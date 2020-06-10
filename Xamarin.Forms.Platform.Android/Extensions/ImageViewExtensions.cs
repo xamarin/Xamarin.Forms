@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Android.Graphics.Drawables;
 using Xamarin.Forms.Internals;
 using Android.Content;
@@ -9,18 +10,19 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal static class ImageViewExtensions
 	{
-		public static Task UpdateBitmap(this AImageView imageView, IImageElement newView, IImageElement previousView) =>
-			imageView.UpdateBitmap(newView, previousView, null, null);
+		public static Task UpdateBitmap(this AImageView imageView, IImageElement newView, IImageElement previousView, CancellationToken cancellationToken = default(CancellationToken)) =>
+			imageView.UpdateBitmap(newView, previousView, null, null, cancellationToken);
 
-		public static Task UpdateBitmap(this AImageView imageView, ImageSource newImageSource, ImageSource previousImageSourc) =>
-			imageView.UpdateBitmap(null, null, newImageSource, previousImageSourc);
+		public static Task UpdateBitmap(this AImageView imageView, ImageSource newImageSource, ImageSource previousImageSourc, CancellationToken cancellationToken = default(CancellationToken)) =>
+			imageView.UpdateBitmap(null, null, newImageSource, previousImageSourc, cancellationToken);
 
 		static async Task UpdateBitmap(
 			this AImageView imageView,
 			IImageElement newView,
 			IImageElement previousView,
 			ImageSource newImageSource,
-			ImageSource previousImageSource)
+			ImageSource previousImageSource,
+			CancellationToken cancellationToken)
 		{
 
 			IImageController imageController = newView as IImageController;
@@ -58,7 +60,7 @@ namespace Xamarin.Forms.Platform.Android
 					{
 						var animationHandler = Registrar.Registered.GetHandlerForObject<IAnimationSourceHandler>(newImageSource);
 						if (animationHandler != null)
-							animation = await animationHandler.LoadImageAnimationAsync(newImageSource, imageView.Context);
+							animation = await animationHandler.LoadImageAnimationAsync(newImageSource, imageView.Context, cancellationToken);
 					}
 
 					if (animation == null)
@@ -66,24 +68,24 @@ namespace Xamarin.Forms.Platform.Android
 						var imageViewHandler = Registrar.Registered.GetHandlerForObject<IImageViewHandler>(newImageSource);
 						if (imageViewHandler != null)
 						{
-							await imageViewHandler.LoadImageAsync(newImageSource, errorPlaceholder, imageView);
+							await imageViewHandler.LoadImageAsync(newImageSource, errorPlaceholder, imageView, cancellationToken);
 						}
 						else
 						{
-							await SetImagePlaceholder(imageView, loadingPlaceholder);
-							using (var drawable = await imageView.Context.GetFormsDrawableAsync(newImageSource))
+							await SetImagePlaceholder(imageView, loadingPlaceholder, cancellationToken);
+							using (var drawable = await imageView.Context.GetFormsDrawableAsync(newImageSource, cancellationToken))
 							{
 								// only set the image if we are still on the same one
-								if (!imageView.IsDisposed() && SourceIsNotChanged(newView, newImageSource) && drawable != null)
+								if (CanUpdateImageView(imageView, cancellationToken) && drawable != null)
 									imageView.SetImageDrawable(drawable);
 								else if (errorPlaceholder != null)
-									await SetImagePlaceholder(imageView, errorPlaceholder);
+									await SetImagePlaceholder(imageView, errorPlaceholder, cancellationToken);
 							}
 						}
 					}
 					else
 					{
-						if (!imageView.IsDisposed() && SourceIsNotChanged(newView, newImageSource))
+						if (CanUpdateImageView(imageView, cancellationToken))
 							imageView.SetImageDrawable(animation.ImageDrawable);
 						else
 						{
@@ -94,7 +96,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				else if (errorPlaceholder != null)
 				{
-					await SetImagePlaceholder(imageView, errorPlaceholder);
+					await SetImagePlaceholder(imageView, errorPlaceholder, cancellationToken);
 				}
 				else
 				{
@@ -104,26 +106,25 @@ namespace Xamarin.Forms.Platform.Android
 			finally
 			{
 				// only mark as finished if we are still working on the same image
-				if (SourceIsNotChanged(newView, newImageSource))
+				if (!cancellationToken.IsCancellationRequested)
 				{
 					imageController?.SetIsLoading(false);
 					imageController?.NativeSizeChanged();
 				}
 			}
 
-
-			bool SourceIsNotChanged(IImageElement imageElement, ImageSource imageSource)
+			bool CanUpdateImageView(AImageView view, CancellationToken cancellation)
 			{
-				return (imageElement != null) ? imageElement.Source == imageSource : true;
+				return !view.IsDisposed() && !cancellation.IsCancellationRequested;
 			}
 		}
 
-		static async Task SetImagePlaceholder(AImageView imageView, ImageSource placeholder)
+		static async Task SetImagePlaceholder(AImageView imageView, ImageSource placeholder, CancellationToken cancellationToken)
 		{
-			using (var drawable = await imageView.Context.GetFormsDrawableAsync(placeholder))
+			using (var drawable = await imageView.Context.GetFormsDrawableAsync(placeholder, cancellationToken))
 			{
 				// only set the image if we are still on the same one
-				if (!imageView.IsDisposed())
+				if (!imageView.IsDisposed() && !cancellationToken.IsCancellationRequested)
 					imageView.SetImageDrawable(drawable);
 			}
 		}
