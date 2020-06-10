@@ -69,13 +69,11 @@ namespace Xamarin.Forms.Platform.iOS
 			if (IsElementOrControlEmpty)
 				return;
 
-			if (!Forms.IsiOS13OrNewer)
-			{
-				HandleOffColorForOlderSystemVersions(Element.BackgroundColor);
-				return;
-			}
+			UIView offColorView = Control;
+			var subviewDepth = Forms.IsiOS13OrNewer ? 2 : 3;
+			for (var i = 0; i < subviewDepth; i++)
+				offColorView = offColorView?.Subviews?.FirstOrDefault();
 
-			var offColorView = Control.Subviews.FirstOrDefault()?.Subviews.FirstOrDefault();
 			if (offColorView == null)
 				return;
 			
@@ -102,35 +100,6 @@ namespace Xamarin.Forms.Platform.iOS
 		void OnElementToggled(object sender, EventArgs e)
 		{
 			Control.SetState(Element.IsToggled, true);
-		}
-
-		protected override void SetBackgroundColor(Color color)
-		{
-			if (IsElementOrControlEmpty)
-				return;
-
-			if (!Forms.IsiOS13OrNewer)
-			{
-				HandleOffColorForOlderSystemVersions(Element.BackgroundColor);
-				return;
-			}
-
-			base.SetBackgroundColor(color);
-		}
-
-		void HandleOffColorForOlderSystemVersions(Color backgroundColor)
-		{
-			if (Element.OffColor == Color.Default || backgroundColor != Color.Default)
-			{
-				Control.TintColor = _defaultOffColor;
-				Control.Layer.CornerRadius = 0;
-				base.SetBackgroundColor(backgroundColor);
-				return;
-			}
-			var offColor = Element.OffColor.ToUIColor();
-			Control.TintColor = offColor;
-			Control.BackgroundColor = offColor;
-			Control.Layer.CornerRadius = Control.Bounds.Height / 2;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
