@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
+using Android.Graphics;
 using Android.Graphics.Drawables;
 #if __ANDROID_29__
 using AndroidX.Core.View;
@@ -218,6 +219,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 
 			_hasLayoutOccurred = true;
+		}
+
+		public override void Draw(Canvas canvas)
+		{
+			canvas.ClipShape(Context, Element);
+
+			base.Draw(canvas);
 		}
 
 		public override bool OnTouchEvent(MotionEvent e)

@@ -1,6 +1,8 @@
 using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 using Windows.UI.Xaml.Input;
 using System.Threading.Tasks;

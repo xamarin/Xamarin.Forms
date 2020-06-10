@@ -126,17 +126,22 @@ namespace Xamarin.Forms.Platform.iOS
 			return gradientImage;
 		}
 
-		public static void InsertBackgroundLayer(this UIView view, CALayer backgroundLayer, int index)
+		public static void InsertBackgroundLayer(this UIView view, CALayer backgroundLayer, int index = -1)
 		{
 			InsertBackgroundLayer(view.Layer, backgroundLayer, index);
 		}
 
-		public static void InsertBackgroundLayer(this CALayer layer, CALayer backgroundLayer, int index)
+		public static void InsertBackgroundLayer(this CALayer layer, CALayer backgroundLayer, int index = -1)
 		{
 			RemoveBackgroundLayer(layer);
 
 			if (backgroundLayer != null)
-				layer.InsertSublayer(backgroundLayer, index);
+			{
+				if (index > -1)
+					layer.InsertSublayer(backgroundLayer, index);
+				else
+					layer.AddSublayer(backgroundLayer);
+			}
 		}
 
 		public static void RemoveBackgroundLayer(this UIView view)

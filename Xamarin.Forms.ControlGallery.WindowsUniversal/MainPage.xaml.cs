@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Media;
 using Xamarin.Forms;
 using Xamarin.Forms.Controls;
 using Xamarin.Forms.Platform.UWP;
+using WRectangleGeometry = Windows.UI.Xaml.Media.RectangleGeometry;
 using WRect = Windows.Foundation.Rect;
 using WSolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 
