@@ -48,6 +48,18 @@ namespace Xamarin.Forms.Controls.GalleryPages.GradientGalleries
             }
         }
 
+        void OnBorderColorChanged(object sender, TextChangedEventArgs e)
+        {
+            var borderColor = GetColorFromString(e.NewTextValue);
+
+            if (borderColor != Color.Default)
+            {
+                GradientView.BorderColor = borderColor;
+                BorderColorEntry.BackgroundColor = borderColor;
+                BorderColorFrame.BackgroundColor = borderColor;
+            }
+        }
+
         void OnColorPickerTapped(object sender, EventArgs e)
         {
             GradientColorPicker.FadeTo(1, AnimationSpeed, Easing.SinInOut);

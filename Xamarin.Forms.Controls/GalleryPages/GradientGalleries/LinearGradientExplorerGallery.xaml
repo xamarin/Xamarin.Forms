@@ -18,11 +18,17 @@
                 Padding="12">
                 <Frame
                     x:Name="GradientView"
-                    BorderColor="LightGray"
                     HasShadow="True"
                     HeightRequest="120"
                     WidthRequest="120"
-                    CornerRadius="12"/>
+                    CornerRadius="12">
+                          <Grid>
+                        <Label
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            Text="LinearGradientBrush"/>
+                    </Grid>
+                </Frame>
             </Grid>
             <ScrollView
                 Grid.Row="1"
@@ -44,6 +50,30 @@
                             TextChanged="OnBackgroundColorChanged"/>
                         <Frame
                             x:Name="BackgroundColorFrame"
+                            CornerRadius="6"
+                            HasShadow="False"
+                            BorderColor="LightGray">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Tapped="OnColorPickerTapped"/>
+                            </Frame.GestureRecognizers>
+                        </Frame>
+                    </StackLayout>
+                    <!-- BORDER COLOR -->
+                    <Label
+                        FontSize="24"
+                        Text="Border Color"
+                        VerticalTextAlignment="Center" />
+                    <StackLayout
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Entry
+                            x:Name="BorderColorEntry"
+                            HorizontalOptions="FillAndExpand"
+                            Placeholder="Background Color Hex"
+                            TextChanged="OnBorderColorChanged"/>
+                        <Frame
+                            x:Name="BorderColorFrame"
                             CornerRadius="6"
                             HasShadow="False"
                             BorderColor="LightGray">

@@ -78,6 +78,16 @@ namespace Xamarin.Forms.Platform.iOS
 			_actualView.Layer.CornerRadius = cornerRadius;
 			_actualView.Layer.MasksToBounds = cornerRadius > 0;
 
+			if (Element.BackgroundColor == Color.Default)
+				_actualView.Layer.BackgroundColor = ColorExtensions.BackgroundColor.CGColor;
+			else
+			{
+				// BackgroundColor gets set on the base class too which messes with
+				// the corner radius, shadow, etc. so override that behaviour here
+				BackgroundColor = null;
+				_actualView.Layer.BackgroundColor = Element.BackgroundColor.ToCGColor();
+			}
+
 			_actualView.Layer.RemoveBackgroundLayer();
 
 			if (Element.Background != null && !Element.Background.IsEmpty)
@@ -89,18 +99,6 @@ namespace Xamarin.Forms.Platform.iOS
 					_actualView.Layer.BackgroundColor = UIColor.Clear.CGColor;
 					Layer.InsertBackgroundLayer(backgroundLayer, 0);
 					backgroundLayer.CornerRadius = cornerRadius;
-				}
-			}
-			else
-			{
-				if (Element.BackgroundColor == Color.Default)
-					_actualView.Layer.BackgroundColor = ColorExtensions.BackgroundColor.CGColor;
-				else
-				{
-					// BackgroundColor gets set on the base class too which messes with
-					// the corner radius, shadow, etc. so override that behaviour here
-					BackgroundColor = null;
-					_actualView.Layer.BackgroundColor = Element.BackgroundColor.ToCGColor();
 				}
 			}
 
