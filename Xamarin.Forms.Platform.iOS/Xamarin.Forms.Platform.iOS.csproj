@@ -275,7 +275,6 @@
     <Compile Include="Shapes\PolygonRenderer.cs" />
     <Compile Include="Shapes\PolylineRenderer.cs" />
     <Compile Include="Shapes\RectangleRenderer.cs" />
-    <Compile Include="Shapes\ShapeRenderer.cs" />
     <Compile Include="Extensions\BrushExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
