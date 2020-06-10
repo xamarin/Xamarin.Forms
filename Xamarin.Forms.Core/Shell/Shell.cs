@@ -1220,12 +1220,12 @@ namespace Xamarin.Forms
 
 		internal T GetEffectiveValue<T>(BindableProperty property, T defaultValue)
 		{
-			return GetEffectiveValue(property, () => defaultValue, null);
+			return GetEffectiveValue<T>(property, () => defaultValue, null);
 		}
 
-		internal T GetEffectiveValue<T>(BindableProperty property, T defaultValue, Element element)
+		internal T GetEffectiveValue<T>(BindableProperty property, Func<T> defaultValue, Action<Element> observer, Element element = null)
 		{
-			Element element = GetVisiblePage() ?? CurrentContent;
+			element = element ?? GetVisiblePage() ?? CurrentContent;
 			while (element != this && element != null)
 			{
 				observer?.Invoke(element);

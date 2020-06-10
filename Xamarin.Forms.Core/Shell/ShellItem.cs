@@ -106,7 +106,7 @@ namespace Xamarin.Forms
 					return true;
 
 				bool defaultShow = ShellItemController.GetItems().Count > 1;
-				return shell.GetEffectiveValue<bool>(Shell.TabBarIsVisibleProperty, defaultShow, displayedPage);
+				return shell.GetEffectiveValue<bool>(Shell.TabBarIsVisibleProperty, () => defaultShow, null, displayedPage);
 			}
 		}
 
