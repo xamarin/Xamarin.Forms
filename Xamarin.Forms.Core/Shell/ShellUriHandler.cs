@@ -513,17 +513,20 @@ namespace Xamarin.Forms
 			IEnumerable results = null;
 			switch (node)
 			{
-				case Shell shell:
-					results = shell.Items;
+				case IShellController shell:
+					results = shell.GetItems();
 					break;
-				case ShellGroupItem sgi:
-					results = sgi.ShellElementCollection;
+				case IShellItemController item:
+					results = item.GetItems();
+					break;
+				case IShellSectionController section:
+					results = section.GetItems();
 					break;
 				case ShellContent content:
 					results = new object[0];
 					break;
-				case GlobalRouteItem routeITem:
-					results = routeITem.Items;
+				case GlobalRouteItem routeItem:
+					results = routeItem.Items;
 					break;
 			}
 

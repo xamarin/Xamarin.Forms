@@ -1085,7 +1085,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public async Task CanStillNavigateToNotVisibleShellItem()
+		public async Task CantNavigateToNotVisibleShellItem()
 		{
 			var shell = new Shell();
 			var item1 = CreateShellItem(shellItemRoute:"NotVisible");
@@ -1096,9 +1096,9 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			item1.IsVisible = false;
 
-			shell.GoToAsync("//NotVisible");
+			Assert.That(async () => await shell.GoToAsync($"//NotVisible"), Throws.Exception);
 
-			Assert.AreEqual("//NotVisible", shell.CurrentState.Location.ToString());
+			Assert.AreEqual(shell.CurrentItem, item2);
 		}
 
 
