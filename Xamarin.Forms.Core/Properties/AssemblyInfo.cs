@@ -117,6 +117,7 @@ using Xamarin.Forms.StyleSheets;
 [assembly: StyleProperty("-xf-visual", typeof(VisualElement), nameof(VisualElement.VisualProperty))]
 [assembly: StyleProperty("-xf-vertical-text-alignment", typeof(Label), nameof(TextAlignmentElement.VerticalTextAlignmentProperty))]
 [assembly: StyleProperty("-xf-thumb-color", typeof(Switch), nameof(Switch.ThumbColorProperty))]
+[assembly: StyleProperty("-xf-off-color", typeof(Switch), nameof(Switch.OffColorProperty))]
 
 //shell
 [assembly: StyleProperty("-xf-flyout-background", typeof(Shell), nameof(Shell.FlyoutBackgroundColorProperty))]
