@@ -40,7 +40,7 @@
     <CodesignKey>iPhone Developer</CodesignKey>
     <CodesignProvision />
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <MtouchExtraArgs>--nolinkaway</MtouchExtraArgs>
+    <MtouchExtraArgs>--nolinkaway --optimize=experimental-xforms-product-type</MtouchExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>none</DebugType>

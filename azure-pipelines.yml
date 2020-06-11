@@ -140,7 +140,7 @@ stages:
             - msbuild
         variables:
           FormsIdAppend: ''
-          buildConfiguration: $(DefaultBuildConfiguration)
+          buildConfiguration: variables['DefaultBuildConfiguration']
           nugetPackageVersion : $[ dependencies.win_bots.outputs['debug.winbuild.xamarinformspackageversion'] ]
         steps:
           - template: build/steps/build-nuget.yml
@@ -171,7 +171,7 @@ stages:
           - Xamarin.iOS
       variables:
         provisionator.osxPath : 'build/provisioning/provisioning.csx'
-        buildConfiguration: $(DefaultBuildConfiguration)
+        buildConfiguration: variables['DefaultBuildConfiguration']
         slnPath: $(SolutionFile)
         iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
         iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
@@ -195,7 +195,7 @@ stages:
           - Xamarin.iOS
       variables:
         provisionator.osxPath : 'build/provisioning/provisioning.csx'
-        buildConfiguration: $(DefaultBuildConfiguration)
+        buildConfiguration: ${{ variables.DefaultBuildConfiguration }}
         slnPath: $(SolutionFile)
         iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
         iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
