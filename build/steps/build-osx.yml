@@ -55,7 +55,7 @@ steps:
     inputs:
       targetType: 'filePath'
       filePath: 'build.sh'
-      arguments: --target BuildTasks
+      arguments: --target BuildTasks --BUILD_CONFIGURATION=${{ variables.buildConfiguration }} --buildForVS2017=$(buildForVS2017)
 
   - task: InstallAppleCertificate@2
     displayName: 'Install an Apple certificate'
