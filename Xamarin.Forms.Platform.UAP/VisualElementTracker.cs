@@ -7,6 +7,7 @@ using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.Foundation.Metadata;
 using Xamarin.Forms.Internals;
 using WCompositeTransform = Windows.UI.Xaml.Media.CompositeTransform;
 using WRectangleGeometry = Windows.UI.Xaml.Media.RectangleGeometry;

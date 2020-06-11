@@ -1,4 +1,5 @@
-﻿using Windows.UI.Composition;
+﻿using Windows.Foundation.Metadata;
+using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Hosting;
 using Xamarin.Forms.Shapes;
