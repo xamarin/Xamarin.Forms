@@ -99,7 +99,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <MtouchLink>Full</MtouchLink>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TF_BUILD)' == 'true' OR '$(CI)' == 'true'">
+  <PropertyGroup>
     <MtouchLink>Full</MtouchLink>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">

@@ -23,7 +23,7 @@ PowerShell:
 #addin "nuget:?package=Cake.Git&version=0.21.0"
 #addin "nuget:?package=Cake.Android.SdkManager&version=3.0.2"
 #addin "nuget:?package=Cake.Boots&version=1.0.2.437"
-
+#addin "nuget:?package=Cake.AppleSimulator&version=0.2.0"
 #addin "nuget:?package=Cake.FileHelpers&version=3.2.1"
 //////////////////////////////////////////////////////////////////////
 // TOOLS
@@ -35,10 +35,17 @@ PowerShell:
 //////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "Default");
+var IOS_SIM_NAME = EnvironmentVariable("IOS_SIM_NAME") ?? "iPhone 11";
+var IOS_SIM_RUNTIME = EnvironmentVariable("IOS_SIM_RUNTIME") ?? "com.apple.CoreSimulator.SimRuntime.iOS-13-5";
+var IOS_PROJ = "./DeviceTests.iOS/DeviceTests.iOS.csproj";
+var IOS_BUNDLE_ID = "com.xamarin.quickui.controlgallery";
+var IOS_IPA_PATH = "./Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/Debug/XamarinFormsControlGalleryiOS.app";
+var IOS_TEST_RESULTS_PATH = "./xunit-ios.xml";
+var IOS_BUILD_IPA = Argument("IOS_BUILD_IPA", (target == "test-ios-emu") ? true : false );
 
 var ANDROID_RENDERERS = Argument("ANDROID_RENDERERS", "FAST");
 var XamarinFormsVersion = Argument("XamarinFormsVersion", "");
-var configuration = Argument("BUILD_CONFIGURATION", "Debug");
+var configuration = Argument("configuration", "Debug");
 var packageVersion = Argument("packageVersion", "");
 var releaseChannelArg = Argument("CHANNEL", "Stable");
 releaseChannelArg = EnvironmentVariable("CHANNEL") ?? releaseChannelArg;
@@ -671,6 +678,68 @@ Task("cg-ios-vs")
     {   
         StartVisualStudio();
     });
+
+Task ("test-ios-emu")
+    //.IsDependentOn ("build-ios")
+    .Does (() =>
+{
+    IOS_SIM_NAME = "iPhone 8";
+    IOS_SIM_RUNTIME = "com.apple.CoreSimulator.SimRuntime.iOS-13-5";
+    var sims = ListAppleSimulators ();
+    foreach (var s in sims)
+    {
+        if(s.Runtime.Contains("13-5"))
+            continue;
+            
+        Information("Info: {0} ({1} - {2} - {3})", s.Name, s.Runtime, s.UDID, s.Availability);
+    }
+
+    // Look for a matching simulator on the system
+    var sim = sims.First (s => s.Name == IOS_SIM_NAME && s.Runtime == IOS_SIM_RUNTIME);
+
+    // Boot the simulator
+    Information("Booting: {0} ({1} - {2})", sim.Name, sim.Runtime, sim.UDID);
+    if (!sim.State.ToLower().Contains ("booted"))
+        BootAppleSimulator (sim.UDID);
+
+    // Wait for it to be booted
+    var booted = false;
+    for (int i = 0; i < 100; i++) {
+        if (ListAppleSimulators().Any (s => s.UDID == sim.UDID && s.State.ToLower().Contains("booted"))) {
+            booted = true;
+            break;
+        }
+        System.Threading.Thread.Sleep(1000);
+    }
+
+    // Install the IPA that was previously built
+    var ipaPath = new FilePath(IOS_IPA_PATH);
+    Information ("Installing: {0}", ipaPath);
+    InstalliOSApplication(sim.UDID, MakeAbsolute(ipaPath).FullPath);
+
+
+    // Launch the IPA
+    Information("Launching: {0}", IOS_BUNDLE_ID);
+    LaunchiOSApplication(sim.UDID, IOS_BUNDLE_ID);
+
+    // Start our Test Results TCP listener
+/*    Information("Started TCP Test Results Listener on port: {0}", TCP_LISTEN_PORT);
+    var tcpListenerTask = DownloadTcpTextAsync (TCP_LISTEN_PORT, IOS_TEST_RESULTS_PATH);
+
+    // Launch the IPA
+    Information("Launching: {0}", IOS_BUNDLE_ID);
+    LaunchiOSApplication(sim.UDID, IOS_BUNDLE_ID);
+
+    // Wait for the TCP listener to get results
+    Information("Waiting for tests...");
+    tcpListenerTask.Wait ();
+
+    AddPlatformToTestResults(IOS_TEST_RESULTS_PATH, "iOS");
+*/
+    // Close up simulators
+    Information("Closing Simulator");
+    ShutdownAllAppleSimulators ();
+});
 
 /*
 Task("Deploy")
