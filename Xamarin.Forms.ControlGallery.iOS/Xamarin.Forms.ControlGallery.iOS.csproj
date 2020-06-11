@@ -101,7 +101,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(TF_BUILD)' == 'true' OR '$(CI)' == 'true'">
     <MtouchLink>Full</MtouchLink>
-    <MtouchExtraArgs>--nolinkaway --optimize=experimental-xforms-product-type</MtouchExtraArgs>
+    <MtouchExtraArgs>--nolinkaway --optimize=experimental-xforms-product-type --dsym=true</MtouchExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <AppExtensionDebugBundleId />
