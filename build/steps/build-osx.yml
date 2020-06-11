@@ -94,6 +94,7 @@ steps:
       Contents: |
         **/XamarinFormsControlGalleryiOS.ipa
         **/*.dSYM
+        Xamarin.Forms.ControlGallery.iOS/**/*.*
         Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Newtonsoft.Json.*
         Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/nunit.*
         Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/NUnit3.*
