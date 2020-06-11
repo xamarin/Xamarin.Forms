@@ -1,6 +1,4 @@
 variables:
-- name: DefaultBuildConfiguration
-  value: Debug
 - name: DefaultBuildPlatform
   value: 'any cpu'
 - name: ApkName
@@ -171,7 +169,7 @@ stages:
           - Xamarin.iOS
       variables:
         provisionator.osxPath : 'build/provisioning/provisioning.csx'
-        buildConfiguration: variables['DefaultBuildConfiguration']
+        buildConfiguration: ${{ variables.DefaultBuildConfiguration }}
         slnPath: $(SolutionFile)
         iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
         iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
