@@ -11,40 +11,43 @@ namespace Xamarin.Forms.Platform.UWP
 #if UWP_18362
 		public static void Clip(this FrameworkElement frameworkElement, Geometry geometry)
 		{
-			var compositor = Window.Current.Compositor;
-			var visual = ElementCompositionPreview.GetElementVisual(frameworkElement);
-
-			CompositionClip compositionClip = null;
-
-			if (geometry is EllipseGeometry ellipseGeometry)
+			if(ApiInformation.IsTypePresent("Windows.UI.Composition.CompositionEllipseGeometry"))
 			{
-				var compositionEllipseGeometry = compositor.CreateEllipseGeometry();
+				var compositor = Window.Current.Compositor;
+				var visual = ElementCompositionPreview.GetElementVisual(frameworkElement);
 
-				compositionEllipseGeometry.Center = new WVector2((float)ellipseGeometry.Center.X, (float)ellipseGeometry.Center.Y);
-				compositionEllipseGeometry.Radius = new WVector2((float)ellipseGeometry.RadiusX, (float)ellipseGeometry.RadiusY);
+				CompositionClip compositionClip = null;
 
-				compositionClip = compositor.CreateGeometricClip(compositionEllipseGeometry);
-			}
-			else if (geometry is LineGeometry lineGeometry)
-			{
-				var compositionLineGeometry = compositor.CreateLineGeometry();
+				if (geometry is EllipseGeometry ellipseGeometry)
+				{
+					var compositionEllipseGeometry = compositor.CreateEllipseGeometry();
 
-				compositionLineGeometry.Start = new WVector2((float)lineGeometry.StartPoint.X, (float)lineGeometry.StartPoint.Y);
-				compositionLineGeometry.End = new WVector2((float)lineGeometry.EndPoint.X, (float)lineGeometry.EndPoint.Y);
+					compositionEllipseGeometry.Center = new WVector2((float)ellipseGeometry.Center.X, (float)ellipseGeometry.Center.Y);
+					compositionEllipseGeometry.Radius = new WVector2((float)ellipseGeometry.RadiusX, (float)ellipseGeometry.RadiusY);
 
-				compositionClip = compositor.CreateGeometricClip(compositionLineGeometry);
-			}
-			else if (geometry is RectangleGeometry rectangleGeometry)
-			{
-				var compositionRectangleGeometry = compositor.CreateRectangleGeometry();
+					compositionClip = compositor.CreateGeometricClip(compositionEllipseGeometry);
+				}
+				else if (geometry is LineGeometry lineGeometry)
+				{
+					var compositionLineGeometry = compositor.CreateLineGeometry();
 
-				compositionRectangleGeometry.Offset = new WVector2((float)rectangleGeometry.Rect.X, (float)rectangleGeometry.Rect.Y);
-				compositionRectangleGeometry.Size = new WVector2((float)rectangleGeometry.Rect.Width, (float)rectangleGeometry.Rect.Height);
+					compositionLineGeometry.Start = new WVector2((float)lineGeometry.StartPoint.X, (float)lineGeometry.StartPoint.Y);
+					compositionLineGeometry.End = new WVector2((float)lineGeometry.EndPoint.X, (float)lineGeometry.EndPoint.Y);
 
-				compositionClip = compositor.CreateGeometricClip(compositionRectangleGeometry);
-			}
+					compositionClip = compositor.CreateGeometricClip(compositionLineGeometry);
+				}
+				else if (geometry is RectangleGeometry rectangleGeometry)
+				{
+					var compositionRectangleGeometry = compositor.CreateRectangleGeometry();
+
+					compositionRectangleGeometry.Offset = new WVector2((float)rectangleGeometry.Rect.X, (float)rectangleGeometry.Rect.Y);
+					compositionRectangleGeometry.Size = new WVector2((float)rectangleGeometry.Rect.Width, (float)rectangleGeometry.Rect.Height);
+
+					compositionClip = compositor.CreateGeometricClip(compositionRectangleGeometry);
+				}
 	
-			visual.Clip = compositionClip;
+				visual.Clip = compositionClip;
+			}
 		}
 #endif
 	}
