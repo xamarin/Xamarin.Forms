@@ -33,11 +33,12 @@ PowerShell:
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
+var IOS_BUILD_IPA = Argument("IOS_BUILD_IPA", false);
 
 var ANDROID_RENDERERS = Argument("ANDROID_RENDERERS", "FAST");
 var XamarinFormsVersion = Argument("XamarinFormsVersion", "");
 var target = Argument("target", "Default");
-var configuration = Argument("configuration", "Debug");
+var configuration = Argument("BUILD_CONFIGURATION", "Debug");
 var packageVersion = Argument("packageVersion", "");
 var releaseChannelArg = Argument("CHANNEL", "Stable");
 releaseChannelArg = EnvironmentVariable("CHANNEL") ?? releaseChannelArg;
@@ -614,7 +615,7 @@ Task("cg-android")
             };
 
             buildSettings.BinaryLogger = binaryLogger;
-            binaryLogger.FileName = $"{artifactStagingDirectory}/android-{ANDROID_RENDERERS}.binlog";
+            binaryLogger.FileName = $"{artifactStagingDirectory}/android-{ANDROID_RENDERERS}_${buildForVS2017}.binlog";
         }
         else
         {
@@ -637,7 +638,13 @@ Task("cg-ios")
     .IsDependentOn("BuildTasks")
     .Does(() =>
     {   
-        MSBuild("./Xamarin.Forms.ControlGallery.iOS/Xamarin.Forms.ControlGallery.iOS.csproj", GetMSBuildSettings().WithRestore());
+        var buildSettings = 
+            GetMSBuildSettings(null)
+            .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}")
+            .WithRestore();
+
+        MSBuild("./Xamarin.Forms.ControlGallery.iOS/Xamarin.Forms.ControlGallery.iOS.csproj", 
+            buildSettings);
     });
 
 Task("cg-ios-vs")
@@ -721,10 +728,10 @@ void StartVisualStudio(string sln = "Xamarin.Forms.sln")
          StartProcess("open", new ProcessSettings{ Arguments = "Xamarin.Forms.sln" });
 }
 
-MSBuildSettings GetMSBuildSettings()
+MSBuildSettings GetMSBuildSettings(PlatformTarget? platformTarget = PlatformTarget.MSIL)
 {
     var buildSettings =  new MSBuildSettings {
-        PlatformTarget = PlatformTarget.MSIL,
+        PlatformTarget = platformTarget,
         MSBuildPlatform = Cake.Common.Tools.MSBuild.MSBuildPlatform.x86,
         Configuration = configuration,
     };

@@ -92,7 +92,8 @@ steps:
     condition: eq(variables['buildForVS2017'], 'false')
     inputs:
       Contents: |
-        **/$(IpaName)
+        **/XamarinFormsControlGalleryiOS.ipa
+        **/*.dSYM
         Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Newtonsoft.Json.*
         Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/nunit.*
         Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/NUnit3.*
