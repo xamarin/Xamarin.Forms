@@ -9,7 +9,6 @@ parameters:
   slnPath : 'Xamarin.Forms.sln'
   buildTaskPath : 'Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj'
   androidProjectPath : 'Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj'
-  buildConfiguration : 'Debug'
   nugetVersion: $(NUGET_VERSION)
   monoVersion: $(MONO_VERSION)
   provisionatorPath: 'build/provisioning/provisioning.csx'

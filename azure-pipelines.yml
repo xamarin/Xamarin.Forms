@@ -151,6 +151,7 @@ stages:
         parameters:
           vmImage: $(macOSXVmImage)
           provisionatorPath : 'build/provisioning/provisioning.csx'
+          buildConfiguration : variables['DefaultBuildConfiguration']
 
 
   - stage: build_osx
@@ -169,7 +170,7 @@ stages:
           - Xamarin.iOS
       variables:
         provisionator.osxPath : 'build/provisioning/provisioning.csx'
-        buildConfiguration: ${{ variables.DefaultBuildConfiguration }}
+        buildConfiguration: $(DefaultBuildConfiguration)
         slnPath: $(SolutionFile)
         iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
         iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
@@ -193,7 +194,7 @@ stages:
           - Xamarin.iOS
       variables:
         provisionator.osxPath : 'build/provisioning/provisioning.csx'
-        buildConfiguration: ${{ variables.DefaultBuildConfiguration }}
+        buildConfiguration: variables['DefaultBuildConfiguration']
         slnPath: $(SolutionFile)
         iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
         iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
