@@ -92,8 +92,6 @@ steps:
     condition: eq(variables['buildForVS2017'], 'false')
     inputs:
       Contents: |
-        **/XamarinFormsControlGalleryiOS.ipa
-        **/*.dSYM
         Xamarin.Forms.ControlGallery.iOS/**/*.*
         Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Newtonsoft.Json.*
         Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/nunit.*
@@ -102,7 +100,7 @@ steps:
         Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Xamarin.*
       TargetFolder: '$(build.artifactstagingdirectory)/ios'
       CleanTargetFolder: true
-      flattenFolders: true
+      flattenFolders: false
 
 
   - task: CopyFiles@2
