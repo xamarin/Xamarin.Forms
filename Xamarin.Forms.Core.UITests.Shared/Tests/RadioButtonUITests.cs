@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using Xamarin.Forms.CustomAttributes;
 
-namespace Xamarin.Forms.Core.UITests.Shared.Tests
+namespace Xamarin.Forms.Core.UITests
 {
 	[TestFixture]
 	[Category(UITestCategories.RadioButton)]
