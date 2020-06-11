@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.UWP
 #if UWP_18362
 		public static void Clip(this FrameworkElement frameworkElement, Geometry geometry)
 		{
-			if(ApiInformation.IsTypePresent("Windows.UI.Composition.CompositionEllipseGeometry"))
+			if(ApiInformation.IsTypePresent("Windows.UI.Composition.CompositionGeometry"))
 			{
 				var compositor = Window.Current.Compositor;
 				var visual = ElementCompositionPreview.GetElementVisual(frameworkElement);
