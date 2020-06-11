@@ -77,6 +77,7 @@ namespace Xamarin.Forms.Core.UITests
 		public static readonly string Picker = "UITextField";
 		public static readonly string Pin = "MKPinAnnotationView";
 		public static readonly string ProgressBar = "UIProgressView";
+		public static readonly string RadioButton = "Xamarin_Forms_Platform_iOS_RadioButtonRenderer";
 		public static readonly string SearchBar = "UISearchBar";
 		public static readonly string Slider = "UISlider";
 		public static readonly string Stepper = "UIStepper";
