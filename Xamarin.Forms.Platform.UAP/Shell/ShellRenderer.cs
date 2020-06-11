@@ -168,10 +168,6 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				IsPaneOpen = Shell.FlyoutIsPresented;
 			}
-			else if (e.PropertyName == Shell.FlyoutBackgroundColorProperty.PropertyName)
-			{
-				UpdateFlyoutBackgroundColor();
-			}
 			else if (e.PropertyName == Shell.FlyoutBackdropColorProperty.PropertyName)
 			{
 				UpdateFlyoutBackdropColor();
@@ -184,6 +180,10 @@ namespace Xamarin.Forms.Platform.UWP
             {
                 UpdateStatusBarStyle();
             }
+			//else if (e.PropertyName == Shell.FlyoutBackdropColorProperty.PropertyName)
+			//{
+			//	UpdateFlyoutBackdropColor();
+			//}
 		}
 
 		protected virtual void UpdateFlyoutBackdropColor()
@@ -191,7 +191,7 @@ namespace Xamarin.Forms.Platform.UWP
 			var splitView = ShellSplitView;
 			if (splitView != null)
 			{
-				splitView.FlyoutBackdropColor = _shell.FlyoutBackdropColor;
+				//splitView.FlyoutBackdropColor = _shell.FlyoutBackdropColor;
 				if (IsPaneOpen)
 					ShellSplitView.UpdateFlyoutBackdropColor();
 			}

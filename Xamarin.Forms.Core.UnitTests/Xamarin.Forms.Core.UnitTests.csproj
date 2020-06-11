@@ -76,6 +76,7 @@
     <Compile Include="CommandSourceTests.cs" />
     <Compile Include="CommandTests.cs" />
     <Compile Include="DependencyResolutionTests.cs" />
+    <Compile Include="ItemsLayoutTypeConverterTests.cs" />
     <Compile Include="MultiBindingTests.cs" />
     <Compile Include="Markup\DefaultBindablePropertiesTests.cs" />
     <Compile Include="Markup\BindableObjectExtensionsTests.cs" />
@@ -241,6 +242,13 @@
     <Compile Include="FlexOrderTests.cs" />
     <Compile Include="FontAttributeConverterUnitTests.cs" />
     <Compile Include="AppThemeTests.cs" />
+    <Compile Include="DoubleCollectionTests.cs" />
+    <Compile Include="PointCollectionTests.cs" />
+    <Compile Include="PathFigureCollectionTests.cs" />
+    <Compile Include="PolygonTests.cs" />
+    <Compile Include="PolylineTests.cs" />
+    <Compile Include="RectangleTests.cs" />
+    <Compile Include="LineTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
