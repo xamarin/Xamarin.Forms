@@ -645,8 +645,6 @@ Task("cg-ios")
         var buildSettings = 
             GetMSBuildSettings(null)
             .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
-        
-        var buildSettings = GetMSBuildSettings();
 
         if(isCIBuild)
         {
