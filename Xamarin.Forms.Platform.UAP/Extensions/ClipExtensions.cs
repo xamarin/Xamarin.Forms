@@ -1,24 +1,33 @@
-﻿using Windows.Foundation.Metadata;
+﻿using System.Reflection;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Hosting;
 using Xamarin.Forms.Shapes;
+using WRectangleGeometry = Windows.UI.Xaml.Media.RectangleGeometry;
+
+#if UWP_18362
 using WVector2 = System.Numerics.Vector2;
+#endif
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	internal static class CompositionExtensions
+	internal static class ClipExtensions
 	{
-#if UWP_18362
+		static bool SetTypePresent;
+		static bool IsTypePresent;
+
 		public static void Clip(this FrameworkElement frameworkElement, Geometry geometry)
 		{
-			if(ApiInformation.IsTypePresent("Windows.UI.Composition.CompositionGeometry"))
+			if (IsCompositionGeometryTypePresent)
 			{
 				var compositor = Window.Current.Compositor;
 				var visual = ElementCompositionPreview.GetElementVisual(frameworkElement);
 
 				CompositionClip compositionClip = null;
 
+				// UIElement.Clip only support rectangle geometry to be used for clipping area sizing.
+				// If the used Build is 17763 or higher, we use Composition's APIs (CompositionGeometricClip) to allow Clip complex geometries.
+#if UWP_18362
 				if (geometry is EllipseGeometry ellipseGeometry)
 				{
 					var compositionEllipseGeometry = compositor.CreateEllipseGeometry();
@@ -46,10 +55,32 @@ namespace Xamarin.Forms.Platform.UWP
 
 					compositionClip = compositor.CreateGeometricClip(compositionRectangleGeometry);
 				}
-	
-				visual.Clip = compositionClip;
+#endif
+				if (visual.Clip != compositionClip)
+					visual.Clip = compositionClip;
+			}
+			else
+			{
+				var wGeometry = geometry.ToWindows();
+
+				if (wGeometry is WRectangleGeometry wRectangleGeometry && frameworkElement.Clip != wRectangleGeometry)
+					frameworkElement.Clip = wRectangleGeometry;
 			}
 		}
-#endif
+
+		internal static bool IsCompositionGeometryTypePresent
+		{
+			get
+			{
+				if (!SetTypePresent)
+				{
+					MethodInfo methodInfo = typeof(Compositor).GetMethod("CreateEllipseGeometry");
+					IsTypePresent = methodInfo != null;
+					SetTypePresent = true;
+				}
+
+				return IsTypePresent;
+			}
+		}
 	}
 }
