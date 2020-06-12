@@ -67,11 +67,6 @@ namespace Xamarin.Forms.Platform.iOS
 #endif
 		}
 
-		protected override void SetBackgroundColor(Color color)
-		{
-			
-		}
-
 		public virtual void SetupLayer()
 		{
 			float cornerRadius = Element.CornerRadius;
@@ -84,7 +79,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Element.BackgroundColor == Color.Default)
 				_actualView.Layer.BackgroundColor = ColorExtensions.BackgroundColor.CGColor;
 			else
+			{
+				// BackgroundColor gets set on the base class too which messes with
+				// the corner radius, shadow, etc. so override that behaviour here
+				BackgroundColor = UIColor.Clear;
 				_actualView.Layer.BackgroundColor = Element.BackgroundColor.ToCGColor();
+			}
 
 			if (Element.BorderColor == Color.Default)
 				_actualView.Layer.BorderColor = UIColor.Clear.CGColor;
