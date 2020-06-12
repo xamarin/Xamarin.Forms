@@ -33,11 +33,9 @@ PowerShell:
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
-var IOS_BUILD_IPA = Argument("IOS_BUILD_IPA", false);
 
 var ANDROID_RENDERERS = Argument("ANDROID_RENDERERS", "FAST");
 var XamarinFormsVersion = Argument("XamarinFormsVersion", "");
-var target = Argument("target", "Default");
 var configuration = Argument("BUILD_CONFIGURATION", "Debug");
 var packageVersion = Argument("packageVersion", "");
 var releaseChannelArg = Argument("CHANNEL", "Stable");
@@ -48,10 +46,12 @@ string agentName = EnvironmentVariable("AGENT_NAME", "");
 bool isHostedAgent = agentName.StartsWith("Azure Pipelines");
 bool isCIBuild = !String.IsNullOrWhiteSpace(agentName);
 string artifactStagingDirectory = EnvironmentVariable("BUILD_ARTIFACTSTAGINGDIRECTORY", ".");
+
 var ANDROID_HOME = EnvironmentVariable("ANDROID_HOME") ??
     (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
-
 string[] androidSdkManagerInstalls = new [] { "platforms;android-28", "platforms;android-29", "build-tools;29.0.3"};
+
+var IOS_BUILD_IPA = Argument("IOS_BUILD_IPA", false || isCIBuild);
 
 (string name, string location)[] windowsSdksInstalls = new (string name, string location)[]
 {
@@ -642,8 +642,23 @@ Task("cg-ios")
     {   
         var buildSettings = 
             GetMSBuildSettings(null)
-            .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}")
-            .WithRestore();
+            .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
+        
+        var buildSettings = GetMSBuildSettings();
+
+        if(isCIBuild)
+        {
+            var binaryLogger = new MSBuildBinaryLogSettings {
+                Enabled  = true
+            };
+
+            buildSettings.BinaryLogger = binaryLogger;
+            binaryLogger.FileName = $"{artifactStagingDirectory}/ios-cg-2017_${buildForVS2017}.binlog";
+        }
+        else
+        {
+            buildSettings = buildSettings.WithRestore();
+        }
 
         MSBuild("./Xamarin.Forms.ControlGallery.iOS/Xamarin.Forms.ControlGallery.iOS.csproj", 
             buildSettings);

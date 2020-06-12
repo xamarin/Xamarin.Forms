@@ -48,8 +48,8 @@ if (IsMac)
 		if(releaseChannel == "Beta")
 		{
 			Console.WriteLine("Installing Beta Channel");			
-			await ResolveUrl ("https://xamci.azurewebsites.net/dl/xamarin/xamarin-macios/d16-6/PKG-Xamarin.Mac-notarized");
-			await ResolveUrl ("https://xamci.azurewebsites.net/dl/xamarin/xamarin-macios/d16-6/PKG-Xamarin.iOS-notarized");
+			await ResolveUrl ("https://xamci.azurewebsites.net/dl/xamarin/xamarin-macios/d16-6-xcode11.6/PKG-Xamarin.Mac-notarized");
+			await ResolveUrl ("https://xamci.azurewebsites.net/dl/xamarin/xamarin-macios/d16-6-xcode11.6/PKG-Xamarin.iOS-notarized");
 		}
 		else if(releaseChannel == "Preview")
 		{
