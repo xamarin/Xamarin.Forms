@@ -151,15 +151,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			try
 			{
-				// If it's a url image source and ToWindowsImageSourceAsync returns null, that was an error
-
 				var imagesource = await imageElement.Source.ToWindowsImageSourceAsync();
-
-				if (imageElement.Source is UriImageSource && imagesource == null)
-				{
-					await DisplayErrorImage(renderer);
-					return;
-				}
 
 				if (renderer.IsDisposed)
 					return;
@@ -177,7 +169,6 @@ namespace Xamarin.Forms.Platform.UWP
 				imageController?.SetIsLoading(false);
 			}
 		}
-
 
 		static internal void RefreshImage(IImageVisualElementRenderer renderer)
 		{
