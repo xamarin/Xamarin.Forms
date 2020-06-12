@@ -523,7 +523,11 @@ namespace Xamarin.Forms.Platform.UWP
 		static void UpdateClip(VisualElement view, FrameworkElement frameworkElement)
 		{
 			var geometry = view.Clip;
-			frameworkElement.Clip(geometry);
+
+			if (CompositionHelper.IsCompositionGeometryTypePresent)
+				frameworkElement.ClipVisual(geometry);
+			else
+				frameworkElement.Clip(geometry);
 		}
 	
 		static void UpdateOpacity(VisualElement view, FrameworkElement frameworkElement)
