@@ -55,7 +55,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (controller.IsLoading)
 				return;
-
+			
 
 			if (renderer.GetImage()?.Source is BitmapImage bitmapImage)
 			{
@@ -145,16 +145,10 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			if (imageElement is Image img)
-			{
-				var source = await img.LoadingPlaceholder.ToWindowsImageSourceAsync();
-				renderer.SetImage(source);
-			}
-
 			var imageController = Element as IImageController;
 
 			imageController?.SetIsLoading(true);
-			
+
 			try
 			{
 				// If it's a url image source and ToWindowsImageSourceAsync returns null, that was an error
@@ -184,29 +178,13 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		internal static async Task DisplayErrorImage(IImageVisualElementRenderer renderer) 
-		{
-			if (!(renderer?.Element is Image image))
-			{
-				return;
-			}
-
-			ImageSource placeholderError = image.ErrorPlaceholder;
-			if (placeholderError == null)
-			{
-				return;
-			}
-
-			var imagesource = await placeholderError.ToWindowsImageSourceAsync();
-			renderer.SetImage(imagesource);
-		}
 
 		static internal void RefreshImage(IImageVisualElementRenderer renderer)
 		{
-			if (renderer.Element is IViewController element)
+			if(renderer.Element is IViewController element)
 				element?.InvalidateMeasure(InvalidationTrigger.RendererReady);
 
-			if (renderer.Element is IImageElement controller)
+			if(renderer.Element is IImageElement controller)
 				StartStopAnimation(renderer, controller);
 		}
 	}
