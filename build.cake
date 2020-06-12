@@ -34,6 +34,8 @@ PowerShell:
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
 
+var target = Argument("target", "Default");
+
 var ANDROID_RENDERERS = Argument("ANDROID_RENDERERS", "FAST");
 var XamarinFormsVersion = Argument("XamarinFormsVersion", "");
 var configuration = Argument("BUILD_CONFIGURATION", "Debug");
