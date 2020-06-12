@@ -619,7 +619,7 @@ Task("cg-android")
             };
 
             buildSettings.BinaryLogger = binaryLogger;
-            binaryLogger.FileName = $"{artifactStagingDirectory}/android-{ANDROID_RENDERERS}_${buildForVS2017}.binlog";
+            binaryLogger.FileName = $"{artifactStagingDirectory}/android-{ANDROID_RENDERERS}_{buildForVS2017}.binlog";
         }
         else
         {
