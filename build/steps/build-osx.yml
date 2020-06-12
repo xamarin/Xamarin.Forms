@@ -60,13 +60,6 @@ steps:
     inputs:
       provProfileSecureFile: 'Xamarin Forms iOS Provisioning.mobileprovision'
 
-  - task: XamariniOS@2
-    displayName: 'Build Xamarin.iOS solution $(slnPath)'
-    inputs:
-      solutionFile: $(slnPath)
-      configuration: $(buildConfiguration)
-      args: /bl:$(Build.ArtifactStagingDirectory)/ios-2017_$(buildForVS2017).binlog
-
   - task: Bash@3
     displayName: 'Build Control Gallery IPA'
     inputs:
