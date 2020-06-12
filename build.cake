@@ -653,7 +653,7 @@ Task("cg-ios")
             };
 
             buildSettings.BinaryLogger = binaryLogger;
-            binaryLogger.FileName = $"{artifactStagingDirectory}/ios-cg-2017_${buildForVS2017}.binlog";
+            binaryLogger.FileName = $"{artifactStagingDirectory}/ios-cg-2017_{buildForVS2017}.binlog";
         }
         else
         {
