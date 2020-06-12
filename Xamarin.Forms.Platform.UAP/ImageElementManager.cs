@@ -55,7 +55,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (controller.IsLoading)
 				return;
-			
 
 			if (renderer.GetImage()?.Source is BitmapImage bitmapImage)
 			{
