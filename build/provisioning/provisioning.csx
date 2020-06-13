@@ -63,9 +63,17 @@ if (IsMac)
 
 	async System.Threading.Tasks.Task ResolveUrl (string url)
 	{
-		using (var response = await client.GetAsync (url, System.Net.Http.HttpCompletionOption.ResponseHeadersRead)) {
-			response.EnsureSuccessStatusCode ();
-			Item(response.RequestMessage.RequestUri.ToString());
+		// When downloading a package using the xamci we have to use the following code to 
+		// install updates otherwise provionator can't tell the difference between a new package or an old one
+		try
+		{
+			using (var response = await client.GetAsync (url, System.Net.Http.HttpCompletionOption.ResponseHeadersRead)) {
+				response.EnsureSuccessStatusCode ();
+				Item(response.RequestMessage.RequestUri.ToString());
+			}
+		}
+		catch{
+			Item(url);
 		}
 	}
 }
