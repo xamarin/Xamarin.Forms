@@ -108,9 +108,9 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty AutoFitTextProperty = BindableProperty.Create(nameof(AutoFitText), typeof(AutoFitTextMode), typeof(Label), AutoFitTextMode.None);
 
-		public static readonly BindableProperty MinAutoFitSizeProperty = BindableProperty.Create(nameof(MinAutoFitSize), typeof(int), typeof(Label), 9);
+		public static readonly BindableProperty MinAutoFitFontSizeProperty = BindableProperty.Create(nameof(MinAutoFitFontSize), typeof(int), typeof(Label), 9);
 
-		public static readonly BindableProperty MaxAutoFitSizeProperty = BindableProperty.Create(nameof(MaxAutoFitSize), typeof(int), typeof(Label), 100);
+		public static readonly BindableProperty MaxAutoFitFontSizeProperty = BindableProperty.Create(nameof(MaxAutoFitFontSize), typeof(int), typeof(Label), 100);
 
 		readonly Lazy<PlatformConfigurationRegistry<Label>> _platformConfigurationRegistry;
 
@@ -247,16 +247,16 @@ namespace Xamarin.Forms
 			set => SetValue(AutoFitTextProperty, value);
 		}
 
-		public int MinAutoFitSize
+		public int MinAutoFitFontSize
 		{
-			get => (int)GetValue(MinAutoFitSizeProperty);
-			set => SetValue(MinAutoFitSizeProperty, value);
+			get => (int)GetValue(MinAutoFitFontSizeProperty);
+			set => SetValue(MinAutoFitFontSizeProperty, value);
 		}
 
-		public int MaxAutoFitSize
+		public int MaxAutoFitFontSize
 		{
-			get => (int)GetValue(MaxAutoFitSizeProperty);
-			set => SetValue(MaxAutoFitSizeProperty, value);
+			get => (int)GetValue(MaxAutoFitFontSizeProperty);
+			set => SetValue(MaxAutoFitFontSizeProperty, value);
 		}
 
 		double IFontElement.FontSizeDefaultValueCreator() =>
