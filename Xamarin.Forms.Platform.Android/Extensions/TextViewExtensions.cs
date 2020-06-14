@@ -163,15 +163,14 @@ namespace Xamarin.Forms.Platform.Android
 			switch (label.AutoFitText)
 			{
 				case AutoFitTextMode.FitToWidth:
-					textView.SetMaxLines(1);
-
+					label.SetValueFromRenderer(Label.MaxLinesProperty, 1);
 					TextViewCompat.SetAutoSizeTextTypeUniformWithConfiguration(
 						textView, label.MinAutoFitFontSize, label.MaxAutoFitFontSize, 1, (int)ComplexUnitType.Sp);
 					break;
 				case AutoFitTextMode.None:
 				default:
 					TextViewCompat.SetAutoSizeTextTypeWithDefaults(textView, (int)AutoSizeTextType.None);
-					textView.SetLineBreakMode(label);
+					label.SetValueFromRenderer(Label.LineBreakModeProperty, label.LineBreakMode);
 
 #pragma warning disable 618 // We will need to update this when .Font goes away
 					var f = label.Font;
