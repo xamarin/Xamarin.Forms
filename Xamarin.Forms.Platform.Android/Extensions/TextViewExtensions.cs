@@ -3,8 +3,13 @@ using Android.Text;
 using Android.Widget;
 using System.Collections.Generic;
 using Xamarin.Forms.Internals;
-using Android.Support.V4.Widget;
 using Android.Util;
+
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+#else
+using Android.Support.V4.Widget;
+#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
