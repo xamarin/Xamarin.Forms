@@ -137,6 +137,23 @@ namespace Xamarin.Forms.Platform.UWP
 			Content = _renderer.ContainerElement;
 
 			itemsView?.AddLogicalChild(_view);
+			if (_renderer?.ContainerElement == null)
+			{
+				var view = FormsDataTemplate.CreateContent(dataContext, container) as View;
+				view.BindingContext = dataContext;
+				_renderer = Platform.CreateRenderer(view);
+				Platform.SetRenderer(view, _renderer);
+				Content = _renderer.ContainerElement;
+				itemsView?.AddLogicalChild(view);
+			}
+			else
+			{
+				// We are reusing this ItemContentControl and we can reuse the Element
+				var view = _renderer.Element;
+				view.BindingContext = dataContext;
+				Content = _renderer.ContainerElement;
+				itemsView?.AddLogicalChild(view);
+			}
 		}
 
 		internal void UpdateIsSelected(bool isSelected)
