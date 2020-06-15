@@ -451,7 +451,7 @@ namespace Xamarin.Forms.Platform.MacOS
         void UpdatePathStrokeBounds()
         {
             if (_path != null)
-                _pathStrokeBounds = _path.CopyByStrokingPath(_strokeWidth, _strokeLineCap, _strokeLineJoin, StrokeMiterLimit).PathBoundingBox;
+                _pathStrokeBounds = _path.CopyByStrokingPath(_strokeWidth, _strokeLineCap, _strokeLineJoin, _strokeMiterLimit).PathBoundingBox;
             else
                 _pathStrokeBounds = new CGRect();
 
