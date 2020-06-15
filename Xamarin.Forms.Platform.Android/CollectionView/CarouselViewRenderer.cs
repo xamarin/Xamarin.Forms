@@ -102,6 +102,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFromPosition();
 			else if (changedProperty.Is(FormsCarouselView.CurrentItemProperty))
 				UpdateFromCurrentItem();
+			else if (changedProperty.Is(FormsCarouselView.LoopProperty))
+				UpdateAdapter();
 		}
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
@@ -189,7 +191,7 @@ namespace Xamarin.Forms.Platform.Android
 			var oldItemViewAdapter = ItemsViewAdapter;
 			UnsubscribeCollectionItemsSourceChanged(oldItemViewAdapter);
 
-			ItemsViewAdapter = new ItemsViewAdapter<ItemsView, IItemsViewSource>(ItemsView, 
+			ItemsViewAdapter = new CarouselViewAdapter<ItemsView, IItemsViewSource>(Carousel,
 				(view, context) => new SizedItemContentView(Context, GetItemWidth, GetItemHeight));
 
 			_gotoPosition = -1;
@@ -379,7 +381,18 @@ namespace Xamarin.Forms.Platform.Android
 		void CarouselViewScrolled(object sender, ItemsViewScrolledEventArgs e)
 		{
 			_noNeedForScroll = false;
-			UpdatePosition(e.CenterItemIndex);
+			var index = e.CenterItemIndex;
+			if (Carousel.Loop)
+			{
+				var centeredView = this.GetCenteredView();
+
+				if (centeredView is ItemContentView templatedCell)
+				{
+					var bContext = templatedCell.Content?.Element?.BindingContext;
+					index = ItemsViewAdapter.GetPositionForItem(bContext);
+				}
+			}
+			UpdatePosition(index);
 			UpdateVisualStates();
 		}
 
@@ -485,8 +498,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		class CarouselViewOnScrollListener : RecyclerViewScrollListener<ItemsView, IItemsViewSource>
 		{
+			ItemsViewAdapter<ItemsView, IItemsViewSource> _itemsViewAdapter;
 			public CarouselViewOnScrollListener(ItemsView itemsView, ItemsViewAdapter<ItemsView, IItemsViewSource> itemsViewAdapter) : base(itemsView, itemsViewAdapter, true)
 			{
+				_itemsViewAdapter = itemsViewAdapter;
 			}
 
 			public override void OnScrollStateChanged(RecyclerView recyclerView, int state)
@@ -503,6 +518,21 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				carouselViewRenderer.Carousel.IsScrolling = state != ScrollStateIdle;
+			}
+
+			public override void OnScrolled(RecyclerView recyclerView, int dx, int dy)
+			{
+				base.OnScrolled(recyclerView, dx, dy);
+
+				if (!(recyclerView.GetLayoutManager() is LinearLayoutManager linearLayoutManager))
+					return;
+
+				var itemSourceCount = _itemsViewAdapter.ItemsSource.Count;
+
+				var firstCompletelyItemVisible = linearLayoutManager.FindFirstCompletelyVisibleItemPosition();
+
+				if (firstCompletelyItemVisible == 0)
+					linearLayoutManager.ScrollToPositionWithOffset(itemSourceCount, -recyclerView.ComputeHorizontalScrollOffset());
 			}
 		}
 
