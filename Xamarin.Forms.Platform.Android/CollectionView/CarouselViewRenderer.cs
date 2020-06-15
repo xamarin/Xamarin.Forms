@@ -323,12 +323,13 @@ namespace Xamarin.Forms.Platform.Android
 
 			var first = layoutManager.FindFirstVisibleItemPosition();
 			var last = layoutManager.FindLastVisibleItemPosition();
+		
 
 			if (first == -1)
 				return;
 
 			var newViews = new List<View>();
-			var carouselPosition = Carousel.Position;
+			var carouselPosition = this.CalculateCenterItemIndex(first, layoutManager, false);
 			var previousPosition = carouselPosition - 1;
 			var nextPosition = carouselPosition + 1;
 
@@ -522,8 +523,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			public override void OnScrolled(RecyclerView recyclerView, int dx, int dy)
 			{
-				base.OnScrolled(recyclerView, dx, dy);
-
+			
 				if (!(recyclerView.GetLayoutManager() is LinearLayoutManager linearLayoutManager))
 					return;
 
@@ -533,6 +533,9 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (firstCompletelyItemVisible == 0)
 					linearLayoutManager.ScrollToPositionWithOffset(itemSourceCount, -recyclerView.ComputeHorizontalScrollOffset());
+
+				base.OnScrolled(recyclerView, dx, dy);
+
 			}
 		}
 
