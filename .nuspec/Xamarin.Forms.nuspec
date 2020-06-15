@@ -15,10 +15,10 @@
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <dependencies>
       <group targetFramework="MonoAndroid10.0">
-        <dependency id="Xamarin.AndroidX.Lifecycle.LiveData" version="2.1.0" />
-        <dependency id="Xamarin.Google.Android.Material" version="1.0.0" />
-        <dependency id="Xamarin.AndroidX.Legacy.Support.V4" version="1.0.0" />
-        <dependency id="Xamarin.AndroidX.Browser" version="1.0.0" />
+        <dependency id="Xamarin.AndroidX.Lifecycle.LiveData" version="2.1.0.1" />
+        <dependency id="Xamarin.Google.Android.Material" version="1.0.0.1" />
+        <dependency id="Xamarin.AndroidX.Legacy.Support.V4" version="1.0.0.1" />
+        <dependency id="Xamarin.AndroidX.Browser" version="1.0.0.1" />
       </group>
       <group targetFramework="MonoAndroid90">
         <dependency id="Xamarin.Android.Support.v4" version="28.0.0.3"/>
@@ -37,7 +37,7 @@
       <group targetFramework="uap10.0.16299">
         <dependency id="Microsoft.NETCore.UniversalWindowsPlatform" version="6.0.15" />
         <dependency id="Win2D.uwp" version="1.20.0" />
-        <dependency id="Microsoft.UI.Xaml" version="2.3.191211002" />
+        <dependency id="Microsoft.UI.Xaml" version="2.4.2" />
       </group>
       <group targetFramework="tizen40">
         <dependency id="Tizen.NET" version="4.0.0"/>
