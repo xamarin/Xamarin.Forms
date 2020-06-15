@@ -39,6 +39,7 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateStrokeDashOffset();
 				UpdateStrokeLineCap();
 				UpdateStrokeLineJoin();
+				UpdateStrokeMiterLimit();
 			}
 		}
 
@@ -66,6 +67,8 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateStrokeLineCap();
 			else if (args.PropertyName == Shape.StrokeLineJoinProperty.PropertyName)
 				UpdateStrokeLineJoin();
+			else if (args.PropertyName == Shape.StrokeMiterLimitProperty.PropertyName)
+				UpdateStrokeMiterLimit();
 		}
 		
 #if !WINDOWS_UWP
@@ -200,6 +203,11 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 
 			Control.StrokeLineJoin = wLineJoin;
+		}
+
+		void UpdateStrokeMiterLimit()
+		{
+			Control.StrokeMiterLimit = Element.StrokeMiterLimit;
 		}
 	}
 }
