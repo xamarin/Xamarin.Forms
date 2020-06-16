@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			for (int n = 0; n < ItemsCount(); n++)
 			{
-				if (ElementAt(n) == item)
+				if (ElementAt(n).Equals(item))
 				{
 					return AdjustPositionForHeader(n);
 				}
