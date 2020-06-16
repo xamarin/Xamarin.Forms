@@ -639,24 +639,6 @@ Task("VSMAC")
     });
 
 Task("cg-android")
-    .Description("Builds Android Control Gallery and open VS")
-    .IsDependentOn("BuildTasks")
-    .Does(() => 
-    {
-        MSBuild("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", GetMSBuildSettings().WithRestore());
-        StartVisualStudio();
-    });
-
-Task("cg-ios")
-    .Description("Builds iOS Control Gallery and open VS")
-    .IsDependentOn("BuildTasks")
-    .Does(() =>
-    {   
-        MSBuild("./Xamarin.Forms.ControlGallery.iOS/Xamarin.Forms.ControlGallery.iOS.csproj", GetMSBuildSettings().WithRestore());
-        StartVisualStudio();
-    });
-
-Task("cg-android")
     .Description("Builds Android Control Gallery")
     .IsDependentOn("WriteGoogleMapsAPIKey")
     .IsDependentOn("BuildTasks")
