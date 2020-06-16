@@ -37,6 +37,8 @@ namespace Xamarin.Forms
 			SystemResources = DependencyService.Get<ISystemResourcesProvider>().GetSystemResources();
 			SystemResources.ValuesChanged += OnParentResourcesChanged;
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Application>>(() => new PlatformConfigurationRegistry<Application>(this));
+			// Initialize this value, when the app loads
+			_lastAppTheme = RequestedTheme;
 		}
 
 		public void Quit()
@@ -155,7 +157,16 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public OSAppTheme RequestedTheme => Device.PlatformServices.RequestedTheme;
+		public OSAppTheme UserAppTheme
+		{
+			get => _userAppTheme;
+			set
+			{
+				_userAppTheme = value;
+				TriggerThemeChangedActual(new AppThemeChangedEventArgs(value));
+			}
+		}
+		public OSAppTheme RequestedTheme => UserAppTheme == OSAppTheme.Unspecified ? Device.PlatformServices.RequestedTheme : UserAppTheme;
 
 		public event EventHandler<AppThemeChangedEventArgs> RequestedThemeChanged
 		{
@@ -165,28 +176,37 @@ namespace Xamarin.Forms
 
 		bool _themeChangedFiring;
 		OSAppTheme _lastAppTheme;
+		OSAppTheme _userAppTheme = OSAppTheme.Unspecified;
+
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void OnRequestedThemeChanged(AppThemeChangedEventArgs args)
+		public void TriggerThemeChanged(AppThemeChangedEventArgs args)
+		{
+			if (UserAppTheme != OSAppTheme.Unspecified)
+				return;
+			TriggerThemeChangedActual(args);
+		}
+
+		void TriggerThemeChangedActual(AppThemeChangedEventArgs args)
 		{
 			if (Device.Flags == null || Device.Flags.IndexOf(ExperimentalFlags.AppThemeExperimental) == -1)
 				return;
 
 			// On iOS the event is triggered more than once.
 			// To minimize that for us, we only do it when the theme actually changes and it's not currently firing
-			if (!_themeChangedFiring && RequestedTheme != _lastAppTheme)
-			{
-				try
-				{
-					_themeChangedFiring = true;
-					_lastAppTheme = RequestedTheme;
+			if (_themeChangedFiring || RequestedTheme == _lastAppTheme)
+				return;
 
-					_weakEventManager.HandleEvent(this, args, nameof(RequestedThemeChanged));
-				}
-				finally
-				{
-					_themeChangedFiring = false;
-				}
+			try
+			{
+				_themeChangedFiring = true;
+				_lastAppTheme = RequestedTheme;
+
+				_weakEventManager.HandleEvent(this, args, nameof(RequestedThemeChanged));
+			}
+			finally
+			{
+				_themeChangedFiring = false;
 			}
 		}
 
