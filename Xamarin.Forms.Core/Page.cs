@@ -250,13 +250,6 @@ namespace Xamarin.Forms
 			return OnBackButtonPressed();
 		}
 
-		protected override void OnRequestedThemeChanged(OSAppTheme newValue)
-		{
-			base.OnRequestedThemeChanged(newValue);
-
-			Resources?.Reload();
-		}
-
 		protected virtual void LayoutChildren(double x, double y, double width, double height)
 		{
 			var area = new Rectangle(x, y, width, height);
@@ -292,6 +285,9 @@ namespace Xamarin.Forms
 
 		protected virtual bool OnBackButtonPressed()
 		{
+			if (RealParent is BaseShellItem || RealParent is Shell)
+				return true;
+
 			var application = RealParent as Application;
 			if (application == null || this == application.MainPage)
 				return false;
