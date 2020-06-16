@@ -100,6 +100,7 @@
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <MtouchLink>Full</MtouchLink>
+    <BuildIpa>True</BuildIpa>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TF_BUILD)' == 'true' OR '$(CI)' == 'true'">
     <MtouchLink>Full</MtouchLink>
