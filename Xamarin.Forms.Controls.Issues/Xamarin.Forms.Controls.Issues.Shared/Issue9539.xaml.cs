@@ -12,8 +12,9 @@ namespace Xamarin.Forms.Controls.Issues
     {
         public Issue9539()
         {
+#if APP
             InitializeComponent();
-
+#endif
             BindingContext = new Issue9539ViewModel();
         }
     }
