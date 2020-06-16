@@ -10,7 +10,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
     <PropertyGroup>
-      <NoWarn>$(NoWarn);NU1701</NoWarn>
+      <NoWarn>$(NoWarn);NU1701;NU1202</NoWarn>
     </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,9 +33,14 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <ItemGroup Condition = " '$(TargetFramework)' == 'netcoreapp3.1' ">
+    <PackageReference Include="ViceCode.MapControl.WPF" Version="2.0.0" />    
+  </ItemGroup>
+  <ItemGroup Condition = " '$(TargetFramework)' == 'net461' ">
+    <PackageReference Include="Microsoft.Maps.MapControl.WPF" Version="1.0.0.3" />    
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Meziantou.WpfFontAwesome" Version="5.13.0" />
-    <PackageReference Include="Microsoft.Maps.MapControl.WPF" Version="1.0.0.3" />
     <PackageReference Include="OpenTK" Version="3.0.1" />
     <PackageReference Include="OpenTK.GLControl" Version="3.0.1" />
   </ItemGroup>
