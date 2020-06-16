@@ -912,7 +912,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public async Task ApplyUnapplyStyledElementsOffMainThreadShouldNotCrash()
+		public async Task ApplyAndRemoveStyleOffMainThreadShouldNotCrash()
 		{
 			List<Task> tasks = new List<Task>();
 
