@@ -12,6 +12,7 @@ using Android.Views;
 using Java.Interop;
 using FormsCarouselView = Xamarin.Forms.CarouselView;
 using Xamarin.Forms.Platform.Android.CollectionView;
+using Java.Lang;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -19,12 +20,14 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		protected FormsCarouselView Carousel;
 		RecyclerView.ItemDecoration _itemDecoration;
+		CarouselViewLoopManager _carouselViewLoopManager;
 		bool _isSwipeEnabled;
 		int _oldPosition;
 		int _gotoPosition = -1;
 		bool _noNeedForScroll;
 		bool _initialized;
 		bool _isVisible;
+		bool _disposed;
 
 		List<View> _oldViews;
 		CarouselViewwOnGlobalLayoutListener _carouselViewLayoutListener;
@@ -33,12 +36,17 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			FormsCarouselView.VerifyCarouselViewFlagEnabled(nameof(CarouselViewRenderer));
 			_oldViews = new List<View>();
+			_carouselViewLoopManager = new CarouselViewLoopManager();
 		}
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing)
+			if (disposing && !_disposed)
 			{
+				_disposed = true;
+				_carouselViewLoopManager?.SetItemsSource(null);
+				_carouselViewLoopManager = null;
+
 				if (_itemDecoration != null)
 				{
 					_itemDecoration.Dispose();
@@ -68,7 +76,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override RecyclerViewScrollListener<ItemsView, IItemsViewSource> CreateScrollListener()
 		{
-			return new CarouselViewOnScrollListener(ItemsView, ItemsViewAdapter);
+			return new CarouselViewOnScrollListener(ItemsView, ItemsViewAdapter, _carouselViewLoopManager);
 		}
 
 		protected override void TearDownOldElement(ItemsView oldElement)
@@ -84,6 +92,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			UpdateAdapter();
 			UpdateEmptyView();
+			_carouselViewLoopManager.SetItemsSource(ItemsViewAdapter.ItemsSource);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
@@ -148,9 +157,7 @@ namespace Xamarin.Forms.Platform.Android
 			var itemWidth = Width;
 
 			if (ItemsLayout is LinearItemsLayout listItemsLayout && listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal)
-			{
 				itemWidth = (int)(Width - Context?.ToPixels(Carousel.PeekAreaInsets.Left) - Context?.ToPixels(Carousel.PeekAreaInsets.Right) - Context?.ToPixels(listItemsLayout.ItemSpacing));
-			}
 
 			return itemWidth;
 		}
@@ -160,9 +167,7 @@ namespace Xamarin.Forms.Platform.Android
 			var itemHeight = Height;
 
 			if (ItemsLayout is LinearItemsLayout listItemsLayout && listItemsLayout.Orientation == ItemsLayoutOrientation.Vertical)
-			{
 				itemHeight = (int)(Height - Context?.ToPixels(Carousel.PeekAreaInsets.Top) - Context?.ToPixels(Carousel.PeekAreaInsets.Bottom) - Context?.ToPixels(listItemsLayout.ItemSpacing));
-			}
 
 			return itemHeight;
 		}
@@ -207,6 +212,17 @@ namespace Xamarin.Forms.Platform.Android
 
 			oldItemViewAdapter?.Dispose();
 		}
+
+		protected override int DetermineTargetPosition(ScrollToRequestEventArgs args)
+		{
+			if (args.Mode == ScrollToMode.Position)
+			{
+				return Carousel.Loop ? _carouselViewLoopManager.GetGoToIndex(this, Carousel.Position, args.Index) : args.Index;
+			}
+
+			return ItemsViewAdapter.GetPositionForItem(args.Item);
+		}
+
 
 		void UnsubscribeCollectionItemsSourceChanged(ItemsViewAdapter<ItemsView, IItemsViewSource> oldItemViewAdapter)
 		{
@@ -323,7 +339,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var first = layoutManager.FindFirstVisibleItemPosition();
 			var last = layoutManager.FindLastVisibleItemPosition();
-		
+
 
 			if (first == -1)
 				return;
@@ -499,43 +515,36 @@ namespace Xamarin.Forms.Platform.Android
 
 		class CarouselViewOnScrollListener : RecyclerViewScrollListener<ItemsView, IItemsViewSource>
 		{
-			ItemsViewAdapter<ItemsView, IItemsViewSource> _itemsViewAdapter;
-			public CarouselViewOnScrollListener(ItemsView itemsView, ItemsViewAdapter<ItemsView, IItemsViewSource> itemsViewAdapter) : base(itemsView, itemsViewAdapter, true)
+			FormsCarouselView _carouselView;
+			CarouselViewLoopManager _carouselViewLoopManager;
+			public CarouselViewOnScrollListener(ItemsView itemsView, ItemsViewAdapter<ItemsView, IItemsViewSource> itemsViewAdapter, CarouselViewLoopManager carouselViewLoopManager) : base(itemsView, itemsViewAdapter, true)
 			{
-				_itemsViewAdapter = itemsViewAdapter;
+				_carouselView = itemsView as FormsCarouselView;
+				_carouselViewLoopManager = carouselViewLoopManager;
 			}
 
 			public override void OnScrollStateChanged(RecyclerView recyclerView, int state)
 			{
 				base.OnScrollStateChanged(recyclerView, state);
-				CarouselViewRenderer carouselViewRenderer = (CarouselViewRenderer)recyclerView;
 
-				if (carouselViewRenderer._isSwipeEnabled)
+				if (_carouselView.IsSwipeEnabled)
 				{
 					if (state == ScrollStateDragging)
-						carouselViewRenderer.Carousel.SetIsDragging(true);
+						_carouselView.SetIsDragging(true);
 					else
-						carouselViewRenderer.Carousel.SetIsDragging(false);
+						_carouselView.SetIsDragging(false);
 				}
 
-				carouselViewRenderer.Carousel.IsScrolling = state != ScrollStateIdle;
+				_carouselView.IsScrolling = state != ScrollStateIdle;
 			}
 
 			public override void OnScrolled(RecyclerView recyclerView, int dx, int dy)
 			{
-			
-				if (!(recyclerView.GetLayoutManager() is LinearLayoutManager linearLayoutManager))
-					return;
-
-				var itemSourceCount = _itemsViewAdapter.ItemsSource.Count;
-
-				var firstCompletelyItemVisible = linearLayoutManager.FindFirstCompletelyVisibleItemPosition();
-
-				if (firstCompletelyItemVisible == 0)
-					linearLayoutManager.ScrollToPositionWithOffset(itemSourceCount, -recyclerView.ComputeHorizontalScrollOffset());
-
 				base.OnScrolled(recyclerView, dx, dy);
 
+				bool isHorizontal = (_carouselView?.ItemsLayout)?.Orientation == ItemsLayoutOrientation.Horizontal;
+				if (_carouselView.Loop)
+					_carouselViewLoopManager.CenterIfNeeded(recyclerView, isHorizontal);
 			}
 		}
 
@@ -546,6 +555,61 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				LayoutReady?.Invoke(this, new EventArgs());
 			}
+		}
+
+		class CarouselViewLoopManager
+		{
+			IItemsViewSource _itemsSource;
+
+			public void CenterIfNeeded(RecyclerView recyclerView, bool isHorizontal)
+			{
+				if (!(recyclerView.GetLayoutManager() is LinearLayoutManager linearLayoutManager))
+					return;
+
+				var itemSourceCount = _itemsSource.Count;
+
+				var firstCompletelyItemVisible = linearLayoutManager.FindFirstCompletelyVisibleItemPosition();
+
+				var offSet = recyclerView.ComputeHorizontalScrollOffset();
+
+				if (!isHorizontal)
+					offSet = recyclerView.ComputeVerticalScrollOffset();
+
+				if (firstCompletelyItemVisible == 0)
+					linearLayoutManager.ScrollToPositionWithOffset(itemSourceCount, -offSet);
+			}
+
+			public int GetLoopItemsCount() => int.MaxValue;
+
+			public int GetGoToIndex(RecyclerView recyclerView, int carouselPosition, int newPosition)
+			{
+				if (!(recyclerView.GetLayoutManager() is LinearLayoutManager linearLayoutManager))
+					return -1;
+
+				var currentCarouselPosition = carouselPosition;
+				var itemSourceCount = _itemsSource.Count;
+
+				var diffToStart = currentCarouselPosition + (itemSourceCount - newPosition);
+				var diffToEnd = itemSourceCount - currentCarouselPosition + newPosition;
+				var centerView = recyclerView.GetCenteredView();
+				var centerPosition = linearLayoutManager.GetPosition(centerView);
+
+				var increment = currentCarouselPosition - newPosition;
+				var incrementAbs = System.Math.Abs(increment);
+
+				int goToPosition;
+				if (diffToStart < incrementAbs)
+					goToPosition = centerPosition - diffToStart;
+				else if (diffToEnd < incrementAbs)
+					goToPosition = centerPosition + diffToEnd;
+				else
+					goToPosition = centerPosition - increment;
+
+				return goToPosition;
+			}
+
+			public void SetItemsSource(IItemsViewSource itemsSource) => _itemsSource = itemsSource;
+
 		}
 	}
 }
