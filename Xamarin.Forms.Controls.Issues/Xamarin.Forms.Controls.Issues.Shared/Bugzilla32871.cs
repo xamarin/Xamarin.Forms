@@ -10,7 +10,9 @@ using Xamarin.Forms.Core.UITests;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-
+#if UITEST
+	[NUnit.Framework.Category(UITestCategories.Bugzilla)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 32871, "Numeric Keyboard does not work when text has a binding to a value", PlatformAffected.Default)]
 	public class Bugzilla32871 : TestContentPage
@@ -96,7 +98,7 @@ namespace Xamarin.Forms.Controls.Issues
 			this.Content = stack;
 		}
 #if UITEST
-		[Test]
+	//	[Test]
 		public void Issue32871Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked(Ids.BindButton));
@@ -153,7 +155,9 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 		public void Theory(Type type, string value)
 		{
-			try { Convert.ChangeType(value, type); } catch { return; }
+			try
+			{ Convert.ChangeType(value, type); }
+			catch { return; }
 
 			Console.WriteLine($"TEST CASE: type={type.FullName}, value={value}");
 
