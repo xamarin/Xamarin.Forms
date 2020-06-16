@@ -211,7 +211,7 @@ stages:
 
   - stage: android_2017
     displayName: Build Android 2017
-    condition: eq(variables['System.TeamProject'], 'devdiv')
+    condition: and(succeeded(), eq(variables['System.TeamProject'], 'devdiv'))
     dependsOn: windows
     jobs:
       - template: build/steps/build-android.yml
