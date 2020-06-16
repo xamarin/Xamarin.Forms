@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			for (int n = 0; n < _itemsSource.Count; n++)
 			{
-				if (_itemsSource[n] == item)
+				if (_itemsSource[n].Equals(item))
 				{
 					return AdjustPosition(n);
 				}
