@@ -45,8 +45,10 @@ steps:
     displayName: 'NuGet restore ${{ parameters.slnPath }}'
     inputs:
       restoreSolution: ${{ parameters.slnPath }}
+      feedsToUse: config
+      nugetConfigPath: 'DevopsNuget.config'
 
-  - script: build.cmd -Target BuildForNuget -ScriptArgs '-configuration="$(BuildConfiguration)"','-Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"'
+  - script: build.cmd -Target BuildForNuget -ScriptArgs '-BUILD_CONFIGURATION="$(BuildConfiguration)"','-Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"'
     name: winbuild
     displayName: 'Build Projects For Nuget'
 
