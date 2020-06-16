@@ -9,17 +9,15 @@ using AndroidX.RecyclerView.Widget;
 using Android.Support.V7.Widget;
 #endif
 using Android.Views;
-using Java.Interop;
 using FormsCarouselView = Xamarin.Forms.CarouselView;
 using Xamarin.Forms.Platform.Android.CollectionView;
-using Java.Lang;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	public class CarouselViewRenderer : ItemsViewRenderer<ItemsView, ItemsViewAdapter<ItemsView, IItemsViewSource>, IItemsViewSource>
 	{
 		protected FormsCarouselView Carousel;
-		RecyclerView.ItemDecoration _itemDecoration;
+		ItemDecoration _itemDecoration;
 		CarouselViewLoopManager _carouselViewLoopManager;
 		bool _isSwipeEnabled;
 		int _oldPosition;
@@ -39,7 +37,32 @@ namespace Xamarin.Forms.Platform.Android
 			_carouselViewLoopManager = new CarouselViewLoopManager();
 		}
 
+		public override bool OnInterceptTouchEvent(MotionEvent ev)
+		{
+			if (!_isSwipeEnabled)
+				return false;
+
+			return base.OnInterceptTouchEvent(ev);
+		}
+
 		protected virtual bool IsHorizontal => (Carousel?.ItemsLayout)?.Orientation == ItemsLayoutOrientation.Horizontal;
+
+		protected override int DetermineTargetPosition(ScrollToRequestEventArgs args)
+		{
+			if (args.Mode == ScrollToMode.Element)
+				return ItemsViewAdapter.GetPositionForItem(args.Item);
+
+			if (!Carousel.Loop)
+				return args.Index;
+
+			var carouselPosition = Carousel.Position;
+			var getGoIndex = _carouselViewLoopManager.GetGoToIndex(this, carouselPosition, args.Index);
+
+			if (carouselPosition == 0 && getGoIndex == -1)
+				_carouselViewLoopManager.CenterIfNeeded(this, IsHorizontal);
+
+			return getGoIndex;
+		}
 
 		protected override void Dispose(bool disposing)
 		{
@@ -90,6 +113,32 @@ namespace Xamarin.Forms.Platform.Android
 			base.TearDownOldElement(oldElement);
 		}
 
+		protected override void UpdateAdapter()
+		{
+			// By default the CollectionViewAdapter creates the items at whatever size the template calls for
+			// But for the Carousel, we want it to create the items to fit the width/height of the viewport
+			// So we give it an alternate delegate for creating the views
+
+			var oldItemViewAdapter = ItemsViewAdapter;
+			UnsubscribeCollectionItemsSourceChanged(oldItemViewAdapter);
+
+			ItemsViewAdapter = new CarouselViewAdapter<ItemsView, IItemsViewSource>(Carousel,
+				(view, context) => new SizedItemContentView(Context, GetItemWidth, GetItemHeight));
+
+			_gotoPosition = -1;
+
+
+			SwapAdapter(ItemsViewAdapter, false);
+
+			if (_oldPosition > 0)
+				UpdateInitialPosition();
+
+			if (ItemsViewAdapter?.ItemsSource is ObservableItemsSource observableItemsSource)
+				observableItemsSource.CollectionItemsSourceChanged += CollectionItemsSourceChanged;
+
+			oldItemViewAdapter?.Dispose();
+		}
+
 		protected override void UpdateItemsSource()
 		{
 			UpdateAdapter();
@@ -117,15 +166,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateAdapter();
 		}
 
-		public override bool OnInterceptTouchEvent(MotionEvent ev)
-		{
-			if (!_isSwipeEnabled)
-				return false;
-
-			return base.OnInterceptTouchEvent(ev);
-		}
-
-		protected override RecyclerView.ItemDecoration CreateSpacingDecoration(IItemsLayout itemsLayout)
+		protected override ItemDecoration CreateSpacingDecoration(IItemsLayout itemsLayout)
 		{
 			return new CarouselSpacingItemDecoration(itemsLayout, Carousel);
 		}
@@ -149,9 +190,18 @@ namespace Xamarin.Forms.Platform.Android
 			base.UpdateItemSpacing();
 		}
 
-		protected override IItemsLayout GetItemsLayout()
+		protected override IItemsLayout GetItemsLayout() => Carousel.ItemsLayout;
+
+		protected override void ScrollTo(ScrollToRequestEventArgs args)
 		{
-			return Carousel.ItemsLayout;
+			var position = DetermineTargetPosition(args);
+			//Special case here
+			//We could have a race condition where we are scrolling our collection to center the first item
+			//And at the same time the user is requesting we go to a particular item
+			if (position == -1 && Carousel.Loop)
+				_carouselViewLoopManager.AddPendingScrollTo(args);
+			else
+				base.ScrollTo(args);
 		}
 
 		int GetItemWidth()
@@ -174,76 +224,11 @@ namespace Xamarin.Forms.Platform.Android
 			return itemHeight;
 		}
 
-		void UpdateIsSwipeEnabled()
-		{
-			_isSwipeEnabled = Carousel.IsSwipeEnabled;
-		}
+		void UpdateIsSwipeEnabled() => _isSwipeEnabled = Carousel.IsSwipeEnabled;
 
-		void UpdateIsBounceEnabled()
-		{
-			OverScrollMode = Carousel.IsBounceEnabled ? OverScrollMode.Always : OverScrollMode.Never;
-		}
+		void UpdateIsBounceEnabled() => OverScrollMode = Carousel.IsBounceEnabled ? OverScrollMode.Always : OverScrollMode.Never;
 
-		void UpdatePeekAreaInsets()
-		{
-			UpdateAdapter();
-		}
-
-		protected override void UpdateAdapter()
-		{
-			// By default the CollectionViewAdapter creates the items at whatever size the template calls for
-			// But for the Carousel, we want it to create the items to fit the width/height of the viewport
-			// So we give it an alternate delegate for creating the views
-
-			var oldItemViewAdapter = ItemsViewAdapter;
-			UnsubscribeCollectionItemsSourceChanged(oldItemViewAdapter);
-
-			ItemsViewAdapter = new CarouselViewAdapter<ItemsView, IItemsViewSource>(Carousel,
-				(view, context) => new SizedItemContentView(Context, GetItemWidth, GetItemHeight));
-
-			_gotoPosition = -1;
-
-
-			SwapAdapter(ItemsViewAdapter, false);
-
-			if (_oldPosition > 0)
-				UpdateInitialPosition();
-
-			if (ItemsViewAdapter?.ItemsSource is ObservableItemsSource observableItemsSource)
-				observableItemsSource.CollectionItemsSourceChanged += CollectionItemsSourceChanged;
-
-			oldItemViewAdapter?.Dispose();
-		}
-
-		protected override void ScrollTo(ScrollToRequestEventArgs args)
-		{
-			var position = DetermineTargetPosition(args);
-			//Special case here
-			//We could have a race condition where we are scrolling our collection to center the first item
-			//And at the same time the user is requesting we go to a particular item
-			if (position == -1 && Carousel.Loop)
-				_carouselViewLoopManager.AddPendingScrollTo(args);
-			else
-				base.ScrollTo(args);
-		}
-
-		protected override int DetermineTargetPosition(ScrollToRequestEventArgs args)
-		{
-			if (args.Mode == ScrollToMode.Element)
-				return ItemsViewAdapter.GetPositionForItem(args.Item);
-
-			if (!Carousel.Loop)
-				return args.Index;
-
-			var carouselPosition = Carousel.Position;
-			var getGoIndex = _carouselViewLoopManager.GetGoToIndex(this, carouselPosition, args.Index);
-
-			if (carouselPosition == 0 && getGoIndex == -1)
-				_carouselViewLoopManager.CenterIfNeeded(this, IsHorizontal);
-
-			return getGoIndex;
-		}
-
+		void UpdatePeekAreaInsets() => UpdateAdapter();
 
 		void UnsubscribeCollectionItemsSourceChanged(ItemsViewAdapter<ItemsView, IItemsViewSource> oldItemViewAdapter)
 		{
@@ -466,6 +451,7 @@ namespace Xamarin.Forms.Platform.Android
 				Carousel.ScrollTo(currentItemPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: Carousel.AnimateCurrentItemChanges);
 			}
 		}
+
 		void UpdateFromPosition()
 		{
 			var itemCount = ItemsViewAdapter?.ItemsSource.Count;
