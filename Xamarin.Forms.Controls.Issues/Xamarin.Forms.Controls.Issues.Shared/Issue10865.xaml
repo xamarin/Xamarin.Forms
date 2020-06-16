@@ -36,7 +36,7 @@
             <Button
                 Grid.Column="1"
                 Command="{Binding RemoveLastCommand}"
-                Text="RemoveLast" />
+                Text="Remove Last" />
         </Grid>
         <CarouselView
             Grid.Row="2"
