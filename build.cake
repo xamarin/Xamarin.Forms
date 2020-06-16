@@ -34,23 +34,26 @@ PowerShell:
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
 
+var target = Argument("target", "Default");
+
 var ANDROID_RENDERERS = Argument("ANDROID_RENDERERS", "FAST");
 var XamarinFormsVersion = Argument("XamarinFormsVersion", "");
-var target = Argument("target", "Default");
-var configuration = Argument("configuration", "Debug");
+var configuration = Argument("BUILD_CONFIGURATION", "Debug");
 var packageVersion = Argument("packageVersion", "");
 var releaseChannelArg = Argument("CHANNEL", "Stable");
 releaseChannelArg = EnvironmentVariable("CHANNEL") ?? releaseChannelArg;
 var teamProject = Argument("TeamProject", "");
 bool buildForVS2017 = Convert.ToBoolean(Argument("buildForVS2017", "false"));
-string agentName = EnvironmentVariable("Agent_Name", "");
+string agentName = EnvironmentVariable("AGENT_NAME", "");
 bool isHostedAgent = agentName.StartsWith("Azure Pipelines");
 bool isCIBuild = !String.IsNullOrWhiteSpace(agentName);
-string artifactStagingDirectory = Argument("Build_ArtifactStagingDirectory", (string)null) ?? EnvironmentVariable("Build.ArtifactStagingDirectory") ?? EnvironmentVariable("Build_ArtifactStagingDirectory") ?? ".";
+string artifactStagingDirectory = EnvironmentVariable("BUILD_ARTIFACTSTAGINGDIRECTORY", ".");
+
 var ANDROID_HOME = EnvironmentVariable("ANDROID_HOME") ??
     (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
-
 string[] androidSdkManagerInstalls = new [] { "platforms;android-28", "platforms;android-29", "build-tools;29.0.3"};
+
+var IOS_BUILD_IPA = Argument("IOS_BUILD_IPA", false || isCIBuild);
 
 (string name, string location)[] windowsSdksInstalls = new (string name, string location)[]
 {
@@ -63,7 +66,9 @@ string[] androidSdkManagerInstalls = new [] { "platforms;android-28", "platforms
 string[] netFrameworkSdksLocalInstall = new string[]
 {
     "https://go.microsoft.com/fwlink/?linkid=2099470", //NET461 SDK
-    "https://go.microsoft.com/fwlink/?linkid=874338" //NET472 SDK
+    "https://go.microsoft.com/fwlink/?linkid=874338", //NET472 SDK
+    "https://go.microsoft.com/fwlink/?linkid=2099465", //NET47
+    "https://download.microsoft.com/download/A/1/D/A1D07600-6915-4CB8-A931-9A980EF47BB7/NDP47-DevPack-KB3186612-ENU.exe" //net47 targeting pack
 };
 
 // these don't run on CI
@@ -89,9 +94,9 @@ Information ("configuration: {0}", configuration);
 Information ("ANDROID_HOME: {0}", ANDROID_HOME);
 Information ("Team Project: {0}", teamProject);
 Information ("buildForVS2017: {0}", buildForVS2017);
-Information ("Agent.Name: {0}", EnvironmentVariable("Agent_Name"));
+Information ("Agent.Name: {0}", agentName);
 Information ("isCIBuild: {0}", isCIBuild);
-
+Information ("artifactStagingDirectory: {0}", artifactStagingDirectory);
 
 var releaseChannel = ReleaseChannel.Stable;
 if(releaseChannelArg == "Preview")
@@ -488,6 +493,19 @@ Task("Restore")
         }
     });
 
+Task("WriteGoogleMapsAPIKey")
+    .Description("Write GoogleMapsAPIKey to Android Control Gallery")
+    .Does(() =>
+    {    
+        string GoogleMapsAPIKey = Argument("GoogleMapsAPIKey", "");
+
+        if(!String.IsNullOrWhiteSpace(GoogleMapsAPIKey))
+        {
+            Information("Writing GoogleMapsAPIKey");
+            System.IO.File.WriteAllText("Xamarin.Forms.ControlGallery.Android/Properties/MapsKey.cs", "[assembly: Android.App.MetaData(\"com.google.android.maps.v2.API_KEY\", Value = \"" + GoogleMapsAPIKey + "\")]");
+        }
+    });
+
 Task("BuildForNuget")
     .Description("Builds all necessary projects to create Nuget Packages")
     .Does(() =>
@@ -500,7 +518,6 @@ Task("BuildForNuget")
         };
 
         msbuildSettings.BinaryLogger = binaryLogger;
-        msbuildSettings.ArgumentCustomization = args => args.Append("/nowarn:VSX1000");
         binaryLogger.FileName = $"{artifactStagingDirectory}/win-{configuration}.binlog";
 
         MSBuild("./Xamarin.Forms.sln", msbuildSettings);
@@ -586,6 +603,75 @@ Task("VSMAC")
         StartProcess("open", new ProcessSettings{ Arguments = "Xamarin.Forms.sln" });
     });
 
+Task("cg-android")
+    .Description("Builds Android Control Gallery")
+    .IsDependentOn("WriteGoogleMapsAPIKey")
+    .IsDependentOn("BuildTasks")
+    .Does(() => 
+    {
+        var buildSettings = GetMSBuildSettings();
+
+        if(isCIBuild)
+        {
+            buildSettings = buildSettings.WithTarget("Rebuild").WithTarget("SignAndroidPackage");
+            var binaryLogger = new MSBuildBinaryLogSettings {
+                Enabled  = true
+            };
+
+            buildSettings.BinaryLogger = binaryLogger;
+            binaryLogger.FileName = $"{artifactStagingDirectory}/android-{ANDROID_RENDERERS}_{buildForVS2017}.binlog";
+        }
+        else
+        {
+            buildSettings = buildSettings.WithRestore();
+        }
+
+        MSBuild("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", buildSettings);
+    });
+
+Task("cg-android-vs")
+    .Description("Builds Android Control Gallery and open VS")
+    .IsDependentOn("cg-android")
+    .Does(() => 
+    {
+        StartVisualStudio();
+    });
+
+Task("cg-ios")
+    .Description("Builds iOS Control Gallery and open VS")
+    .IsDependentOn("BuildTasks")
+    .Does(() =>
+    {   
+        var buildSettings = 
+            GetMSBuildSettings(null)
+            .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
+
+        if(isCIBuild)
+        {
+            var binaryLogger = new MSBuildBinaryLogSettings {
+                Enabled  = true
+            };
+
+            buildSettings.BinaryLogger = binaryLogger;
+            binaryLogger.FileName = $"{artifactStagingDirectory}/ios-cg-2017_{buildForVS2017}.binlog";
+        }
+        else
+        {
+            buildSettings = buildSettings.WithRestore();
+        }
+
+        MSBuild("./Xamarin.Forms.ControlGallery.iOS/Xamarin.Forms.ControlGallery.iOS.csproj", 
+            buildSettings);
+    });
+
+Task("cg-ios-vs")
+    .Description("Builds iOS Control Gallery and open VS")
+    .IsDependentOn("cg-ios")
+    .Does(() =>
+    {   
+        StartVisualStudio();
+    });
+
 /*
 Task("Deploy")
     .IsDependentOn("DeployiOS")
@@ -613,6 +699,27 @@ Task("DeployAndroid")
         AmStartActivity("AndroidControlGallery.AndroidControlGallery/md546303760447087909496d02dc7b17ae8.Activity1");
     });
 
+Task("_PrintEnvironmentVariables")
+    .Does(() => 
+    {       
+        var envVars = EnvironmentVariables();
+
+        string path;
+        if (envVars.TryGetValue("PATH", out path))
+        {
+            Information("Path: {0}", path);
+        }
+
+        foreach(var envVar in envVars)
+        {
+            Information(
+                "Key: {0}\tValue: \"{1}\"",
+                envVar.Key,
+                envVar.Value
+                );
+        }
+    });
+
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
@@ -627,11 +734,21 @@ Task("Default")
 
 RunTarget(target);
 
+void StartVisualStudio(string sln = "Xamarin.Forms.sln")
+{
+    if(isCIBuild)
+        return;
 
-MSBuildSettings GetMSBuildSettings()
+    if(IsRunningOnWindows())
+         StartProcess("start", new ProcessSettings{ Arguments = "Xamarin.Forms.sln" });
+    else
+         StartProcess("open", new ProcessSettings{ Arguments = "Xamarin.Forms.sln" });
+}
+
+MSBuildSettings GetMSBuildSettings(PlatformTarget? platformTarget = PlatformTarget.MSIL)
 {
     var buildSettings =  new MSBuildSettings {
-        PlatformTarget = PlatformTarget.MSIL,
+        PlatformTarget = platformTarget,
         MSBuildPlatform = Cake.Common.Tools.MSBuild.MSBuildPlatform.x86,
         Configuration = configuration,
     };
