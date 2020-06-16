@@ -4,13 +4,14 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.StyleSheets;
 
 namespace Xamarin.Forms
 {
 	[Flags]
-	public enum ActivationFlags
+	public enum InitializationFlags : long
 	{
-		NoCss = 1 << 0,
+		DisableCss = 1 << 0
 	}
 
 
@@ -26,28 +27,38 @@ namespace Xamarin.Forms.Internals
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public class Registrar<TRegistrable> where TRegistrable : class
 	{
-		readonly Dictionary<Type, Dictionary<Type, Type>> _handlers = new Dictionary<Type, Dictionary<Type, Type>>();
+		readonly Dictionary<Type, Dictionary<Type, (Type target, short priority)>> _handlers = new Dictionary<Type, Dictionary<Type, (Type target, short priority)>>();
 		static Type _defaultVisualType = typeof(VisualMarker.DefaultVisual);
 		static Type _materialVisualType = typeof(VisualMarker.MaterialVisual);
 
 		static Type[] _defaultVisualRenderers = new[] { _defaultVisualType };
 
-		public void Register(Type tview, Type trender, Type[] supportedVisuals)
+		public void Register(Type tview, Type trender, Type[] supportedVisuals, short priority)
 		{
 			supportedVisuals = supportedVisuals ?? _defaultVisualRenderers;
 			//avoid caching null renderers
 			if (trender == null)
 				return;
 
-			if (!_handlers.TryGetValue(tview, out Dictionary<Type, Type> visualRenderers))
+			if (!_handlers.TryGetValue(tview, out Dictionary<Type, (Type target, short priority)> visualRenderers))
 			{
-				visualRenderers = new Dictionary<Type, Type>();
+				visualRenderers = new Dictionary<Type, (Type target, short priority)>();
 				_handlers[tview] = visualRenderers;
 			}
 
 			for (int i = 0; i < supportedVisuals.Length; i++)
-				visualRenderers[supportedVisuals[i]] = trender;
+			{
+				if(visualRenderers.TryGetValue(supportedVisuals[i], out (Type target, short priority) existingTargetValue))
+				{
+					if(existingTargetValue.priority <= priority)
+						visualRenderers[supportedVisuals[i]] = (trender, priority);
+				}
+				else
+					visualRenderers[supportedVisuals[i]] = (trender, priority);
+			}
 		}
+
+		public void Register(Type tview, Type trender, Type[] supportedVisual) => Register(tview, trender, supportedVisual, 0);
 
 		public void Register(Type tview, Type trender) => Register(tview, trender, _defaultVisualRenderers);
 
@@ -119,22 +130,22 @@ namespace Xamarin.Forms.Internals
 			visualType = visualType ?? _defaultVisualType;
 
 			// 1. Do we have this specific type registered already?
-			if (_handlers.TryGetValue(viewType, out Dictionary<Type, Type> visualRenderers))
-				if (visualRenderers.TryGetValue(visualType, out Type specificTypeRenderer))
-					return specificTypeRenderer;
+			if (_handlers.TryGetValue(viewType, out Dictionary<Type, (Type target, short priority)> visualRenderers))
+				if (visualRenderers.TryGetValue(visualType, out (Type target, short priority) specificTypeRenderer))
+					return specificTypeRenderer.target;
 				else if (visualType == _materialVisualType)
 					VisualMarker.MaterialCheck();
 
 			if (visualType != _defaultVisualType && visualRenderers != null)
-				if (visualRenderers.TryGetValue(_defaultVisualType, out Type specificTypeRenderer))
-					return specificTypeRenderer;
+				if (visualRenderers.TryGetValue(_defaultVisualType, out (Type target, short priority) specificTypeRenderer))
+					return specificTypeRenderer.target;
 
 			// 2. Do we have a RenderWith for this type or its base types? Register them now.
 			RegisterRenderWithTypes(viewType, visualType);
 
 			// 3. Do we have a custom renderer for a base type or did we just register an appropriate renderer from RenderWith?
-			if (LookupHandlerType(viewType, visualType, out Type baseTypeRenderer))
-				return baseTypeRenderer;
+			if (LookupHandlerType(viewType, visualType, out (Type target, short priority) baseTypeRenderer))
+				return baseTypeRenderer.target;
 			else
 				return null;
 		}
@@ -150,12 +161,12 @@ namespace Xamarin.Forms.Internals
 			return GetHandlerType(type);
 		}
 
-		bool LookupHandlerType(Type viewType, Type visualType, out Type handlerType)
+		bool LookupHandlerType(Type viewType, Type visualType, out (Type target, short priority) handlerType)
 		{
 			visualType = visualType ?? _defaultVisualType;
 			while (viewType != null && viewType != typeof(Element))
 			{
-				if (_handlers.TryGetValue(viewType, out Dictionary<Type, Type> visualRenderers))
+				if (_handlers.TryGetValue(viewType, out Dictionary<Type, (Type target, short priority)> visualRenderers))
 					if (visualRenderers.TryGetValue(visualType, out handlerType))
 						return true;
 
@@ -166,7 +177,7 @@ namespace Xamarin.Forms.Internals
 				viewType = viewType.GetTypeInfo().BaseType;
 			}
 
-			handlerType = null;
+			handlerType = (null, 0);
 			return false;
 		}
 
@@ -182,7 +193,7 @@ namespace Xamarin.Forms.Internals
 				// Only go through this process if we have not registered something for this type;
 				// we don't want RenderWith renderers to override ExportRenderers that are already registered.
 				// Plus, there's no need to do this again if we already have a renderer registered.
-				if (!_handlers.TryGetValue(viewType, out Dictionary<Type, Type> visualRenderers) || 
+				if (!_handlers.TryGetValue(viewType, out Dictionary<Type, (Type target, short priority)> visualRenderers) || 
 					!(visualRenderers.ContainsKey(visualType) ||
 					  visualRenderers.ContainsKey(_defaultVisualType)))
 				{
@@ -252,6 +263,7 @@ namespace Xamarin.Forms.Internals
 		//typeof(ExportRendererAttribute);
 		//typeof(ExportCellAttribute);
 		//typeof(ExportImageSourceHandlerAttribute);
+		//TODO this is no longer used?
 		public static void RegisterRenderers(HandlerAttribute[] attributes)
 		{
 			var length = attributes.Length;
@@ -259,27 +271,27 @@ namespace Xamarin.Forms.Internals
 			{
 				var attribute = attributes[i];
 				if (attribute.ShouldRegister())
-					Registered.Register(attribute.HandlerType, attribute.TargetType, attribute.SupportedVisuals);
+					Registered.Register(attribute.HandlerType, attribute.TargetType, attribute.SupportedVisuals, attribute.Priority);
 			}
 		}
 
 		public static void RegisterStylesheets()
 		{
-			var assembly = typeof(StyleSheets.StylePropertyAttribute).GetTypeInfo().Assembly;
+			var assembly = typeof(StylePropertyAttribute).GetTypeInfo().Assembly;
 
 #if NETSTANDARD2_0
-			object[] styleAttributes = assembly.GetCustomAttributes(typeof(StyleSheets.StylePropertyAttribute), true);
+			object[] styleAttributes = assembly.GetCustomAttributes(typeof(StylePropertyAttribute), true);
 #else
 			object[] styleAttributes = assembly.GetCustomAttributes(typeof(StyleSheets.StylePropertyAttribute)).ToArray();
 #endif
 			var stylePropertiesLength = styleAttributes.Length;
 			for (var i = 0; i < stylePropertiesLength; i++)
 			{
-				var attribute = (StyleSheets.StylePropertyAttribute)styleAttributes[i];
+				var attribute = (StylePropertyAttribute)styleAttributes[i];
 				if (StyleProperties.TryGetValue(attribute.CssPropertyName, out var attrList))
 					attrList.Add(attribute);
 				else
-					StyleProperties[attribute.CssPropertyName] = new List<StyleSheets.StylePropertyAttribute> { attribute };
+					StyleProperties[attribute.CssPropertyName] = new List<StylePropertyAttribute> { attribute };
 			}
 		}
 
@@ -295,9 +307,9 @@ namespace Xamarin.Forms.Internals
 
 		public static void RegisterAll(Type[] attrTypes)
 		{
-			RegisterAll(attrTypes, default(ActivationFlags));
+			RegisterAll(attrTypes, default(InitializationFlags));
 		}
-		public static void RegisterAll(Type[] attrTypes, ActivationFlags flags)
+		public static void RegisterAll(Type[] attrTypes, InitializationFlags flags)
 		{
 			Profile.FrameBegin();
 
@@ -320,67 +332,53 @@ namespace Xamarin.Forms.Internals
 			Profile.FramePartition("Reflect");
 			foreach (Assembly assembly in assemblies)
 			{
-				Profile.FrameBegin(assembly.GetName().Name);
+				var assemblyName = assembly.GetName().Name;
+				Profile.FrameBegin(assemblyName);
 
 				foreach (Type attrType in attrTypes)
 				{
-					object[] attributes;
-					try
-					{
-#if NETSTANDARD2_0
-						attributes = assembly.GetCustomAttributes(attrType, true);
-#else
-						attributes = assembly.GetCustomAttributes(attrType).ToArray();
-#endif
-					}
-					catch (System.IO.FileNotFoundException)
-					{
-						// Sometimes the previewer doesn't actually have everything required for these loads to work
-						Log.Warning(nameof(Registrar), "Could not load assembly: {0} for Attibute {1} | Some renderers may not be loaded", assembly.FullName, attrType.FullName);
+					object[] attributes = assembly.GetCustomAttributesSafe(attrType);
+					if (attributes == null || attributes.Length == 0)
 						continue;
-					}
-
+					
 					var length = attributes.Length;
 					for (var i = 0; i < length; i++)
 					{
-						var attribute = (HandlerAttribute)attributes[i];
-						if (attribute.ShouldRegister())
-							Registered.Register(attribute.HandlerType, attribute.TargetType, attribute.SupportedVisuals);
+						var a = attributes[i];
+						var attribute = a as HandlerAttribute;
+						if(attribute == null && (a is ExportFontAttribute fa))
+						{
+							FontRegistrar.Register(fa, assembly);
+						}
+						else
+						{
+							if (attribute.ShouldRegister())
+								Registered.Register(attribute.HandlerType, attribute.TargetType, attribute.SupportedVisuals, attribute.Priority);
+						}
 					}
+				}
+
+				object[] effectAttributes = assembly.GetCustomAttributesSafe(typeof (ExportEffectAttribute));
+				if (effectAttributes == null || effectAttributes.Length == 0)
+				{
+					Profile.FrameEnd(assemblyName);
+					continue;
 				}
 
 				string resolutionName = assembly.FullName;
 				var resolutionNameAttribute = (ResolutionGroupNameAttribute)assembly.GetCustomAttribute(typeof(ResolutionGroupNameAttribute));
 				if (resolutionNameAttribute != null)
 					resolutionName = resolutionNameAttribute.ShortName;
+				//NOTE: a simple cast to ExportEffectAttribute[] failed on UWP, hence the Array.Copy
+				var typedEffectAttributes = new ExportEffectAttribute[effectAttributes.Length];
+				Array.Copy(effectAttributes, typedEffectAttributes, effectAttributes.Length);
+				RegisterEffects(resolutionName, typedEffectAttributes);
 
-#if NETSTANDARD2_0
-				object[] effectAttributes = assembly.GetCustomAttributes(typeof(ExportEffectAttribute), true);
-#else
-				object[] effectAttributes = assembly.GetCustomAttributes(typeof(ExportEffectAttribute)).ToArray();
-#endif
-				var exportEffectsLength = effectAttributes.Length;
-				for (var i = 0; i < exportEffectsLength; i++)
-				{
-					var effect = (ExportEffectAttribute)effectAttributes[i];
-					Effects[resolutionName + "." + effect.Id] = effect.Type;
-				}
-				Profile.FrameEnd();
-#if NETSTANDARD2_0
-				object[] styleAttributes = assembly.GetCustomAttributes(typeof(StyleSheets.StylePropertyAttribute), true);
-#else
-				object[] styleAttributes = assembly.GetCustomAttributes(typeof(StyleSheets.StylePropertyAttribute)).ToArray();
-#endif
-				var stylePropertiesLength = styleAttributes.Length;
-				for (var i = 0; i < stylePropertiesLength; i++)
-				{
-					var attribute = (StyleSheets.StylePropertyAttribute)styleAttributes[i];
-					if (StyleProperties.TryGetValue(attribute.CssPropertyName, out var attrList))
-						attrList.Add(attribute);
-					else
-						StyleProperties[attribute.CssPropertyName] = new List<StyleSheets.StylePropertyAttribute> { attribute };
-				}
+				Profile.FrameEnd(assemblyName);
 			}
+
+			if ((flags & InitializationFlags.DisableCss) == 0)
+				RegisterStylesheets();
 
 			Profile.FramePartition("DependencyService.Initialize");
 			DependencyService.Initialize(assemblies);

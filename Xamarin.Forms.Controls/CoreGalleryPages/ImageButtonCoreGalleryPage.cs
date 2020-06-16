@@ -94,6 +94,15 @@ namespace Xamarin.Forms.Controls
 				}
 			);
 
+			var paddingContainer = new ViewContainer<ImageButton>(Test.ImageButton.Padding,
+				new ImageButton
+				{
+					Source = "oasissmall.jpg",
+					BackgroundColor = Color.Red,
+					Padding = new Thickness(20, 30, 60, 15)
+				}
+			);
+
 
 			InitializeElement(aspectFillContainer.View);
 			InitializeElement(aspectFitContainer.View);
@@ -103,12 +112,15 @@ namespace Xamarin.Forms.Controls
 
 			var sourceContainer = new ViewContainer<ImageButton>(Test.ImageButton.Source, new ImageButton { Source = "https://raw.githubusercontent.com/xamarin/Xamarin.Forms/master/Xamarin.Forms.Controls/coffee.png" });
 
+			var gifContainer = new ViewContainer<ImageButton>(Test.ImageButton.Source, new ImageButton { Source = "GifTwo.gif" });
+
 			Add(aspectFillContainer);
 			Add(aspectFitContainer);
 			Add(fillContainer);
 			Add(isLoadingContainer);
 			Add(isOpaqueContainer);
 			Add(sourceContainer);
+			Add(gifContainer);
 
 			Add(borderButtonContainer);
 			Add(borderWidthContainer);
@@ -117,6 +129,7 @@ namespace Xamarin.Forms.Controls
 			Add(corderRadiusContainer);
 			Add(imageContainer);
 			Add(pressedContainer);
+			Add(paddingContainer);
 		}
 	}
 }

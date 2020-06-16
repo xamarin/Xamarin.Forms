@@ -96,6 +96,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty HorizontalTextAlignmentProperty = TextAlignmentElement.HorizontalTextAlignmentProperty;
 
+		public static readonly BindableProperty VerticalTextAlignmentProperty = TextAlignmentElement.VerticalTextAlignmentProperty;
+
 		void ITextAlignmentElement.OnHorizontalTextAlignmentPropertyChanged(TextAlignment oldValue, TextAlignment newValue)
 		{
 		}
@@ -106,11 +108,15 @@ namespace Xamarin.Forms
 			set { SetValue(TextAlignmentElement.HorizontalTextAlignmentProperty, value); }
 		}
 
+		public TextAlignment VerticalTextAlignment
+		{
+			get { return (TextAlignment)GetValue(TextAlignmentElement.VerticalTextAlignmentProperty); }
+			set { SetValue(TextAlignmentElement.VerticalTextAlignmentProperty, value); }
+		}
+
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 
-		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
-		{
-		}
+		public static readonly BindableProperty CharacterSpacingProperty = TextElement.CharacterSpacingProperty;
 
 		public Color TextColor
 		{
@@ -147,6 +153,12 @@ namespace Xamarin.Forms
 		{
 			get { return (string)GetValue(FontFamilyProperty); }
 			set { SetValue(FontFamilyProperty, value); }
+		}
+
+		public double CharacterSpacing
+		{
+			get { return (double)GetValue(TextElement.CharacterSpacingProperty); }
+			set { SetValue(TextElement.CharacterSpacingProperty, value); }
 		}
 
 		[TypeConverter(typeof(FontSizeConverter))]
@@ -504,13 +516,23 @@ namespace Xamarin.Forms
 			((SearchHandler)bindable).OnCommandParameterChanged();
 		}
 
+		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
+		{
+			
+		}
+
+		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
+		{
+
+		}
+
 		static void OnItemsSourceChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var self = (SearchHandler)bindable;
 			if (newValue == null)
 				self.ListProxy = null;
 			else
-				self.ListProxy = new ListProxy((IEnumerable)newValue);
+				self.ListProxy = new ListProxy((IEnumerable)newValue, dispatcher: self.Dispatcher);
 		}
 
 		static void OnQueryChanged(BindableObject bindable, object oldValue, object newValue)

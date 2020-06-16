@@ -11,6 +11,10 @@ using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries;
 using Xamarin.Forms.Controls.Issues;
+using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries;
+using Xamarin.Forms.Controls.GalleryPages.RefreshViewGalleries;
+using Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries;
+using Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery;
 
 namespace Xamarin.Forms.Controls
 {
@@ -282,9 +286,15 @@ namespace Xamarin.Forms.Controls
 		}
 
 		List<GalleryPageFactory> _pages = new List<GalleryPageFactory> {
+				new GalleryPageFactory(() => new TabIndexTest.TabIndex(), "Accessibility TabIndex (2)"),
+				new GalleryPageFactory(() => new PlatformTestsConsole(), "Platform Automated Tests"),
+				new GalleryPageFactory(() => new EmbeddedFonts(), "Embedded Fonts"),
 				new GalleryPageFactory(() => new MemoryLeakGallery(), "Memory Leak"),
 				new GalleryPageFactory(() => new Issues.A11yTabIndex(), "Accessibility TabIndex"),
 				new GalleryPageFactory(() => new FontImageSourceGallery(), "Font ImageSource"),
+				new GalleryPageFactory(() => new IndicatorsSample(), "Indicator Gallery"),
+				new GalleryPageFactory(() => new CarouselViewGallery(), "CarouselView Gallery"),
+				new GalleryPageFactory(() => new CarouselViewCoreGalleryPage(), "CarouselView Core Gallery"),
 				new GalleryPageFactory(() => new CollectionViewGallery(), "CollectionView Gallery"),
 				new GalleryPageFactory(() => new CollectionViewCoreGalleryPage(), "CollectionView Core Gallery"),
 				new GalleryPageFactory(() => new Issues.PerformanceGallery(), "Performance"),
@@ -295,6 +305,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new PlatformSpecificsGallery(), "Platform Specifics"),
 				new GalleryPageFactory(() => new NativeBindingGalleryPage(), "Native Binding Controls Gallery"),
 				new GalleryPageFactory(() => new XamlNativeViews(), "Xaml Native Views Gallery"),
+				new GalleryPageFactory(() => new CharacterSpacingGallery(), "CharacterSpacing Views Gallery"),
 				new GalleryPageFactory(() => new AppLinkPageGallery(), "App Link Page Gallery"),
 				new GalleryPageFactory(() => new NestedNativeControlGalleryPage(), "Nested Native Controls Gallery"),
 				new GalleryPageFactory(() => new CellForceUpdateSizeGalleryPage(), "Cell Force Update Size Gallery"),
@@ -336,6 +347,8 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new ProgressBarCoreGalleryPage(), "ProgressBar Gallery"),
 				new GalleryPageFactory(() => new MaterialProgressBarGallery(), "ProgressBar & Slider Gallery (Material)"),
 				new GalleryPageFactory(() => new MaterialActivityIndicatorGallery(), "ActivityIndicator Gallery (Material)"),
+				new GalleryPageFactory(() => new RefreshViewGallery(), "RefreshView Gallery"),
+				new GalleryPageFactory(() => new RefreshViewCoreGalleryPage(), "RefreshView Core Gallery"),
 				new GalleryPageFactory(() => new ScrollGallery(), "ScrollView Gallery"),
 				new GalleryPageFactory(() => new ScrollGallery(ScrollOrientation.Horizontal), "ScrollView Gallery Horizontal"),
 				new GalleryPageFactory(() => new ScrollGallery(ScrollOrientation.Both), "ScrollView Gallery 2D"),
@@ -343,6 +356,8 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new SliderCoreGalleryPage(), "Slider Gallery"),
 				new GalleryPageFactory(() => new StepperCoreGalleryPage(), "Stepper Gallery"),
 				new GalleryPageFactory(() => new SwitchCoreGalleryPage(), "Switch Gallery"),
+				new GalleryPageFactory(() => new SwipeViewCoreGalleryPage(), "SwipeView Core Gallery"),
+				new GalleryPageFactory(() => new SwipeViewGallery(), "SwipeView Gallery"),
 				new GalleryPageFactory(() => new TableViewCoreGalleryPage(), "TableView Gallery"),
 				new GalleryPageFactory(() => new TimePickerCoreGalleryPage(), "TimePicker Gallery"),
 				new GalleryPageFactory(() => new VisualGallery(), "Visual Gallery"),
@@ -366,6 +381,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new EditorGallery(), "Editor Gallery - Legacy"),
 				new GalleryPageFactory(() => new EntryGallery(), "Entry Gallery - Legacy"),
 				new GalleryPageFactory(() => new FrameGallery (), "Frame Gallery - Legacy"),
+   	    		new GalleryPageFactory(() => new GifGallery(), "Gif Support Gallery"),
 				new GalleryPageFactory(() => new GridGallery(), "Grid Gallery - Legacy"),
 				new GalleryPageFactory(() => new GroupedListActionsGallery(), "GroupedListActions Gallery - Legacy"),
 				new GalleryPageFactory(() => new GroupedListContactsGallery(), "GroupedList Gallery - Legacy"),
@@ -382,6 +398,8 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new ListViewDemoPage(), "ListView Demo Gallery - Legacy"),
 				new GalleryPageFactory(() => new MapGallery(), "Map Gallery - Legacy"),
 				new GalleryPageFactory(() => new MapWithItemsSourceGallery(), "Map With ItemsSource Gallery - Legacy"),
+				new GalleryPageFactory(() => new MediaElementDemoPage(), "MediaElement"),
+				new GalleryPageFactory(() => new MapElementsGallery(), "Map Elements Gallery - Legacy"),
 				new GalleryPageFactory(() => new MinimumSizeGallery(), "MinimumSize Gallery - Legacy"),
 				new GalleryPageFactory(() => new MultiGallery(), "Multi Gallery - Legacy"),
 				new GalleryPageFactory(() => new NavigationPropertiesGallery(), "Navigation Properties"),
@@ -422,9 +440,9 @@ namespace Xamarin.Forms.Controls
 			_titleToPage = _pages.ToDictionary(o => o.Title);
 
 			// avoid NRE for root pages without NavigationBar
-			if (navigationBehavior == NavigationBehavior.PushAsync && rootPage.GetType () == typeof (CoreNavigationPage))
+			if (navigationBehavior == NavigationBehavior.PushAsync && rootPage.GetType() == typeof(CoreNavigationPage))
 			{
-				_pages.Insert (0, new GalleryPageFactory(() => new NavigationBarGallery((NavigationPage)rootPage), "NavigationBar Gallery - Legacy"));
+				_pages.Insert(0, new GalleryPageFactory(() => new NavigationBarGallery((NavigationPage)rootPage), "NavigationBar Gallery - Legacy"));
 				_pages.Insert(1, new GalleryPageFactory(() => new TitleView(true), "TitleView"));
 			}
 
@@ -508,7 +526,7 @@ namespace Xamarin.Forms.Controls
 			if (string.IsNullOrWhiteSpace(filter))
 				ItemsSource = _pages;
 			else
-				ItemsSource = _pages.Where(p => p.Title.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) != -1);
+				ItemsSource = _pages.Where(p => p.Title.IndexOf(filter, StringComparison.OrdinalIgnoreCase) != -1);
 		}
 	}
 	[Preserve(AllMembers = true)]
@@ -562,7 +580,6 @@ namespace Xamarin.Forms.Controls
 							GC.Collect ();
 						})
 					}
-
 				}
 			};
 
@@ -570,7 +587,7 @@ namespace Xamarin.Forms.Controls
 			if (secondaryWindowService != null)
 			{
 				var openSecondWindowButton = new Button() { Text = "Open Secondary Window" };
-				openSecondWindowButton.Clicked += (obj, args) => { secondaryWindowService.OpenSecondaryWindow(new Issue2482()); };
+				openSecondWindowButton.Clicked += (obj, args) => { secondaryWindowService.OpenSecondaryWindow(typeof(Issue2482)); };
 				stackLayout.Children.Add(openSecondWindowButton);
 			}
 

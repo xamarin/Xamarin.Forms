@@ -70,6 +70,7 @@
     </Compile>
     <Compile Include="PlatformSpecificCoreGalleryFactory.cs" />
     <Compile Include="RegistrarValidationService.cs" />
+    <Compile Include="Renderers\Issue6693ControlRenderer.cs" />
     <Compile Include="SampleNativeControl.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -104,6 +105,7 @@
     </EmbeddedResource>
     <Resource Include="Assets\fontawesome-webfont.ttf" />
     <Resource Include="Assets\pickax.ttf" />
+    <Resource Include="Assets\ionicons.ttf" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -133,6 +135,12 @@
       <Project>{140bc260-8b15-4d3a-b1b0-ddd8072918cc}</Project>
       <Name>Xamarin.Forms.Platform.WPF</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="coffee.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="bank.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

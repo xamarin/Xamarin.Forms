@@ -22,6 +22,7 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly nfloat _minimumButtonHeight = 44; // Apple docs
 
 
+		[Preserve(Conditional = true)]
 		public ImageButtonRenderer() : base()
 		{
 			ButtonElementManager.Init(this);
@@ -113,8 +114,8 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		protected override UIButton CreateNativeControl()
-		{
-			return new UIButton(UIButtonType.System);
+		{			
+			return new UIButton();
 		}
 
 		protected override void SetAccessibilityLabel()

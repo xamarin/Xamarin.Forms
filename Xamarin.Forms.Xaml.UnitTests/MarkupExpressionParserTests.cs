@@ -12,6 +12,8 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	{
 		IXamlTypeResolver typeResolver;
 
+		public static readonly string Foo = "Foo";
+
 		class MockElementNode : IElementNode, IValueNode, IXmlLineInfo
 		{
 			public bool HasLineInfo () { return false; }
@@ -36,11 +38,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 			public List<XmlName> SkipProperties { get; set; }
 
-			public Forms.Internals.INameScope Namescope {
-				get {
-					throw new NotImplementedException ();
-				}
-			}
+			public NameScopeRef NameScopeRef => throw new NotImplementedException();
 
 			public XmlType XmlType {
 				get;
@@ -97,11 +95,10 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual (Binding.SelfPath, ((Binding)binding).Path);
 		}
 
-		[Test]
-		public void BindingWithImplicitPath ()
+		[TestCase("{Binding Foo}")]
+		[TestCase("{Binding {x:Static local:MarkupExpressionParserTests.Foo}}")]
+		public void BindingWithImplicitPath (string bindingString)
 		{
-			var bindingString = "{Binding Foo}";
-
 			var binding = (new MarkupExtensionParser ()).ParseExpression (ref bindingString, new Internals.XamlServiceProvider (null, null) {
 				IXamlTypeResolver = typeResolver,
 			});
@@ -377,6 +374,18 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			});
 
 			Assert.AreEqual(expected, actual);
+		}
+
+		[TestCase("{Binding")]
+		[TestCase("{Binding 'Foo}")]
+		[TestCase("{Binding Foo, Converter={StaticResource Bar}")]
+		[TestCase("{Binding Foo, Converter={StaticResource Bar}?}")]
+		public void InvalidExpressions (string expression)
+		{
+			var serviceProvider = new Internals.XamlServiceProvider (null, null);
+			serviceProvider.IXamlTypeResolver = typeResolver;
+			serviceProvider.IProvideValueTarget = new MockValueProvider ("Bar", new ReverseConverter());
+			Assert.Throws<XamlParseException> (() => (new MarkupExtensionParser ()).ParseExpression (ref expression, serviceProvider));
 		}
 	}
 }

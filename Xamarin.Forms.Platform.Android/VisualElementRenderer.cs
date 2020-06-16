@@ -7,7 +7,12 @@ using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using Android.Runtime;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+#else
 using Android.Support.V4.View;
+#endif
+
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -20,6 +25,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		string _defaultContentDescription;
 		bool? _defaultFocusable;
+		ImportantForAccessibility? _defaultImportantForAccessibility;
 		string _defaultHint;
 		bool _cascadeInputTransparent = true;
 
@@ -62,7 +68,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			return base.DispatchTouchEvent(e);
-		}		  		
+		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use VisualElementRenderer(Context) instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -172,6 +178,10 @@ namespace Xamarin.Forms.Platform.Android
 			if (tabIndexes == null)
 				return base.FocusSearch(focused, direction);
 
+			// use OS default--there's no need for us to keep going if there's one or fewer tab indexes!
+			if (tabIndexes.Count <= 1)
+				return base.FocusSearch(focused, direction);
+
 			int tabIndex = element.TabIndex;
 			AView control = null;
 			int attempt = 0;
@@ -202,11 +212,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void SetElement(TElement element)
 		{
-			if (element == null)
-				throw new ArgumentNullException(nameof(element));
-
 			TElement oldElement = Element;
-			Element = element;
+			Element = element ?? throw new ArgumentNullException(nameof(element));
 
 			Performance.Start(out string reference);
 
@@ -215,13 +222,10 @@ namespace Xamarin.Forms.Platform.Android
 				oldElement.PropertyChanged -= _propertyChangeHandler;
 			}
 
-			// element may be allowed to be passed as null in the future
-			if (element != null)
-			{
-				Color currentColor = oldElement != null ? oldElement.BackgroundColor : Color.Default;
-				if (element.BackgroundColor != currentColor)
-					UpdateBackgroundColor();
-			}
+			Color currentColor = oldElement?.BackgroundColor ?? Color.Default;
+
+			if (element.BackgroundColor != currentColor)
+				UpdateBackgroundColor();
 
 			if (_propertyChangeHandler == null)
 				_propertyChangeHandler = OnElementPropertyChanged;
@@ -241,12 +245,15 @@ namespace Xamarin.Forms.Platform.Android
 			if (AutoTrack && Tracker == null)
 				SetTracker(new VisualElementTracker(this));
 
+			if (oldElement != null)
+				Tracker?.UpdateLayout();
+
 			if (element != null)
 				SendVisualElementInitialized(element, this);
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 
-			if (element != null && !string.IsNullOrEmpty(element.AutomationId))
+			if (!string.IsNullOrEmpty(element.AutomationId))
 				SetAutomationId(element.AutomationId);
 
 			SetContentDescription();
@@ -282,6 +289,11 @@ namespace Xamarin.Forms.Platform.Android
 
 				EffectUtilities.UnregisterEffectControlProvider(this, Element);
 
+				if (Element != null)
+				{
+					Element.PropertyChanged -= _propertyChangeHandler;
+				}
+
 				if (Tracker != null)
 				{
 					Tracker.Dispose();
@@ -302,18 +314,16 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (ManageNativeControlLifetime)
 				{
-					int count = ChildCount;
-					for (var i = 0; i < count; i++)
+					while (ChildCount > 0)
 					{
-						AView child = GetChildAt(i);
+						AView child = GetChildAt(0);
+						child.RemoveFromParent();
 						child.Dispose();
 					}
 				}
 
 				if (Element != null)
 				{
-					Element.PropertyChanged -= _propertyChangeHandler;
-
 					if (Platform.GetRenderer(Element) == this)
 						Platform.SetRenderer(Element, null);
 
@@ -343,7 +353,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			ElevationHelper.SetElevation(this, e.NewElement);
 		}
-		
+
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
@@ -378,7 +388,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		static void UpdateLayout(IEnumerable<Element> children)
 		{
-			foreach (Element element in children)  	{
+			foreach (Element element in children)
+			{
 				var visualElement = element as VisualElement;
 				if (visualElement == null)
 					continue;
@@ -413,7 +424,7 @@ namespace Xamarin.Forms.Platform.Android
 			=> AutomationPropertiesProvider.SetContentDescription(this, Element, ref _defaultContentDescription, ref _defaultHint);
 
 		protected virtual void SetFocusable()
-			=> AutomationPropertiesProvider.SetFocusable(this, Element, ref _defaultFocusable);
+			=> AutomationPropertiesProvider.SetFocusable(this, Element, ref _defaultFocusable, ref _defaultImportantForAccessibility);
 
 		void UpdateInputTransparent()
 		{

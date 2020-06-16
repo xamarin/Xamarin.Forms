@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
+using EImage = ElmSharp.Image;
 
 using Specific = Xamarin.Forms.PlatformConfiguration.TizenSpecific.Image;
 
@@ -8,52 +9,41 @@ namespace Xamarin.Forms.Platform.Tizen
 {
 	public class ImageRenderer : ViewRenderer<Image, Native.Image>
 	{
+		public ImageRenderer()
+		{
+			RegisterPropertyHandler(Image.SourceProperty, UpdateSource);
+			RegisterPropertyHandler(Image.AspectProperty, UpdateAspect);
+			RegisterPropertyHandler(Image.IsOpaqueProperty, UpdateIsOpaque);
+			RegisterPropertyHandler(Image.IsAnimationPlayingProperty, UpdateIsAnimationPlaying);
+			RegisterPropertyHandler(Specific.BlendColorProperty, UpdateBlendColor);
+			RegisterPropertyHandler(Specific.FileProperty, UpdateFile);
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Image> e)
 		{
 			if (Control == null)
 			{
-				var image = new Native.Image(Forms.NativeParent);
-				SetNativeControl(image);
+				SetNativeControl(new Native.Image(Forms.NativeParent));
 			}
-
-			UpdateAll();
 			base.OnElementChanged(e);
 		}
 
-		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		async void UpdateSource(bool initialize)
 		{
-			base.OnElementPropertyChanged(sender, e);
-			if (e.PropertyName == Image.SourceProperty.PropertyName)
-			{
-				UpdateSource();
-			}
-			else if (e.PropertyName == Image.AspectProperty.PropertyName)
-			{
-				UpdateAspect();
-			}
-			else if (e.PropertyName == Image.IsOpaqueProperty.PropertyName)
-			{
-				UpdateIsOpaque();
-			}
-			else if (e.PropertyName == Specific.BlendColorProperty.PropertyName)
-			{
-				UpdateBlendColor();
-			}
-		}
+			if (initialize && Element.Source == default(ImageSource))
+				return;
 
-		async void UpdateSource()
-		{
 			ImageSource source = Element.Source;
-
 			((IImageController)Element).SetIsLoading(true);
 
 			if (Control != null)
 			{
 				bool success = await Control.LoadFromImageSourceAsync(source);
+
 				if (!IsDisposed && success)
 				{
 					((IVisualElementController)Element).NativeSizeChanged();
-					UpdateAfterLoading();
+					UpdateAfterLoading(initialize);
 				}
 			}
 
@@ -61,42 +51,72 @@ namespace Xamarin.Forms.Platform.Tizen
 				((IImageController)Element).SetIsLoading(false);
 		}
 
-		protected virtual void UpdateAfterLoading()
+		void UpdateFile(bool initialize)
 		{
-			UpdateIsOpaque();
-			UpdateBlendColor();
+			if (initialize && Specific.GetFile(Element) == default || Element.Source != default(ImageSource))
+				return;
+
+			if (Control != null)
+			{
+				bool success = Control.LoadFromFile(Specific.GetFile(Element));
+
+				if (!IsDisposed && success)
+				{
+					((IVisualElementController)Element).NativeSizeChanged();
+					UpdateAfterLoading(initialize);
+				}
+			}
 		}
 
-		void UpdateAspect()
+		protected virtual void UpdateAfterLoading(bool initialize)
 		{
-			Control.Aspect = Element.Aspect;
+			UpdateIsOpaque(initialize);
+			UpdateBlendColor(initialize);
+			UpdateIsAnimationPlaying(initialize);
 		}
 
-		void UpdateIsOpaque()
+		void UpdateAspect(bool initialize)
 		{
+			if (initialize && Element.Aspect == Aspect.AspectFit)
+				return;
+
+			Control.ApplyAspect(Element.Aspect);
+		}
+
+		void UpdateIsOpaque(bool initialize)
+		{
+			if (initialize && !Element.IsOpaque)
+				return;
+
 			Control.IsOpaque = Element.IsOpaque;
 		}
 
-		void UpdateBlendColor()
+		void UpdateIsAnimationPlaying(bool initialize)
 		{
-			Control.Color = Specific.GetBlendColor(Element).ToNative();
+			if (initialize && !Element.IsAnimationPlaying)
+				return;
+
+			Control.IsAnimated = Element.IsAnimationPlaying;
+			Control.IsAnimationPlaying = Element.IsAnimationPlaying;
 		}
 
-		void UpdateAll()
+		void UpdateBlendColor(bool initialize)
 		{
-			UpdateSource();
-			UpdateAspect();
+			if (initialize && Specific.GetBlendColor(Element).IsDefault)
+				return;
+
+			Control.Color = Specific.GetBlendColor(Element).ToNative();
 		}
 	}
 
 	public interface IImageSourceHandler : IRegisterable
 	{
-		Task<bool> LoadImageAsync(Native.Image image, ImageSource imageSource, CancellationToken cancelationToken = default(CancellationToken));
+		Task<bool> LoadImageAsync(EImage image, ImageSource imageSource, CancellationToken cancelationToken = default(CancellationToken));
 	}
 
 	public sealed class FileImageSourceHandler : IImageSourceHandler
 	{
-		public Task<bool> LoadImageAsync(Native.Image image, ImageSource imageSource, CancellationToken cancelationToken = default(CancellationToken))
+		public Task<bool> LoadImageAsync(EImage image, ImageSource imageSource, CancellationToken cancelationToken = default(CancellationToken))
 		{
 			var filesource = imageSource as FileImageSource;
 			if (filesource != null)
@@ -111,7 +131,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 	public sealed class StreamImageSourceHandler : IImageSourceHandler
 	{
-		public async Task<bool> LoadImageAsync(Native.Image image, ImageSource imageSource, CancellationToken cancelationToken = default(CancellationToken))
+		public async Task<bool> LoadImageAsync(EImage image, ImageSource imageSource, CancellationToken cancelationToken = default(CancellationToken))
 		{
 			var streamsource = imageSource as StreamImageSource;
 			if (streamsource != null && streamsource.Stream != null)
@@ -128,7 +148,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 	public sealed class UriImageSourceHandler : IImageSourceHandler
 	{
-		public Task<bool> LoadImageAsync(Native.Image image, ImageSource imageSource, CancellationToken cancelationToken = default(CancellationToken))
+		public Task<bool> LoadImageAsync(EImage image, ImageSource imageSource, CancellationToken cancelationToken = default(CancellationToken))
 		{
 			var urisource = imageSource as UriImageSource;
 			if (urisource != null && urisource.Uri != null)

@@ -12,6 +12,12 @@ namespace Xamarin.Forms.Platform.iOS
 		UIView _originalBackgroundView;
 		RectangleF _previousFrame;
 
+		[Internals.Preserve(Conditional = true)]
+		public TableViewRenderer()
+		{
+
+		}
+
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			return Control.GetSizeRequest(widthConstraint, heightConstraint, DefaultRowHeight, DefaultRowHeight);
@@ -19,6 +25,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void LayoutSubviews()
 		{
+			_insetTracker?.OnLayoutSubviews();
 			base.LayoutSubviews();
 
 			if (_previousFrame != Frame)
@@ -81,7 +88,7 @@ namespace Xamarin.Forms.Platform.iOS
 						var offset = Control.ContentOffset;
 						offset.Y += point.Y;
 						Control.SetContentOffset(offset, true);
-					});
+					}, this);
 				}
 
 				SetSource();

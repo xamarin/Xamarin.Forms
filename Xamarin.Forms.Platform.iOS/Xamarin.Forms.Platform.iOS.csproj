@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Condition="'$(EnvironmentBuildPropsImported)' != 'True'" Project="..\Environment.Build.props" />
   <PropertyGroup>
     <Description>iOS Backend for Xamarin.Forms</Description>
     <AssemblyName>Xamarin.Forms.Platform.iOS</AssemblyName>
@@ -15,10 +16,9 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <DefineConstants>$(DefineConstants);DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -26,7 +26,6 @@
     </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -34,6 +33,13 @@
     <ConsolePause>false</ConsolePause>
     <NoWarn>
     </NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Use2017)' == 'true' ">
+    <DefineConstants>$(DefineConstants);__XCODE10__</DefineConstants>
+    <OutputPath>$(OutputPath)\2017</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Use2017)' != 'true' ">
+    <DefineConstants>$(DefineConstants);__XCODE11__</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -107,20 +113,38 @@
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\WebViewRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\CellExtensions.cs" />
+    <Compile Include="..\Xamarin.Forms.Core\StreamWrapper.cs">
+      <Link>StreamWrapper.cs</Link>
+    </Compile>
     <Compile Include="CADisplayLinkTicker.cs" />
+    <Compile Include="CollectionView\CarouselViewDelegator.cs" />
     <Compile Include="CollectionView\CarouselViewRenderer.cs" />
     <Compile Include="CollectionView\CollectionViewRenderer.cs" />
     <Compile Include="CollectionView\EmptySource.cs" />
+    <Compile Include="CollectionView\GroupableItemsViewController.cs" />
+    <Compile Include="CollectionView\GroupableItemsViewDelegator.cs" />
+    <Compile Include="CollectionView\GroupableItemsViewRenderer.cs" />
+    <Compile Include="CollectionView\HorizontalCell.cs" />
+    <Compile Include="CollectionView\HorizontalDefaultSupplementalView.cs" />
+    <Compile Include="CollectionView\HorizontalTemplatedHeaderView.cs" />
     <Compile Include="CollectionView\IItemsViewSource.cs" />
+    <Compile Include="CollectionView\IndexPathExtensions.cs" />
     <Compile Include="CollectionView\ItemsSourceFactory.cs" />
     <Compile Include="CollectionView\ItemsViewCell.cs" />
+    <Compile Include="CollectionView\ItemsViewRenderer.cs" />
     <Compile Include="CollectionView\DefaultCell.cs" />
     <Compile Include="CollectionView\HorizontalDefaultCell.cs" />
     <Compile Include="CollectionView\ItemsViewController.cs" />
+    <Compile Include="CollectionView\ObservableGroupedSource.cs" />
     <Compile Include="CollectionView\ScrollToPositionExtensions.cs" />
     <Compile Include="CollectionView\SelectableItemsViewController.cs" />
+    <Compile Include="CollectionView\SelectableItemsViewDelegator.cs" />
     <Compile Include="CollectionView\SelectableItemsViewRenderer.cs" />
-    <Compile Include="CollectionView\UICollectionViewDelegator.cs" />
+    <Compile Include="CollectionView\TemplateHelpers.cs" />
+    <Compile Include="CollectionView\ItemsViewDelegator.cs" />
+    <Compile Include="CollectionView\VerticalCell.cs" />
+    <Compile Include="CollectionView\StructuredItemsViewController.cs" />
+    <Compile Include="CollectionView\StructuredItemsViewRenderer.cs" />
     <Compile Include="CollectionView\VerticalDefaultCell.cs" />
     <Compile Include="CollectionView\GridViewLayout.cs" />
     <Compile Include="CollectionView\ItemsViewLayout.cs" />
@@ -130,8 +154,10 @@
     <Compile Include="CollectionView\PropertyChangedEventArgsExtensions.cs" />
     <Compile Include="CollectionView\SnapHelpers.cs" />
     <Compile Include="CollectionView\TemplatedCell.cs" />
-    <Compile Include="CollectionView\HorizontalTemplatedCell.cs" />
-    <Compile Include="CollectionView\VerticalTemplatedCell.cs" />
+    <Compile Include="CollectionView\HeightConstrainedTemplatedCell.cs" />
+    <Compile Include="CollectionView\VerticalDefaultSupplementalView.cs" />
+    <Compile Include="CollectionView\WidthConstrainedTemplatedCell.cs" />
+    <Compile Include="CollectionView\VerticalSupplementaryView.cs" />
     <Compile Include="DisposeHelpers.cs" />
     <Compile Include="EffectUtilities.cs" />
     <Compile Include="ExportCellAttribute.cs" />
@@ -139,13 +165,18 @@
     <Compile Include="ExportRendererAttribute.cs" />
     <Compile Include="Extensions\ArrayExtensions.cs" />
     <Compile Include="Extensions\FlowDirectionExtensions.cs" />
+    <Compile Include="Extensions\NSObjectExtensions.cs" />
     <Compile Include="Extensions\PlatformConfigurationExtensions.cs" />
     <Compile Include="Extensions\LabelExtensions.cs" />
     <Compile Include="Extensions\VisualElementExtensions.cs" />
     <Compile Include="Flags.cs" />
     <Compile Include="IOSDeviceInfo.cs" />
+    <Compile Include="LinkerSafeAttribute.cs" />
     <Compile Include="ModalWrapper.cs" />
+    <Compile Include="Renderers\FormsCAKeyFrameAnimation.cs" />
     <Compile Include="Renderers\FormsCheckBox.cs" />
+    <Compile Include="Renderers\FormsUIImageView.cs" />
+    <Compile Include="Renderers\ImageAnimationHelper.cs" />
     <Compile Include="Renderers\ImageElementManager.cs" />
     <Compile Include="IVisualNativeElementRenderer.cs" />
     <Compile Include="NativeViewWrapper.cs" />
@@ -155,6 +186,7 @@
     <Compile Include="Forms.cs" />
     <Compile Include="PageExtensions.cs" />
     <Compile Include="Renderers\IAccessibilityElementsController.cs" />
+    <Compile Include="Renderers\IShellSectionRootHeader.cs" />
     <Compile Include="Renderers\PageContainer.cs" />
     <Compile Include="Renderers\CheckBoxRendererBase.cs" />
     <Compile Include="Renderers\WkWebViewRenderer.cs" />
@@ -177,7 +209,6 @@
     <Compile Include="Renderers\ShellFlyoutRenderer.cs" />
     <Compile Include="Renderers\ShellItemRenderer.cs" />
     <Compile Include="Renderers\ShellItemTransition.cs" />
-    <Compile Include="Renderers\ShellNavBarAppearanceTracker.cs" />
     <Compile Include="Renderers\ShellPageRendererTracker.cs" />
     <Compile Include="Renderers\ShellRenderer.cs" />
     <Compile Include="Renderers\ShellScrollViewTracker.cs" />
@@ -196,7 +227,7 @@
     <Compile Include="Renderers\ButtonElementManager.cs" />
     <Compile Include="Renderers\IImageVisualElementRenderer.cs" />
     <Compile Include="Renderers\ImageButtonRenderer.cs" />
-    <Compile Include="CollectionView\ItemsViewRenderer.cs" />
+    <Compile Include="Renderers\MediaElementRenderer.cs" />
     <Compile Include="Resources\StringResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -215,8 +246,18 @@
     <Compile Include="Extensions\FontExtensions.Shared.cs" />
     <Compile Include="Renderers\ButtonLayoutManager.cs" />
     <Compile Include="Renderers\IButtonLayoutRenderer.cs" />
+    <Compile Include="EmbeddedFontLoader.cs" />
     <Compile Include="Renderers\SearchHandlerAppearanceTracker.cs" />
     <Compile Include="Renderers\CheckBoxRenderer.cs" />
+    <Compile Include="CollectionView\CarouselViewLayout.cs" />
+    <Compile Include="CollectionView\CarouselViewController.cs" />
+    <Compile Include="CollectionView\CarouselTemplatedCell.cs" />
+    <Compile Include="Renderers\RefreshViewRenderer.cs" />
+    <Compile Include="Renderers\ShellNavBarAppearanceTracker.cs" />
+    <Compile Include="Renderers\IndicatorViewRenderer.cs" />
+    <Compile Include="Renderers\SwipeViewRenderer.cs" />
+    <Compile Include="Extensions\UIApplicationExtensions.cs" />
+    <Compile Include="Extensions\UICollectionViewExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />
@@ -267,5 +308,10 @@
       <Name>Xamarin.Forms.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup Condition="'$(Use2017)' == 'true'">
+    <Reference Include="netstandard" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Condition="'$(CI)' == 'true'" Include="Xamarin.Build.TypeRedirector" Version="0.1.2-preview" PrivateAssets="all" />
+  </ItemGroup>
 </Project>

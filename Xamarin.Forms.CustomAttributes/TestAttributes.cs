@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Xamarin.Forms.CustomAttributes
 {
-	[Conditional("DEBUG")]
+	
 	[AttributeUsage(
 		AttributeTargets.Class |
 		AttributeTargets.Event |
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.CustomAttributes
 		Default
 	}
 
-	[Conditional("DEBUG")]
+	
 	[AttributeUsage(
 		AttributeTargets.Class |
 		AttributeTargets.Method,
@@ -88,7 +88,7 @@ namespace Xamarin.Forms.CustomAttributes
 			: $"{IssueTracker.ToString().Substring(0, 1)}{IssueNumber} ({IssueTestNumber})";
 	}
 
-	[Conditional("DEBUG")]
+	
 	public class UiTestExemptAttribute : Attribute
 	{
 		// optional string reason
@@ -106,7 +106,7 @@ namespace Xamarin.Forms.CustomAttributes
 		public string Description => "Description: " + _description;
 	}
 
-	[Conditional("DEBUG")]
+	
 	public class UiTestFragileAttribute : Attribute
 	{
 		// optional string reason
@@ -120,7 +120,7 @@ namespace Xamarin.Forms.CustomAttributes
 		public string Description => "Description: " + _description;
 	}
 
-	[Conditional("DEBUG")]
+	
 	[AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
 	public class UiTestBrokenAttribute : Attribute
 	{
@@ -149,6 +149,7 @@ namespace Xamarin.Forms.CustomAttributes
 		UWP = 1 << 4,
 		WPF = 1 << 5,
 		macOS = 1 << 6,
+		Gtk = 1 << 7,
 		All = ~0,
 		Default = 0
 	}
@@ -200,7 +201,8 @@ namespace Xamarin.Forms.CustomAttributes
 			EntryCell,
 			Editor,
 			DatePicker,
-			CheckBox
+			CheckBox,
+			SwipeView
 		}
 
 		public enum Layouts
@@ -431,6 +433,7 @@ namespace Xamarin.Forms.CustomAttributes
 			GroupDisplayBinding,
 			GroupShortNameBinding,
 			ScrollTo,
+			Scrolled,
 			FastScroll,
 			RefreshControlColor,
 			ScrollBarVisibility
@@ -503,6 +506,7 @@ namespace Xamarin.Forms.CustomAttributes
 			Completed,
 			TextChanged,
 			Placeholder,
+			PlaceholderColor,
 			Text,
 			TextColor,
 			FontAttributes,
@@ -526,6 +530,12 @@ namespace Xamarin.Forms.CustomAttributes
 			HorizontalTextAlignmentPlaceholderStart,
 			HorizontalTextAlignmentPlaceholderCenter,
 			HorizontalTextAlignmentPlaceholderEnd,
+			VerticalTextAlignmentStart,
+			VerticalTextAlignmentCenter,
+			VerticalTextAlignmentEnd,
+			VerticalTextAlignmentPlaceholderStart,
+			VerticalTextAlignmentPlaceholderCenter,
+			VerticalTextAlignmentPlaceholderEnd,
 			FontAttributes,
 			FontFamily,
 			FontSize,
@@ -535,13 +545,16 @@ namespace Xamarin.Forms.CustomAttributes
 			PasswordColor,
 			MaxLength,
 			IsReadOnly,
-			IsPasswordNumeric
+			IsPasswordNumeric,
+			ClearButtonVisibility
 		}
 
 		public enum Frame
 		{
 			OutlineColor,
-			HasShadow
+			HasShadow,
+			Content,
+			CornerRadius
 		}
 
 		public enum Image
@@ -570,7 +583,8 @@ namespace Xamarin.Forms.CustomAttributes
 			Clicked,
 			Command,
 			Image,
-			Pressed
+			Pressed,
+			Padding
 		}
 
 		public enum ImageSource
@@ -605,6 +619,7 @@ namespace Xamarin.Forms.CustomAttributes
 		{
 			TextColor,
 			Text,
+			Padding,
 			FormattedText,
 			FontAttibutesBold,
 			FontAttributesItalic,
@@ -626,7 +641,11 @@ namespace Xamarin.Forms.CustomAttributes
 			VerticalTextAlignmentStart,
 			VerticalTextAlignmentCenter,
 			VerticalTextAlignmentEnd,
-			MaxLines
+			MaxLines,
+			HtmlTextType,
+			HtmlTextTypeMultipleLines,
+			HtmlTextLabelProperties,
+			TextTypeToggle,
 		}
 
 		public enum MasterDetailPage
@@ -649,6 +668,11 @@ namespace Xamarin.Forms.CustomAttributes
 		{
 			Progress,
 			ProgressColor
+		}
+
+		public enum RefreshView
+		{
+			RefreshColor
 		}
 
 		public enum RelativeLayout
@@ -678,9 +702,15 @@ namespace Xamarin.Forms.CustomAttributes
 			TextAlignmentStart,
 			TextAlignmentCenter,
 			TextAlignmentEnd,
+			TextVerticalAlignmentStart,
+			TextVerticalAlignmentCenter,
+			TextVerticalAlignmentEnd,
 			PlaceholderAlignmentStart,
 			PlaceholderAlignmentCenter,
 			PlaceholderAlignmentEnd,
+			PlaceholderVerticalAlignmentStart,
+			PlaceholderVerticalAlignmentCenter,
+			PlaceholderVerticalAlignmentEnd,
 			TextColor,
 			PlaceholderColor
 		}
@@ -715,7 +745,15 @@ namespace Xamarin.Forms.CustomAttributes
 		public enum Switch
 		{
 			IsToggled,
-			OnColor
+			OnColor,
+			ThumbColor
+		}
+
+		public enum SwipeView
+		{
+			RightItems,
+			TopItems,
+			BottomItems
 		}
 
 		public enum CheckBox
@@ -837,6 +875,16 @@ namespace Xamarin.Forms.CustomAttributes
 			CornerRadius
 		}
 
+		public enum CarouselView
+		{
+			CurrentItem,
+			IsSwipeEnabled,
+			IsScrollAnimated,
+			NumberOfSideItems, 
+			PeekAreaInsets,
+			Position,
+			IsBounceEnabled
+		}
 	}
 }
 

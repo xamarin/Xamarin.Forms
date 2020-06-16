@@ -1,4 +1,4 @@
-#if __ANDROID_28__
+
 using Android.Content;
 using Android.Views;
 using Android.Widget;
@@ -10,7 +10,7 @@ using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Material.Android
 {
-	public class MaterialPickerRenderer : Platform.Android.AppCompat.PickerRendererBase<MaterialPickerTextInputLayout>
+	public class MaterialPickerRenderer : Platform.Android.AppCompat.PickerRendererBase<MaterialPickerTextInputLayout>, ITabStop
 	{
 		MaterialPickerTextInputLayout _textInputLayout;
 		MaterialPickerEditText _textInputEditText;
@@ -46,10 +46,15 @@ namespace Xamarin.Forms.Material.Android
 			_textInputLayout.BoxBackgroundColor = MaterialColors.CreateEntryFilledInputBackgroundColor(Element.BackgroundColor, Element.TextColor);
 		}
 
-		protected override void UpdatePlaceHolderText() => _textInputLayout.SetHint(string.Empty, Element);
+		protected override void UpdatePlaceHolderText()
+		{
+			_textInputLayout.SetHint(Element.Title, Element);
+		}
+
 		protected override void UpdateTitleColor() => ApplyTheme();
 		protected override void UpdateTextColor() => ApplyTheme();
-		protected virtual void ApplyTheme() => _textInputLayout?.ApplyTheme(Element.TextColor, Color.Default);
+		protected virtual void ApplyTheme() => _textInputLayout?.ApplyTheme(Element.TextColor, Element.TitleColor);
+
+		AView ITabStop.TabStop => EditText;
 	}
 }
-#endif

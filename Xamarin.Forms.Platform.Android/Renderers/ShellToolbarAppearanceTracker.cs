@@ -1,5 +1,9 @@
 ﻿using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -47,13 +51,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
+			if (disposing)
 			{
-				if (disposing)
-				{
-				}
 				_shellContext = null;
-				_disposed = true;
 			}
 		}
 

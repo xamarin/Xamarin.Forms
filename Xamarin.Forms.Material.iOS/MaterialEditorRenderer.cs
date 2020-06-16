@@ -1,6 +1,7 @@
 ﻿using UIKit;
 using MaterialComponents;
 using System;
+using Foundation;
 using Xamarin.Forms.Platform.iOS;
 
 namespace Xamarin.Forms.Material.iOS
@@ -39,6 +40,11 @@ namespace Xamarin.Forms.Material.iOS
 			Control.UpdatePlaceholder(this);
 		}
 
+		protected internal override void UpdateCharacterSpacing()
+		{
+			Control.AttributedText = Control.AttributedText.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
+		}
+
 		protected internal override void UpdateText()
 		{
 			if (!_hackHasRan)
@@ -50,7 +56,9 @@ namespace Xamarin.Forms.Material.iOS
 		protected override void OnElementChanged(ElementChangedEventArgs<Editor> e)
 		{
 			base.OnElementChanged(e);
-			InitialPlaceholderSetupHack();
+
+			if(e.NewElement != null)
+				InitialPlaceholderSetupHack();
 		}
 
 		protected internal override void UpdateAutoSizeOption()

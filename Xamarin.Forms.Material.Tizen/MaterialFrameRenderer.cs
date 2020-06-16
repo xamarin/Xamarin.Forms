@@ -3,9 +3,8 @@ using Xamarin.Forms.Platform.Tizen;
 using Xamarin.Forms.Platform.Tizen.Native;
 using Xamarin.Forms.Material.Tizen;
 using Tizen.NET.MaterialComponents;
-using TForms = Xamarin.Forms.Platform.Tizen.Forms;
 
-[assembly: ExportRenderer(typeof(Frame), typeof(MaterialFrameRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
+[assembly: ExportRenderer(typeof(Frame), typeof(MaterialFrameRenderer), new[] { typeof(VisualMarker.MaterialVisual) }, Priority = short.MinValue)]
 namespace Xamarin.Forms.Material.Tizen
 {
 	public class MaterialFrameRenderer : ViewRenderer<Frame, MCard>
@@ -20,7 +19,7 @@ namespace Xamarin.Forms.Material.Tizen
 		{
 			if (Control == null)
 			{
-				SetNativeControl(new MaterialCanvas(TForms.NativeParent));
+				SetNativeControl(new MaterialCanvas(Forms.NativeParent));
 			}
 			base.OnElementChanged(e);
 		}

@@ -2,7 +2,11 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using Android.Util;
 using Android.Views;
 using Xamarin.Forms.Platform.Android.FastRenderers;
@@ -126,6 +130,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateEnabled();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -144,6 +150,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			UpdateTextColor();
 			UpdateEnabled();
 			UpdateBackgroundColor();
+			UpdateCharacterSpacing();
 		}
 
 		void UpdateEnabled()
@@ -182,6 +189,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
 		}
 
+		void UpdateCharacterSpacing()
+		{
+			if (Forms.IsLollipopOrNewer)
+			{
+				NativeButton.LetterSpacing = Element.CharacterSpacing.ToEm();
+			}
+			
+		}
+
 		void IOnClickListener.OnClick(AView v) => ButtonElementManager.OnClick(Element, Element, v);
 
 		bool IOnTouchListener.OnTouch(AView v, MotionEvent e) => ButtonElementManager.OnTouch(Element, Element, v, e);
@@ -208,6 +224,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		}
 
 		AppCompatButton IButtonLayoutRenderer.View => Control;
-		bool IDisposedState.IsDisposed => _isDisposed;
+		bool IDisposedState.IsDisposed => _isDisposed || !Control.IsAlive();
 	}
 }

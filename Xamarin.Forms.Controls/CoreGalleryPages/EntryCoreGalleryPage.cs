@@ -52,6 +52,20 @@ namespace Xamarin.Forms.Controls
 			var xAlignPlaceholderStart = new ViewContainer<Entry> (Test.Entry.HorizontalTextAlignmentPlaceholderStart,
 				new Entry { Placeholder = "Should be aligned start", HorizontalTextAlignment = TextAlignment.Start });
 
+			var yAlignCenterContainer = new ViewContainer<Entry>(Test.Entry.VerticalTextAlignmentCenter,
+				new Entry { Text = "Should be centered!", VerticalTextAlignment = TextAlignment.Center, BackgroundColor = Color.Pink, HeightRequest = 100 });
+			var yAlignEndContainer = new ViewContainer<Entry>(Test.Entry.VerticalTextAlignmentEnd,
+				new Entry { Text = "Should be aligned end!", VerticalTextAlignment = TextAlignment.End, BackgroundColor = Color.Pink, HeightRequest = 100 });
+			var yAlignStartContainer = new ViewContainer<Entry>(Test.Entry.VerticalTextAlignmentStart,
+				new Entry { Text = "Should be aligned start!", VerticalTextAlignment = TextAlignment.Start, BackgroundColor = Color.Pink, HeightRequest = 100 });
+
+			var yAlignPlaceholderCenter = new ViewContainer<Entry>(Test.Entry.VerticalTextAlignmentPlaceholderCenter,
+				new Entry { Placeholder = "Should be centered!", VerticalTextAlignment = TextAlignment.Center, BackgroundColor = Color.Pink, HeightRequest = 100 });
+			var yAlignPlaceholderEnd = new ViewContainer<Entry>(Test.Entry.VerticalTextAlignmentPlaceholderEnd,
+				new Entry { Placeholder = "Should be aligned end!", VerticalTextAlignment = TextAlignment.End, BackgroundColor = Color.Pink, HeightRequest = 100 });
+			var yAlignPlaceholderStart = new ViewContainer<Entry>(Test.Entry.VerticalTextAlignmentPlaceholderStart,
+				new Entry { Placeholder = "Should be aligned start!", VerticalTextAlignment = TextAlignment.Start, BackgroundColor = Color.Pink, HeightRequest = 100 });
+
 			var placeholderColorContainer = new ViewContainer<Entry> (Test.Entry.PlaceholderColor,
 				new Entry { Placeholder = "Hi, I should be red", PlaceholderColor = Color.Red });
 
@@ -91,6 +105,13 @@ namespace Xamarin.Forms.Controls
 			isPasswordInputScopeContainer.ContainerLayout.Children.Add(switchPasswordButton);
 			isPasswordInputScopeContainer.ContainerLayout.Children.Add(switchNumericButton);
 
+			var switchClearBtnVisibilityBtn = new Button { Text = "Toggle ClearButtonVisibility" };
+			var clearBtnModelContainer = new ViewContainer<Entry>(Test.Entry.ClearButtonVisibility,
+				new Entry { Text = "I should have clear button visible", ClearButtonVisibility = ClearButtonVisibility.WhileEditing });
+			switchClearBtnVisibilityBtn.Clicked += (o, a) =>
+				clearBtnModelContainer.View.ClearButtonVisibility = clearBtnModelContainer.View.ClearButtonVisibility == ClearButtonVisibility.Never ? ClearButtonVisibility.WhileEditing : ClearButtonVisibility.Never;
+			clearBtnModelContainer.ContainerLayout.Children.Add(switchClearBtnVisibilityBtn);
+
 			Add (isPasswordContainer);
 			Add (completedContainer);
 			Add (placeholderContainer);
@@ -104,6 +125,12 @@ namespace Xamarin.Forms.Controls
 			Add (xAlignEndContainer);
 			Add (xAlignPlaceholderStart);
 			Add (xAlignStartContainer);
+			Add (yAlignPlaceholderCenter);
+			Add (yAlignCenterContainer);
+			Add (yAlignPlaceholderEnd);
+			Add (yAlignEndContainer);
+			Add (yAlignPlaceholderStart);
+			Add (yAlignStartContainer);
 			Add (textFontAttributesContainer);
 			Add (textFamilyContainer1);
 			Add (textFamilyContainer2);
@@ -117,6 +144,7 @@ namespace Xamarin.Forms.Controls
 			Add (maxLengthContainer);
 			Add (readOnlyContainer);
 			Add (isPasswordInputScopeContainer);
+			Add (clearBtnModelContainer);
 		}
 	}
 }

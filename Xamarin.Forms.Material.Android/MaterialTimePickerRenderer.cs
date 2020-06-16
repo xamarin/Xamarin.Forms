@@ -1,4 +1,4 @@
-#if __ANDROID_28__
+
 using Android.Content;
 using Android.Views;
 using Android.Widget;
@@ -10,7 +10,7 @@ using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Material.Android
 {
-	public class MaterialTimePickerRenderer : TimePickerRendererBase<MaterialPickerTextInputLayout>
+	public class MaterialTimePickerRenderer : TimePickerRendererBase<MaterialPickerTextInputLayout>, ITabStop
 	{
 		MaterialPickerTextInputLayout _textInputLayout;
 		MaterialPickerEditText _textInputEditText;
@@ -55,6 +55,6 @@ namespace Xamarin.Forms.Material.Android
 			_textInputLayout?.ApplyTheme(Element.TextColor, Color.Default);
 		}
 
+		AView ITabStop.TabStop => EditText;
 	}
 }
-#endif

@@ -3,7 +3,11 @@ using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using Android.Widget;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 
@@ -14,6 +18,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		bool _disposed;
 		Drawable _defaultTrackDrawable;
 		string _defaultContentDescription;
+		bool _changedThumbColor;
 
 		public SwitchRenderer(Context context) : base(context)
 		{
@@ -97,6 +102,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				e.NewElement.Toggled += HandleToggled;
 				Control.Checked = e.NewElement.IsToggled;
 				UpdateOnColor();
+				UpdateThumbColor();
 			}
 		}
 
@@ -106,6 +112,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (e.PropertyName == Switch.OnColorProperty.PropertyName)
 				UpdateOnColor();
+			else if (e.PropertyName == Slider.ThumbColorProperty.PropertyName)
+				UpdateThumbColor();
 		}
 
 		void UpdateOnColor()
@@ -121,12 +129,32 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 				else
 				{
-					Control.TrackDrawable?.SetColorFilter(Element.OnColor.ToAndroid(), PorterDuff.Mode.Multiply);
+					Control.TrackDrawable?.SetColorFilter(Element.OnColor, FilterMode.Multiply);
 				}
 			}
 			else
 			{
 				Control.TrackDrawable?.ClearColorFilter();
+			}
+		}
+
+		void UpdateThumbColor()
+		{
+			if (Element == null)
+				return;
+
+			if (Element.ThumbColor != Color.Default)
+			{
+				Control.ThumbDrawable?.SetColorFilter(Element.ThumbColor, FilterMode.Multiply);
+				_changedThumbColor = true;
+			}
+			else
+			{
+				if (_changedThumbColor)
+				{
+					Control.ThumbDrawable?.ClearColorFilter();
+					_changedThumbColor = false;
+				}
 			}
 		}
 

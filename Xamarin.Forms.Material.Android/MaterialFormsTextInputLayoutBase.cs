@@ -1,13 +1,18 @@
-﻿#if __ANDROID_28__
+﻿
 using System;
 using Android.Content;
-using Android.Support.Design.Widget;
 using Android.Runtime;
 using Android.Util;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+using Google.Android.Material.TextField;
+#else
 using Android.Support.V4.View;
+using Android.Support.Design.Widget;
+using Xamarin.Forms.Platform.Android.AppCompat;
+#endif
 using Android.Content.Res;
 using AView = Android.Views.View;
-using Xamarin.Forms.Platform.Android.AppCompat;
 using Xamarin.Forms.Platform.Android;
 using Android.Widget;
 
@@ -46,7 +51,7 @@ namespace Xamarin.Forms.Material.Android
 			_formsPlaceholderColor = formsPlaceHolderColor;
 			_formsTextColor = formsTextColor;
 
-			var underlineColors = MaterialColors.GetUnderlineColor(_formsTextColor);
+			var underlineColors = MaterialColors.GetUnderlineColor(_formsPlaceholderColor);
 			var placeHolderColors = MaterialColors.GetPlaceHolderColor(_formsPlaceholderColor, _formsTextColor);
 
 			// I realize these are the same but I have to set it to a difference instance
@@ -148,4 +153,3 @@ namespace Xamarin.Forms.Material.Android
 		}
 	}
 }
-#endif

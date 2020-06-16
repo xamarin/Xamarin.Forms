@@ -12,10 +12,9 @@ namespace Xamarin.Forms.Platform.iOS
 		protected NSLayoutConstraint Constraint { get; set; }
 
 		[Export("initWithFrame:")]
+		[Internals.Preserve(Conditional = true)]
 		protected DefaultCell(CGRect frame) : base(frame)
 		{
-			CollectionView.VerifyCollectionViewFlagEnabled(nameof(DefaultCell));
-
 			Label = new UILabel(frame)
 			{
 				TextColor = UIColor.Black,

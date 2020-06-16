@@ -1,4 +1,4 @@
-﻿using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using System.Threading.Tasks;
 
@@ -23,8 +23,10 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = new StackLayout
 			{
 				Children = {
+#pragma warning disable CS0618 // Type or member is obsolete
 					new Button { Text = "Call 123 4567", AutomationId = "tel", Command = new Command(() => Device.OpenUri(new System.Uri("tel:123 4567"))) },
 					new Button { Text = "Mail support@xamarin.com", AutomationId = "mailto", Command = new Command(() => Device.OpenUri(new System.Uri("mailto:support@xamarin.com"))) }
+#pragma warning restore CS0618 // Type or member is obsolete
 				}
 			};
 		}
@@ -34,7 +36,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		[Test]
 		[Ignore("This test opens a system dialog in iOS11+ that cannot be dismissed by UITest and covers subsequent tests.")]
-		public async void Bugzilla60691_Tel()
+		public async Task Bugzilla60691_Tel()
 		{
 			RunningApp.WaitForElement(q => q.Marked("tel"));
 			RunningApp.Tap(q => q.Marked("tel"));

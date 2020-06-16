@@ -17,11 +17,8 @@ namespace Xamarin.Forms.Xaml.Internals
 				IProvideValueTarget = new XamlValueTargetProvider(targetObject, node, context, null);
 			if (context != null)
 				IRootObjectProvider = new XamlRootObjectProvider(context.RootElement);
-			if (context != null && node != null)
-			{
-				IXamlTypeResolver = new XamlTypeResolver(node.NamespaceResolver, XamlParser.GetElementType,
-					context.RootElement.GetType().GetTypeInfo().Assembly);
-
+			if (context != null && node != null) {
+				IXamlTypeResolver = new XamlTypeResolver(node.NamespaceResolver, XamlParser.GetElementType, context.RootAssembly);
 				Add(typeof(IReferenceProvider), new ReferenceProvider(node));
 			}
 
@@ -31,58 +28,48 @@ namespace Xamarin.Forms.Xaml.Internals
 			IValueConverterProvider = new ValueConverterProvider();
 		}
 
-		public XamlServiceProvider()
-		{
-			IValueConverterProvider = new ValueConverterProvider();
-		}
+		public XamlServiceProvider() => IValueConverterProvider = new ValueConverterProvider();
 
 		internal IProvideValueTarget IProvideValueTarget
 		{
-			get { return (IProvideValueTarget)GetService(typeof (IProvideValueTarget)); }
-			set { services[typeof (IProvideValueTarget)] = value; }
+			get => (IProvideValueTarget)GetService(typeof(IProvideValueTarget));
+			set => services[typeof(IProvideValueTarget)] = value;
 		}
 
 		internal IXamlTypeResolver IXamlTypeResolver
 		{
-			get { return (IXamlTypeResolver)GetService(typeof (IXamlTypeResolver)); }
-			set { services[typeof (IXamlTypeResolver)] = value; }
+			get => (IXamlTypeResolver)GetService(typeof(IXamlTypeResolver));
+			set => services[typeof(IXamlTypeResolver)] = value;
 		}
 
 		internal IRootObjectProvider IRootObjectProvider
 		{
-			get { return (IRootObjectProvider)GetService(typeof (IRootObjectProvider)); }
-			set { services[typeof (IRootObjectProvider)] = value; }
+			get => (IRootObjectProvider)GetService(typeof(IRootObjectProvider));
+			set => services[typeof(IRootObjectProvider)] = value;
 		}
 
 		internal IXmlLineInfoProvider IXmlLineInfoProvider
 		{
-			get { return (IXmlLineInfoProvider)GetService(typeof (IXmlLineInfoProvider)); }
-			set { services[typeof (IXmlLineInfoProvider)] = value; }
+			get => (IXmlLineInfoProvider)GetService(typeof(IXmlLineInfoProvider));
+			set => services[typeof(IXmlLineInfoProvider)] = value;
 		}
+
+		internal IValueConverterProvider IValueConverterProvider
+		{
+			get => (IValueConverterProvider)GetService(typeof(IValueConverterProvider));
+			set => services[typeof(IValueConverterProvider)] = value;
+		}
+
+		public object GetService(Type serviceType) => services.TryGetValue(serviceType, out var service) ? service : null;
+
+		public void Add(Type type, object service) => services.Add(type, service);
 
 		[Obsolete]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		internal INameScopeProvider INameScopeProvider
 		{
-			get { return (INameScopeProvider)GetService(typeof (INameScopeProvider)); }
-			set { services[typeof (INameScopeProvider)] = value; }
-		}
-
-		internal IValueConverterProvider IValueConverterProvider
-		{
-			get { return (IValueConverterProvider)GetService(typeof (IValueConverterProvider)); }
-			set { services[typeof (IValueConverterProvider)] = value; }
-		}
-
-		public object GetService(Type serviceType)
-		{
-			object service;
-			return services.TryGetValue(serviceType, out service) ? service : null;
-		}
-
-		public void Add(Type type, object service)
-		{
-			services.Add(type, service);
+			get { return (INameScopeProvider)GetService(typeof(INameScopeProvider)); }
+			set { services[typeof(INameScopeProvider)] = value; }
 		}
 	}
 
@@ -104,21 +91,16 @@ namespace Xamarin.Forms.Xaml.Internals
 
 		IEnumerable<object> IProvideParentValues.ParentObjects
 		{
-			get
-			{
+			get {
 				if (Node == null || Context == null)
 					yield break;
 				var n = Node;
-				object obj = null;
 				var context = Context;
-				while (n.Parent != null && context != null)
-				{
-					if (n.Parent is IElementNode)
-					{
-						if (context.Values.TryGetValue(n.Parent, out obj))
+				while (n.Parent != null && context != null) {
+					if (n.Parent is IElementNode) {
+						if (context.Values.TryGetValue(n.Parent, out var obj))
 							yield return obj;
-						else
-						{
+						else {
 							context = context.ParentContext;
 							continue;
 						}
@@ -159,27 +141,22 @@ namespace Xamarin.Forms.Xaml.Internals
 			this.scope = scope;
 		}
 
-		IEnumerable<object> IProvideParentValues.ParentObjects
-			=> objectAndParents;
-
-		object IProvideValueTarget.TargetObject
-			=> objectAndParents[0];
-
-		object IProvideValueTarget.TargetProperty
-			=> targetProperty;
+		IEnumerable<object> IProvideParentValues.ParentObjects => objectAndParents;
+		object IProvideValueTarget.TargetObject => objectAndParents[0];
+		object IProvideValueTarget.TargetProperty => targetProperty;
 
 		public object FindByName(string name)
 		{
-			if (scope != null)
-				return scope.FindByName(name);
+			object value;
+			if ((value = scope?.FindByName(name)) != null)
+				return value;
 
 			for (var i = 0; i < objectAndParents.Length; i++) {
-				var bo = objectAndParents[i] as BindableObject;
-				if (bo == null) continue;
-				var ns = NameScope.GetNameScope(bo) as INameScope;
-				if (ns == null) continue;
-				var value = ns.FindByName(name);
-				if (value != null)
+				if (!(objectAndParents[i] is BindableObject bo))
+					continue;
+				if (!(NameScope.GetNameScope(bo) is INameScope ns))
+					continue;
+				if ((value = ns.FindByName(name)) != null)
 					return value;
 			}
 			return null;
@@ -219,6 +196,13 @@ namespace Xamarin.Forms.Xaml.Internals
 			return exception == null;
 		}
 
+		internal bool TryResolve(XmlType xmlType, out Type type)
+		{
+			XamlParseException exception;
+			type = getTypeFromXmlName(xmlType, null, currentAssembly, out exception);
+			return exception == null;
+		}
+
 		Type Resolve(string qualifiedTypeName, IServiceProvider serviceProvider, out XamlParseException exception)
 		{
 			exception = null;
@@ -244,7 +228,7 @@ namespace Xamarin.Forms.Xaml.Internals
 
 			var namespaceuri = namespaceResolver.LookupNamespace(prefix);
 			if (namespaceuri == null) {
-				exception = new XamlParseException(string.Format("No xmlns declaration for prefix \"{0}\"", prefix), xmlLineInfo);
+				exception = new XamlParseException($"No xmlns declaration for prefix \"{prefix}\"", xmlLineInfo);
 				return null;
 			}
 
@@ -256,20 +240,14 @@ namespace Xamarin.Forms.Xaml.Internals
 
 	class XamlRootObjectProvider : IRootObjectProvider
 	{
-		public XamlRootObjectProvider(object rootObject)
-		{
-			RootObject = rootObject;
-		}
+		public XamlRootObjectProvider(object rootObject) => RootObject = rootObject;
 
 		public object RootObject { get; }
 	}
 
 	public class XmlLineInfoProvider : IXmlLineInfoProvider
 	{
-		public XmlLineInfoProvider(IXmlLineInfo xmlLineInfo)
-		{
-			XmlLineInfo = xmlLineInfo;
-		}
+		public XmlLineInfoProvider(IXmlLineInfo xmlLineInfo) => XmlLineInfo = xmlLineInfo;
 
 		public IXmlLineInfo XmlLineInfo { get; }
 	}
@@ -277,15 +255,14 @@ namespace Xamarin.Forms.Xaml.Internals
 	class ReferenceProvider : IReferenceProvider
 	{
 		readonly INode _node;
-		internal ReferenceProvider(INode node)
-			=> _node = node;
+		internal ReferenceProvider(INode node) => _node = node;
 
 		public object FindByName(string name)
 		{
 			var n = _node;
-			object value = null;
 			while (n != null) {
-				if ((value = (n as IElementNode)?.Namescope?.FindByName(name)) != null)
+				object value;
+				if ((value = (n as IElementNode)?.NameScopeRef.NameScope?.FindByName(name)) != null)
 					return value;
 				n = n.Parent;
 			}
@@ -304,27 +281,16 @@ namespace Xamarin.Forms.Xaml.Internals
 	{
 		readonly Dictionary<string, string> namespaces = new Dictionary<string, string>();
 
-		public IDictionary<string, string> GetNamespacesInScope(XmlNamespaceScope scope)
-		{
-			throw new NotImplementedException();
-		}
+		public IDictionary<string, string> GetNamespacesInScope(XmlNamespaceScope scope) => throw new NotImplementedException();
 
 		public string LookupNamespace(string prefix)
 		{
-			string result;
-			if (namespaces.TryGetValue(prefix, out result))
+			if (namespaces.TryGetValue(prefix, out var result))
 				return result;
 			return null;
 		}
 
-		public string LookupPrefix(string namespaceName)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Add(string prefix, string ns)
-		{
-			namespaces.Add(prefix, ns);
-		}
+		public string LookupPrefix(string namespaceName) => throw new NotImplementedException();
+		public void Add(string prefix, string ns) => namespaces.Add(prefix, ns);
 	}
 }

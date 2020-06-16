@@ -12,6 +12,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class EntryRenderer : EntryRendererBase<UITextField>
 	{
+		[Preserve(Conditional = true)]
 		public EntryRenderer()
 		{
 			Frame = new RectangleF(0, 20, 320, 40);
@@ -132,9 +133,11 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdatePlaceholder();
 			UpdatePassword();
 			UpdateText();
+			UpdateCharacterSpacing();
 			UpdateColor();
 			UpdateKeyboard();
-			UpdateAlignment();
+			UpdateHorizontalTextAlignment();
+			UpdateVerticalTextAlignment();
 			UpdateAdjustsFontSizeToFitWidth();
 			UpdateMaxLength();
 			UpdateReturnType();
@@ -144,6 +147,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateCursorColor();
 			UpdateIsReadOnly();
+
+			if (Element.ClearButtonVisibility != ClearButtonVisibility.Never)
+				UpdateClearButtonVisibility();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -153,9 +159,14 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
 				UpdatePassword();
 			else if (e.PropertyName == Entry.TextProperty.PropertyName)
+			{
 				UpdateText();
+				UpdateCharacterSpacing();
+			}
 			else if (e.PropertyName == Entry.TextColorProperty.PropertyName)
 				UpdateColor();
+			else if (e.PropertyName == Entry.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Xamarin.Forms.InputView.KeyboardProperty.PropertyName)
 				UpdateKeyboard();
 			else if (e.PropertyName == Xamarin.Forms.InputView.IsSpellCheckEnabledProperty.PropertyName)
@@ -163,7 +174,9 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Entry.IsTextPredictionEnabledProperty.PropertyName)
 				UpdateKeyboard();
 			else if (e.PropertyName == Entry.HorizontalTextAlignmentProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
+			else if (e.PropertyName == Entry.VerticalTextAlignmentProperty.PropertyName)
+				UpdateVerticalTextAlignment();
 			else if (e.PropertyName == Entry.FontAttributesProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Entry.FontFamilyProperty.PropertyName)
@@ -178,7 +191,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Specifics.AdjustsFontSizeToFitWidthProperty.PropertyName)
 				UpdateAdjustsFontSizeToFitWidth();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
 			else if (e.PropertyName == Xamarin.Forms.InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
 			else if (e.PropertyName == Entry.ReturnTypeProperty.PropertyName)
@@ -191,6 +204,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateCursorColor();
 			else if (e.PropertyName == Xamarin.Forms.InputView.IsReadOnlyProperty.PropertyName)
 				UpdateIsReadOnly();
+			else if (e.PropertyName == Entry.ClearButtonVisibilityProperty.PropertyName)
+				UpdateClearButtonVisibility();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -231,12 +246,23 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			Control.ResignFirstResponder();
 			((IEntryController)Element).SendCompleted();
+
+			if (Element != null && Element.ReturnType == ReturnType.Next)
+			{
+				FocusSearch(true);
+			}
+
 			return false;
 		}
 
-		void UpdateAlignment()
+		void UpdateHorizontalTextAlignment()
 		{
 			Control.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
+		}
+
+		void UpdateVerticalTextAlignment()
+		{
+			Control.VerticalAlignment = Element.VerticalTextAlignment.ToNativeTextAlignment();
 		}
 
 		protected virtual void UpdateColor()
@@ -318,21 +344,38 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_useLegacyColorManagement)
 			{
 				var color = targetColor.IsDefault || !Element.IsEnabled ? _defaultPlaceholderColor : targetColor;
-				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
 			}
 			else
 			{
 				// Using VSM color management; take whatever is in Element.PlaceholderColor
 				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
-				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				UpdateAttributedPlaceholder(formatted.ToAttributed(Element, color));
 			}
+
+			UpdateAttributedPlaceholder(Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing));
 		}
+		protected virtual void UpdateAttributedPlaceholder(NSAttributedString nsAttributedString) =>
+			Control.AttributedPlaceholder = nsAttributedString;
 
 		void UpdateText()
 		{
 			// ReSharper disable once RedundantCheckBeforeAssignment
 			if (Control.Text != Element.Text)
 				Control.Text = Element.Text;
+		}
+
+		void UpdateCharacterSpacing()
+		{
+			var textAttr = Control.AttributedText.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
+
+			if (textAttr != null)
+				Control.AttributedText = textAttr;
+
+			var placeHolder = Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
+
+			if (placeHolder != null)
+				UpdateAttributedPlaceholder(placeHolder);
 		}
 
 		void UpdateMaxLength()
@@ -499,9 +542,14 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-        void UpdateIsReadOnly()
-        {
-            Control.UserInteractionEnabled = !Element.IsReadOnly;
-        }
-    }
+		void UpdateIsReadOnly()
+		{
+			Control.UserInteractionEnabled = !Element.IsReadOnly;
+		}
+
+		void UpdateClearButtonVisibility()
+		{
+			Control.ClearButtonMode = Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing ? UITextFieldViewMode.WhileEditing : UITextFieldViewMode.Never;
+		}
+	}
 }

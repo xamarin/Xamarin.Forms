@@ -21,7 +21,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		bool _disposed;
 		bool _navAnimationInProgress;
 		NavigationModel _navModel = new NavigationModel();
-		Page _pendingRootChange = null;
+		NavigationModel _previousNavModel = null;
+
 		internal static string PackageName { get; private set; }
 		internal static string GetPackageName() => PackageName ?? Android.Platform.PackageName;
 
@@ -57,9 +58,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				return;
 			_disposed = true;
 
-			SetPage(null);
-
 			FormsAppCompatActivity.BackPressed -= HandleBackPressed;
+
+			SetPage(null);
 		}
 
 		void INavigation.InsertPageBefore(Page page, Page before)
@@ -250,6 +251,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			base.OnBindingContextChanged();
 		}
 
+		internal void SettingNewPage()
+		{
+			_previousNavModel = _navModel;
+			_navModel = new NavigationModel();
+		}
+
 		internal void SetPage(Page newRoot)
 		{
 			if (Page == newRoot)
@@ -259,22 +266,25 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (Page != null)
 			{
-				foreach (var rootPage in _navModel.Roots)
+				var navModel = (_previousNavModel ?? _navModel);
+				foreach (var rootPage in navModel.Roots)
 				{
-					if ((Android.Platform.GetRenderer(rootPage) is ILifeCycleState nr))
+					if (Android.Platform.GetRenderer(rootPage) is ILifeCycleState nr)
 						nr.MarkedForDispose = true;
 				}
 
-				_pendingRootChange = newRoot;
-				// Queue up disposal of the previous renderers after the current layout updates have finished
-				new Handler(Looper.MainLooper).Post(() =>
-				{
-					if (_pendingRootChange == newRoot)
-					{
-						_pendingRootChange = null;
-						SetPageInternal(newRoot);
-					}
-				});
+				var viewsToRemove = new List<AView>();
+				var renderersToDispose = new List<IVisualElementRenderer>();
+
+				for (int i = 0; i < _renderer.ChildCount; i++)
+					viewsToRemove.Add(_renderer.GetChildAt(i));
+
+				foreach (var root in navModel.Roots)
+					renderersToDispose.Add(Android.Platform.GetRenderer(root));
+
+				SetPageInternal(newRoot);
+
+				Cleanup(viewsToRemove, renderersToDispose);
 			}
 			else
 			{
@@ -298,50 +308,63 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			var layout = false;
 
-			var viewsToRemove = new List<AView>();
-			var renderersToDispose = new List<IVisualElementRenderer>();
-
 			if (Page != null)
 			{
-				for (int i = 0; i < _renderer.ChildCount; i++)
-					viewsToRemove.Add(_renderer.GetChildAt(i));
-
-				foreach (var root in _navModel.Roots)
-					renderersToDispose.Add(Android.Platform.GetRenderer(root));
-
-				_navModel = new NavigationModel();
+				// if _previousNavModel has been set than _navModel has already been reinitialized
+				if (_previousNavModel != null)
+				{
+					_previousNavModel = null;
+					if (_navModel == null)
+						_navModel = new NavigationModel();
+				}
+				else
+					_navModel = new NavigationModel();
 
 				layout = true;
 			}
 
 			if (newRoot == null)
 			{
-				Cleanup(viewsToRemove, renderersToDispose);
+				Page = null;
+
 				return;
 			}
 
 			_navModel.Push(newRoot, null);
 
 			Page = newRoot;
-			AddChild(Page, layout);
 
-			Cleanup(viewsToRemove, renderersToDispose);
+			AddChild(Page, layout);
 
 			Application.Current.NavigationProxy.Inner = this;
 		}
 
 		void Cleanup(List<AView> viewsToRemove, List<IVisualElementRenderer> renderersToDispose)
 		{
-			for (int i = 0; i < viewsToRemove.Count; i++)
+			// If trigger by dispose, cleanup now, otherwise queue it for later
+			if (_disposed)
 			{
-				AView view = viewsToRemove[i];
-				_renderer?.RemoveView(view);
+				DoCleanup();
+			}
+			else
+			{
+				new Handler(Looper.MainLooper).Post(DoCleanup);
 			}
 
-			for (int i = 0; i < renderersToDispose.Count; i++)
+			void DoCleanup()
 			{
-				IVisualElementRenderer rootRenderer = renderersToDispose[i];
-				rootRenderer?.Dispose();
+				for (int i = 0; i < viewsToRemove.Count; i++)
+				{
+					AView view = viewsToRemove[i];
+					_renderer?.RemoveView(view);
+				}
+
+				for (int i = 0; i < renderersToDispose.Count; i++)
+				{
+					IVisualElementRenderer rootRenderer = renderersToDispose[i];
+					rootRenderer?.Element.ClearValue(Android.Platform.RendererProperty);
+					rootRenderer?.Dispose();
+				}
 			}
 		}
 
@@ -367,8 +390,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (NavAnimationInProgress)
 				return true;
 
-			Page root = _navModel.Roots.Last();
-			bool handled = root.SendBackButtonPressed();
+			Page root = _navModel.Roots.LastOrDefault();
+			bool handled = root?.SendBackButtonPressed() ?? false;
 
 			return handled;
 		}

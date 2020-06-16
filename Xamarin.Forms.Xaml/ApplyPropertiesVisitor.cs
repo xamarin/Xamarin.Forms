@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Xaml.Diagnostics;
 using Xamarin.Forms.Xaml.Internals;
 
 using static System.String;
@@ -157,8 +158,7 @@ namespace Xamarin.Forms.Xaml
 				Exception xpe = null;
 				var xKey = node.Properties.ContainsKey(XmlName.xKey) ? ((ValueNode)node.Properties[XmlName.xKey]).Value as string : null;
 
-				object _;
-				var collection = GetPropertyValue(source, parentList.XmlName, Context, parentList, out _) as IEnumerable;
+				var collection = GetPropertyValue(source, parentList.XmlName, Context, parentList, out _, out _) as IEnumerable;
 				if (collection == null)
 					xpe = new XamlParseException($"Property {parentList.XmlName.LocalName} is null or is not IEnumerable", node);
 
@@ -344,17 +344,27 @@ namespace Xamarin.Forms.Xaml
 			if (xpe == null && TrySetBinding(xamlelement, property, localName, value, lineInfo, out xpe))
 				return;
 
+			var assemblyName = (context.RootAssembly ?? rootElement.GetType().GetTypeInfo().Assembly)?.GetName().Name;
 			//If it's a BindableProberty, SetValue
-			if (xpe == null && TrySetValue(xamlelement, property, attached, value, lineInfo, serviceProvider, out xpe))
+			if (xpe == null && TrySetValue(xamlelement, property, attached, value, lineInfo, serviceProvider, out xpe)) {
+				if (!(node is ValueNode) && value != null && !value.GetType().GetTypeInfo().IsValueType && XamlFilePathAttribute.GetFilePathForObject(context.RootElement) is string path)
+					VisualDiagnostics.RegisterSourceInfo(value, new Uri($"{path};assembly={assemblyName}", UriKind.Relative), ((IXmlLineInfo)node).LineNumber, ((IXmlLineInfo)node).LinePosition);
 				return;
+			}
 
 			//If we can assign that value to a normal property, let's do it
-			if (xpe == null && TrySetProperty(xamlelement, localName, value, lineInfo, serviceProvider, context, out xpe))
+			if (xpe == null && TrySetProperty(xamlelement, localName, value, lineInfo, serviceProvider, context, out xpe)) {
+				if (!(node is ValueNode) && value != null && !value.GetType().GetTypeInfo().IsValueType && XamlFilePathAttribute.GetFilePathForObject(context.RootElement) is string path)
+					VisualDiagnostics.RegisterSourceInfo(value, new Uri($"{path};assembly={assemblyName}", UriKind.Relative), ((IXmlLineInfo)node).LineNumber, ((IXmlLineInfo)node).LinePosition);
 				return;
+			}
 
 			//If it's an already initialized property, add to it
-			if (xpe == null && TryAddToProperty(xamlelement, propertyName, value, xKey, lineInfo, serviceProvider, context, out xpe))
+			if (xpe == null && TryAddToProperty(xamlelement, propertyName, value, xKey, lineInfo, serviceProvider, context, out xpe)) {
+				if (!(node is ValueNode) && value != null && !value.GetType().GetTypeInfo().IsValueType && XamlFilePathAttribute.GetFilePathForObject(context.RootElement) is string path)
+					VisualDiagnostics.RegisterSourceInfo(value, new Uri($"{path};assembly={assemblyName}", UriKind.Relative), ((IXmlLineInfo)node).LineNumber, ((IXmlLineInfo)node).LinePosition);
 				return;
+			}
 
 			xpe = xpe ?? new XamlParseException($"Cannot assign property \"{localName}\": Property does not exist, or is not assignable, or mismatching type between value and property", lineInfo);
 			if (context.ExceptionHandler != null)
@@ -363,11 +373,10 @@ namespace Xamarin.Forms.Xaml
 				throw xpe;
 		}
 
-		public static object GetPropertyValue(object xamlElement, XmlName propertyName, HydrationContext context, IXmlLineInfo lineInfo, out object targetProperty)
+		public static object GetPropertyValue(object xamlElement, XmlName propertyName, HydrationContext context, IXmlLineInfo lineInfo, out Exception xpe, out object targetProperty)
 		{
 			var localName = propertyName.LocalName;
-			Exception xpe = null;
-			object value;
+			xpe = null;
 			targetProperty = null;
 
 			//If it's an attached BP, update elementType and propertyName
@@ -376,7 +385,7 @@ namespace Xamarin.Forms.Xaml
 			var property = GetBindableProperty(bpOwnerType, localName, lineInfo, false);
 
 			//If it's a BindableProberty, GetValue
-			if (xpe == null && TryGetValue(xamlElement, property, attached, out value, lineInfo, out xpe, out targetProperty))
+			if (xpe == null && TryGetValue(xamlElement, property, attached, out var value, lineInfo, out xpe, out targetProperty))
 				return value;
 
 			//If it's a normal property, get it
@@ -384,10 +393,6 @@ namespace Xamarin.Forms.Xaml
 				return value;
 
 			xpe = xpe ?? new XamlParseException($"Property {localName} is not found or does not have an accessible getter", lineInfo);
-			if (context.ExceptionHandler != null)
-				context.ExceptionHandler(xpe);
-			else
-				throw xpe;
 
 			return null;
 		}
@@ -638,11 +643,7 @@ namespace Xamarin.Forms.Xaml
 		static bool TryAddToProperty(object element, XmlName propertyName, object value, string xKey, IXmlLineInfo lineInfo, XamlServiceProvider serviceProvider, HydrationContext context, out Exception exception)
 		{
 			exception = null;
-
-			object targetProperty;
-			var collection = GetPropertyValue(element, propertyName, context, lineInfo, out targetProperty) as IEnumerable;
-
-			if (collection == null)
+			if (!(GetPropertyValue(element, propertyName, context, lineInfo, out _, out var targetProperty) is IEnumerable collection))
 				return false;
 
 			if (exception == null && TryAddToResourceDictionary(collection as ResourceDictionary, value, xKey, lineInfo, out exception))
@@ -695,7 +696,7 @@ namespace Xamarin.Forms.Xaml
 			((IDataTemplate)dt).LoadTemplate = () => {
 #pragma warning restore 0612
 				var cnode = node.Clone();
-				var context = new HydrationContext { ParentContext = Context, RootElement = Context.RootElement, ExceptionHandler = Context.ExceptionHandler };
+				var context = new HydrationContext { ParentContext = Context, RootAssembly = Context.RootAssembly, RootElement = Context.RootElement, ExceptionHandler = Context.ExceptionHandler };
 				cnode.Accept(new XamlNodeVisitor((n, parent) => n.Parent = parent), node.Parent); //set parents for {StaticResource}
 				cnode.Accept(new ExpandMarkupsVisitor(context), null);
 				cnode.Accept(new NamescopingVisitor(context), null);

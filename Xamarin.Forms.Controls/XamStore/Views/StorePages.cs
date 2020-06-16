@@ -19,6 +19,9 @@ namespace Xamarin.Forms.Controls.XamStore
 
 		public BasePage(string title, Color tint)
 		{
+			ToolbarItems.Add(new ToolbarItem() { Text = "text" });
+			ToolbarItems.Add(new ToolbarItem() { IconImageSource = "coffee.png" });
+
 			Title = title;
 			Shell.SetForegroundColor(this, tint);
 			var grid = new Grid()
@@ -261,13 +264,53 @@ namespace Xamarin.Forms.Controls.XamStore
 			}, 0, 17);
 			grid.Children.Add(headerWidth, 1, 17);
 
+			grid.Children.Add(MakeButton("bg image",
+				() => Shell.Current.FlyoutBackgroundImage = ImageSource.FromFile("photo.jpg")),
+			0, 18);
+			grid.Children.Add(MakeButton("bg color",
+				() => Shell.Current.FlyoutBackgroundColor = Color.DarkGreen),
+			1, 18);
+			grid.Children.Add(MakeButton("bg aFit",
+				() => Shell.Current.FlyoutBackgroundImageAspect = Aspect.AspectFit),
+			2, 18);
+			grid.Children.Add(MakeButton("bg aFill",
+				() => Shell.Current.FlyoutBackgroundImageAspect = Aspect.AspectFill),
+			0, 19);
+			grid.Children.Add(MakeButton("bg Fill",
+				() => Shell.Current.FlyoutBackgroundImageAspect = Aspect.Fill),
+			1, 19);
+			grid.Children.Add(MakeButton("clear bg",
+				() => {
+					Shell.Current.ClearValue(Shell.FlyoutBackgroundColorProperty);
+					Shell.Current.ClearValue(Shell.FlyoutBackgroundImageProperty);
+				}),
+			2, 19);
+
+			Entry flyheaderMargin = new Entry();
+			flyheaderMargin.TextChanged += (_, __) =>
+			{
+				int topMargin;
+				if (Int32.TryParse(flyheaderMargin.Text, out topMargin))
+					(Shell.Current.FlyoutHeader as View).Margin = new Thickness(0, topMargin, 0, 0);
+				else
+					(Shell.Current.FlyoutHeader as View).ClearValue(View.MarginProperty);
+			};
+
+
+			grid.Children.Add(new Label() { Text = "FH Top Margin" }, 0, 20);
+			grid.Children.Add(flyheaderMargin, 1, 20);
+
 			Content = new ScrollView { Content = grid };
 
-			//var listView = new ListView();
-			//listView.ItemsSource = Enumerable.Range(0, 1000).ToList();
 
-			//Content = listView;
-		}
+            grid.Children.Add(MakeButton("Hide Nav Shadow",
+                    () => Shell.SetNavBarHasShadow(this, false)),
+                1, 21);
+
+            grid.Children.Add(MakeButton("Show Nav Shadow",
+                    () => Shell.SetNavBarHasShadow(this, true)),
+                2, 21);
+        }
 
 		Switch _navBarVisibleSwitch;
 		Switch _tabBarVisibleSwitch;
@@ -439,7 +482,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	[Preserve (AllMembers = true)]
 	public class HomePage : BasePage
 	{
-		public HomePage() : base("Store Home", Color.Default)
+		public HomePage() : base("Store Home", Color.Black)
 		{
 			AddSearchHandler("Search Apps", SearchBoxVisibility.Expanded);
 		}
@@ -448,7 +491,7 @@ namespace Xamarin.Forms.Controls.XamStore
 	[Preserve (AllMembers = true)]
 	public class GamesPage : BasePage
 	{
-		public GamesPage() : base("Games", Color.Default)
+		public GamesPage() : base("Games", Color.Black)
 		{
 			AddSearchHandler("Search Games", SearchBoxVisibility.Expanded);
 		}

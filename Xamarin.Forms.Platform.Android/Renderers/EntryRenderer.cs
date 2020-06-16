@@ -2,6 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
+using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Core.Content;
+#else
+using Android.Support.V4.Content;
+#endif
 using Android.Text;
 using Android.Text.Method;
 using Android.Util;
@@ -61,7 +67,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 	}
 
-	public abstract class EntryRendererBase<TControl> : ViewRenderer<Entry, TControl>, ITextWatcher, TextView.IOnEditorActionListener
+	public abstract partial class EntryRendererBase<TControl> : ViewRenderer<Entry, TControl>, ITextWatcher, TextView.IOnEditorActionListener
 		where TControl : global::Android.Views.View
 	{
 		bool _disposed;
@@ -91,8 +97,26 @@ namespace Xamarin.Forms.Platform.Android
 			// Fire Completed and dismiss keyboard for hardware / physical keyboards
 			if (actionId == ImeAction.Done || actionId == _currentInputImeFlag || (actionId == ImeAction.ImeNull && e.KeyCode == Keycode.Enter && e.Action == KeyEventActions.Up))
 			{
-				EditText.ClearFocus();
-				v.HideKeyboard();
+				global::Android.Views.View nextFocus = null;
+				if (_currentInputImeFlag == ImeAction.Next)
+				{
+					nextFocus = FocusSearch(v, FocusSearchDirection.Forward);
+				}
+
+				if (nextFocus != null)
+				{
+					nextFocus.RequestFocus();
+					if (!nextFocus.OnCheckIsTextEditor())
+					{
+						v.HideKeyboard();
+					}
+				}
+				else
+				{
+					EditText.ClearFocus();
+					v.HideKeyboard();
+				}
+
 				((IEntryController)Element).SendCompleted();
 			}
 
@@ -101,6 +125,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ITextWatcher.AfterTextChanged(IEditable s)
 		{
+			OnAfterTextChanged(s);
 		}
 
 		void ITextWatcher.BeforeTextChanged(ICharSequence s, int start, int count, int after)
@@ -159,9 +184,10 @@ namespace Xamarin.Forms.Platform.Android
 			UpdatePlaceHolderText();
 			EditText.Text = Element.Text;
 			UpdateInputType();
-
 			UpdateColor();
-			UpdateAlignment();
+			UpdateCharacterSpacing();
+			UpdateHorizontalTextAlignment();
+			UpdateVerticalTextAlignment();
 			UpdateFont();
 			UpdatePlaceholderColor();
 			UpdateMaxLength();
@@ -171,6 +197,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_cursorPositionChangePending || _selectionLengthChangePending)
 				UpdateCursorSelection();
+
+			UpdateClearBtnOnElementChanged();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -188,14 +216,26 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					formsEditContext.OnKeyboardBackPressed -= OnKeyboardBackPressed;
 					formsEditContext.SelectionChanged -= SelectionChanged;
+					ListenForCloseBtnTouch(false);
 				}
+				_clearBtn = null;
 			}
 
 			base.Dispose(disposing);
 		}
 
 
-		protected virtual void UpdatePlaceHolderText() => EditText.Hint = Element.Placeholder;
+		protected virtual void UpdatePlaceHolderText()
+		{
+			if (EditText.Hint == Element.Placeholder)
+				return;
+
+			EditText.Hint = Element.Placeholder;
+			if (EditText.IsFocused)
+			{
+				EditText.ShowKeyboard();
+			}
+		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -224,7 +264,11 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.PropertyName == Entry.IsTextPredictionEnabledProperty.PropertyName)
 				UpdateInputType();
 			else if (e.PropertyName == Entry.HorizontalTextAlignmentProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
+			else if(e.PropertyName == Entry.VerticalTextAlignmentProperty.PropertyName)
+				UpdateVerticalTextAlignment();
+			else if (e.PropertyName == Entry.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Entry.FontAttributesProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Entry.FontFamilyProperty.PropertyName)
@@ -234,7 +278,7 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.PropertyName == Entry.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholderColor();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
-				UpdateAlignment();
+				UpdateHorizontalTextAlignment();
 			else if (e.PropertyName == InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
 			else if (e.PropertyName == PlatformConfiguration.AndroidSpecific.Entry.ImeOptionsProperty.PropertyName)
@@ -247,6 +291,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateCursorSelection();
 			else if (e.PropertyName == InputView.IsReadOnlyProperty.PropertyName)
 				UpdateIsReadOnly();
+			if (e.PropertyName == Entry.ClearButtonVisibilityProperty.PropertyName)
+				UpdateClearBtnOnPropertyChanged();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -268,9 +314,14 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.ImeOptions = _currentInputImeFlag;
 		}
 
-		void UpdateAlignment()
+		void UpdateHorizontalTextAlignment()
 		{
-			EditText.UpdateHorizontalAlignment(Element.HorizontalTextAlignment, Context.HasRtlSupport());
+			EditText.UpdateTextAlignment(Element.HorizontalTextAlignment, Element.VerticalTextAlignment);
+		}
+
+		void UpdateVerticalTextAlignment()
+		{
+			EditText.UpdateTextAlignment(Element.HorizontalTextAlignment, Element.VerticalTextAlignment);
 		}
 
 		protected abstract void UpdateColor();
@@ -349,6 +400,14 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (currentControlText.Length > Element.MaxLength)
 				EditText.Text = currentControlText.Substring(0, Element.MaxLength);
+		}
+
+		void UpdateCharacterSpacing()
+		{
+			if (Forms.IsLollipopOrNewer)
+			{
+				EditText.LetterSpacing = Element.CharacterSpacing.ToEm();
+			}
 		}
 
 		void UpdateReturnType()
@@ -480,6 +539,101 @@ namespace Xamarin.Forms.Platform.Android
 
 			EditText.FocusableInTouchMode = isReadOnly;
 			EditText.Focusable = isReadOnly;
+		}
+	}
+
+	// Entry clear button management
+	public abstract partial class EntryRendererBase<TControl>
+	{
+		Drawable _clearBtn;
+		internal override void OnNativeFocusChanged(bool hasFocus)
+		{
+			base.OnNativeFocusChanged(hasFocus);
+			UpdateClearBtnOnFocusChanged(hasFocus);
+		}
+
+		void OnAfterTextChanged(IEditable s)
+		{
+			if (Control.IsFocused)
+				UpdateClearBtnOnTyping();
+		}
+
+		void EditTextTouched(object sender, TouchEventArgs e)
+		{
+			e.Handled = false;
+			var me = e.Event;
+
+			var rBounds = _clearBtn?.Bounds;
+			if (rBounds != null)
+			{
+				var x = me.GetX();
+				var y = me.GetY();
+				if (me.Action == MotionEventActions.Up
+				    && x >= (EditText.Right - rBounds.Width())
+				    && x <= (EditText.Right - EditText.PaddingRight)
+				    && y >= EditText.PaddingTop
+				    && y <= (EditText.Height - EditText.PaddingBottom))
+				{
+					EditText.Text = null;
+					e.Handled = true;
+				}
+			}
+		}
+
+		void UpdateClearBtnOnElementChanged()
+		{
+			bool showClearBtn = Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing;
+			if (showClearBtn && Element.IsFocused)
+			{
+				UpdateClearBtn(true);
+				ListenForCloseBtnTouch(true);
+			}
+		}
+
+		void UpdateClearBtnOnPropertyChanged()
+		{
+			bool isFocused = Element.IsFocused;
+			if (isFocused)
+			{
+				bool showClearBtn = Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing;
+				UpdateClearBtn(showClearBtn);
+
+				if (!showClearBtn && isFocused)
+					ListenForCloseBtnTouch(false);
+			}
+		}
+
+		void UpdateClearBtnOnFocusChanged(bool isFocused)
+		{
+			if (Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing)
+			{
+				UpdateClearBtn(isFocused);
+				ListenForCloseBtnTouch(isFocused);
+			}
+		}
+
+		void UpdateClearBtnOnTyping()
+		{
+			if (Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing)
+				UpdateClearBtn(true);
+		}
+
+		void UpdateClearBtn(bool showClearButton)
+		{
+			Drawable d = showClearButton && (Element.Text?.Length > 0) ? GetCloseButtonDrawable() : null;
+			EditText.SetCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+			_clearBtn = d;
+		}
+
+		protected virtual Drawable GetCloseButtonDrawable()
+			=> ContextCompat.GetDrawable(Context, Resource.Drawable.abc_ic_clear_material);
+
+		void ListenForCloseBtnTouch(bool listen)
+		{
+			if (listen)
+				EditText.Touch += EditTextTouched;
+			else
+				EditText.Touch -= EditTextTouched;
 		}
 	}
 }

@@ -5,7 +5,16 @@ using Android.Util;
 using Android.Views.InputMethods;
 using AApplicationInfoFlags = Android.Content.PM.ApplicationInfoFlags;
 using AActivity = Android.App.Activity;
+
+#if __ANDROID_29__
+using AndroidX.Fragment.App;
+using AndroidX.AppCompat.App;
+using AFragmentManager = AndroidX.Fragment.App.FragmentManager;
+#else
 using AFragmentManager = Android.Support.V4.App.FragmentManager;
+using Android.Support.V4.App;
+using Android.Support.V7.App;
+#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -106,7 +115,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (context.IsDesignerContext())
 				return context;
 
-			if (context is global::Android.Support.V7.App.AppCompatActivity activity)
+			if (context is AppCompatActivity activity)
 				return activity.SupportActionBar.ThemedContext;
 
 			if (context is ContextWrapper contextWrapper)
@@ -115,18 +124,22 @@ namespace Xamarin.Forms.Platform.Android
 			return null;
 		}
 
+		static bool? _isDesignerContext;
 		internal static bool IsDesignerContext(this Context context)
 		{
+			if (_isDesignerContext.HasValue)
+				return _isDesignerContext.Value;
+
 			if (context == null)
-				return false;
-			
-			if ($"{context.ToString()}".Contains("com.android.layoutlib.bridge.android.BridgeContext"))
-				return true;
-
-			if (context is ContextWrapper contextWrapper)
+				_isDesignerContext = false;
+			else if ($"{context}".Contains("com.android.layoutlib.bridge.android.BridgeContext"))
+				_isDesignerContext = true;
+			else if (context is ContextWrapper contextWrapper)
 				return contextWrapper.BaseContext.IsDesignerContext();
+			else
+				_isDesignerContext = false;
 
-			return false;
+			return _isDesignerContext.Value;
 		}
 
 		public static AFragmentManager GetFragmentManager(this Context context)
@@ -136,7 +149,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var activity = context.GetActivity();
 
-			if (activity is global::Android.Support.V4.App.FragmentActivity fa)
+			if (activity is FragmentActivity fa)
 				return fa.SupportFragmentManager;
 
 			return null;

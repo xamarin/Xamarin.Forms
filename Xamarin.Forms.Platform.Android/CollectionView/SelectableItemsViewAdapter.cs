@@ -1,20 +1,25 @@
 using System;
 using System.Collections.Generic;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using Object = Java.Lang.Object;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class SelectableItemsViewAdapter : ItemsViewAdapter
+	public class SelectableItemsViewAdapter<TItemsView, TItemsSource> : StructuredItemsViewAdapter<TItemsView, TItemsSource> 
+		where TItemsView : SelectableItemsView
+		where TItemsSource : IItemsViewSource
 	{
-		protected readonly SelectableItemsView SelectableItemsView;
 		List<SelectableViewHolder> _currentViewHolders = new List<SelectableViewHolder>();
 
-		internal SelectableItemsViewAdapter(SelectableItemsView selectableItemsView,
+		internal SelectableItemsViewAdapter(TItemsView selectableItemsView,
 			Func<View, Context, ItemContentView> createView = null) : base(selectableItemsView, createView)
 		{
-			SelectableItemsView = selectableItemsView;
 		}
 
 		public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
@@ -27,21 +32,21 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			// Watch for clicks so the user can select the item held by this ViewHolder
-			selectable.Clicked += SelectableOnClicked;
+			selectable.Clicked += SelectableClicked;
 
 			// Keep track of the view holders here so we can clear the native selection
 			_currentViewHolders.Add(selectable);
 
 			// Make sure that if this item is one of the selected items, it's marked as selected
-			selectable.IsSelected = PostionIsSelected(position);
+			selectable.IsSelected = PositionIsSelected(position);
 		}
-	
+
 		public override void OnViewRecycled(Object holder)
 		{
 			if (holder is SelectableViewHolder selectable)
 			{
 				_currentViewHolders.Remove(selectable);
-				selectable.Clicked -= SelectableOnClicked;
+				selectable.Clicked -= SelectableClicked;
 				selectable.IsSelected = false;
 			}
 
@@ -77,13 +82,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		int[] GetSelectedPositions()
 		{
-			switch (SelectableItemsView.SelectionMode)
+			switch (ItemsView.SelectionMode)
 			{
 				case SelectionMode.None:
 					return new int[0];
 
 				case SelectionMode.Single:
-					var selectedItem = SelectableItemsView.SelectedItem;
+					var selectedItem = ItemsView.SelectedItem;
 					if (selectedItem == null)
 					{
 						return new int[0];
@@ -92,7 +97,7 @@ namespace Xamarin.Forms.Platform.Android
 					return new int[1] { GetPositionForItem(selectedItem) };
 
 				case SelectionMode.Multiple:
-					var selectedItems = SelectableItemsView.SelectedItems;
+					var selectedItems = ItemsView.SelectedItems;
 					var result = new int[selectedItems.Count];
 
 					for (int n = 0; n < result.Length; n++)
@@ -106,7 +111,7 @@ namespace Xamarin.Forms.Platform.Android
 			return new int[0];
 		}
 
-		bool PostionIsSelected(int position)
+		bool PositionIsSelected(int position)
 		{
 			var selectedPositions = GetSelectedPositions();
 			foreach (var selectedPosition in selectedPositions)
@@ -120,14 +125,14 @@ namespace Xamarin.Forms.Platform.Android
 			return false;
 		}
 
-		void SelectableOnClicked(object sender, int adapterPosition)
+		void SelectableClicked(object sender, int adapterPosition)
 		{
 			UpdateFormsSelection(adapterPosition);
 		}
 
 		void UpdateFormsSelection(int adapterPosition)
 		{
-			var mode = SelectableItemsView.SelectionMode;
+			var mode = ItemsView.SelectionMode;
 
 			switch (mode)
 			{
@@ -135,11 +140,11 @@ namespace Xamarin.Forms.Platform.Android
 					// Selection's not even on, so there's nothing to do here
 					return;
 				case SelectionMode.Single:
-					SelectableItemsView.SelectedItem = ItemsSource[adapterPosition];
+					ItemsView.SelectedItem = ItemsSource.GetItem(adapterPosition);
 					return;
 				case SelectionMode.Multiple:
-					var item = ItemsSource[adapterPosition];
-					var selectedItems = SelectableItemsView.SelectedItems;
+					var item = ItemsSource.GetItem(adapterPosition);
+					var selectedItems = ItemsView.SelectedItems;
 
 					if (selectedItems.Contains(item))
 					{
@@ -151,6 +156,6 @@ namespace Xamarin.Forms.Platform.Android
 					}
 					return;
 			}
-		}
+		}		
 	}
 }

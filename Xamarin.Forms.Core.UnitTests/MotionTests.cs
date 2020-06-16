@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Xamarin.Forms.Internals;
@@ -61,14 +62,14 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class MotionTests : BaseTestFixture
 	{
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void Init ()
 		{
 			Device.PlatformServices = new MockPlatformServices ();
 			Ticker.Default = new BlockingTicker ();
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void End ()
 		{
 			Device.PlatformServices = null;
@@ -154,14 +155,14 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class TickerSystemEnabledTests
 	{
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void Init ()
 		{
 			Device.PlatformServices = new MockPlatformServices ();
 			Ticker.Default = new AsyncTicker(); 
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void End ()
 		{
 			Device.PlatformServices = null;
@@ -172,6 +173,12 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			await Task.Delay(32);
 			((AsyncTicker)Ticker.Default).SetEnabled(false);
+		}
+
+		static async Task EnableTicker()
+		{
+			await Task.Delay(32);
+			((AsyncTicker)Ticker.Default).SetEnabled(true);
 		}
 
 		async Task SwapFadeViews(View view1, View view2)
@@ -236,6 +243,42 @@ namespace Xamarin.Forms.Core.UnitTests
 			await view.RotateYTo(200);
 
 			Assert.That(view.RotationY, Is.EqualTo(200));
+		}
+
+		[Test]
+		public async Task AnimationExtensionsReturnTrueIfAnimationsDisabled() 
+		{
+			await DisableTicker();
+
+			var label = new Label { Text = "Foo" };
+			var result = await label.ScaleTo(2, 500);
+
+			Assert.That(result, Is.True);
+		}
+
+		[Test, Timeout(2000)]
+		public async Task CanExitAnimationLoopIfAnimationsDisabled() 
+		{
+			await DisableTicker();
+
+			var run = true;
+			var label = new Label { Text = "Foo" };
+
+			while (run)
+			{
+				await label.ScaleTo(2, 500);
+				run = !(await label.ScaleTo(0.5, 500));
+			}
+		}
+
+		[Test]
+		public async Task CanCheckThatAnimationsAreEnabled() 
+		{
+			await EnableTicker();
+			Assert.That(Animation.IsEnabled, Is.True);
+
+			await DisableTicker();
+			Assert.That(Animation.IsEnabled, Is.False);
 		}
 	}
 }

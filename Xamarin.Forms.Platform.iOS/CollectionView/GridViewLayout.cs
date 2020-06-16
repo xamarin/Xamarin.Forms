@@ -6,11 +6,11 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	internal class GridViewLayout : ItemsViewLayout
+	public class GridViewLayout : ItemsViewLayout
 	{
 		readonly GridItemsLayout _itemsLayout;
 
-		public GridViewLayout(GridItemsLayout itemsLayout) : base(itemsLayout)
+		public GridViewLayout(GridItemsLayout itemsLayout, ItemSizingStrategy itemSizingStrategy) : base(itemsLayout, itemSizingStrategy)
 		{
 			_itemsLayout = itemsLayout;
 		}
@@ -99,35 +99,34 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override UICollectionViewLayoutAttributes[] LayoutAttributesForElementsInRect(CGRect rect)
 		{
+			var layoutAttributesForRectElements = base.LayoutAttributesForElementsInRect(rect);
+
 			if (!NeedsPartialColumnAdjustment())
-			{ 
-				return base.LayoutAttributesForElementsInRect(rect);
+			{
+				return layoutAttributesForRectElements;
 			}
 
 			// When we implement Groups, we'll have to iterate over all of them to adjust and this will
 			// be a lot more complicated. But until then, we only have to worry about section 0
-			int section = 0;
-
-			var fullColumns = base.LayoutAttributesForElementsInRect(rect);
+			var section = 0;
 
 			var itemCount = CollectionView.NumberOfItemsInSection(section);
 
-			if (fullColumns.Length == itemCount)
+			if (layoutAttributesForRectElements.Length == itemCount)
 			{
-				return fullColumns;
+				return layoutAttributesForRectElements;
 			}
 
-			var missingCellCount = itemCount % _itemsLayout.Span;
+			var layoutAttributesForAllCells = new UICollectionViewLayoutAttributes[itemCount];
 
-			UICollectionViewLayoutAttributes[] allCells = new UICollectionViewLayoutAttributes[fullColumns.Length + missingCellCount];
-			fullColumns.CopyTo(allCells, 0);
+			layoutAttributesForRectElements.CopyTo(layoutAttributesForAllCells, 0);
 
-			for (int n = fullColumns.Length; n < allCells.Length; n++)
+			for (int i = layoutAttributesForRectElements.Length; i < layoutAttributesForAllCells.Length; i++)
 			{
-				allCells[n] = LayoutAttributesForItem(NSIndexPath.FromItemSection(n, section));
+				layoutAttributesForAllCells[i] = LayoutAttributesForItem(NSIndexPath.FromItemSection(i, section));
 			}
 
-			return allCells;
+			return layoutAttributesForAllCells;
 		}
 
 		bool NeedsPartialColumnAdjustment(int section = 0)
@@ -138,11 +137,20 @@ namespace Xamarin.Forms.Platform.iOS
 				return false; 
 			}
 
+			if (CollectionView.NumberOfSections() == 0)
+			{
+				// And it only happens if there are items
+				return false;
+			}
+
 			if (EstimatedItemSize.IsEmpty)
 			{
 				// The bug only occurs when using Autolayout; with a set ItemSize, we don't have to worry about it
 				return false;
 			}
+
+			if (CollectionView.NumberOfSections() == 0)
+				return false;
 
 			var itemCount = CollectionView.NumberOfItemsInSection(section);
 

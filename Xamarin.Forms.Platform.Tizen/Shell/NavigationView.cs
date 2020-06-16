@@ -2,23 +2,29 @@ using System;
 using System.Collections.Generic;
 using ElmSharp;
 using EColor = ElmSharp.Color;
+using EImage = ElmSharp.Image;
+using NBox = Xamarin.Forms.Platform.Tizen.Native.Box;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
-	public class NavigationView : Native.Box
+	public class NavigationView : Background, INavigationView
 	{
+		NBox _box;
+		EImage _bg;
+		Aspect _bgImageAspect;
+		ImageSource _bgImageSource;
 		EvasObject _header;
 		GenList _menu;
+		GenItemClass _defaultClass;
 		EColor _backgroundColor;
 		EColor _defaultBackgroundColor = EColor.White;
-
-		IList<Group> _groups;
-		GenItemClass _defaultClass;
+		List<Group> _groups;
+		IDictionary<Item, Element> _flyoutMenu = new Dictionary<Item, Element>();
 
 		public NavigationView(EvasObject parent) : base(parent)
 		{
 			Initialize(parent);
-			LayoutUpdated += (s, e) =>
+			_box.LayoutUpdated += (s, e) =>
 			{
 				UpdateChildGeometry();
 			};
@@ -26,7 +32,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			_menu.BackgroundColor = _defaultBackgroundColor;
 		}
 
-		public event EventHandler<GenListItemEventArgs> MenuItemSelected;
+		public event EventHandler<SelectedItemChangedEventArgs> SelectedItemChanged;
 
 		public override EColor BackgroundColor
 		{
@@ -37,10 +43,58 @@ namespace Xamarin.Forms.Platform.Tizen
 			set
 			{
 				_backgroundColor = value;
-
 				EColor effectiveColor = _backgroundColor.IsDefault ? _defaultBackgroundColor : _backgroundColor;
-				_menu.BackgroundColor = effectiveColor;
 				base.BackgroundColor = effectiveColor;
+
+				if(_bg == null)
+				{
+					_menu.BackgroundColor = effectiveColor;
+				}
+			}
+		}
+
+		public Aspect BackgroundImageAspect
+		{
+			get
+			{
+				return _bgImageAspect;
+			}
+			set
+			{
+				_bgImageAspect = value;
+				if (_bg != null)
+				{
+					_bg.ApplyAspect(_bgImageAspect);
+				}
+			}
+		}
+
+		public ImageSource BackgroundImageSource
+		{
+			get
+			{
+				return _bgImageSource;
+			}
+			set
+			{
+				_bgImageSource = value;
+				if (_bgImageSource != null)
+				{
+					if (_bg == null)
+					{
+						_bg = new EImage(this);
+					}
+					_menu.BackgroundColor = EColor.Transparent;
+					SetPartContent("elm.swallow.background", _bg);
+					_bg.ApplyAspect(_bgImageAspect);
+					_ = _bg.LoadFromImageSourceAsync(_bgImageSource);
+				}
+				else
+				{
+					EColor effectiveColor = _backgroundColor.IsDefault ? _defaultBackgroundColor : _backgroundColor;
+					_menu.BackgroundColor = effectiveColor;
+					SetPartContent("elm.swallow.background", null);
+				}
 			}
 		}
 
@@ -54,14 +108,14 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				if (_header != null)
 				{
-					UnPack(_header);
+					_box.UnPack(_header);
 					_header.Hide();
 				}
 				_header = value;
 
 				if (_header != null)
 				{
-					PackStart(_header);
+					_box.PackStart(_header);
 					if (!_header.IsVisible)
 					{
 						_header.Show();
@@ -72,21 +126,59 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 		}
 
-		public IList<Group> Menu
+		public void BuildMenu(List<List<Element>> flyoutGroups)
 		{
-			get
+			var groups = new List<Group>();
+			_flyoutMenu.Clear();
+
+			for (int i = 0; i < flyoutGroups.Count; i++)
 			{
-				return _groups;
+				var flyoutGroup = flyoutGroups[i];
+				var items = new List<Item>();
+				for (int j = 0; j < flyoutGroup.Count; j++)
+				{
+					string title = null;
+					ImageSource icon = null;
+					if (flyoutGroup[j] is BaseShellItem shellItem)
+					{
+						title = shellItem.Title;
+
+						if (shellItem.FlyoutIcon is FileImageSource flyoutIcon)
+						{
+							icon = flyoutIcon;
+						}
+					}
+					else if (flyoutGroup[j] is MenuItem menuItem)
+					{
+						title = menuItem.Text;
+						if (menuItem.IconImageSource != null)
+						{
+							icon = menuItem.IconImageSource;
+						}
+					}
+					Item item = new Item(title, icon);
+					items.Add(item);
+
+					_flyoutMenu.Add(item, flyoutGroup[j]);
+				}
+				var group = new Group(items);
+				groups.Add(group);
 			}
-			set
-			{
-				_groups = value;
-				UpdateMenu();
-			}
+			_groups = groups;
+			UpdateMenu();
 		}
 
 		void Initialize(EvasObject parent)
 		{
+			_box = new Native.Box(parent)
+			{
+				AlignmentX = -1,
+				AlignmentY = -1,
+				WeightX = 1,
+				WeightY = 1
+			};
+			SetContent(_box);
+
 			_menu = new GenList(parent)
 			{
 				BackgroundColor = EColor.Transparent,
@@ -95,11 +187,13 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			_menu.ItemSelected += (s, e) =>
 			{
-				MenuItemSelected?.Invoke(this, e);
+				_flyoutMenu.TryGetValue(e.Item.Data as Item, out Element element);
+
+				SelectedItemChanged?.Invoke(this, new SelectedItemChangedEventArgs(element, -1));
 			};
 
 			_menu.Show();
-			PackEnd(_menu);
+			_box.PackEnd(_menu);
 
 			_defaultClass = new GenItemClass("double_label")
 			{
@@ -119,15 +213,14 @@ namespace Xamarin.Forms.Platform.Tizen
 					if (part == "elm.swallow.icon")
 					{
 						var icon = ((Item)obj).Icon;
-
 						if (icon != null)
 						{
-							var image = new ElmSharp.Image(parent)
+							var image = new Native.Image(parent)
 							{
 								MinimumWidth = Forms.ConvertToScaledPixel(24),
 								MinimumHeight = Forms.ConvertToScaledPixel(24)
 							};
-							var result = image.Load(ResourcePath.GetPath(icon));
+							var result = image.LoadFromImageSourceAsync(icon);
 							return image;
 						}
 						else
@@ -181,9 +274,9 @@ namespace Xamarin.Forms.Platform.Tizen
 	{
 		public string Title { get; set; }
 
-		public string Icon { get; set; }
+		public ImageSource Icon { get; set; }
 
-		public Item(string title, string icon = null)
+		public Item(string title, ImageSource icon = null)
 		{
 			Title = title;
 			Icon = icon;

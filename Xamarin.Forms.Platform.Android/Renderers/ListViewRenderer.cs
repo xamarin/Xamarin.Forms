@@ -1,7 +1,11 @@
 using System.ComponentModel;
-using Android.App;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+using AndroidX.SwipeRefreshLayout.Widget;
+#else
 using Android.Support.V4.Widget;
+#endif
 using Android.Views;
 using AListView = Android.Widget.ListView;
 using AView = Android.Views.View;
@@ -60,6 +64,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
+				Controller.ScrollToRequested -= OnScrollToRequested;
+		
 				if (_headerRenderer != null)
 				{
 					Platform.ClearRenderer(_headerRenderer.View);
@@ -80,10 +86,12 @@ namespace Xamarin.Forms.Platform.Android
 				_footerView?.Dispose();
 				_footerView = null;
 
-				// Unhook the adapter from the ListView before disposing of it
 				if (Control != null)
 				{
+					// Unhook the adapter from the ListView before disposing of it
 					Control.Adapter = null;
+
+					Control.SetOnScrollListener(null);
 				}
 
 				if (_adapter != null)
@@ -91,8 +99,6 @@ namespace Xamarin.Forms.Platform.Android
 					_adapter.Dispose();
 					_adapter = null;
 				}
-
-				Controller.ScrollToRequested -= OnScrollToRequested;
 			}
 
 			base.Dispose(disposing);
@@ -109,6 +115,9 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnAttachedToWindow()
 		{
 			base.OnAttachedToWindow();
+
+			if (Forms.IsLollipopOrNewer && Control != null)
+				Control.NestedScrollingEnabled = (Parent.GetParentOfType<NestedScrollView>() != null);
 
 			_isAttached = true;
 			_adapter.IsAttachedToWindow = _isAttached;
@@ -136,14 +145,16 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				((IListViewController)e.OldElement).ScrollToRequested -= OnScrollToRequested;
 
-				if (_adapter != null)
+				if (Control != null)
 				{
 					// Unhook the adapter from the ListView before disposing of it
-					if (Control != null)
-					{
-						Control.Adapter = null;
-					}
+					Control.Adapter = null;
+					
+					Control.SetOnScrollListener(null);
+				}
 
+				if (_adapter != null)
+				{
 					_adapter.Dispose();
 					_adapter = null;
 				}
@@ -156,8 +167,6 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					var ctx = Context;
 					nativeListView = CreateNativeControl();
-					if (Forms.IsLollipopOrNewer)
-						nativeListView.NestedScrollingEnabled = true;
 					_refresh = CreateNativePullToRefresh(ctx);
 					_refresh.SetOnRefreshListener(this);
 					_refresh.AddView(nativeListView, new LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent));
@@ -170,7 +179,8 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				((IListViewController)e.NewElement).ScrollToRequested += OnScrollToRequested;
-
+				Control?.SetOnScrollListener(new ListViewScrollDetector(this));
+				
 				nativeListView.DividerHeight = 0;
 				nativeListView.Focusable = false;
 				nativeListView.DescendantFocusability = DescendantFocusability.AfterDescendants;
@@ -189,6 +199,20 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateHorizontalScrollBarVisibility();
 				UpdateVerticalScrollBarVisibility();
 			}
+		}
+
+		internal void ClickOn(AView viewCell)
+		{
+			if (Control == null)
+			{
+				return;
+			}
+
+			var position = Control.GetPositionForView(viewCell);
+			var id = Control.GetItemIdAtPosition(position);
+
+			viewCell.PerformHapticFeedback(FeedbackConstants.ContextClick);
+			_adapter.OnItemClick(Control, viewCell, position, id);
 		}
 
 		internal void LongClickOn(AView viewCell)
@@ -391,8 +415,8 @@ namespace Xamarin.Forms.Platform.Android
 					_refresh.Refreshing = false;
 					_refresh.Post(() =>
 					{
-					    if(_refresh.IsDisposed())
-						    return;
+						if(_refresh.IsDisposed())
+							return;
 						
 						_refresh.Refreshing = true;
 					});
@@ -574,6 +598,133 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				base.OnNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
 				_nestedScrollCalled = true;
+			}
+		}
+		class ListViewScrollDetector : Java.Lang.Object, AbsListView.IOnScrollListener
+		{
+			class TrackElement
+			{
+				public TrackElement(int position)
+				{
+					_position = position;
+				}
+
+				readonly int _position;
+
+				AView _trackedView;
+				int _trackedViewPrevPosition;
+				int _trackedViewPrevTop;
+
+				public void SyncState(AbsListView view)
+				{
+					if (view.ChildCount > 0)
+					{
+						_trackedView = GetChild(view);
+						_trackedViewPrevTop = GetY();
+						_trackedViewPrevPosition = view.GetPositionForView(_trackedView);
+					}
+				}
+
+				public void Reset()
+				{
+					_trackedView = null;
+				}
+
+				public bool IsSafeToTrack(AbsListView view)
+				{
+					return _trackedView != null && _trackedView.Parent == view && view.GetPositionForView(_trackedView) == _trackedViewPrevPosition;
+				}
+
+				public int GetDeltaY()
+				{
+					return GetY() - _trackedViewPrevTop;
+				}
+
+				AView GetChild(AbsListView view)
+				{
+					switch (_position)
+					{
+						case 0:
+							return view.GetChildAt(0);
+						case 1:
+						case 2:
+							return view.GetChildAt(view.ChildCount / 2);
+						case 3:
+							return view.GetChildAt(view.ChildCount - 1);
+						default:
+							return null;
+					}
+				}
+				int GetY()
+				{
+					return _position <= 1 ? _trackedView.Bottom : _trackedView.Top;
+				}
+			}
+
+			readonly ListView _element;
+			readonly float _density;
+			int _contentOffset;
+
+			public ListViewScrollDetector(ListViewRenderer renderer)
+			{
+				_element = renderer.Element;
+				_density = renderer.Context.Resources.DisplayMetrics.Density;
+			}
+
+			void SendScrollEvent(double y)
+			{
+				var element = _element;
+				double offset = Math.Abs(y) / _density;
+				var args = new ScrolledEventArgs(0, offset);
+				element?.SendScrolled(args);
+			}
+
+
+			readonly TrackElement[] _trackElements =
+			{
+				new TrackElement(0), // Top view, bottom Y
+				new TrackElement(1), // Mid view, bottom Y
+				new TrackElement(2), // Mid view, top Y
+				new TrackElement(3) // Bottom view, top Y
+			};
+
+
+			public void OnScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount)
+			{
+				var wasTracked = false;
+				foreach (TrackElement t in _trackElements)
+				{
+					if (!wasTracked)
+					{
+						if (t.IsSafeToTrack(view))
+						{
+							wasTracked = true;
+							_contentOffset += t.GetDeltaY();
+							SendScrollEvent(_contentOffset);
+							t.SyncState(view);
+						}
+						else
+						{
+							t.Reset();
+							t.SyncState(view);
+						}
+					}
+					else
+					{
+						t.SyncState(view);
+					}
+				}
+			}
+
+			public void OnScrollStateChanged(AbsListView view, ScrollState scrollState)
+			{
+				if (scrollState == ScrollState.TouchScroll || scrollState == ScrollState.Fling)
+				{
+					foreach (TrackElement t in _trackElements)
+					{
+						t.SyncState(view);
+					}
+				}
 			}
 		}
 	}

@@ -8,9 +8,9 @@ namespace Xamarin.Forms.Platform.iOS
 	public abstract class ItemsViewCell : UICollectionViewCell
 	{
 		[Export("initWithFrame:")]
+		[Internals.Preserve(Conditional = true)]
 		protected ItemsViewCell(CGRect frame) : base(frame)
 		{
-			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewCell));
 			ContentView.BackgroundColor = UIColor.Clear;
 
 			var selectedBackgroundView = new UIView

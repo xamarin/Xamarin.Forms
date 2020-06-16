@@ -23,10 +23,16 @@ namespace Xamarin.Forms.Controls
 			InitializeComponent();
 
 			Map = MakeMap();
-			Map.Pins.ForEach(pin => pin.Clicked += PinClicked);
+			Map.Pins.ForEach(pin =>
+			{
+				pin.MarkerClicked += MarkerClicked;
+				pin.InfoWindowClicked += InfoWindowClicked;
+			});
 			Map.MapClicked += MapClicked;
 
 			((Grid)Content).Children.Add(Map, 0, 1);
+
+			_btnToggleMoveToLastRegionOnLayoutChange.Text = Map.MoveToLastRegionOnLayoutChangeProperty.DefaultValue.ToString();
 		}
 
 		public static Map MakeMap()
@@ -61,9 +67,15 @@ namespace Xamarin.Forms.Controls
 			};
 		}
 
-		void PinClicked(object sender, EventArgs e)
+		void MarkerClicked(object sender, PinClickedEventArgs e)
 		{
-			LastPinClickLabel.Text = $"Last Pin Clicked: {((Pin)sender).Label}";
+			LastMarkerClickLabel.Text = $"Last Marker Clicked: {((Pin)sender).Label}";
+		}
+
+		void InfoWindowClicked(object sender, PinClickedEventArgs e)
+		{
+			LastInfoWindowClickLabel.Text = $"Last Info Window Clicked: {((Pin)sender).Label}";
+			e.HideInfoWindow = true;
 		}
 
 		async void SearchForAddress(object sender, EventArgs e)
@@ -154,6 +166,12 @@ namespace Xamarin.Forms.Controls
 		void RemovePinClicked(object sender, EventArgs e)
 		{
 			Map.Pins.RemoveAt(0);
+		}
+
+		void ToggleMoveToLastRegionOnLayoutChange(object sender, EventArgs e)
+		{
+			Map.MoveToLastRegionOnLayoutChange = !Map.MoveToLastRegionOnLayoutChange;
+			((Button)sender).Text = Map.MoveToLastRegionOnLayoutChange.ToString();
 		}
 	}
 }

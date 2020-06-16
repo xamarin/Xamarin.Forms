@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using CoreGraphics;
+using Foundation;
 using MaterialComponents;
 using UIKit;
 using Xamarin.Forms.Platform.iOS;
@@ -89,7 +90,14 @@ namespace Xamarin.Forms.Material.iOS
 			};
 		}
 
-		protected virtual void ApplyTheme() => ContainedButtonThemer.ApplyScheme(_buttonScheme, Control);
+		protected virtual void ApplyTheme()
+		{
+			ContainedButtonThemer.ApplyScheme(_buttonScheme, Control);
+
+			// Colors have to be re-applied to Character spacing
+			_buttonLayoutManager?.UpdateText();
+		}
+
 		protected override MButton CreateNativeControl() => new MButton();
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -160,6 +168,9 @@ namespace Xamarin.Forms.Material.iOS
 					colorScheme.PrimaryColor = uiColor;
 					colorScheme.OnSurfaceColor = uiColor;
 				}
+
+				if (Control != null)
+					ApplyTheme();
 			}
 		}
 
@@ -235,6 +246,7 @@ namespace Xamarin.Forms.Material.iOS
 				else
 					colorScheme.OnPrimaryColor = textColor.ToUIColor();
 			}
+			
 		}
 
 		// IImageVisualElementRenderer

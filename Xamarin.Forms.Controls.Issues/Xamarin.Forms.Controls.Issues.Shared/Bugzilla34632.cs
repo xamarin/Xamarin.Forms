@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Controls.Issues
 							IsPresented = false;
 						}
 					})
-				} 
+				}	
 			};
 
 			Detail = new NavigationPage (new ModalRotationIssue ());
@@ -59,12 +59,11 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-		#if UITEST
+		#if UITEST && __IOS__
 		[Test]
 		public void Bugzilla34632Test ()
 		{
-			var app = RunningApp as iOSApp;
-			if (app != null && app.Device.IsTablet) {
+			if (RunningApp.IsTablet()) {
 				RunningApp.SetOrientationPortrait ();
 				RunningApp.Tap (q => q.Marked ("btnModal"));
 				RunningApp.SetOrientationLandscape ();
@@ -72,7 +71,15 @@ namespace Xamarin.Forms.Controls.Issues
 				RunningApp.Tap (q => q.Marked ("btnModal"));
 				RunningApp.SetOrientationPortrait ();
 				RunningApp.Tap (q => q.Marked ("btnDismissModal"));
+				RunningApp.Tap("Main Page");
 				RunningApp.Tap (q => q.Marked ("btnMaster"));
+				RunningApp.WaitForNoElement("btnMaster");
+			}
+			else
+			{
+				// Wait for the test to finish loading before exiting otherwise
+				// the next UI test might start running while this is still loading
+				RunningApp.WaitForElement(q => q.Marked("btnModal"));
 			}
 		}
 

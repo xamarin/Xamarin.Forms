@@ -9,6 +9,7 @@ using Uri = System.Uri;
 
 namespace Xamarin.Forms.Platform.iOS
 {
+	[Obsolete("WebViewRenderer is obsolete as of 4.4.0. Please use the WkWebViewRenderer instead.")]
 	public class WebViewRenderer : UIWebView, IVisualElementRenderer, IWebViewDelegate, IEffectControlProvider, ITabStop
 	{
 		EventTracker _events;
@@ -18,6 +19,8 @@ namespace Xamarin.Forms.Platform.iOS
 #pragma warning disable 0414
 		VisualElementTracker _tracker;
 #pragma warning restore 0414
+
+		[Internals.Preserve(Conditional = true)]
 		public WebViewRenderer() : base(RectangleF.Empty)
 		{
 		}

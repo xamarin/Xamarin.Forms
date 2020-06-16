@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
@@ -89,6 +90,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			});
 		}
 
+		public static DataTemplate CarouselXamlTemplate()
+		{
+			return new DataTemplate(() =>
+			{
+				return new CarouselViewGalleries.ExampleTemplateCarousel();
+			});
+		}
+
 		public static DataTemplate CarouselTemplate()
 		{
 			return new DataTemplate(() =>
@@ -112,15 +121,19 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 				image.SetBinding(Image.SourceProperty, new Binding("Image"));
 
-				var caption = new Label
+				var caption = new Button
 				{
 					BackgroundColor = Color.Gray,
 					HorizontalOptions = LayoutOptions.Fill,
-					HorizontalTextAlignment = TextAlignment.Center,
 					Margin = new Thickness(5)
 				};
 
-				caption.SetBinding(Label.TextProperty, new Binding("Caption"));
+				caption.SetBinding(Button.TextProperty, new Binding("Caption"));
+				caption.SetBinding(Button.AutomationIdProperty, new Binding("Caption"));
+				caption.Clicked += (sender, e) =>
+				{
+					App.Current.MainPage.DisplayAlert("Button works", (sender as Button).Text, "Ok");
+				};
 
 				grid.Children.Add(image);
 				grid.Children.Add(caption);
@@ -130,10 +143,33 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				var frame = new Frame
 				{
 					Padding = new Thickness(5),
+					BackgroundColor = Color.Transparent,
 					Content = grid
 				};
 
 				return frame;
+			});
+		}
+
+		public static DataTemplate IndicatorTemplate()
+		{
+			return new DataTemplate(() =>
+			{
+				var image = new Image
+				{
+					HorizontalOptions = LayoutOptions.Center,
+					VerticalOptions = LayoutOptions.Center,
+					Aspect = Aspect.AspectFill,
+					Source = new FontImageSource
+					{
+						FontFamily = DefaultFontFamily(),
+						Glyph = "\uf30c",
+					},
+					HeightRequest = 10,
+					WidthRequest = 10
+				};
+
+				return image;
 			});
 		}
 
@@ -302,6 +338,29 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			});
 		}
 
+		public static DataTemplate RandomSizeTemplate()
+		{
+			var indexHeightConverter = new IndexRequestRandomConverter(50, 150);
+			var indexWidthConverter = new IndexRequestRandomConverter(50, 150);
+			var colorConverter = new IndexColorConverter();
+
+			return new DataTemplate(() =>
+			{
+				var layout = new Frame();
+
+				layout.SetBinding(VisualElement.HeightRequestProperty, new Binding("Index", converter: indexHeightConverter));
+				layout.SetBinding(VisualElement.WidthRequestProperty, new Binding("Index", converter: indexWidthConverter));
+				layout.SetBinding(VisualElement.BackgroundColorProperty, new Binding("Index", converter: colorConverter));
+
+				var label = new Label { FontSize = 30 };
+				label.SetBinding(Label.TextProperty, new Binding("Index"));
+
+				layout.Content = label;
+
+				return layout;
+			});
+		}
+
 		public static DataTemplate DynamicTextTemplate()
 		{
 			return new DataTemplate(() =>
@@ -433,6 +492,26 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			throw new NotImplementedException();
 		}
 
+		static string DefaultFontFamily()
+		{
+			var fontFamily = "";
+			switch (Device.RuntimePlatform)
+			{
+				case Device.iOS:
+					fontFamily = "Ionicons";
+					break;
+				case Device.UWP:
+					fontFamily = "Assets/Fonts/ionicons.ttf#ionicons";
+					break;
+				case Device.Android:
+				default:
+					fontFamily = "fonts/ionicons.ttf#";
+					break;
+			}
+
+			return fontFamily;
+		}
+
 		class IndexRequestConverter : IValueConverter
 		{
 			readonly int _cutoff;
@@ -451,6 +530,34 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				var index = (int)value;
 
 				return index < _cutoff ? _lowValue : (object)_highValue;
+			}
+
+			public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+		}
+
+		class IndexRequestRandomConverter : IValueConverter
+		{
+			readonly int _lowValue;
+			readonly int _highValue;
+			readonly Random _random;
+			readonly Dictionary<int, int> _dictionary = new Dictionary<int, int>();
+
+			public IndexRequestRandomConverter(int lowValue, int highValue)
+			{
+				_lowValue = lowValue;
+				_highValue = highValue;
+				_random = new Random(DateTime.UtcNow.Millisecond);
+			}
+
+			public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+			{
+				var index = (int)value;
+				if (!_dictionary.ContainsKey(index))
+				{
+					_dictionary[index] = _random.Next(_lowValue, _highValue);
+				}
+
+				return _dictionary[index];
 			}
 
 			public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();

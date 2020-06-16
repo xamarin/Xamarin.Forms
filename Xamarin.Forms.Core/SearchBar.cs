@@ -7,26 +7,19 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_SearchBarRenderer))]
-	public class SearchBar : InputView, IFontElement, IPlaceholderElement, ITextElement, ITextAlignmentElement, ISearchBarController, IElementConfiguration<SearchBar>
+	public class SearchBar : InputView, IFontElement, ITextAlignmentElement, ISearchBarController, IElementConfiguration<SearchBar>
 	{
 		public static readonly BindableProperty SearchCommandProperty = BindableProperty.Create("SearchCommand", typeof(ICommand), typeof(SearchBar), null, propertyChanged: OnCommandChanged);
 
 		public static readonly BindableProperty SearchCommandParameterProperty = BindableProperty.Create("SearchCommandParameter", typeof(object), typeof(SearchBar), null);
 
-		public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(SearchBar), default(string), BindingMode.TwoWay,
-			propertyChanged: (bindable, oldValue, newValue) =>
-			{
-				var searchBar = (SearchBar)bindable;
-				EventHandler<TextChangedEventArgs> eh = searchBar.TextChanged;
-				if (eh != null)
-					eh(searchBar, new TextChangedEventArgs((string)oldValue, (string)newValue));
-			});
+		public new static readonly BindableProperty TextProperty = InputView.TextProperty;
 
 		public static readonly BindableProperty CancelButtonColorProperty = BindableProperty.Create("CancelButtonColor", typeof(Color), typeof(SearchBar), default(Color));
 
-		public static readonly BindableProperty PlaceholderProperty = PlaceholderElement.PlaceholderProperty;
+		public new static readonly BindableProperty PlaceholderProperty = InputView.PlaceholderProperty;
 
-		public static readonly BindableProperty PlaceholderColorProperty = PlaceholderElement.PlaceholderColorProperty;
+		public new static readonly BindableProperty PlaceholderColorProperty = InputView.PlaceholderColorProperty;
 
 		public static readonly BindableProperty FontFamilyProperty = FontElement.FontFamilyProperty;
 
@@ -36,7 +29,11 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty HorizontalTextAlignmentProperty = TextAlignmentElement.HorizontalTextAlignmentProperty;
 
-		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
+		public static readonly BindableProperty VerticalTextAlignmentProperty = TextAlignmentElement.VerticalTextAlignmentProperty;
+
+		public new static readonly BindableProperty TextColorProperty = InputView.TextColorProperty;
+
+		public new static readonly BindableProperty CharacterSpacingProperty = InputView.CharacterSpacingProperty;
 
 		readonly Lazy<PlatformConfigurationRegistry<SearchBar>> _platformConfigurationRegistry;
 
@@ -52,14 +49,10 @@ namespace Xamarin.Forms
 			set { SetValue(TextAlignmentElement.HorizontalTextAlignmentProperty, value); }
 		}
 
-		public string Placeholder {
-			get => (string)GetValue(PlaceholderElement.PlaceholderProperty);
-			set => SetValue(PlaceholderElement.PlaceholderProperty, value);
-		}
-
-		public Color PlaceholderColor {
-			get => (Color)GetValue(PlaceholderElement.PlaceholderColorProperty);
-			set => SetValue(PlaceholderElement.PlaceholderColorProperty, value);
+		public TextAlignment VerticalTextAlignment
+		{
+			get { return (TextAlignment)GetValue(TextAlignmentElement.VerticalTextAlignmentProperty); }
+			set { SetValue(TextAlignmentElement.VerticalTextAlignmentProperty, value); }
 		}
 
 		public ICommand SearchCommand
@@ -72,18 +65,6 @@ namespace Xamarin.Forms
 		{
 			get { return GetValue(SearchCommandParameterProperty); }
 			set { SetValue(SearchCommandParameterProperty, value); }
-		}
-
-		public string Text
-		{
-			get { return (string)GetValue(TextProperty); }
-			set { SetValue(TextProperty, value); }
-		}
-
-		public Color TextColor
-		{
-			get { return (Color)GetValue(TextElement.TextColorProperty); }
-			set { SetValue(TextElement.TextColorProperty, value); }
 		}
 
 		bool IsEnabledCore
@@ -130,8 +111,6 @@ namespace Xamarin.Forms
 		}
 
 		public event EventHandler SearchButtonPressed;
-
-		public event EventHandler<TextChangedEventArgs> TextChanged;
 
 		public SearchBar()
 		{
@@ -182,10 +161,6 @@ namespace Xamarin.Forms
 		public IPlatformElementConfiguration<T, SearchBar> On<T>() where T : IConfigPlatform
 		{
 			return _platformConfigurationRegistry.Value.On<T>();
-		}
-
-		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
-		{
 		}
 
 		void ITextAlignmentElement.OnHorizontalTextAlignmentPropertyChanged(TextAlignment oldValue, TextAlignment newValue)

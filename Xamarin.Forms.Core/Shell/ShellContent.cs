@@ -9,6 +9,7 @@ using System.Linq;
 #endif
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
@@ -45,6 +46,9 @@ namespace Xamarin.Forms
 
 		Page IShellContentController.Page => ContentCache;
 
+		EventHandler _isPageVisibleChanged;
+		event EventHandler IShellContentController.IsPageVisibleChanged { add => _isPageVisibleChanged += value; remove => _isPageVisibleChanged -= value; }
+
 		Page IShellContentController.GetOrCreateContent()
 		{
 			var template = ContentTemplate;
@@ -61,9 +65,6 @@ namespace Xamarin.Forms
 				result = ContentCache ?? (Page)template.CreateContent(content, this);
 				ContentCache = result;
 			}
-
-			if (result != null && result.Parent != this)
-				OnChildAdded(result);
 
 			if (result == null)
 				throw new InvalidOperationException($"No Content found for {nameof(ShellContent)}, Title:{Title}, Route {Route}");
@@ -84,8 +85,78 @@ namespace Xamarin.Forms
 
 		public ShellContent() => ((INotifyCollectionChanged)MenuItems).CollectionChanged += MenuItemsCollectionChanged;
 
-
+		internal bool IsVisibleContent => Parent is ShellSection shellSection && shellSection.IsVisibleSection && shellSection.CurrentItem == this;
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => _logicalChildrenReadOnly ?? (_logicalChildrenReadOnly = new ReadOnlyCollection<Element>(_logicalChildren));
+
+		internal override void SendDisappearing()
+		{
+			base.SendDisappearing();
+			((ContentCache ?? Content) as Page)?.SendDisappearing();
+		}
+
+		internal override void SendAppearing()
+		{
+			// only fire Appearing when the Content Page exists on the ShellContent
+			var content = ContentCache ?? Content;
+			if (content == null)
+				return;
+
+			base.SendAppearing();
+
+			SendPageAppearing((ContentCache ?? Content) as Page);
+		}
+
+		void SendPageAppearing(Page page)
+		{
+			if (page == null)
+				return;
+
+			if (page.Parent == null)
+			{
+				page.ParentSet += OnPresentedPageParentSet;
+				void OnPresentedPageParentSet(object sender, EventArgs e)
+				{
+					page.SendAppearing();
+					(sender as Page).ParentSet -= OnPresentedPageParentSet;
+				}
+			}
+			else
+			{
+				page.SendAppearing();
+			}
+		}
+
+		protected override void OnChildAdded(Element child)
+		{
+			base.OnChildAdded(child);
+			if (child is Page page)
+			{
+				if (IsVisibleContent && page.IsVisible)
+				{
+					SendAppearing();
+					SendPageAppearing(page);
+				}
+
+				page.PropertyChanged += OnPagePropertyChanged;
+				_isPageVisibleChanged?.Invoke(this, EventArgs.Empty);
+			}
+		}
+
+		protected override void OnChildRemoved(Element child)
+		{
+			base.OnChildRemoved(child);
+			if (child is Page page)
+			{
+				page.PropertyChanged -= OnPagePropertyChanged;
+			}
+		}
+		
+
+		void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == Page.IsVisibleProperty.PropertyName)
+				_isPageVisibleChanged?.Invoke(this, EventArgs.Empty);
+		}
 
 		Page ContentCache
 		{
@@ -93,11 +164,16 @@ namespace Xamarin.Forms
 			set
 			{
 				_contentCache = value;
+				if (value != null && value.Parent != this)
+				{
+					OnChildAdded(value);
+				}
+
 				if (Parent != null)
 					((ShellSection)Parent).UpdateDisplayedPage();
 			}
 		}
-
+		
 		public static implicit operator ShellContent(TemplatedPage page)
 		{
 			var shellContent = new ShellContent();
@@ -133,8 +209,6 @@ namespace Xamarin.Forms
 				{
 					shellContent._logicalChildren.Add((Element)newValue);
 					shellContent.ContentCache = newElement;
-					// parent new item
-					shellContent.OnChildAdded(newElement);
 				}
 				else if(newValue != null)
 				{
@@ -143,7 +217,7 @@ namespace Xamarin.Forms
 			}
 
 			if (shellContent.Parent?.Parent is ShellItem shellItem)
-				shellItem?.SendStructureChanged();
+				shellItem.SendStructureChanged();
 		}
 
 		void MenuItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

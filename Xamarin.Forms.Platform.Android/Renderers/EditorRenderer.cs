@@ -125,13 +125,14 @@ namespace Xamarin.Forms.Platform.Android
 
 			EditText.SetSingleLine(false);
 			EditText.Gravity = GravityFlags.Top;
-			if ((int)Build.VERSION.SdkInt > 16)
+			if ((int)Forms.SdkInt > 16)
 				EditText.TextAlignment = global::Android.Views.TextAlignment.ViewStart;
 			EditText.SetHorizontallyScrolling(false);
 
 			UpdateText();
 			UpdateInputType();
 			UpdateTextColor();
+			UpdateCharacterSpacing();
 			UpdateFont();
 			UpdateMaxLength();
 			UpdatePlaceholderColor();
@@ -151,6 +152,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateInputType();
 			else if (e.PropertyName == Editor.TextColorProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == Editor.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
 			else if (e.PropertyName == Editor.FontAttributesProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Editor.FontFamilyProperty.PropertyName)
@@ -236,6 +239,14 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		void UpdateCharacterSpacing()
+		{
+			if (Forms.IsLollipopOrNewer)
+			{
+				EditText.LetterSpacing = Element.CharacterSpacing.ToEm();
+			}
+		}
+
 		void UpdateText()
 		{
 			string newText = Element.Text ?? "";
@@ -243,6 +254,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (EditText.Text == newText)
 				return;
 
+			newText = TrimToMaxLength(newText);
 			EditText.Text = newText;
 			EditText.SetSelection(newText.Length);
 		}
@@ -280,12 +292,19 @@ namespace Xamarin.Forms.Platform.Android
 
 			currentFilters.Add(new InputFilterLengthFilter(Element.MaxLength));
 
-			EditText?.SetFilters(currentFilters.ToArray());
+			if (EditText == null)
+				return;
 
-			var currentControlText = EditText?.Text;
+			EditText.SetFilters(currentFilters.ToArray());
+			EditText.Text = TrimToMaxLength(EditText.Text);
+		}
 
-			if (currentControlText.Length > Element.MaxLength)
-				EditText.Text = currentControlText.Substring(0, Element.MaxLength);
+		string TrimToMaxLength(string currentText)
+		{
+			if (currentText == null || currentText.Length <= Element.MaxLength)
+				return currentText;
+
+			return currentText.Substring(0, Element.MaxLength);
 		}
 
 		void UpdateIsReadOnly()
