@@ -15,26 +15,37 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Click add until you have more than one item, then scroll to the last item and remove the last item. Without exception, the test has passed."/>
+        <Grid
+            Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0"
-                    Command="{Binding AddCommand}"
-                    Text="Add" />
-            <Button Grid.Column="1"
-                    Command="{Binding RemoveLastCommand}"
-                    Text="RemoveLast" />
+            <Button
+                Grid.Column="0"
+                Command="{Binding AddCommand}"
+                Text="Add" />
+            <Button
+                Grid.Column="1"
+                Command="{Binding RemoveLastCommand}"
+                Text="RemoveLast" />
         </Grid>
-        <CarouselView Grid.Row="1"
-                      ItemsSource="{Binding Items}">
+        <CarouselView
+            Grid.Row="2"
+            ItemsSource="{Binding Items}">
             <CarouselView.ItemTemplate>
                 <DataTemplate>
-                    <Label Padding="50"
-                           Text="{Binding .}" />
+                    <Label
+                        Padding="50"
+                        Text="{Binding .}" />
                 </DataTemplate>
             </CarouselView.ItemTemplate>
         </CarouselView>
