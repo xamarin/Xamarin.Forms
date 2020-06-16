@@ -416,6 +416,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 				CenterVerticallyIfNeeded(collectionView);
 		}
+
 		public (UICollectionViewCell cell, int correctedIndex) GetCellAndCorrectIndex(UICollectionView collectionView, NSIndexPath indexPath, string reuseId)
 		{
 			var cell = collectionView.DequeueReusableCell(reuseId, indexPath) as UICollectionViewCell;
