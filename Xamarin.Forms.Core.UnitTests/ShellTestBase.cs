@@ -272,10 +272,17 @@ namespace Xamarin.Forms.Core.UnitTests
 				OnNavigatingCount++;
 			}
 
+			public Func<bool> OnBackButtonPressedFunc;
 			protected override bool OnBackButtonPressed()
 			{
+				var result = OnBackButtonPressedFunc?.Invoke() ?? false;
+
 				OnBackButtonPressedCount++;
-				return base.OnBackButtonPressed();
+
+				if(!result)
+					result = base.OnBackButtonPressed();
+
+				return result;
 			}
 
 			public void Reset()

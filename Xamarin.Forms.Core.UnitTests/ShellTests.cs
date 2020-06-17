@@ -590,7 +590,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assume.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//one/tabone/content"));
 		}
 
-
 		[Test]
 		public async Task OnBackbuttonPressedPageReturnsTrue()
 		{			
@@ -615,6 +614,19 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			shell.SendBackButtonPressed();
 			Assert.AreEqual(1, shell.Navigation.NavigationStack.Count);
+		}
+
+		[Test]
+		public async Task OnBackbuttonPressedShellReturnsTrue()
+		{
+			TestShell shell = new TestShell();
+
+			Routing.RegisterRoute("OnBackbuttonPressedShellReturnsTrue", typeof(ShellTestPage));
+			shell.Items.Add(CreateShellItem());
+			await shell.GoToAsync($"OnBackbuttonPressedShellReturnsTrue");
+			shell.OnBackButtonPressedFunc = () => true;
+			shell.SendBackButtonPressed();
+			Assert.AreEqual(2, shell.Navigation.NavigationStack.Count);
 		}
 
 		[Test]
