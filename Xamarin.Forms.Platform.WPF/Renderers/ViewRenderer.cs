@@ -245,9 +245,13 @@ namespace Xamarin.Forms.Platform.WPF
 			UpdateTabStop();
 			UpdateTabIndex();
 			UpdateAutomationId();
-			UpdateAutomationLabeledBy();
-			UpdateAutomationName();
-			UpdateAutomationHelpText();
+			var isInAccessibleTree = AutomationProperties.GetIsInAccessibleTree(Element);
+			if (!(isInAccessibleTree.HasValue && !isInAccessibleTree.Value))
+			{
+				UpdateAutomationLabeledBy();
+				UpdateAutomationName();
+				UpdateAutomationHelpText();
+			}
 		}
 
 		internal virtual void OnModelFocusChangeRequested(object sender, VisualElement.FocusRequestArgs args)
