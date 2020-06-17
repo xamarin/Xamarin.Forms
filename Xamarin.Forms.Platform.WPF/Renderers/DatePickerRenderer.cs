@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using WDatePicker = System.Windows.Controls.DatePicker;
 
 namespace Xamarin.Forms.Platform.WPF
@@ -27,6 +27,9 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateMinimumDate();
 				UpdateMaximumDate();
 				UpdateTextColor();
+				UpdateFontSize();
+				UpdateFontFamily();
+				UpdateFontAttributes();
 			}
 
 			base.OnElementChanged(e);
@@ -50,6 +53,12 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateMinimumDate();
 			else if (e.PropertyName == DatePicker.TextColorProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == DatePicker.FontSizeProperty.PropertyName)
+				UpdateFontSize();
+			else if (e.PropertyName == DatePicker.FontFamilyProperty.PropertyName)
+				UpdateFontFamily();
+			else if (e.PropertyName == DatePicker.FontAttributesProperty.PropertyName)
+				UpdateFontAttributes();
 		}
 
 		void UpdateDate()
@@ -70,6 +79,24 @@ namespace Xamarin.Forms.Platform.WPF
 		void UpdateTextColor()
 		{
 			Control.UpdateDependencyColor(WDatePicker.ForegroundProperty, Element.TextColor);
+		}
+
+		void UpdateFontFamily()
+		{
+			if (!string.IsNullOrEmpty(Element.FontFamily))
+				Control.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Element.FontFamily);
+			else
+				Control.FontFamily = (FontFamily)System.Windows.Application.Current.Resources["FontFamilyNormal"];
+		}
+
+		void UpdateFontSize()
+		{
+			Control.FontSize = Element.FontSize;
+		}
+
+		void UpdateFontAttributes()
+		{
+			Control.ApplyFontAttributes(Element.FontAttributes);
 		}
 
 		void OnNativeSelectedDateChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
