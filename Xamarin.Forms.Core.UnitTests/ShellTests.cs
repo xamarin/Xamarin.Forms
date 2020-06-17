@@ -592,13 +592,29 @@ namespace Xamarin.Forms.Core.UnitTests
 
 
 		[Test]
-		public async Task OnBackbuttonPressedFiresOnPage()
-		{
-			Shell shell = new Shell();
+		public async Task OnBackbuttonPressedPageReturnsTrue()
+		{			
+			TestShell shell = new TestShell();
+
 			Routing.RegisterRoute("OnBackbuttonPressedFiresOnPage", typeof(ShellTestPage));
 			shell.Items.Add(CreateShellItem());
 			await shell.GoToAsync($"OnBackbuttonPressedFiresOnPage?CancelNavigationOnBackButtonPressed=true");
-			Assert.AreEqual(false, shell.SendBackButtonPressed());
+
+			shell.SendBackButtonPressed();
+			Assert.AreEqual(2, shell.Navigation.NavigationStack.Count);
+		}
+
+		[Test]
+		public async Task OnBackbuttonPressedPageReturnsFalse()
+		{
+			TestShell shell = new TestShell();
+
+			Routing.RegisterRoute("OnBackbuttonPressedFiresOnPage", typeof(ShellTestPage));
+			shell.Items.Add(CreateShellItem());
+			await shell.GoToAsync($"OnBackbuttonPressedFiresOnPage?CancelNavigationOnBackButtonPressed=false");
+
+			shell.SendBackButtonPressed();
+			Assert.AreEqual(1, shell.Navigation.NavigationStack.Count);
 		}
 
 		[Test]
