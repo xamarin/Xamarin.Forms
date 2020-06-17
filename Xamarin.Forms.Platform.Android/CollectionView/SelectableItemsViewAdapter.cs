@@ -1,7 +1,12 @@
 using System;
 using System.Collections.Generic;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using Object = Java.Lang.Object;
 
 namespace Xamarin.Forms.Platform.Android
@@ -12,7 +17,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		List<SelectableViewHolder> _currentViewHolders = new List<SelectableViewHolder>();
 
-		internal SelectableItemsViewAdapter(TItemsView selectableItemsView,
+		protected internal SelectableItemsViewAdapter(TItemsView selectableItemsView,
 			Func<View, Context, ItemContentView> createView = null) : base(selectableItemsView, createView)
 		{
 		}

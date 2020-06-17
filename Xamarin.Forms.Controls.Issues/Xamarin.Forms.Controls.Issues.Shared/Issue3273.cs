@@ -11,10 +11,11 @@ using Xamarin.Forms.Core.UITests;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
 	[Category(UITestCategories.ListView)]
 #endif
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Github, 3273, "Drag and drop reordering not firing CollectionChanged", PlatformAffected.UWP)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 3273, "Drag and drop reordering not firing CollectionChanged", PlatformAffected.UWP)]
 	public class Issue3273 : TestContentPage
 	{
 		[Preserve(AllMembers = true)]
@@ -22,7 +23,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 		}
 
-		protected override void Init ()
+		protected override void Init()
 		{
 			var statusLabel = new Label();
 			var actionLabel = new Label();
@@ -39,7 +40,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Items.CollectionChanged += (_, e) =>
 			{
 				statusLabel.Text = "Success";
-				var log = $"<{DateTime.Now.ToLongTimeString()}> {e.Action} action fired.";
+				var log = $"<{DateTime.Now.ToString("T")}> {e.Action} action fired.";
 				actionLabel.Text += $"{log}{Environment.NewLine}";
 				System.Diagnostics.Debug.WriteLine(log);
 			};

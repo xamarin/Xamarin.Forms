@@ -8,8 +8,9 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		readonly CarouselView _carouselView;
 		readonly ItemsLayout _itemsLayout;
+		CGPoint? _pendingOffset;
 
-		public CarouselViewLayout(ItemsLayout itemsLayout, ItemSizingStrategy itemSizingStrategy, CarouselView carouselView) : base(itemsLayout, itemSizingStrategy)
+		public CarouselViewLayout(ItemsLayout itemsLayout, CarouselView carouselView) : base(itemsLayout)
 		{
 			_carouselView = carouselView;
 			_itemsLayout = itemsLayout;
@@ -23,10 +24,8 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ConstrainTo(CGSize size)
 		{
 			//TODO: Should we scale the items 
-			var aspectRatio = size.Width / size.Height;
-			var numberOfVisibleItems = _carouselView.NumberOfSideItems * 2 + 1;
-			var width = (size.Width - _carouselView.PeekAreaInsets.Left - _carouselView.PeekAreaInsets.Right) / numberOfVisibleItems;
-			var height = (size.Height - _carouselView.PeekAreaInsets.Top - _carouselView.PeekAreaInsets.Bottom) / numberOfVisibleItems;
+			var width = size.Width - _carouselView.PeekAreaInsets.Left - _carouselView.PeekAreaInsets.Right;
+			var height = size.Height - _carouselView.PeekAreaInsets.Top - _carouselView.PeekAreaInsets.Bottom;
 
 			if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
 			{
@@ -38,7 +37,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		internal void UpdateConstraints(CGSize size)
+		internal override void UpdateConstraints(CGSize size)
 		{
 			ConstrainTo(size);
 			UpdateCellConstraints();
@@ -60,21 +59,44 @@ namespace Xamarin.Forms.Platform.iOS
 			var top = insets.Top + (float)_carouselView.PeekAreaInsets.Top;
 			var bottom = insets.Bottom + (float)_carouselView.PeekAreaInsets.Bottom;
 
-			// We give some insets so the user can scroll to the first and last item
-			if (_carouselView.NumberOfSideItems > 0)
+			return new UIEdgeInsets(top, left, bottom, right);
+		}
+
+		public override void PrepareForCollectionViewUpdates(UICollectionViewUpdateItem[] updateItems)
+		{
+			base.PrepareForCollectionViewUpdates(updateItems);
+
+			// Determine whether the change is a removal 
+			if (updateItems.Length == 0 || updateItems[0].UpdateAction != UICollectionUpdateAction.Delete)
 			{
-				if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
-				{
-					left += ItemSize.Width;
-					right += ItemSize.Width;
-
-					return new UIEdgeInsets(insets.Top, left, insets.Bottom, right);
-				}
-
-				return new UIEdgeInsets(ItemSize.Height, insets.Left, ItemSize.Height, insets.Right);
+				return;
 			}
 
-			return new UIEdgeInsets(top, left, bottom, right);
+			// Determine whether the removed item is before the current position
+			if (updateItems[0].IndexPathBeforeUpdate.Item >= _carouselView.Position)
+			{
+				return;
+			}
+
+			// If an earlier item is being removed, we'll need to adjust the content offset to account for 
+			// the now mising item. Calculate what the new offset will be and store that.
+			var currentOffset = CollectionView.ContentOffset;
+			if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
+				_pendingOffset = new CGPoint(currentOffset.X - ItemSize.Width, currentOffset.Y);
+			else
+				_pendingOffset = new CGPoint(currentOffset.X, currentOffset.Y - ItemSize.Height);
+		}
+
+		public override void FinalizeCollectionViewUpdates()
+		{
+			base.FinalizeCollectionViewUpdates();
+
+			// Adjust the offset if necessary (e.g., if we've removed items from earlier in the carousel)
+			if (_pendingOffset.HasValue)
+			{
+				CollectionView.SetContentOffset(_pendingOffset.Value, false);
+				_pendingOffset = null;
+			}
 		}
 	}
 }

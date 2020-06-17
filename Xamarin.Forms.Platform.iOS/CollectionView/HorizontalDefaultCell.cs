@@ -1,5 +1,6 @@
 ﻿using CoreGraphics;
 using Foundation;
+using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -8,9 +9,11 @@ namespace Xamarin.Forms.Platform.iOS
 		public static NSString ReuseId = new NSString("Xamarin.Forms.Platform.iOS.HorizontalDefaultCell");
 
 		[Export("initWithFrame:")]
+		[Internals.Preserve(Conditional = true)]
 		public HorizontalDefaultCell(CGRect frame) : base(frame)
 		{
 			Constraint = Label.HeightAnchor.ConstraintEqualTo(Frame.Height);
+			Constraint.Priority = (float)UILayoutPriority.DefaultHigh;
 			Constraint.Active = true;
 		}
 

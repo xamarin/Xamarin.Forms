@@ -14,8 +14,12 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			_itemsSource = itemSource as IList ?? itemSource as IEnumerable;
 			_notifier = notifier;
+
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
 		}
+
+
+		internal event NotifyCollectionChangedEventHandler CollectionItemsSourceChanged;
 
 		public int Count => ItemsCount() + (HasHeader ? 1 : 0) + (HasFooter ? 1 : 0);
 
@@ -82,6 +86,19 @@ namespace Xamarin.Forms.Platform.Android
 
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
+			if (Device.IsInvokeRequired)
+			{
+				Device.BeginInvokeOnMainThread(() => CollectionChanged(args));
+			}
+			else
+			{
+				CollectionChanged(args);
+			}
+			
+		}
+
+		void CollectionChanged(NotifyCollectionChangedEventArgs args)
+		{
 			switch (args.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
@@ -102,6 +119,7 @@ namespace Xamarin.Forms.Platform.Android
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
+			CollectionItemsSourceChanged?.Invoke(this, args);
 		}
 
 		void Move(NotifyCollectionChangedEventArgs args)

@@ -94,6 +94,8 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				UpdateText();
 			else if (e.PropertyName == Label.FormattedTextProperty.PropertyName)
 				UpdateText();
+			else if (e.PropertyName == Label.TextTransformProperty.PropertyName)
+				UpdateText();
 			else if (e.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName || e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
 				UpdateTextAlignment();
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
@@ -138,7 +140,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 					FontAttributes = Element.FontAttributes,
 					FontFamily = Element.FontFamily,
 					FontSize = Element.FontSize,
-					Text = GLib.Markup.EscapeText(Element.Text ?? string.Empty)
+					Text = GLib.Markup.EscapeText(Element.UpdateFormsText(Element.Text ?? string.Empty, Element.TextTransform)) ?? string.Empty
 				};
 
 				Control.SetTextFromSpan(span);
@@ -157,8 +159,10 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 		private void UpdateTextAlignment()
 		{
-			var hAlignmentValue = GetAlignmentValue(Element.HorizontalTextAlignment);
-			var vAlignmentValue = GetAlignmentValue(Element.VerticalTextAlignment);
+			_perfectSizeValid = false;
+
+			var hAlignmentValue = Element.HorizontalTextAlignment.ToAlignmentValue();
+			var vAlignmentValue = Element.VerticalTextAlignment.ToAlignmentValue();
 
 			Control.SetAlignment(hAlignmentValue, vAlignmentValue);
 		}
@@ -201,22 +205,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
-		}
-
-		private float GetAlignmentValue(TextAlignment alignment)
-		{
-			_perfectSizeValid = false;
-
-			switch (alignment)
-			{
-				case TextAlignment.Start:
-					return 0f;
-				case TextAlignment.End:
-					return 1f;
-				default:
-					return 0.5f;
-			}
-		}
+		}		
 
 		private SizeRequest GetPerfectSize(int widthConstraint = -1)
 		{

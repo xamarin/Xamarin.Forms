@@ -1,37 +1,40 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using System.Linq;
 
 using Xamarin.Forms.Platform.Tizen.Native;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
-	public class ItemsViewRenderer : ViewRenderer<StructuredItemsView, Native.CollectionView>
+	public abstract class ItemsViewRenderer<TItemsView, TNative> : ViewRenderer<TItemsView, TNative>
+		where TItemsView : ItemsView
+		where TNative : Native.CollectionView
 	{
 		INotifyCollectionChanged _observableSource;
+
+		protected IItemsLayout ItemsLayout { get; private set; }
 
 		public ItemsViewRenderer()
 		{
 			RegisterPropertyHandler(ItemsView.ItemsSourceProperty, UpdateItemsSource);
 			RegisterPropertyHandler(ItemsView.ItemTemplateProperty, UpdateAdaptor);
-			RegisterPropertyHandler(StructuredItemsView.ItemsLayoutProperty, UpdateItemsLayout);
-			RegisterPropertyHandler(ItemsView.ItemSizingStrategyProperty, UpdateSizingStrategy);
-			RegisterPropertyHandler(SelectableItemsView.SelectedItemProperty, UpdateSelectedItem);
-			RegisterPropertyHandler(SelectableItemsView.SelectionModeProperty, UpdateSelectionMode);
 		}
 
-		protected override void OnElementChanged(ElementChangedEventArgs<StructuredItemsView> e)
+		protected abstract TNative CreateNativeControl(ElmSharp.EvasObject parent);
+
+		protected override void OnElementChanged(ElementChangedEventArgs<TItemsView> e)
 		{
 			if (Control == null)
 			{
-				SetNativeControl(new Native.CollectionView(Forms.NativeParent));
+				SetNativeControl(CreateNativeControl(Forms.NativeParent));
+				Control.Scrolled += OnScrolled;
 			}
-
 			if (e.NewElement != null)
 			{
 				e.NewElement.ScrollToRequested += OnScrollToRequest;
 			}
-
 			base.OnElementChanged(e);
+			ItemsLayout = GetItemsLayout();
 			UpdateAdaptor(false);
 		}
 
@@ -42,7 +45,8 @@ namespace Xamarin.Forms.Platform.Tizen
 				if (Element != null)
 				{
 					Element.ScrollToRequested -= OnScrollToRequest;
-					Element.ItemsLayout.PropertyChanged -= OnLayoutPropertyChanged;
+					ItemsLayout.PropertyChanged -= OnLayoutPropertyChanged;
+					Control.Scrolled -= OnScrolled;
 				}
 				if (_observableSource != null)
 				{
@@ -52,23 +56,49 @@ namespace Xamarin.Forms.Platform.Tizen
 			base.Dispose(disposing);
 		}
 
-		void UpdateSelectedItem(bool initialize)
+		protected void UpdateItemsLayout()
 		{
-			if (initialize)
-				return;
-
-			if (Element is SelectableItemsView selectable)
+			if (ItemsLayout != null)
 			{
-				Control?.Adaptor?.RequestItemSelected(selectable.SelectedItem);
+				ItemsLayout.PropertyChanged -= OnLayoutPropertyChanged;
+			}
+			ItemsLayout = GetItemsLayout();
+			if (ItemsLayout != null)
+			{
+				if (Element is CollectionView)
+				{
+					Control.LayoutManager = ItemsLayout.ToLayoutManager((Element as CollectionView).ItemSizingStrategy);
+				}
+				else
+				{
+					Control.LayoutManager = ItemsLayout.ToLayoutManager(ItemSizingStrategy.MeasureFirstItem);
+				}
+				Control.SnapPointsType = ((ItemsLayout)ItemsLayout)?.SnapPointsType ?? SnapPointsType.None;
+				ItemsLayout.PropertyChanged += OnLayoutPropertyChanged;
 			}
 		}
 
-		void UpdateSelectionMode()
+		protected virtual void OnLayoutPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			if (Element is SelectableItemsView selectable)
+			if (e.PropertyName == nameof(Xamarin.Forms.ItemsLayout.SnapPointsType))
 			{
-				Control.SelectionMode = selectable.SelectionMode == SelectionMode.None ? CollectionViewSelectionMode.None : CollectionViewSelectionMode.Single;
+				Control.SnapPointsType = (sender as ItemsLayout)?.SnapPointsType ?? SnapPointsType.None;
 			}
+			else if (e.PropertyName == nameof(GridItemsLayout.Span))
+			{
+				((GridLayoutManager)(Control.LayoutManager)).UpdateSpan(((GridItemsLayout)sender).Span);
+			}
+		}
+
+		protected abstract IItemsLayout GetItemsLayout();
+
+		protected virtual void OnItemSelectedFromUI(object sender, SelectedItemChangedEventArgs e)
+		{
+		}
+
+		void OnScrolled(object sender, ItemsViewScrolledEventArgs e)
+		{
+			Element.SendScrolled(e);
 		}
 
 		void OnScrollToRequest(object sender, ScrollToRequestEventArgs e)
@@ -129,45 +159,6 @@ namespace Xamarin.Forms.Platform.Tizen
 					Control.Adaptor = new ItemTemplateAdaptor(Element);
 					Control.Adaptor.ItemSelected += OnItemSelectedFromUI;
 				}
-			}
-		}
-
-		void OnItemSelectedFromUI(object sender, SelectedItemChangedEventArgs e)
-		{
-			if (Element is SelectableItemsView selectableItemsView)
-			{
-				selectableItemsView.SelectedItem = e.SelectedItem;
-			}
-		}
-
-		void UpdateItemsLayout()
-		{
-			if (Element.ItemsLayout != null)
-			{
-				Control.LayoutManager = Element.ItemsLayout.ToLayoutManager(Element.ItemSizingStrategy);
-				Control.SnapPointsType = (Element.ItemsLayout as ItemsLayout)?.SnapPointsType ?? SnapPointsType.None;
-				Element.ItemsLayout.PropertyChanged += OnLayoutPropertyChanged;
-			}
-		}
-
-		void UpdateSizingStrategy(bool initialize)
-		{
-			if (initialize)
-			{
-				return;
-			}
-			Control.LayoutManager = Element.ItemsLayout.ToLayoutManager(Element.ItemSizingStrategy);
-		}
-
-		void OnLayoutPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName == nameof(ItemsLayout.SnapPointsType))
-			{
-				Control.SnapPointsType = (Element.ItemsLayout as ItemsLayout)?.SnapPointsType ?? SnapPointsType.None;
-			}
-			else if (e.PropertyName == nameof(GridItemsLayout.Span))
-			{
-				((GridLayoutManager)(Control.LayoutManager)).UpdateSpan(((GridItemsLayout)Element.ItemsLayout).Span);
 			}
 		}
 	}

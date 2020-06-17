@@ -1,79 +1,119 @@
-
-string monoMajorVersion = "6.4.0";
-string monoPatchVersion = "198";
-string monoVersion = $"{monoMajorVersion}.{monoPatchVersion}";
-
-string monoSDK_windows = $"https://download.mono-project.com/archive/{monoMajorVersion}/windows-installer/mono-{monoVersion}-x64-0.msi";
-string androidSDK_windows = "https://download.visualstudio.microsoft.com/download/pr/1131a8f5-99f5-4326-93b1-f5827b54ecd5/e7bd0f680004131157a22982c389b05f2d3698cc04fab3901ce2d7ded47ad8e0/Xamarin.Android.Sdk-10.0.0.43.vsix";
-string iOSSDK_windows = "";
-string macSDK_windows = "";
-
-string androidSDK_macos = "https://download.visualstudio.microsoft.com/download/pr/d5a432e4-09f3-4da6-9bdd-1d4fdd87f34c/c4ce0854064ffc16b957f22ccc08f9df/xamarin.android-10.0.0.43.pkg";
-string monoSDK_macos = $"https://download.mono-project.com/archive/{monoMajorVersion}/macos-10-universal/MonoFramework-MDK-{monoVersion}.macos10.xamarin.universal.pkg";
-string iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-3/5e8a208b5f44c4885060d95e3c3ad68d6a5e95e8/40/package/xamarin.ios-13.2.0.42.pkg";
-string macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-3/5e8a208b5f44c4885060d95e3c3ad68d6a5e95e8/40/package/xamarin.mac-6.2.0.42.pkg";
-
 if (IsMac)
 {
-	Item (XreItem.Xcode_11_1_0_rc).XcodeSelect ();
-
-  if(!String.IsNullOrEmpty(monoSDK_macos))
-    Item ("Mono", monoVersion)
-      .Source (_ => monoSDK_macos);
-
-	if(!String.IsNullOrEmpty(androidSDK_macos))
-		Item ("Xamarin.Android", "10.0.0.43")
-      .Source (_ => androidSDK_macos);
-
-	if(!String.IsNullOrEmpty(iOSSDK_macos))
-		Item ("Xamarin.iOS", "13.2.0.42")
-      .Source (_ => iOSSDK_macos);
-
-	if(!String.IsNullOrEmpty(macSDK_macos))
-		Item ("Xamarin.Mac", "6.2.0.42")
-      .Source (_ => macSDK_macos);
+	System.Net.Http.HttpClient client = new System.Net.Http.HttpClient (new System.Net.Http.HttpClientHandler { AllowAutoRedirect = true });
+	if (!Directory.Exists ("/Library/Frameworks/Mono.framework/Versions/Current/Commands/"))
+	{
+		Item ("Mono", "6.8.0.123")
+			.Source (_ => "https://download.mono-project.com/archive/6.8.0/macos-10-universal/MonoFramework-MDK-6.8.0.123.macos10.xamarin.universal.pkg");
+	}
     
 	ForceJavaCleanup();
+	Item (XreItem.Java_OpenJDK_1_8_0_25);
 
-    var dotnetVersion = System.Environment.GetEnvironmentVariable("DOTNET_VERSION");
-    if (!string.IsNullOrEmpty(dotnetVersion))
-	  {
-		// VSTS installs into a non-default location. Let's hardcode it here because why not.
-		var vstsBaseInstallPath = Path.Combine (Environment.GetEnvironmentVariable ("HOME"), ".dotnet", "sdk");
-		var vstsInstallPath = Path.Combine (vstsBaseInstallPath, dotnetVersion);
-		var defaultInstallLocation = Path.Combine ("/usr/local/share/dotnet/sdk/", dotnetVersion);
-		if (Directory.Exists (vstsBaseInstallPath) && !Directory.Exists (vstsInstallPath))
-			ln (defaultInstallLocation, vstsInstallPath);
-	  }
+	string releaseChannel = Environment.GetEnvironmentVariable ("CHANNEL");
+	Console.WriteLine ("ANDROID_SDK_MAC: {0}", Environment.GetEnvironmentVariable ("ANDROID_SDK_MAC"));
+	Console.WriteLine ("IOS_SDK_MAC: {0}", Environment.GetEnvironmentVariable ("IOS_SDK_MAC"));
+	Console.WriteLine ("MONO_SDK_MAC: {0}", Environment.GetEnvironmentVariable ("MONO_SDK_MAC"));
+	Console.WriteLine ("MAC_SDK_MAC: {0}", Environment.GetEnvironmentVariable ("MAC_SDK_MAC"));
+	Console.WriteLine ("releaseChannel: {0}", releaseChannel);
+
+	bool specificSdkSet = false;
+
+	if(!String.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable ("MONO_SDK_MAC")))
+	{
+		await ResolveUrl (Environment.GetEnvironmentVariable ("MONO_SDK_MAC"));
+		specificSdkSet = true;
+	}
+
+	if(!String.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable ("ANDROID_SDK_MAC")))
+	{
+		await ResolveUrl (Environment.GetEnvironmentVariable ("ANDROID_SDK_MAC"));
+		specificSdkSet = true;
+	}
+
+	if(!String.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable ("IOS_SDK_MAC")))
+	{
+		await ResolveUrl (Environment.GetEnvironmentVariable ("IOS_SDK_MAC"));
+		specificSdkSet = true;
+	}
+
+	if(!String.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable ("MAC_SDK_MAC")))
+	{
+		await ResolveUrl (Environment.GetEnvironmentVariable ("MAC_SDK_MAC"));
+		specificSdkSet = true;
+	}
+	
+	if(!specificSdkSet)
+	{
+		if(releaseChannel == "Beta")
+		{
+			Console.WriteLine("Installing Beta Channel");			
+			await ResolveUrl ("https://xamci.azurewebsites.net/dl/xamarin/xamarin-macios/d16-6-xcode11.6/PKG-Xamarin.Mac-notarized");
+			await ResolveUrl ("https://xamci.azurewebsites.net/dl/xamarin/xamarin-macios/d16-6-xcode11.6/PKG-Xamarin.iOS-notarized");
+		}
+		else if(releaseChannel == "Preview")
+		{
+			XamarinChannel("Preview");
+		}
+		else if(releaseChannel == "Stable")
+		{
+			XamarinChannel("Stable");
+		}
+	}
+
+	async System.Threading.Tasks.Task ResolveUrl (string url)
+	{
+		// When downloading a package using the xamci we have to use the following code to 
+		// install updates otherwise provionator can't tell the difference between a new package or an old one
+		try
+		{
+			using (var response = await client.GetAsync (url, System.Net.Http.HttpCompletionOption.ResponseHeadersRead)) {
+				response.EnsureSuccessStatusCode ();
+				Item(response.RequestMessage.RequestUri.ToString());
+			}
+		}
+		catch{
+			Item(url);
+		}
+	}
 }
 else
 {
-	if(!String.IsNullOrEmpty(androidSDK_windows))
-		Item ("Xamarin.Android", "10.0.0.43")
-      .Source (_ => androidSDK_windows);
 
-	if(!String.IsNullOrEmpty(iOSSDK_windows))
-		Item ("Xamarin.iOS", "13.2.0.42")
-      .Source (_ => iOSSDK_windows);
+	if(!String.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable ("ANDROID_SDK_WINDOWS")))
+		Item ("Xamarin.Android")
+      		.Source (_ => Environment.GetEnvironmentVariable ("ANDROID_SDK_WINDOWS"));
 
-	if(!String.IsNullOrEmpty(macSDK_windows))
-		Item ("Xamarin.Mac", "6.2.0.42")
-      .Source (_ => macSDK_windows);
+	if(!String.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable ("IOS_SDK_WINDOWS")))
+		Item ("Xamarin.iOS")
+      		.Source (_ => Environment.GetEnvironmentVariable ("IOS_SDK_WINDOWS"));
 
-	if(!String.IsNullOrEmpty(monoSDK_windows))
-    Item ("Mono", monoVersion)
-      .Source (_ => monoSDK_windows);
+	if(!String.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable ("MONO_SDK_WINDOWS")))
+		Item ("Mono")
+      		.Source (_ => Environment.GetEnvironmentVariable ("MONO_SDK_WINDOWS"));
+
+	if(!String.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable ("MAC_SDK_WINDOWS")))
+		Item ("Xamarin.Mac")
+      		.Source (_ => Environment.GetEnvironmentVariable ("MAC_SDK_WINDOWS"));
 
 }
 
-Item(XreItem.Java_OpenJDK_1_8_0_25);
-AndroidSdk ().ApiLevel((AndroidApiLevel)24);
-AndroidSdk ().ApiLevel((AndroidApiLevel)28);
-AndroidSdk ().ApiLevel((AndroidApiLevel)29);
+string ANDROID_API_SDKS = Environment.GetEnvironmentVariable ("ANDROID_API_SDKS");
 
-void ln (string source, string destination)
+if(String.IsNullOrWhiteSpace(ANDROID_API_SDKS))
 {
-	Console.WriteLine ($"ln -sf {source} {destination}");
-	if (!Config.DryRun)
-		Exec ("/bin/ln", "-sf", source, destination);
+	AndroidSdk()
+		.ApiLevel((AndroidApiLevel)24)
+		.ApiLevel((AndroidApiLevel)28)
+		.ApiLevel((AndroidApiLevel)29)
+		.SdkManagerPackage ("build-tools;29.0.3");
+}
+else{
+
+	var androidSDK = AndroidSdk();
+	foreach(var sdk in ANDROID_API_SDKS.Split(','))
+	{
+		Console.WriteLine("Installing SDK: {0}", sdk);
+		androidSDK = androidSDK.SdkManagerPackage (sdk);
+	}
 }

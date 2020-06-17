@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (Control is IButton ib)
 			{
-				ib.FontFamily = Element.FontFamily;
+				ib.FontFamily = Element.FontFamily.ToNativeFontFamily();
 			}			
 		}
 
@@ -140,13 +140,20 @@ namespace Xamarin.Forms.Platform.Tizen
 				if (Element.ImageSource != null)
 				{
 					ib.Image = new Native.Image(Control);
-					var task = ib.Image.LoadFromImageSourceAsync(Element.ImageSource);
+					if (Element.ImageSource is FileImageSource fis)
+					{
+						ib.Image.LoadFromFile(fis.File);
+					}
+					else
+					{
+						var task = ib.Image.LoadFromImageSourceAsync(Element.ImageSource);
+					}
 				}
 				else
 				{
 					ib.Image = null;
 				}
-			}			
+			}
 		}
 
 		void UpdateBorder()

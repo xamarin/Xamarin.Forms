@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		{
 			On<iOS>().SetLargeTitleDisplay(LargeTitleDisplayMode.Never);
 
-			var viewModel = new CarouselItemsGalleryViewModel();
+			var viewModel = new CarouselItemsGalleryViewModel(false, false);
 
 			Title = $"CarouselView Snap Options";
 
@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
 				BackgroundColor = Color.LightGray,
-				PeekAreaInsets = new Thickness(0, 0, 300, 0),
+				PeekAreaInsets = new Thickness(0, 0, 100, 0),
 				Margin = new Thickness(12),
 				AutomationId = "TheCarouselView"
 			};

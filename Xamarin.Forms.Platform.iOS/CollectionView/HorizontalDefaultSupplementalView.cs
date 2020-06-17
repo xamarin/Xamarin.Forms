@@ -9,11 +9,13 @@ namespace Xamarin.Forms.Platform.iOS
 		public static NSString ReuseId = new NSString("Xamarin.Forms.Platform.iOS.HorizontalDefaultSupplementalView");
 
 		[Export("initWithFrame:")]
+		[Internals.Preserve(Conditional = true)]
 		public HorizontalDefaultSupplementalView(CGRect frame) : base(frame)
 		{
 			Label.Font = UIFont.PreferredHeadline;
 
 			Constraint = Label.HeightAnchor.ConstraintEqualTo(Frame.Height);
+			Constraint.Priority = (float)UILayoutPriority.DefaultHigh;
 			Constraint.Active = true;
 		}
 
@@ -27,5 +29,4 @@ namespace Xamarin.Forms.Platform.iOS
 			return new CGSize(Label.IntrinsicContentSize.Width, Constraint.Constant);
 		}
 	}
-
 }

@@ -1,15 +1,15 @@
-using System;
 using System.ComponentModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Input;
 using Xamarin.Forms.Internals;
-using WThickness = Windows.UI.Xaml.Thickness;
-using WButton = Windows.UI.Xaml.Controls.Button;
 using WImage = Windows.UI.Xaml.Controls.Image;
 using Windows.UI.Xaml.Input;
 using Xamarin.Forms.Platform.UWP.Extensions;
+using WStretch = Windows.UI.Xaml.Media.Stretch;
+using WThickness = Windows.UI.Xaml.Thickness;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -109,7 +109,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Button.TextProperty.PropertyName || e.PropertyName == Button.ImageSourceProperty.PropertyName)
+			if (e.IsOneOf(Button.TextProperty, Button.ImageSourceProperty, Button.TextTransformProperty))
 			{
 				UpdateContent();
 			}
@@ -199,7 +199,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		async void UpdateContent()
 		{
-			var text = Element.Text;
+			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 			var elementImage = await Element.ImageSource.ToWindowsImageSourceAsync();
 
 			// No image, just the text
@@ -216,7 +216,7 @@ namespace Xamarin.Forms.Platform.UWP
 				Source = elementImage,
 				VerticalAlignment = VerticalAlignment.Center,
 				HorizontalAlignment = HorizontalAlignment.Center,
-				Stretch = Stretch.Uniform,
+				Stretch = WStretch.Uniform,
 				Width = size.Width,
 				Height = size.Height,
 			};

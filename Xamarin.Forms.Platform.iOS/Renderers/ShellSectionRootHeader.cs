@@ -7,7 +7,7 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class ShellSectionRootHeader : UICollectionViewController, IAppearanceObserver
+	public class ShellSectionRootHeader : UICollectionViewController, IAppearanceObserver, IShellSectionRootHeader
 	{
 		#region IAppearanceObserver
 
@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_unselectedColor = unselectedColor;
 
 			if (reloadData)
-				CollectionView.ReloadData();
+				ReloadData();
 		}
 
 		#endregion IAppearanceObserver
@@ -57,7 +57,15 @@ namespace Xamarin.Forms.Platform.iOS
 		UIView _bottomShadow;
 		Color _selectedColor;
 		Color _unselectedColor;
+		bool _isDisposed;
 
+		[Internals.Preserve(Conditional = true)]
+		public ShellSectionRootHeader()
+		{
+
+		}
+
+		[Internals.Preserve(Conditional = true)]
 		public ShellSectionRootHeader(IShellContext shellContext) : base(new UICollectionViewFlowLayout())
 		{
 			_shellContext = shellContext;
@@ -65,6 +73,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public double SelectedIndex { get; set; }
 		public ShellSection ShellSection { get; set; }
+		IShellSectionController ShellSectionController => ShellSection;
+
+		public UIViewController ViewController => this;
 
 		public override bool CanMoveItem(UICollectionView collectionView, NSIndexPath indexPath)
 		{
@@ -73,37 +84,51 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
 		{
-			var headerCell = (ShellSectionHeaderCell)collectionView.DequeueReusableCell(CellId, indexPath);
+			var reusedCell = (UICollectionViewCell)collectionView.DequeueReusableCell(CellId, indexPath);
+			var headerCell = reusedCell as ShellSectionHeaderCell;
+
+			if (headerCell == null)
+				return reusedCell;
 
 			var selectedItems = collectionView.GetIndexPathsForSelectedItems();
 
-			var shellContent = ShellSection.Items[indexPath.Row];
+			var shellContent = ShellSectionController.GetItems()[indexPath.Row];
 			headerCell.Label.Text = shellContent.Title;
 			headerCell.Label.SetNeedsDisplay();
 
+			headerCell.SelectedColor = _selectedColor.ToUIColor();
+			headerCell.UnSelectedColor = _unselectedColor.ToUIColor();
+
 			if (selectedItems.Length > 0 && selectedItems[0].Row == indexPath.Row)
-				headerCell.Label.TextColor = headerCell.SelectedColor = _selectedColor.ToUIColor();
+				headerCell.Selected = true;
 			else
-				headerCell.Label.TextColor = headerCell.UnSelectedColor = _unselectedColor.ToUIColor();
+				headerCell.Selected = false;
 
 			return headerCell;
 		}
 
 		public override nint GetItemsCount(UICollectionView collectionView, nint section)
 		{
-			return ShellSection.Items.Count;
+			return ShellSectionController.GetItems().Count;
 		}
 
 		public override void ItemDeselected(UICollectionView collectionView, NSIndexPath indexPath)
 		{
+			if(CollectionView.CellForItem(indexPath) is ShellSectionHeaderCell cell)
+				cell.Label.TextColor = _unselectedColor.ToUIColor();
 		}
 
 		public override void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
 		{
 			var row = indexPath.Row;
-			var item = ShellSection.Items[row];
+
+			var item = ShellSectionController.GetItems()[row];
+
 			if (item != ShellSection.CurrentItem)
 				ShellSection.SetValueFromRenderer(ShellSection.CurrentItemProperty, item);
+
+			if (CollectionView.CellForItem(indexPath) is ShellSectionHeaderCell cell)
+				cell.Label.TextColor = _selectedColor.ToUIColor();
 		}
 
 		public override nint NumberOfSections(UICollectionView collectionView)
@@ -114,7 +139,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public override bool ShouldSelectItem(UICollectionView collectionView, NSIndexPath indexPath)
 		{
 			var row = indexPath.Row;
-			var item = ShellSection.Items[row];
+			var item = ShellSectionController.GetItems()[row];
 			IShellController shellController = _shellContext.Shell;
 
 			if (item == ShellSection.CurrentItem)
@@ -124,6 +149,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidLayoutSubviews()
 		{
+			if (_isDisposed)
+				return;
+
 			base.ViewDidLayoutSubviews();
 
 			LayoutBar();
@@ -133,6 +161,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidLoad()
 		{
+			if (_isDisposed)
+				return;
+
 			base.ViewDidLoad();
 
 			CollectionView.ScrollsToTop = false;
@@ -157,35 +188,54 @@ namespace Xamarin.Forms.Platform.iOS
 			flowLayout.MinimumLineSpacing = 0;
 			flowLayout.EstimatedItemSize = new CGSize(70, 35);
 
-			CollectionView.RegisterClassForCell(typeof(ShellSectionHeaderCell), CellId);
+			CollectionView.RegisterClassForCell(GetCellType(), CellId);
 
 			((IShellController)_shellContext.Shell).AddAppearanceObserver(this, ShellSection);
-			((INotifyCollectionChanged)ShellSection.Items).CollectionChanged += OnShellSectionItemsChanged;
+			ShellSectionController.ItemsCollectionChanged += OnShellSectionItemsChanged;
 
 			UpdateSelectedIndex();
 			ShellSection.PropertyChanged += OnShellSectionPropertyChanged;
 		}
 
+		protected virtual Type GetCellType()
+		{
+			return typeof(ShellSectionHeaderCell);
+		}
+
 		protected override void Dispose(bool disposing)
 		{
-			base.Dispose(disposing);
+			if (_isDisposed)
+				return;
 
 			if (disposing)
 			{
 				((IShellController)_shellContext.Shell).RemoveAppearanceObserver(this);
-				((INotifyCollectionChanged)ShellSection.Items).CollectionChanged -= OnShellSectionItemsChanged;
+				ShellSectionController.ItemsCollectionChanged -= OnShellSectionItemsChanged;
 				ShellSection.PropertyChanged -= OnShellSectionPropertyChanged;
 
 				ShellSection = null;
 				_bar.RemoveFromSuperview();
+				this.RemoveFromParentViewController();
 				_bar.Dispose();
 				_bar = null;
 			}
+
+			_isDisposed = true;
+			base.Dispose(disposing);
 		}
 
 		protected void LayoutBar()
 		{
+			if (SelectedIndex < 0)
+				return;
+
+			if (ShellSectionController.GetItems().IndexOf(ShellSection.CurrentItem) != SelectedIndex)
+				return;
+
 			var layout = CollectionView.GetLayoutAttributesForItem(NSIndexPath.FromItemSection((int)SelectedIndex, 0));
+
+			if (layout == null)
+				return;
 
 			var frame = layout.Frame;
 
@@ -209,7 +259,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void UpdateSelectedIndex(bool animated = false)
 		{
-			SelectedIndex = ShellSection.Items.IndexOf(ShellSection.CurrentItem);
+			if (ShellSection.CurrentItem == null)
+				return;
+
+			SelectedIndex = ShellSectionController.GetItems().IndexOf(ShellSection.CurrentItem);
+
+			if (SelectedIndex < 0)
+				return;
+
 			LayoutBar();
 
 			CollectionView.SelectItem(NSIndexPath.FromItemSection((int)SelectedIndex, 0), false, UICollectionViewScrollPosition.CenteredHorizontally);
@@ -217,13 +274,38 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnShellSectionItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
+			ReloadData();
+		}
+
+		void ReloadData()
+		{
+			if (_isDisposed)
+				return;
+
 			CollectionView.ReloadData();
+			CollectionView.CollectionViewLayout.InvalidateLayout();
 		}
 
 		public class ShellSectionHeaderCell : UICollectionViewCell
 		{
 			public UIColor SelectedColor { get; set; }
 			public UIColor UnSelectedColor { get; set; }
+
+			[Internals.Preserve(Conditional = true)]
+			public ShellSectionHeaderCell()
+			{
+
+			}
+
+			[Export("initWithFrame:")]
+			[Internals.Preserve(Conditional = true)]
+			public ShellSectionHeaderCell(CGRect frame) : base(frame)
+			{
+				Label = new UILabel();
+				Label.TextAlignment = UITextAlignment.Center;
+				Label.Font = UIFont.BoldSystemFontOfSize(14);
+				ContentView.AddSubview(Label);
+			}
 
 			public override bool Selected
 			{
@@ -233,15 +315,6 @@ namespace Xamarin.Forms.Platform.iOS
 					base.Selected = value;
 					Label.TextColor = value ? SelectedColor : UnSelectedColor;
 				}
-			}
-
-			[Export("initWithFrame:")]
-			public ShellSectionHeaderCell(CGRect frame) : base(frame)
-			{
-				Label = new UILabel();
-				Label.TextAlignment = UITextAlignment.Center;
-				Label.Font = UIFont.BoldSystemFontOfSize(14);
-				ContentView.AddSubview(Label);
 			}
 
 			public UILabel Label { get; }

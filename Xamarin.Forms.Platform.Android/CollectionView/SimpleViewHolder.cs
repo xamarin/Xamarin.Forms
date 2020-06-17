@@ -1,6 +1,11 @@
 ﻿using System;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using Android.Views;
 using Android.Widget;
 
@@ -23,6 +28,7 @@ namespace Xamarin.Forms.Platform.Android
 		public static SimpleViewHolder FromText(string text, Context context, bool fill = true)
 		{
 			var textView = new TextView(context) { Text = text };
+
 			if (fill)
 			{
 				var layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent,
@@ -35,10 +41,14 @@ namespace Xamarin.Forms.Platform.Android
 			return new SimpleViewHolder(textView, null);
 		}
 
-		public static SimpleViewHolder FromFormsView(View formsView, Context context, Func<int> width, Func<int> height)
+		public static SimpleViewHolder FromFormsView(View formsView, Context context, Func<int> width, Func<int> height, ItemsView container)
 		{
 			var itemContentControl = new SizedItemContentView(context, width, height);
+
+			// Make sure the Visual property is available during renderer creation
+			Internals.PropertyPropagationExtensions.PropagatePropertyChanged(null, formsView, container);
 			itemContentControl.RealizeContent(formsView);
+
 			return new SimpleViewHolder(itemContentControl, formsView);
 		}
 

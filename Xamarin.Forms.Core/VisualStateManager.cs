@@ -18,9 +18,9 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty VisualStateGroupsProperty =
-			BindableProperty.CreateAttached("VisualStateGroups", typeof(VisualStateGroupList), typeof(VisualElement), 
-				defaultValue: null, propertyChanged: VisualStateGroupsPropertyChanged, 
-				defaultValueCreator: bindable => new VisualStateGroupList {VisualElement = (VisualElement)bindable});
+			BindableProperty.CreateAttached("VisualStateGroups", typeof(VisualStateGroupList), typeof(VisualElement),
+				defaultValue: null, propertyChanged: VisualStateGroupsPropertyChanged,
+				defaultValueCreator: bindable => new VisualStateGroupList(true) { VisualElement = (VisualElement)bindable });
 
 		static void VisualStateGroupsPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
@@ -34,6 +34,8 @@ namespace Xamarin.Forms
 			((VisualStateGroupList)newValue).VisualElement = visualElement;
 
 			visualElement.ChangeVisualState();
+
+			UpdateStateTriggers(visualElement);
 		}
 
 		public static IList<VisualStateGroup> GetVisualStateGroups(VisualElement visualElement)
@@ -48,7 +50,7 @@ namespace Xamarin.Forms
 
 		public static bool GoToState(VisualElement visualElement, string name)
 		{
-			if (!visualElement.IsSet(VisualStateGroupsProperty))
+			if (!visualElement.HasVisualStateGroups())
 			{
 				return false;
 			}
@@ -96,20 +98,38 @@ namespace Xamarin.Forms
 
 		public static bool HasVisualStateGroups(this VisualElement element)
 		{
-			return element.IsSet(VisualStateGroupsProperty);
+			if (!element.IsSet(VisualStateGroupsProperty))
+				return false;
+
+			if (GetVisualStateGroups(element) is VisualStateGroupList vsgl)
+				return !vsgl.IsDefault;
+
+			return true;
+		}
+
+		internal static void UpdateStateTriggers(VisualElement visualElement)
+		{
+			var groups = (IList<VisualStateGroup>)visualElement.GetValue(VisualStateGroupsProperty);
+
+			foreach (VisualStateGroup group in groups)
+			{
+				group.VisualElement = visualElement;
+				group.UpdateStateTriggers();
+			}
 		}
 	}
 
 	public class VisualStateGroupList : IList<VisualStateGroup>
 	{
 		readonly IList<VisualStateGroup> _internalList;
+		internal bool IsDefault { get; private set; }
 
 		// Used to check for duplicate names; we keep it around because it's cheaper to create it once and clear it
 		// than to create one every time we need to validate
 		readonly HashSet<string> _names = new HashSet<string>();
 
 		void Validate(IList<VisualStateGroup> groups)
-		{ 
+		{
 			var groupCount = groups.Count;
 
 			// If we only have 1 group, no need to worry about duplicate group names
@@ -138,6 +158,9 @@ namespace Xamarin.Forms
 			{
 				// Cache the group lookup and states count; it's ugly, but it speeds things up a lot
 				var group = groups[groupIndex];
+				group.VisualElement = VisualElement;
+				group.UpdateStateTriggers();
+
 				var stateCount = group.States.Count;
 
 				for (int stateIndex = 0; stateIndex < stateCount; stateIndex++)
@@ -151,8 +174,13 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public VisualStateGroupList() 
+		public VisualStateGroupList() : this(false)
 		{
+		}
+
+		public VisualStateGroupList(bool isDefault)
+		{
+			IsDefault = isDefault;
 			_internalList = new WatchAddList<VisualStateGroup>(ValidateAndNotify);
 		}
 
@@ -163,6 +191,9 @@ namespace Xamarin.Forms
 
 		void ValidateAndNotify(IList<VisualStateGroup> groups)
 		{
+			if(groups.Count > 0)
+				IsDefault = false;
+
 			Validate(groups);
 			OnStatesChanged();
 		}
@@ -252,9 +283,9 @@ namespace Xamarin.Forms
 			set => _internalList[index] = value;
 		}
 
-		internal VisualElement VisualElement { get; set; }
+        internal VisualElement VisualElement { get; set; }
 
-		void OnStatesChanged()
+        void OnStatesChanged()
 		{
 			VisualElement?.ChangeVisualState();
 		}
@@ -262,7 +293,7 @@ namespace Xamarin.Forms
 
 	[RuntimeNameProperty(nameof(Name))]
 	[ContentProperty(nameof(States))]
-	public sealed class VisualStateGroup 
+	public sealed class VisualStateGroup
 	{
 		public VisualStateGroup()
 		{
@@ -273,6 +304,7 @@ namespace Xamarin.Forms
 		public string Name { get; set; }
 		public IList<VisualState> States { get; }
 		public VisualState CurrentState { get; internal set; }
+		internal VisualElement VisualElement { get; set; }
 
 		internal VisualState GetState(string name)
 		{
@@ -287,24 +319,136 @@ namespace Xamarin.Forms
 			return null;
 		}
 
-		internal VisualStateGroup Clone()
+		internal bool HasStateTriggers()
 		{
-			var clone =  new VisualStateGroup {TargetType = TargetType, Name = Name, CurrentState = CurrentState};
+			bool hasStateTriggers = false;
+
 			foreach (VisualState state in States)
 			{
+				if (state.StateTriggers.Count > 0)
+				{
+					hasStateTriggers = true;
+					break;
+				}
+			}
+
+			return hasStateTriggers;
+		}
+
+		internal VisualState GetActiveTrigger()
+		{
+			var defaultState = default(VisualState);
+			var visualState = defaultState;
+			var conflicts = new List<StateTriggerBase>();
+
+			for (var stateIndex = 0; stateIndex < States.Count; stateIndex++)
+			{
+				var state = States[stateIndex];
+				for (var triggerIndex = 0; triggerIndex < state.StateTriggers.Count; triggerIndex++)
+				{
+					var trigger = state.StateTriggers[triggerIndex];
+
+					if (trigger.IsActive)
+					{
+						if(visualState == defaultState)
+							visualState = state;
+
+						conflicts.Add(trigger);
+					}
+				}
+			}
+
+			if (conflicts.Count > 1)
+				visualState = ResolveStateTriggersConflict(conflicts);
+
+			return visualState;
+		}
+
+		VisualState ResolveStateTriggersConflict(List<StateTriggerBase> conflicts)
+		{
+			// When using StateTriggers to control visual states, the trigger engine uses the following rules to 
+			// score triggers and determine which trigger, and the corresponding VisualState, will be active:
+			//
+			// 1. Custom trigger that derives from StateTriggerBase
+			// 2. AdaptiveTrigger activated due to MinWindowWidth
+			// 3. AdaptiveTrigger activated due to MinWindowHeight
+			//
+			// If there are multiple active triggers at a time that have a conflict in scoring (i.e.two custom 
+			// triggers), then the first one declared in the markup file takes precedence.
+
+			var existCustomTriggers = conflicts.Where(c => !(c is AdaptiveTrigger));
+
+			if (existCustomTriggers.Count() > 1)
+			{
+				var firstExistCustomTrigger = existCustomTriggers.FirstOrDefault();
+				return firstExistCustomTrigger.VisualState;
+			}
+
+			var adaptiveTriggers = conflicts.Where(c => c is AdaptiveTrigger);
+
+			var minWindowWidthAdaptiveTriggers = adaptiveTriggers.Where(c => ((AdaptiveTrigger)c).MinWindowWidth != -1d).OrderByDescending(c => ((AdaptiveTrigger)c).MinWindowWidth);
+			var latestMinWindowWidthAdaptiveTrigger = minWindowWidthAdaptiveTriggers.FirstOrDefault();
+
+			if (latestMinWindowWidthAdaptiveTrigger != null)
+				return latestMinWindowWidthAdaptiveTrigger.VisualState;
+
+			var minWindowHeightAdaptiveTriggers = adaptiveTriggers.Where(c => ((AdaptiveTrigger)c).MinWindowHeight != -1d).OrderByDescending(c => ((AdaptiveTrigger)c).MinWindowHeight);
+			var latestMinWindowHeightAdaptiveTrigger = minWindowHeightAdaptiveTriggers.FirstOrDefault();
+
+			if (latestMinWindowHeightAdaptiveTrigger != null)
+				return latestMinWindowHeightAdaptiveTrigger.VisualState;
+
+			return default;
+		}
+
+		internal VisualStateGroup Clone()
+		{
+			var clone = new VisualStateGroup { TargetType = TargetType, Name = Name, CurrentState = CurrentState, VisualElement = VisualElement };
+
+			foreach (VisualState state in States)
+			{
+				state.VisualStateGroup = clone;
 				clone.States.Add(state.Clone());
 			}
 
 			return clone;
 		}
 
+		internal void UpdateStateTriggers()
+		{
+			if (VisualElement == null)
+				return;
+
+			bool hasStateTriggers = HasStateTriggers();
+
+			if (!hasStateTriggers)
+				return;
+
+			var newStateTrigger = GetActiveTrigger();
+
+			if (newStateTrigger == null)
+				return;
+			
+			var oldStateTrigger = CurrentState;
+
+			if (newStateTrigger == oldStateTrigger)
+				return;
+
+			VisualStateManager.GoToState(VisualElement, newStateTrigger.Name);
+		}
+
 		internal event EventHandler StatesChanged;
 
-		void OnStatesChanged(IList<VisualState> list)
+		void OnStatesChanged(IList<VisualState> states)
 		{
-			if (list.Any(state => string.IsNullOrEmpty(state.Name)))
+			if (states.Any(state => string.IsNullOrEmpty(state.Name)))
 			{
 				throw new InvalidOperationException("State names may not be null or empty");
+			}
+
+			foreach(var state in states)
+			{
+				state.VisualStateGroup = this;
 			}
 
 			StatesChanged?.Invoke(this, EventArgs.Empty);
@@ -312,26 +456,46 @@ namespace Xamarin.Forms
 	}
 
 	[RuntimeNameProperty(nameof(Name))]
-	public sealed class VisualState 
+	public sealed class VisualState
 	{
 		public VisualState()
 		{
 			Setters = new ObservableCollection<Setter>();
+			StateTriggers = new WatchAddList<StateTriggerBase>(OnStateTriggersChanged);
 		}
 
 		public string Name { get; set; }
-		public IList<Setter> Setters { get;}
+		public IList<Setter> Setters { get; }
+		public IList<StateTriggerBase> StateTriggers { get; }
 		public Type TargetType { get; set; }
+		internal VisualStateGroup VisualStateGroup { get; set; }
 
 		internal VisualState Clone()
 		{
 			var clone = new VisualState { Name = Name, TargetType = TargetType };
+
 			foreach (var setter in Setters)
 			{
 				clone.Setters.Add(setter);
 			}
 
+			foreach (var stateTrigger in StateTriggers)
+			{
+				stateTrigger.VisualState = this;
+				clone.StateTriggers.Add(stateTrigger);
+			}
+
 			return clone;
+		}
+
+		void OnStateTriggersChanged(IList<StateTriggerBase> stateTriggers)
+		{
+			foreach(var stateTrigger in stateTriggers)
+			{
+				stateTrigger.VisualState = this;
+			}
+
+			VisualStateGroup?.UpdateStateTriggers();
 		}
 	}
 
@@ -340,8 +504,10 @@ namespace Xamarin.Forms
 		internal static IList<VisualStateGroup> Clone(this IList<VisualStateGroup> groups)
 		{
 			var actual = new VisualStateGroupList();
+
 			foreach (var group in groups)
 			{
+				group.VisualElement = actual.VisualElement;	
 				actual.Add(group.Clone());
 			}
 

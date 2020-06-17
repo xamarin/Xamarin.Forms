@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using ElmSharp;
+using ERect = ElmSharp.Rect;
 using EScroller = ElmSharp.Scroller;
 
 namespace Xamarin.Forms.Platform.Tizen.Native
@@ -10,6 +11,10 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		bool _isAnimation = false;
 
 		public Scroller(EvasObject parent) : base(parent)
+		{
+		}
+
+		protected Scroller()
 		{
 		}
 
@@ -46,7 +51,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			return animated && _isAnimation ? _animationTaskComplateSource.Task : Task.CompletedTask;
 		}
 
-		public Task ScrollToAsync(Rect rect, bool animated)
+		public Task ScrollToAsync(ERect rect, bool animated)
 		{
 			CheckTaskCompletionSource();
 			ScrollTo(rect, animated);

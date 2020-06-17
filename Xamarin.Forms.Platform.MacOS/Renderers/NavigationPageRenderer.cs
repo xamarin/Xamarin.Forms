@@ -86,6 +86,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (!_disposed && disposing)
 			{
+
+				_disposed = true;
+
 				if (Element != null)
 				{
 					if (NavigationPage != null)
@@ -99,6 +102,8 @@ namespace Xamarin.Forms.Platform.MacOS
 						NavigationPage.PoppedToRoot -= OnPoppedToRoot;
 
 						NavigationPage.SendDisappearing();
+
+						Platform.NativeToolbarTracker.TryHide(NavigationPage);
 					}
 					((Element as IPageContainer<Page>)?.CurrentPage as Page)?.SendDisappearing();
 					Element.PropertyChanged -= OnElementPropertyChanged;
@@ -121,10 +126,6 @@ namespace Xamarin.Forms.Platform.MacOS
 					_currentStack.Clear();
 					_currentStack = null;
 				}
-
-				Platform.NativeToolbarTracker.Navigation = null;
-				_disposed = true;
-
 			}
 			base.Dispose(disposing);
 		}
@@ -430,6 +431,10 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			Platform.NativeToolbarTracker.UpdateToolBar();
 		}
+		void UpdateBackButtonTitle()
+		{
+			Platform.NativeToolbarTracker.UpdateToolBar();
+		}
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -442,6 +447,10 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateBarTextColor();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
+			else if (e.PropertyName == NavigationPage.BackButtonTitleProperty.PropertyName)
+			{
+				UpdateBackButtonTitle();
+			}
 		}
 	}
 }

@@ -3,7 +3,11 @@ using System.ComponentModel;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+#else
 using Android.Support.V4.View;
+#endif
 using Android.Text;
 using Android.Util;
 using Android.Views;
@@ -31,7 +35,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		VisualElementRenderer _visualElementRenderer;
 		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
 		SpannableString _spannableString;
-
+		bool _hasLayoutOccurred;
 		bool _wasFormatted;
 
 		public LabelRenderer(Context context) : base(context)
@@ -115,8 +119,19 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					return _lastSizeRequest.Value;
 			}
 
+			//We need to clear the Hint or else it will interfere with the sizing of the Label
+			var hint = Control.Hint;
+			bool setHint = Control.LayoutParameters != null;
+			if (!string.IsNullOrEmpty(hint) && setHint)
+				Control.Hint = string.Empty;
+
 			Measure(widthConstraint, heightConstraint);
-			SizeRequest result = new SizeRequest(new Size(MeasuredWidth, MeasuredHeight), new Size());
+			var result = new SizeRequest(new Size(MeasuredWidth, MeasuredHeight), new Size());
+
+			//Set Hint back after sizing
+			if(setHint)
+				Control.Hint = hint;
+
 			result.Minimum = new Size(Math.Min(Context.ToPixels(10), result.Request.Width), result.Request.Height);
 
 			// if the measure of the view has changed then trigger a request for layout
@@ -139,6 +154,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			base.OnLayout(changed, left, top, right, bottom);
 			this.RecalculateSpanPositions(Element, _spannableString, new SizeRequest(new Size(right - left, bottom - top)));
+			_hasLayoutOccurred = true;
 		}
 
 		void IVisualElementRenderer.SetElement(VisualElement element)
@@ -240,7 +256,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 				e.NewElement.PropertyChanged += OnElementPropertyChanged;
 
-				SkipNextInvalidate();
 				UpdateText();
 				UpdateLineHeight();
 				UpdateCharacterSpacing();
@@ -260,7 +275,15 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			ElementPropertyChanged?.Invoke(this, e);
+
+			if (Control?.LayoutParameters == null && _hasLayoutOccurred)
+				return;
 
 			if (e.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName || e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
 				UpdateGravity();
@@ -275,7 +298,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateCharacterSpacing();
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();
-			else if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName)
+			else if (e.IsOneOf(Label.TextProperty, Label.FormattedTextProperty, Label.TextTransformProperty))
 				UpdateText();
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
 				UpdateLineHeight();
@@ -395,7 +418,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 						break;
 
 					default:
-						Text = Element.Text;
+							Text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 						break;
 				}
 				

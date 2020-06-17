@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Bugzilla, 56771, "Multi-item add in INotifyCollectionChanged causes a NSInternalInconsistencyException in bindings on iOS", PlatformAffected.iOS)]
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.ListView)]
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
 #endif
 	public class Bugzilla56771 : TestContentPage
 	{
@@ -41,7 +42,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			data.CollectionChanged += (_, e) =>
 			{
-				var log = $"<{DateTime.Now.ToLongTimeString()}> {e.Action} action fired.";
+				var log = $"<{DateTime.Now.ToString("T")}> {e.Action} action fired.";
 				System.Diagnostics.Debug.WriteLine(log);
 			};
 			var label = new Label { Text = "Click the Add 2 button." };
@@ -96,7 +97,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Bugzilla56771Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked(BtnAdd));
-			RunningApp.Tap(q => q.Marked(BtnAdd)); 
+			RunningApp.Tap(q => q.Marked(BtnAdd));
 			RunningApp.WaitForElement(q => q.Marked(Success));
 		}
 #endif

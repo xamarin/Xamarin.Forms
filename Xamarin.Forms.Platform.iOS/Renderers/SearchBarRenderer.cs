@@ -4,6 +4,7 @@ using System.Drawing;
 using CoreGraphics;
 using Foundation;
 using UIKit;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -23,6 +24,12 @@ namespace Xamarin.Forms.Platform.iOS
 		UIToolbar _numericAccessoryView;
 
 		IElementController ElementController => Element as IElementController;
+
+		[Internals.Preserve(Conditional = true)]
+		public SearchBarRenderer()
+		{
+
+		}
 
 		protected override void Dispose(bool disposing)
 		{
@@ -81,6 +88,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateCharacterSpacing();
 				UpdateMaxLength();
 				UpdateKeyboard();
+				UpdateSearchBarStyle();
 			}
 
 			base.OnElementChanged(e);
@@ -100,9 +108,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.PropertyName == SearchBar.TextColorProperty.PropertyName)
 				UpdateTextColor();
-			else if (e.PropertyName == SearchBar.CharacterSpacingProperty.PropertyName)
-				UpdateCharacterSpacing();
-			else if (e.PropertyName == SearchBar.TextProperty.PropertyName)
+			else if (e.IsOneOf(SearchBar.TextProperty, SearchBar.TextTransformProperty,
+				SearchBar.CharacterSpacingProperty))
 			{
 				UpdateText();
 				UpdateCharacterSpacing();
@@ -129,6 +136,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateKeyboard();
 			else if(e.PropertyName == Xamarin.Forms.InputView.IsSpellCheckEnabledProperty.PropertyName)
 				UpdateKeyboard();
+			else if(e.PropertyName == PlatformConfiguration.iOSSpecific.SearchBar.SearchBarStyleProperty.PropertyName)
+				UpdateSearchBarStyle();
 		}
 
 		protected override void SetBackgroundColor(Color color)
@@ -165,6 +174,16 @@ namespace Xamarin.Forms.Platform.iOS
 			sizeThatFits.Width = (nfloat)Math.Max(sizeThatFits.Width, size.Width);
 
 			return sizeThatFits;
+		}
+
+		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+		{
+			base.TraitCollectionDidChange(previousTraitCollection);
+#if __XCODE11__
+			// Make sure the control adheres to changes in UI theme
+			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				UpdateTextColor();
+#endif
 		}
 
 		void OnCancelClicked(object sender, EventArgs args)
@@ -290,7 +309,7 @@ namespace Xamarin.Forms.Platform.iOS
 				// https://developer.apple.com/library/prerelease/ios/documentation/UIKit/Reference/UITextField_Class/index.html#//apple_ref/occ/instp/UITextField/placeholder
 
 				var color = Element.IsEnabled && !targetColor.IsDefault 
-					? targetColor : ColorExtensions.SeventyPercentGrey.ToColor();
+					? targetColor : ColorExtensions.PlaceholderColor.ToColor();
 
 				_textField.AttributedPlaceholder = formatted.ToAttributed(Element, color);
 				_textField.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
@@ -299,7 +318,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 			{
 				_textField.AttributedPlaceholder = formatted.ToAttributed(Element, targetColor.IsDefault 
-					? ColorExtensions.SeventyPercentGrey.ToColor() : targetColor);
+					? ColorExtensions.PlaceholderColor.ToColor() : targetColor);
 				_textField.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
 			}
 		}
@@ -313,7 +332,7 @@ namespace Xamarin.Forms.Platform.iOS
 			// when typing, so by keeping track of whether or not text was typed, we can respect
 			// other changes to Element.Text.
 			if (!_textWasTyped)
-				Control.Text = Element.Text;
+				Control.Text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 			
 			UpdateCancelButton();
 		}
@@ -396,6 +415,11 @@ namespace Xamarin.Forms.Platform.iOS
 			accessoryView.SetItems(new[] { spacer, searchButton }, false);
 
 			return accessoryView;
+		}
+
+		void UpdateSearchBarStyle()
+		{
+			Control.SearchBarStyle = Element.OnThisPlatform().GetSearchBarStyle().ToNativeSearchBarStyle();
 		}
 	}
 }

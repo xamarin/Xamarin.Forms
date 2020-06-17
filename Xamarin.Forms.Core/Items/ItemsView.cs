@@ -97,8 +97,6 @@ namespace Xamarin.Forms
 
 			_logicalChildren.Add(element);
 
-			PropertyPropagationExtensions.PropagatePropertyChanged(null, element);
-
 			element.Parent = this;
 		}
 
@@ -123,27 +121,22 @@ namespace Xamarin.Forms
 
 		internal static readonly BindableProperty InternalItemsLayoutProperty =
 			BindableProperty.Create(nameof(ItemsLayout), typeof(IItemsLayout), typeof(ItemsView),
-				LinearItemsLayout.Vertical);
+				LinearItemsLayout.Vertical, propertyChanged: OnInternalItemsLayoutPropertyChanged);
 
+		static void OnInternalItemsLayoutPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			if (oldValue is BindableObject boOld)
+				SetInheritedBindingContext(boOld, null);
 
-		//	public abstract IItemsLayout ItemsLayout { get; }
-
+			if (newValue is BindableObject boNew)
+				SetInheritedBindingContext(boNew, bindable.BindingContext);
+		}
 
 		protected IItemsLayout InternalItemsLayout
 		{
 			get => (IItemsLayout)GetValue(InternalItemsLayoutProperty);
 			set => SetValue(InternalItemsLayoutProperty, value);
 		}
-
-		public static readonly BindableProperty ItemSizingStrategyProperty =
-			BindableProperty.Create(nameof(ItemSizingStrategy), typeof(ItemSizingStrategy), typeof(ItemsView));
-
-		public ItemSizingStrategy ItemSizingStrategy
-		{
-			get => (ItemSizingStrategy)GetValue(ItemSizingStrategyProperty);
-			set => SetValue(ItemSizingStrategyProperty, value);
-		}
-
 
 		public static readonly BindableProperty ItemTemplateProperty =
 			BindableProperty.Create(nameof(ItemTemplate), typeof(DataTemplate), typeof(ItemsView));
@@ -225,6 +218,13 @@ namespace Xamarin.Forms
 		protected virtual void OnScrolled(ItemsViewScrolledEventArgs e)
 		{
 			
+		}
+
+		protected override void OnBindingContextChanged()
+		{
+			base.OnBindingContextChanged();
+			if (InternalItemsLayout is BindableObject bo)
+				SetInheritedBindingContext(bo, BindingContext);
 		}
 	}
 }

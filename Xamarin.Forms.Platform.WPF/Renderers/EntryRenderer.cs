@@ -12,7 +12,8 @@ namespace Xamarin.Forms.Platform.WPF
 		bool _fontApplied;
 		bool _ignoreTextChange;
 		Brush _placeholderDefaultBrush;
-		
+		string _transformedText;
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
 		{
 			if (e.NewElement != null)
@@ -23,6 +24,7 @@ namespace Xamarin.Forms.Platform.WPF
 					Control.LostFocus += OnTextBoxUnfocused;
 					Control.TextChanged += TextBoxOnTextChanged;
 					Control.KeyUp += TextBoxOnKeyUp;
+					Control.SelectionChanged += TextBoxOnSelectionChanged;
 				}
 
 				// Update Control properties
@@ -37,6 +39,7 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdatePlaceholderColor();
 				UpdateMaxLength();
 				UpdateIsReadOnly();
+				UpdateCursorPosition();
 			}
 
 			base.OnElementChanged(e);
@@ -46,7 +49,8 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Entry.TextProperty.PropertyName)
+			if (e.PropertyName == Entry.TextProperty.PropertyName ||
+				e.PropertyName == Entry.TextTransformProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Entry.PlaceholderProperty.PropertyName)
 				UpdatePlaceholder();
@@ -68,12 +72,14 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateVerticalTextAlignment();
 			else if (e.PropertyName == Entry.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholderColor();
+			else if (e.PropertyName == Entry.CursorPositionProperty.PropertyName)
+				UpdateCursorPosition();
 			else if (e.PropertyName == InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
 			else if (e.PropertyName == InputView.IsReadOnlyProperty.PropertyName)
 				UpdateIsReadOnly();
 		}
-		
+
 		internal override void OnModelFocusChangeRequested(object sender, VisualElement.FocusRequestArgs args)
 		{
 			if (args.Focus)
@@ -102,22 +108,36 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void TextBoxOnTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs textChangedEventArgs)
 		{
+			if (Control.Text == _transformedText)
+				return;
+
 			// Signal to the UpdateText method that the change to TextProperty doesn't need to update the control
 			// This prevents the cursor position from getting lost
 			_ignoreTextChange = true;
-			((IElementController)Element).SetValueFromRenderer(Entry.TextProperty, Control.Text);
+			_transformedText = Element.UpdateFormsText(Control.Text, Element.TextTransform);
+			((IElementController)Element).SetValueFromRenderer(Entry.TextProperty, _transformedText);
 
 			// If an Entry.TextChanged handler modified the value of the Entry's text, the values could now be 
-			// out-of-sync; re-sync them and force the TextBox cursor to the end of the text
+			// out-of-sync; re-sync them and fix TextBox cursor position
 			string entryText = Element.Text;
 			if (Control.Text != entryText)
 			{
 				Control.Text = entryText;
 				if (Control.Text != null)
-					Control.SelectionStart = Control.Text.Length;
+				{
+					var savedSelectionStart = Control.SelectionStart;
+					var len = Control.Text.Length;
+					Control.SelectionStart = savedSelectionStart > len ? len : savedSelectionStart;
+				}
 			}
 
 			_ignoreTextChange = false;
+		}
+
+		private void TextBoxOnSelectionChanged(object sender, RoutedEventArgs e)
+		{
+			if (Control != null && Element != null)
+				Element.CursorPosition = Control.CaretIndex;
 		}
 
 		void UpdateHorizontalTextAlignment()
@@ -190,7 +210,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			Control.InputScope = Element.Keyboard.ToInputScope();
 		}
-		
+
 		void UpdateIsPassword()
 		{
 			Control.IsPassword = Element.IsPassword;
@@ -209,7 +229,7 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				if (_placeholderDefaultBrush == null)
 				{
-					_placeholderDefaultBrush = (Brush)WControl.ForegroundProperty.GetMetadata(typeof(FormsTextBox)).DefaultValue; 
+					_placeholderDefaultBrush = (Brush)WControl.ForegroundProperty.GetMetadata(typeof(FormsTextBox)).DefaultValue;
 				}
 
 				// Use the cached default brush
@@ -233,10 +253,11 @@ namespace Xamarin.Forms.Platform.WPF
 			if (_ignoreTextChange)
 				return;
 
-			if (Control.Text == Element.Text)
+			var text = _transformedText = Element.UpdateFormsText(Element.Text, Element.TextTransform);
+			if (Control.Text == text)
 				return;
 
-			Control.Text = Element.Text ?? "";
+			Control.Text = text;
 			Control.Select(Control.Text == null ? 0 : Control.Text.Length, 0);
 		}
 
@@ -264,6 +285,7 @@ namespace Xamarin.Forms.Platform.WPF
 					Control.LostFocus -= OnTextBoxUnfocused;
 					Control.TextChanged -= TextBoxOnTextChanged;
 					Control.KeyUp -= TextBoxOnKeyUp;
+					Control.SelectionChanged -= TextBoxOnSelectionChanged;
 				}
 			}
 
@@ -274,6 +296,12 @@ namespace Xamarin.Forms.Platform.WPF
 		void UpdateIsReadOnly()
 		{
 			Control.IsReadOnly = Element.IsReadOnly;
+		}
+
+		void UpdateCursorPosition()
+		{
+			if (Control.CaretIndex != Element.CursorPosition)
+				Control.CaretIndex = Element.CursorPosition;
 		}
 	}
 }

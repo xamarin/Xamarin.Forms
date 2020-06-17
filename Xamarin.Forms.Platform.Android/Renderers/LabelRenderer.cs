@@ -124,8 +124,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateMaxLines();
 			}
 			else
-			{
-				_view.SkipNextInvalidate();
+			{	
 				UpdateText();
 				if (e.OldElement.LineBreakMode != e.NewElement.LineBreakMode)
 					UpdateLineBreakMode();
@@ -143,11 +142,16 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName || e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
 				UpdateGravity();
-			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
+			else if (e.IsOneOf(Label.TextColorProperty, Label.TextTransformProperty))
 				UpdateText();
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateText();
@@ -286,7 +290,7 @@ namespace Xamarin.Forms.Platform.Android
 						break;
 
 					default:
-						_view.Text = Element.Text;
+						_view.Text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 
 						break;
 				}

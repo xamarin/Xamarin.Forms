@@ -1,23 +1,30 @@
-#if __ANDROID_28__
+
 using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+using AndroidX.AppCompat.Widget;
+using MButton = Google.Android.Material.Button.MaterialButton;
+#else
 using Android.Support.V4.View;
 using Android.Support.V7.Widget;
+using MButton = Android.Support.Design.Button.MaterialButton;
+#endif
 using Android.Util;
 using Android.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using Xamarin.Forms.Material.Android;
+using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AColor = Android.Graphics.Color;
+using APath = Android.Graphics.Path;
 using AView = Android.Views.View;
-using MButton = Android.Support.Design.Button.MaterialButton;
-using Xamarin.Forms.Platform.Android;
-
 
 namespace Xamarin.Forms.Material.Android
 {
@@ -39,6 +46,7 @@ namespace Xamarin.Forms.Material.Android
 		VisualElementRenderer _visualElementRenderer;
 		ButtonLayoutManager _buttonLayoutManager;
 		readonly AutomationPropertiesProvider _automationPropertiesProvider;
+		bool _hasDrawnOnce = false;
 
 		public MaterialButtonRenderer(Context context)
 			: this(MaterialContextThemeWrapper.Create(context), null) { }
@@ -105,6 +113,13 @@ namespace Xamarin.Forms.Material.Android
 
 		public override void Draw(Canvas canvas)
 		{
+			_hasDrawnOnce = true;
+			if (Element.IsEnabled != Enabled)
+			{
+				Enabled = Element.IsEnabled;
+				return;
+			}
+
 			if(Element == null || Element.CornerRadius <= 0)
 			{
 				base.Draw(canvas);
@@ -115,10 +130,10 @@ namespace Xamarin.Forms.Material.Android
 			{
 				var radiusToPixels = (float)Context.ToPixels(Element.CornerRadius);
 
-				using (var path = new Path())
+				using (var path = new APath())
 				{
 					RectF rect = new RectF(0, 0, canvas.Width, canvas.Height);
-					path.AddRoundRect(rect, radiusToPixels, radiusToPixels, Path.Direction.Ccw);
+					path.AddRoundRect(rect, radiusToPixels, radiusToPixels, APath.Direction.Ccw);
 					canvas.Save();
 					canvas.ClipPath(path);
 					base.Draw(canvas);
@@ -313,19 +328,39 @@ namespace Xamarin.Forms.Material.Android
 			// text
 			Color textColor = Element.TextColor;
 			AColor text;
+			AColor disabledText;
+
 			if (textColor.IsDefault)
+			{
 				text = MaterialColors.Light.OnPrimaryColor;
+				disabledText = MaterialColors.Light.DisabledColor;
+			}
 			else
-				text = textColor.ToAndroid();
+			{
+				text = disabledText = textColor.ToAndroid();
+			}
 
 			// apply
-			SetTextColor(MaterialColors.CreateButtonTextColors(background, text));
+			SetTextColor(MaterialColors.CreateButtonTextColors(background, text, disabledText));
 			ViewCompat.SetBackgroundTintList(this, MaterialColors.CreateButtonBackgroundColors(background));
 		}
 
 		void UpdateCharacterSpacing()
 		{
 			LetterSpacing = Element.CharacterSpacing.ToEm();
+		}
+
+		public override bool Enabled
+		{
+			get => base.Enabled;
+			set
+			{
+				// if this control is disabled before the first draw is called it can cause the shadow to
+				// draw incorrectly on the parent
+				// See Issue4435 for recreation
+				if (_hasDrawnOnce)
+					base.Enabled = value;
+			}
 		}
 
 		IPlatformElementConfiguration<PlatformConfiguration.Android, Button> OnThisPlatform() =>
@@ -335,8 +370,11 @@ namespace Xamarin.Forms.Material.Android
 		void IOnAttachStateChangeListener.OnViewAttachedToWindow(AView attachedView) =>
 			_buttonLayoutManager?.OnViewAttachedToWindow(attachedView);
 
-		void IOnAttachStateChangeListener.OnViewDetachedFromWindow(AView detachedView) =>
+		void IOnAttachStateChangeListener.OnViewDetachedFromWindow(AView detachedView)
+		{
+			_hasDrawnOnce = false;
 			_buttonLayoutManager?.OnViewDetachedFromWindow(detachedView);
+		}
 
 		// IOnFocusChangeListener
 		void IOnFocusChangeListener.OnFocusChange(AView v, bool hasFocus) =>
@@ -404,4 +442,3 @@ namespace Xamarin.Forms.Material.Android
 		}
 	}
 }
-#endif

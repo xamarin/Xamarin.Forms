@@ -35,6 +35,10 @@
 	{
 	}
 
+	internal class _RadioButtonRenderer
+	{
+	}
+
 	internal class _TableViewRenderer
 	{
 	}
@@ -107,6 +111,10 @@
 	{
 	}
 
+	internal class _IndicatorViewRenderer
+	{
+	}
+
 	internal class _OpenGLViewRenderer
 	{
 	}
@@ -128,6 +136,38 @@
 	}
 
 	internal class _MasterDetailPageRenderer
+	{
+	}
+
+	internal class _MediaElementRenderer
+  {
+	}
+   
+  internal class _SwipeViewRenderer
+	{
+	}
+
+	internal class _PathRenderer	
+	{
+	}
+	
+	internal class _EllipseRenderer
+	{
+	}
+
+	internal class _LineRenderer
+	{
+	}
+
+	internal class _RectangleRenderer
+	{
+	}
+
+	internal class _PolylineRenderer
+	{
+	}
+
+	internal class _PolygonRenderer
 	{
 	}
 }

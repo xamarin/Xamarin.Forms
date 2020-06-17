@@ -1,6 +1,11 @@
 using System;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using Android.Widget;
 using Object = Java.Lang.Object;
 using ViewGroup = Android.Views.ViewGroup;
@@ -13,14 +18,12 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		protected readonly TItemsView ItemsView;
 		readonly Func<View, Context, ItemContentView> _createItemContentView;
-		internal TItemsViewSource ItemsSource;
+		protected internal TItemsViewSource ItemsSource;
 
 		bool _disposed;
-		Size? _size;
-
 		bool _usingItemTemplate = false;
 
-		internal ItemsViewAdapter(TItemsView itemsView, Func<View, Context, ItemContentView> createItemContentView = null)
+		protected internal ItemsViewAdapter(TItemsView itemsView, Func<View, Context, ItemContentView> createItemContentView = null)
 		{
 			ItemsView = itemsView ?? throw new ArgumentNullException(nameof(itemsView));
 
@@ -126,16 +129,9 @@ namespace Xamarin.Forms.Platform.Android
 			return ItemsSource.GetPosition(item);
 		}
 
-		protected void BindTemplatedItemViewHolder(TemplatedItemViewHolder templatedItemViewHolder, object context)
+		protected virtual void BindTemplatedItemViewHolder(TemplatedItemViewHolder templatedItemViewHolder, object context)
 		{
-			if (ItemsView.ItemSizingStrategy == ItemSizingStrategy.MeasureFirstItem)
-			{
-				templatedItemViewHolder.Bind(context, ItemsView, SetStaticSize, _size);
-			}
-			else
-			{
-				templatedItemViewHolder.Bind(context, ItemsView);
-			}
+			templatedItemViewHolder.Bind(context, ItemsView);
 		}
 
 		void UpdateItemsSource()
@@ -143,11 +139,6 @@ namespace Xamarin.Forms.Platform.Android
 			ItemsSource?.Dispose();
 
 			ItemsSource = CreateItemsSource();
-		}
-
-		void SetStaticSize(Size size)
-		{
-			_size = size;
 		}
 
 		void UpdateUsingItemTemplate()

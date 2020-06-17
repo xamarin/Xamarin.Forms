@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		#endregion IShellPageRendererTracker
 
-		readonly IShellContext _context;
+		IShellContext _context;
 		bool _disposed;
 		FlyoutBehavior _flyoutBehavior;
 		WeakReference<UIViewController> _rendererRef;
@@ -65,6 +65,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_context = context;
 			_nSCache = new NSCache();
+			_context.Shell.PropertyChanged += HandleShellPropertyChanged;
 		}
 
 		public async void OnFlyoutBehaviorChanged(FlyoutBehavior behavior)
@@ -73,11 +74,15 @@ namespace Xamarin.Forms.Platform.iOS
 			await UpdateToolbarItems().ConfigureAwait(false);
 		}
 
+		protected virtual void HandleShellPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.Is(VisualElement.FlowDirectionProperty))
+				UpdateFlowDirection();
+		}
+
 		protected virtual async void OnBackButtonBehaviorPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == BackButtonBehavior.CommandProperty.PropertyName)
-				return;
-			else if (e.PropertyName == BackButtonBehavior.CommandParameterProperty.PropertyName)
+			if (e.PropertyName == BackButtonBehavior.CommandParameterProperty.PropertyName)
 				return;
 			else if (e.PropertyName == BackButtonBehavior.IsEnabledProperty.PropertyName)
 			{
@@ -87,7 +92,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-			await UpdateToolbarItems().ConfigureAwait(false);
+			await UpdateLeftToolbarItems().ConfigureAwait(false);
 		}
 
 		protected virtual void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -126,7 +131,7 @@ namespace Xamarin.Forms.Platform.iOS
 				NavigationItem.Title = Page.Title;
 		}
 
-		protected virtual void OnPageSet(Page oldPage, Page newPage)
+		protected virtual async void OnPageSet(Page oldPage, Page newPage)
 		{
 			if (oldPage != null)
 			{
@@ -149,6 +154,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (oldPage == null)
 				((IShellController)_context.Shell).AddFlyoutBehaviorObserver(this);
+
+			if (newPage != null)
+			{
+				try
+				{
+					await UpdateToolbarItems().ConfigureAwait(false);
+				}
+				catch (Exception exc)
+				{
+					Internals.Log.Warning(nameof(ShellPageRendererTracker), $"Failed to update toolbar items: {exc}");
+				}
+			}
 		}
 
 		protected virtual void OnRendererSet()
@@ -197,27 +214,36 @@ namespace Xamarin.Forms.Platform.iOS
 					NavigationItem.RightBarButtonItems[i].Dispose();
 			}
 
-			List<UIBarButtonItem> items = new List<UIBarButtonItem>();
-			if (Page != null)
+			List<UIBarButtonItem> primaries = null;
+			if (Page.ToolbarItems.Count > 0)
 			{
-				foreach (var item in Page.ToolbarItems)
+				foreach (var item in System.Linq.Enumerable.OrderBy(Page.ToolbarItems, x => x.Priority))
 				{
-					items.Add(item.ToUIBarButtonItem(false, true));
+					(primaries = primaries ?? new List<UIBarButtonItem>()).Add(item.ToUIBarButtonItem(false, true));
 				}
+
+				if (primaries != null)
+					primaries.Reverse();
 			}
 
-			items.Reverse();
-			NavigationItem.SetRightBarButtonItems(items.ToArray(), false);
+			NavigationItem.SetRightBarButtonItems(primaries == null ? new UIBarButtonItem[0] : primaries.ToArray(), false);
 
+			await UpdateLeftToolbarItems().ConfigureAwait(false);
+
+		}
+
+		async Task UpdateLeftToolbarItems()
+		{
 			var behavior = BackButtonBehavior;
 
 			var image = behavior.GetPropertyIfSet<ImageSource>(BackButtonBehavior.IconOverrideProperty, null);
 			var enabled = behavior.GetPropertyIfSet(BackButtonBehavior.IsEnabledProperty, true);
-			var text = behavior.GetPropertyIfSet(BackButtonBehavior.TextOverrideProperty, String.Empty);
-			
+			var text = behavior.GetPropertyIfSet<string>(BackButtonBehavior.TextOverrideProperty, null);
+			var command = behavior.GetPropertyIfSet<object>(BackButtonBehavior.CommandProperty, null);
+
 			UIImage icon = null;
 
-			if (image == null && String.IsNullOrWhiteSpace(text) && (!IsRootPage || _flyoutBehavior != FlyoutBehavior.Flyout))
+			if(IsRootPage && _flyoutBehavior != FlyoutBehavior.Flyout)
 			{
 				NavigationItem.LeftBarButtonItem = null;
 			}
@@ -239,29 +265,36 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (image != null)
 					icon = await image.GetNativeImageAsync();
-				else if (String.IsNullOrWhiteSpace(text))
+				else if (String.IsNullOrWhiteSpace(text) && IsRootPage)
 					icon = DrawHamburger();
 
-				if (icon == null)
+				if (icon != null)
+				{
+					NavigationItem.LeftBarButtonItem =
+						new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, IsRootPage)) { Enabled = enabled };
+				}
+				else if (!String.IsNullOrWhiteSpace(text))
 				{
 					NavigationItem.LeftBarButtonItem =
 						new UIBarButtonItem(text, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, IsRootPage)) { Enabled = enabled };
 				}
 				else
 				{
-					NavigationItem.LeftBarButtonItem =
-						new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, IsRootPage)) { Enabled = enabled };
+					NavigationItem.LeftBarButtonItem = null;
 				}
 
-				if (String.IsNullOrWhiteSpace(image?.AutomationId))
-					NavigationItem.LeftBarButtonItem.AccessibilityIdentifier = "OK";
-				else
-					NavigationItem.LeftBarButtonItem.AccessibilityIdentifier = image.AutomationId;
-
-				if (image != null)
+				if (NavigationItem.LeftBarButtonItem != null)
 				{
-					NavigationItem.LeftBarButtonItem.SetAccessibilityHint(image);
-					NavigationItem.LeftBarButtonItem.SetAccessibilityLabel(image);
+					if (String.IsNullOrWhiteSpace(image?.AutomationId))
+						NavigationItem.LeftBarButtonItem.AccessibilityIdentifier = "OK";
+					else
+						NavigationItem.LeftBarButtonItem.AccessibilityIdentifier = image.AutomationId;
+
+					if (image != null)
+					{
+						NavigationItem.LeftBarButtonItem.SetAccessibilityHint(image);
+						NavigationItem.LeftBarButtonItem.SetAccessibilityLabel(image);
+					}
 				}
 			}
 		}
@@ -269,7 +302,8 @@ namespace Xamarin.Forms.Platform.iOS
 		void LeftBarButtonItemHandler(UIViewController controller, bool isRootPage)
 		{
 			var behavior = BackButtonBehavior;
-			var command = behavior.GetPropertyIfSet(BackButtonBehavior.CommandProperty, new Command(() => OnMenuButtonPressed(this, EventArgs.Empty)));
+			ICommand defaultCommand = new Command(() => OnMenuButtonPressed(this, EventArgs.Empty));
+			var command = behavior.GetPropertyIfSet(BackButtonBehavior.CommandProperty, defaultCommand);
 			var commandParameter = behavior.GetPropertyIfSet<object>(BackButtonBehavior.CommandParameterProperty, null);
 
 			if (command == null && !isRootPage && controller?.ParentViewController is UINavigationController navigationController)
@@ -476,6 +510,19 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		void UpdateFlowDirection()
+		{
+			if (_searchHandlerAppearanceTracker != null)
+			{
+				_searchHandlerAppearanceTracker.UpdateFlowDirection(_context.Shell);
+			}
+			if (_searchController != null)
+			{
+				_searchController.View.UpdateFlowDirection(_context.Shell);
+				_searchController.SearchBar.UpdateFlowDirection(_context.Shell);
+			}
+		}
+
 		void AttachSearchController()
 		{
 
@@ -533,6 +580,8 @@ namespace Xamarin.Forms.Platform.iOS
 			searchBar.ShowsBookmarkButton = SearchHandler.ClearPlaceholderEnabled;
 
 			_searchHandlerAppearanceTracker = new SearchHandlerAppearanceTracker(searchBar, SearchHandler);
+
+			UpdateFlowDirection();
 		}
 
 		void BookmarkButtonClicked(object sender, EventArgs e)
@@ -566,17 +615,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void SearchButtonClicked(object sender, EventArgs e)
 		{
-			_searchController.Active = false;
 			((ISearchHandlerController)SearchHandler).QueryConfirmed();
 		}
 
 		async void SetSearchBarIcon(UISearchBar searchBar, ImageSource source, UISearchBarIcon icon)
 		{
 			var result = await source.GetNativeImageAsync();
-			var newResult = result.ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
-			searchBar.SetImageforSearchBarIcon(newResult, icon, UIControlState.Normal);
-			searchBar.SetImageforSearchBarIcon(newResult, icon, UIControlState.Highlighted);
-			searchBar.SetImageforSearchBarIcon(newResult, icon, UIControlState.Selected);
+			if (result != null)
+			{
+				var newResult = result.ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
+				searchBar.SetImageforSearchBarIcon(newResult, icon, UIControlState.Normal);
+				searchBar.SetImageforSearchBarIcon(newResult, icon, UIControlState.Highlighted);
+				searchBar.SetImageforSearchBarIcon(newResult, icon, UIControlState.Selected);
+			}
 		}
 
 		void PageAppearing(object sender, EventArgs e)
@@ -611,8 +662,10 @@ namespace Xamarin.Forms.Platform.iOS
 				if (BackButtonBehavior != null)
 					BackButtonBehavior.PropertyChanged -= OnBackButtonBehaviorPropertyChanged;
 
+				_context.Shell.PropertyChanged -= HandleShellPropertyChanged;
 			}
 
+			_context = null;
 			SearchHandler = null;
 			Page = null;
 			BackButtonBehavior = null;

@@ -70,7 +70,11 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateTextColor();
 			}
-			else if (e.IsOneOf(SearchHandler.PlaceholderColorProperty))
+			else if (e.Is(SearchHandler.TextTransformProperty))
+			{
+				UpdateTextTransform();
+			}
+			else if (e.Is(SearchHandler.PlaceholderColorProperty))
 			{
 				UpdatePlaceholderColor();
 			}
@@ -100,6 +104,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			UpdateBackgroundColor();
 			UpdateTextColor();
+			UpdateTextTransform();
 			UpdatePlaceholderColor();
 			UpdateCancelButtonColor();
 		}
@@ -123,6 +128,11 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateVerticalTextAlignment()
 		{
 			_editText.UpdateVerticalAlignment(_searchHandler.VerticalTextAlignment, Xamarin.Forms.TextAlignment.Center.ToVerticalGravityFlags());
+		}
+		
+		void UpdateTextTransform()
+		{
+			_editText.Text = _searchHandler.UpdateFormsText(_editText.Text, _searchHandler.TextTransform);
 		}
 
 		void UpdateBackgroundColor()
@@ -162,7 +172,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (image != null && image.Drawable != null)
 			{
 				if (!toColor.IsDefault)
-					image.Drawable.SetColorFilter(toColor.ToAndroid(), PorterDuff.Mode.SrcIn);
+					image.Drawable.SetColorFilter(toColor, FilterMode.SrcIn);
 				else
 					image.Drawable.ClearColorFilter();
 			}

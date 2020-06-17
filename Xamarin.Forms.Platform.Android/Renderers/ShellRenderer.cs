@@ -1,8 +1,19 @@
 ﻿using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Fragment.App;
+#else
 using Android.Support.V4.App;
+#endif
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+using AndroidX.DrawerLayout.Widget;
+using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
+#else
 using Android.Support.V4.Widget;
+using Toolbar = Android.Support.V7.Widget.Toolbar;
+#endif
 using Android.Views;
 using Android.Widget;
 using System;
@@ -10,9 +21,9 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using AColor = Android.Graphics.Color;
+using ARect = Android.Graphics.Rect;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
-using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -149,11 +160,11 @@ namespace Xamarin.Forms.Platform.Android
 		event EventHandler<PropertyChangedEventArgs> _elementPropertyChanged;
 
 		public ShellRenderer(Context context)
-		{	
+		{
 			AndroidContext = context;
 		}
 
-		
+
 
 		protected Context AndroidContext { get; }
 		protected Shell Element { get; private set; }
@@ -242,7 +253,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			// Previewer Hack
 			Profile.FramePartition("Previewer Hack");
-			if (AndroidContext.GetActivity() != null)
+			if (AndroidContext.GetActivity() != null && shell.CurrentItem != null)
 				SwitchFragment(FragmentManager, _frameLayout, shell.CurrentItem, false);
 
 			Profile.FrameEnd();
@@ -256,7 +267,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			Profile.FramePartition("IsDesignerContext");
 			if (AndroidContext.IsDesignerContext())
-				return; 
+				return;
 
 			Profile.FramePartition("CreateShellItemRenderer");
 			var previousRenderer = _currentRenderer;
@@ -265,7 +276,7 @@ namespace Xamarin.Forms.Platform.Android
 			var fragment = _currentRenderer.Fragment;
 
 			Profile.FramePartition("Transaction");
-			FragmentTransaction transaction = manager.BeginTransaction();
+			FragmentTransaction transaction = manager.BeginTransactionEx();
 
 			if (animate)
 				transaction.SetTransitionEx((int)global::Android.App.FragmentTransit.EnterMask);
@@ -274,7 +285,7 @@ namespace Xamarin.Forms.Platform.Android
 			transaction.CommitAllowingStateLossEx();
 
 			Profile.FramePartition("OnDestroyed");
-			void OnDestroyed (object sender, EventArgs args)
+			void OnDestroyed(object sender, EventArgs args)
 			{
 				previousRenderer.Destroyed -= OnDestroyed;
 
@@ -297,7 +308,7 @@ namespace Xamarin.Forms.Platform.Android
 			int height = (int)AndroidContext.ToPixels(Element.Height);
 
 			Profile.FramePartition("Measure");
-			_flyoutRenderer.AndroidView.Measure(MeasureSpecFactory.MakeMeasureSpec(width, MeasureSpecMode.Exactly), 
+			_flyoutRenderer.AndroidView.Measure(MeasureSpecFactory.MakeMeasureSpec(width, MeasureSpecMode.Exactly),
 				MeasureSpecFactory.MakeMeasureSpec(height, MeasureSpecMode.Exactly));
 
 			Profile.FramePartition("Layout");
@@ -346,11 +357,14 @@ namespace Xamarin.Forms.Platform.Android
 					color = Color.FromHex("#03A9F4").ToAndroid();
 				}
 
-				Profile.FramePartition("Create SplitDrawable");
-				var split = new SplitDrawable(color, statusBarHeight, navigationBarHeight);
-
-				Profile.FramePartition("SetBackground");
-				decorView.SetBackground(split);
+				if (!(decorView.Background is SplitDrawable splitDrawable) ||
+					splitDrawable.Color != color || splitDrawable.TopSize != statusBarHeight || splitDrawable.BottomSize != navigationBarHeight)
+				{
+					Profile.FramePartition("Create SplitDrawable");
+					var split = new SplitDrawable(color, statusBarHeight, navigationBarHeight);
+					Profile.FramePartition("SetBackground");
+					decorView.SetBackground(split);
+				}
 			}
 
 			Profile.FrameEnd("UpdtStatBarClr");
@@ -358,15 +372,15 @@ namespace Xamarin.Forms.Platform.Android
 
 		class SplitDrawable : Drawable
 		{
-			readonly int _bottomSize;
-			readonly AColor _color;
-			readonly int _topSize;
+			public int BottomSize { get; }
+			public AColor Color { get; }
+			public int TopSize { get; }
 
 			public SplitDrawable(AColor color, int topSize, int bottomSize)
 			{
-				_color = color;
-				_bottomSize = bottomSize;
-				_topSize = topSize;
+				Color = color;
+				BottomSize = bottomSize;
+				TopSize = topSize;
 			}
 
 			public override int Opacity => (int)Format.Opaque;
@@ -378,11 +392,11 @@ namespace Xamarin.Forms.Platform.Android
 				using (var paint = new Paint())
 				{
 
-					paint.Color = _color;
+					paint.Color = Color;
 
-					canvas.DrawRect(new Rect(0, 0, bounds.Right, _topSize), paint);
+					canvas.DrawRect(new ARect(0, 0, bounds.Right, TopSize), paint);
 
-					canvas.DrawRect(new Rect(0, bounds.Bottom - _bottomSize, bounds.Right, bounds.Bottom), paint);
+					canvas.DrawRect(new ARect(0, bounds.Bottom - BottomSize, bounds.Right, bounds.Bottom), paint);
 
 					paint.Dispose();
 				}
@@ -415,7 +429,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (_currentRenderer != null && _currentRenderer.Fragment.IsAlive())
 				{
-					FragmentTransaction transaction = FragmentManager.BeginTransaction();
+					FragmentTransaction transaction = FragmentManager.BeginTransactionEx();
 					transaction.RemoveEx(_currentRenderer.Fragment);
 					transaction.CommitAllowingStateLossEx();
 					FragmentManager.ExecutePendingTransactionsEx();

@@ -14,8 +14,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 			var button = new Button
 			{
-				Text = "Enable CarouselView",
-				AutomationId = "EnableCarouselView"
+				Text = "Enable IndicatorView",
+				AutomationId = "EnableIndicatorView"
 			};
 			button.Clicked += ButtonClicked;
 
@@ -33,14 +33,26 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 							new CarouselCodeGallery(ItemsLayoutOrientation.Vertical), Navigation),
 						GalleryBuilder.NavButton("CarouselView (XAML, Horizontal)", () =>
 							new CarouselXamlGallery(), Navigation),
-						GalleryBuilder.NavButton("CarouselView (Items)", () =>
+						GalleryBuilder.NavButton("CarouselView (Indicators Forms)", () =>
 							new CarouselItemsGallery(), Navigation),
+						GalleryBuilder.NavButton("CarouselView (Indicators Default (Native))", () =>
+							new CarouselItemsGallery(useNativeIndicators: true), Navigation),
+						GalleryBuilder.NavButton("CarouselView Async", () =>
+							new CarouselItemsGallery(setCollectionWithAsync:true, useNativeIndicators: true), Navigation),
 	  					GalleryBuilder.NavButton("CarouselView Snap", () =>
  							new CarouselSnapGallery(), Navigation),
 						GalleryBuilder.NavButton("ObservableCollection and CarouselView", () =>
  							new CollectionCarouselViewGallery(), Navigation),
 						GalleryBuilder.NavButton("CarouselView EmptyView", () =>
-  							new EmptyCarouselGallery(), Navigation)
+  							new EmptyCarouselGallery(), Navigation),
+						GalleryBuilder.NavButton("IndicatorView", () =>
+  							new IndicatorCodeGallery(), Navigation),
+						GalleryBuilder.NavButton("CarouselView SetPosition Ctor", () =>
+							new CarouselItemsGallery(useNativeIndicators: true, setPositionOnConstructor: true), Navigation),
+						GalleryBuilder.NavButton("CarouselView SetPosition Appearing", () =>
+							new CarouselItemsGallery(useNativeIndicators: true, setPositionOnAppearing: true), Navigation),
+						GalleryBuilder.NavButton("CarouselView SetPosition Ctor No Animation", () =>
+							new CarouselItemsGallery(useNativeIndicators: true, setPositionOnConstructor: true, useScrollAnimated: false), Navigation),
 					}
 				}
 			};
@@ -50,7 +62,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		{
 			var button = sender as Button;
 
-			button.Text = "CarouselView Enabled!";
+			button.Text = "IndicatorView Enabled!";
 			button.TextColor = Color.Black;
 			button.IsEnabled = false;
 

@@ -1,7 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using ViewGroup = Android.Views.ViewGroup;
 
 namespace Xamarin.Forms.Platform.Android
@@ -10,7 +15,9 @@ namespace Xamarin.Forms.Platform.Android
 		where TItemsView : StructuredItemsView
 		where TItemsViewSource : IItemsViewSource
 	{
-		internal StructuredItemsViewAdapter(TItemsView itemsView, 
+		Size? _size;
+
+		protected internal StructuredItemsViewAdapter(TItemsView itemsView, 
 			Func<View, Context, ItemContentView> createItemContentView = null) : base(itemsView, createItemContentView)
 		{
 			UpdateHasHeader();
@@ -90,6 +97,18 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnBindViewHolder(holder, position);
 		}
 
+		protected override void BindTemplatedItemViewHolder(TemplatedItemViewHolder templatedItemViewHolder, object context)
+		{
+			if (ItemsView.ItemSizingStrategy == ItemSizingStrategy.MeasureFirstItem)
+			{
+				templatedItemViewHolder.Bind(context, ItemsView, SetStaticSize, _size);
+			}
+			else
+			{
+				base.BindTemplatedItemViewHolder(templatedItemViewHolder, context);
+			}
+		}
+
 		void UpdateHasHeader()
 		{
 			ItemsSource.HasHeader = ItemsView.Header != null;
@@ -120,11 +139,21 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (content is View formsView)
 			{
-				return SimpleViewHolder.FromFormsView(formsView, context);
+				var viewHolder = SimpleViewHolder.FromFormsView(formsView, context);
+
+				// Propagate the binding context, visual, etc. from the ItemsView to the header/footer
+				ItemsView.AddLogicalChild(viewHolder.View);
+
+				return viewHolder;
 			}
 
 			// No template, Footer is not a Forms View, so just display Footer.ToString
 			return SimpleViewHolder.FromText(content?.ToString(), context, fill: false);
+		}
+
+		void SetStaticSize(Size size)
+		{
+			_size = size;
 		}
 	}
 }

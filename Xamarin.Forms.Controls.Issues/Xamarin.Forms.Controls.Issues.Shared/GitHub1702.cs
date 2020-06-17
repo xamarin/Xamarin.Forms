@@ -4,9 +4,13 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1702, "[Enhancement] Padding on Buttons", PlatformAffected.All)]
 	public class GitHub1702 : TestContentPage
@@ -59,7 +63,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var buttons = layout.Children.OfType<Button>();
 			layout.Children.Insert(0, ActionGrid(buttons.ToList()));
-			PaddingAnimation(buttons).Start();
+			PaddingAnimation(buttons);
 
 			Content = layout;
 		}
@@ -122,9 +126,9 @@ namespace Xamarin.Forms.Controls.Issues
 			return actionGrid;
 		}
 
-		Thread PaddingAnimation(IEnumerable<Button> buttons)
+		void PaddingAnimation(IEnumerable<Button> buttons)
 		{
-			return new Thread(() =>
+			Task.Run(async () =>
 			{
 				int increment = 1;
 				int current = 0;
@@ -134,7 +138,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 				while (true)
 				{
-					Thread.Sleep(sleep);
+					await Task.Delay(sleep);
 
 					if (!animation)
 						continue;

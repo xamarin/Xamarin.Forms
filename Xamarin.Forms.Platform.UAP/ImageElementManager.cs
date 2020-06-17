@@ -1,18 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.UWP;
+using WStretch = Windows.UI.Xaml.Media.Stretch;
 
 namespace Xamarin.Forms.Platform.UWP
 {
 	public static class ImageElementManager
 	{
+		static bool _nativeAnimationSupport = false;
+		static ImageElementManager()
+		{
+			if (Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Media.Imaging.BitmapImage", "AutoPlay"))
+				if (Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Media.Imaging.BitmapImage", "IsPlaying"))
+					if (Windows.Foundation.Metadata.ApiInformation.IsMethodPresent("Windows.UI.Xaml.Media.Imaging.BitmapImage", "Play"))
+						if (Windows.Foundation.Metadata.ApiInformation.IsMethodPresent("Windows.UI.Xaml.Media.Imaging.BitmapImage", "Stop"))
+							_nativeAnimationSupport = true;
+		}
+
 		public static void Init(IImageVisualElementRenderer renderer)
 		{
 			renderer.ElementPropertyChanged += OnElementPropertyChanged;
@@ -34,6 +42,36 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (e.PropertyName == Image.AspectProperty.PropertyName)
 				UpdateAspect(renderer, controller);
+			else if (e.PropertyName == Image.IsAnimationPlayingProperty.PropertyName)
+				StartStopAnimation(renderer, controller);
+		}
+
+		static void StartStopAnimation(IImageVisualElementRenderer renderer, IImageElement controller)
+		{
+			if (renderer.IsDisposed || controller == null)
+			{
+				return;
+			}
+
+			if (controller.IsLoading)
+				return;
+
+			if (renderer.GetImage()?.Source is BitmapImage bitmapImage)
+			{
+				if (_nativeAnimationSupport)
+				{
+					if (controller.IsAnimationPlaying && !bitmapImage.IsPlaying)
+						bitmapImage.Play();
+					else if (!controller.IsAnimationPlaying && bitmapImage.IsPlaying)
+						bitmapImage.Stop();
+
+					bitmapImage.RegisterPropertyChangedCallback(BitmapImage.IsPlayingProperty, OnIsPlaying);
+				}
+			}
+		}
+
+		static void OnIsPlaying(DependencyObject sender, DependencyProperty dp)
+		{
 		}
 
 		static void OnElementChanged(object sender, VisualElementChangedEventArgs e)
@@ -46,8 +84,6 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateAspect(renderer, controller);
 			}
 		}
-
-
 
 		static void OnControlChanged(object sender, EventArgs e)
 		{
@@ -83,17 +119,17 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		static Stretch GetStretch(Aspect aspect)
+		static WStretch GetStretch(Aspect aspect)
 		{
 			switch (aspect)
 			{
 				case Aspect.Fill:
-					return Stretch.Fill;
+					return WStretch.Fill;
 				case Aspect.AspectFill:
-					return Stretch.UniformToFill;
+					return WStretch.UniformToFill;
 				default:
 				case Aspect.AspectFit:
-					return Stretch.Uniform;
+					return WStretch.Uniform;
 			}
 		}
 
@@ -119,10 +155,13 @@ namespace Xamarin.Forms.Platform.UWP
 				if (renderer.IsDisposed)
 					return;
 
+				if (imagesource is BitmapImage bitmapImage && _nativeAnimationSupport)
+					bitmapImage.AutoPlay = false;
+
 				if (Control != null)
 					renderer.SetImage(imagesource);
 
-				RefreshImage(imageElement as IViewController);
+				RefreshImage(renderer);
 			}
 			finally
 			{
@@ -130,12 +169,13 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-
-		static internal void RefreshImage(IViewController element)
+		static internal void RefreshImage(IImageVisualElementRenderer renderer)
 		{
-			element?.InvalidateMeasure(InvalidationTrigger.RendererReady);
+			if(renderer.Element is IViewController element)
+				element?.InvalidateMeasure(InvalidationTrigger.RendererReady);
+
+			if(renderer.Element is IImageElement controller)
+				StartStopAnimation(renderer, controller);
 		}
-
-
 	}
 }

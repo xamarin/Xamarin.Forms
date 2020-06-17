@@ -1,4 +1,5 @@
 ﻿using System;
+using CoreGraphics;
 using Foundation;
 using UIKit;
 
@@ -6,16 +7,17 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public abstract class ItemsViewController<TItemsView> : UICollectionViewController
 	where TItemsView : ItemsView
-	{ 
+	{
+		public const int EmptyTag = 333;
+
 		public IItemsViewSource ItemsSource { get; protected set; }
 		public TItemsView ItemsView { get; }
 		protected ItemsViewLayout ItemsViewLayout { get; set; }
 		bool _initialConstraintsSet;
 		bool _isEmpty;
-		bool _currentBackgroundIsEmptyView;
+		bool _emptyViewDisplayed;
 		bool _disposed;
 
-		UIView _backgroundUIView;
 		UIView _emptyUIView;
 		VisualElement _emptyViewFormsElement;
 
@@ -56,13 +58,11 @@ namespace Xamarin.Forms.Platform.iOS
 			if (disposing)
 			{
 				ItemsSource?.Dispose();
+				Delegator?.Dispose();
 
 				_emptyUIView?.Dispose();
 				_emptyUIView = null;
-
-				_backgroundUIView?.Dispose();
-				_backgroundUIView = null;
-
+	
 				_emptyViewFormsElement = null;
 			}
 
@@ -149,13 +149,13 @@ namespace Xamarin.Forms.Platform.iOS
 			// are set up the first time this method is called.
 			if (!_initialConstraintsSet)
 			{
-				ItemsViewLayout.ConstrainTo(CollectionView.Bounds.Size);
+				ItemsViewLayout.SetInitialConstraints(CollectionView.Bounds.Size);
 				UpdateEmptyView();
 				_initialConstraintsSet = true;
 			}
 			else
 			{
-				ResizeEmptyView();
+				LayoutEmptyView();
 			}
 		}
 
@@ -196,13 +196,13 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			cell.ContentSizeChanged -= CellContentSizeChanged;
 
-			cell.Bind(ItemsView, ItemsSource[indexPath]);
+			cell.Bind(ItemsView.ItemTemplate, ItemsSource[indexPath], ItemsView);
 
 			cell.ContentSizeChanged += CellContentSizeChanged;
 
 			ItemsViewLayout.PrepareCellForLayout(cell);
 		}
-
+		
 		public virtual NSIndexPath GetIndexForItem(object item)
 		{
 			return ItemsSource.GetIndexForItem(item);
@@ -281,13 +281,21 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateEmptyViewVisibility(ItemsSource?.ItemCount == 0);
 		}
 
-		void ResizeEmptyView()
+		protected virtual CGRect DetermineEmptyViewFrame() 
 		{
-			if (_emptyUIView != null)
-				_emptyUIView.Frame = CollectionView.Frame;
+			return new CGRect(CollectionView.Frame.X, CollectionView.Frame.Y,
+					CollectionView.Frame.Width, CollectionView.Frame.Height);
+		}
 
-			if (_emptyViewFormsElement != null)
-				_emptyViewFormsElement.Layout(CollectionView.Frame.ToRectangle());
+		void LayoutEmptyView()
+		{
+			var frame = DetermineEmptyViewFrame();	
+
+			if (_emptyUIView != null)
+				_emptyUIView.Frame = frame;
+
+			if (_emptyViewFormsElement != null && ItemsView.LogicalChildren.Contains(_emptyViewFormsElement))
+				_emptyViewFormsElement.Layout(frame.ToRectangle());
 		}
 
 		protected void RemeasureLayout(VisualElement formsElement)
@@ -342,15 +350,17 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (isEmpty && _emptyUIView != null)
 			{
-				if (!_currentBackgroundIsEmptyView)
+				var emptyView = CollectionView.ViewWithTag(EmptyTag);
+
+				if(emptyView != null)
 				{
-					// Cache any existing background view so we can restore it later
-					_backgroundUIView = CollectionView.BackgroundView;
+					emptyView.RemoveFromSuperview();
+					ItemsView.RemoveLogicalChild(_emptyViewFormsElement);
 				}
 
-				// Replace any current background with the EmptyView. This will also set the native empty view's frame
-				// to match the UICollectionView's frame
-				CollectionView.BackgroundView = _emptyUIView;
+				_emptyUIView.Tag = EmptyTag;
+				CollectionView.AddSubview(_emptyUIView);
+				LayoutEmptyView();
 
 				if (_emptyViewFormsElement != null)
 				{
@@ -364,19 +374,20 @@ namespace Xamarin.Forms.Platform.iOS
 					_emptyViewFormsElement.Layout(_emptyUIView.Frame.ToRectangle());
 				}
 
-				_currentBackgroundIsEmptyView = true;
+				_emptyViewDisplayed = true;
 			}
 			else
 			{
 				// Is the empty view currently in the background? Swap back to the default.
-				if (_currentBackgroundIsEmptyView)
+				if (_emptyViewDisplayed)
 				{
-					CollectionView.BackgroundView = _backgroundUIView;
+					_emptyUIView.RemoveFromSuperview();
 					ItemsView.RemoveLogicalChild(_emptyViewFormsElement);
 				}
 
-				_currentBackgroundIsEmptyView = false;
+				_emptyViewDisplayed = false;
 			}
 		}
+		
 	}
 }

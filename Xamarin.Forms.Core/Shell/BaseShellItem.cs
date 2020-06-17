@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
 using System.ComponentModel;
+using System.Linq;
+using Xamarin.Forms.StyleSheets;
 
 namespace Xamarin.Forms
 {
@@ -14,6 +16,9 @@ namespace Xamarin.Forms
 		public event EventHandler Disappearing;
 
 		bool _hasAppearing;
+		const string DefaultFlyoutItemLabelStyle = "Default_FlyoutItemLabelStyle";
+		const string DefaultFlyoutItemImageStyle = "Default_FlyoutItemImageStyle";
+		const string DefaultFlyoutItemLayoutStyle = "Default_FlyoutItemLayoutStyle";
 
 		#region PropertyKeys
 
@@ -146,6 +151,21 @@ namespace Xamarin.Forms
 				action();
 			else
 			{
+				if (Navigation.ModalStack.Count > 0)
+				{
+					Navigation.ModalStack[Navigation.ModalStack.Count - 1]
+						.OnAppearing(action);
+
+					return;
+				}
+				else if (Navigation.NavigationStack.Count > 1)
+				{
+					Navigation.NavigationStack[Navigation.NavigationStack.Count - 1]
+						.OnAppearing(action);
+
+					return;
+				}
+
 				EventHandler eventHandler = null;
 				eventHandler = (_, __) =>
 				{
@@ -239,12 +259,170 @@ namespace Xamarin.Forms
 				OnPropertyChanged(VisualElement.FlowDirectionProperty.PropertyName);
 			}
 		}
+
 		bool IFlowDirectionController.ApplyEffectiveFlowDirectionToChildContainer => true;
 		double IFlowDirectionController.Width => (Parent as VisualElement)?.Width ?? 0;
 
-
 		internal virtual void ApplyQueryAttributes(IDictionary<string, string> query)
 		{
+		}
+
+		static void UpdateFlyoutItemStyles(Grid flyoutItemCell, IStyleSelectable source)
+		{
+			List<string> bindableObjectStyle = new List<string>() {
+				DefaultFlyoutItemLabelStyle,
+				DefaultFlyoutItemImageStyle,
+				DefaultFlyoutItemLayoutStyle,
+				FlyoutItem.LabelStyle,
+				FlyoutItem.ImageStyle,
+				FlyoutItem.LayoutStyle };
+
+			if (source?.Classes != null)
+				foreach (var styleClass in source.Classes)
+					bindableObjectStyle.Add(styleClass);
+
+			flyoutItemCell
+				.StyleClass = bindableObjectStyle;
+			flyoutItemCell.Children.OfType<Label>().First()
+				.StyleClass = bindableObjectStyle;
+			flyoutItemCell.Children.OfType<Image>().First()
+				.StyleClass = bindableObjectStyle;
+		}
+
+		internal static DataTemplate CreateDefaultFlyoutItemCell(IStyleSelectable styleSelectable, string textBinding, string iconBinding)
+		{
+			return new DataTemplate(() =>
+			{
+				var grid = new Grid();
+				if (Device.RuntimePlatform == Device.UWP)
+					grid.ColumnSpacing = grid.RowSpacing = 0;
+
+				grid.Resources = new ResourceDictionary();
+
+				var defaultLabelClass = new Style(typeof(Label))
+				{
+					Setters = {
+						new Setter { Property = Label.VerticalTextAlignmentProperty, Value = TextAlignment.Center }
+					},
+					Class = DefaultFlyoutItemLabelStyle,
+				};
+
+				var defaultImageClass = new Style(typeof(Image))
+				{
+					Setters = {
+						new Setter { Property = Image.VerticalOptionsProperty, Value = LayoutOptions.Center }
+					},
+					Class = DefaultFlyoutItemImageStyle,
+				};
+
+				var defaultGridClass = new Style(typeof(Grid))
+				{
+					Class = DefaultFlyoutItemLayoutStyle,
+				};
+
+
+				var groups = new VisualStateGroupList();
+
+				var commonGroup = new VisualStateGroup();
+				commonGroup.Name = "CommonStates";
+				groups.Add(commonGroup);
+
+				var normalState = new VisualState();
+				normalState.Name = "Normal";
+				commonGroup.States.Add(normalState);
+
+				var selectedState = new VisualState();
+				selectedState.Name = "Selected";
+
+				if (Device.RuntimePlatform != Device.UWP)
+				{
+					selectedState.Setters.Add(new Setter
+					{
+						Property = VisualElement.BackgroundColorProperty,
+						Value = new Color(0.95)
+					});
+				}
+
+				commonGroup.States.Add(selectedState);
+
+				defaultGridClass.Setters.Add(new Setter { Property = VisualStateManager.VisualStateGroupsProperty, Value = groups });
+
+				if (Device.RuntimePlatform == Device.Android)
+					defaultGridClass.Setters.Add(new Setter { Property = Grid.HeightRequestProperty, Value = 50 });
+
+				ColumnDefinitionCollection columnDefinitions = new ColumnDefinitionCollection();
+
+				if (Device.RuntimePlatform == Device.Android)
+					columnDefinitions.Add(new ColumnDefinition { Width = 54 });
+				else if (Device.RuntimePlatform == Device.iOS)
+					columnDefinitions.Add(new ColumnDefinition { Width = 50 });
+				else if (Device.RuntimePlatform == Device.UWP)
+					columnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+				columnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
+				defaultGridClass.Setters.Add(new Setter { Property = Grid.ColumnDefinitionsProperty, Value = columnDefinitions });
+
+				var image = new Image();
+
+				double sizeRequest = -1;
+				if (Device.RuntimePlatform == Device.Android)
+					sizeRequest = 24;
+				else if (Device.RuntimePlatform == Device.iOS)
+					sizeRequest = 22;
+				else if (Device.RuntimePlatform == Device.UWP)
+					sizeRequest = 16;
+
+				if (sizeRequest > 0)
+				{
+					defaultImageClass.Setters.Add(new Setter() { Property = Image.HeightRequestProperty, Value = sizeRequest });
+					defaultImageClass.Setters.Add(new Setter() { Property = Image.WidthRequestProperty, Value = sizeRequest });
+				}
+
+				if (Device.RuntimePlatform == Device.UWP)
+				{
+					defaultImageClass.Setters.Add(new Setter { Property = Image.HorizontalOptionsProperty, Value = LayoutOptions.Start });
+					defaultImageClass.Setters.Add(new Setter { Property = Image.MarginProperty, Value = new Thickness(12, 0, 12, 0) });
+				}
+
+				Binding imageBinding = new Binding(iconBinding);
+				defaultImageClass.Setters.Add(new Setter { Property = Image.SourceProperty, Value = imageBinding });
+
+				grid.Children.Add(image);
+
+				var label = new Label();
+				Binding labelBinding = new Binding(textBinding);
+				defaultLabelClass.Setters.Add(new Setter { Property = Label.TextProperty, Value = labelBinding });
+
+				grid.Children.Add(label, 1, 0);
+
+				if (Device.RuntimePlatform == Device.Android)
+				{
+					defaultLabelClass.Setters.Add(new Setter { Property = Label.FontSizeProperty, Value = 14 });
+					defaultLabelClass.Setters.Add(new Setter { Property = Label.TextColorProperty, Value = Color.Black.MultiplyAlpha(0.87) });
+					defaultLabelClass.Setters.Add(new Setter { Property = Label.FontFamilyProperty, Value = "sans-serif-medium" });
+					defaultLabelClass.Setters.Add(new Setter { Property = Label.MarginProperty, Value = new Thickness(20, 0, 0, 0) });
+				}
+				else if (Device.RuntimePlatform == Device.iOS)
+				{
+					defaultLabelClass.Setters.Add(new Setter { Property = Label.FontSizeProperty, Value = Device.GetNamedSize(NamedSize.Small, label) });
+					defaultLabelClass.Setters.Add(new Setter { Property = Label.FontAttributesProperty, Value = FontAttributes.Bold });
+				}
+				else if (Device.RuntimePlatform == Device.UWP)
+				{
+					defaultLabelClass.Setters.Add(new Setter { Property = Label.HorizontalOptionsProperty, Value = LayoutOptions.Start });
+					defaultLabelClass.Setters.Add(new Setter { Property = Label.HorizontalTextAlignmentProperty, Value = TextAlignment.Start });
+				}
+
+				INameScope nameScope = new NameScope();
+				NameScope.SetNameScope(grid, nameScope);
+				nameScope.RegisterName("FlyoutItemLayout", grid);
+				nameScope.RegisterName("FlyoutItemImage", image);
+				nameScope.RegisterName("FlyoutItemLabel", label);
+
+				UpdateFlyoutItemStyles(grid, styleSelectable);
+				grid.Resources = new ResourceDictionary() { defaultGridClass, defaultLabelClass, defaultImageClass };
+				return grid;
+			});
 		}
 	}
 

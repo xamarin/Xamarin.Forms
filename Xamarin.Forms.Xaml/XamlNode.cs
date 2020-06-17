@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Xaml
 
 		public override void Accept(IXamlNodeVisitor visitor, INode parentNode)
 		{
-			if (!SkipVisitNode(visitor, parentNode) && visitor.VisitingMode == TreeVisitingMode.TopDown)
+			if (visitor.VisitingMode == TreeVisitingMode.TopDown && !SkipVisitNode(visitor, parentNode))
 				visitor.Visit(this, parentNode);
 
 			if (!SkipChildren(visitor, this, parentNode)) {
@@ -151,7 +151,7 @@ namespace Xamarin.Forms.Xaml
 					node.Accept(visitor, this);
 			}
 
-			if (!SkipVisitNode(visitor, parentNode) && visitor.VisitingMode == TreeVisitingMode.BottomUp)
+			if (visitor.VisitingMode == TreeVisitingMode.BottomUp && !SkipVisitNode(visitor, parentNode))
 				visitor.Visit(this, parentNode);
 
 		}
@@ -190,13 +190,13 @@ namespace Xamarin.Forms.Xaml
 
 	abstract class RootNode : ElementNode
 	{
-		protected RootNode(XmlType xmlType, IXmlNamespaceResolver nsResolver) : base(xmlType, xmlType.NamespaceUri, nsResolver)
+		protected RootNode(XmlType xmlType, IXmlNamespaceResolver nsResolver, int linenumber = -1, int lineposition = -1) : base(xmlType, xmlType.NamespaceUri, nsResolver, linenumber: linenumber, lineposition: lineposition)
 		{
 		}
 
 		public override void Accept(IXamlNodeVisitor visitor, INode parentNode)
 		{
-			if (!SkipVisitNode(visitor, parentNode) && visitor.VisitingMode == TreeVisitingMode.TopDown)
+			if (visitor.VisitingMode == TreeVisitingMode.TopDown && !SkipVisitNode(visitor, parentNode))
 				visitor.Visit(this, parentNode);
 
 			if (!SkipChildren(visitor, this, parentNode)) {
@@ -206,7 +206,7 @@ namespace Xamarin.Forms.Xaml
 					node.Accept(visitor, this);
 			}
 
-			if (!SkipVisitNode(visitor, parentNode) && visitor.VisitingMode == TreeVisitingMode.BottomUp)
+			if (visitor.VisitingMode == TreeVisitingMode.BottomUp && !SkipVisitNode(visitor, parentNode))
 				visitor.Visit(this, parentNode);
 		}
 	}

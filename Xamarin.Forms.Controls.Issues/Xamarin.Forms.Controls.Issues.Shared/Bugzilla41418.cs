@@ -2,6 +2,7 @@
 using System.Threading;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using System.Threading.Tasks;
 
 #if UITEST
 using Xamarin.UITest;
@@ -10,6 +11,9 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 41418, "Margin inside ScrollView not working properly", PlatformAffected.All)]
 	public class Bugzilla41418 : TestContentPage
@@ -46,12 +50,13 @@ namespace Xamarin.Forms.Controls.Issues
 			var disappeared = false;
 
 			// change margin of box after the first rendering
-			new Thread(() => {
+			Task.Run(async () =>
+			{
 				while (true)
 				{
 					for (int margin = 20; margin < 160; margin += 20)
 					{
-						Thread.Sleep(1000);
+						await Task.Delay(1000);
 						if (disappeared)
 							return;
 						Device.BeginInvokeOnMainThread(() =>
