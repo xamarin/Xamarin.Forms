@@ -1,12 +1,8 @@
 variables:
-- name: DefaultBuildConfiguration
-  value: Debug
 - name: DefaultBuildPlatform
   value: 'any cpu'
 - name: ApkName
   value: AndroidControlGallery.AndroidControlGallery.apk
-- name: IpaName
-  value: XamarinFormsControlGalleryiOS.ipa
 - name: SolutionFile
   value: Xamarin.Forms.sln
 - name: BuildVersion
@@ -72,7 +68,7 @@ stages:
         pool:
           name: $(vs2019VmPool)
           vmImage: $(vs2019VmImage)
-          demands: 
+          demands:
             msbuild
         strategy:
           matrix:
@@ -93,7 +89,7 @@ stages:
         pool:
           name: $(vs2019VmPool)
           vmImage: $(vs2019VmImage)
-          demands: 
+          demands:
             msbuild
         strategy:
           matrix:
@@ -115,11 +111,12 @@ stages:
         displayName: Nuget Phase
         dependsOn:
         - win_hosted
+        - pages_hosted
         condition: succeeded()
         pool:
           name: $(vs2019VmPool)
           vmImage: $(vs2019VmImage)
-          demands: 
+          demands:
             msbuild
         variables:
           FormsIdAppend: ''
@@ -136,7 +133,7 @@ stages:
         pool:
           name: $(vs2019VmPool)
           vmImage: $(vs2019VmImage)
-          demands: 
+          demands:
             - Agent.OS -equals Windows_NT
             - msbuild
         strategy:
@@ -158,7 +155,7 @@ stages:
         pool:
           name: $(vs2019VmPool)
           vmImage: $(vs2019VmImage)
-          demands: 
+          demands:
             - Agent.OS -equals Windows_NT
             - msbuild
         strategy:
@@ -181,11 +178,12 @@ stages:
         displayName: Nuget Phase
         dependsOn:
         - win_bots
+        - pages_bots
         condition: succeeded()
         pool:
           name: $(vs2019VmPool)
           vmImage: $(vs2019VmImage)
-          demands: 
+          demands:
             - Agent.OS -equals Windows_NT
             - msbuild
         variables:
@@ -204,8 +202,26 @@ stages:
     jobs:
       - template: build/steps/build-android.yml
         parameters:
-          vmImage: $(macOSXVmImage)
+          vmPool: $[coalesce(variables.macAndroid2019VmPool, 'Azure Pipelines')]
+          vmImage: $[coalesce(variables.macAndroid2019VmImage, 'macOS-10.15')]
           provisionatorPath : 'build/provisioning/provisioning.csx'
+          buildForVS2017: false
+          buildConfiguration: $(DefaultBuildConfiguration)
+          ${{ if ne(variables['MSBuildArguments_cg_android'], '') }}:
+            MSBuildArguments_cg_android: $(MSBuildArguments_cg_android)
+
+  - stage: android_2017
+    displayName: Build Android 2017
+    condition: and(succeeded(), eq(variables['System.TeamProject'], 'devdiv'))
+    dependsOn: windows
+    jobs:
+      - template: build/steps/build-android.yml
+        parameters:
+          vmPool: $[coalesce(variables.macAndroid2017VmPool, 'Azure Pipelines')]
+          vmImage: 'macOS-10.14'
+          provisionatorPath : 'build/provisioning/provisioning.csx'
+          buildForVS2017: true
+          buildConfiguration: $(DefaultBuildConfiguration)
 
   - stage: build_osx
     displayName: Build OSX
@@ -218,6 +234,7 @@ stages:
         workspace:
           clean: all
         displayName: OSX Phase
+        timeoutInMinutes: 120
         pool:
           name:  $(osx2019VmPool)
           vmImage: $(macOSXVmImage)
@@ -243,7 +260,7 @@ stages:
       - job: osx
         workspace:
           clean: all
-        displayName: OSX Phase
+        displayName: OSX Phase 2017
         pool:
           name:  $(osx2017VmPool)
           vmImage: 'macOS-10.14'
@@ -253,6 +270,7 @@ stages:
         variables:
           provisionator.osxPath : 'build/provisioning/provisioning.csx'
           buildConfiguration: $(DefaultBuildConfiguration)
+          slnPath: $(SolutionFile)
           iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
           iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
           buildForVS2017: 'true'
@@ -269,10 +287,10 @@ stages:
           displayName: Sign Phase
           pool:
             name: $(signVmImage)
-            demands: 
+            demands:
               msbuild
           steps:
             - template: build/steps/build-sign.yml
-          condition: and(succeeded(), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
+          condition: and(succeeded(), ne(variables['signVmImage'], ''), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
 
 

@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using ElmSharp;
 using EBox = ElmSharp.Box;
+using ERect = ElmSharp.Rect;
 using EScroller = ElmSharp.Scroller;
 using ESize = ElmSharp.Size;
 using EPoint = ElmSharp.Point;
@@ -32,6 +33,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		public CollectionView(EvasObject parent) : base(parent)
 		{
+			AllowFocus(true);
 			SetLayoutCallback(OnLayout);
 			Scroller = CreateScroller(parent);
 			Scroller.Show();
@@ -122,7 +124,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		protected ESize AllocatedSize { get; set; }
 
-		Rect ViewPort => Scroller.CurrentRegion;
+		ERect ViewPort => Scroller.CurrentRegion;
 
 		public void ScrollTo(int index, ScrollToPosition position = ScrollToPosition.MakeVisible, bool animate = true)
 		{
@@ -248,6 +250,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			return Adaptor.MeasureItem(index, widthConstraint, heightConstraint);
 		}
 
+		protected virtual ViewHolder CreateViewHolder()
+		{
+			return new ViewHolder(this);
+		}
+
 		ViewHolder ICollectionViewController.RealizeView(int index)
 		{
 			if (Adaptor == null)
@@ -261,7 +268,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			else
 			{
 				var content = Adaptor.CreateNativeView(index, this);
-				holder = new ViewHolder(this);
+				holder = CreateViewHolder();
 				holder.RequestSelected += OnRequestItemSelection;
 				holder.Content = content;
 				holder.ViewCategory = Adaptor.GetViewCategory(index);
@@ -485,7 +492,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			RequestLayoutItems();
 		}
 
-		Rect _lastGeometry;
+		ERect _lastGeometry;
 		void OnLayout()
 		{
 			if (_lastGeometry == Geometry)

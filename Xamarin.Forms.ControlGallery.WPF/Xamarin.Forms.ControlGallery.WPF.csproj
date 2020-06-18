@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\ControlGallery.Build.props" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -123,10 +124,6 @@
       <Project>{57b8b73d-c3b5-4c42-869e-7b2f17d354ac}</Project>
       <Name>Xamarin.Forms.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Xamarin.Forms.DualScreen\Xamarin.Forms.DualScreen.csproj">
-      <Project>{fb4a866a-5721-4545-9e5d-b7f7d59875a4}</Project>
-      <Name>Xamarin.Forms.DualScreen</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Maps.WPF\Xamarin.Forms.Maps.WPF.csproj">
       <Project>{89b0db73-a32e-447c-9390-a2a59d89b2e4}</Project>
       <Name>Xamarin.Forms.Maps.WPF</Name>
@@ -145,6 +142,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="bank.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="crimson.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

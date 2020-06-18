@@ -179,7 +179,9 @@ namespace Xamarin.Forms
 			SendUpdateCurrentState(ShellNavigationSource.Pop);
 		}
 
-		ReadOnlyCollection<ShellContent> IShellSectionController.GetItems() => ((ShellContentCollection)Items).VisibleItems;
+		// we want the list returned from here to remain point in time accurate
+		ReadOnlyCollection<ShellContent> IShellSectionController.GetItems() 
+			=> new ReadOnlyCollection<ShellContent>(((ShellContentCollection)Items).VisibleItemsReadOnly.ToList());
 
 		[Obsolete]
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -236,7 +238,29 @@ namespace Xamarin.Forms
 
 		public ShellSection()
 		{
+			((ShellElementCollection)Items).VisibleItemsChangedInternal += (_, args) =>
+			{
+				if (args.OldItems != null)
+				{
+					foreach (Element item in args.OldItems)
+					{
+						OnVisibleChildRemoved(item);
+					}
+				}
+
+				if(args.NewItems != null)
+				{
+					foreach (Element item in args.NewItems)
+					{
+						OnVisibleChildAdded(item);
+					}
+				}
+
+				SendStructureChanged();
+			};
+
 			(Items as INotifyCollectionChanged).CollectionChanged += ItemsCollectionChanged;
+
 			Navigation = new NavigationImpl(this);
 		}
 				
@@ -247,12 +271,13 @@ namespace Xamarin.Forms
 		}
 
 		public IList<ShellContent> Items => (IList<ShellContent>)GetValue(ItemsProperty);
+		internal override ShellElementCollection ShellElementCollection => (ShellElementCollection)Items;
 
 		public IReadOnlyList<Page> Stack => _navStack;
 
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => _logicalChildrenReadOnly ?? (_logicalChildrenReadOnly = new ReadOnlyCollection<Element>(_logicalChildren));
 
-		Page DisplayedPage
+		internal Page DisplayedPage
 		{
 			get { return _displayedPage; }
 			set
@@ -272,6 +297,11 @@ namespace Xamarin.Forms
 
 		internal static ShellSection CreateFromShellContent(ShellContent shellContent)
 		{
+			if(shellContent.Parent != null)
+			{
+				return (ShellSection)shellContent.Parent;
+			}
+
 			var shellSection = new ShellSection();
 
 			var contentRoute = shellContent.Route;
@@ -292,17 +322,11 @@ namespace Xamarin.Forms
 			return CreateFromShellContent((ShellContent)page);
 		}
 
-#if DEBUG
-		[Obsolete("Please dont use this in core code... its SUPER hard to debug when this happens", true)]
-#endif
 		public static implicit operator ShellSection(ShellContent shellContent)
 		{
 			return CreateFromShellContent(shellContent);
 		}
 
-#if DEBUG
-		[Obsolete("Please dont use this in core code... its SUPER hard to debug when this happens", true)]
-#endif
 		public static implicit operator ShellSection(TemplatedPage page)
 		{
 			return (ShellSection)(ShellContent)page;
@@ -470,7 +494,7 @@ namespace Xamarin.Forms
 
 		internal void SendStructureChanged()
 		{
-			if (Parent?.Parent is Shell shell)
+			if (Parent?.Parent is Shell shell && IsVisibleSection)
 			{
 				shell.SendStructureChanged();
 			}
@@ -503,29 +527,49 @@ namespace Xamarin.Forms
 		protected override void OnChildAdded(Element child)
 		{
 			base.OnChildAdded(child);
+			OnVisibleChildAdded(child);
+		}
+				
+		protected override void OnChildRemoved(Element child)
+		{
+			if(child is IShellContentController sc && sc.Page.IsPlatformEnabled)
+			{
+				sc.Page.PlatformEnabledChanged += WaitForRendererToGetRemoved;
+				void WaitForRendererToGetRemoved(object s, EventArgs p)
+				{
+					sc.Page.PlatformEnabledChanged -= WaitForRendererToGetRemoved;
+					base.OnChildRemoved(child);
+				};
+			}
+			else
+			{
+				base.OnChildRemoved(child);
+			}
+
+			OnVisibleChildRemoved(child);
+		}
+
+		void OnVisibleChildAdded(Element child)
+		{
 			if (CurrentItem == null && ((IShellSectionController)this).GetItems().Contains(child))
 				SetValueFromRenderer(CurrentItemProperty, child);
 
-			if(CurrentItem != null)
+			if (CurrentItem != null)
 				UpdateDisplayedPage();
 		}
 
-		protected override void OnChildRemoved(Element child)
+		void OnVisibleChildRemoved(Element child)
 		{
-			base.OnChildRemoved(child);
 			if (CurrentItem == child)
 			{
-				var items = ShellSectionController.GetItems();
-				if (items.Count == 0)
+				var contentItems = ShellSectionController.GetItems();
+				if (contentItems.Count == 0)
+				{
 					ClearValue(CurrentItemProperty);
+				}
 				else
 				{
-					// We want to delay invoke this because the renderer may handle this instead
-					Device.BeginInvokeOnMainThread(() =>
-					{
-						if (CurrentItem == null)
-							SetValueFromRenderer(CurrentItemProperty, items[0]);
-					});
+					SetValueFromRenderer(CurrentItemProperty, contentItems[0]);
 				}
 			}
 
@@ -800,15 +844,20 @@ namespace Xamarin.Forms
 			if (oldValue is ShellContent oldShellItem)
 				oldShellItem.SendDisappearing();
 
+			if (newValue == null)
+				return;
+
 			shellSection.PresentedPageAppearing();
 
-			if (shellSection.Parent?.Parent is IShellController shell)
+			if (shellSection.Parent?.Parent is IShellController shell && shellSection.IsVisibleSection)
 			{
 				shell.UpdateCurrentState(ShellNavigationSource.ShellSectionChanged);
 			}
 
 			shellSection.SendStructureChanged();
-			((IShellController)shellSection?.Parent?.Parent)?.AppearanceChanged(shellSection, false);
+
+			if(shellSection.IsVisibleSection)
+				((IShellController)shellSection?.Parent?.Parent)?.AppearanceChanged(shellSection, false);
 
 			shellSection.UpdateDisplayedPage();
 		}
@@ -832,8 +881,6 @@ namespace Xamarin.Forms
 				foreach (Element element in e.OldItems)
 					OnChildRemoved(element);
 			}
-
-			SendStructureChanged();
 		}
 
 		void RemovePage(Page page)
