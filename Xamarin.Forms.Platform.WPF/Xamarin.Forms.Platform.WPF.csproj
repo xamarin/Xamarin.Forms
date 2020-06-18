@@ -34,7 +34,4 @@
     <PackageReference Include="OpenTK" Version="3.0.1" />
     <PackageReference Include="OpenTK.GLControl" Version="3.0.1" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Shapes\" />
-  </ItemGroup>
 </Project>

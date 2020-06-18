@@ -9,9 +9,10 @@
     <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-    <PropertyGroup>
-      <NoWarn>$(NoWarn);NU1701;NU1202</NoWarn>
-    </PropertyGroup>
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);NU1701</NoWarn>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
@@ -33,18 +34,14 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <ItemGroup Condition = " '$(TargetFramework)' == 'netcoreapp3.1' ">
-    <PackageReference Include="ViceCode.MapControl.WPF" Version="2.0.0" />    
-  </ItemGroup>
-  <ItemGroup Condition = " '$(TargetFramework)' == 'net461' ">
-    <PackageReference Include="Microsoft.Maps.MapControl.WPF" Version="1.0.0.3" />    
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Meziantou.WpfFontAwesome" Version="5.13.0" />
+    <PackageReference Include="Microsoft.Maps.MapControl.WPF" Version="1.0.0.3" />
     <PackageReference Include="OpenTK" Version="3.0.1" />
     <PackageReference Include="OpenTK.GLControl" Version="3.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Remove="**\*.xaml" />
     <Compile Include="..\Xamarin.Forms.Controls\GalleryPages\OpenGLGalleries\AdvancedOpenGLGallery.cs">
       <Link>GalleryPages\AdvancedOpenGLGallery.cs</Link>
     </Compile>
@@ -53,9 +50,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Assets\fontawesome-webfont.ttf" />
-    <Resource Include="Assets\pickax.ttf" />
-    <Resource Include="Assets\ionicons.ttf" />
+    <Resource Include="Assets\*.ttf" />
+    <Resource Include="*.png" />
+    <Resource Include="*.jpg" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -67,12 +64,4 @@
     <ProjectReference Include="..\Xamarin.Forms.Maps\Xamarin.Forms.Maps.csproj" />
     <ProjectReference Include="..\Xamarin.Forms.Platform.WPF\Xamarin.Forms.Platform.WPF.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="coffee.png" />
-    <Resource Include="bank.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="crimson.jpg" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
