@@ -15,16 +15,17 @@
 
         </ResourceDictionary>
     </ContentPage.Resources>
-        <Grid
-            x:Name="grid"
-            WidthRequest="200"
-            HeightRequest="200"
-            TranslationX="100"
-            TranslationY="100"
-            HorizontalOptions="Center"
-            VerticalOptions="Center">
+    <Grid BackgroundColor="Red"
+        x:Name="grid" 
+        WidthRequest="200"
+        HeightRequest="200"
+        HorizontalOptions="Start"
+        VerticalOptions="Start">
         <!-- Small tick marks -->
         <Path
+            WidthRequest="200" 
+            HeightRequest="200"
+            Fill="{x:Null}"
             StrokeThickness="3"
             StrokeDashArray="0.1 3.04159">
             <Path.Data>
@@ -50,10 +51,10 @@
                     Figures="M 0 -60 C 0 -30, 20 -30, 5 -20 L 5 0
                     C 5 7.5, -5 7.5, -5 0 L -5 -20
                     C -20 -30, 0 -30, 0 -60" />
-            </Path.Data>
+                </Path.Data>
             <Path.RenderTransform>
                 <RotateTransform
-                    Angle="{Binding HourHandAngle}" />
+                    x:Name="hourHand"/>
             </Path.RenderTransform>
         </Path>
         <!-- Minute hand pointing straight up -->
@@ -66,7 +67,7 @@
             </Path.Data>
             <Path.RenderTransform>
                 <RotateTransform
-                    Angle="{Binding MinuteHandAngle}" />
+                    x:Name="minuteHand" />
             </Path.RenderTransform>
         </Path>
         <!-- Second hand pointing straight up -->
@@ -76,8 +77,8 @@
                     Figures="M 0 10 L 0 -80" />
             </Path.Data>
             <Path.RenderTransform>
-                <RotateTransform
-                    Angle="{Binding SecondHandAngle}" />
+                <RotateTransform  
+                    x:Name="secondHand"/>
             </Path.RenderTransform>
         </Path>
     </Grid>
