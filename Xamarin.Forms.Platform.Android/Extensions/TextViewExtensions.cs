@@ -33,10 +33,18 @@ namespace Xamarin.Forms.Platform.Android
 			textView.SetMaxLines(lines);
 		}
 
-		public static void SetLineBreakMode(this TextView textView, Label label)
+		public static void	SetLineBreakMode(this TextView textView, Label label)
 		{
-			var lineBreakMode = label.LineBreakMode;
+			var maxLines = SetLineBreak(textView, label.LineBreakMode);
+			textView.SetMaxLines(maxLines);
+		}
 
+		public static void SetLineBreakMode(this TextView textView, Button button) =>
+			SetLineBreak(textView, button.LineBreakMode);
+
+
+		public static int SetLineBreak( TextView textView, LineBreakMode lineBreakMode)
+		{
 			int maxLines = Int32.MaxValue;
 			bool singleLine = false;
 
@@ -44,6 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				case LineBreakMode.NoWrap:
 					maxLines = 1;
+					singleLine = true;
 					textView.Ellipsize = null;
 					break;
 				case LineBreakMode.WordWrap:
@@ -59,6 +68,7 @@ namespace Xamarin.Forms.Platform.Android
 					break;
 				case LineBreakMode.TailTruncation:
 					maxLines = 1;
+					singleLine = true;
 					textView.Ellipsize = TextUtils.TruncateAt.End;
 					break;
 				case LineBreakMode.MiddleTruncation:
@@ -69,7 +79,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			textView.SetSingleLine(singleLine);
-			textView.SetMaxLines(label, maxLines);
+			return maxLines;
 		}
 
 		public static void RecalculateSpanPositions(this TextView textView, Label element, SpannableString spannableString, SizeRequest finalSize)
