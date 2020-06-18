@@ -71,6 +71,8 @@ namespace Xamarin.Forms.Platform.Tizen
 					if (_moreOption.IsValueCreated)
 					{
 						_moreOption.Value.Clicked -= OnMoreOptionItemClicked;
+						_moreOption.Value.Closed -= SendMoreOptionClosed;
+						_moreOption.Value.Opened -= SendMoreOptionOpened;
 						_moreOption.Value.Items.Clear();
 						_moreOption.Value.Unrealize();
 					}
@@ -113,6 +115,14 @@ namespace Xamarin.Forms.Platform.Tizen
 			return moreOptionItem;
 		}
 
+		protected virtual void OnMoreOptionClosed()
+		{
+		}
+
+		protected virtual void OnMoreOptionOpened()
+		{
+		}
+
 		void UpdateBackgroundImage(bool initialize)
 		{
 			if (initialize && Element.BackgroundImageSource.IsNullOrEmpty())
@@ -140,18 +150,28 @@ namespace Xamarin.Forms.Platform.Tizen
 		MoreOption CreateMoreOption()
 		{
 			var moreOption = new MoreOption(_page);
-			moreOption.Clicked += OnMoreOptionItemClicked;
+			moreOption.Geometry = _page.Geometry;
 			_page.Children.Add(moreOption);
 			moreOption.Show();
+			moreOption.Clicked += OnMoreOptionItemClicked;
+			moreOption.Closed += SendMoreOptionClosed;
+			moreOption.Opened += SendMoreOptionOpened;
 			return moreOption;
+		}
+
+		void SendMoreOptionClosed(object sender, EventArgs e)
+		{
+			OnMoreOptionClosed();
+		}
+
+		void SendMoreOptionOpened(object sender, EventArgs e)
+		{
+			OnMoreOptionOpened();
 		}
 
 		void OnToolbarCollectionChanged(object sender, EventArgs eventArgs)
 		{
-			if (Element.ToolbarItems.Count > 0 || _moreOption.IsValueCreated)
-			{
-				UpdateToolbarItems(false);
-			}
+			UpdateToolbarItems(false);
 		}
 
 		void UpdateToolbarItems(bool initialize)
@@ -162,9 +182,17 @@ namespace Xamarin.Forms.Platform.Tizen
 				_moreOption.Value.Items.Clear();
 			}
 
-			foreach (var item in Element.ToolbarItems)
+			if (Element.ToolbarItems.Count > 0)
 			{
-				_moreOption.Value.Items.Add(CreateMoreOptionItem(item));
+				_moreOption.Value.Show();
+				foreach (var item in Element.ToolbarItems)
+				{
+					_moreOption.Value.Items.Add(CreateMoreOptionItem(item));
+				}
+			}
+			else
+			{
+				_moreOption.Value.Hide();
 			}
 		}
 

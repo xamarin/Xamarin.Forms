@@ -290,8 +290,8 @@ namespace Xamarin.Forms.Core.UITests
 			App.WaitForElement(t => t.Marked(item));
 		}
 
-		[TestCase("DataTemplate Galleries", "DataTemplateSelector")]
-		void VisitAndCheckForItems(string collectionTestName, string subGallery)
+		[TestCase("DataTemplate", "DataTemplateSelector")]
+		public void VisitAndCheckForItems(string collectionTestName, string subGallery)
 		{
 			VisitInitialGallery(collectionTestName);
 

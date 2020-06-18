@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
+using Android.Graphics;
 using Android.Graphics.Drawables;
 #if __ANDROID_29__
 using AndroidX.Core.View;
@@ -22,6 +23,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		float _defaultCornerRadius = -1f;
 		int? _defaultLabelFor;
 
+		bool _hasLayoutOccurred;
 		bool _disposed;
 		Frame _element;
 		GradientDrawable _backgroundDrawable;
@@ -214,6 +216,15 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				IVisualElementRenderer renderer = Android.Platform.GetRenderer(visualElement);
 				renderer?.UpdateLayout();
 			}
+
+			_hasLayoutOccurred = true;
+		}
+
+		public override void Draw(Canvas canvas)
+		{
+			canvas.ClipShape(Context, Element);
+
+			base.Draw(canvas);
 		}
 
 		public override bool OnTouchEvent(MotionEvent e)
@@ -235,7 +246,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			ElementPropertyChanged?.Invoke(this, e);
 
-			if (Control?.LayoutParameters == null)
+			if (Control?.LayoutParameters == null && _hasLayoutOccurred)
 			{
 				return;
 			}

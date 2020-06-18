@@ -13,6 +13,7 @@ using Android.Support.V4.Widget;
 using Android.Support.V7.Widget;
 #endif
 using Xamarin.Forms.Internals;
+using ARect = Android.Graphics.Rect;
 using AView = Android.Views.View;
 using AButton = Android.Widget.Button;
 
@@ -29,7 +30,7 @@ namespace Xamarin.Forms.Platform.Android
 		Button.ButtonContentLayout _imageOnlyLayout = new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Left, 0);
 
 		// reuse this instance to save on allocations
-		Rect _drawableBounds = new Rect();
+		ARect _drawableBounds = new ARect();
 
 		bool _disposed;
 		IButtonLayoutRenderer _renderer;
@@ -184,6 +185,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void Update()
 		{
+			if (View?.LayoutParameters == null && _hasLayoutOccurred)
+				return;
+
 			if (!UpdateTextAndImage())
 				UpdateImage();
 			UpdatePadding();
@@ -258,9 +262,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool UpdateTextAndImage()
 		{
-			if (_disposed || _renderer == null || _element == null || View?.LayoutParameters == null)
+			if (_disposed || _renderer == null || _element == null)
 				return false;
 
+			if (View?.LayoutParameters == null && _hasLayoutOccurred)
+				return false;
+			
 			AButton view = View;
 			if (view == null)
 				return false;
