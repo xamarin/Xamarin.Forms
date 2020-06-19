@@ -33,9 +33,11 @@ namespace Xamarin.Forms.Controls.Issues
 		public Issue11107(bool tabBarIsVisible)
 		{
 			_tabBarIsVisible = tabBarIsVisible;
+#if !UITEST
 			Shell.SetTabBarIsVisible(this, _tabBarIsVisible);
 			Shell.SetNavBarHasShadow(this, false);
 			_tabBarLabel.Text = $"TabBarIsVisible: {_tabBarIsVisible}";
+#endif
 		}
 
 		protected override void Init()
