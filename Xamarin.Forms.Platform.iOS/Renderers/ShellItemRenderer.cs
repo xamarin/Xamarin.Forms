@@ -402,8 +402,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_displayedPage == null || ShellItem == null)
 				return;
 
-			var hidden = ShellItemController.GetItems().Count < 1 ||
-				!Shell.GetTabBarIsVisible(_displayedPage);
+			var hidden = !(ShellItemController.GetItems().Count > 1 &&
+				Shell.GetTabBarIsVisible(_displayedPage));
 
 			SetTabBarHidden(hidden);
 		}
