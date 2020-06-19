@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Platform.WPF
 #endif	
 		void UpdateHeight()
 		{
-			Control.Height = Element.Height;
+			Control.Height = Element.Height > 0 ? Element.Height : 0;
 		}
 
 #if !WINDOWS_UWP
@@ -82,7 +82,7 @@ namespace Xamarin.Forms.Platform.WPF
 #endif
 		void UpdateWidth()
 		{
-			Control.Width = Element.Width;
+			Control.Width = Element.Width > 0 ? Element.Width : 0;
 		}
 
 		void UpdateAspect()
