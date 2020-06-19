@@ -461,7 +461,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				_copyOfTextBox = new FormsTextBox
 				{
-					Style = Windows.UI.Xaml.Application.Current.Resources["FormsTextBoxStyle"] as Windows.UI.Xaml.Style
+					Style = Windows.UI.Xaml.Application.Current.Resources["FormsTextBoxStyleMeasure"] as Windows.UI.Xaml.Style
 				};
 
 				// This causes the copy to be initially setup correctly. 
