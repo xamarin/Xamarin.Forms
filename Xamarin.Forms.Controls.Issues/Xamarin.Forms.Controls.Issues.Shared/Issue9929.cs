@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SpacingGalleries;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -24,7 +23,7 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 #if APP
-			PushAsync(new SpacingGallery (new GridItemsLayout(3, ItemsLayoutOrientation.Vertical)));
+			PushAsync(new Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SpacingGalleries.SpacingGallery(new GridItemsLayout(3, ItemsLayoutOrientation.Vertical)));
 #endif
 		}
 
