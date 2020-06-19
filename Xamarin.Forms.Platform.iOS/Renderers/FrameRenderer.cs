@@ -109,6 +109,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			Layer.RasterizationScale = UIScreen.MainScreen.Scale;
 			Layer.ShouldRasterize = true;
+			Layer.MasksToBounds = false;
 
 			_actualView.Layer.RasterizationScale = UIScreen.MainScreen.Scale;
 			_actualView.Layer.ShouldRasterize = true;
