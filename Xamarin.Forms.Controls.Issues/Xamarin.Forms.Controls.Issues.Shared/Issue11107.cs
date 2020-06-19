@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Controls.Issues
 			_tabBarLabel.Text = $"TabBarIsVisible: {_tabBarIsVisible}";
 		}
 
-		protected async override void Init()
+		protected override void Init()
 		{
 			_tabBarLabel = new Label();
 			ContentPage firstPage = new ContentPage()
@@ -101,9 +101,11 @@ namespace Xamarin.Forms.Controls.Issues
 
 			CurrentItem = item2;
 
-
-			await Task.Delay(2000);
-			await GoToAsync("//FirstPage/Issue11107HeaderPage");
+			Device.BeginInvokeOnMainThread(async () =>
+			{
+				await Task.Delay(1000);
+				await GoToAsync("//FirstPage/Issue11107HeaderPage");
+			});
 		}
 
 		[Preserve(AllMembers = true)]
@@ -139,15 +141,15 @@ namespace Xamarin.Forms.Controls.Issues
 			RunTests();
 			RunningApp.Tap("RunTestTwoTabs");
 			RunTests();
-		}
 
-		void RunTests()
-		{
-			RunningApp.WaitForElement("SecondPageLoaded");
-			RunningApp.WaitForNoElement("Tab1AutomationId");
-			TapBackArrow();
-			RunningApp.WaitForElement("Page1Loaded");
-			RunningApp.WaitForNoElement("Tab1AutomationId");
+			void RunTests()
+			{
+				RunningApp.WaitForElement("SecondPageLoaded");
+				RunningApp.WaitForNoElement("Tab1AutomationId");
+				TapBackArrow();
+				RunningApp.WaitForElement("Page1Loaded");
+				RunningApp.WaitForNoElement("Tab1AutomationId");
+			}
 		}
 #endif
 	}
