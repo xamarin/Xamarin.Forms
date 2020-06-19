@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -235,14 +236,24 @@ namespace Xamarin.Forms.Platform.iOS
 				oldObservableItemsSource.CollectionItemsSourceChanged -= CollectionItemsSourceChanged;
 		}
 
-		void CarouselViewPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs changedProperty)
+		async void CarouselViewPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs changedProperty)
 		{
 			if (changedProperty.Is(CarouselView.PositionProperty))
 				UpdateFromPosition();
 			else if (changedProperty.Is(CarouselView.CurrentItemProperty))
 				UpdateFromCurrentItem();
 			else if (changedProperty.Is(CarouselView.LoopProperty))
-				CollectionView.ReloadData();
+				await UpdateLoop();
+		}
+
+		async Task UpdateLoop()
+		{
+			var carouselPosition = Carousel.Position;
+
+			CollectionView.ReloadData();
+			await Task.Delay(50);
+
+			ScrollToPosition(carouselPosition, carouselPosition, false, true);
 		}
 
 		void ScrollToPosition(int goToPosition, int carouselPosition, bool animate, bool forceScroll = false)
