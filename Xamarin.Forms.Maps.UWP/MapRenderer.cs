@@ -10,8 +10,8 @@ using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Shapes;
 using Xamarin.Forms.Platform.UWP;
+using WEllipse = Windows.UI.Xaml.Shapes.Ellipse;
 
 namespace Xamarin.Forms.Maps.UWP
 {
@@ -35,12 +35,12 @@ namespace Xamarin.Forms.Maps.UWP
 
 				if (Control == null)
 				{
-					SetNativeControl(new MapControl());  
+					SetNativeControl(new MapControl());
 					Control.MapServiceToken = FormsMaps.AuthenticationToken;
 					Control.ZoomLevelChanged += async (s, a) => await UpdateVisibleRegion();
 					Control.CenterChanged += async (s, a) => await UpdateVisibleRegion();
-					Control.MapTapped += OnMapTapped; 
-					Control.LayoutUpdated += OnLayoutUpdated; 
+					Control.MapTapped += OnMapTapped;
+					Control.LayoutUpdated += OnLayoutUpdated;
 				}
 
 				MessagingCenter.Subscribe<Map, MapSpan>(this, "MapMoveToRegion", async (s, a) => await MoveToRegion(a), mapModel);
@@ -121,10 +121,22 @@ namespace Xamarin.Forms.Maps.UWP
 		}
 
 		bool _disposed;
-		Ellipse _userPositionCircle;
+		WEllipse _userPositionCircle;
 		DispatcherTimer _timer;
 
 		void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (Device.IsInvokeRequired)
+			{
+				Device.BeginInvokeOnMainThread(() => PinCollectionChanged(e));
+			}
+			else
+			{
+				PinCollectionChanged(e);
+			}
+		}
+
+		void PinCollectionChanged(NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action)
 			{
@@ -147,6 +159,7 @@ namespace Xamarin.Forms.Maps.UWP
 					break;
 				case NotifyCollectionChangedAction.Reset:
 					ClearPins();
+					LoadPins();
 					break;
 			}
 		}
@@ -183,6 +196,18 @@ namespace Xamarin.Forms.Maps.UWP
 		}
 
 		void OnMapElementCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (Device.IsInvokeRequired)
+			{
+				Device.BeginInvokeOnMainThread(() => MapElementCollectionChanged(e));
+			}
+			else
+			{
+				MapElementCollectionChanged(e);
+			}
+		}
+
+		void MapElementCollectionChanged(NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action)
 			{
@@ -445,7 +470,7 @@ namespace Xamarin.Forms.Maps.UWP
 				Longitude = span.Center.Longitude + span.LongitudeDegrees / 2
 			};
 			var boundingBox = new GeoboundingBox(nw, se);
-			_isRegionUpdatePending = !await Control.TrySetViewBoundsAsync(boundingBox, null, animation); 
+			_isRegionUpdatePending = !await Control.TrySetViewBoundsAsync(boundingBox, null, animation);
 		}
 
 		async Task UpdateVisibleRegion()
@@ -491,7 +516,7 @@ namespace Xamarin.Forms.Maps.UWP
 
 			if (_userPositionCircle == null)
 			{
-				_userPositionCircle = new Ellipse
+				_userPositionCircle = new WEllipse
 				{
 					Stroke = new SolidColorBrush(Colors.White),
 					Fill = new SolidColorBrush(Colors.Blue),

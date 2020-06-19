@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using WRect = System.Windows.Rect;
 
 namespace Xamarin.Forms.Platform.WPF
 {
@@ -48,7 +45,7 @@ namespace Xamarin.Forms.Platform.WPF
 					control.Width = width = Math.Ceiling(width / stepX) * stepX;
 					control.Height = height = Math.Ceiling(height / stepY) * stepY;
 				}
-				control.Arrange(new Rect(bounds.X, bounds.Y, width, height));
+				control.Arrange(new WRect(bounds.X, bounds.Y, width, height));
 			}
 
 			Element.IsInNativeLayout = false;
@@ -82,6 +79,13 @@ namespace Xamarin.Forms.Platform.WPF
 			if (double.IsInfinity(elementDesiredWidth) || double.IsPositiveInfinity(elementDesiredHeight))
 			{
 				Size request = Element.Measure(elementDesiredWidth, elementDesiredHeight, MeasureFlags.IncludeMargins).Request;
+				
+				if (request.Width == -1)
+					request.Width = 0.0;
+
+				if (request.Height == -1)
+					request.Height = 0.0;
+
 				result = new System.Windows.Size(request.Width, request.Height);
 			}
 			else

@@ -22,7 +22,7 @@ PowerShell:
 #addin "nuget:?package=Cake.Android.Adb&version=3.2.0"
 #addin "nuget:?package=Cake.Git&version=0.21.0"
 #addin "nuget:?package=Cake.Android.SdkManager&version=3.0.2"
-#addin "nuget:?package=Cake.Boots&version=1.0.2.421"
+#addin "nuget:?package=Cake.Boots&version=1.0.2.437"
 
 #addin "nuget:?package=Cake.FileHelpers&version=3.2.1"
 //////////////////////////////////////////////////////////////////////
@@ -34,24 +34,77 @@ PowerShell:
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
 
+var target = Argument("target", "Default");
+
 var ANDROID_RENDERERS = Argument("ANDROID_RENDERERS", "FAST");
 var XamarinFormsVersion = Argument("XamarinFormsVersion", "");
-var target = Argument("target", "Default");
-var configuration = Argument("configuration", "Debug");
+var configuration = Argument("BUILD_CONFIGURATION", "Debug");
 var packageVersion = Argument("packageVersion", "");
 var releaseChannelArg = Argument("CHANNEL", "Stable");
 releaseChannelArg = EnvironmentVariable("CHANNEL") ?? releaseChannelArg;
 var teamProject = Argument("TeamProject", "");
+bool buildForVS2017 = Convert.ToBoolean(Argument("buildForVS2017", "false"));
+string agentName = EnvironmentVariable("AGENT_NAME", "");
+bool isHostedAgent = agentName.StartsWith("Azure Pipelines");
+bool isCIBuild = !String.IsNullOrWhiteSpace(agentName);
+string artifactStagingDirectory = EnvironmentVariable("BUILD_ARTIFACTSTAGINGDIRECTORY", ".");
 
-var buildForVS2017Arg = EnvironmentVariable("buildForVS2017") ?? Argument("buildForVS2017", "false");
-bool buildForVS2017 = Convert.ToBoolean(buildForVS2017Arg);
-
-string artifactStagingDirectory = Argument("Build_ArtifactStagingDirectory", (string)null) ?? EnvironmentVariable("Build.ArtifactStagingDirectory") ?? EnvironmentVariable("Build_ArtifactStagingDirectory") ?? ".";
 var ANDROID_HOME = EnvironmentVariable("ANDROID_HOME") ??
     (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
 
-string[] androidSdkManagerInstalls = new string[0]; //new [] { "platforms;android-24", "platforms;android-28", "platforms;android-29", "build-tools;29.0.3"};
+string MSBuildArgumentsENV = EnvironmentVariable("MSBuildArguments", "");
+string MSBuildArgumentsARGS = Argument("MSBuildArguments", "");
+string MSBuildArguments;
 
+if(buildForVS2017)
+    MSBuildArguments = String.Empty;
+else
+    MSBuildArguments = $"{MSBuildArgumentsENV} {MSBuildArgumentsARGS}";
+    
+Information("MSBuildArguments: {0}", MSBuildArguments);
+
+string androidSdks = EnvironmentVariable("ANDROID_API_SDKS", "platforms;android-28,platforms;android-29,build-tools;29.0.3");
+
+if(buildForVS2017)
+    androidSdks = "platforms;android-28,platforms;android-29,build-tools;29.0.3";
+
+Information("ANDROID_API_SDKS: {0}", androidSdks);
+string[] androidSdkManagerInstalls = androidSdks.Split(',');
+
+var IOS_BUILD_IPA = Argument("IOS_BUILD_IPA", false || isCIBuild);
+
+(string name, string location)[] windowsSdksInstalls = new (string name, string location)[]
+{
+    ("10.0.19041.0", "https://go.microsoft.com/fwlink/p/?linkid=2120843"), 
+    ("10.0.18362.0", "https://go.microsoft.com/fwlink/?linkid=2083338"),
+    ("10.0.16299.0", "https://go.microsoft.com/fwlink/p/?linkid=864422"),
+    ("10.0.14393.0", "https://go.microsoft.com/fwlink/p/?LinkId=838916")
+};
+
+string[] netFrameworkSdksLocalInstall = new string[]
+{
+    "https://go.microsoft.com/fwlink/?linkid=2099470", //NET461 SDK
+    "https://go.microsoft.com/fwlink/?linkid=874338", //NET472 SDK
+    "https://go.microsoft.com/fwlink/?linkid=2099465", //NET47
+    "https://download.microsoft.com/download/A/1/D/A1D07600-6915-4CB8-A931-9A980EF47BB7/NDP47-DevPack-KB3186612-ENU.exe" //net47 targeting pack
+};
+
+// these don't run on CI
+(string msiUrl, string cabUrl)[] netframeworkMSI = new (string msiUrl, string cabUrl)[]
+{
+    (
+        "https://download.visualstudio.microsoft.com/download/pr/34dae2b3-314f-465e-aba0-0a862c29638e/b2bc986f304acdd76fcd8f910012b656/sdk_tools462.msi",
+        "https://download.visualstudio.microsoft.com/download/pr/6283f4a0-36b3-4336-a6f2-c5afd9f8fdbb/ffbe35e429f7d5c1d3777d03b2f38a24/sdk_tools462.cab"
+    ),
+    (
+        "https://download.visualstudio.microsoft.com/download/pr/0d63c72c-9341-4de6-b493-dc7ad0d01246/f16b6402b8f8fb3b95dde5c1c2e5a2b4/sdk_tools461.msi",
+        "https://download.visualstudio.microsoft.com/download/pr/3dc58ffd-d515-43a4-87bd-2aba395eab17/5bff8f781c9843d64bd2367898395c5e/sdk_tools461.cab"
+    ),
+    (
+        "https://download.visualstudio.microsoft.com/download/pr/9d14aa59-3f7f-4fe6-85e9-3bc31031e1f2/88b90ec9d096ec382a001e1fbd4a6be8/sdk_tools472.msi",
+        "https://download.visualstudio.microsoft.com/download/pr/77f1d250-f253-4c48-849c-0f08c9c11e77/ab2aa8f856e686cd4ad1c921742f2eeb/sdk_tools472.cab"
+    )
+};
 
 Information ("XamarinFormsVersion: {0}", XamarinFormsVersion);
 Information ("ANDROID_RENDERERS: {0}", ANDROID_RENDERERS);
@@ -59,8 +112,9 @@ Information ("configuration: {0}", configuration);
 Information ("ANDROID_HOME: {0}", ANDROID_HOME);
 Information ("Team Project: {0}", teamProject);
 Information ("buildForVS2017: {0}", buildForVS2017);
-Information ("EnvironmentVariable buildForVS2017: {0}", EnvironmentVariable("buildForVS2017"));
-Information ("Argument buildForVS2017: {0}", Argument("buildForVS2017", "not set"));
+Information ("Agent.Name: {0}", agentName);
+Information ("isCIBuild: {0}", isCIBuild);
+Information ("artifactStagingDirectory: {0}", artifactStagingDirectory);
 
 var releaseChannel = ReleaseChannel.Stable;
 if(releaseChannelArg == "Preview")
@@ -181,7 +235,7 @@ Task("provision-iossdk")
     .Description("Install Xamarin.iOS SDK")
     .Does(async () =>
     {
-        if (!IsRunningOnWindows ()) {
+        if (!IsRunningOnWindows()) {
             if(!String.IsNullOrWhiteSpace(iosSDK))
                 await Boots(iosSDK);
             else
@@ -199,6 +253,7 @@ Task("provision-androidsdk")
 
         if(androidSdkManagerInstalls.Length > 0)
         {
+            Information("Updating Android SDKs");
             var androidSdkSettings = new AndroidSdkManagerToolSettings {
                 SkipVersionCheck = true
             };
@@ -206,20 +261,51 @@ Task("provision-androidsdk")
             if(!String.IsNullOrWhiteSpace(ANDROID_HOME))            
                 androidSdkSettings.SdkRoot = ANDROID_HOME;
 
-            AcceptLicenses (androidSdkSettings);
-            AndroidSdkManagerUpdateAll (androidSdkSettings);
-            AcceptLicenses (androidSdkSettings);
-            AndroidSdkManagerInstall (androidSdkManagerInstalls, androidSdkSettings);
+            try{
+                AcceptLicenses (androidSdkSettings);
+            }
+            catch(Exception exc)
+            {
+                Information("AcceptLicenses: {0}", exc);
+            }
+
+            try{
+                AndroidSdkManagerUpdateAll (androidSdkSettings);
+            }
+            catch(Exception exc)
+            {
+                Information("AndroidSdkManagerUpdateAll: {0}", exc);
+            }
+            
+            try{
+                AcceptLicenses (androidSdkSettings);
+            }
+            catch(Exception exc)
+            {
+                Information("AcceptLicenses: {0}", exc);
+            }
+
+            try{
+                AndroidSdkManagerInstall (androidSdkManagerInstalls, androidSdkSettings);
+            }
+            catch(Exception exc)
+            {
+                Information("AndroidSdkManagerInstall: {0}", exc);
+            }
         }
 
         if (!IsRunningOnWindows ()) {
             if(!String.IsNullOrWhiteSpace(androidSDK))
+            {
                 await Boots (androidSDK);
+            }
             else
                 await Boots (Product.XamarinAndroid, releaseChannel);
         }
         else if(!String.IsNullOrWhiteSpace(androidSDK))
-            await Boots(androidSDK);
+        {
+            await Boots (androidSDK);
+        }
     });
 
 Task("provision-monosdk")
@@ -237,12 +323,154 @@ Task("provision-monosdk")
             await Boots(monoSDK);
     });
 
+Task("provision-windowssdk")
+    .Description("Install Windows SDK")
+    .Does(() =>
+    {
+        if(IsRunningOnWindows() && !isHostedAgent)
+        {
+            int i = 0;
+            foreach(var windowsSdk in windowsSdksInstalls)
+            {
+                string sdkPath = System.IO.Path.Combine(@"C:\Program Files (x86)\Windows Kits\10\Platforms\UAP", windowsSdk.name);
+                if(DirectoryExists(sdkPath) && GetFiles(System.IO.Path.Combine(sdkPath, "*.*")).Count() > 0)
+                {
+                    Information("Already Installed: {0}", sdkPath);
+                    continue;
+                }
+
+
+                Information("Installing: {0}", sdkPath);
+                string installUrl = windowsSdk.location;
+                string installerPath = $"{System.IO.Path.GetTempPath()}" + $"WindowsSDK{i}.exe";
+                DownloadFile(installUrl, installerPath);
+
+                var result = StartProcess(installerPath, new ProcessSettings {
+                    Arguments = new ProcessArgumentBuilder()
+                        .Append(@"/features + /q")
+                    }
+                );
+
+                i++;
+            }
+        }
+    });
+
+Task("provision-netsdk-local")
+    .Description("Install .NET SDK")
+    .Does(() =>
+    {
+        if(IsRunningOnWindows() && (!isCIBuild || target == "provision-netsdk-local"))
+        {
+            foreach(var installUrl in netframeworkMSI)
+            {
+                string msiUrl = installUrl.msiUrl;
+                string cabUrl = installUrl.cabUrl;
+
+
+                string cabName = cabUrl.Split('/').Last();
+                string msiName = msiUrl.Split('/').Last();                
+                string cabPath = $"{System.IO.Path.GetTempPath()}{cabName}";
+
+                Information("Downloading: {0} to {1}", cabUrl, cabPath);
+                DownloadFile(cabUrl, cabPath);
+                InstallMsi(msiUrl, null, msiName);
+            }
+
+            int i = 0;
+            foreach(var installUrl in netFrameworkSdksLocalInstall)
+            {
+                Information("Installing: {0}", installUrl);
+                string installerPath = $"{System.IO.Path.GetTempPath()}" + $"netSDKS{i}.exe";
+                DownloadFile(installUrl, installerPath);
+
+                var result = StartProcess(installerPath, new ProcessSettings {
+                    Arguments = new ProcessArgumentBuilder()
+                        .Append(@"/quiet")
+                    }
+                );
+
+                i++;
+            }
+        }
+    });
+
+Task("provision-uitests-uwp")
+    .Description("Installs and Starts WindowsApplicationDriver. Use WinAppDriverPath to specify WinAppDriver Location.")
+    .Does(() =>
+    {
+        if(IsRunningOnWindows())
+        {
+            string installPath = Argument("WinAppDriverPath", @"C:\Program Files (x86)\");
+            string driverPath = System.IO.Path.Combine(installPath, "Windows Application Driver");
+            if(!DirectoryExists(driverPath))
+            {
+                InstallMsi("https://github.com/microsoft/WinAppDriver/releases/download/v1.2-RC/WindowsApplicationDriver.msi", installPath);
+            }
+
+
+            var info = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "WinAppDriver",
+                WorkingDirectory = driverPath
+            };
+
+            Information("Starting: {0}", driverPath);
+            System.Diagnostics.Process.Start(info);
+        }
+        
+    });
+
+void InstallMsi(string msiFile, string installTo, string fileName = "InstallFile.msi")
+{
+    string installerPath = $"{System.IO.Path.GetTempPath()}{fileName}";
+        
+    try
+    {
+        Information ("Installing: {0}", msiFile);
+        DownloadFile(msiFile, installerPath);
+        Information("File Downloaded To: {0}", installerPath);
+
+        var argumentBuilder = 
+            new ProcessArgumentBuilder()
+                .Append("/a")
+                .Append(installerPath)
+                .Append("/qn");
+
+        if(!String.IsNullOrWhiteSpace(installTo))
+        {
+            Information("Installing into: {0}", installTo);
+            argumentBuilder = argumentBuilder.Append("TARGETDIR=\"" + installTo + "\"");
+        }
+
+        var result = StartProcess("msiexec", new ProcessSettings {
+            Arguments = argumentBuilder
+        });
+
+        if(result != 0)
+            throw new Exception("Failed to install: " + msiFile);
+
+        Information("File Installed: {0}", result);
+    }
+    catch(Exception exc)
+    {
+        Information("Failed to install {0} make sure you are running script as admin {1}", msiFile, exc);
+        throw;
+    }
+    finally{
+        DeleteFile(installerPath);
+
+    }
+}
+
 Task("provision")
     .Description("Install SDKs required to build project")
     .IsDependentOn("provision-macsdk")
     .IsDependentOn("provision-iossdk")
-    .IsDependentOn("provision-monosdk")
-    .IsDependentOn("provision-androidsdk");
+    .IsDependentOn("provision-androidsdk")
+    .IsDependentOn("provision-netsdk-local")
+    .IsDependentOn("provision-windowssdk")
+    .IsDependentOn("provision-monosdk"); // always provision monosdk last otherwise CI might fail
 
 Task("NuGetPack")
     .Description("Build and Create Nugets")
@@ -285,7 +513,6 @@ Task("_NuGetPack")
         NuGetPack(nugetFilePaths, nuGetPackSettings);
     });
 
-
 Task("Restore")
     .Description("Restore target on Xamarin.Forms.sln")
     .Does(() =>
@@ -297,6 +524,19 @@ Task("Restore")
             // ignore restore errors that come from uwp
             if(IsRunningOnWindows())
                 throw;
+        }
+    });
+
+Task("WriteGoogleMapsAPIKey")
+    .Description("Write GoogleMapsAPIKey to Android Control Gallery")
+    .Does(() =>
+    {    
+        string GoogleMapsAPIKey = Argument("GoogleMapsAPIKey", "");
+
+        if(!String.IsNullOrWhiteSpace(GoogleMapsAPIKey))
+        {
+            Information("Writing GoogleMapsAPIKey");
+            System.IO.File.WriteAllText("Xamarin.Forms.ControlGallery.Android/Properties/MapsKey.cs", "[assembly: Android.App.MetaData(\"com.google.android.maps.v2.API_KEY\", Value = \"" + GoogleMapsAPIKey + "\")]");
         }
     });
 
@@ -312,7 +552,6 @@ Task("BuildForNuget")
         };
 
         msbuildSettings.BinaryLogger = binaryLogger;
-        msbuildSettings.ArgumentCustomization = args => args.Append("/nowarn:VSX1000");
         binaryLogger.FileName = $"{artifactStagingDirectory}/win-{configuration}.binlog";
 
         MSBuild("./Xamarin.Forms.sln", msbuildSettings);
@@ -385,17 +624,87 @@ Task("Android100")
     .Description("Builds Monodroid10.0 targets")
     .Does(() =>
     {
-            MSBuild("Xamarin.Forms.sln",
-                    GetMSBuildSettings()
-                        .WithRestore()
-                        .WithProperty("AndroidTargetFrameworks", "MonoAndroid90;MonoAndroid10.0"));
+        MSBuild("Xamarin.Forms.sln",
+                GetMSBuildSettings()
+                    .WithRestore()
+                    .WithProperty("AndroidTargetFrameworks", "MonoAndroid90;MonoAndroid10.0"));
     });
 
 Task("VSMAC")
     .Description("Builds projects necessary so solution compiles on VSMAC")
+    .IsDependentOn("BuildTasks")
     .Does(() =>
     {
-        StartProcess("open", new ProcessSettings{ Arguments = "Xamarin.Forms.sln" });
+        StartVisualStudio();
+    });
+
+Task("cg-android")
+    .Description("Builds Android Control Gallery")
+    .IsDependentOn("WriteGoogleMapsAPIKey")
+    .IsDependentOn("BuildTasks")
+    .Does(() => 
+    {
+        var buildSettings = GetMSBuildSettings();
+
+        if(isCIBuild)
+        {
+            buildSettings = buildSettings.WithTarget("Rebuild").WithTarget("SignAndroidPackage");
+            var binaryLogger = new MSBuildBinaryLogSettings {
+                Enabled  = true
+            };
+
+            buildSettings.BinaryLogger = binaryLogger;
+            binaryLogger.FileName = $"{artifactStagingDirectory}/android-{ANDROID_RENDERERS}_{buildForVS2017}.binlog";
+        }
+        else
+        {
+            buildSettings = buildSettings.WithRestore();
+        }
+
+        MSBuild("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", buildSettings);
+    });
+
+Task("cg-android-vs")
+    .Description("Builds Android Control Gallery and open VS")
+    .IsDependentOn("cg-android")
+    .Does(() => 
+    {
+        StartVisualStudio();
+    });
+
+Task("cg-ios")
+    .Description("Builds iOS Control Gallery and open VS")
+    .IsDependentOn("BuildTasks")
+    .Does(() =>
+    {   
+        var buildSettings = 
+            GetMSBuildSettings(null)
+            .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
+
+        if(isCIBuild)
+        {
+            var binaryLogger = new MSBuildBinaryLogSettings {
+                Enabled  = true
+            };
+
+            buildSettings.BinaryLogger = binaryLogger;
+            binaryLogger.FileName = $"{artifactStagingDirectory}/ios-cg-2017_{buildForVS2017}.binlog";
+        }
+        else
+        {
+            buildSettings = buildSettings.WithRestore();
+        }
+
+        MSBuild("./Xamarin.Forms.ControlGallery.iOS/Xamarin.Forms.ControlGallery.iOS.csproj", 
+            buildSettings);
+    });
+
+Task("cg-ios-vs")
+    .Description("Builds iOS Control Gallery and open VS")
+    .IsDependentOn("cg-ios")
+    .Does(() =>
+    {   
+        StartVisualStudio();
     });
 
 /*
@@ -425,6 +734,27 @@ Task("DeployAndroid")
         AmStartActivity("AndroidControlGallery.AndroidControlGallery/md546303760447087909496d02dc7b17ae8.Activity1");
     });
 
+Task("_PrintEnvironmentVariables")
+    .Does(() => 
+    {       
+        var envVars = EnvironmentVariables();
+
+        string path;
+        if (envVars.TryGetValue("PATH", out path))
+        {
+            Information("Path: {0}", path);
+        }
+
+        foreach(var envVar in envVars)
+        {
+            Information(
+                "Key: {0}\tValue: \"{1}\"",
+                envVar.Key,
+                envVar.Value
+                );
+        }
+    });
+
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
@@ -439,11 +769,21 @@ Task("Default")
 
 RunTarget(target);
 
+void StartVisualStudio(string sln = "Xamarin.Forms.sln")
+{
+    if(isCIBuild)
+        return;
 
-MSBuildSettings GetMSBuildSettings()
+    if(IsRunningOnWindows())
+         StartProcess("start", new ProcessSettings{ Arguments = "Xamarin.Forms.sln" });
+    else
+         StartProcess("open", new ProcessSettings{ Arguments = "Xamarin.Forms.sln" });
+}
+
+MSBuildSettings GetMSBuildSettings(PlatformTarget? platformTarget = PlatformTarget.MSIL)
 {
     var buildSettings =  new MSBuildSettings {
-        PlatformTarget = PlatformTarget.MSIL,
+        PlatformTarget = platformTarget,
         MSBuildPlatform = Cake.Common.Tools.MSBuild.MSBuildPlatform.x86,
         Configuration = configuration,
     };
@@ -453,7 +793,7 @@ MSBuildSettings GetMSBuildSettings()
         buildSettings = buildSettings.WithProperty("XamarinFormsVersion", XamarinFormsVersion);
     }
     
-    buildSettings.ArgumentCustomization = args => args.Append("/nowarn:VSX1000");
+    buildSettings.ArgumentCustomization = args => args.Append($"/nowarn:VSX1000 {MSBuildArguments}");
     return buildSettings;
 }
 
