@@ -6,7 +6,8 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class ItemContentView : ViewGroup
 	{
-		internal protected IVisualElementRenderer Content;
+		protected IVisualElementRenderer Content;
+		internal Element Element => Content?.Element;
 		Size? _size;
 		Action<Size> _reportMeasure;
 
