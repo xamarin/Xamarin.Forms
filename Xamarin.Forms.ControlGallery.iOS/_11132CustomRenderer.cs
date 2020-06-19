@@ -1,4 +1,5 @@
-﻿using CoreAnimation;
+﻿using System.Diagnostics;
+using CoreAnimation;
 using CoreGraphics;
 using Xamarin.Forms;
 using Xamarin.Forms.ControlGallery.iOS;
@@ -38,6 +39,8 @@ namespace Xamarin.Forms.ControlGallery.iOS
 				};
 				layer.Mask = clipShapeLayer;
                 layer.Mask.Name = "test";
+
+                Debug.WriteLine($"_11132CustomRenderer Layer Name { layer.Mask.Name}");
             }
         }
     }

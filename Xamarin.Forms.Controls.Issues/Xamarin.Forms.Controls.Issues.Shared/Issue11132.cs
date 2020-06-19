@@ -16,6 +16,8 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 11132, "[Bug] [iOS] UpdateClip throws NullReferenceException when the Name of the Mask of the Layer is null", PlatformAffected.iOS)]
 	public class Issue11132 : TestContentPage
 	{
+		const string InstructionsId = "instructions";
+
 		public Issue11132()
 		{
 
@@ -29,6 +31,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var instructions = new Label
 			{
+				AutomationId = InstructionsId,
 				Padding = 12,
 				BackgroundColor = Color.Black,
 				TextColor = Color.White,
@@ -37,7 +40,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var issue11132Control = new Issue11132Control
 			{
-				BackgroundColor = Color.Red,
 				HeightRequest = 100
 			};
 
@@ -46,6 +48,17 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Content = layout;
 		}
+
+#if UITEST
+		[Test]
+		[Description("Verify that can use a CustomRenderer overriding the iOS View Layer properties")]
+		public void Issue11132CustomRendererLayerAndClip()
+		{
+			RunningApp.WaitForElement(InstructionsId);
+			RunningApp.Screenshot("No crash");
+		}
+#endif
+
 	}
 
 	[Preserve(AllMembers = true)]
