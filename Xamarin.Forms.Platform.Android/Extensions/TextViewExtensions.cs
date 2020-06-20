@@ -22,17 +22,6 @@ namespace Xamarin.Forms.Platform.Android
 			textView.SetMaxLines(maxLines);
 		}
 
-		static void SetMaxLines(this TextView textView, Label label, int lines)
-		{
-			// If the Label's MaxLines has been explicitly set, we should not set it here
-			if (label.MaxLines != (int)Label.MaxLinesProperty.DefaultValue)
-			{
-				return;
-			}
-
-			textView.SetMaxLines(lines);
-		}
-
 		public static void	SetLineBreakMode(this TextView textView, Label label)
 		{
 			var maxLines = SetLineBreak(textView, label.LineBreakMode);
