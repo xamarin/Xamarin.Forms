@@ -34,11 +34,11 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement("entryUpdate_Spacing");
 			RunningApp.Tap("entryUpdate_Spacing");	
 			RunningApp.ClearText();
-			RunningApp.EnterText("500,0");
+			RunningApp.EnterText("0,500");
 			RunningApp.Tap("btnUpdate_Spacing");	
 
 			// If it hasn't crashed, we should still be able to find this
-			RunningApp.WaitForElement("entryUpdate Spacing");
+			RunningApp.WaitForElement("entryUpdate_Spacing");
 		}
 #endif
 	}
