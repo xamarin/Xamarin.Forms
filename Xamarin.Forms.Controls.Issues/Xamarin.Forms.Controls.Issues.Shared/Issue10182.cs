@@ -68,11 +68,11 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-#if UITEST
+#if UITEST && __ANDROID__
 		[Test]
 		public void AppDoesntCrashWhenResettingPage()
 		{
-			RunningApp.WaitForElement("Loaded");
+			RunningApp.WaitForElement("Success");
 		}
 #endif
 	}
