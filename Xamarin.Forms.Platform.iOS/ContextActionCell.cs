@@ -472,7 +472,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (e.PropertyName == "HasContextActions")
 			{
-				if (_cell != null)
+				if (_cell == null)
 					return;
 
 				var recycling = _cell.RealParent is ListView parentListView &&
