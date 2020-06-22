@@ -53,6 +53,7 @@
     <Resource Include="Assets\*.ttf" />
     <Resource Include="*.png" />
     <Resource Include="*.jpg" />
+    <Resource Include="*.gif" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -64,11 +65,4 @@
     <ProjectReference Include="..\Xamarin.Forms.Maps\Xamarin.Forms.Maps.csproj" />
     <ProjectReference Include="..\Xamarin.Forms.Platform.WPF\Xamarin.Forms.Platform.WPF.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="GifOne.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="photo.jpg" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
