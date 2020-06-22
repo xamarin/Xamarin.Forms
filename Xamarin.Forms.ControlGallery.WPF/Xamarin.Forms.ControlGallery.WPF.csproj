@@ -64,4 +64,11 @@
     <ProjectReference Include="..\Xamarin.Forms.Maps\Xamarin.Forms.Maps.csproj" />
     <ProjectReference Include="..\Xamarin.Forms.Platform.WPF\Xamarin.Forms.Platform.WPF.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="GifOne.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="photo.jpg" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
