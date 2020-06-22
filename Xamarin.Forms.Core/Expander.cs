@@ -10,11 +10,10 @@ namespace Xamarin.Forms
 	{
 		const string ExpandAnimationName = nameof(ExpandAnimationName);
 		const uint DefaultAnimationLength = 250;
+		const double EnabledOpacity = 1;
+		const double DisabledOpacity = .6;
 
 		public event EventHandler Tapped;
-
-		public static readonly BindableProperty SpacingProperty = BindableProperty.Create(nameof(Spacing), typeof(double), typeof(Expander), 0d, propertyChanged: (bindable, oldvalue, newvalue)
-			=> ((Expander)bindable).ExpanderLayout.Spacing = (double)newvalue);
 
 		public static readonly BindableProperty HeaderProperty = BindableProperty.Create(nameof(Header), typeof(View), typeof(Expander), default(View), propertyChanged: (bindable, oldValue, newValue)
 			=> ((Expander)bindable).SetHeader((View)oldValue));
@@ -55,7 +54,7 @@ namespace Xamarin.Forms
 
 		public Expander()
 		{
-			ExpanderLayout = new StackLayout { Spacing = Spacing };
+			ExpanderLayout = new StackLayout { Spacing = 0 };
 			ForceUpdateSizeCommand = new Command(ForceUpdateSize);
 			InternalChildren.Add(ExpanderLayout);
 		}
@@ -89,12 +88,6 @@ namespace Xamarin.Forms
 					return heightRequest;
 				return heightRequest + layout.Padding.VerticalThickness;
 			}
-		}
-
-		public double Spacing
-		{
-			get => (double)GetValue(SpacingProperty);
-			set => SetValue(SpacingProperty, value);
 		}
 
 		public View Header
@@ -180,6 +173,13 @@ namespace Xamarin.Forms
 			base.OnBindingContextChanged();
 			_lastVisibleHeight = -1;
 			SetContent(true, true);
+		}
+
+		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			base.OnPropertyChanged(propertyName);
+			if (propertyName == IsEnabledProperty.PropertyName)
+				OnIsEnabledChanged();
 		}
 
 		protected override void OnSizeAllocated(double width, double height)
@@ -363,5 +363,8 @@ namespace Xamarin.Forms
 					State = ExpanderState.Expanded;
 				});
 		}
+
+		void OnIsEnabledChanged()
+			=> ExpanderLayout.Opacity = IsEnabled ? EnabledOpacity: DisabledOpacity;
 	}
 }

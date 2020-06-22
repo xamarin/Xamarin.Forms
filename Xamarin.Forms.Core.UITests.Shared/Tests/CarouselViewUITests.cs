@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using NUnit.Framework;
 using Xamarin.UITest;
 
@@ -56,6 +56,26 @@ namespace Xamarin.Forms.Core.UITests
 			CheckPositionValue("lblPosition", "0");
 			CheckPositionValue("lblCurrentItem", "1");
 			CheckPositionValue("lblSelected", "1");
+
+			App.Back();
+		}
+
+
+		[TestCase("CarouselView (XAML, Horizontal)")]
+		public void CarouselViewGoToNextCurrentItem(string subgallery)
+		{
+			VisitSubGallery(subgallery);
+
+			CheckPositionValue("lblPosition", "0");
+			CheckPositionValue("lblCurrentItem", "0");
+			App.Tap(x => x.Marked("btnNext"));
+			CheckPositionValue("lblPosition", "1");
+			CheckPositionValue("lblCurrentItem", "1");
+			CheckPositionValue("lblSelected", "1");
+			App.Tap(x => x.Marked("btnPrev"));
+			CheckPositionValue("lblPosition", "0");
+			CheckPositionValue("lblCurrentItem", "0");
+			CheckPositionValue("lblSelected", "0");
 
 			App.Back();
 		}
@@ -190,14 +210,22 @@ namespace Xamarin.Forms.Core.UITests
 
 		void VisitSubGallery(string galleryName, bool enableIndicator = false)
 		{
+			App.ScrollUp();
+			App.ScrollUp();
+
 			if (enableIndicator)
 				App.Tap(t => t.Marked("EnableIndicatorView"));
 
 			App.QueryUntilPresent(() =>
 			{
-				App.ScrollDown();
-				return App.Query(t => t.Marked(galleryName));
-			});
+				var query = App.Query(t => t.Marked(galleryName));
+				if (query.Count() == 0)
+				{
+					App.ScrollDown();
+					return null;
+				}
+				return query;
+			}, delayInMs: 500);
 
 			App.Tap(t => t.Marked(galleryName));
 		}

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Xamarin.Forms.CustomAttributes;
-using System.IO;
+using IOPath = System.IO.Path;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Controls
 #if __ANDROID__
 		static IApp InitializeAndroidApp()
 		{
-			var fullApkPath = Path.Combine(TestContext.CurrentContext.TestDirectory, AppPaths.ApkPath);
+			var fullApkPath = IOPath.Combine(TestContext.CurrentContext.TestDirectory, AppPaths.ApkPath);
 			var app = ConfigureApp.Android.ApkFile(fullApkPath).Debug().StartApp(UITest.Configuration.AppDataMode.DoNotClear);
 
 			if (bool.Parse((string)app.Invoke("IsPreAppCompat")))
@@ -601,6 +601,23 @@ namespace Xamarin.Forms.Controls
 		protected virtual bool Isolate => true;
 #endif
 
+		protected void IncreaseFlyoutItemsHeightSoUITestsCanClickOnThem()
+		{
+			this.Resources.Add(new Style(typeof(Label))
+			{
+				ApplyToDerivedTypes = true,
+				Class = FlyoutItem.LayoutStyle,
+				Setters =
+				{
+					new Setter()
+					{
+						Property = HeightRequestProperty,
+						Value = 50
+					}
+				}
+			});
+		}
+
 		protected TestShell() : base()
 		{
 			Routing.Clear();
@@ -619,7 +636,11 @@ namespace Xamarin.Forms.Controls
 
 		public ContentPage AddTopTab(string title, string icon = null)
 		{
-			var page = new ContentPage();
+			var page = new ContentPage()
+			{
+				Title = title
+			};
+
 			AddTopTab(page, title, icon);
 			return page;
 		}
