@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using CoreTelephony;
 using Foundation;
 using UIKit;
 
@@ -18,14 +14,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public PageLifecycleManager(IPageController pageController)
 		{
-			if (pageController == null)
-				throw new ArgumentNullException("You need to provide a Page Element ");
+			_pageController = pageController ?? throw new ArgumentNullException("You need to provide a Page Element");
 
-			_pageController = pageController;
+			_activateObserver = NSNotificationCenter.DefaultCenter.AddObserver(UIApplication.DidBecomeActiveNotification, n =>
+			{
+				if (CheckIfWeAreTheCurrentPage())
+					HandlePageAppearing();
+			});
 
-			_activateObserver = NSNotificationCenter.DefaultCenter.AddObserver(UIApplication.DidBecomeActiveNotification, n => HandlePageAppearing());
-
-			_resignObserver = NSNotificationCenter.DefaultCenter.AddObserver(UIApplication.WillResignActiveNotification, n => HandlePageDisappearing());
+			_resignObserver = NSNotificationCenter.DefaultCenter.AddObserver(UIApplication.WillResignActiveNotification, n =>
+			{
+				if (CheckIfWeAreTheCurrentPage())
+					HandlePageDisappearing();
+			});
 		}
 
 		protected virtual void Dispose(bool disposing)
@@ -63,11 +64,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public void HandlePageAppearing()
 		{
-			if (!_appeared)
-			{
-				_appeared = true;
-				_pageController?.SendAppearing();
-			}
+			if (_appeared)
+				return;
+
+			_appeared = true;
+			_pageController?.SendAppearing();
+
 		}
 
 		public void HandlePageDisappearing()
@@ -77,6 +79,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_appeared = false;
 			_pageController.SendDisappearing();
+		}
+
+		bool CheckIfWeAreTheCurrentPage()
+		{
+			if (_pageController.RealParent is IPageContainer<Page> multipage)
+				return multipage.CurrentPage == _pageController;
+			return true;
 		}
 	}
 }
