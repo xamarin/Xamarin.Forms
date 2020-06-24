@@ -19,7 +19,9 @@ steps:
     - task: APIScan@2
       inputs:
         softwareFolder: '$(System.DefaultWorkingDirectory)'
-        softwareBuildNum: '$(Build.BuildNumber)'
+        softwareName: 'Xamarin.Forms'
+        softwareVersionNum: '$(Build.BuildNumber)'
+        softwareBuildNum: '$(Build.BuildId)'
         symbolsFolder: 'SRV*http://symweb'
     
     - task: PoliCheck@1
