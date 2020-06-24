@@ -65,6 +65,35 @@ namespace Xamarin.Forms.Platform.Android
 			_textColorSwitcher = _textColorSwitcher ?? new TextColorSwitcher(EditText.TextColors, Element.UseLegacyColorManagement());
 			_textColorSwitcher.UpdateTextColor(EditText, color);
 		}
+
+		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
+		{
+			base.OnElementChanged(e);
+
+			UpdateDismissKeyboardOnOutsideTap();
+		}
+
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
+			if (e.PropertyName == PlatformConfiguration.AndroidSpecific.InputView.DismissKeyboardOnOutsideTapProperty.PropertyName)
+				UpdateDismissKeyboardOnOutsideTap();
+
+			base.OnElementPropertyChanged(sender, e);
+		}
+
+		protected virtual void UpdateDismissKeyboardOnOutsideTap()
+		{
+			if (Element == null || Control == null)
+				return;
+			var dismissKeyboardOnOutsideTap = Element.OnThisPlatform().DismissKeyboardOnOutsideTap();
+
+			Control.ShouldDismissKeyboardOnOutsideTap = dismissKeyboardOnOutsideTap;
+		}
 	}
 
 	public abstract partial class EntryRendererBase<TControl> : ViewRenderer<Entry, TControl>, ITextWatcher, TextView.IOnEditorActionListener

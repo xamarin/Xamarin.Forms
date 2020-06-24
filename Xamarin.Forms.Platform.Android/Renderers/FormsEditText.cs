@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
+		public bool ShouldDismissKeyboardOnOutsideTap { get; set; } = true;
 
 		public override bool OnKeyPreIme(Keycode keyCode, KeyEvent e)
 		{
