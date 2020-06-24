@@ -117,7 +117,7 @@
   <ItemGroup Condition=" '$(OS)' == 'Windows_NT' AND $(TargetFramework.StartsWith('uap10.0'))  ">
     <!-- Conditions duplicated on PackageReference to make VS Mac happy -->
     <PackageReference Include="Microsoft.UI.Xaml" Condition="'$(OS)' == 'Windows_NT' AND $(TargetPlatformMinVersion) &lt; '10.0.16299.0'">
-      <Version>2.4.2</Version>
+      <Version>2.1.190606001</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.UI.Xaml" Condition="'$(OS)' == 'Windows_NT' AND $(TargetPlatformMinVersion) &gt;= '10.0.16299.0'">
       <Version>2.4.2</Version>
