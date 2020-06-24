@@ -41,7 +41,7 @@ var IOS_PROJ = "./DeviceTests.iOS/DeviceTests.iOS.csproj";
 var IOS_BUNDLE_ID = "com.xamarin.quickui.controlgallery";
 var IOS_IPA_PATH = "./Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/Debug/XamarinFormsControlGalleryiOS.app";
 var IOS_TEST_RESULTS_PATH = "./xunit-ios.xml";
-var IOS_BUILD_IPA = Argument("IOS_BUILD_IPA", (target == "test-ios-emu") ? true : false );
+var IOS_BUILD_IPA = Argument("IOS_BUILD_IPA", (target == "cg-ios-deploy") ? true : (false || isCIBuild) );
 
 var ANDROID_RENDERERS = Argument("ANDROID_RENDERERS", "FAST");
 var XamarinFormsVersion = Argument("XamarinFormsVersion", "");
@@ -59,8 +59,6 @@ string artifactStagingDirectory = EnvironmentVariable("BUILD_ARTIFACTSTAGINGDIRE
 var ANDROID_HOME = EnvironmentVariable("ANDROID_HOME") ??
     (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
 string[] androidSdkManagerInstalls = new [] { "platforms;android-28", "platforms;android-29", "build-tools;29.0.3"};
-
-var IOS_BUILD_IPA = Argument("IOS_BUILD_IPA", false || isCIBuild);
 
 (string name, string location)[] windowsSdksInstalls = new (string name, string location)[]
 {
@@ -653,6 +651,11 @@ Task("cg-ios")
             GetMSBuildSettings(null)
             .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
 
+        if(target == "cg-ios-deploy")
+        {
+            buildSettings = buildSettings.WithProperty("MtouchArch", "x86_64");
+        }
+
         if(isCIBuild)
         {
             var binaryLogger = new MSBuildBinaryLogSettings {
@@ -679,8 +682,14 @@ Task("cg-ios-vs")
         StartVisualStudio();
     });
 
-Task ("test-ios-emu")
-    //.IsDependentOn ("build-ios")
+Task("cg-ios-test")
+    .Does(() =>
+    {
+        NUnit3("./Xamarin.Forms.Core.iOS.UITests/**/bin/Debug/Xamarin.Forms.Core.iOS.UITests.dll");
+    });
+
+Task ("cg-ios-deploy")
+    .IsDependentOn ("cg-ios")
     .Does (() =>
 {
     IOS_SIM_NAME = "iPhone 8";
