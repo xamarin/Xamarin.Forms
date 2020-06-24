@@ -15,6 +15,19 @@ steps:
       SourceFolder: '$(Build.ArtifactsDirectory)/win_build'
       TargetFolder: '$(System.DefaultWorkingDirectory)'
 
+  - ${{ if eq(variables['System.TeamProject'], 'devdiv') }}:
+    - task: APIScan@2
+      inputs:
+        softwareFolder: '$(System.DefaultWorkingDirectory)'
+        softwareBuildNum: '$(Build.BuildNumber)'
+        symbolsFolder: 'SRV*http://symweb'
+    
+    - task: PoliCheck@1
+      inputs:
+        inputType: 'Basic'
+        targetType: 'F'
+        targetArgument: '$(Build.SourcesDirectory)'
+        result: 'PoliCheck.xml'
 
   - task: PowerShell@1
     displayName: 'Generate docs from docs repo'
