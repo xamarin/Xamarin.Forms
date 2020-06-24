@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using CoreGraphics;
-using Rect = Xamarin.Forms.Shapes.Rectangle;
+using FormsRectangle = Xamarin.Forms.Shapes.Rectangle;
 
 #if __MOBILE__
 namespace Xamarin.Forms.Platform.iOS
@@ -9,9 +9,9 @@ namespace Xamarin.Forms.Platform.iOS
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
-    public class RectangleRenderer : ShapeRenderer<Rect, RectView>
+    public class RectangleRenderer : ShapeRenderer<FormsRectangle, RectView>
     {
-        protected override void OnElementChanged(ElementChangedEventArgs<Rect> args)
+        protected override void OnElementChanged(ElementChangedEventArgs<FormsRectangle> args)
         {
             if (Control == null)
             {
@@ -31,9 +31,9 @@ namespace Xamarin.Forms.Platform.MacOS
         {
             base.OnElementPropertyChanged(sender, args);
 
-            if (args.PropertyName == Rect.RadiusXProperty.PropertyName)
+            if (args.PropertyName == FormsRectangle.RadiusXProperty.PropertyName)
                 UpdateRadiusX();
-            else if (args.PropertyName == Rect.RadiusYProperty.PropertyName)
+            else if (args.PropertyName == FormsRectangle.RadiusYProperty.PropertyName)
                 UpdateRadiusY();
         }
 
