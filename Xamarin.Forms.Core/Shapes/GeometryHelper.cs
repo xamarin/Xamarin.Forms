@@ -260,6 +260,7 @@ namespace Xamarin.Forms.Shapes
             }
         }
 
+        // More information: http://www.charlespetzold.com/blog/2008/01/Mathematics-of-ArcSegment.html
         public static void FlattenArc(List<Point> points, Point pt1, Point pt2, double radiusX, double radiusY, double angleRotation,
             bool isLargeArc, bool isCounterclockwise, double tolerance)
         {
@@ -320,7 +321,7 @@ namespace Xamarin.Forms.Shapes
             matx.Invert();
 
             // Calculate number of points for polyline approximation
-            int max = (int)((4 * (radiusX + radiusY) * Math.Abs(angle2 - angle1) / (2 * Math.PI)) / tolerance);
+            int max = (int)(4 * (radiusX + radiusY) * Math.Abs(angle2 - angle1) / (2 * Math.PI) / tolerance);
 
             for (int i = 0; i <= max; i++)
             {

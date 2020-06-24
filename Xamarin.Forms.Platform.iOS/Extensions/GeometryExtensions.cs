@@ -158,7 +158,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
                             List<Point> points = new List<Point>();
 
-                            GeometryHelper.FlattenArc(points,
+                            GeometryHelper.FlattenArc(
+                                points,
                                 lastPoint,
                                 arcSegment.Point,
                                 arcSegment.Size.Width,
@@ -175,7 +176,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
                             pathData.Data.AddLines(cgpoints);
 
-                            lastPoint = points[points.Count - 1];
+                            lastPoint = points.Count > 0 ? points[points.Count - 1] : Point.Zero;
                         }
                     }
 
