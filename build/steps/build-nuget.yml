@@ -20,9 +20,8 @@ steps:
       inputs:
         softwareFolder: '$(System.DefaultWorkingDirectory)'
         softwareName: 'Xamarin.Forms'
-        softwareVersionNum: '$(Build.BuildNumber)'
+        softwareVersionNum: '4.XX'
         softwareBuildNum: '$(Build.BuildId)'
-        symbolsFolder: 'SRV*http://symweb'
     
     - task: PoliCheck@1
       inputs:
@@ -30,6 +29,14 @@ steps:
         targetType: 'F'
         targetArgument: '$(Build.SourcesDirectory)'
         result: 'PoliCheck.xml'
+    
+    - task: RoslynAnalyzers@3
+      inputs:
+        userProvideBuildInfo: 'msBuildInfo'
+        msBuildVersion: '16.0'
+        msBuildArchitecture: 'amd64'
+        rulesetName: 'Custom'
+        customRuleset: 'DevDivRoslynRequired.ruleset'
 
   - task: PowerShell@1
     displayName: 'Generate docs from docs repo'
