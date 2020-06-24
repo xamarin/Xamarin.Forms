@@ -29,10 +29,4 @@
     <ProjectReference Include="..\Xamarin.Forms.Platform.UAP\Xamarin.Forms.Platform.UAP.csproj">    
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.10" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="NETStandard.Library" Version="2.0.3" />
-  </ItemGroup>
 </Project>
