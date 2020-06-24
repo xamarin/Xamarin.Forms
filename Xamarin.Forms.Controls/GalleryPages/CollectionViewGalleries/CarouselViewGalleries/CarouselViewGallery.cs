@@ -14,8 +14,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 			var button = new Button
 			{
-				Text = "Enable IndicatorView",
-				AutomationId = "EnableIndicatorView"
+				Text = "Enable CarouselView",
+				AutomationId = "EnableCarouselView"
 			};
 			button.Clicked += ButtonClicked;
 
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		{
 			var button = sender as Button;
 
-			button.Text = "IndicatorView Enabled!";
+			button.Text = "CarouselView Enabled!";
 			button.TextColor = Color.Black;
 			button.IsEnabled = false;
 
