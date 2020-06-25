@@ -215,6 +215,11 @@ namespace Xamarin.Forms.Platform.MacOS
 
         public ShapeLayer()
         {
+#if __MOBILE__
+            ContentsScale = UIScreen.MainScreen.Scale;
+#else
+            ContentsScale = NSScreen.MainScreen.BackingScaleFactor;
+#endif
             _fillMode = false;
             _stretch = Stretch.None;
             _strokeLineCap = CGLineCap.Butt;
