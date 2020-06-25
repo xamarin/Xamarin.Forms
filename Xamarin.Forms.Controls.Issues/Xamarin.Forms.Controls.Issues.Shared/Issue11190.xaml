@@ -15,32 +15,38 @@
             BackgroundColor="Black"
             TextColor="White"
             Text="If the Shape is rendered without problems or exceptions, the test has passed."/>
-        <Path
+        <Grid
             Grid.Row="1"
-            Stroke="Black"
+            HorizontalOptions="Start"
+            VerticalOptions="Start"
             HeightRequest="200"
             WidthRequest="200">
-            <Path.Data>
-                <PathGeometry>
-                    <PathGeometry.Figures>
-                        <PathFigureCollection>
-                            <PathFigure
-                                StartPoint="10,100">
-                                <PathFigure.Segments>
-                                    <PathSegmentCollection>
-                                        <ArcSegment
-                                            Size="100,50"
-                                            RotationAngle="45"
-                                            IsLargeArc="True"
-                                            SweepDirection="CounterClockwise"
-                                            Point="200,100" />
-                                    </PathSegmentCollection>
-                                </PathFigure.Segments>
-                            </PathFigure>
-                        </PathFigureCollection>
-                    </PathGeometry.Figures>
-                </PathGeometry>
-            </Path.Data>
-        </Path>
+            <Path
+                Stroke="Black"
+                HeightRequest="200"
+                WidthRequest="200">
+                <Path.Data>
+                    <PathGeometry>
+                        <PathGeometry.Figures>
+                            <PathFigureCollection>
+                                <PathFigure
+                                    StartPoint="0,0">
+                                    <PathFigure.Segments>
+                                        <PathSegmentCollection>
+                                            <ArcSegment
+                                                Size="100,100"
+                                                RotationAngle="45"
+                                                IsLargeArc="True"
+                                                SweepDirection="CounterClockwise"
+                                                Point="100,100" />
+                                        </PathSegmentCollection>
+                                    </PathFigure.Segments>
+                                </PathFigure>
+                            </PathFigureCollection>
+                        </PathGeometry.Figures>
+                    </PathGeometry>
+                </Path.Data>
+            </Path>
+        </Grid>
     </Grid>
 </controls:TestContentPage>
