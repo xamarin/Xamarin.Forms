@@ -10,7 +10,15 @@
     <OutputType>Library</OutputType>
     <PackageId>Xamarin.Forms.Material.Tizen</PackageId>
     <DefineConstants>__TIZEN__;__MATERIAL__</DefineConstants>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <Compile Include="..\Xamarin.Forms.Material.Android\MaterialColors.cs">
