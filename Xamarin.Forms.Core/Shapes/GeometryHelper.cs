@@ -196,14 +196,19 @@ namespace Xamarin.Forms.Shapes
                         else if (segSrc is ArcSegment)
                         {
                             ArcSegment arcSeg = segSrc as ArcSegment;
+
                             Points.Clear();
 
-                            FlattenArc(Points, ptLast, arcSeg.Point,
-                                       arcSeg.Size.Width, arcSeg.Size.Height,
-                                       arcSeg.RotationAngle,
-                                       arcSeg.IsLargeArc,
-                                       arcSeg.SweepDirection == SweepDirection.CounterClockwise,
-                                       tolerance);
+                            FlattenArc(
+                                Points,
+                                ptLast,
+                                arcSeg.Point,
+                                arcSeg.Size.Width,
+                                arcSeg.Size.Height,
+                                arcSeg.RotationAngle,
+                                arcSeg.IsLargeArc,
+                                arcSeg.SweepDirection == SweepDirection.CounterClockwise,
+                                tolerance);
 
                             // Set ptLast while transferring points
                             for (int i = 1; i < Points.Count; i++)
@@ -286,8 +291,8 @@ namespace Xamarin.Forms.Shapes
 
             vectRotated = vectRotated.Normalized;
 
-            // Distance from chord to center 
-            double centerDistance = Math.Sqrt(radiusY * radiusY - halfChord * halfChord);
+            // Distance from chord to center
+            double centerDistance = Math.Sqrt(Math.Abs((radiusY * radiusY) - (halfChord * halfChord)));
 
             // Calculate center point
             Point center = midPoint + centerDistance * vectRotated;
