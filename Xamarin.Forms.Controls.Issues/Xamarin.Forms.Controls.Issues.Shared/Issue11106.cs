@@ -22,6 +22,19 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			Title = "Issue 11106";
 
+			var grid = new Grid();
+
+			grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+			grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
+
+			var instructions = new Label
+			{
+				Padding = 12,
+				BackgroundColor = Color.Black,
+				TextColor = Color.White,
+				Text = "Scroll to the end and try to set focus to the last Entry. If you can tap the Entry and set the focus, the test has passed."
+			};
+
 			var scroll = new ScrollView();
 
 			var layout = new StackLayout();
@@ -33,7 +46,13 @@ namespace Xamarin.Forms.Controls.Issues
 
 			scroll.Content = layout;
 
-			Content = scroll;
+			grid.Children.Add(instructions);
+			Grid.SetRow(instructions, 0);
+
+			grid.Children.Add(scroll);
+			Grid.SetRow(scroll, 1);
+
+			Content = grid;
 		}
 	}
 }
