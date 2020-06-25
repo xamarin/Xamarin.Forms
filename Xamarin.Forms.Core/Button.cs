@@ -72,6 +72,7 @@ namespace Xamarin.Forms
 		{
 			return default(Thickness);
 		}
+
 		public LineBreakMode LineBreakMode
 		{
 			get { return (LineBreakMode)GetValue(LineBreakModeProperty); }
