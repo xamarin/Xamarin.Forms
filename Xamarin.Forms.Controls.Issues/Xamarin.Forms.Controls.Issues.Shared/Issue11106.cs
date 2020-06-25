@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Category(UITestCategories.ScrollView)]
 #endif
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 1101110631,
+	[Issue(IssueTracker.Github, 11106,
 		"[Bug] ScrollView UWP bug in 4.7.0.968!",
 		PlatformAffected.UWP)]
 	public class Issue11106 : TestContentPage
