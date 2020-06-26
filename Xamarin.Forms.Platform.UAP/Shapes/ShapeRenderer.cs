@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using Xamarin.Forms.Shapes;
 using Shape = Xamarin.Forms.Shapes.Shape;
 
@@ -74,7 +75,7 @@ namespace Xamarin.Forms.Platform.WPF
 #endif	
 		void UpdateHeight()
 		{
-			Control.Height = Element.Height > 0 ? Element.Height : 0;
+			Control.Height = Math.Max(Element.Height, 0);
 		}
 
 #if !WINDOWS_UWP
@@ -82,7 +83,7 @@ namespace Xamarin.Forms.Platform.WPF
 #endif
 		void UpdateWidth()
 		{
-			Control.Width = Element.Width > 0 ? Element.Width : 0;
+			Control.Width = Math.Max(Element.Width, 0);
 		}
 
 		void UpdateAspect()
