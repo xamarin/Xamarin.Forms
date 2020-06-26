@@ -11,6 +11,12 @@ namespace Xamarin.Forms.Platform.MacOS
 {
     public class RectangleRenderer : ShapeRenderer<FormsRectangle, RectView>
     {
+        [Internals.Preserve(Conditional = true)]
+        public RectangleRenderer()
+        {
+
+        }
+
         protected override void OnElementChanged(ElementChangedEventArgs<FormsRectangle> args)
         {
             if (Control == null)
