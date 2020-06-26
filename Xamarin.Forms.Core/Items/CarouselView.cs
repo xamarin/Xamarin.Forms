@@ -201,7 +201,7 @@ namespace Xamarin.Forms
 			string constructorHint = null,
 			[CallerMemberName] string memberName = "")
 		{
-			ExperimentalFlags.VerifyFlagEnabled(nameof(CollectionView), ExperimentalFlags.CarouselViewExperimental,
+			ExperimentalFlags.VerifyFlagEnabled(nameof(CarouselView), ExperimentalFlags.CarouselViewExperimental,
 				constructorHint, memberName);
 		}
 
