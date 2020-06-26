@@ -35,7 +35,7 @@ PowerShell:
 //////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "Default");
-var IOS_SIM_NAME = EnvironmentVariable("IOS_SIM_NAME") ?? "iPhone 11";
+var IOS_SIM_NAME = EnvironmentVariable("IOS_SIM_NAME") ?? "iPhone 8";
 var IOS_SIM_RUNTIME = EnvironmentVariable("IOS_SIM_RUNTIME") ?? "com.apple.CoreSimulator.SimRuntime.iOS-13-5";
 var IOS_PROJ = "./DeviceTests.iOS/DeviceTests.iOS.csproj";
 var IOS_BUNDLE_ID = "com.xamarin.quickui.controlgallery";
@@ -649,11 +649,12 @@ Task("cg-ios")
     {   
         var buildSettings = 
             GetMSBuildSettings(null)
-            .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
+                .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
 
         if(target == "cg-ios-deploy")
         {
             buildSettings = buildSettings.WithProperty("MtouchArch", "x86_64");
+            buildSettings = buildSettings.WithProperty("iOSPlatform", "iPhoneSimulator");
         }
 
         if(isCIBuild)
@@ -682,29 +683,46 @@ Task("cg-ios-vs")
         StartVisualStudio();
     });
 
-Task("cg-ios-test")
+Task("cg-ios-build-tests")
     .Does(() =>
     {
-        NUnit3("./Xamarin.Forms.Core.iOS.UITests/**/bin/Debug/Xamarin.Forms.Core.iOS.UITests.dll");
+        var buildSettings = 
+            GetMSBuildSettings(null, "Debug")
+                .WithProperty("BuildIpa", "true")
+                .WithProperty("MtouchArch", "x86_64")
+                .WithProperty("iOSPlatform", "iPhoneSimulator")
+                .WithRestore();
+
+        MSBuild("./Xamarin.Forms.Core.iOS.UITests/Xamarin.Forms.Core.iOS.UITests.csproj", 
+            buildSettings);
+    });
+
+Task("_cg-ios-run-tests")
+    .Does(() =>
+    {
+        var sim = GetIosSimulator();
+        NUnit3(new [] { "./Xamarin.Forms.Core.iOS.UITests/bin/Debug/Xamarin.Forms.Core.iOS.UITests.dll" }, 
+            new NUnit3Settings {
+                Params = new Dictionary<string, string>()
+                {
+                    {"UDID", GetIosSimulator().UDID}
+                },
+                Where = "cat == Issues && cat != ManualReview"
+            });
+    });
+    
+Task("cg-ios-run-tests")
+    .IsDependentOn("cg-ios-build-tests")
+    .IsDependentOn("_cg-ios-run-tests")
+    .Does(() =>
+    {
     });
 
 Task ("cg-ios-deploy")
-    .IsDependentOn ("cg-ios")
     .Does (() =>
 {
-    IOS_SIM_NAME = "iPhone 8";
-    IOS_SIM_RUNTIME = "com.apple.CoreSimulator.SimRuntime.iOS-13-5";
-    var sims = ListAppleSimulators ();
-    foreach (var s in sims)
-    {
-        if(s.Runtime.Contains("13-5"))
-            continue;
-            
-        Information("Info: {0} ({1} - {2} - {3})", s.Name, s.Runtime, s.UDID, s.Availability);
-    }
-
     // Look for a matching simulator on the system
-    var sim = sims.First (s => s.Name == IOS_SIM_NAME && s.Runtime == IOS_SIM_RUNTIME);
+    var sim = GetIosSimulator();
 
     // Boot the simulator
     Information("Booting: {0} ({1} - {2})", sim.Name, sim.Runtime, sim.UDID);
@@ -750,21 +768,6 @@ Task ("cg-ios-deploy")
     ShutdownAllAppleSimulators ();
 });
 
-/*
-Task("Deploy")
-    .IsDependentOn("DeployiOS")
-    .IsDependentOn("DeployAndroid");
-
-
-// TODO? Not sure how to make this work
-Task("DeployiOS")
-    .Does(() =>
-    {
-        // not sure how to get this to deploy to iOS
-        BuildiOSIpa("./Xamarin.Forms.sln", platform:"iPhoneSimulator", configuration:"Debug");
-
-    });
-*/
 Task("DeployAndroid")
     .Description("Builds and deploy Android Control Gallery")
     .Does(() =>
@@ -823,12 +826,12 @@ void StartVisualStudio(string sln = "Xamarin.Forms.sln")
          StartProcess("open", new ProcessSettings{ Arguments = "Xamarin.Forms.sln" });
 }
 
-MSBuildSettings GetMSBuildSettings(PlatformTarget? platformTarget = PlatformTarget.MSIL)
+MSBuildSettings GetMSBuildSettings(PlatformTarget? platformTarget = PlatformTarget.MSIL, string buildConfiguration = null)
 {
     var buildSettings =  new MSBuildSettings {
         PlatformTarget = platformTarget,
         MSBuildPlatform = Cake.Common.Tools.MSBuild.MSBuildPlatform.x86,
-        Configuration = configuration,
+        Configuration = buildConfiguration ?? configuration,
     };
 
     if(!String.IsNullOrWhiteSpace(XamarinFormsVersion))
@@ -865,4 +868,12 @@ bool IsXcodeVersionOver(string version)
     }
 
     return true;
+}
+
+AppleSimulator GetIosSimulator()
+{
+    var sims = ListAppleSimulators ();
+    // Look for a matching simulator on the system
+    var sim = sims.First (s => s.Name == IOS_SIM_NAME && s.Runtime == IOS_SIM_RUNTIME);
+    return sim;
 }
