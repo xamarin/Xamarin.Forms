@@ -12,8 +12,7 @@
            <CollectionView.ItemTemplate>
                <DataTemplate>
                     <SwipeView
-                        HeightRequest="60"
-                        IsEnabled="True">
+                        HeightRequest="60">
                         <SwipeView.LeftItems>
                             <SwipeItems
                                 Mode="Reveal">
@@ -25,6 +24,10 @@
                         </SwipeView.LeftItems>
                         <Grid
                             BackgroundColor="Yellow">
+                            <Grid.GestureRecognizers>
+                               <TapGestureRecognizer
+                                   Tapped="TapGestureRecognizer_Tapped"/>
+                           </Grid.GestureRecognizers>
                            <Label
                                HorizontalOptions="Start"
                                VerticalOptions="Center"
@@ -34,10 +37,6 @@
                                 HeightRequest="1"
                                 BackgroundColor="Black"
                                 VerticalOptions="End"/>
-                           <Grid.GestureRecognizers>
-                               <TapGestureRecognizer
-                                   Tapped="TapGestureRecognizer_Tapped"/>
-                           </Grid.GestureRecognizers>
                        </Grid>
                     </SwipeView>                       
                </DataTemplate>
