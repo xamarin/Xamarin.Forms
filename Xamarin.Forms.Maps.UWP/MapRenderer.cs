@@ -10,8 +10,8 @@ using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Shapes;
 using Xamarin.Forms.Platform.UWP;
+using WEllipse = Windows.UI.Xaml.Shapes.Ellipse;
 
 namespace Xamarin.Forms.Maps.UWP
 {
@@ -45,6 +45,7 @@ namespace Xamarin.Forms.Maps.UWP
 
 				MessagingCenter.Subscribe<Map, MapSpan>(this, "MapMoveToRegion", async (s, a) => await MoveToRegion(a), mapModel);
 
+				UpdateTrafficEnabled();
 				UpdateMapType();
 				UpdateHasScrollEnabled();
 				UpdateHasZoomEnabled();
@@ -88,6 +89,8 @@ namespace Xamarin.Forms.Maps.UWP
 				UpdateHasScrollEnabled();
 			else if (e.PropertyName == Map.HasZoomEnabledProperty.PropertyName)
 				UpdateHasZoomEnabled();
+			else if (e.PropertyName == Map.TrafficEnabledProperty.PropertyName)
+				UpdateTrafficEnabled();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -118,7 +121,7 @@ namespace Xamarin.Forms.Maps.UWP
 		}
 
 		bool _disposed;
-		Ellipse _userPositionCircle;
+		WEllipse _userPositionCircle;
 		DispatcherTimer _timer;
 
 		void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -513,7 +516,7 @@ namespace Xamarin.Forms.Maps.UWP
 
 			if (_userPositionCircle == null)
 			{
-				_userPositionCircle = new Ellipse
+				_userPositionCircle = new WEllipse
 				{
 					Stroke = new SolidColorBrush(Colors.White),
 					Fill = new SolidColorBrush(Colors.Blue),
@@ -537,6 +540,11 @@ namespace Xamarin.Forms.Maps.UWP
 				Control.Center = point;
 				Control.ZoomLevel = 13;
 			}
+		}
+
+		void UpdateTrafficEnabled()
+		{
+			Control.TrafficFlowVisible = Element.TrafficEnabled;
 		}
 
 		void UpdateMapType()

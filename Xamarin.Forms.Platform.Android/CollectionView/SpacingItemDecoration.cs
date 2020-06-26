@@ -7,10 +7,11 @@ using AndroidX.RecyclerView.Widget;
 using Android.Support.V7.Widget;
 #endif
 using AView = Android.Views.View;
+using ARect = Android.Graphics.Rect;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class SpacingItemDecoration : RecyclerView.ItemDecoration
+	public class SpacingItemDecoration : RecyclerView.ItemDecoration
 	{
 		readonly ItemsLayoutOrientation _orientation;
 		readonly double _verticalSpacing;
@@ -42,7 +43,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		public override void GetItemOffsets(Rect outRect, AView view, RecyclerView parent, RecyclerView.State state)
+		public override void GetItemOffsets(ARect outRect, AView view, RecyclerView parent, RecyclerView.State state)
 		{
 			base.GetItemOffsets(outRect, view, parent, state);
 
