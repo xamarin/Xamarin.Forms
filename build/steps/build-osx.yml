@@ -122,6 +122,14 @@ steps:
       CleanTargetFolder: true
       flattenFolders: true
 
+  - task: CopyFiles@2
+    displayName: 'Copy Cake File'
+    inputs:
+      Contents: |
+        build.cake
+      TargetFolder: '$(build.artifactstagingdirectory)'
+      CleanTargetFolder: false
+      flattenFolders: false
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: iOS'

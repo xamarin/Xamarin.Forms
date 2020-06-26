@@ -40,7 +40,6 @@ var IOS_SIM_RUNTIME = EnvironmentVariable("IOS_SIM_RUNTIME") ?? "com.apple.CoreS
 var IOS_PROJ = "./DeviceTests.iOS/DeviceTests.iOS.csproj";
 var IOS_BUNDLE_ID = "com.xamarin.quickui.controlgallery";
 var IOS_IPA_PATH = "./Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/Debug/XamarinFormsControlGalleryiOS.app";
-var IOS_TEST_RESULTS_PATH = "./xunit-ios.xml";
 var IOS_BUILD_IPA = Argument("IOS_BUILD_IPA", (target == "cg-ios-deploy") ? true : (false || isCIBuild) );
 
 var ANDROID_RENDERERS = Argument("ANDROID_RENDERERS", "FAST");
@@ -707,7 +706,7 @@ Task("_cg-ios-run-tests")
                 {
                     {"UDID", GetIosSimulator().UDID}
                 },
-                Where = "cat == Issues && cat != ManualReview"
+                Where = "cat == Issues && cat != ManualReview && method == UpdatingSourceOfDisposedListViewDoesNotCrash"
             });
     });
     
@@ -748,24 +747,6 @@ Task ("cg-ios-deploy")
     // Launch the IPA
     Information("Launching: {0}", IOS_BUNDLE_ID);
     LaunchiOSApplication(sim.UDID, IOS_BUNDLE_ID);
-
-    // Start our Test Results TCP listener
-/*    Information("Started TCP Test Results Listener on port: {0}", TCP_LISTEN_PORT);
-    var tcpListenerTask = DownloadTcpTextAsync (TCP_LISTEN_PORT, IOS_TEST_RESULTS_PATH);
-
-    // Launch the IPA
-    Information("Launching: {0}", IOS_BUNDLE_ID);
-    LaunchiOSApplication(sim.UDID, IOS_BUNDLE_ID);
-
-    // Wait for the TCP listener to get results
-    Information("Waiting for tests...");
-    tcpListenerTask.Wait ();
-
-    AddPlatformToTestResults(IOS_TEST_RESULTS_PATH, "iOS");
-*/
-    // Close up simulators
-    Information("Closing Simulator");
-    ShutdownAllAppleSimulators ();
 });
 
 Task("DeployAndroid")
