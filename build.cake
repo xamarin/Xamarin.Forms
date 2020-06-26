@@ -649,10 +649,10 @@ Task("cg-ios")
     .Description("Builds iOS Control Gallery and open VS")
     .IsDependentOn("BuildTasks")
     .Does(() =>
-    {   
+    {
         var buildSettings = 
             GetMSBuildSettings(null)
-                .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
+                .WithProperty("BuildIpa", $"true");
 
         if(target == "cg-ios-deploy")
         {
@@ -722,6 +722,7 @@ Task("cg-ios-run-tests")
     });
 
 Task ("cg-ios-deploy")
+    .IsDependentOn("cg-ios")
     .Does (() =>
 {
     // Look for a matching simulator on the system
