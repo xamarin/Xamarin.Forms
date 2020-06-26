@@ -6,8 +6,19 @@
     x:Class="Xamarin.Forms.Controls.Issues.Issue11209"
     x:Name="Issue11209Page"
     Title="Issue 11209">
-    <Grid>
+    <Grid
+        RowSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Tap any item on the list."/>
        <CollectionView
+           Grid.Row="1"
            ItemsSource="{Binding Source={x:Reference Issue11209Page}, Path=Items}">
            <CollectionView.ItemTemplate>
                <DataTemplate>

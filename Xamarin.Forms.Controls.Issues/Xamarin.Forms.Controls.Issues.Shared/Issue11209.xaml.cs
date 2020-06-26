@@ -59,6 +59,20 @@ namespace Xamarin.Forms.Controls.Issues
 		public Issue11209SecondPage()
 		{
 			Title = "Issue 11209";
+
+			var layout = new StackLayout();
+
+			var instructions = new Label
+			{
+				Padding = 12,
+				BackgroundColor = Color.Black,
+				TextColor = Color.White,
+				Text = "If navigated tapping an item from the CollectionView, the test has passed."
+			};
+
+			layout.Children.Add(instructions);
+
+			Content = layout;
 		}
 	}
 }
