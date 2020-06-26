@@ -7,7 +7,7 @@
     <owners>microsoft xamarin</owners>
     <tags>xamarin forms xamarinforms xamarin.forms</tags>
     <license type="expression">MIT</license>
-    <iconUrl>https://raw.githubusercontent.com/xamarin/Xamarin.Forms/master/Assets/xamarin_128x128.png</iconUrl>
+    <icon>Assets\xamarin_128x128.png</icon>
     <projectUrl>http://xamarin.com/forms</projectUrl>
     <repository type="git" url="https://github.com/xamarin/xamarin.forms"/>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
@@ -37,7 +37,7 @@
       <group targetFramework="uap10.0.16299">
         <dependency id="Microsoft.NETCore.UniversalWindowsPlatform" version="6.0.15" />
         <dependency id="Win2D.uwp" version="1.20.0" />
-        <dependency id="Microsoft.UI.Xaml" version="2.3.191211002" />
+        <dependency id="Microsoft.UI.Xaml" version="2.4.2" />
       </group>
       <group targetFramework="tizen40">
         <dependency id="Tizen.NET" version="4.0.0"/>
@@ -100,7 +100,8 @@
   </metadata>
 
   <files>
-
+    <!--Icon-->
+    <file src="..\Assets\xamarin_128x128.png" target="Assets\" />
     <!--netstandard 1.0-->
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard1.0\Xamarin.Forms.Core.dll" target="lib\netstandard1.0" />
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard1.0\Xamarin.Forms.Core.*pdb" target="lib\netstandard1.0" />

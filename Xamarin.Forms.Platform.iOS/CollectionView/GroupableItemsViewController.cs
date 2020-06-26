@@ -68,7 +68,7 @@ namespace Xamarin.Forms.Platform.iOS
 				kind, VerticalDefaultSupplementalView.ReuseId);
 		}
 
-		public override UICollectionReusableView GetViewForSupplementaryElement(UICollectionView collectionView, 
+		public override UICollectionReusableView GetViewForSupplementaryElement(UICollectionView collectionView,
 			NSString elementKind, NSIndexPath indexPath)
 		{
 			var reuseId = DetermineViewReuseId(elementKind);
@@ -230,31 +230,27 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (scrollDirection == UICollectionViewScrollDirection.Horizontal)
 				{
-					return new UIEdgeInsets(itemSpacing + uIEdgeInsets.Top, lineSpacing + uIEdgeInsets.Left, 
+					return new UIEdgeInsets(itemSpacing + uIEdgeInsets.Top, lineSpacing + uIEdgeInsets.Left,
 						uIEdgeInsets.Bottom, uIEdgeInsets.Right);
 				}
 
-				return new UIEdgeInsets(lineSpacing + uIEdgeInsets.Top, itemSpacing + uIEdgeInsets.Left, 
+				return new UIEdgeInsets(lineSpacing + uIEdgeInsets.Top, itemSpacing + uIEdgeInsets.Left,
 					uIEdgeInsets.Bottom, uIEdgeInsets.Right);
 			}
 
 			if (scrollDirection == UICollectionViewScrollDirection.Horizontal)
 			{
-				return new UIEdgeInsets(uIEdgeInsets.Top, lineSpacing + uIEdgeInsets.Left, 
+				return new UIEdgeInsets(uIEdgeInsets.Top, lineSpacing + uIEdgeInsets.Left,
 					uIEdgeInsets.Bottom, uIEdgeInsets.Right);
 			}
 
-			return new UIEdgeInsets(lineSpacing + uIEdgeInsets.Top, uIEdgeInsets.Left, 
+			return new UIEdgeInsets(lineSpacing + uIEdgeInsets.Top, uIEdgeInsets.Left,
 				uIEdgeInsets.Bottom, uIEdgeInsets.Right);
 		}
 
-
 		// These measurement methods are only necessary for iOS 10 and lower
-
 		CGSize MeasureTemplatedSupplementaryCell(NSString elementKind, nint section, NSString reuseId)
 		{
-		
-
 			if (_measurementCellTemplated == null)
 			{
 				if (reuseId == HorizontalSupplementaryView.ReuseId)

@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Core;
-using Windows.ApplicationModel.LockScreen;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage;
@@ -22,6 +21,7 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
+using IOPath = System.IO.Path;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				try
 				{
-					Assembly assembly = Assembly.Load(new AssemblyName { Name = Path.GetFileNameWithoutExtension(file.Name) });
+					Assembly assembly = Assembly.Load(new AssemblyName { Name = IOPath.GetFileNameWithoutExtension(file.Name) });
 
 					assemblies.Add(assembly);
 				}
@@ -94,12 +94,9 @@ namespace Xamarin.Forms.Platform.UWP
 			return assemblies.ToArray();
 		}
 
-		public string GetMD5Hash(string input)
-		{
-			HashAlgorithmProvider algorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
-			IBuffer buffer = algorithm.HashData(Encoding.Unicode.GetBytes(input).AsBuffer());
-			return CryptographicBuffer.EncodeToHexString(buffer);
-		}
+		public string GetHash(string input) => Crc64.GetHash(input);
+
+		string IPlatformServices.GetMD5Hash(string input) => GetHash(input);
 
 		public double GetNamedSize(NamedSize size, Type targetElementType, bool useOldSizes)
 		{

@@ -5,9 +5,12 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
+using WCompositeTransform = Windows.UI.Xaml.Media.CompositeTransform;
+using WScaleTransform = Windows.UI.Xaml.Media.ScaleTransform;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -27,6 +30,8 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _isPinching;
 		bool _wasPanGestureStartedSent;
 		bool _wasPinchGestureStartedSent;
+
+		static bool HasClip;
 
 		public VisualElementTracker()
 		{
@@ -225,6 +230,10 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateInputTransparent(Element, Container);
 			}
+			else if (e.PropertyName == VisualElement.ClipProperty.PropertyName)
+			{
+				UpdateClip(Element, Container);
+			}
 		}
 
 		protected virtual void UpdateNativeControl()
@@ -236,6 +245,7 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateOpacity(Element, Container);
 			UpdateScaleAndRotation(Element, Container);
 			UpdateInputTransparent(Element, Container);
+			UpdateClip(Element, Container);
 
 			if (_invalidateArrangeNeeded)
 			{
@@ -513,6 +523,37 @@ namespace Xamarin.Forms.Platform.UWP
 			frameworkElement.IsHitTestVisible = view.IsEnabled && !view.InputTransparent;
 		}
 
+		static void UpdateClip(VisualElement view, FrameworkElement frameworkElement)
+		{
+			if (!ShouldUpdateClip(view, frameworkElement))
+				return;
+
+			var geometry = view.Clip;
+
+			HasClip = geometry != null;
+
+			if (CompositionHelper.IsCompositionGeometryTypePresent)
+				frameworkElement.ClipVisual(geometry);
+			else
+				frameworkElement.Clip(geometry);
+		}
+
+		static bool ShouldUpdateClip(VisualElement view, FrameworkElement frameworkElement)
+		{
+			if (view == null || frameworkElement == null)
+				return false;
+
+			var formsGeometry = view.Clip;
+
+			if (formsGeometry != null)
+				return true;
+
+			if (formsGeometry == null && HasClip)
+				return true;
+
+			return false;
+		}
+
 		static void UpdateOpacity(VisualElement view, FrameworkElement frameworkElement)
 		{
 			frameworkElement.Opacity = view.Opacity;
@@ -557,7 +598,7 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 				else
 				{
-					frameworkElement.RenderTransform = new CompositeTransform
+					frameworkElement.RenderTransform = new WCompositeTransform
 					{
 						CenterX = anchorX,
 						CenterY = anchorY,
@@ -576,7 +617,7 @@ namespace Xamarin.Forms.Platform.UWP
 			double anchorX = view.AnchorX;
 			double anchorY = view.AnchorY;
 			frameworkElement.RenderTransformOrigin = new Windows.Foundation.Point(anchorX, anchorY);
-			frameworkElement.RenderTransform = new ScaleTransform { ScaleX = view.Scale * view.ScaleX, ScaleY = view.Scale * view.ScaleY };
+			frameworkElement.RenderTransform = new WScaleTransform { ScaleX = view.Scale * view.ScaleX, ScaleY = view.Scale * view.ScaleY };
 
 			UpdateRotation(view, frameworkElement);
 		}
