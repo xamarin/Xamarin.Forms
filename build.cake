@@ -35,9 +35,9 @@ PowerShell:
 //////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "Default");
-var IOS_SIM_NAME = EnvironmentVariable("IOS_SIM_NAME") ?? "iPhone 8";
-var IOS_SIM_RUNTIME = EnvironmentVariable("IOS_SIM_RUNTIME") ?? "com.apple.CoreSimulator.SimRuntime.iOS-13-5";
-var IOS_PROJ = "./DeviceTests.iOS/DeviceTests.iOS.csproj";
+var IOS_SIM_NAME = Argument("IOS_SIM_NAME") ?? "iPhone 8";
+var IOS_SIM_RUNTIME = Argument("IOS_SIM_RUNTIME") ?? "com.apple.CoreSimulator.SimRuntime.iOS-13-5";
+var IOS_TEST_PROJ = Argument("IOS_TEST_PROJ", "./Xamarin.Forms.Core.iOS.UITests/Xamarin.Forms.Core.iOS.UITests.csproj");
 var IOS_BUNDLE_ID = "com.xamarin.quickui.controlgallery";
 var IOS_IPA_PATH = "./Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/Debug/XamarinFormsControlGalleryiOS.app";
 var IOS_BUILD_IPA = Argument("IOS_BUILD_IPA", (target == "cg-ios-deploy") ? true : (false || isCIBuild) );
@@ -692,15 +692,14 @@ Task("cg-ios-build-tests")
                 .WithProperty("iOSPlatform", "iPhoneSimulator")
                 .WithRestore();
 
-        MSBuild("./Xamarin.Forms.Core.iOS.UITests/Xamarin.Forms.Core.iOS.UITests.csproj", 
-            buildSettings);
+        MSBuild(IOS_TEST_PROJ, buildSettings);
     });
 
 Task("_cg-ios-run-tests")
     .Does(() =>
     {
         var sim = GetIosSimulator();
-        NUnit3(new [] { "./Xamarin.Forms.Core.iOS.UITests/bin/Debug/Xamarin.Forms.Core.iOS.UITests.dll" }, 
+        NUnit3(new [] { IOS_TEST_PROJ }, 
             new NUnit3Settings {
                 Params = new Dictionary<string, string>()
                 {
