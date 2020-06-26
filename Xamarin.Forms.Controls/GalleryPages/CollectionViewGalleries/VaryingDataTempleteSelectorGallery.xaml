@@ -9,7 +9,7 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="CarTemplate">
-                <Frame BorderColor="Red" BackgroundColor="Yellow">
+                <Frame BorderColor="Red" BackgroundColor="Yellow" HeightRequest="100">
                     <StackLayout HeightRequest="100">
                         <Label Text="{Binding Name}" />
                     </StackLayout>
@@ -17,7 +17,7 @@
             </DataTemplate>
 
             <DataTemplate x:Key="PlaneTemplate">
-                <Frame BorderColor="Red" BackgroundColor="Aqua">
+                <Frame BorderColor="Red" BackgroundColor="Aqua" HeightRequest="50">
                     <StackLayout HeightRequest="50">
                         <Label Text="{Binding Name}" />
                     </StackLayout>
@@ -39,21 +39,40 @@
 
             <CollectionView ItemsSource="{Binding Items}" 
                             ItemTemplate="{StaticResource VehicleTemplateSelector}"
-                            VerticalOptions="FillAndExpand" ItemSizingStrategy="MeasureAllItems" >
-                <!--<CollectionView.ItemsLayout>
-                    <GridItemsLayout Orientation="Horizontal"
-                                     Span="4" />
-                </CollectionView.ItemsLayout>-->
-
-            </CollectionView>
+                            VerticalOptions="FillAndExpand" ItemSizingStrategy="MeasureAllItems" />
 
             <StackLayout Grid.Row="1">
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Text="Insert" Clicked="Insert_OnClicked"/>
+                    <Button Grid.Column="1" Text="Add" Clicked="Add_OnClicked"/>
+                    <Button Grid.Column="2" Text="Remove" Clicked="Remove_OnClicked"/>
+                </Grid>
+
                 <StackLayout Orientation="Horizontal">
                     <Label Text="Index"/>
-                    <Entry Text="{Binding Index}"/>
+                    <Entry Text="{Binding Index}" HorizontalOptions="FillAndExpand"/>
                 </StackLayout>
-                <Button Text="InsertCar" Clicked="InsertCar_OnClicked"/>
-                <Button Text="InsertPlane" Clicked="InsertPlane_OnClicked"/>
+                <StackLayout Orientation="Horizontal">
+                    <Label Text="ItemsCount"/>
+                    <Entry Text="{Binding ItemsCount}" HorizontalOptions="FillAndExpand"/>
+                </StackLayout>
+
+                <StackLayout Orientation="Horizontal">
+                    <Switch IsToggled="{Binding IsCarTemplate}"/>
+                    <Label Text="{Binding SelectedTemplate}"/>
+                </StackLayout>
+
+                <StackLayout Orientation="Horizontal">
+                    <Switch IsToggled="{Binding ShouldTriggerReset}"/>
+                    <Label Text="Trigger INotifyCollectionChangedAction.Reset"/>
+                </StackLayout>
+
             </StackLayout>
         </Grid>
     </ContentPage.Content>
