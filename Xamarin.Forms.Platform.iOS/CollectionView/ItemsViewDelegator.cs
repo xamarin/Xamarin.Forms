@@ -7,13 +7,6 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	internal class CollectionViewSizeCache
-	{
-		IDictionary<Type, CGSize> _sizeCache = new Dictionary<Type, CGSize>();
-
-
-	}
-
 	public class ItemsViewDelegator<TItemsView, TViewController> : UICollectionViewDelegateFlowLayout
 		where TItemsView : ItemsView
 		where TViewController : ItemsViewController<TItemsView>
