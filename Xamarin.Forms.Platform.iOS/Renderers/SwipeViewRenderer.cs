@@ -331,8 +331,17 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else
 			{
+				UIView content = null;
+
 				if (Subviews.Length > 0)
-					_contentView = Subviews[0];
+					content = Subviews[0];
+
+				if (content != null)
+				{
+					content.RemoveFromSuperview();
+					_contentView = content;
+					AddSubview(content);
+				}
 			}
 		}
 
