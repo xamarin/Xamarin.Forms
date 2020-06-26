@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Core.UITests
 		[TestCase("CarouselView (XAML, Horizontal)")]
 		public void CarouselViewRemoveAndUpdateCurrentItem(string subgallery)
 		{
-			VisitSubGallery(subgallery);
+			VisitSubGallery(subgallery, true);
 
 			CheckPositionValue("lblPosition", "0");
 			CheckPositionValue("lblCurrentItem", "0");
@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Core.UITests
 		[TestCase("CarouselView (XAML, Horizontal)")]
 		public void CarouselViewRemoveFirstCurrentItem(string subgallery)
 		{
-			VisitSubGallery(subgallery);
+			VisitSubGallery(subgallery, true);
 
 			CheckPositionValue("lblPosition", "0");
 			CheckPositionValue("lblCurrentItem", "0");
@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Core.UITests
 		[TestCase("CarouselView (XAML, Horizontal)")]
 		public void CarouselViewGoToNextCurrentItem(string subgallery)
 		{
-			VisitSubGallery(subgallery);
+			VisitSubGallery(subgallery, true);
 
 			CheckPositionValue("lblPosition", "0");
 			CheckPositionValue("lblCurrentItem", "0");
@@ -84,7 +84,7 @@ namespace Xamarin.Forms.Core.UITests
 		[TestCase("CarouselView (XAML, Horizontal)")]
 		public void CarouselViewRemoveLastCurrentItem(string subgallery)
 		{
-			VisitSubGallery(subgallery);
+			VisitSubGallery(subgallery, true);
 
 			CheckPositionValue("lblPosition", "0");
 			CheckPositionValue("lblCurrentItem", "0");
@@ -143,8 +143,7 @@ namespace Xamarin.Forms.Core.UITests
 		//[TestCase("CarouselView (XAML, Horizontal)")]
 		public void CarouselViewHorizontal(string subgallery)
 		{
-			VisitSubGallery(subgallery);
-
+			VisitSubGallery(subgallery, true);
 
 			App.WaitForElement("pos:1", "Did start on the correct position");
 			var rect = App.Query(c => c.Marked("TheCarouselView")).First().Rect;
@@ -177,7 +176,7 @@ namespace Xamarin.Forms.Core.UITests
 #endif
 		public void CarouselViewVertical(string subgallery)
 		{
-			VisitSubGallery(subgallery);
+			VisitSubGallery(subgallery, true);
 			var rect = App.Query(c => c.Marked("TheCarouselView")).First().Rect;
 
 			var centerX = rect.CenterX;
@@ -214,7 +213,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.ScrollUp();
 
 			if (enableIndicator)
-				App.Tap(t => t.Marked("EnableIndicatorView"));
+				App.Tap(t => t.Marked("EnableCarouselView"));
 
 			App.QueryUntilPresent(() =>
 			{
