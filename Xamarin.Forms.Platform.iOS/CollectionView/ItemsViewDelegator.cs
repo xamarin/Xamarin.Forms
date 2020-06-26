@@ -7,12 +7,19 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
+	internal class CollectionViewSizeCache
+	{
+		IDictionary<Type, CGSize> _sizeCache = new Dictionary<Type, CGSize>();
+
+
+	}
+
 	public class ItemsViewDelegator<TItemsView, TViewController> : UICollectionViewDelegateFlowLayout
 		where TItemsView : ItemsView
 		where TViewController : ItemsViewController<TItemsView>
 	{
 
-		private IDictionary<Type, CGSize> _sizeChache = new Dictionary<Type,CGSize>();
+		IDictionary<Type, CGSize> _sizeChache = new Dictionary<Type,CGSize>();
 		public ItemsViewLayout ItemsViewLayout { get; }
 		public TViewController ViewController { get; }
 		public IItemsViewSource ItemsSource { get; }
@@ -38,37 +45,34 @@ namespace Xamarin.Forms.Platform.iOS
 			if (ItemsViewLayout.ItemSizingStrategy == ItemSizingStrategy.MeasureFirstItem)
 				return ItemsViewLayout.EstimatedItemSize;
 
-			// ".CellForItem" is not reliable here because when the cell at "indexpath" is not visible it will return null
-			//var cell = collectionView.CellForItem(indexPath);
-			//if (cell is ItemsViewCell itemsViewCell)
-			//{
-			//	var size = itemsViewCell.Measure();
-			//	return size;
-			//}
+			var vm = ItemsSource[indexPath];
+
+			// try to get a cached size
+			if (_sizeChache.ContainsKey(vm.GetType()))
+				return _sizeChache[vm.GetType()];
+
 			if (ViewController.ItemsView.ItemTemplate is DataTemplateSelector templateSelector)
 			{
-				var source = collectionView.Source;
-				var vm = ItemsSource[indexPath];
 				var viewTemplate = templateSelector.SelectTemplate(vm, ViewController.ItemsView);
 				if (!(viewTemplate.CreateContent() is VisualElement visualElement))
 					return ItemsViewLayout.EstimatedItemSize;
-				var height = visualElement.HeightRequest;
-				var s = new CGSize(ItemsViewLayout.EstimatedItemSize.Width, height + 40);
 
-				var t = VerticalCell.MeasureInternal(visualElement, ItemsViewLayout.EstimatedItemSize.Width);
+				var result = ItemsViewLayout.ScrollDirection == UICollectionViewScrollDirection.Vertical ?
+					VerticalCell.MeasureInternal(visualElement, ItemsViewLayout.EstimatedItemSize.Width) :
+					HorizontalCell.MeasureInternal(visualElement, ItemsViewLayout.EstimatedItemSize.Width);
 
-				return t;
+				// when items are added to the collection for the first time, they have a double-infinity value for a size property
+				// we only add the size to the cache if the 'result' is valid
+				if((ItemsViewLayout.ScrollDirection == UICollectionViewScrollDirection.Vertical && result.Width > 1 ) ||
+				   (ItemsViewLayout.ScrollDirection == UICollectionViewScrollDirection.Horizontal && result.Height > 1))
+					_sizeChache[vm.GetType()] = result;
+
+				return result;
 			}
-			else if (ViewController.ItemsView.ItemTemplate is DataTemplate dataTemplate)
-			{
-
-			}
-			else
-			{
-
-			}
-
-			return ItemsViewLayout.EstimatedItemSize; // This is basically a Fallback when ".CellForItem" return null
+			
+			// this is used as fallback because the base implementation of "GetSizeForItem" returns the "EstimatedSize".
+			// but we cant call the base method as it throws an exception
+			return ItemsViewLayout.EstimatedItemSize; 
 		}
 
 		public override void Scrolled(UIScrollView scrollView)
