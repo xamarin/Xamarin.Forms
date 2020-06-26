@@ -4,8 +4,8 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class CarouselViewDelegator : ItemsViewDelegator<CarouselView, CarouselViewController>
 	{
-		public CarouselViewDelegator(ItemsViewLayout itemsViewLayout, CarouselViewController itemsViewController) 
-			: base(itemsViewLayout, itemsViewController)
+		public CarouselViewDelegator(ItemsViewLayout itemsViewLayout, CarouselViewController itemsViewController, IItemsViewSource itemsSource) 
+			: base(itemsViewLayout, itemsViewController, itemsSource)
 		{
 		}
 

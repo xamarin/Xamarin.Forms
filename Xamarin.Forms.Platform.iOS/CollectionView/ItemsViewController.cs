@@ -39,10 +39,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			ItemsViewLayout = newLayout;
 			ItemsViewLayout.GetPrototype = GetPrototype;
-
+			
             Delegator = CreateDelegator();
 			CollectionView.Delegate = Delegator;
-
+			
 			// Make sure the new layout is sized properly
 			ItemsViewLayout.ConstrainTo(CollectionView.Bounds.Size);
 
@@ -192,7 +192,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual UICollectionViewDelegateFlowLayout CreateDelegator()
 		{
-			return new ItemsViewDelegator<TItemsView, ItemsViewController<TItemsView>>(ItemsViewLayout, this);
+			return new ItemsViewDelegator<TItemsView, ItemsViewController<TItemsView>>(ItemsViewLayout, this, ItemsSource);
 		}
 
 		protected virtual IItemsViewSource CreateItemsViewSource()

@@ -8,8 +8,8 @@ namespace Xamarin.Forms.Platform.iOS
 		where TItemsView : GroupableItemsView
 		where TViewController : GroupableItemsViewController<TItemsView>
 	{
-		public GroupableItemsViewDelegator(ItemsViewLayout itemsViewLayout, TViewController itemsViewController) 
-			: base(itemsViewLayout, itemsViewController)
+		public GroupableItemsViewDelegator(ItemsViewLayout itemsViewLayout, TViewController itemsViewController, IItemsViewSource itemsSource) 
+			: base(itemsViewLayout, itemsViewController, itemsSource)
 		{
 		}
 

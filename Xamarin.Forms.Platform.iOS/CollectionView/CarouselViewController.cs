@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override bool IsHorizontal => (Carousel?.ItemsLayout as ItemsLayout)?.Orientation == ItemsLayoutOrientation.Horizontal;
 
-		protected override UICollectionViewDelegateFlowLayout CreateDelegator() => new CarouselViewDelegator(ItemsViewLayout, this);
+		protected override UICollectionViewDelegateFlowLayout CreateDelegator() => new CarouselViewDelegator(ItemsViewLayout, this, ItemsSource);
 
 		protected override string DetermineCellReuseId()
 		{

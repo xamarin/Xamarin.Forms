@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override UICollectionViewDelegateFlowLayout CreateDelegator()
 		{
-			return new GroupableItemsViewDelegator<TItemsView, GroupableItemsViewController<TItemsView>>(ItemsViewLayout, this);
+			return new GroupableItemsViewDelegator<TItemsView, GroupableItemsViewController<TItemsView>>(ItemsViewLayout, this, ItemsSource);
 		}
 
 		protected override IItemsViewSource CreateItemsViewSource()

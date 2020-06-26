@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override UICollectionViewDelegateFlowLayout CreateDelegator()
 		{
-			return new SelectableItemsViewDelegator<TItemsView, SelectableItemsViewController<TItemsView>>(ItemsViewLayout, this);
+			return new SelectableItemsViewDelegator<TItemsView, SelectableItemsViewController<TItemsView>>(ItemsViewLayout, this, ItemsSource);
 		}
 
 		// _Only_ called if the user initiates the selection change; will not be called for programmatic selection
