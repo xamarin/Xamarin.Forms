@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CoreGraphics;
 using Foundation;
@@ -10,15 +11,19 @@ namespace Xamarin.Forms.Platform.iOS
 		where TItemsView : ItemsView
 		where TViewController : ItemsViewController<TItemsView>
 	{
+
+		private IDictionary<Type, CGSize> _sizeChache = new Dictionary<Type,CGSize>();
 		public ItemsViewLayout ItemsViewLayout { get; }
 		public TViewController ViewController { get; }
+		public IItemsViewSource ItemsSource { get; }
 
 		protected float PreviousHorizontalOffset, PreviousVerticalOffset;
 
-		public ItemsViewDelegator(ItemsViewLayout itemsViewLayout, TViewController itemsViewController)
+		public ItemsViewDelegator(ItemsViewLayout itemsViewLayout, TViewController itemsViewController, IItemsViewSource itemsViewSource)
 		{
 			ItemsViewLayout = itemsViewLayout;
 			ViewController = itemsViewController;
+			ItemsSource = itemsViewSource;
 		}
 
 
@@ -34,13 +39,36 @@ namespace Xamarin.Forms.Platform.iOS
 				return ItemsViewLayout.EstimatedItemSize;
 
 			// ".CellForItem" is not reliable here because when the cell at "indexpath" is not visible it will return null
-			var cell = collectionView.CellForItem(indexPath); 
-			if (cell is ItemsViewCell itemsViewCell)
+			//var cell = collectionView.CellForItem(indexPath);
+			//if (cell is ItemsViewCell itemsViewCell)
+			//{
+			//	var size = itemsViewCell.Measure();
+			//	return size;
+			//}
+			if (ViewController.ItemsView.ItemTemplate is DataTemplateSelector templateSelector)
 			{
-				var size = itemsViewCell.Measure();
-				return size;
+				var source = collectionView.Source;
+				var vm = ItemsSource[indexPath];
+				var viewTemplate = templateSelector.SelectTemplate(vm, ViewController.ItemsView);
+				if (!(viewTemplate.CreateContent() is VisualElement visualElement))
+					return ItemsViewLayout.EstimatedItemSize;
+				var height = visualElement.HeightRequest;
+				var s = new CGSize(ItemsViewLayout.EstimatedItemSize.Width, height + 40);
+
+				var t = VerticalCell.MeasureInternal(visualElement, ItemsViewLayout.EstimatedItemSize.Width);
+
+				return t;
 			}
-			else return ItemsViewLayout.EstimatedItemSize; // This is basically a Fallback when ".CellForItem" return null
+			else if (ViewController.ItemsView.ItemTemplate is DataTemplate dataTemplate)
+			{
+
+			}
+			else
+			{
+
+			}
+
+			return ItemsViewLayout.EstimatedItemSize; // This is basically a Fallback when ".CellForItem" return null
 		}
 
 		public override void Scrolled(UIScrollView scrollView)

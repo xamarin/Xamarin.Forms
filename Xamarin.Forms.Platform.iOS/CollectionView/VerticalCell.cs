@@ -1,4 +1,5 @@
-﻿using CoreGraphics;
+﻿using System;
+using CoreGraphics;
 using Foundation;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -13,12 +14,14 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 		}
 
-		public override CGSize Measure()
+		public override CGSize Measure() => MeasureInternal(VisualElementRenderer.Element, ConstrainedDimension);
+
+		internal static CGSize MeasureInternal(VisualElement element, nfloat constrainedDimension)
 		{
-			var measure = VisualElementRenderer.Element.Measure(ConstrainedDimension,
+			var measure = element.Measure(constrainedDimension,
 				double.PositiveInfinity, MeasureFlags.IncludeMargins);
 
-			return new CGSize(ConstrainedDimension, measure.Request.Height);
+			return new CGSize(constrainedDimension, measure.Request.Height);
 		}
 	}
 }
