@@ -97,6 +97,7 @@ steps:
     inputs:
       Contents: |
         **/XamarinFormsControlGalleryiOS.ipa
+        **/XamarinFormsControlGalleryiOS.app
         **/*.dSYM
         Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Newtonsoft.Json.*
         Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/nunit.*

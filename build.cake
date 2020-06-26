@@ -34,12 +34,18 @@ PowerShell:
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
 
+string agentName = EnvironmentVariable("AGENT_NAME", "");
+bool isCIBuild = !String.IsNullOrWhiteSpace(agentName);
+string artifactStagingDirectory = EnvironmentVariable("BUILD_ARTIFACTSTAGINGDIRECTORY", ".");
+string workingDirectory = EnvironmentVariable("SYSTEM_DEFAULTWORKINGDIRECTORY", ".");
+
 var target = Argument("target", "Default");
-var IOS_SIM_NAME = Argument("IOS_SIM_NAME") ?? "iPhone 8";
-var IOS_SIM_RUNTIME = Argument("IOS_SIM_RUNTIME") ?? "com.apple.CoreSimulator.SimRuntime.iOS-13-5";
-var IOS_TEST_PROJ = Argument("IOS_TEST_PROJ", "./Xamarin.Forms.Core.iOS.UITests/Xamarin.Forms.Core.iOS.UITests.csproj");
+var IOS_SIM_NAME = Argument("IOS_SIM_NAME", "iPhone 8");
+var IOS_SIM_RUNTIME = Argument("IOS_SIM_RUNTIME", "com.apple.CoreSimulator.SimRuntime.iOS-13-5");
+var IOS_TEST_PROJ = "./Xamarin.Forms.Core.iOS.UITests/Xamarin.Forms.Core.iOS.UITests.csproj";
+var IOS_TEST_LIBRARY = (isCIBuild) ? $"{workingDirectory}/build/OSXArtifacts/ios/Xamarin.Forms.Core.iOS.UITests.dll" : "./Xamarin.Forms.Core.iOS.UITests/bin/Debug/Xamarin.Forms.Core.iOS.UITests.dll";
 var IOS_BUNDLE_ID = "com.xamarin.quickui.controlgallery";
-var IOS_IPA_PATH = "./Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/Debug/XamarinFormsControlGalleryiOS.app";
+var IOS_IPA_PATH = (isCIBuild) ? $"{workingDirectory}/build/OSXArtifacts/ios/XamarinFormsControlGalleryiOS.app" : "./Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/Debug/XamarinFormsControlGalleryiOS.app";
 var IOS_BUILD_IPA = Argument("IOS_BUILD_IPA", (target == "cg-ios-deploy") ? true : (false || isCIBuild) );
 
 var ANDROID_RENDERERS = Argument("ANDROID_RENDERERS", "FAST");
@@ -50,10 +56,7 @@ var releaseChannelArg = Argument("CHANNEL", "Stable");
 releaseChannelArg = EnvironmentVariable("CHANNEL") ?? releaseChannelArg;
 var teamProject = Argument("TeamProject", "");
 bool buildForVS2017 = Convert.ToBoolean(Argument("buildForVS2017", "false"));
-string agentName = EnvironmentVariable("AGENT_NAME", "");
 bool isHostedAgent = agentName.StartsWith("Azure Pipelines");
-bool isCIBuild = !String.IsNullOrWhiteSpace(agentName);
-string artifactStagingDirectory = EnvironmentVariable("BUILD_ARTIFACTSTAGINGDIRECTORY", ".");
 
 var ANDROID_HOME = EnvironmentVariable("ANDROID_HOME") ??
     (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
@@ -101,6 +104,7 @@ Information ("buildForVS2017: {0}", buildForVS2017);
 Information ("Agent.Name: {0}", agentName);
 Information ("isCIBuild: {0}", isCIBuild);
 Information ("artifactStagingDirectory: {0}", artifactStagingDirectory);
+Information("workingDirectory: {0}", workingDirectory);
 
 var releaseChannel = ReleaseChannel.Stable;
 if(releaseChannelArg == "Preview")
@@ -699,7 +703,7 @@ Task("_cg-ios-run-tests")
     .Does(() =>
     {
         var sim = GetIosSimulator();
-        NUnit3(new [] { IOS_TEST_PROJ }, 
+        NUnit3(new [] { "./Xamarin.Forms.Core.iOS.UITests/bin/Debug/Xamarin.Forms.Core.iOS.UITests.dll" }, 
             new NUnit3Settings {
                 Params = new Dictionary<string, string>()
                 {
@@ -711,6 +715,7 @@ Task("_cg-ios-run-tests")
     
 Task("cg-ios-run-tests")
     .IsDependentOn("cg-ios-build-tests")
+    .IsDependentOn("cg-ios-deploy")
     .IsDependentOn("_cg-ios-run-tests")
     .Does(() =>
     {
