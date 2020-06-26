@@ -35,6 +35,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 
 		/// <summary>
+		/// Concretions have to override this method as this only sizes the items in a vertical and horizontal collectionview
 		/// Per default this method returns the Estimated size when its not overriden.
 		/// This method is called before the rendering process and sizes the cell correctly before it is displayed in the collectionview
 		/// Calling the base implementation of this method will throw an exception when overriding the method
