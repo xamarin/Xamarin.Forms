@@ -602,8 +602,10 @@ namespace Xamarin.Forms.Platform.iOS
 			public override void WillShowViewController(UINavigationController navigationController, [Transient] UIViewController viewController, bool animated)
 			{
 				var element = _self.ElementForViewController(viewController);
-				if (element is null)
+
+				if (element == null)
 					return;
+				
 				bool navBarVisible;
 				if (element is ShellSection)
 					navBarVisible = _self._renderer.ShowNavBar;
