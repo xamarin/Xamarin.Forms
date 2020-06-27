@@ -68,19 +68,11 @@ steps:
       arguments: --target cg-ios --buildForVS2017=$(buildForVS2017) --BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments='${{ variables.MSBuildArguments_cg_ios }}'
 
   - task: Bash@3
-    displayName: 'Run Control Gallery tests'
-    condition: eq(variables['buildForVS2017'], 'false')
+    displayName: 'Build iOS Tests'
     inputs:
       targetType: 'filePath'
       filePath: 'build.sh'
-      arguments: --target cg-ios-run-tests --buildForVS2017=$(buildForVS2017) --BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments='${{ variables.MSBuildArguments_cg_ios }}'
-
-  - task: MSBuild@1
-    displayName: 'Build iOS Tests'
-    inputs:
-      solution: 'Xamarin.Forms.Core.iOS.UITests/Xamarin.Forms.Core.iOS.UITests.csproj'
-      configuration: $(buildConfiguration)
-      msbuildArguments: /bl:$(Build.ArtifactStagingDirectory)/ios-uitests-2017_$(buildForVS2017).binlog
+      arguments: --target cg-ios-build-tests --buildForVS2017=$(buildForVS2017) --BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments='${{ variables.MSBuildArguments_cg_ios }}'
 
   - task: MSBuild@1
     displayName: 'Build Android Tests'
@@ -121,7 +113,7 @@ steps:
       Contents: |
         **/TestResult.xml
       TargetFolder: '$(build.artifactstagingdirectory)/ios'
-      CleanTargetFolder: true
+      CleanTargetFolder: false
       flattenFolders: true
       
   - task: CopyFiles@2
@@ -130,8 +122,17 @@ steps:
     inputs:
       Contents: |
         **/*.dSYM/**/*.*
-        **/XamarinFormsControlGalleryiOS.app/**/*.*
       TargetFolder: '$(build.artifactstagingdirectory)/ios'
+      CleanTargetFolder: false
+      flattenFolders: false
+      
+  - task: CopyFiles@2
+    displayName: 'Copy iOS App'
+    condition: eq(variables['buildForVS2017'], 'false')
+    inputs:
+      Contents: |
+        Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/$(BuildConfiguration)/XamarinFormsControlGalleryiOS.app/**/*.*
+      TargetFolder: '$(build.artifactstagingdirectory)/ios/iPhoneSimulator/XamarinFormsControlGalleryiOS.app'
       CleanTargetFolder: false
       flattenFolders: false
 

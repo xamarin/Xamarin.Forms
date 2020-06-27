@@ -655,12 +655,6 @@ Task("cg-ios")
             GetMSBuildSettings(null)
                 .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
 
-        if(target == "cg-ios-deploy")
-        {
-            buildSettings = buildSettings.WithProperty("MtouchArch", "x86_64");
-            buildSettings = buildSettings.WithProperty("iOSPlatform", "iPhoneSimulator");
-        }
-
         if(isCIBuild)
         {
             var binaryLogger = new MSBuildBinaryLogSettings {
@@ -690,11 +684,24 @@ Task("cg-ios-vs")
 Task("cg-ios-build-tests")
     .Does(() =>
     {
+        // the UI Tests all reference the galleries so those get built as a side effect of building the
+        // ui tests
         var buildSettings = 
             GetMSBuildSettings(null, configuration)
                 .WithProperty("MtouchArch", "x86_64")
                 .WithProperty("iOSPlatform", "iPhoneSimulator")
+                .WithProperty("BuildIpa", $"true")
                 .WithRestore();
+
+        if(isCIBuild)
+        {
+            var binaryLogger = new MSBuildBinaryLogSettings {
+                Enabled  = true,
+                FileName = $"{artifactStagingDirectory}/ios-uitests-2017_{buildForVS2017}.binlog"
+            };
+
+            buildSettings.BinaryLogger = binaryLogger;
+        }
 
         MSBuild(IOS_TEST_PROJ, buildSettings);
     });
