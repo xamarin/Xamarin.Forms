@@ -105,7 +105,6 @@ steps:
     inputs:
       Contents: |
         **/XamarinFormsControlGalleryiOS.ipa
-        **/XamarinFormsControlGalleryiOS.app/**/*.*
         Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Newtonsoft.Json.*
         Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/nunit.*
         Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/NUnit3.*
@@ -131,6 +130,7 @@ steps:
     inputs:
       Contents: |
         **/*.dSYM/**/*.*
+        **/XamarinFormsControlGalleryiOS.app/**/*.*
       TargetFolder: '$(build.artifactstagingdirectory)/ios'
       CleanTargetFolder: false
       flattenFolders: false
