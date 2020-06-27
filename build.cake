@@ -691,8 +691,7 @@ Task("cg-ios-build-tests")
     .Does(() =>
     {
         var buildSettings = 
-            GetMSBuildSettings(null, "Debug")
-                .WithProperty("BuildIpa", "true")
+            GetMSBuildSettings(null, configuration)
                 .WithProperty("MtouchArch", "x86_64")
                 .WithProperty("iOSPlatform", "iPhoneSimulator")
                 .WithRestore();
@@ -704,7 +703,7 @@ Task("_cg-ios-run-tests")
     .Does(() =>
     {
         var sim = GetIosSimulator();
-        NUnit3(new [] { "./Xamarin.Forms.Core.iOS.UITests/bin/Debug/Xamarin.Forms.Core.iOS.UITests.dll" }, 
+        NUnit3(new [] { $"./Xamarin.Forms.Core.iOS.UITests/bin/{configuration}/Xamarin.Forms.Core.iOS.UITests.dll" }, 
             new NUnit3Settings {
                 Params = new Dictionary<string, string>()
                 {
