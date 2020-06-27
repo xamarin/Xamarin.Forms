@@ -31,8 +31,7 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 			var addedView = await Device.InvokeOnMainThreadAsync(() =>
 			{
 				var r = GetRenderer(shell);
-				var window = (Context.GetActivity()).Window;
-				(window.DecorView as global::Android.Views.ViewGroup).AddView(r.View);
+				GetScratchSurface().AddView(r.View);
 				return r.View;
 			});
 
