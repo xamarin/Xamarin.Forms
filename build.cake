@@ -730,6 +730,13 @@ Task("cg-ios-run-tests")
 
 Task ("cg-ios-deploy")
     .IsDependentOn("cg-ios")
+    .IsDependentOn("_cg-ios-deploy")
+    .Does (() =>
+    {
+
+    });
+
+Task ("_cg-ios-deploy")
     .Does (() =>
 {
     // Look for a matching simulator on the system
