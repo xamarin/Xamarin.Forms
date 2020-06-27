@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 /// <summary>
-/// https://github.com/xamarin/java.interop/blob/master/src/Java.Interop.Tools.JavaCallableWrappers/Java.Interop.Tools.JavaCallableWrappers/Crc64.cs
+/// https://github.com/xamarin/java.interop/blob/main/src/Java.Interop.Tools.JavaCallableWrappers/Java.Interop.Tools.JavaCallableWrappers/Crc64.cs
 /// </summary>
 namespace Xamarin.Forms.Internals
 {

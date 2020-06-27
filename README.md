@@ -9,11 +9,11 @@ Read more about the platform at https://www.xamarin.com/forms.
 
 ## Build Status ##
 
-![Azure DevOps](https://devdiv.visualstudio.com/DevDiv/_apis/build/status/Xamarin/XamarinForms/Xamarin%20Forms?branchName=master "Azure Pipelines")
+![Azure DevOps](https://devdiv.visualstudio.com/DevDiv/_apis/build/status/Xamarin/XamarinForms/Xamarin%20Forms?branchName=main "Azure Pipelines")
 
 ## Packages ##
 
-Platform/Feature               | Package name                              | Stable      | Prerelease | Nightly Feed [Azure](https://aka.ms/xf-ci/index.json)  (master branch)
+Platform/Feature               | Package name                              | Stable      | Prerelease | Nightly Feed [Azure](https://aka.ms/xf-ci/index.json)  (main branch)
 -----------------------|-------------------------------------------|-----------------------------|------------------------- |-------------------------|
 Core             | `Xamarin.Forms` | [![NuGet](https://img.shields.io/nuget/v/Xamarin.Forms.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms/) | [![NuGet](https://img.shields.io/nuget/vpre/Xamarin.Forms.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms/) |
 AppLinks  | `Xamarin.Forms.AppLinks`  | [![NuGet](https://img.shields.io/nuget/v/Xamarin.Forms.AppLinks.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.AppLinks/) | [![NuGet](https://img.shields.io/nuget/vpre/Xamarin.Forms.AppLinks.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.AppLinks/) | 
@@ -143,7 +143,7 @@ You should now be able to run any of the UWP UI Tests.
 
 ## Coding Style ##
 
-We follow the style used by the [.NET Foundation](https://github.com/dotnet/runtime/blob/master/docs/coding-guidelines/coding-style.md), with a few exceptions:
+We follow the style used by the [.NET Foundation](https://github.com/dotnet/runtime/blob/main/docs/coding-guidelines/coding-style.md), with a few exceptions:
 
 - We do not use the `private` keyword as it is the default accessibility level in C#.
 - We use hard tabs over spaces. You can change this setting in Visual Studio for Windows via `Tools > Options` and navigating to `Text Editor > C#` and selecting the "Keep tabs" radio option. In Visual Studio for Mac it's set via preferences in `Source Code > Code Formatting > C# source code` and disabling the checkbox for `Convert tabs to spaces`.
@@ -151,7 +151,7 @@ We follow the style used by the [.NET Foundation](https://github.com/dotnet/runt
 
 ## Contributing ##
 
-- [How to Contribute](https://github.com/xamarin/Xamarin.Forms/blob/master/.github/CONTRIBUTING.md)
+- [How to Contribute](https://github.com/xamarin/Xamarin.Forms/blob/main/.github/CONTRIBUTING.md)
 
 ### Reporting Bugs ###
 
