@@ -38,19 +38,19 @@ string agentName = EnvironmentVariable("AGENT_NAME", "");
 bool isCIBuild = !String.IsNullOrWhiteSpace(agentName);
 string artifactStagingDirectory = EnvironmentVariable("BUILD_ARTIFACTSTAGINGDIRECTORY", ".");
 string workingDirectory = EnvironmentVariable("SYSTEM_DEFAULTWORKINGDIRECTORY", ".");
+var configuration = Argument("BUILD_CONFIGURATION", "Debug");
 
 var target = Argument("target", "Default");
 var IOS_SIM_NAME = Argument("IOS_SIM_NAME", "iPhone 8");
 var IOS_SIM_RUNTIME = Argument("IOS_SIM_RUNTIME", "com.apple.CoreSimulator.SimRuntime.iOS-13-5");
 var IOS_TEST_PROJ = "./Xamarin.Forms.Core.iOS.UITests/Xamarin.Forms.Core.iOS.UITests.csproj";
-var IOS_TEST_LIBRARY = (isCIBuild) ? $"{workingDirectory}/build/OSXArtifacts/ios/Xamarin.Forms.Core.iOS.UITests.dll" : "./Xamarin.Forms.Core.iOS.UITests/bin/Debug/Xamarin.Forms.Core.iOS.UITests.dll";
+var IOS_TEST_LIBRARY = (isCIBuild) ? $"{workingDirectory}/build/OSXArtifacts/ios/Xamarin.Forms.Core.iOS.UITests.dll" : $"./Xamarin.Forms.Core.iOS.UITests/bin/{configuration}/Xamarin.Forms.Core.iOS.UITests.dll";
 var IOS_BUNDLE_ID = "com.xamarin.quickui.controlgallery";
-var IOS_IPA_PATH = (isCIBuild) ? $"{workingDirectory}/build/OSXArtifacts/ios/XamarinFormsControlGalleryiOS.app" : "./Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/Debug/XamarinFormsControlGalleryiOS.app";
+var IOS_IPA_PATH = (isCIBuild) ? $"{workingDirectory}/build/OSXArtifacts/ios/XamarinFormsControlGalleryiOS.app" : $"./Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/{configuration}/XamarinFormsControlGalleryiOS.app";
 var IOS_BUILD_IPA = Argument("IOS_BUILD_IPA", (target == "cg-ios-deploy") ? true : (false || isCIBuild) );
 
 var ANDROID_RENDERERS = Argument("ANDROID_RENDERERS", "FAST");
 var XamarinFormsVersion = Argument("XamarinFormsVersion", "");
-var configuration = Argument("BUILD_CONFIGURATION", "Debug");
 var packageVersion = Argument("packageVersion", "");
 var releaseChannelArg = Argument("CHANNEL", "Stable");
 releaseChannelArg = EnvironmentVariable("CHANNEL") ?? releaseChannelArg;
@@ -652,7 +652,7 @@ Task("cg-ios")
     {
         var buildSettings = 
             GetMSBuildSettings(null)
-                .WithProperty("BuildIpa", $"true");
+                .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
 
         if(target == "cg-ios-deploy")
         {
@@ -674,6 +674,11 @@ Task("cg-ios")
             buildSettings = buildSettings.WithRestore();
         }
 
+        MSBuild("./Xamarin.Forms.ControlGallery.iOS/Xamarin.Forms.ControlGallery.iOS.csproj", 
+            buildSettings);
+
+        buildSettings = buildSettings.WithProperty("MtouchArch", "x86_64");
+        buildSettings = buildSettings.WithProperty("iOSPlatform", "iPhoneSimulator");
         MSBuild("./Xamarin.Forms.ControlGallery.iOS/Xamarin.Forms.ControlGallery.iOS.csproj", 
             buildSettings);
     });
