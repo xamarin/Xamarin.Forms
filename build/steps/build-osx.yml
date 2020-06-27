@@ -67,6 +67,13 @@ steps:
       filePath: 'build.sh'
       arguments: --target cg-ios --buildForVS2017=$(buildForVS2017) --BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments='${{ variables.MSBuildArguments_cg_ios }}'
 
+  - task: Bash@3
+    displayName: 'Build Control Gallery tests'
+    inputs:
+      targetType: 'filePath'
+      filePath: 'build.sh'
+      arguments: --target cg-ios-run-tests --buildForVS2017=$(buildForVS2017) --BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments='${{ variables.MSBuildArguments_cg_ios }}'
+
   - task: MSBuild@1
     displayName: 'Build iOS Tests'
     inputs:
