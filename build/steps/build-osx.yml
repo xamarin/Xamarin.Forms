@@ -105,14 +105,16 @@ steps:
       TargetFolder: '$(build.artifactstagingdirectory)/ios'
       CleanTargetFolder: false
       flattenFolders: false
-      
+
+  - script: |
+      cp -r Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/$(BuildConfiguration)/ '$(build.artifactstagingdirectory)/ios/iPhoneSimulator2/'
+    displayName: 'Copy files with script'
+
   - task: CopyFiles@2
     displayName: 'Copy iOS App'
     condition: eq(variables['buildForVS2017'], 'false')
     inputs:
-      sourceFolder: Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/$(BuildConfiguration)/
-      Contents: |
-        XamarinFormsControlGalleryiOS.app/**/*.*
+      SourceFolder: Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/$(BuildConfiguration)/
       TargetFolder: '$(build.artifactstagingdirectory)/ios/iPhoneSimulator/'
       CleanTargetFolder: false
       flattenFolders: false
