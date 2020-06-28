@@ -707,7 +707,7 @@ Task("cg-ios-build-tests")
         MSBuild(IOS_TEST_PROJ, buildSettings);
     });
 
-Task("_cg-ios-run-tests")
+Task("cg-ios-run-tests")
     .Does(() =>
     {
         var sim = GetIosSimulator();
@@ -720,24 +720,15 @@ Task("_cg-ios-run-tests")
                 Where = NUNIT_TEST_WHERE
             });
     });
-    
-Task("cg-ios-run-tests")
-    .IsDependentOn("cg-ios-build-tests")
+
+Task("cg-ios-run-tests-ci")
     .IsDependentOn("cg-ios-deploy")
-    .IsDependentOn("_cg-ios-run-tests")
+    .IsDependentOn("cg-ios-run-tests")
     .Does(() =>
     {
     });
 
 Task ("cg-ios-deploy")
-    .IsDependentOn("cg-ios")
-    .IsDependentOn("_cg-ios-deploy")
-    .Does (() =>
-    {
-
-    });
-
-Task ("_cg-ios-deploy")
     .Does (() =>
 {
     // Look for a matching simulator on the system
