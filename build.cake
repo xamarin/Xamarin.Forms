@@ -682,6 +682,7 @@ Task("cg-ios-vs")
     });
 
 Task("cg-ios-build-tests")
+    .IsDependentOn("BuildTasks")
     .Does(() =>
     {
         // the UI Tests all reference the galleries so those get built as a side effect of building the
