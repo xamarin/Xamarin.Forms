@@ -74,13 +74,6 @@ steps:
       filePath: 'build.sh'
       arguments: --target cg-ios-build-tests --buildForVS2017=$(buildForVS2017) --BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments='${{ variables.MSBuildArguments_cg_ios }}'
 
-  - task: Bash@3
-    displayName: 'Deploy iOS Gallery'
-    inputs:
-      targetType: 'filePath'
-      filePath: 'build.sh'
-      arguments: --target _cg-ios-deploy --buildForVS2017=$(buildForVS2017) --BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments='${{ variables.MSBuildArguments_cg_ios }}'
-
   - task: CopyFiles@2
     displayName: 'Copy iOS Files for UITest'
     condition: eq(variables['buildForVS2017'], 'false')
@@ -100,22 +93,21 @@ steps:
     displayName: 'Copy iOS dSYM'
     condition: eq(variables['buildForVS2017'], 'false')
     inputs:
-      Contents: |
-        **/*.dSYM/**/*.*
-      TargetFolder: '$(build.artifactstagingdirectory)/ios'
+      SourceFolder: Xamarin.Forms.ControlGallery.iOS/bin/iPhone/$(BuildConfiguration)/XamarinFormsControlGalleryiOS.app.dSYM/
+      TargetFolder: '$(build.artifactstagingdirectory)/ios/iPhone/XamarinFormsControlGalleryiOS.app.dSYM/'
       CleanTargetFolder: false
       flattenFolders: false
 
-  - script: |
-      cp -r Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/$(BuildConfiguration)/XamarinFormsControlGalleryiOS.app/ '$(build.artifactstagingdirectory)/ios/iPhoneSimulator2/'
-    displayName: 'Copy files with script'
+ # - script: |
+ #     cp -r Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/$(BuildConfiguration)/XamarinFormsControlGalleryiOS.app/ '$(build.artifactstagingdirectory)/ios/iPhoneSimulator2/'
+ #   displayName: 'Copy files with script'
 
   - task: CopyFiles@2
     displayName: 'Copy iOS App'
     condition: eq(variables['buildForVS2017'], 'false')
     inputs:
       SourceFolder: Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/$(BuildConfiguration)/XamarinFormsControlGalleryiOS.app/
-      TargetFolder: '$(build.artifactstagingdirectory)/ios/iPhoneSimulator/'
+      TargetFolder: '$(build.artifactstagingdirectory)/ios/iPhoneSimulator/XamarinFormsControlGalleryiOS.app/'
       CleanTargetFolder: false
       flattenFolders: false
 
