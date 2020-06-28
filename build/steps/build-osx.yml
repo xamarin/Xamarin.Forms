@@ -75,28 +75,11 @@ steps:
       arguments: --target cg-ios-build-tests --buildForVS2017=$(buildForVS2017) --BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments='${{ variables.MSBuildArguments_cg_ios }}'
 
   - task: Bash@3
-    displayName: 'Deply iOS Gallery'
+    displayName: 'Deploy iOS Gallery'
     inputs:
       targetType: 'filePath'
       filePath: 'build.sh'
       arguments: --target _cg-ios-deploy --buildForVS2017=$(buildForVS2017) --BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments='${{ variables.MSBuildArguments_cg_ios }}'
-
-  - task: MSBuild@1
-    displayName: 'Build Android Tests'
-    inputs:
-      solution: 'Xamarin.Forms.Core.Android.UITests/Xamarin.Forms.Core.Android.UITests.csproj'
-      configuration: $(buildConfiguration)
-      msbuildArguments: /bl:$(Build.ArtifactStagingDirectory)/android-uitests-2017_$(buildForVS2017).binlog
-
-  - task: CopyFiles@2
-    displayName: 'Copy test-cloud.exe'
-    condition: eq(variables['buildForVS2017'], 'false')
-    inputs:
-      Contents: '**/Xamarin.UITest.*/tools/test-cloud.exe'
-      TargetFolder: '$(build.artifactstagingdirectory)/testcloud'
-      CleanTargetFolder: true
-      OverWrite: true
-      flattenFolders: true
 
   - task: CopyFiles@2
     displayName: 'Copy iOS Files for UITest'
@@ -111,16 +94,6 @@ steps:
         Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Xamarin.*
       TargetFolder: '$(build.artifactstagingdirectory)/ios'
       CleanTargetFolder: true
-      flattenFolders: true
-
-  - task: CopyFiles@2
-    displayName: 'Copy Test Results'
-    condition: eq(variables['buildForVS2017'], 'false')
-    inputs:
-      Contents: |
-        **/TestResult.xml
-      TargetFolder: '$(build.artifactstagingdirectory)/ios'
-      CleanTargetFolder: false
       flattenFolders: true
       
   - task: CopyFiles@2
@@ -143,6 +116,23 @@ steps:
       TargetFolder: '$(build.artifactstagingdirectory)/ios/iPhoneSimulator/'
       CleanTargetFolder: false
       flattenFolders: false
+
+  - task: MSBuild@1
+    displayName: 'Build Android Tests'
+    inputs:
+      solution: 'Xamarin.Forms.Core.Android.UITests/Xamarin.Forms.Core.Android.UITests.csproj'
+      configuration: $(buildConfiguration)
+      msbuildArguments: /bl:$(Build.ArtifactStagingDirectory)/android-uitests-2017_$(buildForVS2017).binlog
+
+  - task: CopyFiles@2
+    displayName: 'Copy test-cloud.exe'
+    condition: eq(variables['buildForVS2017'], 'false')
+    inputs:
+      Contents: '**/Xamarin.UITest.*/tools/test-cloud.exe'
+      TargetFolder: '$(build.artifactstagingdirectory)/testcloud'
+      CleanTargetFolder: true
+      OverWrite: true
+      flattenFolders: true
 
   - task: CopyFiles@2
     displayName: 'Copy Android Files for UITest'
