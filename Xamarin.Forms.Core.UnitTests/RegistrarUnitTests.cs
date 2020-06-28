@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using NUnit.Framework;
 using Xamarin.Forms;
 using Xamarin.Forms.Core.UnitTests;
@@ -388,10 +389,13 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public void StyleProperties_ShouldBeRegisteredUnderRegisterAll()
+		public void StyleProperties_ShouldBeRegisteredUnderRegisterStylesheets()
 		{
-			// Arrange & Act
+			// Arrange
 			var customStyles = new[] { "custom-anchor", "-xf-super-batched", "maybe" };
+
+			// Act
+			Internals.Registrar.RegisterStylesheets(default(InitializationFlags), typeof(StylePropertiesRegistrarUnitTests).GetTypeInfo().Assembly);
 			var styleProperties = Internals.Registrar.StyleProperties;
 
 			// Assert
@@ -400,12 +404,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Multiple(() =>
 			{
 				//Predefined Styles from Xamarin.Forms.Core
+				var x = styleProperties.ContainsKey("background-color");
 				Assert.IsTrue(styleProperties.ContainsKey("background-color"));
 				Assert.AreEqual(1, styleProperties["background-color"].Count);
 
 				//Check Custom Styles from Unit Tests
 				foreach (var customStyle in customStyles)
 				{
+					x = styleProperties.ContainsKey(customStyle);
 					Assert.IsTrue(styleProperties.ContainsKey(customStyle));
 					Assert.AreEqual(1, styleProperties[customStyle].Count);
 				}
