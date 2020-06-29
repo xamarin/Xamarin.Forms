@@ -39,8 +39,11 @@
                 </CarouselView.ItemsSource>
             </CarouselView>
             <Button
+                AutomationId="AppearButton"
                 Text="Appear"
                 Clicked="Button_Clicked"/>
+            <Label
+                x:Name="ResultLabel"/>
         </StackLayout>
     </ContentPage.Content>
 </controls:TestContentPage>
