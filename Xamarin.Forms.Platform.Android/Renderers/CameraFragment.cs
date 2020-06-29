@@ -849,21 +849,18 @@ namespace Xamarin.Forms.Platform.Android.Renderers
 		SurfaceOrientation GetDisplayRotation()
 			=> App.Context.GetSystemService(Context.WindowService).JavaCast<IWindowManager>().DefaultDisplay.Rotation;
 
-		int GetDisplayRotationiDegress
+		int GetDisplayRotationiDegress()
 		{
-			get
+			switch (GetDisplayRotation())
 			{
-				switch (GetDisplayRotation())
-				{
-					case SurfaceOrientation.Rotation90:
-						return 90;
-					case SurfaceOrientation.Rotation180:
-						return 180;
-					case SurfaceOrientation.Rotation270:
-						return 270;
-					default:
-						return 0;
-				}
+				case SurfaceOrientation.Rotation90:
+					return 90;
+				case SurfaceOrientation.Rotation180:
+					return 180;
+				case SurfaceOrientation.Rotation270:
+					return 270;
+				default:
+					return 0;
 			}
 		}
 
@@ -936,20 +933,14 @@ namespace Xamarin.Forms.Platform.Android.Renderers
 			}
 
 			matrix.PostScale(mirror ? -sx : sx, sy, centerX, centerY);
-			//matrix.PostRotate(90 * ((int)GetDisplayRotation() - 2), centerX, centerY);
+			matrix.PostRotate(GetCaptureOrientation(), centerX, centerY);
 			_texture.SetTransform(matrix);
 		}
 
 		int GetCaptureOrientation()
 		{
-			if (_cameraType == LensFacing.Front)
-			{
-				var frontResult = (_sensorOrientation + GetDisplayRotationiDegress) % 360;
-				return (360 - frontResult) % 360;
-			}
-
-			var result = _sensorOrientation - GetDisplayRotationiDegress;
-			return (result + 360) % 360;
+			int frontOffset = _cameraType == LensFacing.Front ? 90 : -90;
+			return (360 + _sensorOrientation - GetDisplayRotationiDegress() + frontOffset) % 360;
 		}
 
 		void Sound(MediaActionSoundType soundType)
