@@ -98,15 +98,6 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 			return renderer;
 		}
 
-		protected ViewGroup GetScratchSurface()
-		{
-			var page = (Application.Current.MainPage as MasterDetailPage)
-					.Detail.Navigation.NavigationStack[1];
-
-			var cp = (page as ContentPage).Content;
-			return GetRenderer(cp).View as ViewGroup;
-		}
-
 		protected AView GetNativeControl(VisualElement element)
 		{
 			switch (element)
