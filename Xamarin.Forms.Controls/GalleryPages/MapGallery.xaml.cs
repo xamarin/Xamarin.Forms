@@ -182,5 +182,11 @@ namespace Xamarin.Forms.Controls
 			Map.MoveToLastRegionOnLayoutChange = !Map.MoveToLastRegionOnLayoutChange;
 			((Button)sender).Text = Map.MoveToLastRegionOnLayoutChange.ToString();
 		}
+
+		void ShowTrafficToggled(object sender, ToggledEventArgs e)
+		{
+			var control = (Switch)sender;
+			Map.TrafficEnabled = control.IsToggled;
+		}
 	}
 }

@@ -1,18 +1,14 @@
 parameters:
-  name: ''            # in the form type_platform_host
-  targetFolder: ''    # the bootstrapper target
-  preBuildSteps: []   # any steps to run before the build
-  postBuildSteps: []  # any additional steps to run after the build
   slnPath : 'Xamarin.Forms.sln'
-  csprojPath : 'Xamarin.Forms.Platform.UAP\Xamarin.Forms.Platform.UAP.csproj'
   msbuildExtraArguments : ''
   artifactsTargetFolder: '$(build.artifactstagingdirectory)'
   artifactsName: 'win_build'
-  nunitTestAdapterFolder: 'packages/NUnitTestAdapter.AnyVersion/build/'
   nunitTestFolder: '$(build.sourcesdirectory)'
   includeUwp: 'true'
   includeAndroid: 'true'
   includeNonUwpAndNonAndroid: 'true'
+  includePages: 'false'
+
 
 steps:
   - checkout: self
@@ -51,6 +47,16 @@ steps:
   - script: build.cmd -Target BuildForNuget -ScriptArgs '-BUILD_CONFIGURATION="$(BuildConfiguration)"','-Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"'
     name: winbuild
     displayName: 'Build Projects For Nuget'
+    condition: ne(${{ parameters.includePages }}, 'true')
+
+  - task: MSBuild@1
+    displayName: 'Build solution ${{ parameters.slnPath }}'
+    name: winslnbuild
+    condition: eq(${{ parameters.includePages }}, 'true')
+    inputs:
+      solution: ${{ parameters.slnPath }}
+      configuration: '$(BuildConfiguration)'
+      msbuildArguments: ${{ parameters.msbuildExtraArguments }} /bl:$(Build.ArtifactStagingDirectory)\win-$(BuildConfiguration).binlog
 
   - task: VSTest@2
     displayName: 'Unit Tests'
@@ -103,15 +109,8 @@ steps:
         Xamarin.Forms.Maps/bin/$(BuildConfiguration)/**/*.mdb
         Xamarin.Forms.Maps.iOS/bin/iPhoneSimulator/$(BuildConfiguration)/**/*.dll
         Xamarin.Forms.Maps.MacOS/bin/$(BuildConfiguration)/**/*.dll
-        Xamarin.Forms.Pages/bin/$(BuildConfiguration)/**/*.dll
-        Xamarin.Forms.Pages/bin/$(BuildConfiguration)/**/*.pdb
-        Xamarin.Forms.Pages/bin/$(BuildConfiguration)/**/*.mdb
-        Xamarin.Forms.Pages.Azure/bin/$(BuildConfiguration)/**/*.dll
-        Xamarin.Forms.Pages.Azure/bin/$(BuildConfiguration)/**/*.pdb
-        Xamarin.Forms.Pages.Azure/bin/$(BuildConfiguration)/**/*.mdb
         Xamarin.Forms.Core.UnitTests/bin/$(BuildConfiguration)/**/*.dll
         Xamarin.Forms.Xaml.UnitTests/bin/$(BuildConfiguration)/**/*.dll
-        Xamarin.Forms.Pages.UnitTests/bin/$(BuildConfiguration)/**/*.dll
         Xamarin.Forms.Maps.Tizen/bin/$(BuildConfiguration)/**/*.dll
         Xamarin.Forms.Maps.Tizen/bin/$(BuildConfiguration)/**/*.mdb
         Xamarin.Forms.Maps.Tizen/bin/$(BuildConfiguration)/**/*.pdb
@@ -166,7 +165,7 @@ steps:
 
       TargetFolder: ${{ parameters.artifactsTargetFolder }}
 
-      
+    
   - task: CopyFiles@2
     displayName: 'Copy Android Files dlls'
     condition: eq('${{ parameters.includeAndroid }}', true)
@@ -189,6 +188,21 @@ steps:
         Xamarin.Forms.DualScreen/bin/$(BuildConfiguration)/**/*.mdb
         Xamarin.Forms.DualScreen.UnitTests/bin/$(BuildConfiguration)/**/*.dll
         **/*.binlog
+
+      TargetFolder: ${{ parameters.artifactsTargetFolder }}
+
+  - task: CopyFiles@2
+    displayName: 'Copy Pages Files dlls'
+    condition: eq('${{ parameters.includePages }}', true)
+    inputs:
+      Contents: |
+        Xamarin.Forms.Pages/bin/$(BuildConfiguration)/**/*.dll
+        Xamarin.Forms.Pages/bin/$(BuildConfiguration)/**/*.pdb
+        Xamarin.Forms.Pages/bin/$(BuildConfiguration)/**/*.mdb
+        Xamarin.Forms.Pages.Azure/bin/$(BuildConfiguration)/**/*.dll
+        Xamarin.Forms.Pages.Azure/bin/$(BuildConfiguration)/**/*.pdb
+        Xamarin.Forms.Pages.Azure/bin/$(BuildConfiguration)/**/*.mdb
+        Xamarin.Forms.Pages.UnitTests/bin/$(BuildConfiguration)/**/*.dll
 
       TargetFolder: ${{ parameters.artifactsTargetFolder }}
 

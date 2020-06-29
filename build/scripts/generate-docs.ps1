@@ -1,11 +1,11 @@
 param(
-    [string]$branch = "live",
+    [string]$branch = "master",
     [string]$token
 )
 
 # Yes, this is ignoring the parameter passed in by VSTS; we don't need the 
 # parameter, but we can't remove it until all the active branches don't need it
-$branch = "live"
+$branch = "master"
 
 $mdoc = '..\..\tools\mdoc\mdoc.exe'
 $docsUri = "https://$token@github.com/xamarin/Xamarin.Forms-api-docs.git"
@@ -93,7 +93,7 @@ $translations =
 @{"lang" = "it-it"; "target" = "it"},
 @{"lang" = "ja-jp"; "target" = "ja"},
 @{"lang" = "ko-kr"; "target" = "ko"},
-@{"lang" = "pt-br"; "target" = "pt-br"},
+@{"lang" = "pt-br"; "target" = "pt-BR"},
 @{"lang" = "ru-ru"; "target" = "ru"},
 @{"lang" = "zh-cn"; "target" = "zh-Hans"},
 @{"lang" = "zh-tw"; "target" = "zh-Hant"}
