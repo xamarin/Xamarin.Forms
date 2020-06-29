@@ -174,17 +174,17 @@ namespace Xamarin.Forms.Platform.Android
 						? LinearLayoutManager.Horizontal
 						: LinearLayoutManager.Vertical;
 
-					return new ItemsLinearLayoutManager(Context, orientation, false);
+					return new LinearLayoutManager(Context, orientation, false);
 			}
 
 			// Fall back to plain old vertical list
 			// TODO hartez 2018/08/30 19:34:36 Log a warning when we have to fall back because of an unknown layout	
-			return new ItemsLinearLayoutManager(Context);
+			return new LinearLayoutManager(Context);
 		}
 
 		GridLayoutManager CreateGridLayout(GridItemsLayout gridItemsLayout)
 		{
-			var gridLayoutManager = new ItemsGridLayoutManager(Context, gridItemsLayout.Span,
+			var gridLayoutManager = new GridLayoutManager(Context, gridItemsLayout.Span,
 				gridItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal
 					? LinearLayoutManager.Horizontal
 					: LinearLayoutManager.Vertical,
@@ -633,7 +633,7 @@ namespace Xamarin.Forms.Platform.Android
 				SwapAdapter(_emptyViewAdapter, true);
 
 				// TODO hartez 2018/10/24 17:34:36 If this works, cache this layout manager as _emptyLayoutManager	
-				SetLayoutManager(new ItemsLinearLayoutManager(Context));
+				SetLayoutManager(new LinearLayoutManager(Context));
 			}
 			else if (!showEmptyView && currentAdapter != ItemsViewAdapter)
 			{
@@ -646,7 +646,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (ItemsView.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepLastItemInView)
 			{
-				ScrollTo(new ScrollToRequestEventArgs(ItemsViewAdapter.ItemCount, 0,
+				ScrollTo(new ScrollToRequestEventArgs(GetLayoutManager().ItemCount, 0,
 					Xamarin.Forms.ScrollToPosition.MakeVisible, true));
 			}
 			else if (ItemsView.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepScrollOffset)
