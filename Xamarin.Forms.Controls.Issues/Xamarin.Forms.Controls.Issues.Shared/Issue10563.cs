@@ -17,6 +17,12 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 10563, "[Bug] SwipeView Open methods does not work for RightItems", PlatformAffected.Android | PlatformAffected.iOS)]
 	public class Issue10563 : TestContentPage
 	{
+		const string OpenLeftId = "OpenLeftId";
+		const string OpenRightId = "OpenRightId";
+		const string OpenTopId = "OpenTopId";
+		const string OpenBottomId = "OpenBottomId";
+		const string CloseId = "CloseId";
+
 		public Issue10563()
 		{
 #if APP
@@ -35,26 +41,31 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var openLeftButton = new Button
 			{
+				AutomationId = OpenLeftId,
 				Text = "Open Left SwipeItem"
 			};
 
 			var openRightButton = new Button
 			{
+				AutomationId = OpenRightId,
 				Text = "Open Right SwipeItem"
 			};
 
 			var openTopButton = new Button
 			{
+				AutomationId = OpenTopId,
 				Text = "Open Top SwipeItem"
 			};
 
 			var openBottomButton = new Button
 			{
+				AutomationId = OpenBottomId,
 				Text = "Open Bottom SwipeItem"
 			};
 
 			var closeButton = new Button
 			{
+				AutomationId = CloseId,
 				Text = "Close SwipeView"
 			};
 
@@ -131,5 +142,28 @@ namespace Xamarin.Forms.Controls.Issues
 				swipeView.Close();
 			};
 		}
+
+#if UITEST
+		[Test]
+		public void Issue10563OpenSwipeViewTest ()
+		{
+			RunningApp.WaitForElement(OpenLeftId);
+			RunningApp.Tap(OpenLeftId);
+			RunningApp.Screenshot("Left SwipeItems");
+			RunningApp.Tap(CloseId);
+
+			RunningApp.Tap(OpenRightId);
+			RunningApp.Screenshot("Right SwipeItems");
+			RunningApp.Tap(CloseId);
+
+			RunningApp.Tap(OpenTopId);
+			RunningApp.Screenshot("Top SwipeItems");
+			RunningApp.Tap(CloseId);
+
+			RunningApp.Tap(OpenBottomId);
+			RunningApp.Screenshot("Bottom SwipeItems");
+			RunningApp.Tap(CloseId);
+		}
+#endif
 	}
 }
