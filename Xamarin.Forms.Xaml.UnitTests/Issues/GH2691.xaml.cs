@@ -9,6 +9,7 @@ using NUnit.Framework;
 using Xamarin.Forms.Core.UnitTests;
 using Xamarin.Forms.Controls;
 using Xamarin.Forms.MSBuild.UnitTests;
+using IOPath = System.IO.Path;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {	
@@ -102,7 +103,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void TestXamlGenerator()
 			{
 				string xamlInputFile = CreateXamlInputFile();
-				string xamlOutputFile = Path.GetTempFileName();
+				string xamlOutputFile = IOPath.GetTempFileName();
 				var item = new TaskItem(xamlInputFile);
 				item.SetMetadata("TargetPath", xamlInputFile);
 
@@ -113,9 +114,14 @@ namespace Xamarin.Forms.Xaml.UnitTests
 					"Release";
 #endif
 
-				var dir = Path.GetFullPath(
-						Path.Combine(
-							TestContext.CurrentContext.TestDirectory, "Xamarin.Forms.Controls.dll"));
+				var references = string.Join(";",
+					IOPath.GetFullPath(
+						IOPath.Combine(
+							TestContext.CurrentContext.TestDirectory, "Xamarin.Forms.Controls.dll")),
+					IOPath.GetFullPath(
+						IOPath.Combine(
+							TestContext.CurrentContext.TestDirectory, "Xamarin.Forms.Core.dll"))
+					);
 				var xamlg = new XamlGTask()
 				{
 					BuildEngine = new DummyBuildEngine(),
@@ -123,7 +129,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 					Language = "C#",
 					XamlFiles = new[] { item },
 					OutputFiles = new[] { new TaskItem(xamlOutputFile) },
-					References = dir
+					References = references
 				};
 
 				var generator = new XamlGenerator(item, xamlg.Language, xamlg.AssemblyName, xamlOutputFile, xamlg.References, null);
@@ -134,7 +140,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 			string CreateXamlInputFile()
 			{
-				string fileName = Path.GetTempFileName();
+				string fileName = IOPath.GetTempFileName();
 				File.WriteAllText(fileName, c_xaml);
 				return fileName;
 			}

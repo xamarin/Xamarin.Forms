@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Shapes;
 
 namespace Xamarin.Forms
 {
@@ -56,6 +57,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty ScaleYProperty = BindableProperty.Create(nameof(ScaleY), typeof(double), typeof(VisualElement), 1d);
 
 		internal static readonly BindableProperty TransformProperty = BindableProperty.Create("Transform", typeof(string), typeof(VisualElement), null, propertyChanged: OnTransformChanged);
+
+		public static readonly BindableProperty ClipProperty = BindableProperty.Create(nameof(Clip), typeof(Geometry), typeof(VisualElement), null);
 
 		public static readonly BindableProperty VisualProperty =
 			BindableProperty.Create(nameof(Visual), typeof(IVisual), typeof(VisualElement), Forms.VisualMarker.MatchParent,
@@ -466,6 +469,13 @@ namespace Xamarin.Forms
 			private set { SetValue(YPropertyKey, value); }
 		}
 
+		[TypeConverter(typeof(PathGeometryConverter))]
+		public Geometry Clip
+		{
+			get { return (Geometry)GetValue(ClipProperty); }
+			set { SetValue(ClipProperty, value); }
+		}
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public bool Batched
 		{
@@ -532,6 +542,9 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
+		internal event EventHandler PlatformEnabledChanged;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public bool IsPlatformEnabled
 		{
 			get { return _isPlatformEnabled; }
@@ -547,8 +560,9 @@ namespace Xamarin.Forms
 				InvalidateStateTriggers(IsPlatformEnabled);
 
 				OnIsPlatformEnabledChanged();
+				PlatformEnabledChanged?.Invoke(this, EventArgs.Empty);
 			}
-		}		
+		}
 
 		internal LayoutConstraint SelfConstraint
 		{
@@ -880,14 +894,6 @@ namespace Xamarin.Forms
 		internal virtual void OnIsVisibleChanged(bool oldValue, bool newValue)
 		{
 			InvalidateMeasureInternal(InvalidationTrigger.Undefined);
-		}
-
-		internal override void OnResourcesChanged(object sender, ResourcesChangedEventArgs e)
-		{
-			if (e == ResourcesChangedEventArgs.StyleSheets)
-				ApplyStyleSheets();
-			else
-				base.OnResourcesChanged(sender, e);
 		}
 
 		internal override void OnParentResourcesChanged(IEnumerable<KeyValuePair<string, object>> values)

@@ -1,20 +1,22 @@
-using System;
 using System.ComponentModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using Xamarin.Forms.Internals;
-using WThickness = Windows.UI.Xaml.Thickness;
-using WButton = Windows.UI.Xaml.Controls.Button;
-using WImage = Windows.UI.Xaml.Controls.Image;
 using Windows.UI.Xaml.Input;
+using Xamarin.Forms.Internals;
+using WImage = Windows.UI.Xaml.Controls.Image;
+using WStretch = Windows.UI.Xaml.Media.Stretch;
+using WThickness = Windows.UI.Xaml.Thickness;
 
 namespace Xamarin.Forms.Platform.UWP
 {
 	public class ButtonRenderer : ViewRenderer<Button, FormsButton>
 	{
 		bool _fontApplied;
+
+		FormsButton _button;
+		PointerEventHandler _pointerPressedHandler;		
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Button> e)
 		{
@@ -24,13 +26,13 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (Control == null)
 				{
-					var button = new FormsButton();
+					_button = new FormsButton();
+					_pointerPressedHandler = new PointerEventHandler(OnPointerPressed);
+					_button.Click += OnButtonClick;
+					_button.AddHandler(PointerPressedEvent, _pointerPressedHandler, true);
+					_button.Loaded += ButtonOnLoaded;
 
-					button.Click += OnButtonClick;
-					button.AddHandler(PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
-					button.Loaded += ButtonOnLoaded;
-
-					SetNativeControl(button);
+					SetNativeControl(_button);
 				}
 				else
 				{
@@ -186,7 +188,7 @@ namespace Xamarin.Forms.Platform.UWP
 				Source = elementImage,
 				VerticalAlignment = VerticalAlignment.Center,
 				HorizontalAlignment = HorizontalAlignment.Center,
-				Stretch = Stretch.Uniform,
+				Stretch = WStretch.Uniform,
 				Width = size.Width,
 				Height = size.Height,
 			};
@@ -289,6 +291,25 @@ namespace Xamarin.Forms.Platform.UWP
 				Element.Padding.Right,
 				Element.Padding.Bottom
 			);
+		}
+
+		bool _isDisposed;
+		protected override void Dispose(bool disposing)
+		{
+			if (_isDisposed)
+				return;
+			if (_button != null)
+			{
+				_button.Click -= OnButtonClick;
+				_button.RemoveHandler(PointerPressedEvent, _pointerPressedHandler);
+				_button.Loaded -= ButtonOnLoaded;				
+
+				_pointerPressedHandler = null;
+			}
+
+			_isDisposed = true;
+
+			base.Dispose(disposing);
 		}
 	}
 }
