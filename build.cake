@@ -623,6 +623,16 @@ Task("BuildForNuget")
             Enabled  = isCIBuild
         };
 
+        if(isCIBuild)
+        {        
+            foreach(var platformProject in GetFiles("./Xamarin.*.UnitTests/*.csproj").Select(x=> x.FullPath))
+            {
+                Information("Building: {0}", platformProject);
+                MSBuild(platformProject,
+                        GetMSBuildSettings().WithRestore());
+            }
+        }
+        
         MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings().WithTarget("Restore"));
         MSBuild("./Xamarin.Forms.DualScreen.sln", GetMSBuildSettings().WithTarget("Restore"));
         
@@ -638,16 +648,6 @@ Task("BuildForNuget")
                 .Union(GetFiles("./Xamarin.Forms.Xaml.Design/*.csproj"))
                 .Select(x=> x.FullPath).Distinct()
                 .ToList();
-
-        if(isCIBuild)
-        {        
-            foreach(var platformProject in GetFiles("./Xamarin.*.UnitTests/*.csproj").Select(x=> x.FullPath))
-            {
-                Information("Building: {0}", platformProject);
-                MSBuild(platformProject,
-                        GetMSBuildSettings().WithRestore());
-            }
-        }
 
         foreach(var platformProject in platformProjects)
         {
