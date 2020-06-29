@@ -201,9 +201,9 @@ steps:
     condition: eq(variables['BuildConfiguration'], 'Debug')
     inputs:
       Contents: |
-        Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*
-        Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/Add-AppDevPackage.resources/**
-        Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/TelemetryDependencies/**
+        Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/*
+        Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/Add-AppDevPackage.resources/**
+        Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/TelemetryDependencies/**
       TargetFolder: '$(build.artifactstagingdirectory)'
       CleanTargetFolder: false
       flattenFolders: false
