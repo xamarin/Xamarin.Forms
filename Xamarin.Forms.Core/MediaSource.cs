@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Xamarin.Forms
 {
@@ -19,6 +22,38 @@ namespace Xamarin.Forms
 			if (!uri.IsAbsoluteUri)
 				throw new ArgumentException("uri is relative");
 			return new UriMediaSource { Uri = uri };
+		}
+
+		public static MediaSource FromStream(Func<Stream> stream)
+		{
+			return new StreamMediaSource { Stream = token => Task.Run(stream, token) };
+		}
+
+		public static MediaSource FromResource(string resource, Type resolvingType)
+		{
+			return FromResource(resource, resolvingType.GetTypeInfo().Assembly);
+		}
+
+		public static MediaSource FromResource(string resource, Assembly sourceAssembly = null)
+		{
+#if NETSTANDARD2_0
+			sourceAssembly = sourceAssembly ?? Assembly.GetCallingAssembly();
+#else
+			if (sourceAssembly == null)
+			{
+				MethodInfo callingAssemblyMethod = typeof(Assembly).GetTypeInfo().GetDeclaredMethod("GetCallingAssembly");
+				if (callingAssemblyMethod != null)
+				{
+					sourceAssembly = (Assembly)callingAssemblyMethod.Invoke(null, new object[0]);
+				}
+				else
+				{
+					Internals.Log.Warning("Warning", "Can not find CallingAssembly, pass resolvingType to FromResource to ensure proper resolution");
+					return null;
+				}
+			}
+#endif
+			return FromStream(() => sourceAssembly.GetManifestResourceStream(resource));
 		}
 
 		public static implicit operator MediaSource(string source)

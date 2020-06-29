@@ -144,5 +144,9 @@
 		<string>Fonts/Roboto-BoldItalic.ttf</string>
 		<string>Fonts/fa-solid-900.ttf</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>This app would like to access the camera</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app would like to access the microphone to record movies</string>
 </dict>
 </plist>

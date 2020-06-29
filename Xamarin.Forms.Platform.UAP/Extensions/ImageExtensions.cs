@@ -38,6 +38,10 @@ namespace Xamarin.Forms.Platform.UWP
 					Height = canvas.Size.Height
 				};
 			}
+			else if (source is SoftwareBitmapSource softBitmap)
+			{
+				return (Size)softBitmap.GetValue(StreamImageSourceHandler.Size);
+			}
 
 			throw new InvalidCastException($"\"{source.GetType().FullName}\" is not supported.");
 		}

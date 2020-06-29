@@ -317,6 +317,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new AppLinkPageGallery(), "App Link Page Gallery"),
 				new GalleryPageFactory(() => new NestedNativeControlGalleryPage(), "Nested Native Controls Gallery"),
 				new GalleryPageFactory(() => new CellForceUpdateSizeGalleryPage(), "Cell Force Update Size Gallery"),
+				new GalleryPageFactory(() => new CameraGalleryPage(), "Camera"),
 				new GalleryPageFactory(() => new AppearingGalleryPage(), "Appearing Gallery"),
 				new GalleryPageFactory(() => new EntryCoreGalleryPage(), "Entry Gallery"),
 				new GalleryPageFactory(() => new MaterialEntryGalleryPage(), "Entry Material Demos"),

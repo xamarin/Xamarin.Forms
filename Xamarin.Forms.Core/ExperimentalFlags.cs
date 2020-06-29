@@ -13,6 +13,7 @@ namespace Xamarin.Forms
 		internal const string CarouselViewExperimental = "CarouselView_Experimental";
 		internal const string SwipeViewExperimental = "SwipeView_Experimental";
 		internal const string MediaElementExperimental = "MediaElement_Experimental";
+		internal const string CameraViewExperimental = "CameraView_Experimental";
 		internal const string MarkupExperimental = "Markup_Experimental";
 		internal const string AppThemeExperimental = "AppTheme_Experimental";
 		internal const string ExpanderExperimental = "Expander_Experimental";

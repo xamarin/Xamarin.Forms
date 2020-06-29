@@ -198,6 +198,8 @@
     <Compile Include="Renderers\IShellSectionRootHeader.cs" />
     <Compile Include="Renderers\PageContainer.cs" />
     <Compile Include="Renderers\CheckBoxRendererBase.cs" />
+    <Compile Include="Renderers\CameraViewRenderer.cs" />
+    <Compile Include="Renderers\FormsCameraView.cs" />
     <Compile Include="Renderers\RadioButtonCALayer.cs" />
     <Compile Include="Renderers\RadioButtonRenderer.cs" />
     <Compile Include="Renderers\WkWebViewRenderer.cs" />

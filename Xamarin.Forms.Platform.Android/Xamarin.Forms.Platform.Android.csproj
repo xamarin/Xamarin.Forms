@@ -49,6 +49,12 @@
     <Compile Include="..\Xamarin.Forms.Core\StreamWrapper.cs" Link="StreamWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Resources\Layout\CameraFragment.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Layout\CameraFragment.axml" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />

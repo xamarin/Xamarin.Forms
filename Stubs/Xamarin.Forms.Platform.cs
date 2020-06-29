@@ -193,6 +193,9 @@ namespace Xamarin.Forms.Platform
 
 	[RenderWith(typeof(RectangleRenderer))]
 	internal class _RectangleRenderer { }
+	
+	[RenderWith (typeof(CameraViewRenderer))]
+	internal class _CameraViewRenderer { }
 #endif
 }
 

@@ -45,6 +45,7 @@ using Rectangle = Xamarin.Forms.Shapes.Rectangle;
 [assembly: ExportRenderer(typeof(Polyline), typeof(PolylineRenderer))]
 [assembly: ExportRenderer(typeof(Rectangle), typeof(RectangleRenderer))]
 [assembly: ExportRenderer(typeof(IndicatorView), typeof(IndicatorViewRenderer))]
+[assembly: ExportRenderer(typeof(CameraView), typeof(CameraViewRenderer))]
 
 //ImageSources
 
