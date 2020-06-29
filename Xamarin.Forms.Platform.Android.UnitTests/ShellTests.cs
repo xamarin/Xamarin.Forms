@@ -37,11 +37,8 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 				TestActivity testSurface = null;
 				try
 				{
-					testSurface = await TestActivity.GetTestSurface(Context);
-					var r = GetRenderer(shell, testSurface);
-					var addedView = r.View;
-					testSurface.SetContentView(r.View);
-
+					testSurface = await TestActivity.GetTestSurface(Context, shell);
+					var addedView = shell.GetRenderer().View;
 					Assert.IsNotNull(addedView);
 					Assert.IsNull(newHeader.GetValue(Platform.RendererProperty));
 					Assert.IsNotNull(initialHeader.GetValue(Platform.RendererProperty));

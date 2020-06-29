@@ -41,13 +41,21 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
             Surface.SetResult(this);
         }
 
-        public static async Task<TestActivity> GetTestSurface(Context context)
+        public static async Task<TestActivity> GetTestSurface(Context context, VisualElement visualElement)
         {
             await semaphore.WaitAsync();
             Surface = new TaskCompletionSource<TestActivity>();
             Intent intent = new Intent(context, typeof(TestActivity));
             context.StartActivity(intent);
             var result = await Surface.Task;
+
+            if(visualElement != null)
+			{
+                var renderer = Platform.CreateRendererWithContext(visualElement, result);
+                Platform.SetRenderer(visualElement, renderer);
+                result.SetContentView(renderer.View);
+            }
+
             return result;
         }
 
