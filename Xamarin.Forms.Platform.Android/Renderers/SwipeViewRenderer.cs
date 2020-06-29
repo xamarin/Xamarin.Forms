@@ -1399,7 +1399,7 @@ namespace Xamarin.Forms.Platform.Android
 			((ISwipeViewController)Element).IsOpen = isOpen;
 		}
 
-		void OnCloseRequested(object sender, CloseSwipeEventArgs e)
+		void OnCloseRequested(object sender, SwipeClosedRequestEventArgs e)
 		{
 			var animated = e.Animated;
 

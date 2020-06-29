@@ -77,19 +77,19 @@ namespace Xamarin.Forms
 		public event EventHandler<SwipeEndedEventArgs> SwipeEnded;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public event EventHandler<OpenSwipeEventArgs> OpenRequested;
+		public event EventHandler<SwipeOpenRequestEventArgs> OpenRequested;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public event EventHandler<CloseSwipeEventArgs> CloseRequested;
+		public event EventHandler<SwipeClosedRequestEventArgs> CloseRequested;
 
 		public void Open(OpenSwipeItem openSwipeItem, bool animated = true)
 		{
-			OpenRequested?.Invoke(this, new OpenSwipeEventArgs(openSwipeItem, animated));
+			OpenRequested?.Invoke(this, new SwipeOpenRequestEventArgs(openSwipeItem, animated));
 		}
 
 		public void Close(bool animated = true)
 		{
-			CloseRequested?.Invoke(this, new CloseSwipeEventArgs(animated));
+			CloseRequested?.Invoke(this, new SwipeClosedRequestEventArgs(animated));
 		}
 
 		void ISwipeViewController.SendSwipeStarted(SwipeStartedEventArgs args) => SwipeStarted?.Invoke(this, args);

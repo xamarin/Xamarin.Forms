@@ -12,9 +12,9 @@ namespace Xamarin.Forms
 		public SwipeDirection SwipeDirection { get; set; }
 	}
 
-	public class CloseSwipeEventArgs : EventArgs
+	public class SwipeClosedRequestEventArgs : EventArgs
 	{
-		public CloseSwipeEventArgs(bool animated)
+		public SwipeClosedRequestEventArgs(bool animated)
 		{
 			Animated = animated;
 		}
@@ -22,9 +22,9 @@ namespace Xamarin.Forms
 		public bool Animated { get; set; }
 	}
 
-	public class OpenSwipeEventArgs : EventArgs
+	public class SwipeOpenRequestEventArgs : EventArgs
 	{
-		public OpenSwipeEventArgs(OpenSwipeItem openSwipeItem, bool animated)
+		public SwipeOpenRequestEventArgs(OpenSwipeItem openSwipeItem, bool animated)
 		{
 			OpenSwipeItem = openSwipeItem;
 			Animated = animated;
