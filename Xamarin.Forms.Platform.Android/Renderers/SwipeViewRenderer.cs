@@ -1374,6 +1374,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateSwipeItems();
 			Swipe(animated);
+
+			_swipeOffset = Math.Abs(_swipeOffset);
 		}
 
 		void UpdateOffset(float swipeOffset)

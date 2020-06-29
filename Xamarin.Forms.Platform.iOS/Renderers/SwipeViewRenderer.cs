@@ -1452,7 +1452,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_previousFirstVisibleIndex = e.FirstVisibleItemIndex;
 		}
 
-		void OnOpenRequested(object sender, OpenSwipeEventArgs e)
+		void OnOpenRequested(object sender, SwipeOpenRequestEventArgs e)
 		{
 			if (_contentView == null)
 				return;
@@ -1494,6 +1494,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateSwipeItems();
 			Swipe(animated);
+
+			_swipeOffset = Math.Abs(_swipeOffset);
 		}
 
 		void UpdateOffset(double swipeOffset)
