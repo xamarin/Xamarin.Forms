@@ -391,7 +391,7 @@ namespace Xamarin.Forms.MSBuild.UnitTests
 			AssertExists (IOPath.Combine (intermediateDirectory, "XamlC.stamp"));
 		}
 
-		//https://github.com/dotnet/project-system/blob/main/docs/design-time-builds.md
+		//https://github.com/dotnet/project-system/blob/master/docs/design-time-builds.md
 		//https://daveaglick.com/posts/running-a-design-time-build-with-msbuild-apis
 		[Test]
 		public void DesignTimeBuild ([Values (false/*, true */)] bool sdkStyle)
