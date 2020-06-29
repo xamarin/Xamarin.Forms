@@ -26,11 +26,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			{
 				RowDefinitions = new RowDefinitionCollection
 				{
-					new RowDefinition { Height = 40 },
-					new RowDefinition { Height = 80 },
-					new RowDefinition { Height = 30},
-					new RowDefinition { Height = 20},
-					new RowDefinition { Height = 20},
+					new RowDefinition { Height = GridLength.Auto },
+					new RowDefinition { Height = GridLength.Auto },
+					new RowDefinition { Height = GridLength.Auto },
+					new RowDefinition { Height = GridLength.Auto },
+					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Star }
 				}
