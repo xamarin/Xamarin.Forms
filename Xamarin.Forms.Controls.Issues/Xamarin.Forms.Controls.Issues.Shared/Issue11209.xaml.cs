@@ -4,7 +4,7 @@ using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
-#if UITEST && __ANDROID__
+#if UITEST
 using Xamarin.UITest;
 using Xamarin.UITest.Queries;
 using NUnit.Framework;
