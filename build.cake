@@ -625,14 +625,26 @@ Task("BuildForNuget")
 
         if(isCIBuild)
         {        
+            MSBuild("./Xamarin.Forms.Xaml.UnitTests/Xamarin.Forms.Xaml.UnitTests.csproj", GetMSBuildSettings().WithTarget("Restore"));
+            MSBuild("./Xamarin.Forms.Xaml.UnitTests/Xamarin.Forms.Xaml.UnitTests.csproj", GetMSBuildSettings());
+        }
+        
+        MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings().WithTarget("Restore"));
+        MSBuild("./Xamarin.Forms.DualScreen.sln", GetMSBuildSettings().WithTarget("Restore"));
+
+        if(isCIBuild)
+        {       
             foreach(var platformProject in GetFiles("./Xamarin.*.UnitTests/*.csproj").Select(x=> x.FullPath))
             {
+                if(platformProject.Contains("Xamarin.Forms.Xaml.UnitTests"))
+                    continue;
+
                 Information("Building: {0}", platformProject);
                 MSBuild(platformProject,
                         GetMSBuildSettings().WithRestore());
             }
         }
-        
+
         MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings().WithTarget("Restore"));
         MSBuild("./Xamarin.Forms.DualScreen.sln", GetMSBuildSettings().WithTarget("Restore"));
         
