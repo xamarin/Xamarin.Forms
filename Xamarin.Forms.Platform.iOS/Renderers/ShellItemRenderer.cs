@@ -206,7 +206,7 @@ namespace Xamarin.Forms.Platform.iOS
 					GoTo(ShellItem.CurrentItem);
 			}
 
-			SetTabBarHidden(ViewControllers.Length == 1);
+			UpdateTabBarHidden();
 		}
 
 		protected virtual void OnShellItemSet(ShellItem shellItem)
@@ -271,9 +271,7 @@ namespace Xamarin.Forms.Platform.iOS
 			ViewControllers = viewControllers;
 			CustomizableViewControllers = Array.Empty<UIViewController>();
 
-			// No sense showing a bar that has a single icon
-			if (ViewControllers.Length == 1)
-				SetTabBarHidden(true);
+			UpdateTabBarHidden();
 
 			// Make sure we are at the right item
 			GoTo(ShellItem.CurrentItem);
@@ -370,21 +368,18 @@ namespace Xamarin.Forms.Platform.iOS
 			return null;
 		}
 
-		void SetTabBarHidden(bool hidden)
+		public override void ViewWillLayoutSubviews()
 		{
-			TabBar.Hidden = hidden;
+			UpdateTabBarHidden();
+			base.ViewWillLayoutSubviews();
 		}
 
 		void UpdateTabBarHidden()
 		{
-			if (_displayedPage == null || ShellItem == null)
+			if (ShellItemController == null)
 				return;
 
-			var hidden = !Shell.GetTabBarIsVisible(_displayedPage);
-			if (ShellItemController.GetItems().Count > 1)
-			{
-				SetTabBarHidden(hidden);
-			}
+			TabBar.Hidden = !ShellItemController.ShowTabs;
 		}
 	}
 }

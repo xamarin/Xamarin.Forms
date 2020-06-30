@@ -1,15 +1,14 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.Foundation;
 using Xamarin.Forms.Internals;
+using UwpApp = Windows.UI.Xaml.Application;
+using UwpDataTemplate = Windows.UI.Xaml.DataTemplate;
 using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
-using UWPApp = Windows.UI.Xaml.Application;
-using UWPDataTemplate = Windows.UI.Xaml.DataTemplate;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -21,14 +20,15 @@ namespace Xamarin.Forms.Platform.UWP
 		UwpScrollBarVisibility? _defaultHorizontalScrollVisibility;
 		UwpScrollBarVisibility? _defaultVerticalScrollVisibility;
 		FrameworkElement _emptyView;
-		View _formsEmptyView;
+		View _formsEmptyView; 
+		bool _emptyViewDisplayed;
 		ScrollViewer _scrollViewer;
 		internal double _previousHorizontalOffset;
 		internal double _previousVerticalOffset;
 
 		protected ListViewBase ListViewBase { get; private set; }
-		protected UWPDataTemplate ViewTemplate => (UWPDataTemplate)UWPApp.Current.Resources["View"];
-		protected UWPDataTemplate ItemsViewTemplate => (UWPDataTemplate)UWPApp.Current.Resources["ItemsViewDefaultTemplate"];
+		protected UwpDataTemplate ViewTemplate => (UwpDataTemplate)UwpApp.Current.Resources["View"];
+		protected UwpDataTemplate ItemsViewTemplate => (UwpDataTemplate)UwpApp.Current.Resources["ItemsViewDefaultTemplate"];
 
 		protected ItemsViewRenderer()
 		{
@@ -388,8 +388,33 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			(ListViewBase as IEmptyView)?.SetEmptyView(_emptyView, _formsEmptyView);
-
+			
 			UpdateEmptyViewVisibility();
+		}
+
+		protected virtual void UpdateItemsLayout()
+		{
+			if (_scrollViewer != null)
+				_scrollViewer.ViewChanged -= OnScrollViewChanged;
+
+			if (ListViewBase != null)
+			{
+				ListViewBase.ItemsSource = null;
+				ListViewBase = null;
+			}
+
+			ListViewBase = SelectListViewBase();
+			ListViewBase.IsSynchronizedWithCurrentItem = false;
+
+			FindScrollViewer(ListViewBase);
+
+			SetNativeControl(ListViewBase);
+
+			UpdateItemTemplate();
+			UpdateItemsSource();
+			UpdateVerticalScrollBarVisibility();
+			UpdateHorizontalScrollBarVisibility();
+			UpdateEmptyView();
 		}
 
 		FrameworkElement RealizeEmptyViewTemplate(object bindingContext, DataTemplate emptyViewTemplate)
@@ -413,25 +438,46 @@ namespace Xamarin.Forms.Platform.UWP
 
 		FrameworkElement RealizeEmptyView(View view)
 		{
-			_formsEmptyView = view;
+			_formsEmptyView = view ?? throw new ArgumentNullException(nameof(view));
 			return view.GetOrCreateRenderer().ContainerElement;
 		}
 
 		protected virtual void UpdateEmptyViewVisibility()
 		{
-			if (_emptyView != null && ListViewBase is IEmptyView emptyView)
-			{
-				emptyView.EmptyViewVisibility = (CollectionViewSource?.View?.Count ?? 0) == 0
-					? Visibility.Visible
-					: Visibility.Collapsed;
+			bool isEmpty = (CollectionViewSource?.View?.Count ?? 0) == 0;
 
-				if (emptyView.EmptyViewVisibility == Visibility.Visible)
+			if (isEmpty)
+			{
+				if (_formsEmptyView != null)
 				{
-					if (ActualWidth >= 0 && ActualHeight >= 0)
-					{
-						_formsEmptyView?.Layout(new Rectangle(0, 0, ActualWidth, ActualHeight));
-					}
+					if (_emptyViewDisplayed)
+						ItemsView.RemoveLogicalChild(_formsEmptyView);
+
+					if (ItemsView.EmptyViewTemplate == null)
+						ItemsView.AddLogicalChild(_formsEmptyView);
 				}
+
+				if (_emptyView != null && ListViewBase is IEmptyView emptyView)
+				{
+					emptyView.EmptyViewVisibility = Visibility.Visible;
+
+					if (ActualWidth >= 0 && ActualHeight >= 0)
+						_formsEmptyView?.Layout(new Rectangle(0, 0, ActualWidth, ActualHeight));
+				}
+
+				_emptyViewDisplayed = true;
+			}
+			else
+			{
+				if (_emptyViewDisplayed)
+				{
+					if (_emptyView != null && ListViewBase is IEmptyView emptyView)
+						emptyView.EmptyViewVisibility = Visibility.Collapsed;
+
+					ItemsView.RemoveLogicalChild(_formsEmptyView);
+				}
+
+				_emptyViewDisplayed = false;
 			}
 		}
 
