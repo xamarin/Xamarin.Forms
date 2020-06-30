@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class CarouselViewRenderer : ItemsViewRenderer<ItemsView, ItemsViewAdapter<ItemsView, IItemsViewSource>, IItemsViewSource>
 	{
-		protected FormsCarouselView Carousel;
+		protected FormsCarouselView Carousel => ItemsView as FormsCarouselView;
 		ItemDecoration _itemDecoration;
 		CarouselViewLoopManager _carouselViewLoopManager;
 		bool _isSwipeEnabled;
@@ -55,6 +55,9 @@ namespace Xamarin.Forms.Platform.Android
 			if (!Carousel.Loop)
 				return args.Index;
 
+			if (_carouselViewLoopManager == null)
+				return -1;
+
 			var carouselPosition = Carousel.Position;
 			var getGoIndex = _carouselViewLoopManager.GetGoToIndex(this, carouselPosition, args.Index);
 
@@ -86,8 +89,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void SetUpNewElement(ItemsView newElement)
 		{
-			Carousel = newElement as FormsCarouselView;
-
 			base.SetUpNewElement(newElement);
 
 			if (newElement == null)
@@ -195,6 +196,9 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void ScrollTo(ScrollToRequestEventArgs args)
 		{
 			var position = DetermineTargetPosition(args);
+
+			if (_carouselViewLoopManager == null)
+				return;
 			//Special case here
 			//We could have a race condition where we are scrolling our collection to center the first item
 			//And at the same time the user is requesting we go to a particular item

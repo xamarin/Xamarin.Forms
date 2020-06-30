@@ -609,6 +609,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void ScrollTo(ScrollToRequestEventArgs args)
 		{
+			if (ItemsView == null)
+				return;
+
 			var position = DetermineTargetPosition(args);
 
 			if (args.IsAnimated)

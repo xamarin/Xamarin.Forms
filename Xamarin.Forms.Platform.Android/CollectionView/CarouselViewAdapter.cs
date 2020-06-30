@@ -22,6 +22,9 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 
 		public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
 		{
+			if (CarouselView == null || ItemsSource == null)
+				return;
+
 			int positionInList = CarouselView.Loop ? position % ItemsSource.Count : position;
 			switch (holder)
 			{
