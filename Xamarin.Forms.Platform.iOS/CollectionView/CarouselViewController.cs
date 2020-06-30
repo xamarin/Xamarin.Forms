@@ -133,7 +133,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override IItemsViewSource CreateItemsViewSource()
 		{
 			var itemsSource = base.CreateItemsViewSource();
-			_carouselViewLoopManager.SetItemsSource(itemsSource);
+			_carouselViewLoopManager?.SetItemsSource(itemsSource);
 			SubscribeCollectionItemsSourceChanged(itemsSource);
 			return itemsSource;
 		}
