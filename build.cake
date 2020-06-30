@@ -387,7 +387,7 @@ Task ("cg-uwp-build-tests")
     .Does (() =>
 {
     MSBuild ("Xamarin.Forms.ControlGallery.WindowsUniversal\\Xamarin.Forms.ControlGallery.WindowsUniversal.csproj", 
-        GetMSBuildSettings()
+        GetMSBuildSettings(null)
             .WithProperty("AppxBundlePlatforms", "x86")
             .WithProperty("AppxBundle", "Always")
             .WithProperty("UapAppxPackageBuildMode", "StoreUpload")
