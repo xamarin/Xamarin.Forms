@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
 		{
 			UICollectionViewCell cell;
-			if (Carousel.Loop)
+			if (Carousel?.Loop == true && _carouselViewLoopManager != null)
 			{
 				var cellAndCorrectedIndex = _carouselViewLoopManager.GetCellAndCorrectIndex(collectionView, indexPath, DetermineCellReuseId());
 				cell = cellAndCorrectedIndex.cell;
@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override nint GetItemsCount(UICollectionView collectionView, nint section)
 		{
-			if (Carousel.Loop)
+			if (Carousel?.Loop == true && _carouselViewLoopManager != null)
 				return _carouselViewLoopManager.GetLoopItemsCount();
 
 			return base.GetItemsCount(collectionView, section);
@@ -85,7 +85,7 @@ namespace Xamarin.Forms.Platform.iOS
 				BoundsSizeChanged();
 			}
 
-			if (Carousel.Loop)
+			if (Carousel?.Loop == true && _carouselViewLoopManager != null)
 				_carouselViewLoopManager.CenterIfNeeded(CollectionView, IsHorizontal);
 
 			UpdateInitialPosition();
@@ -106,7 +106,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UnsubscribeCollectionItemsSourceChanged(ItemsSource);
 			base.UpdateItemsSource();
 
-			_carouselViewLoopManager.SetItemsSource(ItemsSource);
+			_carouselViewLoopManager?.SetItemsSource(ItemsSource);
 			SubscribeCollectionItemsSourceChanged(ItemsSource);
 			_initialPositionSet = false;
 			UpdateInitialPosition();
@@ -159,7 +159,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal NSIndexPath GetScrollToIndexPath(int position)
 		{
-			if (Carousel.Loop)
+			if (Carousel?.Loop == true && _carouselViewLoopManager != null)
 				return _carouselViewLoopManager.GetGoToIndex(CollectionView, Carousel.Position, position);
 
 			return NSIndexPath.FromItemSection(position, 0);
@@ -168,7 +168,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void CarouselViewScrolled(object sender, ItemsViewScrolledEventArgs e)
 		{
 			var index = e.CenterItemIndex;
-			if (Carousel.Loop)
+			if (Carousel?.Loop == true)
 			{
 				var cell = CollectionView.CellForItem(NSIndexPath.FromItemSection(e.CenterItemIndex, 0));
 				if (cell is TemplatedCell templatedCell)
@@ -464,7 +464,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public void SetItemsSource(IItemsViewSource itemsSource) => _itemsSource = itemsSource;
 
-		void CenterVerticallyIfNeeded(UICollectionView collectionVie)
+		void CenterVerticallyIfNeeded(UICollectionView collectionView)
 		{
 			var currentOffset = collectionVie.ContentOffset;
 
@@ -475,7 +475,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var centerOffsetY = (LoopCount * contentHeight) / 2;
 
-			var distFromCentre = centerOffsetY - currentOffset.Y;
+			var distFromCenter = centerOffsetY - currentOffset.Y;
 
 			if (Math.Abs(distFromCentre) > (contentHeight / 4))
 			{

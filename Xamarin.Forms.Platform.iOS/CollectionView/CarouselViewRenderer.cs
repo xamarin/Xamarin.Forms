@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
 		{
-			if (Carousel.Loop)
+			if (Carousel?.Loop == true)
 			{
 				var goToIndexPath = Controller.GetScrollToIndexPath(args.Index);
 				Controller.CollectionView.ScrollToItem(goToIndexPath,
