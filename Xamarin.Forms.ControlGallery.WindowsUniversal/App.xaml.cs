@@ -27,6 +27,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
     /// </summary>
     sealed partial class App
     {
+		public static bool RunningAsUITests { get; private set; }
 		/// <summary>
 		/// Initializes the singleton application object.  This is the first line of authored code
 		/// executed, and as such is the logical equivalent of main() or WinMain().
@@ -50,6 +51,12 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 			 * if (!String.IsNullOrWhiteSpace(e.Arguments) &&
 				e.Arguments.Contains("RunningAsUITests"))
 				Controls.App.PreloadTestCasesIssuesList = false;*/
+
+            if (!String.IsNullOrWhiteSpace(e.Arguments) &&
+				e.Arguments.Contains("RunningAsUITests"))
+			{
+				RunningAsUITests = true;
+			}
 #if DEBUG
 			if (System.Diagnostics.Debugger.IsAttached)
             {
