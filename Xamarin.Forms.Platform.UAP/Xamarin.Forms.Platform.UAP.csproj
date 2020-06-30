@@ -105,17 +105,8 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <None Remove="FormsTextBoxStyleMeasure.xaml" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="..\Xamarin.Forms.Core\Crc64.cs" Link="Crc64.cs" />
     <Compile Include="..\Xamarin.Forms.Core\StreamWrapper.cs" Link="StreamWrapper.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="FormsTextBoxStyleMeasure.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
