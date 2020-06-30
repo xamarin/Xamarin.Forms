@@ -238,22 +238,21 @@ namespace Xamarin.Forms.Platform.iOS
 				oldObservableItemsSource.CollectionItemsSourceChanged -= CollectionItemsSourceChanged;
 		}
 
-		async void CarouselViewPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs changedProperty)
+		void CarouselViewPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs changedProperty)
 		{
 			if (changedProperty.Is(CarouselView.PositionProperty))
 				UpdateFromPosition();
 			else if (changedProperty.Is(CarouselView.CurrentItemProperty))
 				UpdateFromCurrentItem();
 			else if (changedProperty.Is(CarouselView.LoopProperty))
-				await UpdateLoop();
+				UpdateLoop();
 		}
 
-		async Task UpdateLoop()
+		void UpdateLoop()
 		{
 			var carouselPosition = Carousel.Position;
 
 			CollectionView.ReloadData();
-			await Task.Delay(50);
 
 			ScrollToPosition(carouselPosition, carouselPosition, false, true);
 		}
@@ -586,6 +585,6 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var correctedIndex = GetCorrectedIndex(shiftCells);
 			_indexOffset += correctedIndex;
-		}	
+		}
 	}
 }
