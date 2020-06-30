@@ -54,7 +54,7 @@ var UWP_PACKAGE_ID = "0d4424f6-1e29-4476-ac00-ba22c3789cb6";
 var UWP_TEST_LIBRARY = Argument("UWP_TEST_LIBRARY", $"./Xamarin.Forms.Core.Windows.UITests/bin/{configuration}/Xamarin.Forms.Core.Windows.UITests.dll");
 var UWP_PFX_PATH = Argument("UWP_PFX_PATH", "Xamarin.Forms.ControlGallery.WindowsUniversal\\Xamarin.Forms.ControlGallery.WindowsUniversal_TemporaryKey.pfx");
 var UWP_APP_PACKAGES_PATH = Argument("UWP_APP_PACKAGES_PATH", "*/AppPackages/");
-
+var UWP_APP_DRIVER_INSTALL_PATH = Argument("UWP_APP_DRIVER_INSTALL_PATH", "https://github.com/microsoft/WinAppDriver/releases/download/v1.2-RC/WindowsApplicationDriver.msi");
 var ANDROID_RENDERERS = Argument("ANDROID_RENDERERS", "FAST");
 var XamarinFormsVersion = Argument("XamarinFormsVersion", "");
 var packageVersion = Argument("packageVersion", "");
@@ -437,8 +437,25 @@ Task ("cg-uwp-deploy")
 });
 
 Task("cg-uwp-run-tests")
+    .IsDependentOn("provision-uitests-uwp")
     .Does(() =>
     {
+        if(!isHostedAgent)
+        {
+            string installPath = Argument("WinAppDriverPath", @"C:\Program Files (x86)\");
+            string driverPath = System.IO.Path.Combine(installPath, "Windows Application Driver");
+
+            var info = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "WinAppDriver",
+                WorkingDirectory = driverPath
+            };
+
+            Information("Starting: {0}", driverPath);
+            System.Diagnostics.Process.Start(info);
+ 
+        }
+
         NUnit3(new [] { UWP_TEST_LIBRARY },
             new NUnit3Settings {
                 Params = new Dictionary<string, string>()
@@ -456,29 +473,16 @@ Task("cg-uwp-run-tests-ci")
     });
 
 Task("provision-uitests-uwp")
+    .WithCriteria(IsRunningOnWindows() && !isHostedAgent)
     .Description("Installs and Starts WindowsApplicationDriver. Use WinAppDriverPath to specify WinAppDriver Location.")
     .Does(() =>
     {
-        if(IsRunningOnWindows())
+        string installPath = Argument("WinAppDriverPath", @"C:\Program Files (x86)\");
+        string driverPath = System.IO.Path.Combine(installPath, "Windows Application Driver");
+        if(!DirectoryExists(driverPath))
         {
-            string installPath = Argument("WinAppDriverPath", @"C:\Program Files (x86)\");
-            string driverPath = System.IO.Path.Combine(installPath, "Windows Application Driver");
-            if(!DirectoryExists(driverPath))
-            {
-                InstallMsi("https://github.com/microsoft/WinAppDriver/releases/download/v1.2-RC/WindowsApplicationDriver.msi", installPath);
-            }
-
-
-            var info = new System.Diagnostics.ProcessStartInfo
-            {
-                FileName = "WinAppDriver",
-                WorkingDirectory = driverPath
-            };
-
-            Information("Starting: {0}", driverPath);
-            System.Diagnostics.Process.Start(info);
+            InstallMsi(UWP_APP_DRIVER_INSTALL_PATH, installPath);
         }
-        
     });
 
 void InstallMsi(string msiFile, string installTo, string fileName = "InstallFile.msi")
