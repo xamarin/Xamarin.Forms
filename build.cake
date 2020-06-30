@@ -440,29 +440,43 @@ Task("cg-uwp-run-tests")
     .IsDependentOn("provision-uitests-uwp")
     .Does(() =>
     {
+        System.Diagnostics.Process process = null;
         if(!isHostedAgent)
         {
             string installPath = Argument("WinAppDriverPath", @"C:\Program Files (x86)\");
             string driverPath = System.IO.Path.Combine(installPath, "Windows Application Driver");
-
-            var info = new System.Diagnostics.ProcessStartInfo
+            
+            try
             {
-                FileName = "WinAppDriver",
-                WorkingDirectory = driverPath
-            };
+                Information("Starting: {0}", driverPath);
+           
+                var info = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "WinAppDriver",
+                    WorkingDirectory = driverPath
+                };
 
-            Information("Starting: {0}", driverPath);
-            System.Diagnostics.Process.Start(info);
- 
+                process =  System.Diagnostics.Process.Start(info);
+            }
+            catch(Exception exc)
+            {
+                Information("Failed: {0}", exc);
+            }
         }
 
-        NUnit3(new [] { UWP_TEST_LIBRARY },
-            new NUnit3Settings {
-                Params = new Dictionary<string, string>()
-                {
-                },
-                Where = NUNIT_TEST_WHERE
-            });
+        try
+        {
+            NUnit3(new [] { UWP_TEST_LIBRARY },
+                new NUnit3Settings {
+                    Params = new Dictionary<string, string>()
+                    {
+                    },
+                    Where = NUNIT_TEST_WHERE
+                });
+        }
+        finally{
+            process?.Kill();
+        }
     });
 
 Task("cg-uwp-run-tests-ci")
