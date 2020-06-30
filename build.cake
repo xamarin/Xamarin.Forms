@@ -443,17 +443,10 @@ Task("cg-uwp-run-tests")
         System.Diagnostics.Process process = null;
         if(!isHostedAgent)
         {
-            string installPath = Argument("WinAppDriverPath", @"C:\Program Files (x86)\");
-            string driverPath = System.IO.Path.Combine(installPath, "Windows Application Driver");
-            
             try
             {
-                Information("Starting: {0}", driverPath);
-           
-                var info = new System.Diagnostics.ProcessStartInfo
+                var info = new System.Diagnostics.ProcessStartInfo(@"C:\Program Files (x86)\Windows Application Driver\WinAppDriver.exe")
                 {
-                    FileName = "WinAppDriver",
-                    WorkingDirectory = driverPath
                 };
 
                 process =  System.Diagnostics.Process.Start(info);
