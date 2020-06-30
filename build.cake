@@ -378,38 +378,28 @@ Task ("cg-uwp")
     .IsDependentOn("BuildTasks")
     .Does (() =>
 {
-    // Nuget restore
-    MSBuild ("Xamarin.Forms.ControlGallery.WindowsUniversal\\Xamarin.Forms.ControlGallery.WindowsUniversal.csproj", c => {
-        c.Targets.Clear();
-        c.Targets.Add("Restore");
-    });
-
-    // Build the project (with ipa)
-    MSBuild ("Xamarin.Forms.ControlGallery.WindowsUniversal\\Xamarin.Forms.ControlGallery.WindowsUniversal.csproj", c => {
-        c.Configuration = configuration;
-        c.Properties["ContinuousIntegrationBuild"] = new List<string> { "false" };
-        c.Properties["AppxBundlePlatforms"] = new List<string> { "x86" };
-        c.Properties["AppxBundle"] = new List<string> { "Always" };
-        
-        c.Properties["UapAppxPackageBuildMode"] = new List<string> { "StoreUpload" };
-        c.Properties["AppxPackageSigningEnabled"] = new List<string> { "true" };
-        c.Properties["PackageCertificateThumbprint"] = new List<string> { "a59087cc92a9a8117ffdb5255eaa155748f9f852" };
-        c.Properties["PackageCertificateKeyFile"] = new List<string> { "Xamarin.Forms.ControlGallery.WindowsUniversal_TemporaryKey.pfx" };
-        c.Properties["PackageCertificatePassword"] = new List<string> { "" };
-
-        c.Targets.Clear();
-        c.Targets.Add("Rebuild");
-    });
+    MSBuild ("Xamarin.Forms.ControlGallery.WindowsUniversal\\Xamarin.Forms.ControlGallery.WindowsUniversal.csproj", 
+        GetMSBuildSettings().WithRestore());
 });
 
 Task ("cg-uwp-build-tests")
     .IsDependentOn("BuildTasks")
     .Does (() =>
 {
-    var buildSettings = 
-            GetMSBuildSettings().WithRestore();
+    MSBuild ("Xamarin.Forms.ControlGallery.WindowsUniversal\\Xamarin.Forms.ControlGallery.WindowsUniversal.csproj", 
+        GetMSBuildSettings()
+            .WithProperty("AppxBundlePlatforms", "x86")
+            .WithProperty("AppxBundle", "Always")
+            .WithProperty("UapAppxPackageBuildMode", "StoreUpload")
+            .WithProperty("AppxPackageSigningEnabled", "true")
+            .WithProperty("PackageCertificateThumbprint", "a59087cc92a9a8117ffdb5255eaa155748f9f852")
+            .WithProperty("PackageCertificateKeyFile", "Xamarin.Forms.ControlGallery.WindowsUniversal_TemporaryKey.pfx")
+            .WithProperty("PackageCertificatePassword", "")
+            .WithRestore()
+    );
 
-    MSBuild("Xamarin.Forms.Core.Windows.UITests\\Xamarin.Forms.Core.Windows.UITests.csproj", buildSettings);
+    MSBuild("Xamarin.Forms.Core.Windows.UITests\\Xamarin.Forms.Core.Windows.UITests.csproj", 
+        GetMSBuildSettings().WithRestore());
 });
 
 Task ("cg-uwp-deploy")

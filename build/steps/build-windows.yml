@@ -193,8 +193,9 @@ steps:
 
       TargetFolder: ${{ parameters.artifactsTargetFolder }}
   
-  - script: build.cmd -Target cg-uwp  -ScriptArgs '-BUILD_CONFIGURATION="$(BuildConfiguration)"'
-    displayName: 'Build Control Gallery APPX'
+  - script: build.cmd -Target cg-uwp-build-tests  -ScriptArgs '-BUILD_CONFIGURATION="$(BuildConfiguration)"'
+    condition: eq(variables['BuildConfiguration'], 'Debug')
+    displayName: 'Build Tests and APPX'
 
   - task: CopyFiles@2
     displayName: 'Copy Appx Packages'
@@ -208,9 +209,6 @@ steps:
       TargetFolder: '$(build.artifactstagingdirectory)'
       CleanTargetFolder: false
       flattenFolders: false
-
-  - script: build.cmd -Target cg-uwp-build-tests  -ScriptArgs '-BUILD_CONFIGURATION="$(BuildConfiguration)"'
-    displayName: 'Build Tests'
 
   - task: CopyFiles@2
     displayName: 'Copy Cake File'
