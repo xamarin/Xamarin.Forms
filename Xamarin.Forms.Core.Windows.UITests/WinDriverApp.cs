@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Core.UITests
 	public class WinDriverApp : IApp
 	{
 		public const string AppName = "Xamarin.Forms.ControlGallery.WindowsUniversal";
+		public static TimeSpan DefaultTimeout = TimeSpan.FromMinutes(1);
 
 		readonly Dictionary<string, string> _controlNameToTag = new Dictionary<string, string>
 		{
@@ -887,7 +888,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		void ScrollTo(WinQuery toQuery, WinQuery withinQuery, TimeSpan? timeout = null, bool down = true)
 		{
-			timeout = timeout ?? TimeSpan.FromSeconds(5);
+			timeout = timeout ?? DefaultTimeout;
 			DateTime start = DateTime.Now;
 
 			while (true)
@@ -980,7 +981,7 @@ namespace Xamarin.Forms.Core.UITests
 			string timeoutMessage = null,
 			TimeSpan? timeout = null, TimeSpan? retryFrequency = null)
 		{
-			timeout = timeout ?? TimeSpan.FromSeconds(5);
+			timeout = timeout ?? DefaultTimeout;
 			retryFrequency = retryFrequency ?? TimeSpan.FromMilliseconds(500);
 			timeoutMessage = timeoutMessage ?? "Timed out on query.";
 
