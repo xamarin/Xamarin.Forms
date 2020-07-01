@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			backgroundLayer.RenderInContext(UIGraphics.GetCurrentContext());
 			UIImage gradientImage = UIGraphics.GetImageFromCurrentImageContext();
-			UIGraphics.EndImageContext();
+			UIGraphics.EndImageContext(); 
 
 			return gradientImage;
 		}
@@ -170,7 +170,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public static void UpdateBackgroundLayer(this UIView view)
 		{
-			if (view.Frame.IsEmpty)
+			if (view == null || view.Frame.IsEmpty)
 				return;
 
 			var layer = view.Layer;
@@ -180,7 +180,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		static void UpdateBackgroundLayer(this CALayer layer, CGRect bounds)
 		{
-			if (layer.Sublayers != null)
+			if (layer != null && layer.Sublayers != null)
 			{
 				foreach (var sublayer in layer.Sublayers)
 				{

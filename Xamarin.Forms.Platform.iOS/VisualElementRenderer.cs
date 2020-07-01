@@ -320,6 +320,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		public override void LayoutSubviews()
 		{
 			base.LayoutSubviews();
+
 			if (_blur != null && Superview != null)
 			{
 				_blur.Frame = Bounds;

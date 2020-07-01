@@ -411,8 +411,9 @@ namespace Xamarin.Forms.Platform.MacOS
 				else
 				{
 					var isClipShapeLayer =
+						uiview.Layer != null &&
 						uiview.Layer.Mask != null &&
-						uiview.Layer.Mask.Name.Equals(ClipShapeLayer);
+						uiview.Layer.Mask.Name == ClipShapeLayer;
 
 					if (isClipShapeLayer)
 						uiview.Layer.Mask = null;
@@ -437,7 +438,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					var isClipShapeLayer =
 						uiview.MaskView != null &&
 						uiview.MaskView.Layer.Mask != null &&
-						uiview.MaskView.Layer.Mask.Name.Equals(ClipShapeLayer);
+						uiview.MaskView.Layer.Mask.Name == ClipShapeLayer;
 
 					if (isClipShapeLayer)
 						uiview.MaskView = null;
