@@ -467,8 +467,13 @@ Task("cg-uwp-run-tests")
                     Where = NUNIT_TEST_WHERE
                 });
         }
-        finally{
-            process?.Kill();
+        finally
+        {
+            try
+            {
+                process?.Kill();
+            }
+            catch{}
         }
     });
 
