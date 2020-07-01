@@ -40,39 +40,45 @@
 				Navigation.PushAsync(new GradientTabsGallery());
 			};
 
-			Content = new ScrollView
+			var layout = new StackLayout
 			{
-				Content = new StackLayout
+				Children =
 				{
-					Children =
-					{
-						descriptionLabel,
-						button,
-						GalleryBuilder.NavButton("Gradient Views", () =>
-							new GradientViewsGallery(), Navigation),
-						GalleryBuilder.NavButton("Gradient Views (Visual)", () =>
-							new VisualGradientViewsGallery(), Navigation),
-						GalleryBuilder.NavButton("SolidColorBrush Converter Gallery", () =>
-							new SolidColorBrushConverterGallery(), Navigation),
-						GalleryBuilder.NavButton("LinearGradientBrush Points Gallery", () =>
-							new LinearGradientPointsGallery(), Navigation),
-						GalleryBuilder.NavButton("LinearGradientBrush Explorer", () =>
-							new LinearGradientExplorerGallery(), Navigation),
-						GalleryBuilder.NavButton("RadialGradient Explorer", () =>
-							new RadialGradientExplorerGallery(), Navigation),
-						GalleryBuilder.NavButton("Bindable Brush Gallery", () =>
-							new BindableBrushGallery(), Navigation),
-						navigationBarButton,
-						tabsButton,
-						GalleryBuilder.NavButton("CSS Gradients Explorer", () =>
-							new CssGradientsGallery(), Navigation),
-						GalleryBuilder.NavButton("CSS Gradients Playground", () =>
-							new CssGradientsPlayground(), Navigation)
-					}
+					descriptionLabel,
+					button,
+					GalleryBuilder.NavButton("Gradient Views", () =>
+						new GradientViewsGallery(), Navigation),
+					GalleryBuilder.NavButton("SolidColorBrush Converter Gallery", () =>
+						new SolidColorBrushConverterGallery(), Navigation),
+					GalleryBuilder.NavButton("LinearGradientBrush Points Gallery", () =>
+						new LinearGradientPointsGallery(), Navigation),
+					GalleryBuilder.NavButton("LinearGradientBrush Explorer", () =>
+						new LinearGradientExplorerGallery(), Navigation),
+					GalleryBuilder.NavButton("RadialGradient Explorer", () =>
+						new RadialGradientExplorerGallery(), Navigation),
+					GalleryBuilder.NavButton("Bindable Brush Gallery", () =>
+						new BindableBrushGallery(), Navigation),
+					navigationBarButton,
+					tabsButton,
+					GalleryBuilder.NavButton("CSS Gradients Explorer", () =>
+						new CssGradientsGallery(), Navigation),
+					GalleryBuilder.NavButton("CSS Gradients Playground", () =>
+						new CssGradientsPlayground(), Navigation)
 				}
 			};
-		}
 
+			if (Device.RuntimePlatform == Device.Android || Device.RuntimePlatform == Device.iOS)
+			{
+				layout.Children.Add(GalleryBuilder.NavButton("Gradient Views (Visual)", () =>
+				new VisualGradientViewsGallery(), Navigation));
+			}
+
+			Content = new ScrollView
+			{
+				Content = layout
+			};
+		}
+		
 		void ButtonClicked(object sender, System.EventArgs e)
 		{
 			var button = sender as Button;
