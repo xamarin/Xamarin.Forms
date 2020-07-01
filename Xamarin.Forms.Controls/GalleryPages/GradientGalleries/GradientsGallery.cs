@@ -60,6 +60,8 @@
 						new BindableBrushGallery(), Navigation),
 					navigationBarButton,
 					tabsButton,
+					GalleryBuilder.NavButton("Shapes using Brush Gallery", () =>
+						new ShapesBrushGallery(), Navigation),
 					GalleryBuilder.NavButton("CSS Gradients Explorer", () =>
 						new CssGradientsGallery(), Navigation),
 					GalleryBuilder.NavButton("CSS Gradients Playground", () =>
@@ -87,7 +89,7 @@
 			button.TextColor = Color.Black;
 			button.IsEnabled = false;
 
-			Device.SetFlags(new[] { ExperimentalFlags.BrushExperimental, ExperimentalFlags.SwipeViewExperimental });
+			Device.SetFlags(new[] { ExperimentalFlags.BrushExperimental, ExperimentalFlags.ShapesExperimental, ExperimentalFlags.SwipeViewExperimental });
 		}
 	}
 }

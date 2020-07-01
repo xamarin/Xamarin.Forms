@@ -464,7 +464,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			hasClipShapeLayer =
 				uiview.Layer != null &&
 				uiview.Layer.Mask != null &&
-				uiview.Layer.Mask.Name= ClipShapeLayer;
+				uiview.Layer.Mask.Name == ClipShapeLayer;
 #endif
 
 			var formsGeometry = element.Clip;
