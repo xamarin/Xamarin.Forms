@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Controls.Issues
 							{
 								CurrentItem = page1;
 								await Task.Delay(1000);
-								GoToAsync("//MainPage");
+								await GoToAsync("//MainPage");
 							})
 						}
 					}
@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var page2 = AddContentPage<TabBar, Tab>(page);
 			page2.Route = "MainPage";
 			await Task.Delay(1000);
-			GoToAsync("//MainPage");
+			await GoToAsync("//MainPage");
 		}
 
 
