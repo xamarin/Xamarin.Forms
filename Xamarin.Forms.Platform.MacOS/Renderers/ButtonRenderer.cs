@@ -115,9 +115,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Button.TextProperty.PropertyName || 
-				e.PropertyName == Button.TextColorProperty.PropertyName ||
-				e.PropertyName == Button.TextTransformProperty.PropertyName)
+			if (e.PropertyName == Button.TextProperty.PropertyName || e.PropertyName == Button.TextColorProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 				UpdateFont();
@@ -185,14 +183,13 @@ namespace Xamarin.Forms.Platform.MacOS
 		void UpdateText()
 		{
 			var color = Element.TextColor;
-			var text = Internals.TextTransformUtilites.GetTransformedText(Element.Text, Element.TextTransform) ?? "";
 			if (color == Color.Default)
 			{
-				Control.Title = text;
+				Control.Title = Element.Text ?? "";
 			}
 			else
 			{
-				var textWithColor = new NSAttributedString(text ?? "", font: Element.Font.ToNSFont(), foregroundColor: color.ToNSColor(), paragraphStyle: new NSMutableParagraphStyle() { Alignment = NSTextAlignment.Center });
+				var textWithColor = new NSAttributedString(Element.Text ?? "", font: Element.Font.ToNSFont(), foregroundColor: color.ToNSColor(), paragraphStyle: new NSMutableParagraphStyle() { Alignment = NSTextAlignment.Center });
 				textWithColor = textWithColor.AddCharacterSpacing(Element.Text ?? string.Empty, Element.CharacterSpacing);
 				Control.AttributedTitle = textWithColor;
 			}

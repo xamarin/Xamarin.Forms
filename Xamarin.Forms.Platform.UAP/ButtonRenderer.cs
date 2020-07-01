@@ -85,7 +85,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.IsOneOf(Button.TextProperty, Button.ImageSourceProperty, Button.TextTransformProperty))
+			if (e.PropertyName == Button.TextProperty.PropertyName || e.PropertyName == Button.ImageSourceProperty.PropertyName)
 			{
 				UpdateContent();
 			}
@@ -171,7 +171,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		async void UpdateContent()
 		{
-			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
+			var text = Element.Text;
 			var elementImage = await Element.ImageSource.ToWindowsImageSourceAsync();
 
 			// No image, just the text

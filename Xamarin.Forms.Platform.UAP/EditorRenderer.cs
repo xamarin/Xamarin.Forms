@@ -18,7 +18,6 @@ namespace Xamarin.Forms.Platform.UWP
 		Brush _defaultTextColorFocusBrush;
 		Brush _defaultPlaceholderColorFocusBrush;
 		Brush _placeholderDefaultBrush;
-		string _transformedText;
 
 		IEditorController ElementController => Element;
 
@@ -116,7 +115,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateFont();
 			}
-			else if (e.IsOneOf(Editor.TextProperty, Editor.TextTransformProperty))
+			else if (e.PropertyName == Editor.TextProperty.PropertyName)
 			{
 				UpdateText();
 			}
@@ -177,8 +176,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnNativeTextChanged(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs args)
 		{
-			_transformedText = Element.UpdateFormsText(Control.Text, Element.TextTransform);
-			Element.SetValueCore(Editor.TextProperty, _transformedText);
+			Element.SetValueCore(Editor.TextProperty, Control.Text);
 		}
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
@@ -261,7 +259,7 @@ namespace Xamarin.Forms.Platform.UWP
 	
 		void UpdateText()
 		{
-			string newText = _transformedText = Element.UpdateFormsText(Element.Text, Element.TextTransform);
+			string newText = Element.Text ?? "";
 
 			if (Control.Text == newText)
 			{

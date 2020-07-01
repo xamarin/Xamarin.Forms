@@ -37,8 +37,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == SearchBar.TextProperty.PropertyName ||
-				e.PropertyName == SearchBar.TextTransformProperty.PropertyName)
+			if (e.PropertyName == SearchBar.TextProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == SearchBar.TextColorProperty.PropertyName)
 				UpdateTextColor();
@@ -84,9 +83,9 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			}
 		}
 
-		void UpdateText()
+		private void UpdateText()
 		{
-			Control.SearchText = Element.UpdateFormsText(Element.Text, Element.TextTransform);
+			Control.SearchText = Element.Text ?? string.Empty;
 		}
 
 		private void UpdatePlaceholder()

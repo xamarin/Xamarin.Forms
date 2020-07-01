@@ -59,8 +59,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Editor.TextProperty.PropertyName ||
-				e.PropertyName == Editor.TextTransformProperty.PropertyName)
+			if (e.PropertyName == Editor.TextProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Editor.TextColorProperty.PropertyName)
 				UpdateTextColor();
@@ -99,10 +98,9 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 		{
 			TextBuffer buffer = Control.TextView.Buffer;
 
-			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
-			if (buffer.Text != text)
+			if (buffer.Text != Element.Text)
 			{
-				buffer.Text = text;
+				buffer.Text = Element.Text ?? string.Empty;
 				UpdateTextColor();
 			}
 		}

@@ -217,7 +217,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.IsOneOf(Editor.TextProperty, Editor.TextTransformProperty))
+			if (e.PropertyName == Editor.TextProperty.PropertyName)
 			{
 				UpdateText();
 				UpdateCharacterSpacing();
@@ -326,10 +326,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected internal virtual void UpdateText()
 		{
-			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
-			if (TextView.Text != text)
+			if (TextView.Text != Element.Text)
 			{
-				TextView.Text = text;
+				TextView.Text = Element.Text;
 			}
 		}
 

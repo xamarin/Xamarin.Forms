@@ -108,8 +108,9 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.PropertyName == SearchBar.TextColorProperty.PropertyName)
 				UpdateTextColor();
-			else if (e.IsOneOf(SearchBar.TextProperty, SearchBar.TextTransformProperty,
-				SearchBar.CharacterSpacingProperty))
+			else if (e.PropertyName == SearchBar.CharacterSpacingProperty.PropertyName)
+				UpdateCharacterSpacing();
+			else if (e.PropertyName == SearchBar.TextProperty.PropertyName)
 			{
 				UpdateText();
 				UpdateCharacterSpacing();
@@ -332,7 +333,7 @@ namespace Xamarin.Forms.Platform.iOS
 			// when typing, so by keeping track of whether or not text was typed, we can respect
 			// other changes to Element.Text.
 			if (!_textWasTyped)
-				Control.Text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
+				Control.Text = Element.Text;
 			
 			UpdateCancelButton();
 		}

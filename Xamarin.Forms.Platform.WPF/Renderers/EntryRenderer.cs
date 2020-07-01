@@ -12,8 +12,7 @@ namespace Xamarin.Forms.Platform.WPF
 		bool _fontApplied;
 		bool _ignoreTextChange;
 		Brush _placeholderDefaultBrush;
-		string _transformedText;
-
+		
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
 		{
 			if (e.NewElement != null)
@@ -49,8 +48,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Entry.TextProperty.PropertyName ||
-				e.PropertyName == Entry.TextTransformProperty.PropertyName)
+			if (e.PropertyName == Entry.TextProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Entry.PlaceholderProperty.PropertyName)
 				UpdatePlaceholder();
@@ -108,14 +106,10 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void TextBoxOnTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs textChangedEventArgs)
 		{
-			if (Control.Text == _transformedText)
-				return;
-
 			// Signal to the UpdateText method that the change to TextProperty doesn't need to update the control
 			// This prevents the cursor position from getting lost
 			_ignoreTextChange = true;
-			_transformedText = Element.UpdateFormsText(Control.Text, Element.TextTransform);
-			((IElementController)Element).SetValueFromRenderer(Entry.TextProperty, _transformedText);
+			((IElementController)Element).SetValueFromRenderer(Entry.TextProperty, Control.Text);
 
 			// If an Entry.TextChanged handler modified the value of the Entry's text, the values could now be 
 			// out-of-sync; re-sync them and fix TextBox cursor position
@@ -253,11 +247,10 @@ namespace Xamarin.Forms.Platform.WPF
 			if (_ignoreTextChange)
 				return;
 
-			var text = _transformedText = Element.UpdateFormsText(Element.Text, Element.TextTransform);
-			if (Control.Text == text)
+			if (Control.Text == Element.Text)
 				return;
 
-			Control.Text = text;
+			Control.Text = Element.Text ?? "";
 			Control.Select(Control.Text == null ? 0 : Control.Text.Length, 0);
 		}
 

@@ -1,5 +1,4 @@
 using System;
-using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
@@ -15,11 +14,5 @@ namespace Xamarin.Forms
 
 		//note to implementor: but implement these methods explicitly
 		void OnCharacterSpacingPropertyChanged(double oldValue, double newValue);
-
-		TextTransform TextTransform { get; set; }
-
-		void OnTextTransformChanged(TextTransform oldValue, TextTransform newValue);
-
-		string UpdateFormsText(string original, TextTransform transform);
 	}
 }

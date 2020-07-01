@@ -20,13 +20,5 @@ namespace Xamarin.Forms
 			((ITextElement)bindable).OnCharacterSpacingPropertyChanged((double)oldValue, (double)newValue);
 		}
 
-		public static readonly BindableProperty TextTransformProperty =
-			BindableProperty.Create(nameof(ITextElement.TextTransform), typeof(TextTransform), typeof(ITextElement), TextTransform.Default,
-							propertyChanged: OnTextTransformPropertyChanged);
-
-		static void OnTextTransformPropertyChanged(BindableObject bindable, object oldValue, object newValue)
-		{
-			((ITextElement)bindable).OnTextTransformChanged((TextTransform)oldValue, (TextTransform)newValue);
-		}
 	}
 }
