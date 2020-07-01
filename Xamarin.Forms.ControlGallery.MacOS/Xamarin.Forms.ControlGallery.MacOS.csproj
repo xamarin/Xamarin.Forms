@@ -114,7 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Controls\Xamarin.Forms.Controls.csproj">
-      <Project>{37B77A83-BB18-4623-8533-09E125A7FF24}</Project>
+      <Project>{CB9C96CE-125C-4A68-B6A1-C3FF1FBF93E1}</Project>
       <Name>Xamarin.Forms.Controls</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">

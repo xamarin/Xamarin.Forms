@@ -108,7 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Controls\Xamarin.Forms.Controls.csproj">
-      <Project>{37B77A83-BB18-4623-8533-09E125A7FF24}</Project>
+      <Project>{cb9c96ce-125c-4a68-b6a1-c3ff1fbf93e1}</Project>
       <Name>Xamarin.Forms.Controls</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
@@ -124,7 +124,7 @@
       <Name>Xamarin.Forms.Maps</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Platform.GTK\Xamarin.Forms.Platform.GTK.csproj">
-      <Project>{0D497738-2598-431D-8CAF-8FBF3D9F99EC}</Project>
+      <Project>{1f058504-62f9-4279-ac8f-16738e0f4417}</Project>
       <Name>Xamarin.Forms.Platform.GTK</Name>
     </ProjectReference>
   </ItemGroup>
