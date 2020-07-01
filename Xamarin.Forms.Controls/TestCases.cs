@@ -192,9 +192,13 @@ namespace Xamarin.Forms.Controls
 				FilterIssues(_filter);
 			}
 
-			public void FilterIssues(string filter = null)
+			public async void FilterIssues(string filter = null)
 			{
 				_filter = filter;
+				// Deeeee bounce
+				await Task.Delay(10);
+				if (_filter != filter)
+					return;
 
 				PageToAction.Clear();
 				if(String.IsNullOrWhiteSpace(filter) && !Controls.App.PreloadTestCasesIssuesList)
