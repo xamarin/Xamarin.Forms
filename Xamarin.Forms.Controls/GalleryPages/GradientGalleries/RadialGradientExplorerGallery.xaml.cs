@@ -132,7 +132,15 @@ namespace Xamarin.Forms.Controls.GalleryPages.GradientGalleries
 			GradientView.HasShadow = e.Value;
 		}
 
-		void UpdateOffsets(IEnumerable<GradientStop> gradientStops, int offsets)
+        void OnVisualCheckBoxCheckedChanged(object sender, CheckedChangedEventArgs e)
+        {
+            if (e.Value)
+                GradientView.Visual = VisualMarker.Material;
+            else
+                GradientView.Visual = VisualMarker.Default;
+        }
+
+        void UpdateOffsets(IEnumerable<GradientStop> gradientStops, int offsets)
         {
             var offset = 0f;
             var delta = 1f / (offsets - 1);

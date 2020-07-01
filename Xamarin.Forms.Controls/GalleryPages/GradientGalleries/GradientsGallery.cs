@@ -50,6 +50,8 @@
 						button,
 						GalleryBuilder.NavButton("Gradient Views", () =>
 							new GradientViewsGallery(), Navigation),
+						GalleryBuilder.NavButton("Gradient Views (Visual)", () =>
+							new VisualGradientViewsGallery(), Navigation),
 						GalleryBuilder.NavButton("SolidColorBrush Converter Gallery", () =>
 							new SolidColorBrushConverterGallery(), Navigation),
 						GalleryBuilder.NavButton("LinearGradientBrush Points Gallery", () =>

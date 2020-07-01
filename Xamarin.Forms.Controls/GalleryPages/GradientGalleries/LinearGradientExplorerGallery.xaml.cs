@@ -129,17 +129,25 @@ namespace Xamarin.Forms.Controls.GalleryPages.GradientGalleries
             entry.Text = $"#{red:X2}{green:X2}{blue:X2}";
         }
 
-		void OnCornerRadiusChanged(object sender, ValueChangedEventArgs e)
-		{
-			GradientView.CornerRadius = (float)e.NewValue;
-		}
+        void OnCornerRadiusChanged(object sender, ValueChangedEventArgs e)
+        {
+            GradientView.CornerRadius = (float)e.NewValue;
+        }
 
-		void OnShadowCheckedChanged(object sender, CheckedChangedEventArgs e)
-		{
-			GradientView.HasShadow = e.Value;
-		}
+        void OnShadowCheckedChanged(object sender, CheckedChangedEventArgs e)
+        {
+            GradientView.HasShadow = e.Value;
+        }
 
-		void UpdateOffsets(IEnumerable<GradientStop> gradientStops, int offsets)
+        void OnVisualCheckBoxCheckedChanged(object sender, CheckedChangedEventArgs e)
+        {
+            if (e.Value)
+                GradientView.Visual = VisualMarker.Material;
+            else
+                GradientView.Visual = VisualMarker.Default;
+        }
+
+        void UpdateOffsets(IEnumerable<GradientStop> gradientStops, int offsets)
         {
             var offset = 0f;
             var delta = 1f / (offsets - 1);
