@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Xamarin.Forms.CustomAttributes;
+using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Controls
 {
