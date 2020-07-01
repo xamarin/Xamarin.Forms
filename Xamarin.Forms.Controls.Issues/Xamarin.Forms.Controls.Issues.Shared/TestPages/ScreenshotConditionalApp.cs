@@ -446,6 +446,13 @@ namespace Xamarin.Forms.Controls
 			get { return _app.TestServer; }
 		}
 
+#if __WINDOWS__
+		public void ScreenshotFailure()
+		{
+			(_app as Core.UITests.WinDriverApp).ScreenshotFailure();
+		}
+#endif
+
 #if __IOS__
 
 		public bool IsTablet

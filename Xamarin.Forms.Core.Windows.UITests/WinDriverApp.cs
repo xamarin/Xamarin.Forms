@@ -8,6 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium.Windows;
 using OpenQA.Selenium.Interactions;
@@ -288,6 +290,20 @@ namespace Xamarin.Forms.Core.UITests
 			throw new NotImplementedException();
 		}
 
+
+		public void ScreenshotFailure()
+		{
+			if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+			{
+				string filename = $"{TestContext.CurrentContext.Test.FullName}.png";
+				Screenshot screenshot = _session.GetScreenshot();
+				screenshot.SaveAsFile(filename, ScreenshotImageFormat.Png);
+				var file = new FileInfo(filename);
+
+				TestContext.AddTestAttachment(file.FullName, TestContext.CurrentContext.Test.FullName);
+			}
+		}
+
 		public FileInfo Screenshot(string title)
 		{
 			// TODO hartez 2017/07/18 10:16:56 Verify that this is working; seems a bit too simple	
@@ -295,7 +311,10 @@ namespace Xamarin.Forms.Core.UITests
 
 			Screenshot screenshot = _session.GetScreenshot();
 			screenshot.SaveAsFile(filename, ScreenshotImageFormat.Png);
-			return new FileInfo(filename);
+			var file = new FileInfo(filename);
+
+			TestContext.AddTestAttachment(file.FullName, title);
+			return file;
 		}
 
 		public void ScrollDown(Func<AppQuery, AppQuery> withinQuery = null, ScrollStrategy strategy = ScrollStrategy.Auto,
@@ -791,7 +810,7 @@ namespace Xamarin.Forms.Core.UITests
 				_viewPort = candidates[3]; // We really just want the viewport; skip the full window, title bar, min/max buttons...
 			else
 				_viewPort = candidates.Last();
-			
+
 			int xOffset = _viewPort.Coordinates.LocationInViewport.X;
 
 			if (xOffset > 1) // Everything having to do with scrolling right now is a horrid kludge
@@ -998,7 +1017,7 @@ namespace Xamarin.Forms.Core.UITests
 				if (elapsed >= timeout.Value.Ticks)
 				{
 					Debug.WriteLine($">>>>> {elapsed} ticks elapsed, timeout value is {timeout.Value.Ticks}");
-
+					
 					throw new TimeoutException(timeoutMessage);
 				}
 

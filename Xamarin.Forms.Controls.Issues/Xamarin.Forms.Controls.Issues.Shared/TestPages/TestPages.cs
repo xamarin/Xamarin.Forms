@@ -2,6 +2,7 @@
 using System.Reflection;
 using Xamarin.Forms.CustomAttributes;
 using System.IO;
+using NUnit.Framework.Interfaces;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -351,6 +352,9 @@ namespace Xamarin.Forms.Controls
 			{
 				AppSetup.EndIsolate();
 			}
+#if __WINDOWS__
+			(RunningApp as ScreenshotConditionalApp).ScreenshotFailure();
+#endif
 		}
 #endif
 
@@ -397,6 +401,9 @@ namespace Xamarin.Forms.Controls
 			{
 				AppSetup.EndIsolate();
 			}
+#if __WINDOWS__
+			(RunningApp as ScreenshotConditionalApp).ScreenshotFailure();
+#endif
 		}
 #endif
 
@@ -445,6 +452,9 @@ namespace Xamarin.Forms.Controls
 			{
 				AppSetup.EndIsolate();
 			}
+#if __WINDOWS__
+			(RunningApp as ScreenshotConditionalApp).ScreenshotFailure();
+#endif
 		}
 #endif
 
@@ -493,6 +503,9 @@ namespace Xamarin.Forms.Controls
 			{
 				AppSetup.EndIsolate();
 			}
+#if __WINDOWS__
+			(RunningApp as ScreenshotConditionalApp).ScreenshotFailure();
+#endif
 		}
 #endif
 
@@ -538,6 +551,9 @@ namespace Xamarin.Forms.Controls
 			{
 				AppSetup.EndIsolate();
 			}
+#if __WINDOWS__
+			(RunningApp as ScreenshotConditionalApp).ScreenshotFailure();
+#endif
 		}
 #endif
 
@@ -589,6 +605,9 @@ namespace Xamarin.Forms.Controls
 			{
 				AppSetup.EndIsolate();
 			}
+#if __WINDOWS__
+			(RunningApp as ScreenshotConditionalApp).ScreenshotFailure();
+#endif
 		}
 #endif
 
@@ -842,6 +861,9 @@ namespace Xamarin.Forms.Controls
 			{
 				AppSetup.EndIsolate();
 			}
+#if __WINDOWS__
+			(RunningApp as ScreenshotConditionalApp).ScreenshotFailure();
+#endif
 		}
 		public void ShowFlyout(string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, bool testForFlyoutIcon = true)
 		{
