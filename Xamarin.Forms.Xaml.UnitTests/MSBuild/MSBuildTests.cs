@@ -142,6 +142,7 @@ namespace Xamarin.Forms.MSBuild.UnitTests
 			}
 			propertyGroup.Add(NewElement("_XFBuildTasksLocation").WithValue($"{testDirectory}\\"));
 
+
 			project.Add (propertyGroup);
 
 			var itemGroup = NewElement ("ItemGroup");

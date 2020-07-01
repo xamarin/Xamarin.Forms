@@ -831,6 +831,8 @@ namespace Xamarin.Forms.CustomAttributes
 			Items,
 			SelectedIndex,
 			Focus,
+			HorizontalTextAlignment,
+			VerticalTextAlignment,
 			TextColor,
 			FontAttributes,
 			FontFamily,

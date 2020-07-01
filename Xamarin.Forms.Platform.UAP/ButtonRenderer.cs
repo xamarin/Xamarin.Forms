@@ -15,6 +15,9 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		bool _fontApplied;
 
+		FormsButton _button;
+		PointerEventHandler _pointerPressedHandler;		
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Button> e)
 		{
 			base.OnElementChanged(e);
@@ -23,13 +26,13 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (Control == null)
 				{
-					var button = new FormsButton();
+					_button = new FormsButton();
+					_pointerPressedHandler = new PointerEventHandler(OnPointerPressed);
+					_button.Click += OnButtonClick;
+					_button.AddHandler(PointerPressedEvent, _pointerPressedHandler, true);
+					_button.Loaded += ButtonOnLoaded;
 
-					button.Click += OnButtonClick;
-					button.AddHandler(PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
-					button.Loaded += ButtonOnLoaded;
-
-					SetNativeControl(button);
+					SetNativeControl(_button);
 				}
 				else
 				{
@@ -85,7 +88,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Button.TextProperty.PropertyName || e.PropertyName == Button.ImageSourceProperty.PropertyName)
+			if (e.IsOneOf(Button.TextProperty, Button.ImageSourceProperty, Button.TextTransformProperty))
 			{
 				UpdateContent();
 			}
@@ -179,7 +182,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		async void UpdateContent()
 		{
-			var text = Element.Text;
+			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 			var elementImage = await Element.ImageSource.ToWindowsImageSourceAsync();
 
 			// No image, just the text
@@ -299,6 +302,25 @@ namespace Xamarin.Forms.Platform.UWP
 				Element.Padding.Right,
 				Element.Padding.Bottom
 			);
+		}
+
+		bool _isDisposed;
+		protected override void Dispose(bool disposing)
+		{
+			if (_isDisposed)
+				return;
+			if (_button != null)
+			{
+				_button.Click -= OnButtonClick;
+				_button.RemoveHandler(PointerPressedEvent, _pointerPressedHandler);
+				_button.Loaded -= ButtonOnLoaded;				
+
+				_pointerPressedHandler = null;
+			}
+
+			_isDisposed = true;
+
+			base.Dispose(disposing);
 		}
 	}
 }

@@ -9,7 +9,9 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	public class ItemContentControl : ContentControl
 	{
+		VisualElement _visualElement;
 		IVisualElementRenderer _renderer;
+		DataTemplate _currentTemplate;
 
 		public ItemContentControl()
 		{
@@ -17,7 +19,7 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		public static readonly DependencyProperty FormsDataTemplateProperty = DependencyProperty.Register(
-			nameof(FormsDataTemplate), typeof(DataTemplate), typeof(ItemContentControl), 
+			nameof(FormsDataTemplate), typeof(DataTemplate), typeof(ItemContentControl),
 			new PropertyMetadata(default(DataTemplate), FormsDataTemplateChanged));
 
 		static void FormsDataTemplateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -38,7 +40,7 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		public static readonly DependencyProperty FormsDataContextProperty = DependencyProperty.Register(
-			nameof(FormsDataContext), typeof(object), typeof(ItemContentControl), 
+			nameof(FormsDataContext), typeof(object), typeof(ItemContentControl),
 			new PropertyMetadata(default(object), FormsDataContextChanged));
 
 		static void FormsDataContextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -103,15 +105,11 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnContentChanged(oldContent, newContent);
 
-			if (oldContent is FrameworkElement oldElement)
-			{
-				oldElement.Loaded -= ContentLoaded;
-			}
+			if (oldContent != null && _visualElement != null)
+				_visualElement.MeasureInvalidated -= OnViewMeasureInvalidated;
 
-			if (newContent is FrameworkElement newElement)
-			{
-				newElement.Loaded += ContentLoaded;
-			}
+			if (newContent != null && _visualElement != null)
+				_visualElement.MeasureInvalidated += OnViewMeasureInvalidated;
 		}
 
 		internal void Realize()
@@ -132,14 +130,28 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			var view = FormsDataTemplate.CreateContent(dataContext, container) as View;
-			view.BindingContext = dataContext;
-			_renderer = Platform.CreateRenderer(view);
-			Platform.SetRenderer(view, _renderer);
+			if (_renderer?.ContainerElement == null || _currentTemplate != formsTemplate)
+			{
+				// If the content has never been realized (i.e., this is a new instance), 
+				// or if we need to switch DataTemplates (because this instance is being recycled)
+				// then we'll need to create the content from the template 
+				_visualElement = formsTemplate.CreateContent(dataContext, container) as VisualElement;
+				_visualElement.BindingContext = dataContext;
+				_renderer = Platform.CreateRenderer(_visualElement);
+				Platform.SetRenderer(_visualElement, _renderer);
+
+				// Keep track of the template in case this instance gets reused later
+				_currentTemplate = formsTemplate;
+			}
+			else
+			{
+				// We are reusing this ItemContentControl and we can reuse the Element
+				_visualElement = _renderer.Element;
+				_visualElement.BindingContext = dataContext;
+			}
 
 			Content = _renderer.ContainerElement;
-
-			itemsView?.AddLogicalChild(view);
+			itemsView?.AddLogicalChild(_visualElement);
 		}
 
 		internal void UpdateIsSelected(bool isSelected)
@@ -154,7 +166,7 @@ namespace Xamarin.Forms.Platform.UWP
 				: VisualStateManager.CommonStates.Normal);
 		}
 
-		void ContentLoaded(object sender, RoutedEventArgs e)
+		void OnViewMeasureInvalidated(object sender, EventArgs e)
 		{
 			InvalidateMeasure();
 		}

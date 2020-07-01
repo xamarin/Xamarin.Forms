@@ -35,6 +35,7 @@ namespace Xamarin.Forms.Platform.UWP
 		internal ShellRenderer ShellContext { get; set; }
 
 		IShellItemController ShellItemController => ShellItem;
+		IShellController ShellController => ShellContext?.Shell;
 
 		public ShellItemRenderer(ShellRenderer shellContext)
 		{
@@ -242,6 +243,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			shellItem.PropertyChanged += OnShellItemPropertyChanged;
 			ShellItemController.ItemsCollectionChanged += OnShellItemsChanged;
+			ShellController.StructureChanged += OnShellStructureChanged;
 			foreach (var shellSection in ShellItemController.GetItems())
 			{
 				HookChildEvents(shellSection);
@@ -256,6 +258,8 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					UnhookChildEvents(shellSection);
 				}
+
+				ShellController.StructureChanged -= OnShellStructureChanged;
 				ShellItemController.ItemsCollectionChanged -= OnShellItemsChanged;
 				ShellItem.PropertyChanged -= OnShellItemPropertyChanged;
 				ShellSection = null;
@@ -298,6 +302,11 @@ namespace Xamarin.Forms.Platform.UWP
 		protected virtual void OnShellSectionChanged(ShellSection oldSection, ShellSection newSection)
 		{
 			SwitchSection(ShellNavigationSource.ShellSectionChanged, newSection, null, oldSection != null);
+		}
+
+		void OnShellStructureChanged(object sender, EventArgs e)
+		{
+			UpdateBottomBarVisibility();
 		}
 
 		void SwitchSection(ShellNavigationSource source, ShellSection section, Page page, bool animate = true)
@@ -366,7 +375,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateBottomBarVisibility()
 		{
-			_BottomBar.Visibility = DisplayedPage == null || Shell.GetTabBarIsVisible(DisplayedPage) ? Visibility.Visible : Visibility.Collapsed;
+			bool isVisible = ShellItemController?.ShowTabs ?? false;
+			_BottomBar.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
 		}
 
 		void UpdateToolbar()

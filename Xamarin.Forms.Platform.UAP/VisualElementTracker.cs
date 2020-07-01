@@ -5,11 +5,11 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 using WCompositeTransform = Windows.UI.Xaml.Media.CompositeTransform;
-using WRectangleGeometry = Windows.UI.Xaml.Media.RectangleGeometry;
 using WScaleTransform = Windows.UI.Xaml.Media.ScaleTransform;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -30,6 +30,8 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _isPinching;
 		bool _wasPanGestureStartedSent;
 		bool _wasPinchGestureStartedSent;
+
+		static bool HasClip;
 
 		public VisualElementTracker()
 		{
@@ -523,19 +525,35 @@ namespace Xamarin.Forms.Platform.UWP
 
 		static void UpdateClip(VisualElement view, FrameworkElement frameworkElement)
 		{
-			var geometry = view.Clip;
-			var wGeometry = geometry.ToWindows();
+			if (!ShouldUpdateClip(view, frameworkElement))
+				return;
 
-			// UIElement.Clip only support rectangle geometry to be used for clipping area sizing.
-			// If the used Build is 17763 or higher, we use Composition's APIs (CompositionGeometricClip) to allow Clip complex geometries.
-#if UWP_18362
-			frameworkElement.Clip(geometry);
-#else
-			if (wGeometry is WRectangleGeometry wRectangleGeometry)
-				frameworkElement.Clip = wRectangleGeometry;
-#endif
+			var geometry = view.Clip;
+
+			HasClip = geometry != null;
+
+			if (CompositionHelper.IsCompositionGeometryTypePresent)
+				frameworkElement.ClipVisual(geometry);
+			else
+				frameworkElement.Clip(geometry);
 		}
-	
+
+		static bool ShouldUpdateClip(VisualElement view, FrameworkElement frameworkElement)
+		{
+			if (view == null || frameworkElement == null)
+				return false;
+
+			var formsGeometry = view.Clip;
+
+			if (formsGeometry != null)
+				return true;
+
+			if (formsGeometry == null && HasClip)
+				return true;
+
+			return false;
+		}
+
 		static void UpdateOpacity(VisualElement view, FrameworkElement frameworkElement)
 		{
 			frameworkElement.Opacity = view.Opacity;

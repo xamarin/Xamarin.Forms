@@ -47,6 +47,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		public override bool FlipsHorizontallyInOppositeLayoutDirection => true;
+
 		protected override void Dispose(bool disposing)
 		{
 			if (_disposed)
@@ -123,16 +125,6 @@ namespace Xamarin.Forms.Platform.iOS
 		public virtual nfloat GetMinimumInteritemSpacingForSection(UICollectionView collectionView,
 			UICollectionViewLayout layout, nint section)
 		{
-			if (_itemsLayout is GridItemsLayout gridItemsLayout)
-			{
-				if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
-				{
-					return (nfloat)gridItemsLayout.VerticalItemSpacing;
-				}
-
-				return (nfloat)gridItemsLayout.HorizontalItemSpacing;
-			}
-
 			return (nfloat)0.0;
 		}
 
