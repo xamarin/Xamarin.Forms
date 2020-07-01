@@ -14,12 +14,12 @@ namespace Xamarin.Forms.Platform.MacOS
     {
         public static PathData ToCGPath(this Geometry geometry, Transform renderTransform = null)
         {
-			PathData pathData = new PathData
-			{
-				Data = new CGPath()
-			};
-
-			CGAffineTransform transform;
+			      PathData pathData = new PathData
+			      {
+				      Data = new CGPath()
+			      };
+            
+            CGAffineTransform transform;
 
             if (renderTransform == null)
                 transform = CGAffineTransform.MakeIdentity();
