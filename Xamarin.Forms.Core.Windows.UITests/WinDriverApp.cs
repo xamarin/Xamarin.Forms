@@ -787,8 +787,11 @@ namespace Xamarin.Forms.Core.UITests
 			}
 
 			ReadOnlyCollection<WindowsElement> candidates = QueryWindows(AppName);
-			_viewPort = candidates[3]; // We really just want the viewport; skip the full window, title bar, min/max buttons...
-
+			if (candidates.Count >= 4)
+				_viewPort = candidates[3]; // We really just want the viewport; skip the full window, title bar, min/max buttons...
+			else
+				_viewPort = candidates.Last();
+			
 			int xOffset = _viewPort.Coordinates.LocationInViewport.X;
 
 			if (xOffset > 1) // Everything having to do with scrolling right now is a horrid kludge

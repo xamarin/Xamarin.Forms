@@ -36,7 +36,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 				var scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
 				var size = new Windows.Foundation.Size(bounds.Width * scaleFactor, bounds.Height * scaleFactor);
 				ApplicationView.PreferredLaunchViewSize = size;
-				ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
+				ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
 			}
 
 
