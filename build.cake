@@ -70,7 +70,7 @@ String IncludeCategory = GetBuildVariable("IncludeCategory", "");
 
 if(!String.IsNullOrWhiteSpace(ExcludeCategory))
 {
-    var splitResult = ExcludeCategory.Split("--exclude-category");
+    var splitResult = ExcludeCategory.Split("--exclude-category".ToCharArray());
     ExcludeCategory = String.Join(" && cat != ", splitResult);
     if(!ExcludeCategory.StartsWith("cat"))
         ExcludeCategory = $" cat !=  {ExcludeCategory}";
@@ -80,7 +80,7 @@ if(!String.IsNullOrWhiteSpace(ExcludeCategory))
 
 if(!String.IsNullOrWhiteSpace(IncludeCategory))
 {
-    IncludeCategory = String.Join(" || cat == ", IncludeCategory.Split("--include-category"));
+    IncludeCategory = String.Join(" || cat == ", IncludeCategory.Split("--include-category".ToCharArray()));
     if(!IncludeCategory.StartsWith("cat"))
         IncludeCategory = $" cat ==  {IncludeCategory}";
 
