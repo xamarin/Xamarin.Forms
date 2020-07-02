@@ -113,12 +113,23 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateIsSpellCheckEnabled();
 			UpdateInputScope();
 			UpdateMaxLength();
+			SetAutomationId(Element.AutomationId);
 
 			// If the Forms VisualStateManager is in play or the user wants to disable the Forms legacy
 			// color stuff, then the underlying textbox should just use the Forms VSM states
 			if (_queryTextBox != null)
 				_queryTextBox.UseFormsVsm = Element.HasVisualStateGroups()
 								|| !Element.OnThisPlatform().GetIsLegacyColorModeEnabled();
+		}
+
+		protected override void SetAutomationId(string id)
+		{
+			base.SetAutomationId(id);
+
+			if (_queryTextBox == null)
+				return;
+
+			_queryTextBox.SetAutomationPropertiesAutomationId($"{id}_AutoSuggestBox");
 		}
 
 		void OnQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs e)

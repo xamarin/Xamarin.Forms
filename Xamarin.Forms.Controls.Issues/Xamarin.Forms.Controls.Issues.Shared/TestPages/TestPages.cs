@@ -198,7 +198,7 @@ namespace Xamarin.Forms.Controls
 					app.Tap(q => q.Button("Go to Test Cases"));
 					app.WaitForElement(q => q.Raw("* marked:'TestCasesIssueList'"));
 
-					app.EnterText(q => q.Raw("* marked:'SearchBarGo'"), $" {cellName}");
+					app.EnterText(q => q.Raw("* marked:'SearchBarGo_AutoSuggestBox'"), $"{cellName}");
 
 					app.WaitForElement(q => q.Raw("* marked:'SearchButton'"));
 					app.Tap(q => q.Raw("* marked:'SearchButton'"));
