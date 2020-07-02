@@ -65,12 +65,13 @@ bool isHostedAgent = agentName.StartsWith("Azure Pipelines") || agentName.Starts
 
 
 var NUNIT_TEST_WHERE = Argument("NUNIT_TEST_WHERE", "cat != Shell && cat != CollectionView && cat != UwpIgnore && cat != CarouselView");
-var ExcludeCategory = GetBuildVariable("ExcludeCategory", "");
-var IncludeCategory = GetBuildVariable("IncludeCategory", "");
+String ExcludeCategory = GetBuildVariable("ExcludeCategory", "");
+String IncludeCategory = GetBuildVariable("IncludeCategory", "");
 
 if(!String.IsNullOrWhiteSpace(ExcludeCategory))
 {
-    ExcludeCategory = String.Join(" && cat != ", ExcludeCategory.Split("--exclude-category"));
+    var splitResult = ExcludeCategory.Split("--exclude-category");
+    ExcludeCategory = String.Join(" && cat != ", splitResult);
     if(!ExcludeCategory.StartsWith("cat"))
         ExcludeCategory = $" cat !=  {ExcludeCategory}";
 
