@@ -2,13 +2,10 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Threading.Tasks;
-
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
-
 using Xamarin.Forms.Internals;
-
 using UwpApp = Windows.UI.Xaml.Application;
 using UwpDataTemplate = Windows.UI.Xaml.DataTemplate;
 using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;

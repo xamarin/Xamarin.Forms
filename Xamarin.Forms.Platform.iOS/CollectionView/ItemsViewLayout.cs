@@ -47,6 +47,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		public override bool FlipsHorizontallyInOppositeLayoutDirection => true;
+
 		protected override void Dispose(bool disposing)
 		{
 			if (_disposed)
@@ -123,16 +125,6 @@ namespace Xamarin.Forms.Platform.iOS
 		public virtual nfloat GetMinimumInteritemSpacingForSection(UICollectionView collectionView,
 			UICollectionViewLayout layout, nint section)
 		{
-			if (_itemsLayout is GridItemsLayout gridItemsLayout)
-			{
-				if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
-				{
-					return (nfloat)gridItemsLayout.VerticalItemSpacing;
-				}
-
-				return (nfloat)gridItemsLayout.HorizontalItemSpacing;
-			}
-
 			return (nfloat)0.0;
 		}
 
@@ -177,19 +169,6 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					return true;
 				}
-			}
-
-			if (Forms.IsiOS11OrNewer)
-			{
-				return base.ShouldInvalidateLayout(preferredAttributes, originalAttributes);
-			}
-
-			// For iOS 10 and lower, we have to invalidate on header/footer changes here; otherwise, all of the 
-			// headers and footers will draw on top of one another
-			if (preferredAttributes.RepresentedElementKind == UICollectionElementKindSectionKey.Header
-				|| preferredAttributes.RepresentedElementKind == UICollectionElementKindSectionKey.Footer)
-			{
-				return true;
 			}
 
 			return base.ShouldInvalidateLayout(preferredAttributes, originalAttributes);
@@ -399,22 +378,6 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return invalidationContext;
-
-			// On iOS 10 though any group headers/footers will initially draw in the wrong location. It's possible to 
-			// work around this problem by forcing a full layout update after the headers/footers have been 
-			// drawn in the wrong places
-		}
-
-		public override UICollectionViewLayoutAttributes LayoutAttributesForSupplementaryView(NSString kind, NSIndexPath indexPath)
-		{
-			if (Forms.IsiOS11OrNewer)
-			{
-				return base.LayoutAttributesForSupplementaryView(kind, indexPath);
-			}
-
-			// iOS 10 and lower doesn't create these and will throw an exception in GetViewForSupplementaryElement 
-			// without them, so we need to do it manually here
-			return UICollectionViewLayoutAttributes.CreateForSupplementaryView(kind, indexPath);
 		}
 
 		public override void PrepareLayout()
