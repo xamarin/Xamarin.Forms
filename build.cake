@@ -50,7 +50,7 @@ var IOS_BUNDLE_ID = "com.xamarin.quickui.controlgallery";
 var IOS_BUILD_IPA = Argument("IOS_BUILD_IPA", (target == "cg-ios-deploy") ? true : (false || isCIBuild) );
 
 var UWP_PACKAGE_ID = "0d4424f6-1e29-4476-ac00-ba22c3789cb6";
-var UWP_TEST_LIBRARY = Argument("UWP_TEST_LIBRARY", $"./Xamarin.Forms.Core.Windows.UITests/bin/{configuration}/Xamarin.Forms.Core.Windows.UITests.dll");
+var UWP_TEST_LIBRARY = GetBuildVariable("UWP_TEST_LIBRARY", $"./Xamarin.Forms.Core.Windows.UITests/bin/{configuration}/Xamarin.Forms.Core.Windows.UITests.dll");
 var UWP_PFX_PATH = Argument("UWP_PFX_PATH", "Xamarin.Forms.ControlGallery.WindowsUniversal\\Xamarin.Forms.ControlGallery.WindowsUniversal_TemporaryKey.pfx");
 var UWP_APP_PACKAGES_PATH = Argument("UWP_APP_PACKAGES_PATH", "*/AppPackages/");
 var UWP_APP_DRIVER_INSTALL_PATH = Argument("UWP_APP_DRIVER_INSTALL_PATH", "https://github.com/microsoft/WinAppDriver/releases/download/v1.2-RC/WindowsApplicationDriver.msi");
@@ -65,8 +65,8 @@ bool isHostedAgent = agentName.StartsWith("Azure Pipelines") || agentName.Starts
 
 
 var NUNIT_TEST_WHERE = Argument("NUNIT_TEST_WHERE", "cat != Shell && cat != CollectionView && cat != UwpIgnore && cat != CarouselView");
-var ExcludeCategory = EnvironmentVariable("ExcludeCategory", Argument("ExcludeCategory", ""));
-var IncludeCategory = EnvironmentVariable("IncludeCategory", Argument("IncludeCategory", ""));
+var ExcludeCategory = GetBuildVariable("ExcludeCategory", "");
+var IncludeCategory = GetBuildVariable("IncludeCategory", "");
 
 if(!String.IsNullOrWhiteSpace(ExcludeCategory))
 {
@@ -990,6 +990,11 @@ Task("Default")
 //////////////////////////////////////////////////////////////////////
 
 RunTarget(target);
+
+T GetBuildVariable<T>(string key, T defaultValue)
+{
+    return Argument(key, EnvironmentVariable(key, defaultValue));
+}
 
 void StartVisualStudio(string sln = "Xamarin.Forms.sln")
 {
