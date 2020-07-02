@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Text = "Loading"
 			};
-
+			
 			var activityIndicator = new ActivityIndicator()
 			{
 				IsRunning = true,

@@ -1,10 +1,13 @@
 ﻿using System.ComponentModel;
+
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
+using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class ActivityIndicatorRenderer : ViewRenderer<ActivityIndicator, ProgressRing>
+	public class ActivityIndicatorRenderer : ViewRenderer<ActivityIndicator, FrameworkElement>
 	{
 		object _foregroundDefault;
 
@@ -16,13 +19,27 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (Control == null)
 				{
-					SetNativeControl(
-						new ProgressRing
+					var activityIndicatorStyle = Element.OnThisPlatform().GetActivityIndicatorStyle();
+					if (activityIndicatorStyle == PlatformConfiguration.WindowsSpecific.ActivityIndicator
+						.ActivityIndicatorType.Ring)
+					{
+						SetNativeControl(new ProgressRing
 						{
 							IsActive = Element.IsRunning,
-							Visibility = Element.IsVisible ? Windows.UI.Xaml.Visibility.Visible : Visibility.Collapsed,
+							Visibility =
+								Element.IsVisible ? Windows.UI.Xaml.Visibility.Visible : Visibility.Collapsed,
 							IsEnabled = Element.IsEnabled
 						});
+					}
+					else
+					{
+						SetNativeControl(new FormsProgressBar
+						{
+							IsIndeterminate = true,
+							Style = Windows.UI.Xaml.Application.Current.Resources["FormsProgressBarStyle"] as
+									Windows.UI.Xaml.Style
+						});
+					}
 
 					Control.Loaded += OnControlLoaded;
 				}
@@ -37,7 +54,7 @@ namespace Xamarin.Forms.Platform.UWP
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == ActivityIndicator.IsRunningProperty.PropertyName ||
-			    e.PropertyName == VisualElement.OpacityProperty.PropertyName)
+				e.PropertyName == VisualElement.OpacityProperty.PropertyName)
 				UpdateIsRunning();
 			else if (e.PropertyName == ActivityIndicator.ColorProperty.PropertyName)
 				UpdateColor();
@@ -51,6 +68,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateColor()
 		{
+			
 			Color color = Element.Color;
 
 			if (color.IsDefault)
@@ -59,13 +77,28 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else
 			{
-				Control.Foreground = color.ToBrush();
+				if (Control is ProgressRing progressRing)
+				{
+					progressRing.Foreground = color.ToBrush();
+
+				}
+				else if (Control is FormsProgressBar formsProgressBar)
+				{
+					formsProgressBar.Foreground = color.ToBrush();
+				}
 			}
 		}
 
 		void UpdateIsRunning()
 		{
-			Control.Opacity = Element.IsRunning ? Element.Opacity : 0;
+			if (Control is ProgressRing progressRing)
+			{
+				progressRing.Opacity = Element.IsRunning ? Element.Opacity : 0;
+			}
+			else if (Control is FormsProgressBar formsProgressBar)
+			{
+				formsProgressBar.ElementOpacity = Element.IsRunning ? Element.Opacity : 0;
+			}
 		}
 	}
 }

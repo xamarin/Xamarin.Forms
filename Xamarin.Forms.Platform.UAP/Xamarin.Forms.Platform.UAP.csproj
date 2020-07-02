@@ -122,4 +122,10 @@
       <Version>1.20.0</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Update="FormsProgressBarStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+  </ItemGroup>
 </Project>
