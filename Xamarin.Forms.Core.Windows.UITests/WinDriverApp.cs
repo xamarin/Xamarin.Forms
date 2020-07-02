@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		public void ClearText(Func<AppQuery, AppQuery> query)
 		{
-			QueryWindows(query).First().Clear();
+			SwapInUsefulElement(QueryWindows(query).First()).Clear();
 		}
 
 		public void ClearText(Func<AppQuery, AppWebQuery> query)
@@ -84,7 +84,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		public void ClearText(string marked)
 		{
-			QueryWindows(marked).First().Clear();
+			SwapInUsefulElement(QueryWindows(marked).First()).Clear();
 		}
 
 		public void ClearText()
@@ -136,20 +136,22 @@ namespace Xamarin.Forms.Core.UITests
 					.Perform();
 		}
 
+		static RemoteWebElement SwapInUsefulElement(WindowsElement element)
+		{
+			var isAutoSuggest = element?.FindElementsByXPath("//*[contains(@AutomationId,'_AutoSuggestBox')]")?.FirstOrDefault();
+			return isAutoSuggest ?? element;
+		}
+
 		public void EnterText(Func<AppQuery, AppQuery> query, string text)
 		{
 			var result = QueryWindows(query).First();
-			ClickOrTapElement(result);
-			Thread.Sleep(1000);
-			result.SendKeys(text);
+			SwapInUsefulElement(result).SendKeys(text);
 		}
 
 		public void EnterText(string marked, string text)
 		{
 			var result = QueryWindows(marked).First();
-			ClickOrTapElement(result);
-			Thread.Sleep(1000);
-			result.SendKeys(text);
+			SwapInUsefulElement(result).SendKeys(text);
 		}
 
 		public void EnterText(Func<AppQuery, AppWebQuery> query, string text)
@@ -1003,7 +1005,7 @@ namespace Xamarin.Forms.Core.UITests
 			{
 				Rect = ToAppRect(windowsElement),
 				Label = windowsElement.Id, // Not entirely sure about this one
-				Description = windowsElement.Text, // or this one
+				Description = SwapInUsefulElement(windowsElement).Text, // or this one
 				Enabled = windowsElement.Enabled,
 				Id = windowsElement.Id
 			};
