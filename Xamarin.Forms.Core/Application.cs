@@ -37,6 +37,8 @@ namespace Xamarin.Forms
 			SystemResources = DependencyService.Get<ISystemResourcesProvider>().GetSystemResources();
 			SystemResources.ValuesChanged += OnParentResourcesChanged;
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Application>>(() => new PlatformConfigurationRegistry<Application>(this));
+			// Initialize this value, when the app loads
+			_lastAppTheme = RequestedTheme;
 		}
 
 		public void Quit()
@@ -176,6 +178,7 @@ namespace Xamarin.Forms
 		OSAppTheme _lastAppTheme;
 		OSAppTheme _userAppTheme = OSAppTheme.Unspecified;
 
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void TriggerThemeChanged(AppThemeChangedEventArgs args)
 		{
@@ -191,19 +194,19 @@ namespace Xamarin.Forms
 
 			// On iOS the event is triggered more than once.
 			// To minimize that for us, we only do it when the theme actually changes and it's not currently firing
-			if (!_themeChangedFiring && RequestedTheme != _lastAppTheme)
-			{
-				try
-				{
-					_themeChangedFiring = true;
-					_lastAppTheme = RequestedTheme;
+			if (_themeChangedFiring || RequestedTheme == _lastAppTheme)
+				return;
 
-					_weakEventManager.HandleEvent(this, args, nameof(RequestedThemeChanged));
-				}
-				finally
-				{
-					_themeChangedFiring = false;
-				}
+			try
+			{
+				_themeChangedFiring = true;
+				_lastAppTheme = RequestedTheme;
+
+				_weakEventManager.HandleEvent(this, args, nameof(RequestedThemeChanged));
+			}
+			finally
+			{
+				_themeChangedFiring = false;
 			}
 		}
 
