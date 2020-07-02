@@ -201,7 +201,7 @@ string macSDK_windows = "";
 if(!buildForVS2017)
 {
     androidSDK_macos = EnvironmentVariable("ANDROID_SDK_MAC", androidSDK_macos);
-    iOSSDK_macos = EnvironmentVariable("    ", iOSSDK_macos);
+    iOSSDK_macos = EnvironmentVariable("IOS_SDK_MAC", iOSSDK_macos);
     monoSDK_macos = EnvironmentVariable("MONO_SDK_MAC", monoSDK_macos);
     macSDK_macos = EnvironmentVariable("MAC_SDK_MAC", macSDK_macos);
 
