@@ -198,7 +198,7 @@ namespace Xamarin.Forms.Controls
 					app.Tap(q => q.Button("Go to Test Cases"));
 					app.WaitForElement(q => q.Raw("* marked:'TestCasesIssueList'"));
 
-					app.EnterText(q => q.Raw("* marked:'SearchBarGo'"), cellName);
+					app.EnterText(q => q.Raw("* marked:'SearchBarGo'"), $" {cellName}");
 
 					app.WaitForElement(q => q.Raw("* marked:'SearchButton'"));
 					app.Tap(q => q.Raw("* marked:'SearchButton'"));
@@ -332,29 +332,13 @@ namespace Xamarin.Forms.Controls
 		[SetUp]
 		public void Setup()
 		{
-			if (Isolate)
-			{
-				AppSetup.BeginIsolate();
-			}
-			else
-			{
-				AppSetup.EnsureMemory();
-				AppSetup.EnsureConnection();
-			}
-
-			AppSetup.NavigateToIssue(GetType(), RunningApp);
+			(RunningApp as ScreenshotConditionalApp).TestSetup(GetType(), Isolate);
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			if (Isolate)
-			{
-				AppSetup.EndIsolate();
-			}
-#if __WINDOWS__
-			(RunningApp as ScreenshotConditionalApp).ScreenshotFailure();
-#endif
+			(RunningApp as ScreenshotConditionalApp).TestTearDown(Isolate);
 		}
 #endif
 
@@ -381,29 +365,13 @@ namespace Xamarin.Forms.Controls
 		[SetUp]
 		public void Setup()
 		{
-			if (Isolate)
-			{
-				AppSetup.BeginIsolate();
-			}
-			else
-			{
-				AppSetup.EnsureMemory();
-				AppSetup.EnsureConnection();
-			}
-
-			AppSetup.NavigateToIssue(GetType(), RunningApp);
+			(RunningApp as ScreenshotConditionalApp).TestSetup(GetType(), Isolate);
 		}
 
 		[TearDown]
 		public virtual void TearDown()
 		{
-			if (Isolate)
-			{
-				AppSetup.EndIsolate();
-			}
-#if __WINDOWS__
-			(RunningApp as ScreenshotConditionalApp).ScreenshotFailure();
-#endif
+			(RunningApp as ScreenshotConditionalApp).TestTearDown(Isolate);
 		}
 #endif
 
@@ -432,29 +400,13 @@ namespace Xamarin.Forms.Controls
 		[SetUp]
 		public void Setup()
 		{
-			if (Isolate)
-			{
-				AppSetup.BeginIsolate();
-			}
-			else
-			{
-				AppSetup.EnsureMemory();
-				AppSetup.EnsureConnection();
-			}
-
-			AppSetup.NavigateToIssue(GetType(), RunningApp);
+			(RunningApp as ScreenshotConditionalApp).TestSetup(GetType(), Isolate);
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			if (Isolate)
-			{
-				AppSetup.EndIsolate();
-			}
-#if __WINDOWS__
-			(RunningApp as ScreenshotConditionalApp).ScreenshotFailure();
-#endif
+			(RunningApp as ScreenshotConditionalApp).TestTearDown(Isolate);
 		}
 #endif
 
@@ -483,29 +435,13 @@ namespace Xamarin.Forms.Controls
 		[SetUp]
 		public void Setup()
 		{
-			if (Isolate)
-			{
-				AppSetup.BeginIsolate();
-			}
-			else
-			{
-				AppSetup.EnsureMemory();
-				AppSetup.EnsureConnection();
-			}
-
-			AppSetup.NavigateToIssue(GetType(), RunningApp);
+			(RunningApp as ScreenshotConditionalApp).TestSetup(GetType(), Isolate);
 		}
 
 		[TearDown]
 		public virtual void TearDown()
 		{
-			if (Isolate)
-			{
-				AppSetup.EndIsolate();
-			}
-#if __WINDOWS__
-			(RunningApp as ScreenshotConditionalApp).ScreenshotFailure();
-#endif
+			(RunningApp as ScreenshotConditionalApp).TestTearDown(Isolate);
 		}
 #endif
 
@@ -531,29 +467,13 @@ namespace Xamarin.Forms.Controls
 		[SetUp]
 		public void Setup()
 		{
-			if (Isolate)
-			{
-				AppSetup.BeginIsolate();
-			}
-			else
-			{
-				AppSetup.EnsureMemory();
-				AppSetup.EnsureConnection();
-			}
-
-			AppSetup.NavigateToIssue(GetType(), RunningApp);
+			(RunningApp as ScreenshotConditionalApp).TestSetup(GetType(), Isolate);
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			if (Isolate)
-			{
-				AppSetup.EndIsolate();
-			}
-#if __WINDOWS__
-			(RunningApp as ScreenshotConditionalApp).ScreenshotFailure();
-#endif
+			(RunningApp as ScreenshotConditionalApp).TestTearDown(Isolate);
 		}
 #endif
 
@@ -585,29 +505,13 @@ namespace Xamarin.Forms.Controls
 		[SetUp]
 		public void Setup()
 		{
-			if (Isolate)
-			{
-				AppSetup.BeginIsolate();
-			}
-			else
-			{
-				AppSetup.EnsureMemory();
-				AppSetup.EnsureConnection();
-			}
-
-			AppSetup.NavigateToIssue(GetType(), RunningApp);
+			(RunningApp as ScreenshotConditionalApp).TestSetup(GetType(), Isolate);
 		}
 
 		[TearDown]
 		public virtual void TearDown()
 		{
-			if (Isolate)
-			{
-				AppSetup.EndIsolate();
-			}
-#if __WINDOWS__
-			(RunningApp as ScreenshotConditionalApp).ScreenshotFailure();
-#endif
+			(RunningApp as ScreenshotConditionalApp).TestTearDown(Isolate);
 		}
 #endif
 
@@ -841,30 +745,15 @@ namespace Xamarin.Forms.Controls
 		[SetUp]
 		public void Setup()
 		{
-			if (Isolate)
-			{
-				AppSetup.BeginIsolate();
-			}
-			else
-			{
-				AppSetup.EnsureMemory();
-				AppSetup.EnsureConnection();
-			}
-
-			AppSetup.NavigateToIssue(GetType(), RunningApp);
+			(RunningApp as ScreenshotConditionalApp).TestSetup(GetType(), Isolate);
 		}
 
 		[TearDown]
 		public virtual void TearDown()
 		{
-			if (Isolate)
-			{
-				AppSetup.EndIsolate();
-			}
-#if __WINDOWS__
-			(RunningApp as ScreenshotConditionalApp).ScreenshotFailure();
-#endif
+			(RunningApp as ScreenshotConditionalApp).TestTearDown(Isolate);
 		}
+
 		public void ShowFlyout(string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, bool testForFlyoutIcon = true)
 		{
 			if (testForFlyoutIcon)

@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -23,7 +24,7 @@ namespace Xamarin.Forms.Core.UITests
 	public class WinDriverApp : IApp
 	{
 		public const string AppName = "Xamarin.Forms.ControlGallery.WindowsUniversal";
-		public static TimeSpan DefaultTimeout = TimeSpan.FromMinutes(1);
+		public static TimeSpan DefaultTimeout = TimeSpan.FromSeconds(15);
 
 		readonly Dictionary<string, string> _controlNameToTag = new Dictionary<string, string>
 		{
@@ -57,6 +58,12 @@ namespace Xamarin.Forms.Core.UITests
 
 		public void RestartFromCrash()
 		{
+			Init(WindowsTestBase.CreateWindowsDriver());
+		}
+
+		public void RestartApp()
+		{
+			_session.CloseApp();
 			Init(WindowsTestBase.CreateWindowsDriver());
 		}
 
@@ -132,13 +139,17 @@ namespace Xamarin.Forms.Core.UITests
 		public void EnterText(Func<AppQuery, AppQuery> query, string text)
 		{
 			var result = QueryWindows(query).First();
+			ClickOrTapElement(result);
+			Thread.Sleep(1000);
 			result.SendKeys(text);
 		}
 
 		public void EnterText(string marked, string text)
 		{
-			var results = QueryWindows(marked).First();
-			results.SendKeys(text);
+			var result = QueryWindows(marked).First();
+			ClickOrTapElement(result);
+			Thread.Sleep(1000);
+			result.SendKeys(text);
 		}
 
 		public void EnterText(Func<AppQuery, AppWebQuery> query, string text)

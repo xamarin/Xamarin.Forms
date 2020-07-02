@@ -195,7 +195,9 @@ namespace Xamarin.Forms.Controls
 
 			public async void FilterIssues(string filter = null)
 			{
+				filter = filter?.Trim();
 				_filter = filter;
+				
 				// Deeeee bounce
 				await Task.Delay(10);
 				if (_filter != filter)
@@ -286,7 +288,7 @@ namespace Xamarin.Forms.Controls
 				AutomationId = "SearchButton",
 				Command = new Command (() => {
 					try {
-						TestCaseScreen.PageToAction[searchBar.Text] ();
+						TestCaseScreen.PageToAction[searchBar.Text?.Trim()] ();
 					} catch (Exception e) {
 						System.Diagnostics.Debug.WriteLine (e.Message);
 					}
