@@ -65,13 +65,12 @@ bool isHostedAgent = agentName.StartsWith("Azure Pipelines") || agentName.Starts
 
 
 var NUNIT_TEST_WHERE = Argument("NUNIT_TEST_WHERE", "cat != Shell && cat != CollectionView && cat != UwpIgnore && cat != CarouselView");
-String ExcludeCategory = GetBuildVariable("ExcludeCategory", "");
-String IncludeCategory = GetBuildVariable("IncludeCategory", "");
+var ExcludeCategory = GetBuildVariable("ExcludeCategory", "");
+var IncludeCategory = GetBuildVariable("IncludeCategory", "");
 
 if(!String.IsNullOrWhiteSpace(ExcludeCategory))
 {
-    var splitResult = ExcludeCategory.Split("--exclude-category".ToCharArray());
-    ExcludeCategory = String.Join(" && cat != ", splitResult);
+    ExcludeCategory = String.Join(" && cat != ", ExcludeCategory.Split(new string[] { "--exclude-category" }, StringSplitOptions.None));
     if(!ExcludeCategory.StartsWith("cat"))
         ExcludeCategory = $" cat !=  {ExcludeCategory}";
 
@@ -80,7 +79,7 @@ if(!String.IsNullOrWhiteSpace(ExcludeCategory))
 
 if(!String.IsNullOrWhiteSpace(IncludeCategory))
 {
-    IncludeCategory = String.Join(" || cat == ", IncludeCategory.Split("--include-category".ToCharArray()));
+    IncludeCategory = String.Join(" || cat == ", IncludeCategory.Split(new string[] { "--include-category" }, StringSplitOptions.None));
     if(!IncludeCategory.StartsWith("cat"))
         IncludeCategory = $" cat ==  {IncludeCategory}";
 
