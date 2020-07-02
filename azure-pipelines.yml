@@ -202,14 +202,17 @@ stages:
       steps:
         - template: build/steps/build-osx.yml
 
+    # My purpose is to enable quick testing of UI Tests when we need to debug 
+    # why tests are failing. Full test suite runs as part of release
   - stage: windows_tests
     displayName: Run Windows Tests
+    condition: 'false'
     dependsOn: []
     jobs:
       - job: win_hosted_tests
         workspace:
           clean: all
-        displayName: Build Windows Phase
+        displayName: Run UWP Tests
         timeoutInMinutes: 500
         pool:
           name: 'Azure Pipelines'

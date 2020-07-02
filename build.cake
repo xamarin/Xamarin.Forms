@@ -48,7 +48,6 @@ var IOS_TEST_LIBRARY = Argument("IOS_TEST_LIBRARY", $"./Xamarin.Forms.Core.iOS.U
 var IOS_IPA_PATH = Argument("IOS_IPA_PATH", $"./Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/{configuration}/XamarinFormsControlGalleryiOS.app");
 var IOS_BUNDLE_ID = "com.xamarin.quickui.controlgallery";
 var IOS_BUILD_IPA = Argument("IOS_BUILD_IPA", (target == "cg-ios-deploy") ? true : (false || isCIBuild) );
-var NUNIT_TEST_WHERE = Argument("NUNIT_TEST_WHERE", "cat == Issues && cat != ManualReview");
 
 var UWP_PACKAGE_ID = "0d4424f6-1e29-4476-ac00-ba22c3789cb6";
 var UWP_TEST_LIBRARY = Argument("UWP_TEST_LIBRARY", $"./Xamarin.Forms.Core.Windows.UITests/bin/{configuration}/Xamarin.Forms.Core.Windows.UITests.dll");
@@ -63,6 +62,23 @@ releaseChannelArg = EnvironmentVariable("CHANNEL") ?? releaseChannelArg;
 var teamProject = Argument("TeamProject", "");
 bool buildForVS2017 = Convert.ToBoolean(Argument("buildForVS2017", "false"));
 bool isHostedAgent = agentName.StartsWith("Azure Pipelines") || agentName.StartsWith("Hosted Agent");
+
+
+var NUNIT_TEST_WHERE = Argument("NUNIT_TEST_WHERE", "cat != Shell && cat != CollectionView && cat != UwpIgnore && cat != CarouselView");
+var ExcludeCategory = Argument("ExcludeCategory", "");
+var IncludeCategory = Argument("IncludeCategory", "");
+
+if(!String.IsNullOrWhiteSpace(ExcludeCategory))
+{
+    ExcludeCategory = String.Join(" && ", ExcludeCategory.Split("--exclude-category"))
+    NUNIT_TEST_WHERE = $"{NUNIT_TEST_WHERE} && {ExcludeCategory}";
+}
+
+if(!String.IsNullOrWhiteSpace(IncludeCategory))
+{
+    IncludeCategory = String.Join(" || ", IncludeCategory.Split("--include-category"))
+    NUNIT_TEST_WHERE = $"({NUNIT_TEST_WHERE}) && {ExcludeCategory}";
+}
 
 var ANDROID_HOME = EnvironmentVariable("ANDROID_HOME") ??
     (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
@@ -179,7 +195,7 @@ string macSDK_windows = "";
 if(!buildForVS2017)
 {
     androidSDK_macos = EnvironmentVariable("ANDROID_SDK_MAC", androidSDK_macos);
-    iOSSDK_macos = EnvironmentVariable("IOS_SDK_MAC", iOSSDK_macos);
+    iOSSDK_macos = EnvironmentVariable("    ", iOSSDK_macos);
     monoSDK_macos = EnvironmentVariable("MONO_SDK_MAC", monoSDK_macos);
     macSDK_macos = EnvironmentVariable("MAC_SDK_MAC", macSDK_macos);
 
