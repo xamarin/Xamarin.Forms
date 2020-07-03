@@ -190,7 +190,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (color.Type == NSColorType.Catalog)
 				throw new InvalidOperationException("Cannot convert a NSColorType.Catalog color without specifying the color space, use the overload to specify an NSColorSpace");
 
-			color.GetRgba(out red, out green, out blue, out alpha);
+			var newColor = color.UsingColorSpace("NSCalibratedRGBColorSpace");
+			newColor.GetRgba(out red, out green, out blue, out alpha);
 #endif
 			return new Color(red, green, blue, alpha);
 		}
