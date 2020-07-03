@@ -453,18 +453,15 @@ Task ("cg-uwp-deploy")
     // Install the appx
     var dependencies = GetFiles(UWP_APP_PACKAGES_PATH + "*/Dependencies/x86/*.appx");
 
-    for(int i = 0; i < 2; i++)
-    {
-        foreach (var dep in dependencies) {
-            try
-            {
-                Information("Installing Dependency appx: {0}", dep);
-                StartProcess("powershell", "Add-AppxPackage -Path \"" + MakeAbsolute(dep).FullPath + "\"");
-            }
-            catch(Exception exc)
-            {
-                Information("Error: {0}", exc);
-            }
+    foreach (var dep in dependencies) {
+        try
+        {
+            Information("Installing Dependency appx: {0}", dep);
+            StartProcess("powershell", "Add-AppxPackage -Path \"" + MakeAbsolute(dep).FullPath + "\"");
+        }
+        catch(Exception exc)
+        {
+            Information("Error: {0}", exc);
         }
     }
 
