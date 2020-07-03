@@ -393,14 +393,16 @@ namespace Xamarin.Forms.Platform.Android
 				icon = new FlyoutIconDrawerDrawable(context, tintColor, null, text);
 			}
 
-			if (icon == null)
+			if (icon == null && _flyoutBehavior == FlyoutBehavior.Flyout)
 			{
 				icon = new DrawerArrowDrawable(context.GetThemedContext());
 				icon.SetColorFilter(tintColor, FilterMode.SrcAtop);
 				defaultDrawerArrowDrawable = true;
 			}
 
-			icon.Progress = (CanNavigateBack) ? 1 : 0;
+			if(icon != null)
+				icon.Progress = (CanNavigateBack) ? 1 : 0;
+
 			if (command != null || CanNavigateBack)
 			{
 				_drawerToggle.DrawerIndicatorEnabled = false;
@@ -408,8 +410,9 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else if(_flyoutBehavior == FlyoutBehavior.Flyout || !defaultDrawerArrowDrawable)
 			{
-				_drawerToggle.DrawerIndicatorEnabled = isEnabled;
-				if (isEnabled)
+				bool drawerEnabled = isEnabled && icon != null;
+				_drawerToggle.DrawerIndicatorEnabled = drawerEnabled;
+				if (drawerEnabled)
 				{
 					_drawerToggle.DrawerArrowDrawable = icon;
 					toolbar.NavigationIcon = null;
@@ -422,7 +425,6 @@ namespace Xamarin.Forms.Platform.Android
 				_drawerToggle.DrawerIndicatorEnabled = false;
 			}
 
-			toolbar.NavigationIcon = icon;
 			_drawerToggle.SyncState();
 
 
