@@ -54,6 +54,7 @@
 
 			Button.BackgroundColor = backgroundColor;
 			BoxView.BackgroundColor = backgroundColor;
+			CornerRadiusBoxView.BackgroundColor = backgroundColor;
 			CheckBox.BackgroundColor = backgroundColor;
 			CollectionView.BackgroundColor = backgroundColor;
 			DatePicker.BackgroundColor = backgroundColor;
@@ -79,6 +80,7 @@
 		{ 
 			Button.Background = background;
 			BoxView.Background = background;
+			CornerRadiusBoxView.Background = background;
 			CheckBox.Background = background;
 			CollectionView.Background = background;
 			DatePicker.Background = background;

@@ -71,13 +71,17 @@
             </Grid>
             <ScrollView
                 Grid.Row="1">
-                <StackLayout>
+                <StackLayout
+                    Padding="12">
                     <Button
                         x:Name="Button"
                         CornerRadius="12"
                         Text="Button"/>
                     <BoxView
                         x:Name="BoxView"
+                        HeightRequest="100"/>
+                    <BoxView
+                        x:Name="CornerRadiusBoxView"
                         CornerRadius="12"
                         HeightRequest="100"/>
                     <CheckBox 
