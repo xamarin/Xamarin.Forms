@@ -250,6 +250,9 @@
     <Compile Include="RectangleTests.cs" />
     <Compile Include="LineTests.cs" />
     <Compile Include="BrushUnitTests.cs" />
+    <Compile Include="LinearGradientBrushTests.cs" />
+    <Compile Include="SolidColorBrushTests.cs" />
+    <Compile Include="RadialGradientBrushTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
