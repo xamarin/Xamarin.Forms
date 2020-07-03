@@ -154,7 +154,7 @@ namespace Xamarin.Forms.Platform.MacOS
 #else
 		internal static readonly NSColor Black = NSColor.Black;
 		internal static readonly NSColor SeventyPercentGrey = NSColor.FromRgba(0.7f, 0.7f, 0.7f, 1);
-		internal static readonly NSColor LabelColor = NSColor.Black;
+		internal static readonly NSColor LabelColor = NSColor.Black.UsingColorSpace("NSCalibratedRGBColorSpace");
 		internal static readonly NSColor AccentColor = Color.FromRgba(50, 79, 133, 255).ToNSColor();
 #endif
 
@@ -190,8 +190,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (color.Type == NSColorType.Catalog)
 				throw new InvalidOperationException("Cannot convert a NSColorType.Catalog color without specifying the color space, use the overload to specify an NSColorSpace");
 
-			var newColor = color.UsingColorSpace("NSCalibratedRGBColorSpace");
-			newColor.GetRgba(out red, out green, out blue, out alpha);
+			color.GetRgba(out red, out green, out blue, out alpha);
 #endif
 			return new Color(red, green, blue, alpha);
 		}
