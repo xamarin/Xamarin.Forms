@@ -138,6 +138,9 @@ namespace Xamarin.Forms.Core.UITests
 
 		static RemoteWebElement SwapInUsefulElement(WindowsElement element)
 		{
+			// AutoSuggestBox on UWP has some interaction issues with WebDriver
+			// The AutomationID is set on the control group not the actual TextBox
+			// This retrieves the actual TextBox which makes the behavior more consistent
 			var isAutoSuggest = element?.FindElementsByXPath("//*[contains(@AutomationId,'_AutoSuggestBox')]")?.FirstOrDefault();
 			return isAutoSuggest ?? element;
 		}
@@ -819,6 +822,8 @@ namespace Xamarin.Forms.Core.UITests
 			}
 
 			ReadOnlyCollection<WindowsElement> candidates = QueryWindows(AppName);
+
+			// When you go full screen there are less candidates because certain elements go away on the window
 			if (candidates.Count >= 4)
 				_viewPort = candidates[3]; // We really just want the viewport; skip the full window, title bar, min/max buttons...
 			else

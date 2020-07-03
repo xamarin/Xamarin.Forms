@@ -66,8 +66,10 @@ bool isHostedAgent = agentName.StartsWith("Azure Pipelines") || agentName.Starts
 
 var NUNIT_TEST_WHERE = Argument("NUNIT_TEST_WHERE", "cat != Shell && cat != CollectionView && cat != UwpIgnore && cat != CarouselView");
 var ExcludeCategory = GetBuildVariable("ExcludeCategory", "");
+var ExcludeCategory2 = GetBuildVariable("ExcludeCategory2", "");
 var IncludeCategory = GetBuildVariable("IncludeCategory", "");
 
+// Replace Azure devops syntax for unit tests to Nunit3 filters
 if(!String.IsNullOrWhiteSpace(ExcludeCategory))
 {
     ExcludeCategory = String.Join(" && cat != ", ExcludeCategory.Split(new string[] { "--exclude-category" }, StringSplitOptions.None));
@@ -75,6 +77,15 @@ if(!String.IsNullOrWhiteSpace(ExcludeCategory))
         ExcludeCategory = $" cat !=  {ExcludeCategory}";
 
     NUNIT_TEST_WHERE = $"{NUNIT_TEST_WHERE} && {ExcludeCategory}";
+}
+
+if(!String.IsNullOrWhiteSpace(ExcludeCategory2))
+{
+    ExcludeCategory2 = String.Join(" && cat != ", ExcludeCategory2.Split(new string[] { "--exclude-category" }, StringSplitOptions.None));
+    if(!ExcludeCategory2.StartsWith("cat"))
+        ExcludeCategory2 = $" cat !=  {ExcludeCategory2}";
+
+    NUNIT_TEST_WHERE = $"{NUNIT_TEST_WHERE} && {ExcludeCategory2}";
 }
 
 if(!String.IsNullOrWhiteSpace(IncludeCategory))

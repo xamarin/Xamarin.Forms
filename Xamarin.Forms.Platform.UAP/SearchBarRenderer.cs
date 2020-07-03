@@ -129,6 +129,8 @@ namespace Xamarin.Forms.Platform.UWP
 			if (_queryTextBox == null)
 				return;
 
+			// This allow us to locate the actual TextBox for Automation purposes
+			// It's more reliable to interact directly with the TextBox
 			_queryTextBox.SetAutomationPropertiesAutomationId($"{id}_AutoSuggestBox");
 		}
 
