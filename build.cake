@@ -65,9 +65,9 @@ bool isHostedAgent = agentName.StartsWith("Azure Pipelines") || agentName.Starts
 
 
 var NUNIT_TEST_WHERE = Argument("NUNIT_TEST_WHERE", "cat != Shell && cat != CollectionView && cat != UwpIgnore && cat != CarouselView");
-var ExcludeCategory = GetBuildVariable("ExcludeCategory", "");
-var ExcludeCategory2 = GetBuildVariable("ExcludeCategory2", "");
-var IncludeCategory = GetBuildVariable("IncludeCategory", "");
+var ExcludeCategory = GetBuildVariable("ExcludeCategory", "")?.Replace("\"", "");
+var ExcludeCategory2 = GetBuildVariable("ExcludeCategory2", "")?.Replace("\"", "");
+var IncludeCategory = GetBuildVariable("IncludeCategory", "")?.Replace("\"", "");
 
 // Replace Azure devops syntax for unit tests to Nunit3 filters
 if(!String.IsNullOrWhiteSpace(ExcludeCategory))
