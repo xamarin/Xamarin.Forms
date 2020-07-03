@@ -22,7 +22,6 @@ namespace Xamarin.Forms.Controls.Issues
 		public Issue11018()
 		{
 #if APP
-			Device.SetFlags(new List<string> { ExperimentalFlags.IndicatorViewExperimental });
 			Title = "Issue 11018";
 #endif
 		}
