@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using UIKit;
 using Xamarin.Forms.Internals;
 
@@ -82,6 +83,28 @@ namespace Xamarin.Forms.Platform.iOS
 			if (ViewControllers.Length < NavigationBar.Items.Length)
 				return true;
 
+			foreach(var tracker in _trackers)
+			{
+				if(tracker.Value.ViewController == TopViewController)
+				{
+					var behavior = Shell.GetBackButtonBehavior(tracker.Value.Page);
+					var command = behavior.GetPropertyIfSet<ICommand>(BackButtonBehavior.CommandProperty, null);
+					var commandParameter = behavior.GetPropertyIfSet<object>(BackButtonBehavior.CommandParameterProperty, null);
+
+					if (command != null)
+					{
+						if(command.CanExecute(commandParameter))
+						{
+							command.Execute(commandParameter);
+						}
+
+						return false;
+					}
+
+					break;
+				}
+			}
+
 			bool allowPop = ShouldPop();
 
 			if (allowPop)
@@ -109,6 +132,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewWillAppear(bool animated)
 		{
+			if (_disposed)
+				return;
+
 			UpdateFlowDirection();
 			base.ViewWillAppear(animated);
 		}
@@ -121,6 +147,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidLayoutSubviews()
 		{
+			if (_disposed)
+				return;
+
 			base.ViewDidLayoutSubviews();
 
 			_appearanceTracker.UpdateLayout(this);
@@ -134,6 +163,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidLoad()
 		{
+			if (_disposed)
+				return;
+
 			base.ViewDidLoad();
 			InteractivePopGestureRecognizer.Delegate = new GestureDelegate(this, ShouldPop);
 			UpdateFlowDirection();
@@ -144,11 +176,9 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_disposed)
 				return;
 
-			base.Dispose(disposing);
-
-
 			if (disposing)
 			{
+				this.RemoveFromParentViewController();
 				_disposed = true;
 				_renderer.Dispose();
 				_appearanceTracker.Dispose();
@@ -167,7 +197,7 @@ namespace Xamarin.Forms.Platform.iOS
 					if (tracker == null)
 						continue;
 
-					DisposePage(tracker);
+					DisposePage(tracker, true);
 				}
 			}
 
@@ -177,6 +207,8 @@ namespace Xamarin.Forms.Platform.iOS
 			_appearanceTracker = null;
 			_renderer = null;
 			_context = null;
+
+			base.Dispose(disposing);
 		}
 
 		protected virtual void HandleShellPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -395,11 +427,11 @@ namespace Xamarin.Forms.Platform.iOS
 			});
 		}
 
-		void DisposePage(Page page)
+		void DisposePage(Page page, bool calledFromDispose = false)
 		{
 			if (_trackers.TryGetValue(page, out var tracker))
 			{
-				if(tracker.ViewController != null && ViewControllers.Contains(tracker.ViewController))
+				if(!calledFromDispose && tracker.ViewController != null && ViewControllers.Contains(tracker.ViewController))
 					ViewControllers = ViewControllers.Remove(_trackers[page].ViewController);
 
 				tracker.Dispose();

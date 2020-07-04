@@ -1,12 +1,8 @@
 variables:
-- name: DefaultBuildConfiguration
-  value: Debug
 - name: DefaultBuildPlatform
   value: 'any cpu'
 - name: ApkName
   value: AndroidControlGallery.AndroidControlGallery.apk
-- name: IpaName
-  value: XamarinFormsControlGalleryiOS.ipa
 - name: SolutionFile
   value: Xamarin.Forms.sln
 - name: BuildVersion
@@ -18,11 +14,11 @@ variables:
 - name: BuildVersion44
   value: $[counter('xf-nuget-counter', 992000)]
 - name: NUGET_VERSION
-  value: 5.4.0
+  value: 5.6.0
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
   value: true
 - name: DOTNET_VERSION
-  value: 3.1.100
+  value: 3.1.301
 
 resources:
   repositories:
@@ -34,7 +30,7 @@ resources:
 trigger:
   branches:
     include:
-    - master
+    - main
     - 3.*
     - 4.*
   tags:
@@ -48,7 +44,7 @@ pr:
   autoCancel: false
   branches:
     include:
-    - master
+    - main
     - 4.*
     - 3.*
 
@@ -57,7 +53,7 @@ schedules:
   displayName: Daily midnight build
   branches:
     include:
-    - master
+    - main
 
 stages:
   - stage: windows
@@ -68,11 +64,11 @@ stages:
         workspace:
           clean: all
         displayName: Build Windows Phase
-        timeoutInMinutes: 120
+        timeoutInMinutes: 60
         pool:
           name: $(vs2019VmPool)
           vmImage: $(vs2019VmImage)
-          demands: 
+          demands:
             msbuild
         strategy:
           matrix:
@@ -93,7 +89,7 @@ stages:
         pool:
           name: $(vs2019VmPool)
           vmImage: $(vs2019VmImage)
-          demands: 
+          demands:
             msbuild
         strategy:
           matrix:
@@ -115,11 +111,12 @@ stages:
         displayName: Nuget Phase
         dependsOn:
         - win_hosted
+        - pages_hosted
         condition: succeeded()
         pool:
           name: $(vs2019VmPool)
           vmImage: $(vs2019VmImage)
-          demands: 
+          demands:
             msbuild
         variables:
           FormsIdAppend: ''
@@ -131,12 +128,12 @@ stages:
         condition: ne(variables['vs2019VmPool'], 'Azure Pipelines')
         workspace:
           clean: all
-        displayName: Build Windows Phase
-        timeoutInMinutes: 120
+        displayName: Build Windows Phase Bots
+        timeoutInMinutes: 60
         pool:
           name: $(vs2019VmPool)
           vmImage: $(vs2019VmImage)
-          demands: 
+          demands:
             - Agent.OS -equals Windows_NT
             - msbuild
         strategy:
@@ -158,7 +155,7 @@ stages:
         pool:
           name: $(vs2019VmPool)
           vmImage: $(vs2019VmImage)
-          demands: 
+          demands:
             - Agent.OS -equals Windows_NT
             - msbuild
         strategy:
@@ -181,11 +178,12 @@ stages:
         displayName: Nuget Phase
         dependsOn:
         - win_bots
+        - pages_bots
         condition: succeeded()
         pool:
           name: $(vs2019VmPool)
           vmImage: $(vs2019VmImage)
-          demands: 
+          demands:
             - Agent.OS -equals Windows_NT
             - msbuild
         variables:
@@ -204,8 +202,26 @@ stages:
     jobs:
       - template: build/steps/build-android.yml
         parameters:
-          vmImage: $(macOSXVmImage)
+          vmPool: $[coalesce(variables.macAndroid2019VmPool, 'Azure Pipelines')]
+          vmImage: $[coalesce(variables.macAndroid2019VmImage, 'macOS-10.15')]
           provisionatorPath : 'build/provisioning/provisioning.csx'
+          buildForVS2017: false
+          buildConfiguration: $(DefaultBuildConfiguration)
+          ${{ if ne(variables['MSBuildArguments_cg_android'], '') }}:
+            MSBuildArguments_cg_android: $(MSBuildArguments_cg_android)
+
+  - stage: android_2017
+    displayName: Build Android 2017
+    condition: and(succeeded(), eq(variables['System.TeamProject'], 'devdiv'))
+    dependsOn: windows
+    jobs:
+      - template: build/steps/build-android.yml
+        parameters:
+          vmPool: $[coalesce(variables.macAndroid2017VmPool, 'Azure Pipelines')]
+          vmImage: 'macOS-10.14'
+          provisionatorPath : 'build/provisioning/provisioning.csx'
+          buildForVS2017: true
+          buildConfiguration: $(DefaultBuildConfiguration)
 
   - stage: build_osx
     displayName: Build OSX
@@ -218,6 +234,7 @@ stages:
         workspace:
           clean: all
         displayName: OSX Phase
+        timeoutInMinutes: 120
         pool:
           name:  $(osx2019VmPool)
           vmImage: $(macOSXVmImage)
@@ -243,7 +260,7 @@ stages:
       - job: osx
         workspace:
           clean: all
-        displayName: OSX Phase
+        displayName: OSX Phase 2017
         pool:
           name:  $(osx2017VmPool)
           vmImage: 'macOS-10.14'
@@ -253,11 +270,38 @@ stages:
         variables:
           provisionator.osxPath : 'build/provisioning/provisioning.csx'
           buildConfiguration: $(DefaultBuildConfiguration)
+          slnPath: $(SolutionFile)
           iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
           iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
           buildForVS2017: 'true'
         steps:
           - template: build/steps/build-osx.yml
+
+    # My purpose is to enable quick testing of UI Tests when we need to debug 
+    # why tests are failing. Full test suite runs as part of release
+  - stage: windows_tests
+    displayName: Run Windows Tests
+    condition: 'false'
+    dependsOn: []
+    jobs:
+      - job: win_hosted_tests
+        workspace:
+          clean: all
+        displayName: Run UWP Tests
+        timeoutInMinutes: 500
+        pool:
+          name: 'Azure Pipelines'
+          vmImage: 'windows-2019'
+          demands: 
+            msbuild
+        strategy:
+          matrix:
+            debug:
+              BuildConfiguration:  'Debug'
+        steps:
+          - template: build/steps/run-windows-tests.yml
+            parameters:
+              provisionatorPath : 'build/provisioning/provisioning.csx'
 
   # only sign using the private server
   - ${{ if eq(variables['System.TeamProject'], 'devdiv') }}:
@@ -269,10 +313,10 @@ stages:
           displayName: Sign Phase
           pool:
             name: $(signVmImage)
-            demands: 
+            demands:
               msbuild
           steps:
             - template: build/steps/build-sign.yml
-          condition: and(succeeded(), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
+          condition: and(succeeded(), ne(variables['signVmImage'], ''), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
 
 

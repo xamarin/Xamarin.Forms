@@ -15,10 +15,10 @@ using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGa
 using Xamarin.Forms.Controls.GalleryPages.RefreshViewGalleries;
 using Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries;
 using Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery;
-using Xamarin.Forms.Controls.GalleryPages.TwoPaneViewGalleries;
 using Xamarin.Forms.Controls.GalleryPages.AppThemeGalleries;
 using Xamarin.Forms.Controls.GalleryPages.ExpanderGalleries;
 using Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries;
+using Xamarin.Forms.Controls.GalleryPages.ShapesGalleries;
 
 namespace Xamarin.Forms.Controls
 {
@@ -300,7 +300,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new RadioButtonCoreGalleryPage(), "RadioButton Core Gallery"),
 				new GalleryPageFactory(() => new FontImageSourceGallery(), "Font ImageSource"),
 				new GalleryPageFactory(() => new ExpanderGalleries(), "Expander Gallery"),
-				new GalleryPageFactory(() => new IndicatorsSample(), "Indicator Gallery"),
+				new GalleryPageFactory(() => new IndicatorGalleries(), "IndicatorView Gallery"),				
 				new GalleryPageFactory(() => new CarouselViewGallery(), "CarouselView Gallery"),
 				new GalleryPageFactory(() => new CarouselViewCoreGalleryPage(), "CarouselView Core Gallery"),
 				new GalleryPageFactory(() => new CollectionViewGallery(), "CollectionView Gallery"),
@@ -308,7 +308,6 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new Issues.PerformanceGallery(), "Performance"),
 				new GalleryPageFactory(() => new EntryReturnTypeGalleryPage(), "Entry ReturnType "),
 				new GalleryPageFactory(() => new VisualStateManagerGallery(), "VisualStateManager Gallery"),
-				new GalleryPageFactory(() => new TwoPaneViewGallery(), "TwoPaneView Gallery"),
 				new GalleryPageFactory(() => new FlowDirectionGalleryLandingPage(), "FlowDirection"),
 				new GalleryPageFactory(() => new AutomationPropertiesGallery(), "Accessibility"),
 				new GalleryPageFactory(() => new PlatformSpecificsGallery(), "Platform Specifics"),
@@ -362,6 +361,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new ScrollGallery(ScrollOrientation.Horizontal), "ScrollView Gallery Horizontal"),
 				new GalleryPageFactory(() => new ScrollGallery(ScrollOrientation.Both), "ScrollView Gallery 2D"),
 				new GalleryPageFactory(() => new SearchBarCoreGalleryPage(), "SearchBar Gallery"),
+				new GalleryPageFactory(() => new ShapesGallery(), "Shapes Gallery"),
 				new GalleryPageFactory(() => new SliderCoreGalleryPage(), "Slider Gallery"),
 				new GalleryPageFactory(() => new StepperCoreGalleryPage(), "Stepper Gallery"),
 				new GalleryPageFactory(() => new SwitchCoreGalleryPage(), "Switch Gallery"),
@@ -505,18 +505,10 @@ namespace Xamarin.Forms.Controls
 			SetValue(AutomationProperties.NameProperty, "Core Pages");
 		}
 
-		NavigationBehavior navigationBehavior;
 
 		async Task PushPage(Page contentPage)
 		{
-			if (navigationBehavior == NavigationBehavior.PushModalAsync)
-			{
-				await Navigation.PushModalAsync(contentPage);
-			}
-			else
-			{
-				await Navigation.PushAsync(contentPage);
-			}
+			await Navigation.PushAsync(contentPage);
 		}
 
 		readonly Dictionary<string, GalleryPageFactory> _titleToPage;

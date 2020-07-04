@@ -55,6 +55,7 @@ namespace Xamarin.Forms.Platform.Android
 		BottomNavigationViewTracker _bottomNavigationTracker;
 		BottomSheetDialog _bottomSheetDialog;
 		bool _disposed;
+		public IShellItemController ShellItemController => ShellItem;
 
 		public ShellItemRenderer(IShellContext shellContext) : base(shellContext)
 		{
@@ -420,14 +421,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (DisplayedPage == null)
 				return;
 
-			bool visible = Shell.GetTabBarIsVisible(DisplayedPage);
-			using (var menu = _bottomView.Menu)
-			{
-				if (menu.Size() == 1)
-					visible = false;
-			}
-
-			_bottomView.Visibility = visible ? ViewStates.Visible : ViewStates.Gone;
+			_bottomView.Visibility = ShellItemController.ShowTabs ? ViewStates.Visible : ViewStates.Gone;
 		}
 	}
 }

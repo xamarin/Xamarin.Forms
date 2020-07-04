@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platform.UWP
 		const string NavigationViewBackButton = "NavigationViewBackButton";
 		internal const string ShellStyle = "ShellNavigationView";
 		Shell _shell;
-
+		FlyoutBehavior _flyoutBehavior;
 		ShellItemRenderer ItemRenderer { get; }
 
 		public ShellRenderer()
@@ -64,6 +64,10 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdatePaneButtonColor(TogglePaneButton, false);
 			UpdatePaneButtonColor(NavigationViewBackButton, false);
 			UpdateFlyoutBackgroundColor();
+			UpdateFlyoutBackdropColor();
+
+			if(_flyoutBehavior == FlyoutBehavior.Flyout)
+				ShellSplitView.UpdateFlyoutBackdropColor();
 		}
 
 		void OnPaneClosed()
@@ -144,6 +148,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 		#endregion IVisualElementRenderer
 
+
+		ShellSplitView ShellSplitView => (ShellSplitView)GetTemplateChild("RootSplitView");
 		protected internal Shell Element { get; set; }
 
 		internal Shell Shell => Element;
@@ -166,6 +172,24 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (e.PropertyName == Shell.FlyoutBackgroundColorProperty.PropertyName)
 			{
 				UpdateFlyoutBackgroundColor();
+			}
+			//else if (e.PropertyName == Shell.FlyoutBackdropColorProperty.PropertyName)
+			//{
+			//	UpdateFlyoutBackdropColor();
+			//}
+		}
+
+		protected virtual void UpdateFlyoutBackdropColor()
+		{
+			if (_flyoutBehavior != FlyoutBehavior.Flyout)
+				return;
+
+			var splitView = ShellSplitView;
+			if (splitView != null)
+			{
+				//splitView.FlyoutBackdropColor = _shell.FlyoutBackdropColor;
+				if (IsPaneOpen)
+					ShellSplitView.UpdateFlyoutBackdropColor();
 			}
 		}
 
@@ -211,6 +235,7 @@ namespace Xamarin.Forms.Platform.UWP
 			((IShellController)shell).AddAppearanceObserver(this, shell);
 			(shell as IShellController).ItemsCollectionChanged += OnItemsCollectionChanged;
 			UpdateFlyoutBackgroundColor();
+			UpdateFlyoutBackdropColor();
 		}
 
 		void OnItemsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -275,9 +300,10 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		#endregion IAppearanceObserver
-
+		
 		void IFlyoutBehaviorObserver.OnFlyoutBehaviorChanged(FlyoutBehavior behavior)
 		{
+			_flyoutBehavior = behavior;
 			switch (behavior)
 			{
 				case FlyoutBehavior.Disabled:
