@@ -1,10 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\ControlGallery.Build.props" />
   <Import Condition="'$(EnvironmentBuildPropsImported)' != 'True'" Project="..\Environment.Build.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' And '$(BuildIpa)' == 'True' ">iPhone</Platform>
-    <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
+    <iOSPlatform Condition=" '$(iOSPlatform)' == '' ">iPhone</iOSPlatform>
+    <Platform Condition=" '$(Platform)' == '' ">$(iOSPlatform)</Platform>
     <ProjectGuid>{C7131F14-274F-4B55-ACA9-E81731AD012F}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
@@ -14,6 +15,7 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <DefineConstants Condition="'$(Use2017)' != 'true'">__XCODE11__;$(DefineConstants);</DefineConstants>
+    <MtouchExtraArgs>--nolinkaway --optimize=experimental-xforms-product-type</MtouchExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,7 +43,6 @@
     <CodesignKey>iPhone Developer</CodesignKey>
     <CodesignProvision />
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <MtouchExtraArgs>--nolinkaway</MtouchExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>none</DebugType>
@@ -71,7 +72,6 @@
     </CodesignEntitlements>
     <MtouchLink>SdkOnly</MtouchLink>
     <MtouchProfiling>False</MtouchProfiling>
-    <MtouchExtraArgs>--nolinkaway --optimize=experimental-xforms-product-type</MtouchExtraArgs>
     <MtouchFastDev>False</MtouchFastDev>
     <MtouchEnableGenericValueTypeSharing>True</MtouchEnableGenericValueTypeSharing>
     <MtouchUseLlvm>False</MtouchUseLlvm>
@@ -99,10 +99,11 @@
     <CodesignKey>iPhone Developer</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TF_BUILD)' == 'true' OR '$(CI)' == 'true'">
     <MtouchLink>Full</MtouchLink>
-    <MtouchExtraArgs>--nolinkaway --optimize=experimental-xforms-product-type</MtouchExtraArgs>
+    <BuildIpa>True</BuildIpa>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(CI)' == 'true'">
+    <MtouchLink>Full</MtouchLink>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <AppExtensionDebugBundleId />
@@ -140,7 +141,11 @@
     <Compile Include="ApiLabelRenderer.cs" />
     <Compile Include="CustomRenderers\CustomSearchBarRenderer.cs" />
     <Compile Include="_9767CustomRenderer.cs" />
+    <Compile Include="CustomRenderers\_9774CustomRenderer.cs" />
+    <Compile Include="CustomRenderers\_CustomFrame10348Renderer.cs" />
+    <Compile Include="CustomEffects\FooEffect.cs" />
     <Compile Include="_10337CustomRenderer.cs" />
+    <Compile Include="_11132CustomRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Controls\Xamarin.Forms.Controls.csproj">
@@ -379,7 +384,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AdvancedColorPicker" Version="2.0.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NUnit">
       <Version>3.12.0</Version>
     </PackageReference>

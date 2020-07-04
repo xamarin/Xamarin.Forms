@@ -11,6 +11,7 @@ using Microsoft.CSharp;
 using Xamarin.Forms.Xaml;
 using Xamarin.Forms.Internals;
 using Mono.Cecil;
+using IOPath = System.IO.Path;
 
 namespace Xamarin.Forms.Build.Tasks
 {
@@ -173,7 +174,7 @@ namespace Xamarin.Forms.Build.Tasks
 		void GenerateCode()
 		{
 			//Create the target directory if required
-			Directory.CreateDirectory(Path.GetDirectoryName(OutputFile));
+			Directory.CreateDirectory(IOPath.GetDirectoryName(OutputFile));
 
 			var ccu = new CodeCompileUnit();
 			ccu.AssemblyCustomAttributes.Add(
@@ -351,8 +352,6 @@ namespace Xamarin.Forms.Build.Tasks
 
 		static string GetClrNamespace(string namespaceuri)
 		{
-			if (namespaceuri == XamlParser.XFUri)
-				return "Xamarin.Forms";
 			if (namespaceuri == XamlParser.X2009Uri)
 				return "System";
 			if (namespaceuri != XamlParser.X2006Uri && 
@@ -384,13 +383,13 @@ namespace Xamarin.Forms.Build.Tasks
 			_xmlnsDefinitions = new List<XmlnsDefinitionAttribute>();
 			_xmlnsModules = new Dictionary<string, ModuleDefinition>();
 
-			if (string.IsNullOrEmpty(References))
-				return;
-
-			string[] paths = References.Split(';').Distinct().ToArray();
+			var paths = References?.Split(';').Distinct().ToList() ?? new List<string>();
+			//Load xmlnsdef from Core and Xaml
+			paths.Add(typeof(Label).Assembly.Location);
+			paths.Add(typeof(Xamarin.Forms.Xaml.Extensions).Assembly.Location);
 
 			foreach (var path in paths) {
-				string asmName = Path.GetFileName(path);
+				string asmName = IOPath.GetFileName(path);
 				if (AssemblyIsSystem(asmName))
 					// Skip the myriad "System." assemblies and others
 					continue;				
@@ -431,9 +430,9 @@ namespace Xamarin.Forms.Build.Tasks
 				null,
 				(typeInfo) =>
 				{
-					ModuleDefinition module = null;
-					if (typeInfo.AssemblyName == null || !_xmlnsModules.TryGetValue(typeInfo.AssemblyName, out module))
+					if (typeInfo.AssemblyName == null || !_xmlnsModules.TryGetValue(typeInfo.AssemblyName, out ModuleDefinition module))
 						return null;
+
 					string typeName = typeInfo.TypeName.Replace('+', '/'); //Nested types
 					string fullName = $"{typeInfo.ClrNamespace}.{typeInfo.TypeName}";
 					return module.Types.Where(t => t.FullName == fullName).FirstOrDefault();
@@ -441,7 +440,7 @@ namespace Xamarin.Forms.Build.Tasks
 				out potentialTypes);
 
 			if (typeReference == null)
-				throw new Exception($"Type {xmlType.Name} not found in xmlns {xmlType.NamespaceUri}");
+				throw new BuildException(BuildExceptionCode.TypeResolution, null, null, xmlType.Name);
 
 			return new CodeTypeReference(typeReference.FullName);
 		}
