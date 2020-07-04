@@ -18,6 +18,7 @@ using Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery;
 using Xamarin.Forms.Controls.GalleryPages.AppThemeGalleries;
 using Xamarin.Forms.Controls.GalleryPages.ExpanderGalleries;
 using Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries;
+using Xamarin.Forms.Controls.GalleryPages.ShapesGalleries;
 
 namespace Xamarin.Forms.Controls
 {
@@ -360,6 +361,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new ScrollGallery(ScrollOrientation.Horizontal), "ScrollView Gallery Horizontal"),
 				new GalleryPageFactory(() => new ScrollGallery(ScrollOrientation.Both), "ScrollView Gallery 2D"),
 				new GalleryPageFactory(() => new SearchBarCoreGalleryPage(), "SearchBar Gallery"),
+				new GalleryPageFactory(() => new ShapesGallery(), "Shapes Gallery"),
 				new GalleryPageFactory(() => new SliderCoreGalleryPage(), "Slider Gallery"),
 				new GalleryPageFactory(() => new StepperCoreGalleryPage(), "Stepper Gallery"),
 				new GalleryPageFactory(() => new SwitchCoreGalleryPage(), "Switch Gallery"),
@@ -503,18 +505,10 @@ namespace Xamarin.Forms.Controls
 			SetValue(AutomationProperties.NameProperty, "Core Pages");
 		}
 
-		NavigationBehavior navigationBehavior;
 
 		async Task PushPage(Page contentPage)
 		{
-			if (navigationBehavior == NavigationBehavior.PushModalAsync)
-			{
-				await Navigation.PushModalAsync(contentPage);
-			}
-			else
-			{
-				await Navigation.PushAsync(contentPage);
-			}
+			await Navigation.PushAsync(contentPage);
 		}
 
 		readonly Dictionary<string, GalleryPageFactory> _titleToPage;

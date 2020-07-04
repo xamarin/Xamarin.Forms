@@ -103,6 +103,21 @@ namespace Xamarin.Forms.Platform.UWP
 			InitializeStatusBar();
 
 			SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
+			Windows.UI.Xaml.Application.Current.Resuming += OnResumingAsync;
+		}
+
+		async void OnResumingAsync(object sender, object e)
+		{
+			try
+			{
+				await UpdateToolbarItems();
+			}
+			catch (Exception exception)
+			{
+				Log.Warning("Update toolbar items after app resume", 
+					$"UpdateToolbarItems failed after app resume: {exception.Message}");
+
+			}
 		}
 
 		internal void SetPage(Page newRoot)
@@ -319,6 +334,14 @@ namespace Xamarin.Forms.Platform.UWP
 					else
 					{
 						RemovePage(previousPage);
+
+						if(!modal && _modalBackgroundPage != null)
+						{
+							RemovePage(_modalBackgroundPage);
+							_modalBackgroundPage.Cleanup();
+							_modalBackgroundPage.Parent = null;
+						}
+						
 						_modalBackgroundPage = null;
 					}
 

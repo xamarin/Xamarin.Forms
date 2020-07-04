@@ -94,6 +94,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				{
 					var btn = new FormsNSButton();
 					btn.SetButtonType(NSButtonType.MomentaryPushIn);
+					btn.BezelStyle = NSBezelStyle.Rounded;
 					btn.Pressed += HandleButtonPressed;
 					btn.Released += HandleButtonReleased;
 					SetNativeControl(btn);
@@ -114,7 +115,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Button.TextProperty.PropertyName || e.PropertyName == Button.TextColorProperty.PropertyName)
+			if (e.PropertyName == Button.TextProperty.PropertyName || 
+				e.PropertyName == Button.TextColorProperty.PropertyName ||
+				e.PropertyName == Button.TextTransformProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 				UpdateFont();
@@ -182,13 +185,14 @@ namespace Xamarin.Forms.Platform.MacOS
 		void UpdateText()
 		{
 			var color = Element.TextColor;
+			var text = Internals.TextTransformUtilites.GetTransformedText(Element.Text, Element.TextTransform) ?? "";
 			if (color == Color.Default)
 			{
-				Control.Title = Element.Text ?? "";
+				Control.Title = text;
 			}
 			else
 			{
-				var textWithColor = new NSAttributedString(Element.Text ?? "", font: Element.Font.ToNSFont(), foregroundColor: color.ToNSColor(), paragraphStyle: new NSMutableParagraphStyle() { Alignment = NSTextAlignment.Center });
+				var textWithColor = new NSAttributedString(text ?? "", font: Element.Font.ToNSFont(), foregroundColor: color.ToNSColor(), paragraphStyle: new NSMutableParagraphStyle() { Alignment = NSTextAlignment.Center });
 				textWithColor = textWithColor.AddCharacterSpacing(Element.Text ?? string.Empty, Element.CharacterSpacing);
 				Control.AttributedTitle = textWithColor;
 			}

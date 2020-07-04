@@ -1,22 +1,19 @@
 parameters:
-  name: ''            # in the form type_platform_host
-  targetFolder: ''    # the bootstrapper target
-  preBuildSteps: []   # any steps to run before the build
-  postBuildSteps: []  # any additional steps to run after the build
   slnPath : 'Xamarin.Forms.sln'
-  csprojPath : 'Xamarin.Forms.Platform.UAP\Xamarin.Forms.Platform.UAP.csproj'
   msbuildExtraArguments : ''
   artifactsTargetFolder: '$(build.artifactstagingdirectory)'
   artifactsName: 'win_build'
-  nunitTestAdapterFolder: 'packages/NUnitTestAdapter.AnyVersion/build/'
   nunitTestFolder: '$(build.sourcesdirectory)'
   includeUwp: 'true'
   includeAndroid: 'true'
   includeNonUwpAndNonAndroid: 'true'
+  includePages: 'false'
+
 
 steps:
   - checkout: self
     clean: true
+
   - script: build.cmd -Target provision
     displayName: 'Cake Provision'
     condition: eq(variables['provisioningCake'], 'true')
@@ -45,10 +42,22 @@ steps:
     displayName: 'NuGet restore ${{ parameters.slnPath }}'
     inputs:
       restoreSolution: ${{ parameters.slnPath }}
+      feedsToUse: config
+      nugetConfigPath: 'DevopsNuget.config'
 
-  - script: build.cmd -Target BuildForNuget -ScriptArgs '-configuration="$(BuildConfiguration)"','-Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"'
+  - script: build.cmd -Target BuildForNuget -ScriptArgs '-BUILD_CONFIGURATION="$(BuildConfiguration)"','-Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"'
     name: winbuild
     displayName: 'Build Projects For Nuget'
+    condition: ne(${{ parameters.includePages }}, 'true')
+
+  - task: MSBuild@1
+    displayName: 'Build solution ${{ parameters.slnPath }}'
+    name: winslnbuild
+    condition: eq(${{ parameters.includePages }}, 'true')
+    inputs:
+      solution: ${{ parameters.slnPath }}
+      configuration: '$(BuildConfiguration)'
+      msbuildArguments: ${{ parameters.msbuildExtraArguments }} /bl:$(Build.ArtifactStagingDirectory)\win-$(BuildConfiguration).binlog
 
   - task: VSTest@2
     displayName: 'Unit Tests'
@@ -101,15 +110,8 @@ steps:
         Xamarin.Forms.Maps/bin/$(BuildConfiguration)/**/*.mdb
         Xamarin.Forms.Maps.iOS/bin/iPhoneSimulator/$(BuildConfiguration)/**/*.dll
         Xamarin.Forms.Maps.MacOS/bin/$(BuildConfiguration)/**/*.dll
-        Xamarin.Forms.Pages/bin/$(BuildConfiguration)/**/*.dll
-        Xamarin.Forms.Pages/bin/$(BuildConfiguration)/**/*.pdb
-        Xamarin.Forms.Pages/bin/$(BuildConfiguration)/**/*.mdb
-        Xamarin.Forms.Pages.Azure/bin/$(BuildConfiguration)/**/*.dll
-        Xamarin.Forms.Pages.Azure/bin/$(BuildConfiguration)/**/*.pdb
-        Xamarin.Forms.Pages.Azure/bin/$(BuildConfiguration)/**/*.mdb
         Xamarin.Forms.Core.UnitTests/bin/$(BuildConfiguration)/**/*.dll
         Xamarin.Forms.Xaml.UnitTests/bin/$(BuildConfiguration)/**/*.dll
-        Xamarin.Forms.Pages.UnitTests/bin/$(BuildConfiguration)/**/*.dll
         Xamarin.Forms.Maps.Tizen/bin/$(BuildConfiguration)/**/*.dll
         Xamarin.Forms.Maps.Tizen/bin/$(BuildConfiguration)/**/*.mdb
         Xamarin.Forms.Maps.Tizen/bin/$(BuildConfiguration)/**/*.pdb
@@ -164,7 +166,7 @@ steps:
 
       TargetFolder: ${{ parameters.artifactsTargetFolder }}
 
-      
+    
   - task: CopyFiles@2
     displayName: 'Copy Android Files dlls'
     condition: eq('${{ parameters.includeAndroid }}', true)
@@ -187,6 +189,64 @@ steps:
         Xamarin.Forms.DualScreen/bin/$(BuildConfiguration)/**/*.mdb
         Xamarin.Forms.DualScreen.UnitTests/bin/$(BuildConfiguration)/**/*.dll
         **/*.binlog
+
+      TargetFolder: ${{ parameters.artifactsTargetFolder }}
+  
+  - script: build.cmd -Target cg-uwp-build-tests  -ScriptArgs '-BUILD_CONFIGURATION="$(BuildConfiguration)"'
+    condition: eq(variables['BuildConfiguration'], 'Debug')
+    displayName: 'Build Tests and APPX'
+
+  - task: CopyFiles@2
+    displayName: 'Copy Appx Packages'
+    condition: eq(variables['BuildConfiguration'], 'Debug')
+    inputs:
+      Contents: |
+        Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/*
+        Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/Add-AppDevPackage.resources/**
+        Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/TelemetryDependencies/**
+        Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/Dependencies/x86/**
+      TargetFolder: '$(build.artifactstagingdirectory)'
+      CleanTargetFolder: false
+      flattenFolders: false
+
+  - task: CopyFiles@2
+    displayName: 'Copy Cake File'
+    inputs:
+      Contents: |
+        build.cake
+      TargetFolder: '${{ parameters.artifactsTargetFolder }}'
+      CleanTargetFolder: false
+      flattenFolders: false
+
+  - task: CopyFiles@2
+    displayName: 'Copy UITest Files'
+    condition: eq(variables['BuildConfiguration'], 'Debug')
+    inputs:
+      SourceFolder: Xamarin.Forms.Core.Windows.UITests/bin/$(BuildConfiguration)/
+      TargetFolder: '$(build.artifactstagingdirectory)/UITests'
+
+  - task: CopyFiles@2
+    displayName: 'Copy Certificate File'
+    condition: eq(variables['BuildConfiguration'], 'Debug')
+    inputs:
+      Contents: |
+        Xamarin.Forms.ControlGallery.WindowsUniversal\Xamarin.Forms.ControlGallery.WindowsUniversal_TemporaryKey.pfx
+      TargetFolder: '$(build.artifactstagingdirectory)'
+      CleanTargetFolder: false
+      flattenFolders: false
+
+  - task: CopyFiles@2
+    displayName: 'Copy Pages Files dlls'
+    condition: eq('${{ parameters.includePages }}', true)
+    inputs:
+      Contents: |
+        Xamarin.Forms.Pages/bin/$(BuildConfiguration)/**/*.dll
+        Xamarin.Forms.Pages/bin/$(BuildConfiguration)/**/*.pdb
+        Xamarin.Forms.Pages/bin/$(BuildConfiguration)/**/*.mdb
+        Xamarin.Forms.Pages.Azure/bin/$(BuildConfiguration)/**/*.dll
+        Xamarin.Forms.Pages.Azure/bin/$(BuildConfiguration)/**/*.pdb
+        Xamarin.Forms.Pages.Azure/bin/$(BuildConfiguration)/**/*.mdb
+        Xamarin.Forms.Pages.UnitTests/bin/$(BuildConfiguration)/**/*.dll
 
       TargetFolder: ${{ parameters.artifactsTargetFolder }}
 

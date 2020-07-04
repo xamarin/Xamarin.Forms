@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == SearchBar.TextProperty.PropertyName)
+			if (e.IsOneOf(SearchBar.TextProperty, SearchBar.TextTransformProperty))
 				UpdateText();
 			else if (e.PropertyName == SearchBar.PlaceholderProperty.PropertyName)
 				UpdatePlaceholder();
@@ -113,12 +113,25 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateIsSpellCheckEnabled();
 			UpdateInputScope();
 			UpdateMaxLength();
+			SetAutomationId(Element.AutomationId);
 
 			// If the Forms VisualStateManager is in play or the user wants to disable the Forms legacy
 			// color stuff, then the underlying textbox should just use the Forms VSM states
 			if (_queryTextBox != null)
 				_queryTextBox.UseFormsVsm = Element.HasVisualStateGroups()
 								|| !Element.OnThisPlatform().GetIsLegacyColorModeEnabled();
+		}
+
+		protected override void SetAutomationId(string id)
+		{
+			base.SetAutomationId(id);
+
+			if (_queryTextBox == null)
+				return;
+
+			// This allow us to locate the actual TextBox for Automation purposes
+			// It's more reliable to interact directly with the TextBox
+			_queryTextBox.SetAutomationPropertiesAutomationId($"{id}_AutoSuggestBox");
 		}
 
 		void OnQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs e)
@@ -234,7 +247,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateText()
 		{
-			Control.Text = Element.Text ?? string.Empty;
+			Control.Text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 		}
 
 		void UpdateTextColor()

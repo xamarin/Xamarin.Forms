@@ -38,18 +38,18 @@ namespace DualScreen
 			TallModeConfiguration.SelectedIndex = 1;
 			WideModeConfiguration.SelectedIndex = 1;
 
-			//DualScreenInfo.Current.HingeAngleChanged += OnHingeAngleChanged;
+			DualScreenInfo.Current.HingeAngleChanged += OnHingeAngleChanged;
 		}
 
 		protected override void OnDisappearing()
 		{
-			//DualScreenInfo.Current.HingeAngleChanged -= OnHingeAngleChanged;
+			DualScreenInfo.Current.HingeAngleChanged -= OnHingeAngleChanged;
 		}
 
-		//void OnHingeAngleChanged(object sender, DualScreen.HingeAngleChangedEventArgs e)
-		//{
-		//	lblHingeAngle.Text = e.HingeAngleInDegrees.ToString();
-		//}
+		void OnHingeAngleChanged(object sender, HingeAngleChangedEventArgs e)
+		{
+			lblHingeAngle.Text = e.HingeAngleInDegrees.ToString();
+		}
 
 		void Setup(double width, double height)
 		{
