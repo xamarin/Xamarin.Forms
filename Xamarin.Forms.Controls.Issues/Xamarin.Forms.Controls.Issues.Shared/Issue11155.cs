@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var instructions = new Label
 			{
-				Text = "Select any Picker item."
+				Text = "Select any Picker item and tap the Done Button."
 			};
 
 			var picker = new Picker
