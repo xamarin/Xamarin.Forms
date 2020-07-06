@@ -2,6 +2,7 @@
 using Xamarin.Forms.Internals;
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -18,12 +19,15 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 10300, "ObservableCollection.RemoveAt(index) with a valid index raises ArgementOutOfRangeException", PlatformAffected.iOS)]
 	public class Issue10300 : TestContentPage // or TestMasterDetailPage, etc ...
 	{
-		CarouselView carousel;
+		CarouselView _carousel;
 
 		public class ModalPage : ContentPage
 		{
 			public ModalPage()
 			{
+#if APP
+				Device.SetFlags(new List<string> { ExperimentalFlags.CarouselViewExperimental });
+#endif
 				var btn = new Button
 				{
 					Text = "Close",
@@ -56,8 +60,8 @@ namespace Xamarin.Forms.Controls.Issues
 																new ModelIssue10300("8", Color.IndianRed),
 																new ModelIssue10300("9", Color.Khaki),
 															});
-			carousel = new CarouselView();
-			carousel.ItemTemplate = new DataTemplate(() =>
+			_carousel = new CarouselView();
+			_carousel.ItemTemplate = new DataTemplate(() =>
 			{
 				var l = new Grid();
 				l.SetBinding(Grid.BackgroundColorProperty, new Binding("Color"));
@@ -70,14 +74,14 @@ namespace Xamarin.Forms.Controls.Issues
 				l.Children.Add(label);
 				return l;
 			});
-			carousel.CurrentItemChanged += Carousel_CurrentItemChanged;
-			carousel.PositionChanged += Carousel_PositionChanged;
+			_carousel.CurrentItemChanged += Carousel_CurrentItemChanged;
+			_carousel.PositionChanged += Carousel_PositionChanged;
 
-			Grid.SetColumnSpan(carousel, 2);
+			Grid.SetColumnSpan(_carousel, 2);
 
 
-			carousel.SetBinding(CarouselView.ItemsSourceProperty, new Binding("Items"));
-			carousel.BindingContext = this;
+			_carousel.SetBinding(CarouselView.ItemsSourceProperty, new Binding("Items"));
+			_carousel.BindingContext = this;
 
 			var grd = new Grid
 			{
@@ -106,7 +110,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Grid.SetRow(btnAdd, 1);
 			Grid.SetColumn(btnAdd, 1);
 
-			grd.Children.Add(carousel);
+			grd.Children.Add(_carousel);
 			grd.Children.Add(btn);
 			grd.Children.Add(btnAdd);
 			Content = grd;
@@ -125,7 +129,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		void Callback(Page page)
 		{
-			var index = Items.IndexOf(carousel.CurrentItem as ModelIssue10300);
+			var index = Items.IndexOf(_carousel.CurrentItem as ModelIssue10300);
 			System.Diagnostics.Debug.WriteLine($"Delete {index}");
 			Items.RemoveAt(index);
 		}

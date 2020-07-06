@@ -20,6 +20,13 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	public class Issue10234 : TestShell
 	{
+		public Issue10234()
+		{
+#if APP
+			Device.SetFlags(new List<string> { ExperimentalFlags.CarouselViewExperimental });
+#endif
+		}
+
 		protected override void Init()
 		{
 			TabBar tabBar = new TabBar

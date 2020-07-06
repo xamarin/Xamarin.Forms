@@ -23,6 +23,13 @@ namespace Xamarin.Forms.Controls.Issues
 		int _counter;
 		Label _lbl;
 
+		public Issue8964()
+		{
+#if APP
+			Device.SetFlags(new List<string> { ExperimentalFlags.CarouselViewExperimental });
+#endif
+		}
+
 		protected override void Init()
 		{
 			ItemSourceUnderTest = new ObservableCollection<ModelIssue8964>(GetCarouselItems());
