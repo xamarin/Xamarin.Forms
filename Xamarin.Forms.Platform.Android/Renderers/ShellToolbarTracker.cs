@@ -276,7 +276,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnBackButtonBehaviorChanged(object sender, PropertyChangedEventArgs e)
 		{
-			UpdateLeftBarButtonItem();
+			if(!e.Is(BackButtonBehavior.CommandParameterProperty))
+				UpdateLeftBarButtonItem();
 		}
 
 
@@ -415,10 +416,11 @@ namespace Xamarin.Forms.Platform.Android
 				if (drawerEnabled)
 				{
 					_drawerToggle.DrawerArrowDrawable = icon;
-					toolbar.NavigationIcon = null;
 				}
 				else
+				{
 					toolbar.NavigationIcon = icon;
+				}
 			}
 			else
 			{
