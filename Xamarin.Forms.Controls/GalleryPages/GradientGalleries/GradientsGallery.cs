@@ -58,6 +58,8 @@
 						new RadialGradientExplorerGallery(), Navigation),
 					GalleryBuilder.NavButton("Bindable Brush Gallery", () =>
 						new BindableBrushGallery(), Navigation),
+					GalleryBuilder.NavButton("Animate Brush Gallery", () =>
+						new AnimateBrushGallery(), Navigation),
 					navigationBarButton,
 					tabsButton,
 					GalleryBuilder.NavButton("Shapes using Brush Gallery", () =>
