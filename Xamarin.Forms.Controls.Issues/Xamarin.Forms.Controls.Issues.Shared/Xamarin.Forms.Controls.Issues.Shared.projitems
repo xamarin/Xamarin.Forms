@@ -1423,13 +1423,16 @@
       <DependentUpon>Issue9555.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue11031.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue11018.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue10940.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue10908.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11132.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11113.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue10182.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11107.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11120.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11291.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue11272.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla22229.xaml">
@@ -1666,6 +1669,9 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue9555.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue10908.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue11113.xaml">
