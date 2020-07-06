@@ -56,10 +56,12 @@
 			BoxView.BackgroundColor = backgroundColor;
 			CornerRadiusBoxView.BackgroundColor = backgroundColor;
 			CheckBox.BackgroundColor = backgroundColor;
+			CarouselView.BackgroundColor = backgroundColor;
 			CollectionView.BackgroundColor = backgroundColor;
 			DatePicker.BackgroundColor = backgroundColor;
 			Editor.BackgroundColor = backgroundColor;
 			Entry.BackgroundColor = backgroundColor;
+			Expander.BackgroundColor = backgroundColor;
 			Frame.BackgroundColor = backgroundColor;
 			Grid.BackgroundColor = backgroundColor;
 			ImageButton.BackgroundColor = backgroundColor;
@@ -82,10 +84,12 @@
 			BoxView.Background = background;
 			CornerRadiusBoxView.Background = background;
 			CheckBox.Background = background;
+			CarouselView.Background = background;
 			CollectionView.Background = background;
 			DatePicker.Background = background;
 			Editor.Background = background;
 			Entry.Background = background;
+			Expander.Background = background;
 			Frame.Background = background;
 			Grid.Background = background;
 			ImageButton.Background = background;
