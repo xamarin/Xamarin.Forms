@@ -151,5 +151,19 @@ namespace Xamarin.Forms.Platform.Android
 				((ISpatialElement)span).Region = Region.FromLines(lineHeights, labelWidth, startX, endX, yaxis).Inflate(10);
 			}
 		}
+
+		public static BreakStrategy ToAndroidBreakStrategy(this PlatformConfiguration.AndroidSpecific.BreakStrategyFlags flags)
+		{
+			switch (flags)
+			{
+				case PlatformConfiguration.AndroidSpecific.BreakStrategyFlags.Balanced:
+					return BreakStrategy.Balanced;
+				case PlatformConfiguration.AndroidSpecific.BreakStrategyFlags.HighQuality:
+					return BreakStrategy.HighQuality;
+				case PlatformConfiguration.AndroidSpecific.BreakStrategyFlags.Simple:
+				default:
+					return BreakStrategy.Simple;
+			}
+		}
 	}
 }

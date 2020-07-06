@@ -1,13 +1,14 @@
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
+using Android.OS;
 using Android.Text;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
 using System;
 using System.ComponentModel;
-using Xamarin.Forms.PlatformConfiguration.TizenSpecific;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -137,6 +138,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			UpdateTextDecorations();
 			UpdatePadding();
+			UpdateBreakStrategy();
 			_motionEventHelper.UpdateElement(e.NewElement);
 		}
 
@@ -169,6 +171,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateMaxLines();
 			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == PlatformConfiguration.AndroidSpecific.Label.BreakStrategyProperty.PropertyName)
+				UpdateBreakStrategy();
 		}
 
 		void UpdateColor()
@@ -321,6 +325,19 @@ namespace Xamarin.Forms.Platform.Android
 				return true;
 
 			return _motionEventHelper.HandleMotionEvent(Parent, e);
+		}
+
+		void UpdateBreakStrategy()
+		{
+			if (Element == null || Control == null)
+				return;
+
+			if (Forms.SdkInt >= BuildVersionCodes.M)
+			{
+				var breakStrategy = Element.OnThisPlatform().BreakStrategy();
+				var _currentBreakStrategy = breakStrategy.ToAndroidBreakStrategy();
+				_view.BreakStrategy = _currentBreakStrategy;
+			}
 		}
 	}
 }
