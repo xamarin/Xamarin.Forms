@@ -7,6 +7,8 @@ using NUnit.Framework.Interfaces;
 using Xamarin.Forms.Core.UITests;
 using Xamarin.UITest;
 using Xamarin.UITest.Queries;
+using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 #if __IOS__
 using Xamarin.UITest.iOS;
@@ -487,6 +489,12 @@ namespace Xamarin.Forms.Controls
 
 		public void AttachScreenshotToTestContext(string title = null)
 		{
+			if(!TestContext.Parameters.Exists("IncludeScreenShots") ||
+				!Convert.ToBoolean(TestContext.Parameters["IncludeScreenShots"]))
+			{
+				return;
+			}
+			
 			title = title ?? TestContext.CurrentContext.Test.FullName
 				.Replace(".", "_")
 				.Replace(" ", "_");

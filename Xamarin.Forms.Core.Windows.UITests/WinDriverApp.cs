@@ -311,12 +311,9 @@ namespace Xamarin.Forms.Core.UITests
 			try
 			{
 				string filename = $"{title}.png";
-
 				Screenshot screenshot = _session.GetScreenshot();
 				screenshot.SaveAsFile(filename, ScreenshotImageFormat.Png);
 				var file = new FileInfo(filename);
-
-				TestContext.AddTestAttachment(file.FullName, title);
 				return file;
 			}
 			catch (OpenQA.Selenium.WebDriverException we)
