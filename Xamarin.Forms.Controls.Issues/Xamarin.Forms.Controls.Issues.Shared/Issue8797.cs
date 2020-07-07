@@ -8,6 +8,7 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
+			var scrollView = new ScrollView();
 			var layout = new StackLayout { Margin = new Thickness(5, 80, 5, 0) };
 
 			var instructions = new Label { Text = "The text visible in the Grid should end with 'finding a good way to spend it'. If that text is cut off, this test has failed." };
@@ -19,7 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 				VerticalOptions = LayoutOptions.Start,
 				BackgroundColor = Color.Bisque,
 				Margin = new Thickness(0, 40, 0, 0),
-				ColumnSpacing = 12
+				ColumnSpacing = 6
 			};
 
 			grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
@@ -33,6 +34,7 @@ namespace Xamarin.Forms.Controls.Issues
 				VerticalOptions = LayoutOptions.Start,
 				LineBreakMode = LineBreakMode.WordWrap,
 				BackgroundColor = Color.CornflowerBlue,
+				FontSize = 10,
 				Text = "There's a 104 days of summer vacation 'til school comes along just to end it. So the annual problem for our generation is finding a good way to spend it."
 			};
 
@@ -41,7 +43,9 @@ namespace Xamarin.Forms.Controls.Issues
 			layout.Children.Add(instructions);
 			layout.Children.Add(grid);
 
-			Content = layout;
+			scrollView.Content = layout;
+
+			Content = scrollView;
 		}
 	}
 }
