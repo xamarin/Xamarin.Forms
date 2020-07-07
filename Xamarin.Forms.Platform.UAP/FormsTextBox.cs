@@ -42,9 +42,16 @@ namespace Xamarin.Forms.Platform.UWP
 		public new static readonly DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text),
 			typeof(string), typeof(FormsTextBox), new PropertyMetadata("", TextPropertyChanged));
 
+		public static readonly DependencyProperty ClearButtonVisibleProperty = DependencyProperty.Register(nameof(ClearButtonVisible),
+			typeof(bool), typeof(FormsTextBox), new PropertyMetadata(true, ClearButtonVisibleChanged));
+
 		InputScope _passwordInputScope;
 		InputScope _numericPasswordInputScope;
 		Border _borderElement;
+		Windows.UI.Xaml.Controls.ScrollViewer _scrollViewer;
+		Windows.UI.Xaml.Controls.Grid _rootGrid;
+		Windows.UI.Xaml.VisualState _DeleteButtonVisibleState;
+		Windows.UI.Xaml.VisualStateGroup _DeleteButtonVisibleStateGroups;
 		InputScope _cachedInputScope;
 		bool _cachedPredictionsSetting;
 		bool _cachedSpellCheckSetting;
@@ -57,11 +64,21 @@ namespace Xamarin.Forms.Platform.UWP
 			TextChanged += OnTextChanged;
 			SelectionChanged += OnSelectionChanged;
 			IsEnabledChanged += OnIsEnabledChanged;
+			Loaded += OnLoaded;
+			RegisterPropertyChangedCallback(VerticalContentAlignmentProperty, OnVerticalContentAlignmentChanged);
 		}
 
 		void OnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
 		{
 			UpdateEnabled();
+		}
+
+		public bool UpdateVerticalAlignmentOnLoad { get; set; } = true;
+
+		public bool ClearButtonVisible
+		{
+			get { return (bool)GetValue(ClearButtonVisibleProperty); }
+			set { SetValue(ClearButtonVisibleProperty, value);}
 		}
 
 		public Brush BackgroundFocusBrush
@@ -145,6 +162,39 @@ namespace Xamarin.Forms.Platform.UWP
 				// If we're on the phone, we need to grab this from the template
 				// so we can manually handle its background when focused
 				_borderElement = (Border)GetTemplateChild("BorderElement");
+			}
+			
+			_rootGrid = (Windows.UI.Xaml.Controls.Grid)GetTemplateChild("RootGrid");
+			if (_rootGrid != null)
+			{
+				var stateGroups = WVisualStateManager.GetVisualStateGroups(_rootGrid).ToList();
+				_DeleteButtonVisibleStateGroups = stateGroups.SingleOrDefault(sg => sg.Name == "ButtonStates");
+				if (_DeleteButtonVisibleStateGroups != null)
+					_DeleteButtonVisibleState = _DeleteButtonVisibleStateGroups.States.SingleOrDefault(s => s.Name == "ButtonVisible");
+			}
+
+			_scrollViewer= (Windows.UI.Xaml.Controls.ScrollViewer)GetTemplateChild("ContentElement");
+		}
+
+		void OnLoaded(object sender, RoutedEventArgs e)
+		{
+			// Set the vertical alignment on load, because setting it in the FormsTextBoxStyle causes text display issues
+			// But the editor has display issues if you do set the vertical alignment here, so the flag allows renderer using
+			// the text box to control this
+			UpdateTemplateScrollViewerVerticalAlignment();
+		}
+
+		void OnVerticalContentAlignmentChanged(DependencyObject sender, DependencyProperty dp)
+		{
+			UpdateTemplateScrollViewerVerticalAlignment();
+		}
+
+		void UpdateTemplateScrollViewerVerticalAlignment()
+		{
+			if (_scrollViewer != null && UpdateVerticalAlignmentOnLoad)
+			{
+				_scrollViewer.VerticalAlignment = VerticalContentAlignment;
+				Focus(FocusState.Programmatic);
 			}
 		}
 
@@ -344,6 +394,21 @@ namespace Xamarin.Forms.Platform.UWP
 			base.Text = IsPassword ? Obfuscate(Text) : Text;
 
 			SelectionStart = base.Text.Length;
+		}
+
+		static void ClearButtonVisibleChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+		{
+			var textBox = (FormsTextBox)dependencyObject;
+			var visibleState = textBox._DeleteButtonVisibleState;
+			var states = textBox._DeleteButtonVisibleStateGroups?.States;
+
+			if (states != null && visibleState != null)
+			{
+				if (textBox.ClearButtonVisible && !states.Contains(visibleState))
+					states.Add(visibleState);
+				else
+					states.Remove(visibleState);
+			}
 		}
 
 		static void TextPropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)

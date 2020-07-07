@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _initialUpdateNeeded = true;
 		bool _layoutNeeded;
 		IVisualElementRenderer _renderer;
-
+		AttachTracker _attachTracker;
 		public VisualElementTracker(IVisualElementRenderer renderer)
 		{
 			_batchCommittedHandler = HandleRedrawNeeded;
@@ -37,7 +37,15 @@ namespace Xamarin.Forms.Platform.Android
 
 			renderer.View.SetCameraDistance(3600);
 
-			renderer.View.AddOnAttachStateChangeListener(AttachTracker.Instance);
+			if(!_context.IsDesignerContext())
+			{
+				_attachTracker = AttachTracker.Instance;
+				renderer.View.AddOnAttachStateChangeListener(_attachTracker);
+			}
+			else
+			{
+				_attachTracker = new AttachTracker();
+			}
 		}
 
 		public void Dispose()
@@ -60,7 +68,13 @@ namespace Xamarin.Forms.Platform.Android
 				if (_renderer != null)
 				{
 					_renderer.ElementChanged -= RendererOnElementChanged;
-					_renderer.View.RemoveOnAttachStateChangeListener(AttachTracker.Instance);
+
+					if (_renderer.View.IsAlive() && _attachTracker.IsAlive())
+					{
+						_renderer.View.RemoveOnAttachStateChangeListener(_attachTracker);
+						_attachTracker = null;
+					}
+
 					_renderer = null;
 					_context = null;
 				}
@@ -104,6 +118,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateClipToBounds();
 			}
+
+			UpdateClip();
 
 			Performance.Stop(reference);
 
@@ -168,6 +184,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateTranslationY();
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateIsEnabled();
+			else if (e.PropertyName == VisualElement.ClipProperty.PropertyName)
+				UpdateClip();
 		}
 
 		void HandleRedrawNeeded(object sender, EventArg<VisualElement> e)
@@ -190,6 +208,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			UpdateClipToBounds();
+			UpdateClip();
 		}
 
 		void RendererOnElementChanged(object sender, VisualElementChangedEventArgs args)
@@ -273,6 +292,12 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			_renderer.View.SetClipToOutline(layout.IsClippedToBounds, _renderer.Element);
+		}
+
+		void UpdateClip()
+		{
+			var aView = _renderer.View;
+			aView?.Invalidate();
 		}
 
 		void UpdateIsVisible()
