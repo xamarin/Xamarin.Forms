@@ -103,28 +103,27 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			SizeF fitSize;
 			nfloat labelHeight;
-			nfloat roundingCorrection = 1;
 			switch (Element.VerticalTextAlignment)
 			{
 				case TextAlignment.Start:
 					fitSize = Control.SizeThatFits(Element.Bounds.Size.ToSizeF());
-					labelHeight = (nfloat)Math.Min(Bounds.Height, fitSize.Height) + roundingCorrection;
+					labelHeight = (nfloat)Math.Min(Bounds.Height, fitSize.Height);
 					Control.Frame = new RectangleF(0, 0, (nfloat)Element.Width, labelHeight);
 					break;
 				case TextAlignment.Center:
 
 #if __MOBILE__
-					Control.Frame = new RectangleF(0, 0, (nfloat)Element.Width, (nfloat)Element.Height + roundingCorrection);
+					Control.Frame = new RectangleF(0, 0, (nfloat)Element.Width, (nfloat)Element.Height);
 #else
 					fitSize = Control.SizeThatFits(Element.Bounds.Size.ToSizeF());
 					labelHeight = (nfloat)Math.Min(Bounds.Height, fitSize.Height);
 					var yOffset = (int)(Element.Height / 2 - labelHeight / 2);
-					Control.Frame = new RectangleF(0, 0, (nfloat)Element.Width, (nfloat)Element.Height - yOffset + roundingCorrection);
+					Control.Frame = new RectangleF(0, 0, (nfloat)Element.Width, (nfloat)Element.Height - yOffset);
 #endif
 					break;
 				case TextAlignment.End:
 					fitSize = Control.SizeThatFits(Element.Bounds.Size.ToSizeF());
-					labelHeight = (nfloat)Math.Min(Bounds.Height, fitSize.Height) + roundingCorrection;
+					labelHeight = (nfloat)Math.Min(Bounds.Height, fitSize.Height);
 #if __MOBILE__
 					nfloat yOffset = 0;
 					yOffset = (nfloat)(Element.Height - labelHeight);
