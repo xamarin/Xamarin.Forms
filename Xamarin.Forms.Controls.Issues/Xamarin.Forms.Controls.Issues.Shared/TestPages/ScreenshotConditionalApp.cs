@@ -7,8 +7,6 @@ using NUnit.Framework.Interfaces;
 using Xamarin.Forms.Core.UITests;
 using Xamarin.UITest;
 using Xamarin.UITest.Queries;
-using NUnit.Framework;
-using NUnit.Framework.Interfaces;
 
 #if __IOS__
 using Xamarin.UITest.iOS;
