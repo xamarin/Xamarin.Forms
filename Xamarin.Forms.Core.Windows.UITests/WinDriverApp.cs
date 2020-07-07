@@ -310,7 +310,6 @@ namespace Xamarin.Forms.Core.UITests
 		{
 			try
 			{
-				// TODO hartez 2017/07/18 10:16:56 Verify that this is working; seems a bit too simple	
 				string filename = $"{title}.png";
 
 				Screenshot screenshot = _session.GetScreenshot();
