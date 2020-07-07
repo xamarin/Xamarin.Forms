@@ -27,8 +27,12 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			var finalSize = control.Frame;
 
-			if (finalSize.Width <= 0 || finalSize.Height <= 0)
-				return;
+			if (finalSize.Width <= 1 || finalSize.Height <= 1)
+                return;
+
+            // Rounding Correction on Height
+            var roundingCorrection = UIScreen.MainScreen.Scale;
+            finalSize = new RectangleF(finalSize.X, finalSize.Y, finalSize.Width, finalSize.Height + roundingCorrection);
 
 #if __MOBILE__
 			var inline = control.AttributedText;
