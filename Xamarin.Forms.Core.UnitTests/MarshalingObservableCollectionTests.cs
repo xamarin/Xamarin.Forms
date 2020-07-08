@@ -284,11 +284,6 @@ namespace Xamarin.Forms.Core.UnitTests
 				throw new NotImplementedException();
 			}
 
-			public string GetMD5Hash(string input)
-			{
-				throw new NotImplementedException();
-			}
-
 			public Color GetNamedColor(string name)
 			{
 				throw new NotImplementedException();
@@ -325,6 +320,11 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 
 			public void StartTimer(TimeSpan interval, Func<bool> callback)
+			{
+				throw new NotImplementedException();
+			}
+
+			public string GetHash(string input)
 			{
 				throw new NotImplementedException();
 			}
