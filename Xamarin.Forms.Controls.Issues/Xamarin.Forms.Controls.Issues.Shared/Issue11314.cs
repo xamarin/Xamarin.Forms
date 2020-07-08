@@ -46,10 +46,23 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			Title = title;
 	
-			for (int i = 0; i < 20; i++)
+			for (int i = 0; i < 5; i++)
 			{
 				Items.Add(DateTime.Now.ToString());
 			}
+
+			var layout = new StackLayout
+			{
+				Padding = 0
+			};
+
+			var instructions = new Label
+			{
+				Padding = 12,
+				BackgroundColor = Color.Black,
+				TextColor = Color.White,
+				Text = "Try to open the SwipeView doing swipe, if you can open it, the test has passed."
+			};
 
 			var listView = new ListView()
 			{
@@ -58,7 +71,7 @@ namespace Xamarin.Forms.Controls.Issues
 				ItemsSource = Items,
 				ItemTemplate = new DataTemplate(() =>
 				{
-					var layout = new StackLayout();
+					var itemLayout = new StackLayout();
 
 					var swipeView = new SwipeView();
 
@@ -88,13 +101,16 @@ namespace Xamarin.Forms.Controls.Issues
 						swipeItem
 					};
 
-					layout.Children.Add(swipeView);
+					itemLayout.Children.Add(swipeView);
 
-					return new ViewCell { View = layout };
+					return new ViewCell { View = itemLayout };
 				})
 			};
-			
-			Content = listView;
+
+			layout.Children.Add(instructions);
+			layout.Children.Add(listView);
+
+			Content = layout;
 		}
 
 		public ObservableCollection<string> Items = new ObservableCollection<string>();
