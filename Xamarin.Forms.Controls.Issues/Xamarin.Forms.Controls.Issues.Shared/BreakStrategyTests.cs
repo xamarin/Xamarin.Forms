@@ -14,11 +14,18 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
+			Title = "Android Break Strategy";
+
 			var grid = new Grid
 			{
 				RowDefinitions = new RowDefinitionCollection()
 				{
 					new RowDefinition(), new RowDefinition()
+				},
+
+				ColumnDefinitions = new ColumnDefinitionCollection()
+				{
+					new ColumnDefinition(), new ColumnDefinition()
 				}
 			};
 
@@ -28,7 +35,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Margin = 4
 			};
 
-			var buttonStackLayout = new StackLayout();
+			var buttonStackLayout1 = new StackLayout();
 
 			var button1 = new Button
 			{
@@ -60,14 +67,101 @@ namespace Xamarin.Forms.Controls.Issues
 				label.On<PlatformConfiguration.Android>().SetBreakStrategy(BreakStrategyFlags.HighQuality);
 			};
 
-			buttonStackLayout.Children.Add(button1);
-			buttonStackLayout.Children.Add(button2);
-			buttonStackLayout.Children.Add(button3);
+			buttonStackLayout1.Children.Add(new Label()
+			{
+				Text = "Break Strategy:" ,
+				HorizontalTextAlignment = TextAlignment.Center
+			});
 
-			grid.AddChild(label, 0, 0);
-			grid.AddChild(buttonStackLayout, 0, 1);
+			buttonStackLayout1.Children.Add(button1);
+			buttonStackLayout1.Children.Add(button2);
+			buttonStackLayout1.Children.Add(button3);
 
-			Content = grid;
+			var buttonStackLayout2 = new StackLayout();
+
+			var button4 = new Button
+			{
+				Text = "CharacterWrap"
+			};
+
+			button4.Clicked += (o, e) =>
+			{
+				label.LineBreakMode = LineBreakMode.CharacterWrap;
+			};
+
+			var button5 = new Button
+			{
+				Text = "HeadTruncation"
+			};
+
+			button5.Clicked += (o, e) =>
+			{
+				label.LineBreakMode = LineBreakMode.HeadTruncation;
+			};
+
+			var button6 = new Button
+			{
+				Text = "MiddleTruncation"
+			};
+
+			button6.Clicked += (o, e) =>
+			{
+				label.LineBreakMode = LineBreakMode.MiddleTruncation;
+			};
+
+			var button7 = new Button
+			{
+				Text = "NoWrap"
+			};
+
+			button7.Clicked += (o, e) =>
+			{
+				label.LineBreakMode = LineBreakMode.NoWrap;
+			};
+
+			var button8 = new Button
+			{
+				Text = "TailTruncation"
+			};
+
+			button8.Clicked += (o, e) =>
+			{
+				label.LineBreakMode = LineBreakMode.TailTruncation;
+			};
+
+			var button9 = new Button
+			{
+				Text = "WordWrap"
+			};
+
+			button9.Clicked += (o, e) =>
+			{
+				label.LineBreakMode = LineBreakMode.WordWrap;
+			};
+
+			buttonStackLayout2.Children.Add(new Label()
+			{
+				Text = "Line Break Mode:",
+				HorizontalTextAlignment = TextAlignment.Center
+			});
+
+			buttonStackLayout2.Children.Add(button4);
+			buttonStackLayout2.Children.Add(button5);
+			buttonStackLayout2.Children.Add(button6);
+			buttonStackLayout2.Children.Add(button7);
+			buttonStackLayout2.Children.Add(button8);
+			buttonStackLayout2.Children.Add(button9);
+
+			grid.AddChild(label, 0, 0, 2);
+			grid.AddChild(buttonStackLayout1, 0, 1);
+			grid.AddChild(buttonStackLayout2, 1, 1);
+
+			var scrollView = new ScrollView
+			{
+				Content = grid
+			};
+
+			Content = scrollView;
 		}
 	}
 }
