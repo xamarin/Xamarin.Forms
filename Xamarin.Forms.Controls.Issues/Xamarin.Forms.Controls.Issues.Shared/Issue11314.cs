@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -43,40 +45,58 @@ namespace Xamarin.Forms.Controls.Issues
 		public Issue11314Page(string title)
 		{
 			Title = title;
-
-			var layout = new StackLayout();
-
-			var swipeView = new SwipeView();
-
-			var content = new Grid
+	
+			for (int i = 0; i < 20; i++)
 			{
-				HeightRequest = 80,
-				BackgroundColor = Color.LightGray
+				Items.Add(DateTime.Now.ToString());
+			}
+
+			var listView = new ListView()
+			{
+				HorizontalOptions = LayoutOptions.FillAndExpand,
+				HasUnevenRows = true,
+				ItemsSource = Items,
+				ItemTemplate = new DataTemplate(() =>
+				{
+					var layout = new StackLayout();
+
+					var swipeView = new SwipeView();
+
+					var content = new Grid
+					{
+						HeightRequest = 80,
+						BackgroundColor = Color.LightGray
+					};
+
+					content.Children.Add(new Label
+					{
+						HorizontalOptions = LayoutOptions.Center,
+						VerticalOptions = LayoutOptions.Center,
+						Text = "Swipe to Left"
+					});
+
+					swipeView.Content = content;
+
+					var swipeItem = new SwipeItem
+					{
+						BackgroundColor = Color.Red,
+						Text = "Text"
+					};
+
+					swipeView.RightItems = new SwipeItems
+					{
+						swipeItem
+					};
+
+					layout.Children.Add(swipeView);
+
+					return new ViewCell { View = layout };
+				})
 			};
-
-			content.Children.Add(new Label
-			{
-				HorizontalOptions = LayoutOptions.Center,
-				VerticalOptions = LayoutOptions.Center,
-				Text = "Swipe to Left"
-			});
-
-			swipeView.Content = content;
-
-			var swipeItem = new SwipeItem
-			{
-				BackgroundColor = Color.Red,
-				Text = "Text"
-			};
-
-			swipeView.RightItems = new SwipeItems
-			{
-				swipeItem
-			};
-
-			layout.Children.Add(swipeView);
-
-			Content = layout;
+			
+			Content = listView;
 		}
+
+		public ObservableCollection<string> Items = new ObservableCollection<string>();
 	}
 }
