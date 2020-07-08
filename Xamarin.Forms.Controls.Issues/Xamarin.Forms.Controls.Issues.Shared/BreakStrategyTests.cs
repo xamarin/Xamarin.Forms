@@ -81,7 +81,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var button4 = new Button
 			{
-				Text = "CharacterWrap"
+				Text = "Character Wrap"
 			};
 
 			button4.Clicked += (o, e) =>
@@ -91,7 +91,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var button5 = new Button
 			{
-				Text = "HeadTruncation"
+				Text = "Head Truncation"
 			};
 
 			button5.Clicked += (o, e) =>
@@ -101,7 +101,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var button6 = new Button
 			{
-				Text = "MiddleTruncation"
+				Text = "Middle Truncation"
 			};
 
 			button6.Clicked += (o, e) =>
@@ -111,7 +111,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var button7 = new Button
 			{
-				Text = "NoWrap"
+				Text = "No Wrap"
 			};
 
 			button7.Clicked += (o, e) =>
@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var button8 = new Button
 			{
-				Text = "TailTruncation"
+				Text = "Tail Truncation"
 			};
 
 			button8.Clicked += (o, e) =>
@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var button9 = new Button
 			{
-				Text = "WordWrap"
+				Text = "Word Wrap"
 			};
 
 			button9.Clicked += (o, e) =>
