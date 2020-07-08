@@ -3,9 +3,9 @@ using System.Collections;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Media;
+using WCompositeTransform = Windows.UI.Xaml.Media.CompositeTransform;
 
-namespace Xamarin.Forms.Platform.UAP.Tests
+namespace Xamarin.Forms.Platform.UAP.UnitTests
 {
 	[TestFixture]
 	public class ScaleTests : PlatformTestFixture
@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Platform.UAP.Tests
 
 		double GetScaleX(FrameworkElement fe)
 		{
-			if (fe.RenderTransform is CompositeTransform compositeTransform)
+			if (fe.RenderTransform is WCompositeTransform compositeTransform)
 			{
 				return compositeTransform.ScaleX;
 			}
@@ -87,7 +87,7 @@ namespace Xamarin.Forms.Platform.UAP.Tests
 
 		double GetScaleY(FrameworkElement fe)
 		{
-			if (fe.RenderTransform is CompositeTransform compositeTransform)
+			if (fe.RenderTransform is WCompositeTransform compositeTransform)
 			{
 				return compositeTransform.ScaleY;
 			}

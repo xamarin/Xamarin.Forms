@@ -123,6 +123,7 @@
     <Compile Include="BackgroundColorTests.cs" />
     <Compile Include="ColorTests.cs" />
     <Compile Include="EmbeddingTests.cs" />
+    <Compile Include="FlowDirectionTests.cs" />
     <Compile Include="IsEnabledTests.cs" />
     <Compile Include="PlatformTestFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -130,11 +131,12 @@
     <Compile Include="RotationTests.cs" />
     <Compile Include="ScaleTests.cs" />
     <Compile Include="ScrollBarVisibilityTests.cs" />
+    <Compile Include="ShellTests.cs" />
     <EmbeddedResource Include="Properties\Xamarin.Forms.Platform.UAP.UnitTests.rd.xml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.2.9</Version>
+      <Version>6.2.10</Version>
     </PackageReference>
     <PackageReference Include="NUnit">
       <Version>3.12.0</Version>

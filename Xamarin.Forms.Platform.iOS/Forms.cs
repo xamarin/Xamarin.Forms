@@ -91,6 +91,30 @@ namespace Xamarin.Forms
 			}
 		}
 #else
+		static bool? s_isSierraOrNewer;
+
+		internal static bool IsSierraOrNewer
+		{
+			get
+			{
+				if (!s_isSierraOrNewer.HasValue)
+					s_isSierraOrNewer = NSProcessInfo.ProcessInfo.IsOperatingSystemAtLeastVersion(new NSOperatingSystemVersion(10, 12, 0));
+				return s_isSierraOrNewer.Value;
+			}
+		}
+
+		static bool? s_isHighSierraOrNewer;
+
+		internal static bool IsHighSierraOrNewer
+		{
+			get
+			{
+				if (!s_isHighSierraOrNewer.HasValue)
+					s_isHighSierraOrNewer = NSProcessInfo.ProcessInfo.IsOperatingSystemAtLeastVersion(new NSOperatingSystemVersion(10, 13, 0));
+				return s_isHighSierraOrNewer.Value;
+			}
+		}
+
 		static bool? s_isMojaveOrNewer;
 
 		internal static bool IsMojaveOrNewer
@@ -281,6 +305,11 @@ namespace Xamarin.Forms
 #if __XCODE11__ && __IOS__
 				UIColor resultColor = null;
 
+				// If not iOS 13, but 11+ we can only get the named colors
+				if (!IsiOS13OrNewer && IsiOS11OrNewer)
+					return (resultColor = UIColor.FromName(name)) == null ? Color.Default : resultColor.ToColor();
+
+				// If iOS 13+ check all dynamic colors too
 				switch (name)
 				{
 					case NamedPlatformColor.Label:
@@ -331,6 +360,9 @@ namespace Xamarin.Forms
 					case NamedPlatformColor.SystemIndigo:
 						resultColor = UIColor.SystemIndigoColor;
 						break;
+					case NamedPlatformColor.SystemOrange:
+						resultColor = UIColor.SystemOrangeColor;
+						break;
 					case NamedPlatformColor.SystemPink:
 						resultColor = UIColor.SystemPinkColor;
 						break;
@@ -358,6 +390,177 @@ namespace Xamarin.Forms
 					return Color.Default;
 
 				return resultColor.ToColor();
+#elif __MACOS__
+
+				NSColor resultColor = null;
+
+				switch (name)
+				{
+					case NamedPlatformColor.AlternateSelectedControlTextColor:
+						resultColor = NSColor.AlternateSelectedControlText;
+							break;
+					case NamedPlatformColor.ControlAccent:
+						if (IsMojaveOrNewer)
+							resultColor = NSColor.ControlAccentColor;
+						break;
+					case NamedPlatformColor.ControlBackgroundColor:
+						resultColor = NSColor.ControlBackground;
+						break;
+					case NamedPlatformColor.ControlColor:
+						resultColor = NSColor.Control;
+						break;
+					case NamedPlatformColor.ControlTextColor:
+						resultColor = NSColor.ControlText;
+						break;
+					case NamedPlatformColor.DisabledControlTextColor:
+						resultColor = NSColor.DisabledControlText;
+						break;
+					case NamedPlatformColor.FindHighlightColor:
+						if (IsHighSierraOrNewer)
+							resultColor = NSColor.FindHighlightColor;
+						break;
+					case NamedPlatformColor.GridColor:
+						resultColor = NSColor.Grid;
+						break;
+					case NamedPlatformColor.HeaderTextColor:
+						resultColor = NSColor.HeaderText;
+						break;
+					case NamedPlatformColor.HighlightColor:
+						resultColor = NSColor.Highlight;
+						break;
+					case NamedPlatformColor.KeyboardFocusIndicatorColor:
+						resultColor = NSColor.KeyboardFocusIndicator;
+						break;
+					case NamedPlatformColor.LabelColor:
+						resultColor = NSColor.LabelColor;
+						break;
+					case NamedPlatformColor.LinkColor:
+						resultColor = NSColor.LinkColor;
+						break;
+					case NamedPlatformColor.PlaceholderTextColor:
+						resultColor = NSColor.PlaceholderTextColor;
+						break;
+					case NamedPlatformColor.QuaternaryLabelColor:
+						resultColor = NSColor.QuaternaryLabelColor;
+						break;
+					case NamedPlatformColor.SecondaryLabelColor:
+						resultColor = NSColor.SecondaryLabelColor;
+						break;
+					case NamedPlatformColor.SelectedContentBackgroundColor:
+						resultColor = NSColor.SelectedContentBackgroundColor;
+						break;
+					case NamedPlatformColor.SelectedControlColor:
+						resultColor = NSColor.SelectedControl;
+						break;
+					case NamedPlatformColor.SelectedControlTextColor:
+						resultColor = NSColor.SelectedControlText;
+						break;
+					case NamedPlatformColor.SelectedMenuItemTextColor:
+						resultColor = NSColor.SelectedMenuItemText;
+						break;
+					case NamedPlatformColor.SelectedTextBackgroundColor:
+						resultColor = NSColor.SelectedTextBackground;
+						break;
+					case NamedPlatformColor.SelectedTextColor:
+						resultColor = NSColor.SelectedText;
+						break;
+					case NamedPlatformColor.SeparatorColor:
+						resultColor = NSColor.SeparatorColor;
+						break;
+					case NamedPlatformColor.ShadowColor:
+						resultColor = NSColor.Shadow;
+						break;
+					case NamedPlatformColor.TertiaryLabelColor:
+						resultColor = NSColor.TertiaryLabelColor;
+						break;
+					case NamedPlatformColor.TextBackgroundColor:
+						resultColor = NSColor.TextBackground;
+						break;
+					case NamedPlatformColor.TextColor:
+						resultColor = NSColor.Text;
+						break;
+					case NamedPlatformColor.UnderPageBackgroundColor:
+						resultColor = NSColor.UnderPageBackgroundColor;
+						break;
+					case NamedPlatformColor.UnemphasizedSelectedContentBackgroundColor:
+						if (IsMojaveOrNewer)
+							resultColor = NSColor.UnemphasizedSelectedContentBackgroundColor;
+						break;
+					case NamedPlatformColor.UnemphasizedSelectedTextBackgroundColor:
+						if (IsMojaveOrNewer)
+							resultColor = NSColor.UnemphasizedSelectedTextBackgroundColor;
+						break;
+					case NamedPlatformColor.UnemphasizedSelectedTextColor:
+						if (IsMojaveOrNewer)
+							resultColor = NSColor.UnemphasizedSelectedTextColor;
+						break;
+					case NamedPlatformColor.WindowBackgroundColor:
+						resultColor = NSColor.WindowBackground;
+						break;
+					case NamedPlatformColor.WindowFrameTextColor:
+						resultColor = NSColor.WindowFrameText;
+						break;
+					case NamedPlatformColor.Label:
+						resultColor = NSColor.LabelColor;
+						break;
+					case NamedPlatformColor.Link:
+						resultColor = NSColor.LinkColor;
+						break;
+					case NamedPlatformColor.PlaceholderText:
+						resultColor = NSColor.PlaceholderTextColor;
+						break;
+					case NamedPlatformColor.QuaternaryLabel:
+						resultColor = NSColor.QuaternaryLabelColor;
+						break;
+					case NamedPlatformColor.SecondaryLabel:
+						resultColor = NSColor.SecondaryLabelColor;
+						break;
+					case NamedPlatformColor.Separator:
+						if (IsMojaveOrNewer)
+							resultColor = NSColor.SeparatorColor;
+						break;
+					case NamedPlatformColor.SystemBlue:
+						resultColor = NSColor.SystemBlueColor;
+						break;
+					case NamedPlatformColor.SystemGray:
+						resultColor = NSColor.SystemGrayColor;
+						break;
+					case NamedPlatformColor.SystemGreen:
+						resultColor = NSColor.SystemGreenColor;
+						break;
+					case NamedPlatformColor.SystemIndigo:
+						resultColor = NSColor.SystemIndigoColor;
+						break;
+					case NamedPlatformColor.SystemOrange:
+						resultColor = NSColor.SystemOrangeColor;
+						break;
+					case NamedPlatformColor.SystemPink:
+						resultColor = NSColor.SystemPinkColor;
+						break;
+					case NamedPlatformColor.SystemPurple:
+						resultColor = NSColor.SystemPurpleColor;
+						break;
+					case NamedPlatformColor.SystemRed:
+						resultColor = NSColor.SystemRedColor;
+						break;
+					case NamedPlatformColor.SystemTeal:
+						resultColor = NSColor.SystemTealColor;
+						break;
+					case NamedPlatformColor.SystemYellow:
+						resultColor = NSColor.SystemYellowColor;
+						break;
+					case NamedPlatformColor.TertiaryLabel:
+						resultColor = NSColor.TertiaryLabelColor;
+						break;
+					default:
+						resultColor = NSColor.FromName(name);
+						break;
+				}
+
+				if (resultColor == null)
+					return Color.Default;
+
+				return resultColor.ToColor(NSColorSpace.GenericRGBColorSpace);
 #else
 				return Color.Default;
 #endif
@@ -493,14 +696,13 @@ namespace Xamarin.Forms
 #endif
 			}
 
-			#region Remove with Essentials API
-			public AppTheme RequestedTheme
-			{
-				get
-				{
+			public OSAppTheme RequestedTheme
+            {
+                get
+                {
 #if __IOS__ || __TVOS__
 					if (!IsiOS13OrNewer)
-						return AppTheme.Unspecified;
+						return OSAppTheme.Unspecified;
 #if __XCODE11__
 					var uiStyle = GetCurrentUIViewController()?.TraitCollection?.UserInterfaceStyle ??
 						UITraitCollection.CurrentTraitCollection.UserInterfaceStyle;
@@ -508,17 +710,17 @@ namespace Xamarin.Forms
 					switch (uiStyle)
 					{
 						case UIUserInterfaceStyle.Light:
-							return AppTheme.Light;
+							return OSAppTheme.Light;
 						case UIUserInterfaceStyle.Dark:
-							return AppTheme.Dark;
+							return OSAppTheme.Dark;
 						default:
-							return AppTheme.Unspecified;
+							return OSAppTheme.Unspecified;
 					};
 #else
-					return AppTheme.Unspecified;
+					return OSAppTheme.Unspecified;
 #endif
 #else
-					return AppTheme.Unspecified;
+                    return OSAppTheme.Unspecified;
 #endif
 				}
 			}
@@ -560,6 +762,5 @@ namespace Xamarin.Forms
 			}
 #endif
 		}
-		#endregion
 	}
 }

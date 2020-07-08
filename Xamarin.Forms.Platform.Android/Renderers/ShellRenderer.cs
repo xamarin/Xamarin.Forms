@@ -21,6 +21,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using AColor = Android.Graphics.Color;
+using ARect = Android.Graphics.Rect;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
 
@@ -275,7 +276,7 @@ namespace Xamarin.Forms.Platform.Android
 			var fragment = _currentRenderer.Fragment;
 
 			Profile.FramePartition("Transaction");
-			FragmentTransaction transaction = manager.BeginTransaction();
+			FragmentTransaction transaction = manager.BeginTransactionEx();
 
 			if (animate)
 				transaction.SetTransitionEx((int)global::Android.App.FragmentTransit.EnterMask);
@@ -393,9 +394,9 @@ namespace Xamarin.Forms.Platform.Android
 
 					paint.Color = Color;
 
-					canvas.DrawRect(new Rect(0, 0, bounds.Right, TopSize), paint);
+					canvas.DrawRect(new ARect(0, 0, bounds.Right, TopSize), paint);
 
-					canvas.DrawRect(new Rect(0, bounds.Bottom - BottomSize, bounds.Right, bounds.Bottom), paint);
+					canvas.DrawRect(new ARect(0, bounds.Bottom - BottomSize, bounds.Right, bounds.Bottom), paint);
 
 					paint.Dispose();
 				}
@@ -428,7 +429,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (_currentRenderer != null && _currentRenderer.Fragment.IsAlive())
 				{
-					FragmentTransaction transaction = FragmentManager.BeginTransaction();
+					FragmentTransaction transaction = FragmentManager.BeginTransactionEx();
 					transaction.RemoveEx(_currentRenderer.Fragment);
 					transaction.CommitAllowingStateLossEx();
 					FragmentManager.ExecutePendingTransactionsEx();

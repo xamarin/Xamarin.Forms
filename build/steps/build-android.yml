@@ -1,8 +1,8 @@
 parameters:
   name: ''            # in the form type_platform_host
   displayName: ''     # the human name
-  vmImage: ''         # the VM image
-  vmPool: ''         # the VM pool
+  vmImage: 'macOS-10.15'         # the VM image
+  vmPool: 'Azure Pipelines'         # the VM pool
   dependsOn: []       # the dependiencies
   preBuildSteps: []   # any steps to run before the build
   postBuildSteps: []  # any additional steps to run after the build
@@ -14,6 +14,7 @@ parameters:
   monoVersion: $(MONO_VERSION)
   provisionatorPath: 'build/provisioning/provisioning.csx'
   provisionatorExtraArguments: ''
+  MSBuildArguments_cg_android: ''
 
 jobs:
   - job: ${{ parameters.name }}
@@ -22,37 +23,41 @@ jobs:
     displayName: ${{ parameters.displayName }}
     timeoutInMinutes: 120
     pool:
-      vmImage: ${{ parameters.vmImage }}
+      name: ${{ coalesce(parameters.vmPool, 'Azure Pipelines') }}
+      vmImage: ${{ coalesce(parameters.vmImage, 'macOS-10.15') }}
     dependsOn: ${{ parameters.dependsOn }}
     strategy:
       matrix:
         android_legacy:
           renderers: 'LEGACY'
           outputfolder: 'legacyRenderers'
+          buildForVS2017: ${{ parameters.buildForVS2017 }}
         android_preAppCompat:
           renderers: 'PREAPPCOMPAT'
           outputfolder: 'preAppCompat'
+          buildForVS2017: ${{ parameters.buildForVS2017 }}
         android_newRenderers:
           renderers: 'FAST'
           outputfolder: 'newRenderers'
+          buildForVS2017: ${{ parameters.buildForVS2017 }}
     steps:
       - checkout: self
         clean: true
 
-      - task: xamops.azdevex.provisionator-task.provisionator@1
-        displayName: 'Provisionator'
-        condition: eq(variables['provisioning'], 'true')
-        inputs:
-          provisioning_script: ${{ parameters.provisionatorPath }}
-          provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
-
       - task: Bash@3
         displayName: 'Cake Provision'
-        condition: eq(variables['provisioningCake'], 'true')
+        condition: or(eq(variables['provisioningCake'], 'true'), eq(variables['buildForVS2017'], 'true'))
         inputs:
           targetType: 'filePath'
           filePath: 'build.sh'
-          arguments: --target provision --TeamProject="$(System.TeamProject)" --releaseChannel=$(releaseChannel)
+          arguments: --target provision --TeamProject="$(System.TeamProject)" --buildForVS2017=$(buildForVS2017)
+
+      - task: xamops.azdevex.provisionator-task.provisionator@1
+        displayName: 'Provisionator'
+        condition: and(eq(variables['provisioning'], 'true'), eq(variables['buildForVS2017'], 'false'))
+        inputs:
+          provisioning_script: ${{ parameters.provisionatorPath }}
+          provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
 
       - task: UseDotNet@2
         displayName: 'Install .net core $(DOTNET_VERSION)'
@@ -69,7 +74,7 @@ jobs:
         condition: ne(variables['NUGET_VERSION'], '')
         inputs:
           versionSpec: $(NUGET_VERSION)
-  
+
       - task: DownloadBuildArtifacts@0
         displayName: 'Download build artifact nuget'
         condition: eq(variables['System.TeamProject'], 'DevDiv')
@@ -84,25 +89,28 @@ jobs:
           SourceFolder: 'Nuget/nuget/${{ parameters.buildConfiguration }}'
           TargetFolder: 'Nuget'
 
+      - bash: |
+          echo "##vso[task.setvariable variable=NUGET_RESTORE_MSBUILD_ARGS]${{ parameters.MSBuildArguments_cg_android }}"
+        displayName: 'Set NUGET_RESTORE_MSBUILD_ARGS for Nuget'
+
+      - bash: |
+          env | grep NUGET_RESTORE_MSBUILD_ARGS
+        displayName: 'Display NUGET_RESTORE_MSBUILD_ARGS for Nuget'
+
       - task: NuGetCommand@2
         displayName: 'NuGet restore ${{ parameters.slnPath }}'
         inputs:
-          restoreSolution:  ${{ parameters.slnPath }}
+          command: restore
+          restoreSolution: 'Xamarin.Forms.sln'
           feedsToUse: config
           nugetConfigPath: 'DevopsNuget.config'
 
-      - task: MSBuild@1
-        displayName: 'Build ${{ parameters.buildTaskPath  }}'
-        inputs:
-          solution: ${{ parameters.buildTaskPath }}
-          configuration: ${{ parameters.buildConfiguration }}
-
-      - task: MSBuild@1
+      - task: Bash@3
         displayName: 'Build Android $(renderers)'
         inputs:
-          solution: ${{ parameters.androidProjectPath }}
-          configuration: ${{ parameters.buildConfiguration }}
-          msbuildArguments: '/t:"Rebuild;SignAndroidPackage" /p:ANDROID_RENDERERS="$(renderers)" /bl:$(Build.ArtifactStagingDirectory)/android-$(renderers).binlog'
+          targetType: 'filePath'
+          filePath: 'build.sh'
+          arguments: --target cg-android --ANDROID_RENDERERS="$(renderers)" --GoogleMapsAPIKey="$(GoogleMapsAPIKey)" --buildForVS2017=$(buildForVS2017) --BUILD_CONFIGURATION=${{ parameters.buildConfiguration }} --MSBuildArguments='${{ variables.MSBuildArguments_cg_android }}'
 
       - task: CopyFiles@2
         displayName: 'Copy $(renderers)'
@@ -115,10 +123,20 @@ jobs:
 
       - task: CopyFiles@2
         displayName: 'Copy Android apk $(renderers) for UITest'
+        condition: eq(variables['buildForVS2017'], 'false')
         inputs:
           Contents: |
             Xamarin.Forms.ControlGallery.Android/$(outputfolder)/$(ApkName)
           TargetFolder: '$(build.artifactstagingdirectory)/androidApp'
+          CleanTargetFolder: true
+
+      - task: CopyFiles@2
+        displayName: 'Copy Android apk $(renderers) for UITest 2017'
+        condition: eq(variables['buildForVS2017'], 'true')
+        inputs:
+          Contents: |
+            Xamarin.Forms.ControlGallery.Android/$(outputfolder)/$(ApkName)
+          TargetFolder: '$(build.artifactstagingdirectory)/androidApp_2017'
           CleanTargetFolder: true
 
       - task: PublishBuildArtifacts@1

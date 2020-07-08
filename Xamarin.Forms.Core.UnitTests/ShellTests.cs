@@ -32,6 +32,61 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(shell.CurrentItem, Is.EqualTo(shellItem));
 		}
 
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void SetCurrentItemWithImplicitlyWrappedShellContent(bool useShellContent)
+		{
+			var shell = new Shell();
+			shell.Items.Add(CreateShellItem());
+
+			BaseShellItem shellElement = null;
+
+			if(useShellContent)
+				shellElement = CreateShellContent(shellContentRoute: "TestMe");
+			else
+				shellElement = CreateShellSection(shellSectionRoute: "TestMe");
+
+			if (useShellContent)
+				shell.Items.Add((ShellContent)shellElement);
+			else
+				shell.Items.Add((ShellSection)shellElement);
+
+			var item2 = shell.Items[1];
+
+			Assert.AreEqual(FindParentOfType<ShellItem>(shellElement), item2);
+
+			if (useShellContent)
+				shell.CurrentItem = (ShellContent)shellElement;
+			else
+				shell.CurrentItem = (ShellSection)shellElement;
+
+			Assert.AreEqual(2, shell.Items.Count);
+			Assert.AreEqual(FindParentOfType<ShellItem>(shellElement), item2);
+			Assert.AreEqual(item2, shell.CurrentItem);
+		}
+
+
+		[Test]
+		public void SetCurrentItemAddsToShellCollection()
+		{
+			var shell = new Shell();
+			var shellItem = CreateShellItem();
+			var shellSection = CreateShellSection();
+			var shellContent = CreateShellContent();
+
+			shell.CurrentItem = shellItem;
+			Assert.IsTrue(shell.Items.Contains(shellItem));
+			Assert.AreEqual(shell.CurrentItem, shellItem);
+
+			shell.CurrentItem = shellSection;
+			Assert.AreEqual(shell.CurrentItem, shellSection.Parent);
+
+			shell.CurrentItem = shellContent;
+			Assert.AreEqual(shell.CurrentItem, shellContent.Parent.Parent);
+		}
+
+
 		[Test]
 		public void ShellChildrenBindingContext()
 		{
@@ -348,7 +403,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var shell = new Shell();
 			ShellTestPage pagetoTest = new ShellTestPage();
-			pagetoTest.BindingContext = pagetoTest;		
+			pagetoTest.BindingContext = pagetoTest;
 			var one = CreateShellItem(pagetoTest, shellContentRoute: "content", templated: useDataTemplates);
 			shell.Items.Add(one);
 			ShellTestPage page = null;
@@ -554,6 +609,45 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.GoToAsync(new ShellNavigationState("//two/tabfour/"));
 
 			Assume.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//one/tabone/content"));
+		}
+
+		[Test]
+		public async Task OnBackbuttonPressedPageReturnsTrue()
+		{			
+			TestShell shell = new TestShell();
+
+			Routing.RegisterRoute("OnBackbuttonPressedFiresOnPage", typeof(ShellTestPage));
+			shell.Items.Add(CreateShellItem());
+			await shell.GoToAsync($"OnBackbuttonPressedFiresOnPage?CancelNavigationOnBackButtonPressed=true");
+
+			shell.SendBackButtonPressed();
+			Assert.AreEqual(2, shell.Navigation.NavigationStack.Count);
+		}
+
+		[Test]
+		public async Task OnBackbuttonPressedPageReturnsFalse()
+		{
+			TestShell shell = new TestShell();
+
+			Routing.RegisterRoute("OnBackbuttonPressedFiresOnPage", typeof(ShellTestPage));
+			shell.Items.Add(CreateShellItem());
+			await shell.GoToAsync($"OnBackbuttonPressedFiresOnPage?CancelNavigationOnBackButtonPressed=false");
+
+			shell.SendBackButtonPressed();
+			Assert.AreEqual(1, shell.Navigation.NavigationStack.Count);
+		}
+
+		[Test]
+		public async Task OnBackbuttonPressedShellReturnsTrue()
+		{
+			TestShell shell = new TestShell();
+
+			Routing.RegisterRoute("OnBackbuttonPressedShellReturnsTrue", typeof(ShellTestPage));
+			shell.Items.Add(CreateShellItem());
+			await shell.GoToAsync($"OnBackbuttonPressedShellReturnsTrue");
+			shell.OnBackButtonPressedFunc = () => true;
+			shell.SendBackButtonPressed();
+			Assert.AreEqual(2, shell.Navigation.NavigationStack.Count);
 		}
 
 		[Test]
@@ -862,6 +956,33 @@ namespace Xamarin.Forms.Core.UnitTests
 
 
 		[Test]
+		public async Task ShellFlyoutChangeableOnShellWithFlyoutItem()
+		{
+			Shell shell = new Shell();
+			var flyoutItem = CreateShellItem<FlyoutItem>();
+			shell.Items.Add(flyoutItem);
+			Assert.AreEqual(FlyoutBehavior.Flyout, shell.GetEffectiveFlyoutBehavior());
+			shell.FlyoutBehavior = FlyoutBehavior.Locked;
+			Assert.AreEqual(FlyoutBehavior.Locked, shell.GetEffectiveFlyoutBehavior());
+			shell.FlyoutBehavior = FlyoutBehavior.Disabled;
+			Assert.AreEqual(FlyoutBehavior.Disabled, shell.GetEffectiveFlyoutBehavior());
+		}
+
+		[Test]
+		public async Task ShellFlyoutChangeableOnShellWithTabBar()
+		{
+			Shell shell = new Shell();
+			var tabBarItem = CreateShellItem<TabBar>();
+			shell.Items.Add(tabBarItem);
+			Assert.AreEqual(FlyoutBehavior.Disabled, shell.GetEffectiveFlyoutBehavior());
+			shell.FlyoutBehavior = FlyoutBehavior.Flyout;
+			Assert.AreEqual(FlyoutBehavior.Flyout, shell.GetEffectiveFlyoutBehavior());
+			shell.FlyoutBehavior = FlyoutBehavior.Locked;
+			Assert.AreEqual(FlyoutBehavior.Locked, shell.GetEffectiveFlyoutBehavior());
+		}
+
+
+		[Test]
 		public async Task ShellFlyoutBehaviorCalculation()
 		{
 			Shell shell = new Shell();
@@ -893,21 +1014,21 @@ namespace Xamarin.Forms.Core.UnitTests
 		public async Task TabBarAutoCreation()
 		{
 			Shell shell = new Shell();
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
 
 			Assert.AreEqual(1, shell.Items.Count);
 			Assert.AreEqual(3, shell.Items[0].Items.Count);
 
-			Assert.AreEqual(FlyoutBehavior.Disabled, Shell.GetFlyoutBehavior(shell.Items[0]));
+			Assert.AreEqual(FlyoutBehavior.Disabled, shell.GetEffectiveFlyoutBehavior());
 
 
 			shell = new Shell();
 			shell.Items.Add(new TabBar());
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
 
 			Assert.AreEqual(2, shell.Items.Count);
 			Assert.AreEqual(0, shell.Items[0].Items.Count);
@@ -915,13 +1036,13 @@ namespace Xamarin.Forms.Core.UnitTests
 
 
 			shell = new Shell();
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
 			shell.Items.Add(new TabBar());
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
-			shell.Items.Add(ShellItem.CreateFromShellSection(new Tab()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
+			shell.Items.Add(ShellItem.CreateFromShellSection(CreateShellSection<Tab>()));
 
 			Assert.AreEqual(3, shell.Items.Count);
 			Assert.AreEqual(3, shell.Items[0].Items.Count);
@@ -1027,6 +1148,81 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public async Task ShellVisibleItemsReAddedIntoSameOrder()
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem();
+			shell.Items.Add(item1);
+			var shellSection = item1.Items[0];
+			var shellSectionController = (IShellSectionController)shellSection;
+			ContentPage hideMe = new ContentPage();
+			var shellContent = CreateShellContent(hideMe);
+
+
+			shellSection.Items.Insert(0, shellContent);
+
+			Assert.AreEqual(0, shellSection.Items.IndexOf(shellContent));
+			Assert.AreEqual(0, shellSectionController.GetItems().IndexOf(shellContent));
+
+			hideMe.IsVisible = false;
+
+			Assert.AreEqual(0, shellSection.Items.IndexOf(shellContent));
+			Assert.AreEqual(-1, shellSectionController.GetItems().IndexOf(shellContent));
+
+			hideMe.IsVisible = true;
+
+			Assert.AreEqual(0, shellSection.Items.IndexOf(shellContent));
+			Assert.AreEqual(0, shellSectionController.GetItems().IndexOf(shellContent));
+		}
+
+		[Test]
+		public async Task HidingShellItemSetsNewCurrentItem()
+		{
+			var shell = new Shell();
+			ContentPage contentPage = new ContentPage();
+			var item1 = CreateShellItem(contentPage);
+			shell.Items.Add(item1);
+			var item2 = CreateShellItem();
+			shell.Items.Add(item2);
+
+			Assert.AreEqual(shell.CurrentItem, item1);
+			contentPage.IsVisible = false;
+			Assert.AreEqual(shell.CurrentItem, item2);
+		}
+
+
+		[Test]
+		public async Task HidingShellSectionSetsNewCurrentItem()
+		{
+			var shell = new Shell();
+			ContentPage contentPage = new ContentPage();
+			var item1 = CreateShellItem(contentPage);
+			shell.Items.Add(item1);
+			var shellSection2 = CreateShellSection();
+			item1.Items.Add(shellSection2);
+
+			Assert.AreEqual(shell.CurrentItem.CurrentItem, item1.Items[0]);
+			contentPage.IsVisible = false;
+			Assert.AreEqual(shell.CurrentItem.CurrentItem, shellSection2);
+		}
+
+
+		[Test]
+		public async Task HidingShellContentSetsNewCurrentItem()
+		{
+			var shell = new Shell();
+			ContentPage contentPage = new ContentPage();
+			var item1 = CreateShellItem(contentPage);
+			shell.Items.Add(item1);
+			var shellContent2 = CreateShellContent();
+			item1.Items[0].Items.Add(shellContent2);
+
+			Assert.AreEqual(shell.CurrentItem.CurrentItem.CurrentItem, item1.Items[0].Items[0]);
+			contentPage.IsVisible = false;
+			Assert.AreEqual(shell.CurrentItem.CurrentItem.CurrentItem, shellContent2);
+		}
+
+		[Test]
 		public async Task ShellLocationRestoredWhenItemsAreReAdded()
 		{
 			var shell = new Shell();
@@ -1052,39 +1248,12 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			shell.Items.Add(shellItem);
 
-			var flyoutItemTemplate = Shell.GetItemTemplate(shellItem);
+			var flyoutItemTemplate = (shell as IShellController).GetFlyoutItemDataTemplate(shellItem);
 			var thing = (Element)flyoutItemTemplate.CreateContent();
 			thing.Parent = shell;
 
 			var label = thing.LogicalChildren.OfType<Label>().First();
 			Assert.AreEqual(TextAlignment.Center, label.VerticalTextAlignment);
-		}
-
-		[Test]
-		public void FlyoutItemLabelStyleCanBeChangedAfterRendered()
-		{
-			var classStyle = new Style(typeof(Label))
-			{
-				Setters = {
-					new Setter { Property = Label.VerticalTextAlignmentProperty, Value = TextAlignment.Start }
-				},
-				Class = "fooClass",
-			};
-
-			Shell shell = new Shell();
-			shell.Resources = new ResourceDictionary { classStyle };
-			var shellItem = CreateShellItem();
-
-			shell.Items.Add(shellItem);
-
-			var flyoutItemTemplate = Shell.GetItemTemplate(shellItem);
-			var thing = (Element)flyoutItemTemplate.CreateContent();
-			thing.Parent = shell;
-
-			var label = thing.LogicalChildren.OfType<Label>().First();
-			Assert.AreEqual(TextAlignment.Center, label.VerticalTextAlignment);
-			shellItem.StyleClass = new[] { "fooClass" };
-			Assert.AreEqual(TextAlignment.Start, label.VerticalTextAlignment);
 		}
 
 
@@ -1106,7 +1275,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			shell.Items.Add(shellItem);
 
-			var flyoutItemTemplate = Shell.GetItemTemplate(shellItem);
+			var flyoutItemTemplate = (shell as IShellController).GetFlyoutItemDataTemplate(shellItem);
 			var thing = (Element)flyoutItemTemplate.CreateContent();
 			thing.Parent = shell;
 
@@ -1134,40 +1303,11 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.Items.Add(shellItem);
 			shell.Items.Add(shellMenuItem);
 
-			var flyoutItemTemplate = Shell.GetItemTemplate(shellMenuItem);
+			var flyoutItemTemplate = (shell as IShellController).GetFlyoutItemDataTemplate(shellMenuItem);
 			var thing = (Element)flyoutItemTemplate.CreateContent();
 			thing.Parent = shell;
 
 			var label = thing.LogicalChildren.OfType<Label>().First();
-			Assert.AreEqual(TextAlignment.Start, label.VerticalTextAlignment);
-		}
-
-		[Test]
-		public void MenuItemLabelStyleCanBeChangedAfterRendered()
-		{
-			var classStyle = new Style(typeof(Label))
-			{
-				Setters = {
-					new Setter { Property = Label.VerticalTextAlignmentProperty, Value = TextAlignment.Start }
-				},
-				Class = "fooClass",
-			};
-
-			Shell shell = new Shell();
-			shell.Resources = new ResourceDictionary { classStyle };
-			var shellItem = CreateShellItem();
-			var menuItem = new MenuItem();
-			var shellMenuItem = new MenuShellItem(menuItem);
-			shell.Items.Add(shellItem);
-			shell.Items.Add(shellMenuItem);
-
-			var flyoutItemTemplate = Shell.GetItemTemplate(shellMenuItem);
-			var thing = (Element)flyoutItemTemplate.CreateContent();
-			thing.Parent = shell;
-
-			var label = thing.LogicalChildren.OfType<Label>().First();
-			Assert.AreEqual(TextAlignment.Center, label.VerticalTextAlignment);
-			menuItem.StyleClass = new[] { "fooClass" };
 			Assert.AreEqual(TextAlignment.Start, label.VerticalTextAlignment);
 		}
 
@@ -1179,7 +1319,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Setters = {
 					new Setter { Property = Label.VerticalTextAlignmentProperty, Value = TextAlignment.Start }
 				},
-				Class = "FlyoutItemLabelStyle",
+				Class = FlyoutItem.LabelStyle,
 			};
 
 			Shell shell = new Shell();
@@ -1188,13 +1328,241 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			shell.Items.Add(shellItem);
 
-			var flyoutItemTemplate = Shell.GetItemTemplate(shellItem);
+			var flyoutItemTemplate = (shell as IShellController).GetFlyoutItemDataTemplate(shellItem);
 			var thing = (Element)flyoutItemTemplate.CreateContent();
 			thing.Parent = shell;
 
 			var label = thing.LogicalChildren.OfType<Label>().First();
 			Assert.AreEqual(TextAlignment.Start, label.VerticalTextAlignment);
 		}
+
+		[Test]
+		public void FlyoutItemDefaultTemplates()
+		{
+			Shell shell = new Shell();
+			IShellController sc = (IShellController)shell;
+			shell.MenuItemTemplate = new DataTemplate(() => new Label() { Text = "MenuItemTemplate" });
+			shell.ItemTemplate = new DataTemplate(() => new Label() { Text = "ItemTemplate" });
+
+			var shellItem = CreateShellItem();
+			var menuItem = new MenuShellItem(new MenuItem());
+			shell.Items.Add(shellItem);
+			shell.Items.Add(menuItem);
+
+
+			DataTemplate triggerDefault = shell.ItemTemplate;
+			triggerDefault = shell.MenuItemTemplate;
+
+			Assert.AreEqual("ItemTemplate", ((Label)sc.GetFlyoutItemDataTemplate(shellItem).CreateContent()).Text);
+			Assert.AreEqual("MenuItemTemplate", ((Label)sc.GetFlyoutItemDataTemplate(menuItem).CreateContent()).Text);
+			Assert.AreEqual("MenuItemTemplate", ((Label)sc.GetFlyoutItemDataTemplate(menuItem.MenuItem).CreateContent()).Text);
+		}
+
+		[Test]
+		public void FlyoutItemLabelVisualStateManager()
+		{
+			var groups = new VisualStateGroupList();
+			var commonGroup = new VisualStateGroup();
+			commonGroup.Name = "CommonStates";
+			groups.Add(commonGroup);
+			var normalState = new VisualState();
+			normalState.Name = "Normal";
+			var selectedState = new VisualState();
+			selectedState.Name = "Selected";
+
+			normalState.Setters.Add(new Setter
+			{
+				Property = Label.BackgroundColorProperty,
+				Value = Color.Red,
+				TargetName = "FlyoutItemLabel"
+			});
+
+			selectedState.Setters.Add(new Setter
+			{
+				Property = Label.BackgroundColorProperty,
+				Value = Color.Green,
+				TargetName = "FlyoutItemLabel"
+			});
+
+			commonGroup.States.Add(normalState);
+			commonGroup.States.Add(selectedState);
+
+			var classStyle = new Style(typeof(Grid))
+			{
+				Setters = {
+					new Setter
+					{
+						Property = VisualStateManager.VisualStateGroupsProperty,
+						Value = groups
+					}
+				},
+				Class = FlyoutItem.LayoutStyle,
+			};
+
+			Shell shell = new Shell();
+			shell.Resources = new ResourceDictionary { classStyle };
+			var shellItem = CreateShellItem();
+			shell.Items.Add(shellItem);
+			var flyoutItemTemplate = (shell as IShellController).GetFlyoutItemDataTemplate(shellItem);
+			var grid = (VisualElement)flyoutItemTemplate.CreateContent();
+			grid.Parent = shell;
+			var label = grid.LogicalChildren.OfType<Label>().First();
+
+			Assert.AreEqual(Color.Red, label.BackgroundColor);
+			Assert.IsTrue(VisualStateManager.GoToState(grid, "Selected"));
+			Assert.AreEqual(Color.Green, label.BackgroundColor);
+		}
+
+		[Test]
+		public void ClearingShellContentAndReAddingSetsCurrentItem()
+		{
+			Shell shell = new Shell();
+			var item = CreateShellItem();
+			item.CurrentItem.Items.Add(CreateShellContent());
+			item.CurrentItem.Items.Add(CreateShellContent());
+			var item2 = CreateShellItem();
+
+			shell.Items.Add(item);
+			shell.Items.Add(item2);
+
+			item.Items[0].Items.Clear();
+
+			var content = CreateShellContent();
+			item.Items[0].Items.Add(content);
+			item.Items[0].Items.Add(CreateShellContent());
+
+			Assert.IsNotNull(item.CurrentItem);
+			Assert.IsNotNull(item.CurrentItem.CurrentItem);
+		}
+
+		[Test]
+		public void ClearingShellSectionAndReAddingSetsCurrentItem()
+		{
+			Shell shell = new Shell();
+			var item = CreateShellItem();
+			item.CurrentItem.Items.Add(CreateShellContent());
+			item.CurrentItem.Items.Add(CreateShellContent());
+			var item2 = CreateShellItem();
+
+			shell.Items.Add(item);
+			shell.Items.Add(item2);
+
+			item.Items.Clear();
+
+			var section = CreateShellSection();
+			item.Items.Add(section);
+			item.Items.Add(CreateShellSection());
+
+			Assert.IsNotNull(item.CurrentItem);
+			Assert.IsNotNull(item.CurrentItem.CurrentItem);
+		}
+
+		[TestCase("ContentPage")]
+		[TestCase("ShellItem")]
+		[TestCase("Shell")]
+		public void TabBarIsVisible(string test)
+		{
+			Shell shell = new Shell();
+			ContentPage page = new ContentPage();
+			var shellItem = CreateShellItem(page);
+			shell.Items.Add(shellItem);
+
+			switch (test)
+			{
+				case "ContentPage":
+					Shell.SetTabBarIsVisible(page, false);
+					break;
+				case "ShellItem":
+					Shell.SetTabBarIsVisible(shellItem, false);
+					break;
+				case "Shell":
+					Shell.SetTabBarIsVisible(shell, false);
+					break;
+			}
+
+			Assert.IsFalse((shellItem as IShellItemController).ShowTabs);
+		}
+
+		[Test]
+		public void SendStructureChangedFiresWhenAddingItems()
+		{
+			Shell shell = new Shell();
+			shell.Items.Add(CreateShellItem());
+
+			int count = 0;
+			int previousCount = 0;
+			(shell as IShellController).StructureChanged += (_, __) => count++;
+
+
+			shell.Items.Add(CreateShellItem());
+			Assert.Greater(count, previousCount, "StructureChanged not fired when adding Shell Item");
+
+			previousCount = count;
+			shell.CurrentItem.Items.Add(CreateShellSection());
+			Assert.Greater(count, previousCount, "StructureChanged not fired when adding Shell Section");
+
+			previousCount = count;
+			shell.CurrentItem.CurrentItem.Items.Add(CreateShellContent());
+			Assert.Greater(count, previousCount, "StructureChanged not fired when adding Shell Content");
+			
+		}
+
+
+		//[Test]
+		//public void FlyoutItemLabelStyleCanBeChangedAfterRendered()
+		//{
+		//	var classStyle = new Style(typeof(Label))
+		//	{
+		//		Setters = {
+		//			new Setter { Property = Label.VerticalTextAlignmentProperty, Value = TextAlignment.Start }
+		//		},
+		//		Class = "fooClass",
+		//	};
+
+		//	Shell shell = new Shell();
+		//	shell.Resources = new ResourceDictionary { classStyle };
+		//	var shellItem = CreateShellItem();
+
+		//	shell.Items.Add(shellItem);
+
+		//	var flyoutItemTemplate = (shell as IShellController).GetFlyoutItemDataTemplate(shellItem);
+		//	var thing = (Element)flyoutItemTemplate.CreateContent();
+		//	thing.Parent = shell;
+
+		//	var label = thing.LogicalChildren.OfType<Label>().First();
+		//	Assert.AreEqual(TextAlignment.Center, label.VerticalTextAlignment);
+		//	shellItem.StyleClass = new[] { "fooClass" };
+		//	Assert.AreEqual(TextAlignment.Start, label.VerticalTextAlignment);
+		//}
+
+		//[Test]
+		//public void MenuItemLabelStyleCanBeChangedAfterRendered()
+		//{
+		//	var classStyle = new Style(typeof(Label))
+		//	{
+		//		Setters = {
+		//			new Setter { Property = Label.VerticalTextAlignmentProperty, Value = TextAlignment.Start }
+		//		},
+		//		Class = "fooClass",
+		//	};
+
+		//	Shell shell = new Shell();
+		//	shell.Resources = new ResourceDictionary { classStyle };
+		//	var shellItem = CreateShellItem();
+		//	var menuItem = new MenuItem();
+		//	var shellMenuItem = new MenuShellItem(menuItem);
+		//	shell.Items.Add(shellItem);
+		//	shell.Items.Add(shellMenuItem);
+
+		//	var flyoutItemTemplate = (shell as IShellController).GetFlyoutItemDataTemplate(shellMenuItem);
+		//	var thing = (Element)flyoutItemTemplate.CreateContent();
+		//	thing.Parent = shell;
+
+		//	var label = thing.LogicalChildren.OfType<Label>().First();
+		//	Assert.AreEqual(TextAlignment.Center, label.VerticalTextAlignment);
+		//	menuItem.StyleClass = new[] { "fooClass" };
+		//	Assert.AreEqual(TextAlignment.Start, label.VerticalTextAlignment);
+		//}
 
 	}
 }

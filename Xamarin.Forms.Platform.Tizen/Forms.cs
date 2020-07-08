@@ -191,6 +191,12 @@ namespace Xamarin.Forms
 			get; internal set;
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static Element RotaryFocusObject
+		{
+			get; internal set;
+		}
+
 		public static bool IsInitialized
 		{
 			get;
@@ -337,6 +343,7 @@ namespace Xamarin.Forms
 
 		public static void Init(InitializationOptions options)
 		{
+			s_useDeviceIndependentPixel = options?.UseDeviceIndependentPixel ?? false;
 			SetupInit(options.Context, options);
 		}
 
@@ -367,11 +374,32 @@ namespace Xamarin.Forms
 			Device.Info = new Forms.TizenDeviceInfo();
 			Device.SetFlags(s_flags);
 
+			string profile = ((TizenDeviceInfo)Device.Info).Profile;
+			if (profile == "mobile")
+			{
+				Device.SetIdiom(TargetIdiom.Phone);
+			}
+			else if (profile == "tv")
+			{
+				Device.SetIdiom(TargetIdiom.TV);
+			}
+			else if (profile == "desktop")
+			{
+				Device.SetIdiom(TargetIdiom.Desktop);
+			}
+			else if (profile == "wearable")
+			{
+				Device.SetIdiom(TargetIdiom.Watch);
+			}
+			else
+			{
+				Device.SetIdiom(TargetIdiom.Unsupported);
+			}
+
 			if (!Forms.IsInitialized)
 			{
 				if (options != null)
 				{
-					s_useDeviceIndependentPixel = options.UseDeviceIndependentPixel;
 					s_platformType = options.PlatformType;
 					s_useMessagingCenter = options.UseMessagingCenter;
 
@@ -433,10 +461,7 @@ namespace Xamarin.Forms
 					}
 
 					// css
-					var flags = options.Flags;
-					var noCss = (flags & InitializationFlags.DisableCss) != 0;
-					if (!noCss)
-						Registrar.RegisterStylesheets();
+					Registrar.RegisterStylesheets(options.Flags);
 				}
 				else
 				{
@@ -456,27 +481,6 @@ namespace Xamarin.Forms
 				}
 			}
 
-			string profile = ((TizenDeviceInfo)Device.Info).Profile;
-			if (profile == "mobile")
-			{
-				Device.SetIdiom(TargetIdiom.Phone);
-			}
-			else if (profile == "tv")
-			{
-				Device.SetIdiom(TargetIdiom.TV);
-			}
-			else if (profile == "desktop")
-			{
-				Device.SetIdiom(TargetIdiom.Desktop);
-			}
-			else if (profile == "wearable")
-			{
-				Device.SetIdiom(TargetIdiom.Watch);
-			}
-			else
-			{
-				Device.SetIdiom(TargetIdiom.Unsupported);
-			}
 			Color.SetAccent(GetAccentColor(profile));
 			ExpressionSearch.Default = new TizenExpressionSearch();
 

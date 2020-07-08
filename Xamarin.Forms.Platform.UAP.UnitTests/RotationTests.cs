@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
+using WCompositeTransform = Windows.UI.Xaml.Media.CompositeTransform;
 
-namespace Xamarin.Forms.Platform.UAP.Tests
+namespace Xamarin.Forms.Platform.UAP.UnitTests
 {
 	[TestFixture]
 	public class RotationTests : PlatformTestFixture 
@@ -95,7 +96,7 @@ namespace Xamarin.Forms.Platform.UAP.Tests
 
 		double GetRotation(FrameworkElement fe)
 		{
-			if (fe.RenderTransform is CompositeTransform compositeTransform)
+			if (fe.RenderTransform is WCompositeTransform compositeTransform)
 			{
 				return compositeTransform.Rotation;
 			}
