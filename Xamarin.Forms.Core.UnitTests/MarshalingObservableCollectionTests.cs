@@ -328,6 +328,11 @@ namespace Xamarin.Forms.Core.UnitTests
 			{
 				throw new NotImplementedException();
 			}
+
+			public string GetMD5Hash(string input)
+			{
+				throw new NotImplementedException();
+			}
 		}
 	}
 }
