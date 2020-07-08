@@ -144,13 +144,18 @@ namespace Xamarin.Forms.Platform.UWP
 					Tracker = new VisualElementTracker<TElement, TNativeElement>();
 				}
 
+				// Old Comment
 				// Disabled until reason for crashes with unhandled exceptions is discovered
 				// Without this some layouts may end up with improper sizes, however their children
 				// will position correctly
-				//Loaded += (sender, args) => {
-				if (Packager != null)
-					Packager.Load();
-				//};
+
+				// Put the packager load call back in the Loaded event to resolve text visabilty issues
+				// with FormsTextBox
+				Loaded += (sender, args) =>
+				{
+					if (Packager != null)
+						Packager.Load();
+				};
 			}
 
 			OnElementChanged(new ElementChangedEventArgs<TElement>(oldElement, Element));
