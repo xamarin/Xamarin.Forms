@@ -27,14 +27,18 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty ValueProperty = BindableProperty.Create(nameof(Value), typeof(double), typeof(Stepper), 0.0, BindingMode.TwoWay,
 			coerceValue: (bindable, value) => {
 				var stepper = (Stepper)bindable;
-				return ((double)value).Clamp(stepper.Minimum, stepper.Maximum);
+				return Math.Round(((double)value), stepper.digits).Clamp(stepper.Minimum, stepper.Maximum);
 			},
 			propertyChanged: (bindable, oldValue, newValue) => {
 				var stepper = (Stepper)bindable;
 				stepper.ValueChanged?.Invoke(stepper, new ValueChangedEventArgs((double)oldValue, (double)newValue));
 			});
 
-		public static readonly BindableProperty IncrementProperty = BindableProperty.Create(nameof(Increment), typeof(double), typeof(Stepper), 1.0);
+		int digits = 4;
+		//'-log10(increment) + 4' as rounding digits gives us 4 significant decimal digits after the most significant one.
+		//If your increment uses more than 4 significant digits, you're holding it wrong.
+		public static readonly BindableProperty IncrementProperty = BindableProperty.Create(nameof(Increment), typeof(double), typeof(Stepper), 1.0,
+			propertyChanged: (b, o, n) => { ((Stepper)b).digits = (int)(-Math.Log10((double)n) + 4).Clamp(1, 15); });
 
 		readonly Lazy<PlatformConfigurationRegistry<Stepper>> _platformConfigurationRegistry;
 
@@ -94,6 +98,5 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		[Obsolete("deprecated without replacement in 4.8.0")]
 		public static readonly BindableProperty StepperPositionProperty = BindableProperty.Create(nameof(StepperPosition), typeof(int), typeof(Stepper), 0);
-
 	}
 }
