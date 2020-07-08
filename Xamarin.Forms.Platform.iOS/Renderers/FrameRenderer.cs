@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class FrameRenderer : VisualElementRenderer<Frame>, ITabStop
 	{
-		UIView _actualView = new UIView();
+		UIView _actualView;
 		CGSize _previousSize;
 
 		UIView ITabStop.TabStop => this;
@@ -16,31 +16,36 @@ namespace Xamarin.Forms.Platform.iOS
 		public FrameRenderer()
 		{
 		}
-
+		
 		protected override void OnElementChanged(ElementChangedEventArgs<Frame> e)
 		{
 			base.OnElementChanged(e);
 
 			if (e.NewElement != null)
 			{
-				// Add the subviews to the actual view.
-				foreach (var item in NativeView.Subviews)
+				if (_actualView == null)
 				{
-					_actualView.AddSubview(item);
+					_actualView = new UIView();
+					// Add the subviews to the actual view.
+					foreach (var item in NativeView.Subviews)
+					{
+						_actualView.AddSubview(item);
+					}
+
+					// Make sure the gestures still work on our subview
+					if (NativeView.GestureRecognizers != null)
+					{
+						foreach (var gesture in NativeView.GestureRecognizers)
+							_actualView.AddGestureRecognizer(gesture);
+					}
+					else if (_actualView.Subviews.Length == 0)
+					{
+						_actualView.UserInteractionEnabled = false;
+					}
+
+					AddSubview(_actualView);
 				}
 
-				// Make sure the gestures still work on our subview
-				if (NativeView.GestureRecognizers != null)
-				{
-					foreach (var gesture in NativeView.GestureRecognizers)
-						_actualView.AddGestureRecognizer(gesture);
-				}
-				else if (_actualView.Subviews.Length == 0)
-				{
-					_actualView.UserInteractionEnabled = false;
-				}
-
-				AddSubview(_actualView);
 				SetupLayer();
 			}
 		}
@@ -69,6 +74,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public virtual void SetupLayer()
 		{
+			if (_actualView == null)
+				return;
+
 			float cornerRadius = Element.CornerRadius;
 
 			if (cornerRadius == -1f)
@@ -123,7 +131,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void Draw(CGRect rect)
 		{
-			_actualView.Frame = Bounds;
+			if (_actualView == null)
+				_actualView.Frame = Bounds;
 
 			base.Draw(rect);
 
@@ -138,7 +147,6 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (_actualView != null)
 				{
-					
 					for (var i = 0; i < _actualView.GestureRecognizers?.Length; i++)
 						_actualView.GestureRecognizers.Remove(_actualView.GestureRecognizers[i]);
 
