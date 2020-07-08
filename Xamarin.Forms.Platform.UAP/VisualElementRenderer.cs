@@ -149,7 +149,7 @@ namespace Xamarin.Forms.Platform.UWP
 				// Without this some layouts may end up with improper sizes, however their children
 				// will position correctly
 
-				// Put the packager load call back in the Loaded event to resolve text visabilty issues
+				// Put the packager load call back in the Loaded event to resolve text visibility issues
 				// with FormsTextBox
 				Loaded += (sender, args) =>
 				{
