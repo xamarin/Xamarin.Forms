@@ -128,7 +128,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void Draw(CGRect rect)
 		{
-			if (_actualView == null)
+			if (_actualView != null)
 				_actualView.Frame = Bounds;
 
 			base.Draw(rect);
