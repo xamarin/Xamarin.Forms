@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Windows.Input;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Markup;
@@ -25,10 +23,11 @@ namespace Xamarin.Forms.Controls.Issues
 
 		ContentPage FirstPage() 
 		{
-			var firstPage = new ContentPage();
-			firstPage.Title = "The first page";
-
-			firstPage.Content = new Label { Text = Success };
+			var firstPage = new ContentPage
+			{
+				Title = "The first page",
+				Content = new Label { Text = Success }
+			};
 
 			firstPage.Appearing += (sender, args) => {
 				if (firstPage.Parent is TabbedPage tabbedPage
@@ -44,18 +43,17 @@ namespace Xamarin.Forms.Controls.Issues
 
 		ContentPage CollectionViewPage()
 		{
-			BindingContext = new CollectionViewModel();
+			BindingContext = new _11311ViewModel();
 
 			var refreshView = new RefreshView
 			{
 				Content = new CollectionView
 				{
-					ItemTemplate = new GreenBoxDataTemplate(),
 					Footer = new BoxView { BackgroundColor = Color.Red, HeightRequest = 53 }
-				}.Bind(CollectionView.ItemsSourceProperty, nameof(CollectionViewModel.ScoreCollectionList))
+				}.Bind(ItemsView.ItemsSourceProperty, nameof(_11311ViewModel.ScoreCollectionList))
 
-			}.Bind(RefreshView.CommandProperty, nameof(CollectionViewModel.PopulateCollectionCommand))
-			 .Bind(RefreshView.IsRefreshingProperty, nameof(CollectionViewModel.IsRefreshing));
+			}.Bind(RefreshView.CommandProperty, nameof(_11311ViewModel.PopulateCollectionCommand))
+			 .Bind(RefreshView.IsRefreshingProperty, nameof(_11311ViewModel.IsRefreshing));
 
 			var page = new ContentPage
 			{
@@ -66,12 +64,12 @@ namespace Xamarin.Forms.Controls.Issues
 			return page;
 		}
 
-		class CollectionViewModel : INotifyPropertyChanged
+		class _11311ViewModel : INotifyPropertyChanged
 		{
 			bool _isRefreshing;
 			IEnumerable<int> _scoreCollectionList;
 
-			public CollectionViewModel()
+			public _11311ViewModel()
 			{
 				PopulateCollectionCommand = new Command(ExecuteRefreshCommand);
 				_scoreCollectionList = Enumerable.Empty<int>();
@@ -110,37 +108,8 @@ namespace Xamarin.Forms.Controls.Issues
 				IsRefreshing = false;
 			}
 
-			void OnPropertyChanged([CallerMemberName] string propertyName = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
-
-		class GreenBoxDataTemplate : DataTemplate
-		{
-			public GreenBoxDataTemplate() : base(CreateTemplate)
-			{
-
-			}
-
-			static View CreateTemplate() => new StackLayout
-			{
-				Children =
-				{
-					new BoxView
-					{
-						BackgroundColor = Color.Black,
-						HeightRequest = 5
-					},
-					new BoxView
-					{
-						BackgroundColor = Color.Green,
-						HeightRequest = 50
-					},
-					new BoxView
-					{
-						BackgroundColor = Color.Black,
-						HeightRequest = 5
-					}
-				}
-			};
+			void OnPropertyChanged([CallerMemberName] string propertyName = "") => 
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 #if UITEST
