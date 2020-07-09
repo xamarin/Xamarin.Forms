@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 			await Device.InvokeOnMainThreadAsync(() => {
 
 
+				ContentPage page = new ContentPage();
 				Frame frame1 = new Frame()
 				{
 					Content = new Label()
@@ -27,6 +28,10 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 					}
 				};
 
+				page.Content = frame1;
+
+
+				using (var pageRenderer = GetRenderer(page))
 				using (var renderer = GetRenderer(frame1))
 				{
 					var frameRenderer = GetRenderer(frame1);
