@@ -6,6 +6,7 @@ using System.Text;
 using Foundation;
 using UIKit;
 using NUnit.Framework;
+using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Platform.iOS.UnitTests
 {
@@ -13,27 +14,55 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 	public class FrameTests : PlatformTestFixture
 	{
 		[Test, Category("Frame")]
-		public void ReusingFrameRendererDoesCauseOverlapWithPreviousContent()
+		public async Task ReusingFrameRendererDoesCauseOverlapWithPreviousContent()
 		{
-			Frame frame1 = new Frame()
-			{
-				Content = new Label()
+			await Device.InvokeOnMainThreadAsync(() => {
+
+
+				Frame frame1 = new Frame()
 				{
-					Text = "I am frame 1"
-				}
-			};
+					Content = new Label()
+					{
+						Text = "I am frame 1"
+					}
+				};
 
-			var frameRenderer = GetRenderer(frame1);
-
-			Frame frame2 = new Frame()
-			{
-				Content = new Label()
+				using (var renderer = GetRenderer(frame1))
 				{
-					Text = "I am frame 2"
-				}
-			};
+					var frameRenderer = GetRenderer(frame1);
 
-			frameRenderer.SetElement(frame2);
+					Frame frame2 = new Frame()
+					{
+						Content = new Label()
+						{
+							Text = "I am frame 2"
+						}
+					};
+
+					frameRenderer.SetElement(frame2);
+
+					Assert.AreEqual(1, frameRenderer.NativeView.Subviews.Length);
+					Assert.AreEqual(1, frameRenderer.NativeView.Subviews[0].Subviews.Length);
+
+					var labelRenderer = (LabelRenderer)frameRenderer.NativeView.Subviews[0];
+					var uILabel = (UILabel)labelRenderer.NativeView.Subviews[0];
+
+					Assert.AreEqual("I am frame 2", uILabel.Text);
+
+					Frame frameWithButton = new Frame()
+					{
+						Content = new Button()
+						{
+							Text = "I am a Button"
+						}
+					};
+
+					frameRenderer.SetElement(frameWithButton);
+
+					var uiButton = (UIButton)frameRenderer.NativeView.Subviews[0].Subviews[0];
+					Assert.AreEqual("I am a Button", uiButton.Title(UIControlState.Normal));
+				}
+			});
 		}
 	}
 }

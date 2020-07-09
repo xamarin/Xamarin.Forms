@@ -15,8 +15,14 @@ namespace Xamarin.Forms.Platform.iOS
 		[Internals.Preserve(Conditional = true)]
 		public FrameRenderer()
 		{
+
 		}
-		
+
+		public override void AddSubview(UIView view)
+		{
+			base.AddSubview(view);
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Frame> e)
 		{
 			base.OnElementChanged(e);
