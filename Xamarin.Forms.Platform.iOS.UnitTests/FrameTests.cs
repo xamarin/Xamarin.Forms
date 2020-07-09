@@ -49,9 +49,18 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 					Assert.AreEqual(1, frameRenderer.NativeView.Subviews.Length);
 					Assert.AreEqual(1, frameRenderer.NativeView.Subviews[0].Subviews.Length);
 
-					var labelRenderer = (LabelRenderer)frameRenderer.NativeView.Subviews[0];
-					var uILabel = (UILabel)labelRenderer.NativeView.Subviews[0];
+					LabelRenderer labelRenderer = null;
+					var view = frameRenderer.NativeView;
+					Assert.AreEqual(1, view.Subviews.Length);
 
+					while (labelRenderer == null)
+					{
+						view = view.Subviews[0];
+						Assert.AreEqual(1, view.Subviews.Length);
+						labelRenderer = view as LabelRenderer;
+					}
+
+					var uILabel = (UILabel)labelRenderer.NativeView.Subviews[0];
 					Assert.AreEqual("I am frame 2", uILabel.Text);
 
 					Frame frameWithButton = new Frame()
