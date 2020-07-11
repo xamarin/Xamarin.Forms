@@ -51,12 +51,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 		}
 
-		protected override void OnAppearing()
-		{
-			base.OnAppearing();
-			throw new Exception("asdf cat cat");
-		}
-
 #if UITEST
 		[Test]
 		public void LegacyImageSourceProperties()
