@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
 #endif
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 4915, "Unify the image handling")]
+	[Issue(IssueTracker.Github, 4915, "Unify the image handling", NavigationBehavior.SetApplicationRoot)]
 	public class Issue4915 : TestTabbedPage
 	{
 		protected override void Init()
