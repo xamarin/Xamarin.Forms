@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
 #endif
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 4915, "Unify the image handling", NavigationBehavior.SetApplicationRoot)]
+	[Issue(IssueTracker.Github, 4915, "Unify the image handling")]
 	public class Issue4915 : TestTabbedPage
 	{
 		protected override void Init()
@@ -49,6 +49,12 @@ namespace Xamarin.Forms.Controls.Issues
 			Children.Add(new Issue4915ContentPage() { Title = "page 2" });
 
 
+		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+			throw new Exception("asdf cat cat");
 		}
 
 #if UITEST
