@@ -316,7 +316,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (section.CurrentItem == null)
 				throw new InvalidOperationException($"Content not found for active {section} - {section.Title}.");
 
-			SectionRenderer.NavigateToShellSection(source, section, animate);
+			SectionRenderer.NavigateToShellSection(source, section, page, animate);
 		}
 
 		Page DisplayedPage { get; set; }
@@ -370,6 +370,10 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdatePageTitle()
 		{
 			_Title.Text = DisplayedPage?.Title ?? ShellSection?.Title ?? "";
+			if(ShellItem.Navigation.NavigationStack.Count > 1)
+				_Title.Padding = new UwpThickness(45, 0, 0, 0);
+			else
+				_Title.Padding = new UwpThickness(0, 0, 0, 0);
 		}
 
 		void UpdateBottomBarVisibility()
