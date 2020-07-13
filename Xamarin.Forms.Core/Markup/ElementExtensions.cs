@@ -5,6 +5,19 @@ namespace Xamarin.Forms.Markup
 {
 	public static class ElementExtensions
 	{
+		// Padding
+
+		public static TLayout Padding<TLayout>(this TLayout paddingElement, Thickness padding) where TLayout : Element, IPaddingElement
+		{ VerifyExperimental(); paddingElement.SetValue(PaddingElement.PaddingProperty, padding); return paddingElement; }
+
+		public static TLayout Padding<TLayout>(this TLayout paddingElement, double horizontalSize, double verticalSize) where TLayout : Element, IPaddingElement
+		{ VerifyExperimental(); paddingElement.SetValue(PaddingElement.PaddingProperty, new Thickness(horizontalSize, verticalSize)); return paddingElement; }
+
+		public static TLayout Paddings<TLayout>(this TLayout paddingElement, double left = 0, double top = 0, double right = 0, double bottom = 0) where TLayout : Element, IPaddingElement
+		{ VerifyExperimental(); paddingElement.SetValue(PaddingElement.PaddingProperty, new Thickness(left, top, right, bottom)); return paddingElement; }
+
+		// DynamicResource
+
 		public static TElement DynamicResource<TElement>(this TElement element, BindableProperty property, string key) where TElement : Element
 		{ VerifyExperimental(); element.SetDynamicResource(property, key); return element; }
 
@@ -14,6 +27,8 @@ namespace Xamarin.Forms.Markup
 		public static TElement RemoveDynamicResources<TElement>(this TElement element, params BindableProperty[] properties) where TElement : Element
 		{ VerifyExperimental(); foreach (var property in properties) element.RemoveDynamicResource(property); return element; }
 
+		// Effects
+
 		public static TElement Effects<TElement>(this TElement element, params Effect[] effects) where TElement : Element
 		{
 			VerifyExperimental();
@@ -21,6 +36,8 @@ namespace Xamarin.Forms.Markup
 				element.Effects.Add(effects[i]);
 			return element;
 		}
+
+		// Font
 
 		public static TFontElement FontSize<TFontElement>(this TFontElement fontElement, double size) where TFontElement : Element, IFontElement
 		{ VerifyExperimental(); fontElement.SetValue(FontElement.FontSizeProperty, size); return fontElement; }
