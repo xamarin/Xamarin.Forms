@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public FrameRenderer()
 		{
 			_actualView = new FrameView();
+			_actualView.UserInteractionEnabled = false;
 			AddSubview(_actualView);
 		}
 
@@ -33,18 +34,7 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnElementChanged(e);
 
 			if (e.NewElement != null)
-			{				
-				// Make sure the gestures still work on our subview
-				if (NativeView.GestureRecognizers != null)
-				{
-					foreach (var gesture in NativeView.GestureRecognizers)
-						_actualView.AddGestureRecognizer(gesture);
-				}
-				else if (_actualView.Subviews.Length == 0)
-				{
-					_actualView.UserInteractionEnabled = false;
-				}
-
+			{
 				SetupLayer();
 			}
 		}
