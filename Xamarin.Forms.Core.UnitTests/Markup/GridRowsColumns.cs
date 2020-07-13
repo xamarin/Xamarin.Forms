@@ -8,23 +8,27 @@ namespace Xamarin.Forms.Markup.UnitTests
 	[TestFixture(false)]
 	public class GridRowsColumns : MarkupBaseTestFixture
 	{
+		const double starsValue = 1.5;
+		readonly GridLength starsLength = new GridLength(starsValue, GridUnitType.Star);
+
 		public GridRowsColumns(bool withExperimentalFlag) : base(withExperimentalFlag) { }
 
-		enum Row { First, Second, Third }
-		enum Col { First, Second, Third, Fourth }
+		enum Row { First, Second, Third, Fourth }
+		enum Col { First, Second, Third, Fourth, Fifth }
 
 		[Test]
 		public void DefineRowsWithoutEnums() => AssertExperimental(() =>
 		{
 			var grid = new Forms.Grid
 			{
-				RowDefinitions = Rows.Define(Auto, Star, 20)
+				RowDefinitions = Rows.Define(Auto, Star, Stars (starsValue), 20)
 			};
 
-			Assert.That(grid.RowDefinitions.Count, Is.EqualTo(3));
+			Assert.That(grid.RowDefinitions.Count, Is.EqualTo(4));
 			Assert.That(grid.RowDefinitions[0]?.Height, Is.EqualTo(GridLength.Auto));
 			Assert.That(grid.RowDefinitions[1]?.Height, Is.EqualTo(GridLength.Star));
-			Assert.That(grid.RowDefinitions[2]?.Height, Is.EqualTo(new GridLength(20)));
+			Assert.That(grid.RowDefinitions[2]?.Height, Is.EqualTo(starsLength));
+			Assert.That(grid.RowDefinitions[3]?.Height, Is.EqualTo(new GridLength(20)));
 		});
 
 		[Test]
@@ -33,16 +37,18 @@ namespace Xamarin.Forms.Markup.UnitTests
 			var grid = new Forms.Grid
 			{
 				RowDefinitions = Rows.Define(
-					(Row.First, Auto),
+					(Row.First , Auto),
 					(Row.Second, Star),
-					(Row.Third, 20)
+					(Row.Third , Stars (starsValue)),
+					(Row.Fourth, 20)
 				)
 			};
 
-			Assert.That(grid.RowDefinitions.Count, Is.EqualTo(3));
+			Assert.That(grid.RowDefinitions.Count, Is.EqualTo(4));
 			Assert.That(grid.RowDefinitions[0]?.Height, Is.EqualTo(GridLength.Auto));
 			Assert.That(grid.RowDefinitions[1]?.Height, Is.EqualTo(GridLength.Star));
-			Assert.That(grid.RowDefinitions[2]?.Height, Is.EqualTo(new GridLength(20)));
+			Assert.That(grid.RowDefinitions[2]?.Height, Is.EqualTo(starsLength));
+			Assert.That(grid.RowDefinitions[3]?.Height, Is.EqualTo(new GridLength(20)));
 		});
 
 		[Test]
@@ -61,14 +67,15 @@ namespace Xamarin.Forms.Markup.UnitTests
 		{
 			var grid = new Forms.Grid
 			{
-				ColumnDefinitions = Columns.Define(Auto, Star, 20, 40)
+				ColumnDefinitions = Columns.Define(Auto, Star, Stars (starsValue), 20, 40)
 			};
 
-			Assert.That(grid.ColumnDefinitions.Count, Is.EqualTo(4));
+			Assert.That(grid.ColumnDefinitions.Count, Is.EqualTo(5));
 			Assert.That(grid.ColumnDefinitions[0]?.Width, Is.EqualTo(GridLength.Auto));
 			Assert.That(grid.ColumnDefinitions[1]?.Width, Is.EqualTo(GridLength.Star));
-			Assert.That(grid.ColumnDefinitions[2]?.Width, Is.EqualTo(new GridLength(20)));
-			Assert.That(grid.ColumnDefinitions[3]?.Width, Is.EqualTo(new GridLength(40)));
+			Assert.That(grid.ColumnDefinitions[2]?.Width, Is.EqualTo(starsLength));
+			Assert.That(grid.ColumnDefinitions[3]?.Width, Is.EqualTo(new GridLength(20)));
+			Assert.That(grid.ColumnDefinitions[4]?.Width, Is.EqualTo(new GridLength(40)));
 		});
 
 		[Test]
@@ -77,18 +84,20 @@ namespace Xamarin.Forms.Markup.UnitTests
 			var grid = new Forms.Grid
 			{
 				ColumnDefinitions = Columns.Define(
-					(Col.First, Auto),
+					(Col.First , Auto),
 					(Col.Second, Star),
-					(Col.Third, 20),
-					(Col.Fourth, 40)
+					(Col.Third , Stars(starsValue)),
+					(Col.Fourth, 20),
+					(Col.Fifth , 40)
 				)
 			};
 
-			Assert.That(grid.ColumnDefinitions.Count, Is.EqualTo(4));
+			Assert.That(grid.ColumnDefinitions.Count, Is.EqualTo(5));
 			Assert.That(grid.ColumnDefinitions[0]?.Width, Is.EqualTo(GridLength.Auto));
 			Assert.That(grid.ColumnDefinitions[1]?.Width, Is.EqualTo(GridLength.Star));
-			Assert.That(grid.ColumnDefinitions[2]?.Width, Is.EqualTo(new GridLength(20)));
-			Assert.That(grid.ColumnDefinitions[3]?.Width, Is.EqualTo(new GridLength(40)));
+			Assert.That(grid.ColumnDefinitions[2]?.Width, Is.EqualTo(starsLength));
+			Assert.That(grid.ColumnDefinitions[3]?.Width, Is.EqualTo(new GridLength(20)));
+			Assert.That(grid.ColumnDefinitions[4]?.Width, Is.EqualTo(new GridLength(40)));
 		});
 
 		[Test]
@@ -104,10 +113,10 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 		[Test]
 		public void AllColumns() => AssertExperimental(()
-			=> Assert.That(All<Col>(), Is.EqualTo(4)));
+			=> Assert.That(All<Col>(), Is.EqualTo(5)));
 
 		[Test]
 		public void LastRow() => AssertExperimental(()
-			=> Assert.That(Last<Row>(), Is.EqualTo(2)));
+			=> Assert.That(Last<Row>(), Is.EqualTo(3)));
 	}
 }

@@ -10,6 +10,8 @@ namespace Xamarin.Forms.Markup
 
 		public static GridLength Star => GridLength.Star;
 
+		public static GridLength Stars(double value) => new GridLength(value, GridUnitType.Star);
+
 		public static class Columns
 		{
 			public static ColumnDefinitionCollection Define(params GridLength [] widths)
