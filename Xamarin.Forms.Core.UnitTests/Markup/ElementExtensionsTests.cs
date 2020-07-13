@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 		[Test]
 		public void FontWithPositionalParameters()
 			=> TestPropertiesSet(
-					l => l.Font(8, true, true, "AFontName"),
+					l => l.Font("AFontName", 8, true, true),
 					(FontElement.FontSizeProperty, 6.0, 8.0),
 					(FontElement.FontAttributesProperty, FontAttributes.None, FontAttributes.Bold | FontAttributes.Italic),
 					(FontElement.FontFamilyProperty, "", "AFontName"));
@@ -125,7 +125,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				.FontSize(8)
 				.Bold()
 				.Italic()
-				.Font(8, true, true, "AFontName");
+				.Font("AFontName", 8, true, true);
 		});
 
 		class DerivedFromLabel : Label { }

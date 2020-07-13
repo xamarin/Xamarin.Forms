@@ -50,13 +50,16 @@ namespace Xamarin.Forms.Markup
 
 		public static TFontElement Font<TFontElement>(
 			this TFontElement fontElement,
+			string family = null,
 			double? size = null,
 			bool? bold = null,
-			bool? italic = null,
-			string family = null
+			bool? italic = null
 		) where TFontElement : Element, IFontElement
 		{
 			VerifyExperimental();
+			if (family != null)
+				fontElement.SetValue(FontElement.FontFamilyProperty, family);
+
 			if (size.HasValue)
 				fontElement.SetValue(FontElement.FontSizeProperty, size.Value);
 
@@ -69,9 +72,6 @@ namespace Xamarin.Forms.Markup
 					attributes |= FontAttributes.Italic;
 				fontElement.SetValue(FontElement.FontAttributesProperty, attributes);
 			}
-
-			if (family != null)
-				fontElement.SetValue(FontElement.FontFamilyProperty, family);
 
 			return fontElement;
 		}
