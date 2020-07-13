@@ -122,7 +122,7 @@ namespace Xamarin.Forms.Platform.iOS
 				NSNotificationCenter.DefaultCenter.RemoveObserver(_playedToEndObserver);
 				_playedToEndObserver = null;
 			}
-
+			
 			if(_rateObserver != null)
 			{
 				_rateObserver.Dispose();
@@ -131,8 +131,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			RemoveStatusObserver();
 
-			_avPlayerViewController?.Player?.Pause();
-			_avPlayerViewController?.Player?.ReplaceCurrentItemWithPlayerItem(null);
+			_avPlayerViewController?.Dispose();
+			_avPlayerViewController = null;
 
 			base.Dispose(disposing);
 		}
@@ -147,7 +147,6 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 				finally
 				{
-
 					_statusObserver = null;
 				}
 			}

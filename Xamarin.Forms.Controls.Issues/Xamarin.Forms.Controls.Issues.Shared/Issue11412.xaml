@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Xamarin.Forms.Controls.Issues.Issue11412"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Issue 11412">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <UriMediaSource
+                x:Key="CompiledBindings"
+                Uri="https://sec.ch9.ms/ch9/b8f3/6759a97e-053a-458a-a1ec-99497794b8f3/XamarinForms101CompiledBindings_mid.mp4" />
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <Grid
+        RowSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Tap Play and Pause buttons a few times and then tap Stop; navigate back the previous page. Without exceptions the test has passed."/>
+        <MediaElement
+            x:Name="mediaElement"
+            Grid.Row="1"
+            AutoPlay="False"
+            Source="{StaticResource CompiledBindings}" />
+        <StackLayout
+            Grid.Row="2"
+            Orientation="Horizontal"
+            Margin="0, 10"
+            BindingContext="{x:Reference mediaElement}">
+            <Button
+                Text="&#x25B6;&#xFE0F; Play"
+                HorizontalOptions="CenterAndExpand"
+                Clicked="OnPlayPauseButtonClicked">
+                <Button.Triggers>
+                    <DataTrigger
+                        TargetType="Button"
+                        Binding="{Binding CurrentState}"
+                        Value="{x:Static MediaElementState.Playing}">
+                        <Setter
+                            Property="Text"
+                            Value="&#x23F8; Pause" />
+                    </DataTrigger>
+
+                    <DataTrigger
+                        TargetType="Button"
+                        Binding="{Binding CurrentState}"
+                        Value="{x:Static MediaElementState.Buffering}">
+                        <Setter
+                            Property="IsEnabled"
+                            Value="False" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+            <Button
+                Text="&#x23F9; Stop"
+                HorizontalOptions="CenterAndExpand"
+                Clicked="OnStopButtonClicked">
+                <Button.Triggers>
+                    <DataTrigger
+                        TargetType="Button"
+                        Binding="{Binding CurrentState}"
+                        Value="{x:Static MediaElementState.Stopped}">
+                        <Setter
+                            Property="IsEnabled"
+                            Value="False" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+        </StackLayout>
+    </Grid>
+</ContentPage>
