@@ -5,6 +5,15 @@ namespace Xamarin.Forms.Markup
 {
 	public static class ElementExtensions
 	{
+		public static TElement DynamicResource<TElement>(this TElement element, BindableProperty property, string key) where TElement : Element
+		{ VerifyExperimental(); element.SetDynamicResource(property, key); return element; }
+
+		public static TElement DynamicResources<TElement>(this TElement element, params (BindableProperty property, string key)[] resources) where TElement : Element
+		{ VerifyExperimental(); foreach (var resource in resources) element.SetDynamicResource(resource.property, resource.key); return element; }
+
+		public static TElement RemoveDynamicResources<TElement>(this TElement element, params BindableProperty[] properties) where TElement : Element
+		{ VerifyExperimental(); foreach (var property in properties) element.RemoveDynamicResource(property); return element; }
+
 		public static TElement Effects<TElement>(this TElement element, params Effect[] effects) where TElement : Element
 		{
 			VerifyExperimental();

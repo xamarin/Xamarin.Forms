@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 
 namespace Xamarin.Forms.Markup.UnitTests
 {
@@ -9,6 +10,48 @@ namespace Xamarin.Forms.Markup.UnitTests
 		public ElementExtensionsTests(bool withExperimentalFlag) : base(withExperimentalFlag) { }
 
 		Label Label => Bindable;
+
+		[Test]
+		public void DynamicResource() => AssertExperimental(() =>
+		{
+			var label = new Label { Resources = new ResourceDictionary { { "TextKey", "TextValue" } } };
+			Assert.That(label.Text, Is.EqualTo(Label.TextProperty.DefaultValue));
+
+			label.DynamicResource(Label.TextProperty, "TextKey");
+			Assert.That(label.Text, Is.EqualTo("TextValue"));
+		});
+
+		[Test]
+		public void DynamicResources() => AssertExperimental(() => AssertDynamicResources());
+
+		[Test]
+		public void RemoveDynamicResources() => AssertExperimental(() =>
+		{
+			var label = AssertDynamicResources();
+
+			label.RemoveDynamicResources(Label.TextProperty, Label.TextColorProperty);
+			label.Resources["TextKey"] = "ChangedTextValue";
+			label.Resources["ColorKey"] = Color.Red;
+
+			Assert.That(label.Text, Is.EqualTo("TextValue"));
+			Assert.That(label.TextColor, Is.EqualTo(Color.Green));
+		});
+
+		Label AssertDynamicResources()
+		{
+			var label = new Label { Resources = new ResourceDictionary { { "TextKey", "TextValue" }, { "ColorKey", Color.Green } } };
+
+			Assert.That(label.Text, Is.EqualTo(Label.TextProperty.DefaultValue));
+			Assert.That(label.TextColor, Is.EqualTo(Label.TextColorProperty.DefaultValue));
+
+			label.DynamicResources((Label.TextProperty, "TextKey"),
+								   (Label.TextColorProperty, "ColorKey"));
+
+			Assert.That(label.Text, Is.EqualTo("TextValue"));
+			Assert.That(label.TextColor, Is.EqualTo(Color.Green));
+
+			return label;
+		}
 
 		[Test]
 		public void EffectSingle() => AssertExperimental(() =>
