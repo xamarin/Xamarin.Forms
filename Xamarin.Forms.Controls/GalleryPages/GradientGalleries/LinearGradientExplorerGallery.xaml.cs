@@ -145,7 +145,12 @@ namespace Xamarin.Forms.Controls.GalleryPages.GradientGalleries
                 GradientView.Visual = VisualMarker.Material;
             else
                 GradientView.Visual = VisualMarker.Default;
-        }
+
+			var gradientView = GradientView;
+			var parentView = (Grid)GradientView.Parent;
+			parentView.Children.Remove(gradientView);
+			Device.BeginInvokeOnMainThread(() => parentView.Children.Add(gradientView));
+		}
 
         void UpdateOffsets(IEnumerable<GradientStop> gradientStops, int offsets)
         {
