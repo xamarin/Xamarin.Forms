@@ -77,6 +77,7 @@
     <Compile Include="CommandTests.cs" />
     <Compile Include="DependencyResolutionTests.cs" />
     <Compile Include="ItemsLayoutTypeConverterTests.cs" />
+    <Compile Include="Markup\RelativeLayoutTests.cs" />
     <Compile Include="MultiBindingTests.cs" />
     <Compile Include="Markup\DefaultBindablePropertiesTests.cs" />
     <Compile Include="Markup\BindableObjectExtensionsTests.cs" />
