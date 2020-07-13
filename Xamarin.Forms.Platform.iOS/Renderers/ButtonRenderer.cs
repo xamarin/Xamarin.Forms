@@ -156,7 +156,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			UIColor backgroundColor = Element.BackgroundColor == Color.Default ? null : Element.BackgroundColor.ToUIColor();
 
-			if (brush is SolidColorBrush solidColorBrush)
+			if (brush is SolidColorBrush solidColorBrush && !solidColorBrush.IsEmpty)
 				backgroundColor = solidColorBrush.Color.ToUIColor();
 			else
 			{
