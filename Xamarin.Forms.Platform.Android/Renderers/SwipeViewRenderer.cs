@@ -1366,8 +1366,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateIsOpen(bool isOpen)
 		{
-			if (Element != null)
-				((ISwipeViewController)Element).IsOpen = isOpen;
+			if (Element == null) 
+				return;
+
+			((ISwipeViewController)Element).IsOpen = isOpen;
 		}
 
 		void OnCloseRequested(object sender, EventArgs e)
