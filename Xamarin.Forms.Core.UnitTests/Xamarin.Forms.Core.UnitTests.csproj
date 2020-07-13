@@ -253,6 +253,7 @@
     <Compile Include="LinearGradientBrushTests.cs" />
     <Compile Include="SolidColorBrushTests.cs" />
     <Compile Include="RadialGradientBrushTests.cs" />
+    <Compile Include="SwipeViewTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">

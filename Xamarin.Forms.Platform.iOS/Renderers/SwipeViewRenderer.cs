@@ -1391,6 +1391,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateIsOpen(bool isOpen)
 		{
+			if (Element == null)
+				return;
+
 			((ISwipeViewController)Element).IsOpen = isOpen;
 		}
 
