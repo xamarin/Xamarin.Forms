@@ -9,12 +9,23 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		UIView _actualView;
 		CGSize _previousSize;
+		bool _isDisposed;
 
 		UIView ITabStop.TabStop => this;
 
 		[Internals.Preserve(Conditional = true)]
 		public FrameRenderer()
 		{
+			_actualView = new FrameView();
+			AddSubview(_actualView);
+		}
+
+		public override void AddSubview(UIView view)
+		{
+			if (view != _actualView)
+				_actualView.AddSubview(view);
+			else
+				base.AddSubview(view);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Frame> e)
@@ -22,14 +33,7 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnElementChanged(e);
 
 			if (e.NewElement != null)
-			{
-				_actualView = new UIView();
-				// Add the subviews to the actual view.
-				foreach (var item in NativeView.Subviews)
-				{
-					_actualView.AddSubview(item);
-				}
-
+			{				
 				// Make sure the gestures still work on our subview
 				if (NativeView.GestureRecognizers != null)
 				{
@@ -40,8 +44,6 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					_actualView.UserInteractionEnabled = false;
 				}
-
-				AddSubview(_actualView);
 
 				SetupLayer();
 			}
@@ -70,7 +72,7 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		public virtual void SetupLayer()
-		{
+		{			
 			if (_actualView == null)
 				return;
 
@@ -138,6 +140,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
+			if (_isDisposed)
+				return;
+
+			_isDisposed = true;
+
 			base.Dispose(disposing);
 
 			if (disposing)
@@ -153,6 +160,19 @@ namespace Xamarin.Forms.Platform.iOS
 					_actualView.RemoveFromSuperview();
 					_actualView.Dispose();
 					_actualView = null;
+				}
+			}
+		}
+
+		[Internals.Preserve(Conditional = true)]
+		class FrameView : UIView
+		{
+			public override void RemoveFromSuperview()
+			{
+				for (var i = Subviews.Length - 1; i >= 0; i--)
+				{
+					var item = Subviews[i];
+					item.RemoveFromSuperview();
 				}
 			}
 		}

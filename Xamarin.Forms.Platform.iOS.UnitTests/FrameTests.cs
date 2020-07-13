@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 
 					frameRenderer.SetElement(frameWithButton);
 
-					var uiButton = (UIButton)frameRenderer.NativeView.Subviews[0].Subviews[0];
+					var uiButton = (UIButton)frameRenderer.NativeView.Subviews[0].Subviews[0].Subviews[0];
 					Assert.AreEqual("I am a Button", uiButton.Title(UIControlState.Normal));
 				}
 			});
