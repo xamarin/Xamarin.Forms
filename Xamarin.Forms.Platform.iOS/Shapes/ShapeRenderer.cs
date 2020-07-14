@@ -421,7 +421,7 @@ namespace Xamarin.Forms.Platform.MacOS
             }
 
             _renderPathFill = _renderPath.PathBoundingBox;
-            _renderPathStroke = _renderPath.CopyByStrokingPath(_strokeWidth, _strokeLineCap, _strokeLineJoin, StrokeMiterLimit).PathBoundingBox;
+            _renderPathStroke = _renderPath.CopyByStrokingPath(_strokeWidth, _strokeLineCap, _strokeLineJoin, _strokeMiterLimit).PathBoundingBox;
 
             CATransaction.Commit();
 
