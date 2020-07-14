@@ -2,7 +2,7 @@
 
 namespace Xamarin.Forms
 {
-	public abstract class BasePopup : View
+	public abstract class BasePopup : VisualElement
 	{
 		protected internal BasePopup()
 		{
@@ -14,6 +14,8 @@ namespace Xamarin.Forms
 
 		public static BindableProperty ColorProperty = BindableProperty.Create(nameof(Color), typeof(Color), typeof(BasePopup));
 		public static BindableProperty SizeProperty = BindableProperty.Create(nameof(Size), typeof(Size), typeof(BasePopup));
+		public static BindableProperty VerticalOptionsProperty = BindableProperty.Create(nameof(VerticalOptions), typeof(LayoutOptions), typeof(BasePopup), LayoutOptions.CenterAndExpand);
+		public static BindableProperty HorizontalOptionsProperty = BindableProperty.Create(nameof(HorizontalOptions), typeof(LayoutOptions), typeof(BasePopup), LayoutOptions.CenterAndExpand);
 
 		/// <summary>
 		/// Gets or sets the <see cref="View"/> to render in the Popup.
@@ -34,6 +36,18 @@ namespace Xamarin.Forms
 		{
 			get => (Color)GetValue(ColorProperty);
 			set => SetValue(ColorProperty, value);
+		}
+
+		public LayoutOptions VerticalOptions
+		{
+			get => (LayoutOptions)GetValue(VerticalOptionsProperty);
+			set => SetValue(VerticalOptionsProperty, value);
+		}
+
+		public LayoutOptions HorizontalOptions
+		{
+			get => (LayoutOptions)GetValue(HorizontalOptionsProperty);
+			set => SetValue(HorizontalOptionsProperty, value);
 		}
 
 		/// <summary>
