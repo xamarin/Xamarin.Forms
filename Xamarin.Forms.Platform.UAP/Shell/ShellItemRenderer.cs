@@ -115,11 +115,14 @@ namespace Xamarin.Forms.Platform.UWP
 			double inset = 10;
 			if (ShellContext.IsPaneToggleButtonVisible)
 				inset += 45;
-			if (Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Controls.NavigationView", "IsBackButtonVisible"))
+
+			if (Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Microsoft.UI.Xaml.Controls.NavigationView", "IsBackButtonVisible"))
 			{
-				if (ShellContext.IsBackButtonVisible != Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed)
+				if (ShellContext.IsBackButtonVisible != Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed &&
+					ShellContext.IsBackEnabled)
 					inset += 45;
 			}
+
 			_HeaderArea.Padding = new UwpThickness(inset, 0, 0, 0);
 		}
 
@@ -370,10 +373,6 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdatePageTitle()
 		{
 			_Title.Text = DisplayedPage?.Title ?? ShellSection?.Title ?? "";
-			if(ShellItem.Navigation.NavigationStack.Count > 1)
-				_Title.Padding = new UwpThickness(45, 0, 0, 0);
-			else
-				_Title.Padding = new UwpThickness(0, 0, 0, 0);
 		}
 
 		void UpdateBottomBarVisibility()
