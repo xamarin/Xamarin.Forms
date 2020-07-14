@@ -12,6 +12,13 @@ namespace Xamarin.Forms.Platform.iOS
 		public UIView NativeView { get => base.View; }
 		public UIViewController ViewController { get; private set; }
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
+
+		[Internals.Preserve(Conditional = true)]
+		public PopupRenderer()
+		{
+
+		}
+
 		public void SetElementSize(Size size)
 		{
 			Control?.SetElementSize(size);
