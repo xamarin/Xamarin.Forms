@@ -16,22 +16,20 @@ namespace Xamarin.Forms.Markup
             foreach (var constrainedView in constrainedViews) constrainedView?.AddTo(layout);
             return layout;
         }
-
-		public static double WidthOf(this RelativeLayout parent, View child) { VerifyExperimental(); return child?.Measure(parent.Width, parent.Height).Request.Width ?? 0; }
-
-		public static double HeightOf(this RelativeLayout parent, View child) { VerifyExperimental(); return child?.Measure(parent.Width, parent.Height).Request.Height ?? 0; }
 	}
 
     public static class ConstrainViewExtensions
     {
         public static UnconstrainedView Unconstrained<TView>(this TView view) where TView : View => new UnconstrainedView(view);
 
-        public static ConstraintsConstrainedView Constrain<TView>(this TView view) where TView : View => new ConstraintsConstrainedView(view);
+        public static ConstraintsConstrainedView Constraints<TView>(this TView view) where TView : View => new ConstraintsConstrainedView(view);
 
-        public static BoundsConstrainedView Constrain<TView>(this TView view, Bounds bounds) where TView : View => new BoundsConstrainedView(view, bounds);
-    }
+		public static BoundsConstrainedView Constrain<TView>(this TView view, Bounds bounds) where TView : View => new BoundsConstrainedView(view, bounds);
 
-    public class UnconstrainedView : ConstrainedView
+		public static ExpressionsConstrainedView Constrain<TView>(this TView view) where TView : View => new ExpressionsConstrainedView(view);
+	}
+
+	public class UnconstrainedView : ConstrainedView
     {
         public UnconstrainedView(View view) : base(view) { }
 
@@ -53,10 +51,10 @@ namespace Xamarin.Forms.Markup
 
         public ExpressionsConstrainedView(View view) : base(view) { }
 
-        public ConstrainedView X     (Expression x     ) { _x      = x;      return this; }
-        public ConstrainedView Y     (Expression y     ) { _y      = y;      return this; }
-        public ConstrainedView Width (Expression width ) { _width  = width;  return this; }
-        public ConstrainedView Height(Expression height) { _height = height; return this; }
+        public ExpressionsConstrainedView X     (Expression x     ) { _x      = x;      return this; }
+        public ExpressionsConstrainedView Y     (Expression y     ) { _y      = y;      return this; }
+        public ExpressionsConstrainedView Width (Expression width ) { _width  = width;  return this; }
+        public ExpressionsConstrainedView Height(Expression height) { _height = height; return this; }
 
         public override void AddTo(RelativeLayout layout) => layout.Children.Add(view, _x, _y, _width, _height);
     }

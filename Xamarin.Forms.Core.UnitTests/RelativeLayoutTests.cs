@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class RelativeLayoutTests : BaseTestFixture
 	{
-		class UnitExpressionSearch : ExpressionVisitor, IExpressionSearch
+		internal class UnitExpressionSearch : ExpressionVisitor, IExpressionSearch
 		{
 			List<object> results;
 			Type targeType;
