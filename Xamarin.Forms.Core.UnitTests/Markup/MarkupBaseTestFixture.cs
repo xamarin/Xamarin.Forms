@@ -37,6 +37,11 @@ namespace Xamarin.Forms.Markup.UnitTests
 			Action<TBindable> modify,
 			params (BindableProperty property, object beforeValue, object expectedValue)[] propertyChanges
 		) => TestPropertiesSet(Bindable, modify, propertyChanges);
+
+		protected void TestPropertiesSet(
+			Action<TBindable> modify,
+			params (BindableProperty property, object expectedValue)[] propertyChanges
+		) => TestPropertiesSet(Bindable, modify, propertyChanges);
 	}
 
 	public class MarkupBaseTestFixture : BaseTestFixture
@@ -110,6 +115,24 @@ namespace Xamarin.Forms.Markup.UnitTests
 
 			foreach (var change in propertyChanges)
 				Assert.That(bindable.GetPropertyIfSet(change.property, change.beforeValue), Is.EqualTo(change.expectedValue));
+		});
+
+		protected void TestPropertiesSet<TBindable, TPropertyValue>(
+			TBindable bindable,
+			Action<TBindable> modify,
+			params (BindableProperty property, TPropertyValue expectedValue)[] propertyChanges
+		) where TBindable : BindableObject => AssertExperimental(() =>
+		{
+			foreach (var change in propertyChanges)
+			{
+				bindable.SetValue(change.property, change.property.DefaultValue);
+				Assume.That(bindable.GetPropertyIfSet(change.property, change.expectedValue), Is.Not.EqualTo(change.expectedValue));
+			}
+
+			modify(bindable);
+
+			foreach (var change in propertyChanges)
+				Assert.That(bindable.GetPropertyIfSet(change.property, change.property.DefaultValue), Is.EqualTo(change.expectedValue));
 		});
 	}
 }
