@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using static Xamarin.Forms.Core.Markup.Markup;
 
 namespace Xamarin.Forms.Markup
@@ -149,6 +150,56 @@ namespace Xamarin.Forms.Markup
 				DefaultBindableProperties.GetFor(bindable),
 				path, mode, converter, converterParameter, stringFormat, source, targetNullValue, fallbackValue
 			);
+			return bindable;
+		}
+
+		///// <summary>Bind to a specified property with 2 bindings and an inline convertor</summary>
+		public static TBindable MultiBind<TBindable, TSource1, TSource2, TDest>(
+			this TBindable bindable,
+			BindableProperty targetProperty,
+			BindingBase binding1,
+			BindingBase binding2,
+			Func<ValueTuple<TSource1, TSource2>, TDest> convert = null,
+			Func<TDest, ValueTuple<TSource1, TSource2>> convertBack = null,
+			object converterParameter = default,
+			BindingMode mode = BindingMode.Default,
+			string stringFormat = null,
+			object targetNullValue = null,
+			object fallbackValue = null
+		) where TBindable : BindableObject
+		=> bindable.MultiBind(
+			targetProperty,
+			new List<BindingBase> { binding1, binding2 },
+			new FuncMultiConverter<TSource1, TSource2, TDest>(convert, convertBack),
+			converterParameter,
+			mode,
+			stringFormat,
+			targetNullValue,
+			fallbackValue
+		);
+
+		/// <summary>Bind to a specified property with multiple bindings and a multi convertor</summary>
+		public static TBindable MultiBind<TBindable>(
+			this TBindable bindable,
+			BindableProperty targetProperty,
+			IList<BindingBase> bindings,
+			IMultiValueConverter converter,
+			object converterParameter = default,
+			BindingMode mode = BindingMode.Default,
+			string stringFormat = null,
+			object targetNullValue = null,
+			object fallbackValue = null
+		) where TBindable : BindableObject
+		{
+			bindable.SetBinding(targetProperty, new MultiBinding {
+				Bindings = bindings,
+				Converter = converter,
+				ConverterParameter = converterParameter,
+				Mode = mode,
+				StringFormat = stringFormat,
+				TargetNullValue = targetNullValue,
+				FallbackValue = fallbackValue
+			});
 			return bindable;
 		}
 
