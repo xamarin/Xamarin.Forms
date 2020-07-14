@@ -17,7 +17,6 @@ namespace Xamarin.Forms.Platform.iOS
 		public FrameRenderer()
 		{
 			_actualView = new FrameView();
-			_actualView.UserInteractionEnabled = false;
 			AddSubview(_actualView);
 		}
 
@@ -164,6 +163,17 @@ namespace Xamarin.Forms.Platform.iOS
 					var item = Subviews[i];
 					item.RemoveFromSuperview();
 				}
+			}
+
+			public override bool PointInside(CGPoint point, UIEvent uievent)
+			{
+				foreach(var view in Subviews)
+				{
+					if (view.HitTest(ConvertPointToView(point, view), uievent) != null)
+						return true;
+				}
+
+				return false;
 			}
 		}
 	}
