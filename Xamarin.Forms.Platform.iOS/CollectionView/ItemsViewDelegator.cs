@@ -11,8 +11,7 @@ namespace Xamarin.Forms.Platform.iOS
 		where TItemsView : ItemsView
 		where TViewController : ItemsViewController<TItemsView>
 	{
-
-		IDictionary<Type, CGSize> _sizeChache = new Dictionary<Type,CGSize>();
+		readonly IDictionary<Type, CGSize> _sizeCache = new Dictionary<Type,CGSize>();
 		public ItemsViewLayout ItemsViewLayout { get; }
 		public TViewController ViewController { get; }
 		public IItemsViewSource ItemsSource { get; }
@@ -39,27 +38,27 @@ namespace Xamarin.Forms.Platform.iOS
 			if (ItemsViewLayout.ItemSizingStrategy == ItemSizingStrategy.MeasureFirstItem)
 				return ItemsViewLayout.EstimatedItemSize;
 
-			var vm = ItemsSource[indexPath];
+			var template = ItemsSource[indexPath];
 
 			// try to get a cached size
-			if (_sizeChache.ContainsKey(vm.GetType()))
-				return _sizeChache[vm.GetType()];
+			if (_sizeCache.ContainsKey(template.GetType()))
+				return _sizeCache[template.GetType()];
 
 			if (ViewController.ItemsView.ItemTemplate is DataTemplateSelector templateSelector)
 			{
-				var viewTemplate = templateSelector.SelectTemplate(vm, ViewController.ItemsView);
+				var viewTemplate = templateSelector.SelectTemplate(template, ViewController.ItemsView);
 				if (!(viewTemplate.CreateContent() is VisualElement visualElement))
 					return ItemsViewLayout.EstimatedItemSize;
 
 				var result = ItemsViewLayout.ScrollDirection == UICollectionViewScrollDirection.Vertical ?
 					VerticalCell.MeasureInternal(visualElement, ItemsViewLayout.EstimatedItemSize.Width) :
-					HorizontalCell.MeasureInternal(visualElement, ItemsViewLayout.EstimatedItemSize.Width);
+					HorizontalCell.MeasureInternal(visualElement, ItemsViewLayout.EstimatedItemSize.Height);
 
 				// when items are added to the collection for the first time, they have a double-infinity value for a size property
 				// we only add the size to the cache if the 'result' is valid
 				if((ItemsViewLayout.ScrollDirection == UICollectionViewScrollDirection.Vertical && result.Width > 1 ) ||
 				   (ItemsViewLayout.ScrollDirection == UICollectionViewScrollDirection.Horizontal && result.Height > 1))
-					_sizeChache[vm.GetType()] = result;
+					_sizeCache[template.GetType()] = result;
 
 				return result;
 			}
