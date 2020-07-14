@@ -38,12 +38,18 @@ namespace Xamarin.Forms
 			set => SetValue(ColorProperty, value);
 		}
 
+		/// <summary>
+		/// Gets or sets the <see cref="LayoutOptions"/> for positioning the <see cref="Popup"/> vertically on the screen.
+		/// </summary>
 		public LayoutOptions VerticalOptions
 		{
 			get => (LayoutOptions)GetValue(VerticalOptionsProperty);
 			set => SetValue(VerticalOptionsProperty, value);
 		}
 
+		/// <summary>
+		/// Gets or sets the <see cref="LayoutOptions"/> for positioning the <see cref="Popup"/> horizontally on the screen.
+		/// </summary>
 		public LayoutOptions HorizontalOptions
 		{
 			get => (LayoutOptions)GetValue(HorizontalOptionsProperty);
