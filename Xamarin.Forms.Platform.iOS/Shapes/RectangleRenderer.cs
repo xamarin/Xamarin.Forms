@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Platform.MacOS
         {
             base.OnElementPropertyChanged(sender, args);
 
-            if (args.IsOneOf(VisualElement.HeightProperty, VisualElement.WidthProperty))
+            if (args.PropertyName == VisualElement.HeightProperty.PropertyName || args.PropertyName == VisualElement.WidthProperty.PropertyName)
                 UpdateRadius();
             if (args.PropertyName == Rect.RadiusXProperty.PropertyName)
                 UpdateRadiusX();
