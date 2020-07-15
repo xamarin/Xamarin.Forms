@@ -8,25 +8,42 @@
              x:Class="Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.VaryingDataTempleteSelectorGallery">
     <ContentPage.Resources>
         <ResourceDictionary>
-            <DataTemplate x:Key="CarTemplate">
-                <Frame BorderColor="Red" BackgroundColor="Yellow" HeightRequest="100">
+            <DataTemplate x:Key="MilkTemplate">
+                <Frame BorderColor="Red" BackgroundColor="Wheat" HeightRequest="100">
                     <StackLayout HeightRequest="100">
                         <Label Text="{Binding Name}" />
                     </StackLayout>
                 </Frame>
             </DataTemplate>
 
-            <DataTemplate x:Key="PlaneTemplate">
-                <Frame BorderColor="Red" BackgroundColor="Aqua" HeightRequest="50">
+            <DataTemplate x:Key="CoffeeTemplate">
+                <Frame BorderColor="Red" BackgroundColor="SaddleBrown" HeightRequest="50">
                     <StackLayout HeightRequest="50">
                         <Label Text="{Binding Name}" />
                     </StackLayout>
                 </Frame>
             </DataTemplate>
 
-            <collectionViewGalleries:VehicleTemplateSelector x:Key="VehicleTemplateSelector"
-                                                             CareTemplate="{StaticResource CarTemplate}"
-                                                             PlaneTemplate="{StaticResource PlaneTemplate}" />
+            <DataTemplate x:Key="LatteTemplate" x:DataType="collectionViewGalleries:Latte">
+                <Frame BorderColor="Red" BackgroundColor="BurlyWood" >
+                    <StackLayout>
+                        <Label Text="{Binding Name, StringFormat='Drink name is: {0}'}"/>
+                        <Label Text="     The ingredients are: " Margin="0,10,0,0"/>
+                        <StackLayout BindableLayout.ItemsSource="{Binding Ingredients}" >
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="collectionViewGalleries:DrinkBase">
+                                    <Label Text="{Binding Name, Mode=TwoWay, StringFormat='    {0}'}" />
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
+            </DataTemplate>
+
+            <collectionViewGalleries:DrinkTemplateSelector x:Key="VehicleTemplateSelector"
+                                                             MilkTemplate="{StaticResource MilkTemplate}"
+                                                             CoffeeTemplate="{StaticResource CoffeeTemplate}"
+                                                             LatteTemplate="{StaticResource LatteTemplate}"/>
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -39,7 +56,8 @@
 
             <CollectionView ItemsSource="{Binding Items}" 
                             ItemTemplate="{StaticResource VehicleTemplateSelector}"
-                            VerticalOptions="FillAndExpand" ItemSizingStrategy="MeasureAllItems" />
+                            VerticalOptions="FillAndExpand"
+                            ItemSizingStrategy="MeasureAllItems" />
 
             <StackLayout Grid.Row="1">
 
@@ -58,15 +76,24 @@
                     <Label Text="Index"/>
                     <Entry Text="{Binding Index}" HorizontalOptions="FillAndExpand"/>
                 </StackLayout>
+
                 <StackLayout Orientation="Horizontal">
                     <Label Text="ItemsCount"/>
                     <Entry Text="{Binding ItemsCount}" HorizontalOptions="FillAndExpand"/>
                 </StackLayout>
 
-                <StackLayout Orientation="Horizontal">
-                    <Switch IsToggled="{Binding IsCarTemplate}"/>
-                    <Label Text="{Binding SelectedTemplate}"/>
-                </StackLayout>
+                <Picker x:Name="TemplatePicker"
+                        Title="Select a template"
+                        TitleColor="Red"
+                        SelectedItem="{Binding SelectedTemplate}">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Coffee</x:String>
+                            <x:String>Milk</x:String>
+                            <x:String>Latte</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
 
                 <StackLayout Orientation="Horizontal">
                     <Switch IsToggled="{Binding ShouldTriggerReset}"/>

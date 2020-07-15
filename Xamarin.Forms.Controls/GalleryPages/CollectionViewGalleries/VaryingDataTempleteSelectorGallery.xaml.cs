@@ -16,8 +16,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		string _index = "1";
 		string _itemsCount = "1";
 		int _counter = 6;
-		string _selectedTemplate = nameof(Plane);
-		bool _isCarTemplate;
+		string _selectedTemplate = nameof(Latte);
 		bool _shouldTriggerReset;
 
 		public VaryingDataTempleteSelectorGallery()
@@ -30,19 +29,19 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				Items.Add(vehicle);
 			}
 
-			IEnumerable<VehicleBase> CreateDefaultVehicles()
+			IEnumerable<DrinkBase> CreateDefaultVehicles()
 			{
-				yield return new Plane("Plane 0");
-				yield return new Plane("Plane 1");
-				yield return new Car("Car 2");
-				yield return new Plane("Plane 3");
-				yield return new Car("Car 4");
-				yield return new Plane("Plane 5");
+				yield return new Coffee("0");
+				yield return new Milk("1");
+				yield return new Coffee("2");
+				yield return new Coffee("3");
+				yield return new Milk("4");
+				yield return new Coffee("5");
 			}
 		}
 
-		public ImprovedObservableCollection<VehicleBase> Items { get; set; } =
-			new ImprovedObservableCollection<VehicleBase>();
+		public SuppressableObservableCollection<DrinkBase> Items { get; set; } =
+			new SuppressableObservableCollection<DrinkBase>();
 
 		public string Index
 		{
@@ -54,16 +53,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		{
 			get => _itemsCount;
 			set => SetValue(ref _itemsCount, value);
-		}
-
-		public bool IsCarTemplate
-		{
-			get => _isCarTemplate;
-			set
-			{
-				SetValue(ref _isCarTemplate, value);
-				SelectedTemplate = value ?  nameof(Car) : nameof(Plane);
-			}
 		}
 
 		public string SelectedTemplate
@@ -85,9 +74,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			using (Items.Suppress(ShouldTriggerReset))
 			{
 				if(int.TryParse(ItemsCount, out var count) && count > 0)
-					Items.InsertRange(index, Enumerable.Range(0, count).Select(_ => CreateVehicle()));
+					Items.InsertRange(index, Enumerable.Range(0, count).Select(_ => CreateDrink()));
 				else 
-					Items.Insert(index, CreateVehicle());
+					Items.Insert(index, CreateDrink());
 			}
 		}
 
@@ -98,9 +87,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			using (Items.Suppress(ShouldTriggerReset))
 			{
 				if(int.TryParse(ItemsCount, out var count) && count > 0)
-					Items.AddRange(Enumerable.Range(0, count).Select(_ => CreateVehicle()));
+					Items.AddRange(Enumerable.Range(0, count).Select(_ => CreateDrink()));
 				else 
-					Items.Add(CreateVehicle());
+					Items.Add(CreateDrink());
 					
 			}
 		}
@@ -123,9 +112,21 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			}
 		}
 
-		VehicleBase CreateVehicle() => IsCarTemplate
-				? (VehicleBase)new Car($"{nameof(Car)} {_counter++}")
-				: new Plane($"{nameof(Plane)} {_counter++}");
+		DrinkBase CreateDrink()
+		{
+			switch (SelectedTemplate)
+			{
+				case nameof(Milk): return new Milk(_counter++.ToString());
+				case nameof(Coffee): return new Coffee(_counter++.ToString());
+				case nameof(Latte):
+				{
+					var latte = new Latte(_counter++.ToString());
+					latte.Ingredients = new ObservableCollection<DrinkBase>(){ new Milk(_counter++.ToString()), new Coffee(_counter++.ToString()) };
+					return latte;
+				}
+				default: throw new ArgumentException();
+			}
+		}
 
 		bool IsValid(out int index)
 		{
@@ -138,7 +139,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		}
 	}
 
-	public class ImprovedObservableCollection<T> : ObservableCollection<T>
+	public class SuppressableObservableCollection<T> : ObservableCollection<T>
 	{
 		bool _suppress;
 
@@ -164,8 +165,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 		class Suppressor : IDisposable
 		{
-			readonly ImprovedObservableCollection<T> _source;
-			public Suppressor(ImprovedObservableCollection<T> source, ref bool shouldSuppress)
+			readonly SuppressableObservableCollection<T> _source;
+			public Suppressor(SuppressableObservableCollection<T> source, ref bool shouldSuppress)
 			{
 				_source = source;
 				_source._suppress = shouldSuppress;
@@ -178,35 +179,50 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		}
 	}
 
-	class VehicleTemplateSelector : DataTemplateSelector
+	class DrinkTemplateSelector : DataTemplateSelector
 	{
-		public DataTemplate CareTemplate { get; set; }
-		public DataTemplate PlaneTemplate { get; set; }
+		public DataTemplate CoffeeTemplate { get; set; }
+		public DataTemplate MilkTemplate { get; set; }
+		public DataTemplate LatteTemplate { get; set; }
+
 		protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
 		{
-			if (CareTemplate == null || PlaneTemplate == null) throw new ArgumentNullException();
+			ThrowIfNullHelper(CoffeeTemplate, MilkTemplate, LatteTemplate);
 
-			if (item is Car car) return CareTemplate;
-			if (item is Plane plane) return PlaneTemplate;
-
+			if (item is Coffee c) return CoffeeTemplate;
+			if (item is Milk m) return MilkTemplate;
+			if (item is Latte l) return LatteTemplate;
+			
 			throw new ArgumentOutOfRangeException();
 		}
+
+		static void ThrowIfNullHelper(params object[] items) => Array.ForEach(items, o => 
+		{ 
+			if (o == null) throw new ArgumentNullException();
+		});
 	}
 
-	public abstract class VehicleBase
+	public abstract class DrinkBase
 	{
-		protected VehicleBase(string name) => Name = name;
+		protected DrinkBase(string name) => Name = name;
 
 		public string Name { get; set; }
 	}
 
-	class Car : VehicleBase
+	class Coffee : DrinkBase
 	{
-		public Car(string name) : base(name) { }
+		public Coffee(string name) : base(nameof(Coffee) + name) { }
 	}
 
-	class Plane : VehicleBase
+	class Milk : DrinkBase
 	{
-		public Plane(string name) : base(name) { }
+		public Milk(string name) : base(nameof(Milk) + name) { }
+	}
+
+	class Latte : DrinkBase
+	{
+		public Latte(string name) : base(nameof(Latte) + name) { }
+
+		public ObservableCollection<DrinkBase> Ingredients { get; set; } = new ObservableCollection<DrinkBase>();
 	}
 }
