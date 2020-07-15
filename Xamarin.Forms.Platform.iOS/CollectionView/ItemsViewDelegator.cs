@@ -11,7 +11,6 @@ namespace Xamarin.Forms.Platform.iOS
 		where TItemsView : ItemsView
 		where TViewController : ItemsViewController<TItemsView>
 	{
-		readonly IDictionary<Type, CGSize> _sizeCache = new Dictionary<Type,CGSize>();
 		public ItemsViewLayout ItemsViewLayout { get; }
 		public TViewController ViewController { get; }
 		public IItemsViewSource ItemsSource { get; }
@@ -38,16 +37,17 @@ namespace Xamarin.Forms.Platform.iOS
 			if (ItemsViewLayout.ItemSizingStrategy == ItemSizingStrategy.MeasureFirstItem)
 				return ItemsViewLayout.EstimatedItemSize;
 
-			var template = ItemsSource[indexPath];
+			var cell = ItemsSource[indexPath];
+			var sizeCache = ItemsViewLayout._sizeCache;
 
 			// try to get a cached size
-			if (_sizeCache.ContainsKey(template.GetType()))
-				return _sizeCache[template.GetType()];
+			if (sizeCache.ContainsKey(indexPath))
+				return sizeCache[indexPath];
 
 			if (ViewController.ItemsView.ItemTemplate is DataTemplateSelector templateSelector)
 			{
-				var viewTemplate = templateSelector.SelectTemplate(template, ViewController.ItemsView);
-				if (!(viewTemplate.CreateContent() is VisualElement visualElement))
+				var cellTemplate = templateSelector.SelectTemplate(cell, ViewController.ItemsView);
+				if (!(cellTemplate.CreateContent() is VisualElement visualElement))
 					return ItemsViewLayout.EstimatedItemSize;
 
 				var result = ItemsViewLayout.ScrollDirection == UICollectionViewScrollDirection.Vertical ?
@@ -58,7 +58,7 @@ namespace Xamarin.Forms.Platform.iOS
 				// we only add the size to the cache if the 'result' is valid
 				if((ItemsViewLayout.ScrollDirection == UICollectionViewScrollDirection.Vertical && result.Width > 1 ) ||
 				   (ItemsViewLayout.ScrollDirection == UICollectionViewScrollDirection.Horizontal && result.Height > 1))
-					_sizeCache[template.GetType()] = result;
+					sizeCache[indexPath] = result;
 
 				return result;
 			}

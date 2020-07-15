@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using CoreGraphics;
 using Foundation;
@@ -15,6 +16,8 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _adjustContentOffset;
 		CGSize _adjustmentSize0;
 		CGSize _adjustmentSize1;
+
+		internal readonly IDictionary<NSIndexPath, CGSize> _sizeCache = new Dictionary<NSIndexPath, CGSize>();
 
 		public ItemsUpdatingScrollMode ItemsUpdatingScrollMode { get; set; }
 
@@ -171,6 +174,9 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (preferredAttributes.Bounds != originalAttributes.Bounds)
 				{
+					// when a size is invalid we update the cached size. this is important when the size changes at runtime
+					// or when the size depends on the BindingContext in a ViewModel
+					_sizeCache[preferredAttributes.IndexPath] = preferredAttributes.Bounds.Size;
 					return true;
 				}
 			}
