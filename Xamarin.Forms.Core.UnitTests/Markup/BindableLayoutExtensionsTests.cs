@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 
 namespace Xamarin.Forms.Markup.UnitTests
 {
@@ -23,6 +24,14 @@ namespace Xamarin.Forms.Markup.UnitTests
 		}
 
 		[Test]
+		public void EmptyViewTemplateFunction() => AssertExperimental(() =>
+		{
+			Func<object> loadTemplate = () => new BoxView();
+			Bindable.EmptyViewTemplate(loadTemplate);
+			Assert.That(BindableLayout.GetEmptyViewTemplate(Bindable), Is.Not.Null);
+		});
+
+		[Test]
 		public void ItemsSource()
 		{
 			var source = new string[] { };
@@ -35,6 +44,14 @@ namespace Xamarin.Forms.Markup.UnitTests
 			var template = new DataTemplate(() => new BoxView());
 			TestPropertiesSet(l => l.ItemTemplate(template), (BindableLayout.ItemTemplateProperty, template));
 		}
+
+		[Test]
+		public void ItemTemplateFunction() => AssertExperimental(() =>
+		{
+			Func<object> loadTemplate = () => new BoxView();
+			Bindable.ItemTemplate(loadTemplate);
+			Assert.That(BindableLayout.GetItemTemplate(Bindable), Is.Not.Null);
+		});
 
 		[Test]
 		public void ItemTemplateSelector()
