@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using static Xamarin.Forms.Core.Markup.Markup;
 
 namespace Xamarin.Forms.Markup
 {
@@ -15,13 +16,13 @@ namespace Xamarin.Forms.Markup
 		readonly Func<TDest, TParam, CultureInfo, object[]> convertBackWithParamAndCulture;
 
 		public FuncMultiConverter(Func<object[], TParam, CultureInfo, TDest> convertWithParamAndCulture = null, Func<TDest, TParam, CultureInfo, object[]> convertBackWithParamAndCulture = null)
-		{ this.convertWithParamAndCulture = convertWithParamAndCulture; this.convertBackWithParamAndCulture = convertBackWithParamAndCulture; }
+		{ VerifyExperimental(constructorHint: "FuncMultiConverter"); this.convertWithParamAndCulture = convertWithParamAndCulture; this.convertBackWithParamAndCulture = convertBackWithParamAndCulture; }
 
 		public FuncMultiConverter(Func<object[], TParam, TDest> convertWithParam = null, Func<TDest, TParam, object[]> convertBackWithParam = null)
-		{ this.convertWithParam = convertWithParam; this.convertBackWithParam = convertBackWithParam; }
+		{ VerifyExperimental(constructorHint: "FuncMultiConverter"); this.convertWithParam = convertWithParam; this.convertBackWithParam = convertBackWithParam; }
 
 		public FuncMultiConverter(Func<object[], TDest> convert = null, Func<TDest, object[]> convertBack = null)
-		{ this.convert = convert; this.convertBack = convertBack; }
+		{ VerifyExperimental(constructorHint: "FuncMultiConverter"); this.convert = convert; this.convertBack = convertBack; }
 
 		public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
 		{

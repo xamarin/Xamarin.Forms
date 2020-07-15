@@ -47,7 +47,151 @@ namespace Xamarin.Forms.Markup.UnitTests
 			base.TearDown();
 		}
 
-		// TODO: Complete unit tests for multibind
+		[Test, TestCase(true, false), TestCase(false, true), TestCase(true, true)]
+		public void BindSpecifiedPropertyWith2BindingsAndInlineConvert(bool testConvert, bool testConvertBack) => AssertExperimental(() =>
+		{
+			var label = new Label();
+
+			// Repeat inline converter code to test that the Bind overloads allow inferring the generic parameter types
+			if (testConvert && testConvertBack)
+			{
+				label.Bind(
+					Label.TextProperty,
+					testBindings[0], testBindings[1],
+					((string text, Guid id) v) => Format(0, v.text, v.id),
+					(string formatted) => { var u = Unformat(0, formatted); return (u.Text, u.Id); }
+				);
+			}
+			else if (testConvert && !testConvertBack)
+			{
+				label.Bind(
+					Label.TextProperty,
+					testBindings[0], testBindings[1],
+					((string text, Guid id) v) => Format(0, v.text, v.id)
+				);
+			}
+			else if (!testConvert && testConvertBack)
+			{
+				label.Bind(
+					Label.TextProperty,
+					testBindings[0], testBindings[1],
+					convertBack: (string formatted) => { var u = Unformat(0, formatted); return (u.Text, u.Id); }
+				);
+			}
+
+			AssertLabelTextMultiBound(label, 2, testConvert, testConvertBack);
+		});
+
+		[Test, TestCase(true, false), TestCase(false, true), TestCase(true, true)]
+		public void BindSpecifiedPropertyWith2BindingsAndInlineConvertAndParameter(bool testConvert, bool testConvertBack) => AssertExperimental(() =>
+		{
+			var label = new Label();
+
+			// Repeat inline converter code to test that the Bind overloads allow inferring the generic parameter types
+			if (testConvert && testConvertBack)
+			{
+				label.Bind(
+					Label.TextProperty,
+					testBindings[0], testBindings[1],
+					((string text, Guid id) v, int parameter) => Format(parameter, v.text, v.id),
+					(string formatted, int parameter) => { var u = Unformat(parameter, formatted); return (u.Text, u.Id); },
+					converterParameter: 2
+				);
+			}
+			else if (testConvert && !testConvertBack)
+			{
+				label.Bind(
+					Label.TextProperty,
+					testBindings[0], testBindings[1],
+					((string text, Guid id) v, int parameter) => Format(parameter, v.text, v.id),
+					converterParameter: 2
+				);
+			}
+			else if (!testConvert && testConvertBack)
+			{
+				label.Bind(
+					Label.TextProperty,
+					testBindings[0], testBindings[1],
+					convertBack: (string formatted, int parameter) => { var u = Unformat(parameter, formatted); return (u.Text, u.Id); },
+					converterParameter: 2
+				);
+			}
+
+			AssertLabelTextMultiBound(label, 2, testConvert, testConvertBack, 2);
+		});
+
+		[Test, TestCase(true, false), TestCase(false, true), TestCase(true, true)]
+		public void BindSpecifiedPropertyWith3BindingsAndInlineConvert(bool testConvert, bool testConvertBack) => AssertExperimental(() =>
+		{
+			var label = new Label();
+
+			// Repeat inline converter code to test that the Bind overloads allow inferring the generic parameter types
+			if (testConvert && testConvertBack)
+			{
+				label.Bind(
+					Label.TextProperty,
+					testBindings[0], testBindings[1], testBindings[2],
+					((string text, Guid id, bool isDone) v) => Format(0, v.text, v.id, v.isDone),
+					(string formatted) => { var u = Unformat(0, formatted); return (u.Text, u.Id, u.IsDone); }
+				);
+			}
+			else if (testConvert && !testConvertBack)
+			{
+				label.Bind(
+					Label.TextProperty,
+					testBindings[0], testBindings[1], testBindings[2],
+					((string text, Guid id, bool isDone) v) => Format(0, v.text, v.id, v.isDone)
+				);
+			}
+			else if (!testConvert && testConvertBack)
+			{
+				label.Bind(
+					Label.TextProperty,
+					testBindings[0], testBindings[1], testBindings[2],
+					convertBack: (string formatted) => { var u = Unformat(0, formatted); return (u.Text, u.Id, u.IsDone); }
+				);
+			}
+
+			AssertLabelTextMultiBound(label, 3, testConvert, testConvertBack);
+		});
+
+		[Test, TestCase(true, false), TestCase(false, true), TestCase(true, true)]
+		public void BindSpecifiedPropertyWith3BindingsAndInlineConvertAndParameter(bool testConvert, bool testConvertBack) => AssertExperimental(() =>
+		{
+			var label = new Label();
+
+			// Repeat inline converter code to test that the Bind overloads allow inferring the generic parameter types
+			if (testConvert && testConvertBack)
+			{
+				label.Bind(
+					Label.TextProperty,
+					testBindings[0], testBindings[1], testBindings[2],
+					((string text, Guid id, bool isDone) v, int parameter) => Format(parameter, v.text, v.id, v.isDone),
+					(string formatted, int parameter) => { var u = Unformat(parameter, formatted); return (u.Text, u.Id, u.IsDone); },
+					converterParameter: 2
+				);
+			}
+			else if (testConvert && !testConvertBack)
+			{
+				label.Bind(
+					Label.TextProperty,
+					testBindings[0], testBindings[1], testBindings[2],
+					((string text, Guid id, bool isDone) v, int parameter) => Format(parameter, v.text, v.id, v.isDone),
+					converterParameter: 2
+				);
+			}
+			else if (!testConvert && testConvertBack)
+			{
+				label.Bind(
+					Label.TextProperty,
+					testBindings[0], testBindings[1], testBindings[2],
+					convertBack: (string formatted, int parameter) => { var u = Unformat(parameter, formatted); return (u.Text, u.Id, u.IsDone); },
+					converterParameter: 2
+				);
+			}
+
+			AssertLabelTextMultiBound(label, 3, testConvert, testConvertBack, 2);
+		});
 
 		[Test, TestCase(true, false), TestCase(false, true), TestCase(true, true)]
 		public void BindSpecifiedPropertyWith4BindingsAndInlineConvert(bool testConvert, bool testConvertBack) => AssertExperimental(() =>

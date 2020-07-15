@@ -10,6 +10,91 @@ namespace Xamarin.Forms.Markup.UnitTests
 		public FuncConverter(bool withExperimentalFlag) : base(withExperimentalFlag) { }
 
 		[Test]
+		public void TwoWayMultiWithParamAndCulture() => AssertExperimental(() =>
+		{
+			CultureInfo convertCulture = null, convertBackCulture = null;
+			var expectedCulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
+
+			// Convert char a and int i values to string of a repeated i times, or double that if parameter was true
+			var converter = new FuncMultiConverter<string, bool>(
+				(values, addOne, culture) => { 
+					convertCulture = culture;
+					char c = (char)values[0];
+					int l = (int)values[1];
+					if (addOne) l++;
+					return new string(c, l);
+				},
+				(text, addOne, culture) => { 
+					convertBackCulture = culture; 
+					return new object[] { 
+						text?.Length > 0 ? text[0] : '\0',
+						(text?.Length ?? 0) - (addOne ? 1 : 0)
+					};
+				}
+			) .AssertConvert(new object[] { 'a', 2 }, true, "aaa", twoWay: true, culture: expectedCulture)
+			  .AssertConvert(new object[] { 'b', 4 }, false, "bbbb", twoWay: true, culture: expectedCulture);
+
+			Assert.That(convertCulture, Is.EqualTo(expectedCulture));
+			Assert.That(convertBackCulture, Is.EqualTo(expectedCulture));
+
+			Assert.That(converter.Convert(new object[] { 'a', 2 }, null, null, CultureInfo.InvariantCulture), Is.EqualTo("aa"));
+			var backValues = converter.ConvertBack(null, null, null, CultureInfo.InvariantCulture);
+			Assert.That((char)backValues[0], Is.EqualTo('\0'));
+			Assert.That((int)backValues[1], Is.EqualTo(0));
+		});
+
+		[Test]
+		public void TwoWayMultiWithParam() => AssertExperimental(() =>
+		{
+			// Convert char a and int i values to string of a repeated i times, or double that if parameter was true
+			var converter = new FuncMultiConverter<string, bool>(
+				(values, addOne) => {
+					char c = (char)values[0];
+					int l = (int)values[1];
+					if (addOne) l++;
+					return new string(c, l);
+				},
+				(text, addOne) => {
+					return new object[] {
+						text?.Length > 0 ? text[0] : '\0',
+						(text?.Length ?? 0) - (addOne ? 1 : 0)
+					};
+				}
+			).AssertConvert(new object[] { 'a', 2 }, true, "aaa", twoWay: true)
+			 .AssertConvert(new object[] { 'b', 4 }, false, "bbbb", twoWay: true);
+
+			Assert.That(converter.Convert(new object[] { 'a', 2 }, null, null, CultureInfo.InvariantCulture), Is.EqualTo("aa"));
+			var backValues = converter.ConvertBack(null, null, null, CultureInfo.InvariantCulture);
+			Assert.That((char)backValues[0], Is.EqualTo('\0'));
+			Assert.That((int)backValues[1], Is.EqualTo(0));
+		});
+
+		[Test]
+		public void TwoWayMulti() => AssertExperimental(() =>
+		{
+			// Convert char a and int i values to string of a repeated i times
+			var converter = new FuncMultiConverter<string, bool>(
+				(values) => {
+					char c = (char)values[0];
+					int l = (int)values[1];
+					return new string(c, l);
+				},
+				(text) => {
+					return new object[] {
+						text?.Length > 0 ? text[0] : '\0',
+						text?.Length ?? 0
+					};
+				}
+			).AssertConvert(new object[] { 'a', 2 }, true, "aa", twoWay: true)
+			 .AssertConvert(new object[] { 'b', 4 }, false, "bbbb", twoWay: true);
+
+			Assert.That(converter.Convert(new object[] { 'a', 2 }, null, null, CultureInfo.InvariantCulture), Is.EqualTo("aa"));
+			var backValues = converter.ConvertBack(null, null, null, CultureInfo.InvariantCulture);
+			Assert.That((char)backValues[0], Is.EqualTo('\0'));
+			Assert.That((int)backValues[1], Is.EqualTo(0));
+		});
+
+		[Test]
 		public void FullyTypedTwoWayWithParamAndCulture() => AssertExperimental(() =>
 		{
 			CultureInfo convertCulture = null, convertBackCulture = null;
