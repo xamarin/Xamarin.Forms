@@ -53,6 +53,7 @@ namespace Xamarin.Forms.Platform.iOS
 			    e.PropertyName == Xamarin.Forms.Frame.BorderColorProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.HasShadowProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.CornerRadiusProperty.PropertyName ||
+				e.PropertyName == Xamarin.Forms.Frame.IsClippedToBoundsProperty.PropertyName ||
 				e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
 				SetupLayer();
 		}
@@ -79,7 +80,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Element.BackgroundColor == Color.Default)
 				_actualView.Layer.BackgroundColor = ColorExtensions.BackgroundColor.CGColor;
 			else
+			{
+				// BackgroundColor gets set on the base class too which messes with
+				// the corner radius, shadow, etc. so override that behaviour here
+				BackgroundColor = UIColor.Clear;
 				_actualView.Layer.BackgroundColor = Element.BackgroundColor.ToCGColor();
+			}
 
 			if (Element.BorderColor == Color.Default)
 				_actualView.Layer.BorderColor = UIColor.Clear.CGColor;
@@ -103,9 +109,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			Layer.RasterizationScale = UIScreen.MainScreen.Scale;
 			Layer.ShouldRasterize = true;
+			Layer.MasksToBounds = false;
 
 			_actualView.Layer.RasterizationScale = UIScreen.MainScreen.Scale;
 			_actualView.Layer.ShouldRasterize = true;
+			_actualView.Layer.MasksToBounds = Element.IsClippedToBounds;
 		}
 
 		public override void LayoutSubviews()

@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using CoreAnimation;
 using CoreGraphics;
+using Xamarin.Forms.Shapes;
 using Shape = Xamarin.Forms.Shapes.Shape;
 
 #if __MOBILE__
@@ -35,6 +36,7 @@ namespace Xamarin.Forms.Platform.MacOS
                 UpdateStrokeDashOffset();
                 UpdateStrokeLineCap();
                 UpdateStrokeLineJoin();
+                UpdateStrokeMiterLimit();
             }
         }
 
@@ -68,6 +70,8 @@ namespace Xamarin.Forms.Platform.MacOS
                 UpdateStrokeLineCap();
             else if (args.PropertyName == Shape.StrokeLineJoinProperty.PropertyName)
                 UpdateStrokeLineJoin();
+            else if (args.PropertyName == Shape.StrokeMiterLimitProperty.PropertyName)
+                UpdateStrokeMiterLimit();
         }
 
         public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
@@ -156,6 +160,11 @@ namespace Xamarin.Forms.Platform.MacOS
 
             Control.ShapeLayer.UpdateStrokeLineJoin(iLineJoin);
         }
+
+        void UpdateStrokeMiterLimit()
+        {
+            Control.ShapeLayer.UpdateStrokeMiterLimit(new nfloat(Element.StrokeMiterLimit));
+        }
     }
 
     public class ShapeView
@@ -190,8 +199,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
     public class ShapeLayer : CALayer
     {
-        const float StrokeMiterLimit = 10f;
-
         CGPath _path;
         CGRect _pathFillBounds;
         CGRect _pathStrokeBounds;
@@ -211,6 +218,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		CGLineCap _strokeLineCap;
         CGLineJoin _strokeLineJoin;
+        nfloat _strokeMiterLimit;
 
         public ShapeLayer()
         {
@@ -218,6 +226,7 @@ namespace Xamarin.Forms.Platform.MacOS
             _stretch = Stretch.None;
             _strokeLineCap = CGLineCap.Butt;
             _strokeLineJoin = CGLineJoin.Miter;
+            _strokeMiterLimit = 10;
         }
 
         public override void DrawInContext(CGContext ctx)
@@ -303,6 +312,13 @@ namespace Xamarin.Forms.Platform.MacOS
         public void UpdateStrokeLineJoin(CGLineJoin strokeLineJoin)
         {
             _strokeLineJoin = strokeLineJoin;
+            UpdatePathStrokeBounds();
+            SetNeedsDisplay();
+        }
+
+        public void UpdateStrokeMiterLimit(nfloat strokeMiterLimit)
+        {
+            _strokeMiterLimit = strokeMiterLimit;
             UpdatePathStrokeBounds();
             SetNeedsDisplay();
         }
@@ -423,7 +439,7 @@ namespace Xamarin.Forms.Platform.MacOS
             graphics.SetLineDash(_dashOffset * _strokeWidth, lengths);
             graphics.SetLineCap(_strokeLineCap);
             graphics.SetLineJoin(_strokeLineJoin);
-            graphics.SetMiterLimit(StrokeMiterLimit * _strokeWidth / 4);
+            graphics.SetMiterLimit(_strokeMiterLimit * _strokeWidth / 4);
 
             graphics.AddPath(_renderPath);
             graphics.SetStrokeColor(_stroke);
@@ -436,7 +452,7 @@ namespace Xamarin.Forms.Platform.MacOS
         void UpdatePathStrokeBounds()
         {
             if (_path != null)
-                _pathStrokeBounds = _path.CopyByStrokingPath(_strokeWidth, _strokeLineCap, _strokeLineJoin, StrokeMiterLimit).PathBoundingBox;
+                _pathStrokeBounds = _path.CopyByStrokingPath(_strokeWidth, _strokeLineCap, _strokeLineJoin, _strokeMiterLimit).PathBoundingBox;
             else
                 _pathStrokeBounds = new CGRect();
 

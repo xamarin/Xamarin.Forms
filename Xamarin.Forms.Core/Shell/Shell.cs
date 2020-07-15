@@ -631,28 +631,28 @@ namespace Xamarin.Forms
 
 		ShellNavigationState GetNavigationState(ShellItem shellItem, ShellSection shellSection, ShellContent shellContent, IReadOnlyList<Page> sectionStack, IReadOnlyList<Page> modalStack)
 		{
-			StringBuilder stateBuilder = new StringBuilder($"//");
-			Dictionary<string, string> queryData = new Dictionary<string, string>();
+			List<string> routeStack = new List<string>();
 
 			bool stackAtRoot = sectionStack == null || sectionStack.Count <= 1;
+			bool hasUserDefinedRoute =
+				(Routing.IsUserDefined(shellItem)) ||
+				(Routing.IsUserDefined(shellSection)) ||
+				(Routing.IsUserDefined(shellContent));
 
 			if (shellItem != null)
 			{
 				var shellItemRoute = shellItem.Route;
-				stateBuilder.Append(shellItemRoute);
-				stateBuilder.Append("/");
+				routeStack.Add(shellItemRoute);
 
 				if (shellSection != null)
 				{
 					var shellSectionRoute = shellSection.Route;
-					stateBuilder.Append(shellSectionRoute);
-					stateBuilder.Append("/");
+					routeStack.Add(shellSectionRoute);
 
 					if (shellContent != null)
 					{
 						var shellContentRoute = shellContent.Route;
-						stateBuilder.Append(shellContentRoute);
-						stateBuilder.Append("/");
+						routeStack.Add(shellContentRoute);
 					}
 
 					if (!stackAtRoot)
@@ -660,37 +660,67 @@ namespace Xamarin.Forms
 						for (int i = 1; i < sectionStack.Count; i++)
 						{
 							var page = sectionStack[i];
-							stateBuilder.Append(Routing.GetRoute(page));
-							if (i < sectionStack.Count - 1)
-								stateBuilder.Append("/");
+							routeStack.AddRange(CollapsePath(Routing.GetRoute(page), routeStack, hasUserDefinedRoute));
 						}
 					}
 
 					if (modalStack != null && modalStack.Count > 0)
 					{
-						if (!stackAtRoot && sectionStack.Count > 0)
-							stateBuilder.Append("/");
-
 						for (int i = 0; i < modalStack.Count; i++)
 						{
 							var topPage = modalStack[i];
 
-							if (i > 0)
-								stateBuilder.Append("/");
-
-							stateBuilder.Append(Routing.GetRoute(topPage));
+							routeStack.AddRange(CollapsePath(Routing.GetRoute(topPage), routeStack, hasUserDefinedRoute));
 
 							for (int j = 1; j < topPage.Navigation.NavigationStack.Count; j++)
 							{
-								stateBuilder.Append("/");
-								stateBuilder.Append(Routing.GetRoute(topPage.Navigation.NavigationStack[j]));
+								routeStack.AddRange(CollapsePath(Routing.GetRoute(topPage.Navigation.NavigationStack[j]), routeStack, hasUserDefinedRoute));
 							}
 						}
 					}
 				}
 			}
 
-			return stateBuilder.ToString();
+			if(routeStack.Count > 0)
+				routeStack.Insert(0, "/");
+
+			return String.Join("/", routeStack);
+
+
+			List<string> CollapsePath(
+				string myRoute, 
+				List<string> currentRouteStack,
+				bool userDefinedRoute)
+			{
+				for (var i = currentRouteStack.Count - 1; i >= 0; i--)
+				{
+					var route = currentRouteStack[i];
+					if (Routing.IsImplicit(route) || 
+						(Routing.IsDefault(route) && userDefinedRoute))
+						currentRouteStack.RemoveAt(i);
+				}
+
+				var paths = myRoute.Split('/').ToList();
+
+				// collapse similar leaves
+				int walkBackCurrentStackIndex = currentRouteStack.Count - (paths.Count - 1);
+
+				while(paths.Count > 1 && walkBackCurrentStackIndex >= 0)
+				{
+					if (paths[0] == currentRouteStack[walkBackCurrentStackIndex])
+					{
+						paths.RemoveAt(0);
+					}
+					else
+					{
+						break;
+					}
+
+					walkBackCurrentStackIndex++;
+				}
+
+				return paths;
+			}
 		}
 
 		public static readonly BindableProperty CurrentItemProperty =
@@ -769,10 +799,31 @@ namespace Xamarin.Forms
 					try
 					{
 						var location = CurrentState.Location;
-						if (ShellUriHandler.GetNavigationRequest(this, ((ShellNavigationState)location).FullLocation, false) != null)
-							await GoToAsync(location, false);
+						var navRequest = ShellUriHandler.GetNavigationRequest(this, ((ShellNavigationState)location).FullLocation, false);
 
-						return;
+						if (navRequest != null)
+						{
+							var item = navRequest.Request.Item;
+							var section = navRequest.Request.Section;
+							var Content = navRequest.Request.Content;
+
+							if (IsValidRoute(item) && IsValidRoute(section) && IsValidRoute(Content))
+							{
+								await GoToAsync(location, false);
+								return;
+							}
+
+							bool IsValidRoute(BaseShellItem baseShellItem)
+							{
+								if (baseShellItem == null)
+									return true;
+
+								if (!baseShellItem.IsVisible)
+									return false;
+
+								return baseShellItem.IsPartOfVisibleTree();
+							}
+						}
 					}
 					catch (Exception exc)
 					{
@@ -952,18 +1003,27 @@ namespace Xamarin.Forms
 
 			foreach (var shellItem in ShellController.GetItems())
 			{
+				if (!FlyoutItem.GetIsVisible(shellItem))
+					continue;
+
 				if (shellItem.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
 				{
 					IncrementGroup();
 
 					foreach (var shellSection in (shellItem as IShellItemController).GetItems())
 					{
+						if (!FlyoutItem.GetIsVisible(shellSection))
+							continue;
+
 						if (shellSection.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
 						{
 							IncrementGroup();
 
 							foreach (var shellContent in shellSection.Items)
 							{
+								if (!FlyoutItem.GetIsVisible(shellContent))
+									continue;
+
 								currentGroup.Add(shellContent);
 								if (shellContent == shellSection.CurrentItem)
 								{
@@ -1006,24 +1066,31 @@ namespace Xamarin.Forms
 
 		protected override bool OnBackButtonPressed()
 		{
-			if(GetVisiblePage() is Page page)
-			{
-				if(!page.SendBackButtonPressed())
-				{
-					return false;
-				}
-			}
+			if (GetVisiblePage() is Page page && page.SendBackButtonPressed())
+				return true;
 
 			var currentContent = CurrentItem?.CurrentItem;
 			if (currentContent != null && currentContent.Stack.Count > 1)
 			{
-				currentContent.Navigation.PopAsync();
+				NavigationPop();
 				return true;
 			}
 
 			var args = new ShellNavigatingEventArgs(this.CurrentState, "", ShellNavigationSource.Pop, true);
 			OnNavigating(args);
 			return args.Cancelled;
+
+			async void NavigationPop()
+			{
+				try
+				{
+					await currentContent.Navigation.PopAsync();
+				}
+				catch(Exception exc)
+				{
+					Internals.Log.Warning(nameof(Shell), $"Failed to Navigate Back: {exc}");
+				}
+			}
 		}
 
 		bool ValidDefaultShellItem(Element child) => !(child is MenuShellItem);

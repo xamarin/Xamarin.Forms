@@ -23,7 +23,7 @@ PowerShell:
 #addin "nuget:?package=Cake.Git&version=0.21.0"
 #addin "nuget:?package=Cake.Android.SdkManager&version=3.0.2"
 #addin "nuget:?package=Cake.Boots&version=1.0.2.437"
-
+#addin "nuget:?package=Cake.AppleSimulator&version=0.2.0"
 #addin "nuget:?package=Cake.FileHelpers&version=3.2.1"
 //////////////////////////////////////////////////////////////////////
 // TOOLS
@@ -34,23 +34,90 @@ PowerShell:
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
 
+string agentName = EnvironmentVariable("AGENT_NAME", "");
+bool isCIBuild = !String.IsNullOrWhiteSpace(agentName);
+string artifactStagingDirectory = EnvironmentVariable("BUILD_ARTIFACTSTAGINGDIRECTORY", ".");
+string workingDirectory = EnvironmentVariable("SYSTEM_DEFAULTWORKINGDIRECTORY", ".");
+var configuration = Argument("BUILD_CONFIGURATION", "Debug");
+
+var target = Argument("target", "Default");
+var IOS_SIM_NAME = Argument("IOS_SIM_NAME", "iPhone 8");
+var IOS_SIM_RUNTIME = Argument("IOS_SIM_RUNTIME", "com.apple.CoreSimulator.SimRuntime.iOS-13-5");
+var IOS_TEST_PROJ = "./Xamarin.Forms.Core.iOS.UITests/Xamarin.Forms.Core.iOS.UITests.csproj";
+var IOS_TEST_LIBRARY = Argument("IOS_TEST_LIBRARY", $"./Xamarin.Forms.Core.iOS.UITests/bin/{configuration}/Xamarin.Forms.Core.iOS.UITests.dll");
+var IOS_IPA_PATH = Argument("IOS_IPA_PATH", $"./Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/{configuration}/XamarinFormsControlGalleryiOS.app");
+var IOS_BUNDLE_ID = "com.xamarin.quickui.controlgallery";
+var IOS_BUILD_IPA = Argument("IOS_BUILD_IPA", (target == "cg-ios-deploy") ? true : (false || isCIBuild) );
+
+var UWP_PACKAGE_ID = "0d4424f6-1e29-4476-ac00-ba22c3789cb6";
+var UWP_TEST_LIBRARY = GetBuildVariable("UWP_TEST_LIBRARY", $"./Xamarin.Forms.Core.Windows.UITests/bin/{configuration}/Xamarin.Forms.Core.Windows.UITests.dll");
+var UWP_PFX_PATH = Argument("UWP_PFX_PATH", "Xamarin.Forms.ControlGallery.WindowsUniversal\\Xamarin.Forms.ControlGallery.WindowsUniversal_TemporaryKey.pfx");
+var UWP_APP_PACKAGES_PATH = Argument("UWP_APP_PACKAGES_PATH", "*/AppPackages/");
+var UWP_APP_DRIVER_INSTALL_PATH = Argument("UWP_APP_DRIVER_INSTALL_PATH", "https://github.com/microsoft/WinAppDriver/releases/download/v1.2-RC/WindowsApplicationDriver.msi");
 var ANDROID_RENDERERS = Argument("ANDROID_RENDERERS", "FAST");
 var XamarinFormsVersion = Argument("XamarinFormsVersion", "");
-var target = Argument("target", "Default");
-var configuration = Argument("configuration", "Debug");
 var packageVersion = Argument("packageVersion", "");
 var releaseChannelArg = Argument("CHANNEL", "Stable");
 releaseChannelArg = EnvironmentVariable("CHANNEL") ?? releaseChannelArg;
 var teamProject = Argument("TeamProject", "");
 bool buildForVS2017 = Convert.ToBoolean(Argument("buildForVS2017", "false"));
-string agentName = EnvironmentVariable("AGENT_NAME", "");
-bool isHostedAgent = agentName.StartsWith("Azure Pipelines");
-bool isCIBuild = !String.IsNullOrWhiteSpace(agentName);
-string artifactStagingDirectory = EnvironmentVariable("BUILD_ARTIFACTSTAGINGDIRECTORY", ".");
+bool isHostedAgent = agentName.StartsWith("Azure Pipelines") || agentName.StartsWith("Hosted Agent");
+
+
+var NUNIT_TEST_WHERE = Argument("NUNIT_TEST_WHERE", "cat != Shell && cat != CollectionView && cat != UwpIgnore && cat != CarouselView");
+var ExcludeCategory = GetBuildVariable("ExcludeCategory", "")?.Replace("\"", "");
+var ExcludeCategory2 = GetBuildVariable("ExcludeCategory2", "")?.Replace("\"", "");
+var IncludeCategory = GetBuildVariable("IncludeCategory", "")?.Replace("\"", "");
+
+// Replace Azure devops syntax for unit tests to Nunit3 filters
+if(!String.IsNullOrWhiteSpace(ExcludeCategory))
+{
+    ExcludeCategory = String.Join(" && cat != ", ExcludeCategory.Split(new string[] { "--exclude-category" }, StringSplitOptions.None));
+    if(!ExcludeCategory.StartsWith("cat"))
+        ExcludeCategory = $" cat !=  {ExcludeCategory}";
+
+    NUNIT_TEST_WHERE = $"{NUNIT_TEST_WHERE} && {ExcludeCategory}";
+}
+
+if(!String.IsNullOrWhiteSpace(ExcludeCategory2))
+{
+    ExcludeCategory2 = String.Join(" && cat != ", ExcludeCategory2.Split(new string[] { "--exclude-category" }, StringSplitOptions.None));
+    if(!ExcludeCategory2.StartsWith("cat"))
+        ExcludeCategory2 = $" cat !=  {ExcludeCategory2}";
+
+    NUNIT_TEST_WHERE = $"{NUNIT_TEST_WHERE} && {ExcludeCategory2}";
+}
+
+if(!String.IsNullOrWhiteSpace(IncludeCategory))
+{
+    IncludeCategory = String.Join(" || cat == ", IncludeCategory.Split(new string[] { "--include-category" }, StringSplitOptions.None));
+    if(!IncludeCategory.StartsWith("cat"))
+        IncludeCategory = $" cat ==  {IncludeCategory}";
+
+    NUNIT_TEST_WHERE = $"({NUNIT_TEST_WHERE}) && ({IncludeCategory})";
+}
+
 var ANDROID_HOME = EnvironmentVariable("ANDROID_HOME") ??
     (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
 
-string[] androidSdkManagerInstalls = new [] { "platforms;android-28", "platforms;android-29", "build-tools;29.0.3"};
+string MSBuildArgumentsENV = EnvironmentVariable("MSBuildArguments", "");
+string MSBuildArgumentsARGS = Argument("MSBuildArguments", "");
+string MSBuildArguments;
+
+if(buildForVS2017)
+    MSBuildArguments = String.Empty;
+else
+    MSBuildArguments = $"{MSBuildArgumentsENV} {MSBuildArgumentsARGS}";
+    
+Information("MSBuildArguments: {0}", MSBuildArguments);
+
+string androidSdks = EnvironmentVariable("ANDROID_API_SDKS", "platforms;android-28,platforms;android-29,build-tools;29.0.3");
+
+if(buildForVS2017)
+    androidSdks = "platforms;android-28,platforms;android-29,build-tools;29.0.3";
+
+Information("ANDROID_API_SDKS: {0}", androidSdks);
+string[] androidSdkManagerInstalls = androidSdks.Split(',');
 
 (string name, string location)[] windowsSdksInstalls = new (string name, string location)[]
 {
@@ -63,7 +130,9 @@ string[] androidSdkManagerInstalls = new [] { "platforms;android-28", "platforms
 string[] netFrameworkSdksLocalInstall = new string[]
 {
     "https://go.microsoft.com/fwlink/?linkid=2099470", //NET461 SDK
-    "https://go.microsoft.com/fwlink/?linkid=874338" //NET472 SDK
+    "https://go.microsoft.com/fwlink/?linkid=874338", //NET472 SDK
+    "https://go.microsoft.com/fwlink/?linkid=2099465", //NET47
+    "https://download.microsoft.com/download/A/1/D/A1D07600-6915-4CB8-A931-9A980EF47BB7/NDP47-DevPack-KB3186612-ENU.exe" //net47 targeting pack
 };
 
 // these don't run on CI
@@ -92,6 +161,7 @@ Information ("buildForVS2017: {0}", buildForVS2017);
 Information ("Agent.Name: {0}", agentName);
 Information ("isCIBuild: {0}", isCIBuild);
 Information ("artifactStagingDirectory: {0}", artifactStagingDirectory);
+Information("workingDirectory: {0}", workingDirectory);
 
 var releaseChannel = ReleaseChannel.Stable;
 if(releaseChannelArg == "Preview")
@@ -230,6 +300,7 @@ Task("provision-androidsdk")
 
         if(androidSdkManagerInstalls.Length > 0)
         {
+            Information("Updating Android SDKs");
             var androidSdkSettings = new AndroidSdkManagerToolSettings {
                 SkipVersionCheck = true
             };
@@ -240,32 +311,48 @@ Task("provision-androidsdk")
             try{
                 AcceptLicenses (androidSdkSettings);
             }
-            catch{}
+            catch(Exception exc)
+            {
+                Information("AcceptLicenses: {0}", exc);
+            }
 
             try{
                 AndroidSdkManagerUpdateAll (androidSdkSettings);
             }
-            catch{}
+            catch(Exception exc)
+            {
+                Information("AndroidSdkManagerUpdateAll: {0}", exc);
+            }
             
             try{
                 AcceptLicenses (androidSdkSettings);
             }
-            catch{}
+            catch(Exception exc)
+            {
+                Information("AcceptLicenses: {0}", exc);
+            }
 
             try{
                 AndroidSdkManagerInstall (androidSdkManagerInstalls, androidSdkSettings);
             }
-            catch{}
+            catch(Exception exc)
+            {
+                Information("AndroidSdkManagerInstall: {0}", exc);
+            }
         }
 
         if (!IsRunningOnWindows ()) {
             if(!String.IsNullOrWhiteSpace(androidSDK))
+            {
                 await Boots (androidSDK);
+            }
             else
                 await Boots (Product.XamarinAndroid, releaseChannel);
         }
         else if(!String.IsNullOrWhiteSpace(androidSDK))
-            await Boots(androidSDK);
+        {
+            await Boots (androidSDK);
+        }
     });
 
 Task("provision-monosdk")
@@ -355,30 +442,135 @@ Task("provision-netsdk-local")
         }
     });
 
+Task ("cg-uwp")
+    .IsDependentOn("BuildTasks")
+    .Does (() =>
+{
+    MSBuild ("Xamarin.Forms.ControlGallery.WindowsUniversal\\Xamarin.Forms.ControlGallery.WindowsUniversal.csproj", 
+        GetMSBuildSettings().WithRestore());
+});
+
+Task ("cg-uwp-build-tests")
+    .IsDependentOn("BuildTasks")
+    .Does (() =>
+{
+    MSBuild ("Xamarin.Forms.ControlGallery.WindowsUniversal\\Xamarin.Forms.ControlGallery.WindowsUniversal.csproj", 
+        GetMSBuildSettings(null)
+            .WithProperty("AppxBundlePlatforms", "x86")
+            .WithProperty("AppxBundle", "Always")
+            .WithProperty("UapAppxPackageBuildMode", "StoreUpload")
+            .WithProperty("AppxPackageSigningEnabled", "true")
+            .WithProperty("PackageCertificateThumbprint", "a59087cc92a9a8117ffdb5255eaa155748f9f852")
+            .WithProperty("PackageCertificateKeyFile", "Xamarin.Forms.ControlGallery.WindowsUniversal_TemporaryKey.pfx")
+            .WithProperty("PackageCertificatePassword", "")
+            .WithRestore()
+    );
+
+    MSBuild("Xamarin.Forms.Core.Windows.UITests\\Xamarin.Forms.Core.Windows.UITests.csproj", 
+        GetMSBuildSettings().WithRestore());
+});
+
+Task ("cg-uwp-deploy")
+    .WithCriteria(IsRunningOnWindows())
+    .Does (() =>
+{
+    var uninstallPS = new Action (() => {
+        try {
+            StartProcess ("powershell",
+                "$app = Get-AppxPackage -Name " + UWP_PACKAGE_ID + "; if ($app) { Remove-AppxPackage -Package $app.PackageFullName }");
+        } catch { }
+    });
+    // Try to uninstall the app if it exists from before
+    uninstallPS();
+
+    StartProcess("certutil", "-f -p \"\" -importpfx \"" + UWP_PFX_PATH + "\"");
+    
+    // Install the appx
+    var dependencies = GetFiles(UWP_APP_PACKAGES_PATH + "*/Dependencies/x86/*.appx");
+
+    foreach (var dep in dependencies) {
+        try
+        {
+            Information("Installing Dependency appx: {0}", dep);
+            StartProcess("powershell", "Add-AppxPackage -Path \"" + MakeAbsolute(dep).FullPath + "\"");
+        }
+        catch(Exception exc)
+        {
+            Information("Error: {0}", exc);
+        }
+    }
+
+    var appxBundlePath = GetFiles(UWP_APP_PACKAGES_PATH + "*/*.appxbundle").First ();
+    Information("Installing appx: {0}", appxBundlePath);
+    StartProcess ("powershell", "Add-AppxPackage -Path \"" + MakeAbsolute(appxBundlePath).FullPath + "\"");
+});
+
+Task("cg-uwp-run-tests")
+    .IsDependentOn("provision-uitests-uwp")
+    .Does(() =>
+    {
+        System.Diagnostics.Process process = null;
+        if(!isHostedAgent)
+        {
+            try
+            {
+                var info = new System.Diagnostics.ProcessStartInfo(@"C:\Program Files (x86)\Windows Application Driver\WinAppDriver.exe")
+                {
+                };
+
+                process =  System.Diagnostics.Process.Start(info);
+            }
+            catch(Exception exc)
+            {
+                Information("Failed: {0}", exc);
+            }
+        }
+
+        try
+        {
+            NUnit3(new [] { UWP_TEST_LIBRARY },
+                new NUnit3Settings {
+                    Params = new Dictionary<string, string>()
+                    {
+                    },
+                    Where = NUNIT_TEST_WHERE
+                });
+        }
+        finally
+        {
+            try
+            {
+                process?.Kill();
+            }
+            catch{}
+        }
+    });
+
+Task("cg-uwp-run-tests-ci")
+    .IsDependentOn("provision-windowssdk")
+    .IsDependentOn("cg-uwp-deploy")
+    .IsDependentOn("cg-uwp-run-tests")
+    .Does(() =>
+    {
+    });
+
 Task("provision-uitests-uwp")
+    .WithCriteria(IsRunningOnWindows() && !isHostedAgent)
     .Description("Installs and Starts WindowsApplicationDriver. Use WinAppDriverPath to specify WinAppDriver Location.")
     .Does(() =>
     {
-        if(IsRunningOnWindows())
+        string installPath = Argument("WinAppDriverPath", @"C:\Program Files (x86)\");
+        string driverPath = System.IO.Path.Combine(installPath, "Windows Application Driver");
+        if(!DirectoryExists(driverPath))
         {
-            string installPath = Argument("WinAppDriverPath", @"C:\Program Files (x86)\");
-            string driverPath = System.IO.Path.Combine(installPath, "Windows Application Driver");
-            if(!DirectoryExists(driverPath))
-            {
-                InstallMsi("https://github.com/microsoft/WinAppDriver/releases/download/v1.2-RC/WindowsApplicationDriver.msi", installPath);
+            try{
+                InstallMsi(UWP_APP_DRIVER_INSTALL_PATH, installPath);
             }
-
-
-            var info = new System.Diagnostics.ProcessStartInfo
+            catch(Exception e)
             {
-                FileName = "WinAppDriver",
-                WorkingDirectory = driverPath
-            };
-
-            Information("Starting: {0}", driverPath);
-            System.Diagnostics.Process.Start(info);
+                Information("Failed to Install Win App Driver: {0}", e);
+            }
         }
-        
     });
 
 void InstallMsi(string msiFile, string installTo, string fileName = "InstallFile.msi")
@@ -473,7 +665,6 @@ Task("_NuGetPack")
         NuGetPack(nugetFilePaths, nuGetPackSettings);
     });
 
-
 Task("Restore")
     .Description("Restore target on Xamarin.Forms.sln")
     .Does(() =>
@@ -502,21 +693,81 @@ Task("WriteGoogleMapsAPIKey")
     });
 
 Task("BuildForNuget")
+    .IsDependentOn("BuildTasks")
     .Description("Builds all necessary projects to create Nuget Packages")
     .Does(() =>
 {
-    try{
+    try
+    {
 
         var msbuildSettings = GetMSBuildSettings();
         var binaryLogger = new MSBuildBinaryLogSettings {
-            Enabled  = true
+            Enabled  = isCIBuild
         };
 
         msbuildSettings.BinaryLogger = binaryLogger;
         binaryLogger.FileName = $"{artifactStagingDirectory}/win-{configuration}.binlog";
-
         MSBuild("./Xamarin.Forms.sln", msbuildSettings);
+        
+        // // This currently fails on CI will revisit later
+        // if(isCIBuild)
+        // {        
+        //     MSBuild("./Xamarin.Forms.Xaml.UnitTests/Xamarin.Forms.Xaml.UnitTests.csproj", GetMSBuildSettings().WithTarget("Restore"));
+        //     MSBuild("./Xamarin.Forms.Xaml.UnitTests/Xamarin.Forms.Xaml.UnitTests.csproj", GetMSBuildSettings());
+        // }
 
+        // MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings().WithTarget("Restore"));
+        // MSBuild("./Xamarin.Forms.DualScreen.sln", GetMSBuildSettings().WithTarget("Restore"));
+
+        // if(isCIBuild)
+        // {       
+        //     foreach(var platformProject in GetFiles("./Xamarin.*.UnitTests/*.csproj").Select(x=> x.FullPath))
+        //     {
+        //         if(platformProject.Contains("Xamarin.Forms.Xaml.UnitTests"))
+        //             continue;
+
+        //         Information("Building: {0}", platformProject);
+        //         MSBuild(platformProject,
+        //                 GetMSBuildSettings().WithRestore());
+        //     }
+        // }
+
+        // MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings().WithTarget("Restore"));
+        // MSBuild("./Xamarin.Forms.DualScreen.sln", GetMSBuildSettings().WithTarget("Restore"));
+        
+        // msbuildSettings.BinaryLogger = binaryLogger;
+        
+        // var platformProjects = 
+        //     GetFiles("./Xamarin.Forms.Platform.*/*.csproj")
+        //         .Union(GetFiles("./Stubs/*/*.csproj"))
+        //         .Union(GetFiles("./Xamarin.Forms.Maps.*/*.csproj"))
+        //         .Union(GetFiles("./Xamarin.Forms.Pages.*/*.csproj"))
+        //         .Union(GetFiles("./Xamarin.Forms.Material.*/*.csproj"))
+        //         .Union(GetFiles("./Xamarin.Forms.Core.Design/*.csproj"))
+        //         .Union(GetFiles("./Xamarin.Forms.Xaml.Design/*.csproj"))
+        //         .Select(x=> x.FullPath).Distinct()
+        //         .ToList();
+
+        // foreach(var platformProject in platformProjects)
+        // {
+        //     if(platformProject.Contains("UnitTests"))
+        //         continue;
+                
+        //     msbuildSettings = GetMSBuildSettings();
+        //     string projectName = platformProject
+        //         .Replace(' ', '_')
+        //         .Split('/')
+        //         .Last();
+
+        //     binaryLogger.FileName = $"{artifactStagingDirectory}/{projectName}-{configuration}.binlog";
+        //     msbuildSettings.BinaryLogger = binaryLogger;
+
+        //     Information("Building: {0}", platformProject);
+        //     MSBuild(platformProject,
+        //             msbuildSettings);
+        // }
+
+        // dual screen
         msbuildSettings = GetMSBuildSettings();
         msbuildSettings.BinaryLogger = binaryLogger;
         binaryLogger.FileName = $"{artifactStagingDirectory}/dualscreen-{configuration}-csproj.binlog";
@@ -585,17 +836,18 @@ Task("Android100")
     .Description("Builds Monodroid10.0 targets")
     .Does(() =>
     {
-            MSBuild("Xamarin.Forms.sln",
-                    GetMSBuildSettings()
-                        .WithRestore()
-                        .WithProperty("AndroidTargetFrameworks", "MonoAndroid90;MonoAndroid10.0"));
+        MSBuild("Xamarin.Forms.sln",
+                GetMSBuildSettings()
+                    .WithRestore()
+                    .WithProperty("AndroidTargetFrameworks", "MonoAndroid90;MonoAndroid10.0"));
     });
 
 Task("VSMAC")
     .Description("Builds projects necessary so solution compiles on VSMAC")
+    .IsDependentOn("BuildTasks")
     .Does(() =>
     {
-        StartProcess("open", new ProcessSettings{ Arguments = "Xamarin.Forms.sln" });
+        StartVisualStudio();
     });
 
 Task("cg-android")
@@ -614,7 +866,7 @@ Task("cg-android")
             };
 
             buildSettings.BinaryLogger = binaryLogger;
-            binaryLogger.FileName = $"{artifactStagingDirectory}/android-{ANDROID_RENDERERS}.binlog";
+            binaryLogger.FileName = $"{artifactStagingDirectory}/android-{ANDROID_RENDERERS}_{buildForVS2017}.binlog";
         }
         else
         {
@@ -636,8 +888,27 @@ Task("cg-ios")
     .Description("Builds iOS Control Gallery and open VS")
     .IsDependentOn("BuildTasks")
     .Does(() =>
-    {   
-        MSBuild("./Xamarin.Forms.ControlGallery.iOS/Xamarin.Forms.ControlGallery.iOS.csproj", GetMSBuildSettings().WithRestore());
+    {
+        var buildSettings = 
+            GetMSBuildSettings(null)
+                .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
+
+        if(isCIBuild)
+        {
+            var binaryLogger = new MSBuildBinaryLogSettings {
+                Enabled  = true
+            };
+
+            buildSettings.BinaryLogger = binaryLogger;
+            binaryLogger.FileName = $"{artifactStagingDirectory}/ios-cg-2017_{buildForVS2017}.binlog";
+        }
+        else
+        {
+            buildSettings = buildSettings.WithRestore();
+        }
+
+        MSBuild("./Xamarin.Forms.ControlGallery.iOS/Xamarin.Forms.ControlGallery.iOS.csproj", 
+            buildSettings);
     });
 
 Task("cg-ios-vs")
@@ -648,21 +919,85 @@ Task("cg-ios-vs")
         StartVisualStudio();
     });
 
-/*
-Task("Deploy")
-    .IsDependentOn("DeployiOS")
-    .IsDependentOn("DeployAndroid");
-
-
-// TODO? Not sure how to make this work
-Task("DeployiOS")
+Task("cg-ios-build-tests")
+    .IsDependentOn("BuildTasks")
     .Does(() =>
     {
-        // not sure how to get this to deploy to iOS
-        BuildiOSIpa("./Xamarin.Forms.sln", platform:"iPhoneSimulator", configuration:"Debug");
+        // the UI Tests all reference the galleries so those get built as a side effect of building the
+        // ui tests
+        var buildSettings = 
+            GetMSBuildSettings(null, configuration)
+                .WithProperty("MtouchArch", "x86_64")
+                .WithProperty("iOSPlatform", "iPhoneSimulator")
+                .WithProperty("BuildIpa", $"true")
+                .WithRestore();
 
+        if(isCIBuild)
+        {
+            var binaryLogger = new MSBuildBinaryLogSettings {
+                Enabled  = true,
+                FileName = $"{artifactStagingDirectory}/ios-uitests-2017_{buildForVS2017}.binlog"
+            };
+
+            buildSettings.BinaryLogger = binaryLogger;
+        }
+
+        MSBuild(IOS_TEST_PROJ, buildSettings);
     });
-*/
+
+Task("cg-ios-run-tests")
+    .Does(() =>
+    {
+        var sim = GetIosSimulator();
+        NUnit3(new [] { IOS_TEST_LIBRARY }, 
+            new NUnit3Settings {
+                Params = new Dictionary<string, string>()
+                {
+                    {"UDID", GetIosSimulator().UDID}
+                },
+                Where = NUNIT_TEST_WHERE
+            });
+    });
+
+Task("cg-ios-run-tests-ci")
+    .IsDependentOn("cg-ios-deploy")
+    .IsDependentOn("cg-ios-run-tests")
+    .Does(() =>
+    {
+    });
+
+Task ("cg-ios-deploy")
+    .Does (() =>
+{
+    // Look for a matching simulator on the system
+    var sim = GetIosSimulator();
+
+    // Boot the simulator
+    Information("Booting: {0} ({1} - {2})", sim.Name, sim.Runtime, sim.UDID);
+    if (!sim.State.ToLower().Contains ("booted"))
+        BootAppleSimulator (sim.UDID);
+
+    // Wait for it to be booted
+    var booted = false;
+    for (int i = 0; i < 100; i++) {
+        if (ListAppleSimulators().Any (s => s.UDID == sim.UDID && s.State.ToLower().Contains("booted"))) {
+            booted = true;
+            break;
+        }
+        System.Threading.Thread.Sleep(1000);
+    }
+
+    // Install the IPA that was previously built
+    var ipaPath = new FilePath(IOS_IPA_PATH);
+    Information ("Installing: {0}", ipaPath);
+    InstalliOSApplication(sim.UDID, MakeAbsolute(ipaPath).FullPath);
+
+
+    // Launch the IPA
+    Information("Launching: {0}", IOS_BUNDLE_ID);
+    LaunchiOSApplication(sim.UDID, IOS_BUNDLE_ID);
+});
+
 Task("DeployAndroid")
     .Description("Builds and deploy Android Control Gallery")
     .Does(() =>
@@ -710,6 +1045,11 @@ Task("Default")
 
 RunTarget(target);
 
+T GetBuildVariable<T>(string key, T defaultValue)
+{
+    return Argument(key, EnvironmentVariable(key, defaultValue));
+}
+
 void StartVisualStudio(string sln = "Xamarin.Forms.sln")
 {
     if(isCIBuild)
@@ -721,12 +1061,12 @@ void StartVisualStudio(string sln = "Xamarin.Forms.sln")
          StartProcess("open", new ProcessSettings{ Arguments = "Xamarin.Forms.sln" });
 }
 
-MSBuildSettings GetMSBuildSettings()
+MSBuildSettings GetMSBuildSettings(PlatformTarget? platformTarget = PlatformTarget.MSIL, string buildConfiguration = null)
 {
     var buildSettings =  new MSBuildSettings {
-        PlatformTarget = PlatformTarget.MSIL,
+        PlatformTarget = platformTarget,
         MSBuildPlatform = Cake.Common.Tools.MSBuild.MSBuildPlatform.x86,
-        Configuration = configuration,
+        Configuration = buildConfiguration ?? configuration,
     };
 
     if(!String.IsNullOrWhiteSpace(XamarinFormsVersion))
@@ -734,7 +1074,7 @@ MSBuildSettings GetMSBuildSettings()
         buildSettings = buildSettings.WithProperty("XamarinFormsVersion", XamarinFormsVersion);
     }
     
-    buildSettings.ArgumentCustomization = args => args.Append("/nowarn:VSX1000");
+    buildSettings.ArgumentCustomization = args => args.Append($"/nowarn:VSX1000 {MSBuildArguments}");
     return buildSettings;
 }
 
@@ -763,4 +1103,12 @@ bool IsXcodeVersionOver(string version)
     }
 
     return true;
+}
+
+AppleSimulator GetIosSimulator()
+{
+    var sims = ListAppleSimulators ();
+    // Look for a matching simulator on the system
+    var sim = sims.First (s => s.Name == IOS_SIM_NAME && s.Runtime == IOS_SIM_RUNTIME);
+    return sim;
 }

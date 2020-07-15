@@ -24,8 +24,9 @@ namespace Xamarin.Forms.Platform.UWP
 		const string NavigationViewBackButton = "NavigationViewBackButton";
 		internal const string ShellStyle = "ShellNavigationView";
 		Shell _shell;
-
+		FlyoutBehavior _flyoutBehavior;
 		ShellItemRenderer ItemRenderer { get; }
+		IShellController ShellController => (IShellController)_shell;
 
 		public ShellRenderer()
 		{
@@ -66,7 +67,9 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdatePaneButtonColor(NavigationViewBackButton, false);
 			UpdateFlyoutBackgroundColor();
 			UpdateFlyoutBackdropColor();
-			ShellSplitView.UpdateFlyoutBackdropColor();
+
+			if(_flyoutBehavior == FlyoutBehavior.Flyout)
+				ShellSplitView.UpdateFlyoutBackdropColor();
 		}
 
 		void OnPaneClosed()
@@ -81,7 +84,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			var item = args.InvokedItemContainer?.DataContext as Element;
 			if (item != null)
-				((IShellController)Element).OnFlyoutItemSelected(item);
+				ShellController.OnFlyoutItemSelected(item);
 		}
 
 		#region IVisualElementRenderer
@@ -188,6 +191,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected virtual void UpdateFlyoutBackdropColor()
 		{
+			if (_flyoutBehavior != FlyoutBehavior.Flyout)
+				return;
+
 			var splitView = ShellSplitView;
 			if (splitView != null)
 			{
@@ -222,7 +228,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (_shell != null)
 			{
-				(_shell as IShellController).ItemsCollectionChanged -= OnItemsCollectionChanged;
+				ShellController.ItemsCollectionChanged -= OnItemsCollectionChanged;
 			}
 
 			_shell = shell;
@@ -235,13 +241,19 @@ namespace Xamarin.Forms.Platform.UWP
 			MenuItemsSource = IterateItems();
 			SwitchShellItem(shell.CurrentItem, false);
 			IsPaneOpen = Shell.FlyoutIsPresented;
-			((IShellController)Element).AddFlyoutBehaviorObserver(this);
-			((IShellController)shell).AddAppearanceObserver(this, shell);
+			ShellController.AddFlyoutBehaviorObserver(this);
+			ShellController.AddAppearanceObserver(this, shell);
+			ShellController.ItemsCollectionChanged += OnItemsCollectionChanged;
+			ShellController.StructureChanged += OnStructureChanged;
 			UpdateStatusBarColor();
 			UpdateStatusBarStyle();
-			(shell as IShellController).ItemsCollectionChanged += OnItemsCollectionChanged;
 			UpdateFlyoutBackgroundColor();
 			UpdateFlyoutBackdropColor();
+		}
+
+		void OnStructureChanged(object sender, EventArgs e)
+		{
+			MenuItemsSource = IterateItems();
 		}
 
 		void OnItemsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -306,9 +318,10 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		#endregion IAppearanceObserver
-
+		
 		void IFlyoutBehaviorObserver.OnFlyoutBehaviorChanged(FlyoutBehavior behavior)
 		{
+			_flyoutBehavior = behavior;
 			switch (behavior)
 			{
 				case FlyoutBehavior.Disabled:

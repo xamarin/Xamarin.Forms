@@ -85,6 +85,11 @@ namespace Xamarin.Forms
 				var value = GetSourceValue(GetValueArray(), _targetProperty.ReturnType);
 				if (value != Binding.DoNothing) {
 					_applying = true;
+					if (!BindingExpression.TryConvert(ref value, _targetProperty, _targetProperty.ReturnType, true))
+					{
+						Log.Warning("MultiBinding", "'{0}' can not be converted to type '{1}'.", value, _targetProperty.ReturnType);
+						return;
+					}
 					_targetObject.SetValueCore(_targetProperty, value, SetValueFlags.ClearDynamicResource, BindableObject.SetValuePrivateFlags.Default | BindableObject.SetValuePrivateFlags.Converted);
 					_applying = false;
 				}
@@ -116,6 +121,9 @@ namespace Xamarin.Forms
 			if (_bindings == null)
 				throw new InvalidOperationException("Bindings is null");
 
+			if (Converter == null && StringFormat == null)
+				throw new InvalidOperationException("Cannot apply MultiBinding because both Converter and StringFormat are null.");
+
 			base.Apply(context, targetObject, targetProperty, fromBindingContextChanged);
 
 			if (!ReferenceEquals(_targetObject, targetObject)) {
@@ -144,6 +152,11 @@ namespace Xamarin.Forms
 			var value = GetSourceValue(GetValueArray(), _targetProperty.ReturnType);
 			if (value != Binding.DoNothing) {
 				_applying = true;
+				if (!BindingExpression.TryConvert(ref value, _targetProperty, _targetProperty.ReturnType, true))
+				{
+					Log.Warning("MultiBinding", "'{0}' can not be converted to type '{1}'.", value, _targetProperty.ReturnType);
+					return;
+				}
 				_targetObject.SetValueCore(_targetProperty, value, SetValueFlags.ClearDynamicResource, BindableObject.SetValuePrivateFlags.Default | BindableObject.SetValuePrivateFlags.Converted);
 				_applying = false;
 			}
