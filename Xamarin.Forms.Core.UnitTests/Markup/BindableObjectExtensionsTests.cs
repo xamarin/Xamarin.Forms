@@ -583,20 +583,121 @@ namespace Xamarin.Forms.Markup.UnitTests
 			);
 		});
 
+
+		// TODO: Complete unit tests for multibind
+
 		[Test]
-		public void BindSpecifiedPropertyWithMultipleBindingsOneWayConvert()
+		[TestCase(true, false)]
+		[TestCase(false, true)]
+		[TestCase(true, true)]
+		public void BindSpecifiedPropertyWith4BindingsAndInlineConvert(bool testConvert, bool testConvertBack)
+		{
+			var label = new Label();
+
+			var bindings = new List<BindingBase> {
+				new Binding(nameof(viewModel.Text)),
+				new Binding(nameof(viewModel.Id)),
+				new Binding(nameof(viewModel.IsRed)),
+				new Binding(nameof(viewModel.Fraction))
+			};
+
+			// Repeat inline converter code for each variantion to test that the Bind overloads allow inferring the generic conversion parameter types
+			// The developer should not have to specify generic type parameters
+			if (testConvert && testConvertBack)
+			{
+				label.Bind(
+					Label.TextProperty,
+					bindings[0], bindings[1], bindings[2], bindings[3],
+					((string text, Guid id, bool isRed, double fraction) values) => $"Text = '{ values.text }', Id = '{ values.id }', IsRed = '{ values.isRed }', Fraction = '{ values.fraction }'",
+					(string formatted) =>
+					{
+						var split = formatted.Split('\'');
+						return (
+							split[1],
+							Guid.Parse(split[3]),
+							bool.Parse(split[5]),
+							double.Parse(split[7])
+						);
+					}
+				);
+			} else if (testConvert && !testConvertBack) {
+				label.Bind(
+					Label.TextProperty,
+					bindings[0], bindings[1], bindings[2], bindings[3],
+					((string text, Guid id, bool isRed, double fraction) values) => $"Text = '{ values.text }', Id = '{ values.id }', IsRed = '{ values.isRed }', Fraction = '{ values.fraction }'"
+				);
+			}
+			else if (!testConvert && testConvertBack) {
+				label.Bind(
+					Label.TextProperty,
+					bindings[0], bindings[1], bindings[2], bindings[3],
+					convertBack: (string formatted) =>
+					{
+						var split = formatted.Split('\'');
+						return (
+							split[1],
+							Guid.Parse(split[3]),
+							bool.Parse(split[5]),
+							double.Parse(split[7])
+						);
+					}
+				);
+			}
+
+			var avalues = new object[] {
+				"Hi",
+				Guid.Parse("{272383A4-92E3-46BA-99DC-438D81E039AB}"),
+				true,
+				0.5
+			};
+
+			BindingHelpers.AssertBindingExists<string>(
+				label,
+				targetProperty: Label.TextProperty,
+				bindings,
+				assertConverterInstanceIsAnyNotNull: true,
+				assertConvert: c => { c.AssertConvert(
+					avalues, 
+					$"Text = '{ avalues[0] }', Id = '{ avalues[1] }', IsRed = '{ avalues[2] }', Fraction = '{ avalues[3] }'",
+					twoWay: testConvert && testConvertBack,
+					backOnly: !testConvert && testConvertBack
+				); }
+			);
+		}
+
+		[Test]
+		[TestCase(true, false)]
+		[TestCase(false, true)]
+		[TestCase(true, true)]
+		public void BindSpecifiedPropertyWithMultipleBindings(bool testConvert, bool testConvertBack)
 		{
 			var label = new Label();
 			var bindings = new List<BindingBase> {
 				new Binding(nameof(viewModel.Text)),
 				new Binding(nameof(viewModel.Id)),
 				new Binding(nameof(viewModel.IsRed)),
-				new Binding(nameof(viewModel.TextColor)),
-				new Binding(nameof(viewModel.Count))
+				new Binding(nameof(viewModel.Fraction)),
+				new Binding(nameof(viewModel.Count)),
 			};
-			var converter = new FuncMultiConverter<string, object>(
-				(object[] values) => $"Text = { values[0] }, Id = { values[1] }, IsRed = { values[2] }, TextColor = { values[3] }, Count = { values[4] }"
-			);
+
+			Func<object[], string> convert = null;
+			if (testConvert) convert = (object[] values) => $"Text = '{ values[0] }', Id = '{ values[1] }', IsRed = '{ values[2] }', Fraction = '{ values[3] }', Count = '{ values[4] }'";
+
+			Func<string, object[]> convertBack = null;
+			if (testConvertBack)
+				convertBack = (string text) => {
+					var split = text.Split('\'');
+					return new object[]
+					{
+						split[1],
+						Guid.Parse(split[3]),
+						bool.Parse(split[5]),
+						double.Parse(split[7]),
+						int.Parse(split[9])
+					};
+				};
+
+			var converter = new FuncMultiConverter<string, object>(convert, convertBack);
 
 			label.Bind(
 				Label.TextProperty,
@@ -608,7 +709,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				"Hi",
 				Guid.Parse("{272383A4-92E3-46BA-99DC-438D81E039AB}"),
 				true,
-				Color.Transparent,
+				0.5,
 				3
 			};
 
@@ -617,7 +718,46 @@ namespace Xamarin.Forms.Markup.UnitTests
 				targetProperty: Label.TextProperty,
 				bindings,
 				converter,
-				assertConvert: c => c.AssertConvert(avalues, $"Text = { avalues[0] }, Id = { avalues[1] }, IsRed = { avalues[2] }, TextColor = { avalues[3] }, Count = { avalues[4] }")
+				assertConvert: c => { c.AssertConvert(
+					avalues, 
+					$"Text = '{ avalues[0] }', Id = '{ avalues[1] }', IsRed = '{ avalues[2] }', Fraction = '{ avalues[3] }', Count = '{ avalues[4] }'",
+					twoWay: testConvert && testConvertBack,
+					backOnly: !testConvert && testConvertBack
+				); }
+			);
+		}
+
+		List<BindingBase> GetTestBindings(int count) => new List<BindingBase> {
+			new Binding(nameof(viewModel.Text)),
+			new Binding(nameof(viewModel.Id)),
+			new Binding(nameof(viewModel.IsRed)),
+			new Binding(nameof(viewModel.Fraction)),
+			new Binding(nameof(viewModel.Count))
+		}.Take(count).ToList();
+
+		object[] GetTestConvertValues(int count) => new List<object> {
+			"Hi",
+			Guid.Parse("{272383A4-92E3-46BA-99DC-438D81E039AB}"),
+			true,
+			0.5,
+			3
+		}.Take(count).ToArray();
+
+		void AssertLabelTextMultiBound(Label label, int nBindings, bool testConvert, bool testConvertBack, IMultiValueConverter converter = null)
+		{
+			var values = GetTestConvertValues(nBindings);
+			string expected               = $"Text = '{ values[0] }', Id = '{ values[1] }'";
+			if (nBindings >= 3) expected += $", IsRed = '{ values[2] }'";
+			if (nBindings >= 4) expected += $", Fraction = '{ values[3] }'";
+			if (nBindings >= 5) expected += $", Count = '{ values[4] }'";
+
+			BindingHelpers.AssertBindingExists<string>(
+				label,
+				targetProperty: Label.TextProperty,
+				GetTestBindings(nBindings),
+				converter,
+				assertConverterInstanceIsAnyNotNull: converter == null,
+				assertConvert: c => c.AssertConvert(values, expected, twoWay: testConvert && testConvertBack, backOnly: !testConvert && testConvertBack)
 			);
 		}
 
@@ -712,6 +852,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 			public string Text { get; set; }
 			public Color TextColor { get; set; }
 			public bool IsRed { get; set; }
+			public double Fraction { get; set; }
 			public int Count { get; set; }
 		}
 	}
@@ -820,7 +961,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 		{
 			var binding = BindingHelpers.GetMultiBinding(bindable, targetProperty);
 			Assert.That(binding, Is.Not.Null);
-			Assert.That(object.ReferenceEquals(binding.Bindings, bindings), Is.True);
+			Assert.That(binding.Bindings.SequenceEqual(bindings), Is.True);
 			Assert.That(binding.Mode, Is.EqualTo(mode));
 			if (assertConverterInstanceIsAnyNotNull)
 				Assert.That(binding.Converter, Is.Not.Null);
