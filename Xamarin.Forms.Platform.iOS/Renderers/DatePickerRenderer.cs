@@ -1,5 +1,7 @@
 using System;
 using System.ComponentModel;
+using System.Globalization;
+using System.Linq;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -165,8 +167,24 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (_picker.Date.ToDateTime().Date != Element.Date.Date)
 				_picker.SetDate(Element.Date.ToNSDate(), animate);
-
-			Control.Text = Element.Date.ToString(Element.Format);
+			if (Element.Format.Equals("") || Element.Format.Equals("d"))
+			{
+				NSDateFormatter dateFormatter = new NSDateFormatter();
+				dateFormatter.DateStyle = NSDateFormatterStyle.Short;
+				var strDate = dateFormatter.StringFor(_picker.Date);
+				Control.Text = strDate;
+			}
+			else if (Element.Format.Equals("D"))
+			{
+				NSDateFormatter dateFormatter = new NSDateFormatter();
+				dateFormatter.DateStyle = NSDateFormatterStyle.Long;
+				var strDate = dateFormatter.StringFor(_picker.Date);
+				Control.Text = strDate;
+			}
+			else
+			{
+				Control.Text = Element.Date.ToString(Element.Format);
+			}
 		}
 
 		void UpdateElementDate()

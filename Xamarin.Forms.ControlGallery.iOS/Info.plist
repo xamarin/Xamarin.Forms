@@ -102,6 +102,10 @@
 	<array>
 		<string>en</string>
 		<string>ar</string>
+		<string>fr</string>
+		<string>de</string>
+		<string>ja</string>
+		<string>zh</string>
 	</array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
