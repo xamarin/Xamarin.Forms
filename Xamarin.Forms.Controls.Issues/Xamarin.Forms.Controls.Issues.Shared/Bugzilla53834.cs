@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			var label = new Label { Text = Instructions };
+			var label = new Label { Text = Instructions, AutomationId = "TestReady" };
 			grouped = new ObservableCollection<GroupedItem>();
 			lstView = new ListView()
 			{
@@ -87,6 +87,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Category(UITestCategories.ManualReview)]
 		public void Bugzilla53834Test()
 		{
+			RunningApp.WaitForElement("TestReady");
 			RunningApp.Screenshot("incorrect row heights test");
 		}
 #endif
