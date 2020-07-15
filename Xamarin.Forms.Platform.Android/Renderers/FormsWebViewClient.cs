@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			_renderer.SyncNativeCookiesToElement(url);
 			var cancel = false;
-			if (!url.Equals(_renderer.UrlCanceled, StringComparison.OrdinalIgnoreCase))
+			if (_renderer.UrlCanceled != null && !url.Equals(_renderer.UrlCanceled, StringComparison.OrdinalIgnoreCase))
 				cancel = SendNavigatingCanceled(url);
 			_renderer.UrlCanceled = null;
 
@@ -58,6 +58,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override void OnPageFinished(WView view, string url)
 		{
+			if (view.Progress != 100)
+			{
+				return;
+			}
+
 			if (_renderer?.Element == null || url == WebViewRenderer.AssetBaseUrl)
 				return;
 
