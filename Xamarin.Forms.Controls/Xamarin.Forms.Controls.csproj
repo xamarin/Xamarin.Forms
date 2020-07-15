@@ -73,6 +73,9 @@
     <EmbeddedResource Update="GalleryPages\RadioButtonGroupGalleryPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <Compile Update="GalleryPages\PopupGalleries\BindablePopup.xaml.cs">
+      <DependentUpon>BindablePopup.xaml</DependentUpon>
+    </Compile>
     <Compile Update="TabIndexTest\DaysOfWeekView.xaml.cs">
       <DependentUpon>DaysOfWeekView.xaml</DependentUpon>
     </Compile>

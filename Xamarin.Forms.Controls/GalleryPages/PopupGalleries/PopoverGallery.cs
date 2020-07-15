@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Controls
 			layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
 			layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-			var top = new StackLayout { Children = { PopoverWithLabel(), PopoverWithLayout(), PopoverWithCloseButtonLayout(), PopoverWithCloseButtonLayoutNoSize(), TermsOfServicePopup() } };
+			var top = new StackLayout { Children = { PopoverWithLabel(), PopoverWithLayout(), PopoverWithCloseButtonLayout(), PopoverWithCloseButtonLayoutNoSize(), TermsOfServicePopup(), BindablePopup() } };
 			Grid.SetRow(top, 0);
 
 			// Putting one of the buttons on the bottom so if we're on the iPad we can see the little popover arrows working
@@ -222,6 +222,25 @@ namespace Xamarin.Forms.Controls
 
 				// Show the result that we just got back from the popup
 				await DisplayAlert(ResultTitle, result.ToString(), DismissText);
+			};
+
+			return button;
+		}
+
+		Button BindablePopup()
+		{
+			var button = new Button { Text = "Bindable Properties Popup" };
+
+			button.Clicked += async (sender, args) =>
+			{
+				// Create the popup, specifying the text for the buttons
+				var bindablePopup = new BindablePopup();
+
+				// Reset the popup in case we've already gotten a result from it
+				bindablePopup.Reset();
+
+				// Display the popup and await the result
+				await Navigation.ShowPopup(bindablePopup);
 			};
 
 			return button;

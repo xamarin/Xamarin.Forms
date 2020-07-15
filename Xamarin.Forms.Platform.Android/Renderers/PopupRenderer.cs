@@ -77,16 +77,17 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
-			if (args.PropertyName == BasePopup.VerticalOptionsProperty.PropertyName)
+			if (args.PropertyName == BasePopup.VerticalOptionsProperty.PropertyName ||
+				args.PropertyName == BasePopup.HorizontalOptionsProperty.PropertyName ||
+				args.PropertyName == BasePopup.SizeProperty.PropertyName)
 			{
-				// TODO - update VerticalOptions
+				SetSize();
+				SetAnchor();
 			}
-			else if (args.PropertyName == BasePopup.HorizontalOptionsProperty.PropertyName)
+			else if (args.PropertyName == BasePopup.ColorProperty.PropertyName)
 			{
-				// TODO - update HorizontalOptions
+				SetColor();
 			}
-
-			// TODO - Add other properties that can be changed at runtime
 
 			ElementPropertyChanged?.Invoke(this, args);
 		}
@@ -135,7 +136,6 @@ namespace Xamarin.Forms.Platform.Android
 						horizontalParams = LayoutParams.MatchParent;
 						break;
 				}
-
 
 				int verticalParams = -1;
 				switch (Element.View.VerticalOptions.Alignment)

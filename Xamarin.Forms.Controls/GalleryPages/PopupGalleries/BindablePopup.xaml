@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Popup xmlns="http://xamarin.com/schemas/2014/forms"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+       mc:Ignorable="d"
+       x:Class="Xamarin.Forms.Controls.BindablePopup">
+    <Popup.View>
+        <StackLayout VerticalOptions="FillAndExpand">
+            <Label Text="Bindable Properties Dialog Popup"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   HorizontalTextAlignment="Center"/>
+            <Label Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt."
+                   VerticalOptions="CenterAndExpand" 
+                   HorizontalOptions="CenterAndExpand"
+                   Margin="10, 0"/>
+            <StackLayout VerticalOptions="EndAndExpand">
+                <Button Text="Toggle Background Color"
+                        Clicked="BackgroundColor_Clicked"/>
+                <Button Text="Toggle Dialog Horizontal Position"
+                        Clicked="HorizontalPosition_Clicked"/>
+                <Button Text="Toggle Dialog Vertical Position"
+                        Clicked="VerticalPosition_Clicked"/>
+                <Button Text="Toggle Size"
+                        Clicked="Size_Clicked"/>
+                <Button Text="Close"
+                        Clicked="Close_Clicked" />
+            </StackLayout>
+        </StackLayout>
+    </Popup.View>
+</Popup>
