@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Padding = 12,
 				BackgroundColor = Color.Black,
 				TextColor = Color.White,
-				Text = "Tap a Button, drag your finger outside the Button and lift up your finger."
+				Text = "Tap a Button, drag your finger outside the Button and lift up your finger. If the Button state is Normal, the test has passed."
 			};
 
 			var button = new Button
@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			button.Clicked += (sender, args) =>
 			{
-				DisplayAlert("Issue 11430", "If you can read this message, the test has passed.", "Ok");
+				DisplayAlert("Issue 11430", "Button Clicked.", "Ok");
 			};
 		}
 	}
