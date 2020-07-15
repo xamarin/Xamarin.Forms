@@ -63,8 +63,12 @@ var teamProject = Argument("TeamProject", "");
 bool buildForVS2017 = Convert.ToBoolean(Argument("buildForVS2017", "false"));
 bool isHostedAgent = agentName.StartsWith("Azure Pipelines") || agentName.StartsWith("Hosted Agent");
 
+string defaultUnitTestWhere = "";
 
-var NUNIT_TEST_WHERE = Argument("NUNIT_TEST_WHERE", "cat != Shell && cat != CollectionView && cat != UwpIgnore && cat != CarouselView");
+if(target.Contains("uwp", StringComparison.OrdinalIgnoreCase))
+    defaultUnitTestWhere = "cat != Shell && cat != CollectionView && cat != UwpIgnore && cat != CarouselView";
+
+var NUNIT_TEST_WHERE = Argument("NUNIT_TEST_WHERE", defaultUnitTestWhere);
 var ExcludeCategory = GetBuildVariable("ExcludeCategory", "")?.Replace("\"", "");
 var ExcludeCategory2 = GetBuildVariable("ExcludeCategory2", "")?.Replace("\"", "");
 var IncludeCategory = GetBuildVariable("IncludeCategory", "")?.Replace("\"", "");
@@ -144,6 +148,7 @@ Information ("Agent.Name: {0}", agentName);
 Information ("isCIBuild: {0}", isCIBuild);
 Information ("artifactStagingDirectory: {0}", artifactStagingDirectory);
 Information("workingDirectory: {0}", workingDirectory);
+Information("NUNIT_TEST_WHERE: {0}", NUNIT_TEST_WHERE);
 
 var releaseChannel = ReleaseChannel.Stable;
 if(releaseChannelArg == "Preview")
