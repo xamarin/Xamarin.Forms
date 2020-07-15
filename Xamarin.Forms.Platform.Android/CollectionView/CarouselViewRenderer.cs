@@ -61,10 +61,15 @@ namespace Xamarin.Forms.Platform.Android
 			var carouselPosition = Carousel.Position;
 			var getGoIndex = _carouselViewLoopManager.GetGoToIndex(this, carouselPosition, args.Index);
 
-			if (carouselPosition == 0 && getGoIndex == -1)
+			return getGoIndex;
+		}
+
+		public override bool OnTouchEvent(MotionEvent e)
+		{
+			if (Carousel.Loop)
 				_carouselViewLoopManager.CenterIfNeeded(this, IsHorizontal);
 
-			return getGoIndex;
+			return base.OnTouchEvent(e);
 		}
 
 		protected override void Dispose(bool disposing)
@@ -427,7 +432,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var carouselPosition = Carousel.Position;
 
-			//we arrived center
+			// We arrived center
 			if (position == _gotoPosition)
 				_gotoPosition = -1;
 
@@ -506,12 +511,6 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateInitialPosition();
 				Carousel.Scrolled += CarouselViewScrolled;
-
-				if (Carousel.Loop)
-				{
-					_carouselViewLoopManager.CenterIfNeeded(this, IsHorizontal);
-				}
-
 				_initialized = true;
 				_isVisible = Carousel.IsVisible;
 			}
@@ -532,8 +531,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		class CarouselViewOnScrollListener : RecyclerViewScrollListener<ItemsView, IItemsViewSource>
 		{
-			FormsCarouselView _carouselView;
-			CarouselViewLoopManager _carouselViewLoopManager;
+			readonly FormsCarouselView _carouselView;
+			readonly CarouselViewLoopManager _carouselViewLoopManager;
+
 			public CarouselViewOnScrollListener(ItemsView itemsView, ItemsViewAdapter<ItemsView, IItemsViewSource> itemsViewAdapter, CarouselViewLoopManager carouselViewLoopManager) : base(itemsView, itemsViewAdapter, true)
 			{
 				_carouselView = itemsView as FormsCarouselView;
@@ -561,18 +561,11 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_carouselView.Loop)
 				{
-					if (!(recyclerView is CarouselViewRenderer carouselViewRenderer))
-						return;
-
-					_carouselViewLoopManager.CenterIfNeeded(recyclerView, carouselViewRenderer.IsHorizontal);
-
 					//We could have a race condition where we are scrolling our collection to center the first item
 					//We save that ScrollToEventARgs and call it again
 					_carouselViewLoopManager.CheckPendingScrollToEvents(recyclerView);
 				}
 			}
-
-
 		}
 
 		class CarouselViewwOnGlobalLayoutListener : Java.Lang.Object, ViewTreeObserver.IOnGlobalLayoutListener
@@ -587,8 +580,7 @@ namespace Xamarin.Forms.Platform.Android
 		class CarouselViewLoopManager
 		{
 			IItemsViewSource _itemsSource;
-
-			Queue<ScrollToRequestEventArgs> _pendingScrollTo = new Queue<ScrollToRequestEventArgs>();
+			readonly Queue<ScrollToRequestEventArgs> _pendingScrollTo = new Queue<ScrollToRequestEventArgs>();
 
 			public void CenterIfNeeded(RecyclerView recyclerView, bool isHorizontal)
 			{
