@@ -100,9 +100,31 @@ namespace Xamarin.Forms.Platform.iOS
 		void SetLayout()
 		{
 			((UIPopoverPresentationController)PresentationController).SourceRect = new CGRect(0, 0, PreferredContentSize.Width, PreferredContentSize.Height);
-			
-			// This appears to place the popover in the correct spot
-			PopoverPresentationController.SourceRect = new CGRect(0, 0, 100, 100);
+
+			nfloat originX = 0;
+			nfloat originY = 0;
+
+			switch (Element.VerticalOptions.Alignment)
+			{
+				case LayoutAlignment.End:
+					originY = UIScreen.MainScreen.Bounds.Height - PreferredContentSize.Height;
+					break;
+				case LayoutAlignment.Center:
+					originY = (UIScreen.MainScreen.Bounds.Height / 2) - (PreferredContentSize.Height / 2);
+					break;
+			}
+
+			switch (Element.HorizontalOptions.Alignment)
+			{
+				case LayoutAlignment.End:
+					originX = UIScreen.MainScreen.Bounds.Width;
+					break;
+				case LayoutAlignment.Center:
+					originX = UIScreen.MainScreen.Bounds.Width / 2;
+					break;
+			}
+
+			PopoverPresentationController.SourceRect = new CGRect(originX, originY, 0, 0);
 		}
 
 		void SetBackgroundColor()
