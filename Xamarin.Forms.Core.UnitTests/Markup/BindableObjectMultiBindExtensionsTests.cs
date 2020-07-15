@@ -93,20 +93,23 @@ namespace Xamarin.Forms.Markup.UnitTests
 					Label.TextProperty,
 					testBindings[0], testBindings[1], testBindings[2], testBindings[3],
 					((string text, Guid id, bool isDone, double fraction) v, int parameter) => Format(parameter, v.text, v.id, v.isDone, v.fraction),
-					(string formatted, int parameter) => { var u = Unformat(parameter, formatted); return (u.Text, u.Id, u.IsDone, u.Fraction); }
+					(string formatted, int parameter) => { var u = Unformat(parameter, formatted); return (u.Text, u.Id, u.IsDone, u.Fraction); },
+					converterParameter: 2
 				);
 			} else if (testConvert && !testConvertBack) {
 				label.Bind(
 					Label.TextProperty,
 					testBindings[0], testBindings[1], testBindings[2], testBindings[3],
-					((string text, Guid id, bool isDone, double fraction) v, int parameter) => Format(parameter, v.text, v.id, v.isDone, v.fraction)
+					((string text, Guid id, bool isDone, double fraction) v, int parameter) => Format(parameter, v.text, v.id, v.isDone, v.fraction),
+					converterParameter: 2
 				);
 			}
 			else if (!testConvert && testConvertBack) {
 				label.Bind(
 					Label.TextProperty,
 					testBindings[0], testBindings[1], testBindings[2], testBindings[3],
-					convertBack: (string formatted, int parameter) => { var u = Unformat(parameter, formatted); return (u.Text, u.Id, u.IsDone, u.Fraction); }
+					convertBack: (string formatted, int parameter) => { var u = Unformat(parameter, formatted); return (u.Text, u.Id, u.IsDone, u.Fraction); },
+					converterParameter: 2
 				);
 			}
 
@@ -140,7 +143,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				{ u.Text, u.Id, u.IsDone, u.Fraction, u.Count }; };
 
 			var converter = new FuncMultiConverter<string, int>(convert, convertBack);
-			var label = new Label { } .Bind (Label.TextProperty, GetTestBindings(5), converter);
+			var label = new Label { } .Bind (Label.TextProperty, GetTestBindings(5), converter, 2);
 			AssertLabelTextMultiBound(label, 5, testConvert, testConvertBack, 2, converter);
 		});
 
@@ -173,10 +176,26 @@ namespace Xamarin.Forms.Markup.UnitTests
 			);
 		}
 
-		void AssertLabelTextMultiBound(Label label, int nBindings, bool testConvert, bool testConvertBack, int parameter = 0, IMultiValueConverter converter = null)
+		void AssertLabelTextMultiBound(Label label, int nBindings, bool testConvert, bool testConvertBack, int parameter, IMultiValueConverter converter = null)
 		{
 			var values = GetTestConvertValues(nBindings);
 			string expected = Format(parameter, values);
+
+			BindingHelpers.AssertBindingExists<string, int>(
+				label,
+				targetProperty: Label.TextProperty,
+				GetTestBindings(nBindings),
+				converter,
+				parameter,
+				assertConverterInstanceIsAnyNotNull: converter == null,
+				assertConvert: c => c.AssertConvert(values, parameter, expected, twoWay: testConvert && testConvertBack, backOnly: !testConvert && testConvertBack)
+			);
+		}
+
+		void AssertLabelTextMultiBound(Label label, int nBindings, bool testConvert, bool testConvertBack, IMultiValueConverter converter = null)
+		{
+			var values = GetTestConvertValues(nBindings);
+			string expected = Format(0, values);
 
 			BindingHelpers.AssertBindingExists<string>(
 				label,
@@ -184,13 +203,7 @@ namespace Xamarin.Forms.Markup.UnitTests
 				GetTestBindings(nBindings),
 				converter,
 				assertConverterInstanceIsAnyNotNull: converter == null,
-				assertConvert: c =>
-				{
-					if (parameter == 0)
-						c.AssertConvert(values, expected, twoWay: testConvert && testConvertBack, backOnly: !testConvert && testConvertBack);
-					else
-						c.AssertConvert(values, parameter, expected, twoWay: testConvert && testConvertBack, backOnly: !testConvert && testConvertBack);
-				}
+				assertConvert: c => c.AssertConvert(values, expected, twoWay: testConvert && testConvertBack, backOnly: !testConvert && testConvertBack)
 			);
 		}
 
