@@ -66,7 +66,7 @@ bool isHostedAgent = agentName.StartsWith("Azure Pipelines") || agentName.Starts
 
 string defaultUnitTestWhere = "";
 
-if(target.Contains("uwp", StringComparison.OrdinalIgnoreCase))
+if(target.ToLower().Contains("uwp"))
     defaultUnitTestWhere = "cat != Shell && cat != CollectionView && cat != UwpIgnore && cat != CarouselView";
 
 var NUNIT_TEST_WHERE = Argument("NUNIT_TEST_WHERE", defaultUnitTestWhere);
@@ -477,7 +477,12 @@ Task ("cg-uwp-deploy")
 });
 
 Task("cg-uwp-run-tests")
+    .IsDependentOn("cg-uwp-build-tests")
+    .IsDependentOn("cg-uwp-deploy")
     .IsDependentOn("provision-uitests-uwp")
+    .IsDependentOn("_cg-uwp-run-tests");
+
+Task("_cg-uwp-run-tests")
     .Does(() =>
     {
         System.Diagnostics.Process process = null;
@@ -526,7 +531,7 @@ Task("cg-uwp-run-tests")
 Task("cg-uwp-run-tests-ci")
     .IsDependentOn("provision-windowssdk")
     .IsDependentOn("cg-uwp-deploy")
-    .IsDependentOn("cg-uwp-run-tests")
+    .IsDependentOn("_cg-uwp-run-tests")
     .Does(() =>
     {
     });
