@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == DatePicker.DateProperty.PropertyName)
+			if (e.PropertyName == DatePicker.DateProperty.PropertyName || e.PropertyName == DatePicker.FormatProperty.PropertyName)
 				UpdateDate(Element.Date);
 			else if (e.PropertyName == DatePicker.MaximumDateProperty.PropertyName)
 				UpdateMaximumDate();
@@ -142,6 +142,53 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (Control != null)
 				Control.Date = new DateTimeOffset(new DateTime(date.Ticks, DateTimeKind.Unspecified));
+
+			if (Element.Format.Equals("") || Element.Format.Equals("d"))
+			{
+				Control.MonthVisible = true;
+				Control.YearVisible = true;
+				Control.DayVisible = true;
+				Control.MonthFormat = "month";
+				Control.YearFormat = "year";
+				Control.DayFormat = "day";
+			}
+			else if (Element.Format.Equals("D"))
+			{
+				Control.MonthVisible = true;
+				Control.YearVisible = true;
+				Control.DayVisible = true;
+				Control.MonthFormat = "month.full";
+				Control.YearFormat = "year.full";
+				Control.DayFormat = "dayofweek.full";
+			}
+			else
+			{
+				var month = Element.Format.Count(x => x == 'M');
+				var year = Element.Format.Count(x => x == 'y');
+				var day = Element.Format.Count(x => x == 'd');
+				if (month == 0)
+					Control.MonthVisible = false;
+				else if (month <= 2)
+					Control.MonthFormat = "month.numeric";
+				else if (month == 3)
+					Control.MonthFormat = "month.abbreviated";
+				else
+					Control.MonthFormat = "month.full";
+				if (year == 0)
+					Control.YearVisible = false;
+				else if (year <= 2)
+					Control.YearFormat = "year.abbreviated";
+				else
+					Control.YearFormat = "year.full";
+				if (day == 0)
+					Control.DayVisible = false;
+				else if (day == 3)
+					Control.DayFormat = "dayofweek.abbreviated";
+				else if (day == 4)
+					Control.DayFormat = "dayofweek.full";
+				else
+					Control.DayFormat = "day";
+			}
 		}
 
 		void UpdateFlowDirection()
