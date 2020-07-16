@@ -79,9 +79,7 @@ namespace Xamarin.Forms.Controls.Issues
 					collection.Add(new Model9631
 					{
 						Text = "Image" + i,
-						Source = i % 2 == 0
-							? "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Kamchatka_Brown_Bear_near_Dvuhyurtochnoe_on_2015-07-23.jpg/320px-Kamchatka_Brown_Bear_near_Dvuhyurtochnoe_on_2015-07-23.jpg"
-							: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Elephant_%40_kabini.jpg/180px-Elephant_%40_kabini.jpg",
+						Source = "coffee.png",
 						AutomationId = "Image" + i
 					});
 				}
