@@ -54,8 +54,8 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			if (Control != null)
 			{
-				Control.TouchUpInside -= OnButtonTouchUpInside;
-				Control.TouchDown -= OnButtonTouchDown;
+				//Control.TouchUpInside -= OnButtonTouchUpInside;
+				//Control.TouchDown -= OnButtonTouchDown;
 				BorderElementManager.Dispose(this);
 			}
 
@@ -86,8 +86,8 @@ namespace Xamarin.Forms.Platform.iOS
 					_buttonTextColorDefaultHighlighted = Control.TitleColor(UIControlState.Highlighted);
 					_buttonTextColorDefaultDisabled = Control.TitleColor(UIControlState.Disabled);
 
-					Control.TouchUpInside += OnButtonTouchUpInside;
-					Control.TouchDown += OnButtonTouchDown;
+					//Control.TouchUpInside += OnButtonTouchUpInside;
+					//Control.TouchDown += OnButtonTouchDown;
 				}
 
 				UpdateText();
@@ -102,23 +102,23 @@ namespace Xamarin.Forms.Platform.iOS
 			return new UIButton(UIButtonType.System);
 		}
 
-		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			base.OnElementPropertyChanged(sender, e);
+		//protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		//{
+		//	base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == RadioButton.TextProperty.PropertyName)
-				UpdateText();
-			else if (e.PropertyName == RadioButton.TextColorProperty.PropertyName)
-				UpdateTextColor();
-			else if (e.PropertyName == RadioButton.FontProperty.PropertyName)
-				UpdateFont();
-			else if (e.PropertyName == RadioButton.PaddingProperty.PropertyName)
-				UpdatePadding();
-			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
-				_radioButtonLayer.SetNeedsDisplay();
-			else if (e.PropertyName == RadioButton.IsCheckedProperty.PropertyName)
-				_radioButtonLayer.SetNeedsDisplay();
-		}
+		//	if (e.PropertyName == RadioButton.TextProperty.PropertyName)
+		//		UpdateText();
+		//	else if (e.PropertyName == RadioButton.TextColorProperty.PropertyName)
+		//		UpdateTextColor();
+		//	else if (e.PropertyName == RadioButton.FontProperty.PropertyName)
+		//		UpdateFont();
+		//	else if (e.PropertyName == RadioButton.PaddingProperty.PropertyName)
+		//		UpdatePadding();
+		//	else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+		//		_radioButtonLayer.SetNeedsDisplay();
+		//	else if (e.PropertyName == RadioButton.IsCheckedProperty.PropertyName)
+		//		_radioButtonLayer.SetNeedsDisplay();
+		//}
 
 		protected override void SetAccessibilityLabel()
 		{
@@ -166,20 +166,20 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void OnButtonTouchUpInside(object sender, EventArgs eventArgs)
-		{
-			ButtonElementManager.OnButtonTouchUpInside(this.Element);
+		//void OnButtonTouchUpInside(object sender, EventArgs eventArgs)
+		//{
+		//	ButtonElementManager.OnButtonTouchUpInside(this.Element);
 
-			if (!Element.IsChecked)
-				Element.IsChecked = !Element.IsChecked;
+		//	if (!Element.IsChecked)
+		//		Element.IsChecked = !Element.IsChecked;
 
-			_radioButtonLayer.SetNeedsDisplay();
-		}
+		//	_radioButtonLayer.SetNeedsDisplay();
+		//}
 
-		void OnButtonTouchDown(object sender, EventArgs eventArgs)
-		{
-			ButtonElementManager.OnButtonTouchDown(this.Element);
-		}
+		//void OnButtonTouchDown(object sender, EventArgs eventArgs)
+		//{
+		//	ButtonElementManager.OnButtonTouchDown(this.Element);
+		//}
 
 		void UpdateFont()
 		{

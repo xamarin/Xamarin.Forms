@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Windows.Devices.Radios;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using WBrush = Windows.UI.Xaml.Media.Brush;
@@ -20,8 +21,6 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					var button = new FormsRadioButton();
 
-					button.Click += OnButtonClick;
-					button.AddHandler(PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
 					button.Loaded += ButtonOnLoaded;
 					button.Checked += OnRadioButtonCheckedOrUnchecked;
 					button.Unchecked += OnRadioButtonCheckedOrUnchecked;
@@ -79,7 +78,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == RadioButton.TextProperty.PropertyName || e.PropertyName == Button.ImageSourceProperty.PropertyName)
+			if (e.PropertyName == RadioButton.ContentProperty.PropertyName || e.PropertyName == Button.ImageSourceProperty.PropertyName)
 			{
 				UpdateContent();
 			}
@@ -91,7 +90,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateTextColor();
 			}
-			else if (e.PropertyName == RadioButton.FontProperty.PropertyName)
+			else if (e.IsOneOf(RadioButton.FontFamilyProperty, RadioButton.FontSizeProperty, RadioButton.FontAttributesProperty))
 			{
 				UpdateFont();
 			}
@@ -131,17 +130,6 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		protected override bool PreventGestureBubbling { get; set; } = true;
-
-		void OnButtonClick(object sender, RoutedEventArgs e)
-		{
-			((IButtonController)Element)?.SendReleased();
-			((IButtonController)Element)?.SendClicked();
-		}
-
-		void OnPointerPressed(object sender, RoutedEventArgs e)
-		{
-			((IButtonController)Element)?.SendPressed();
-		}
 
 		void OnRadioButtonCheckedOrUnchecked(object sender, RoutedEventArgs e)
 		{
@@ -187,10 +175,12 @@ namespace Xamarin.Forms.Platform.UWP
 			if (Control == null || Element == null)
 				return;
 
-			if (Element.Font == Font.Default && !_fontApplied)
+			Font font = Font.OfSize(Element.FontFamily, Element.FontSize).WithAttributes(Element.FontAttributes);
+
+			if (font == Font.Default && !_fontApplied)
 				return;
 
-			Font fontToApply = Element.Font == Font.Default ? Font.SystemFontOfSize(NamedSize.Medium) : Element.Font;
+			Font fontToApply = font == Font.Default ? Font.SystemFontOfSize(NamedSize.Medium) : font;
 
 			Control.ApplyFont(fontToApply);
 			_fontApplied = true;

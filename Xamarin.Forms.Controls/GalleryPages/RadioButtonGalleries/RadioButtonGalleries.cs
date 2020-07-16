@@ -25,7 +25,9 @@
 						descriptionLabel,
 						button,
 						GalleryBuilder.NavButton("RadioButton Group Gallery", () =>
-							new RadioButtonGroupGalleryPage(), Navigation)
+							new RadioButtonGroupGalleryPage(), Navigation),
+						GalleryBuilder.NavButton("RadioButton Group Attached Property", () =>
+							new RadioButtonGroupAttachedGallery(), Navigation)
 					}
 				}
 			};
@@ -39,7 +41,7 @@
 			button.TextColor = Color.Black;
 			button.IsEnabled = false;
 
-			Device.SetFlags(new[] { ExperimentalFlags.RadioButtonExperimental });
+			Device.SetFlags(new[] { ExperimentalFlags.RadioButtonExperimental, ExperimentalFlags.ShapesExperimental });
 		}
 	}
 }
