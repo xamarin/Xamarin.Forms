@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls
 			InitializeComponent();
 		}
 
-		Color _defaultBackground = Color.White;
+		Color _defaultBackground = Color.Orange;
 		void BackgroundColor_Clicked(object sender, System.EventArgs e)
 		{
 			if (Color == _defaultBackground)
