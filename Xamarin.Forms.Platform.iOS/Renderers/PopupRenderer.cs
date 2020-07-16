@@ -166,9 +166,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void SetBackgroundColor()
 		{
-			// TODO - This is currently not working because the background of the foreground object is not set to transparent
-			base.View.BackgroundColor = Element.Color.ToUIColor();
-			((UIPopoverPresentationController)PresentationController).BackgroundColor = Element.Color.ToUIColor();
+			Control.NativeView.BackgroundColor = Element.Color.ToUIColor();
 		}
 
 		void SetView()
