@@ -1,17 +1,23 @@
 ﻿using System;
+using System.ComponentModel;
 using CoreGraphics;
 using UIKit;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
 	public class PopupRenderer : UIViewController, IVisualElementRenderer
 	{
 		public IVisualElementRenderer Control { get; private set; }
-		public Popup Element { get; private set; }
+		public BasePopup Element { get; private set; }
 		VisualElement IVisualElementRenderer.Element { get => Element; }
 		public UIView NativeView { get => base.View; }
 		public UIViewController ViewController { get; private set; }
+
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
+		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
+
+		bool _isDisposed;
 
 		[Internals.Preserve(Conditional = true)]
 		public PopupRenderer()
@@ -35,25 +41,56 @@ namespace Xamarin.Forms.Platform.iOS
 			return NativeView.GetSizeRequest(widthConstraint, heightConstraint);
 		}
 
-		public void SetElement(VisualElement element)
+		void IVisualElementRenderer.SetElement(VisualElement element)
 		{
-			var oldElement = Element;
-			Element = (Popup)element;
+			if (element == null)
+				throw new ArgumentNullException(nameof(element));
+			
+			if (!(element is BasePopup popup))
+				throw new ArgumentNullException("Element is not of type " + typeof(BasePopup), nameof(element));
 
-			OnElementChanged(new ElementChangedEventArgs<Popup>(oldElement, Element));
+			var oldElement = Element;
+			Element = popup;
+			CreateControl();
+
+			Performance.Start(out string reference);
+
+			if (oldElement != null)
+				oldElement.PropertyChanged -= OnElementPropertyChanged;
+			
+			element.PropertyChanged += OnElementPropertyChanged;
+			
+			OnElementChanged(new ElementChangedEventArgs<BasePopup>(oldElement, Element));
+			Element?.SendViewInitialized(NativeView);
+
+			Performance.Stop(reference);
 		}
 
-		protected virtual void OnElementChanged(ElementChangedEventArgs<Popup> e)
+		protected virtual void OnElementChanged(ElementChangedEventArgs<BasePopup> e)
 		{
-			if (Control == null)
-				CreateControl();
-			else if (Element != null)
+			if (e.NewElement != null && !_isDisposed)
 			{
+				ModalInPopover = true;
+				ModalPresentationStyle = UIModalPresentationStyle.Popover;
+
+				SetViewController();
+				SetEvents();
 				SetSize();
+				SetLayout();
 				SetBackgroundColor();
+				SetView();
+				SetPresentationController();
+				AddToCurrentPageViewController();
 			}
 
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
+		}
+
+		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs args)
+		{
+			// todo - update properties
+
+			ElementPropertyChanged?.Invoke(this, args);
 		}
 
 		void CreateControl()
@@ -64,18 +101,6 @@ namespace Xamarin.Forms.Platform.iOS
 			Control = Platform.CreateRenderer(contentPage);
 			Platform.SetRenderer(contentPage, Control);
 			contentPage.Parent = Application.Current.MainPage;
-
-			ModalInPopover = true;
-			ModalPresentationStyle = UIModalPresentationStyle.Popover;
-
-			SetViewController();
-			SetEvents();
-			SetSize();
-			SetLayout();
-			SetBackgroundColor();
-			SetView();
-			SetPresentationController();
-			AddToCurrentPageViewController();
 		}
 
 		void SetViewController()
@@ -159,6 +184,28 @@ namespace Xamarin.Forms.Platform.iOS
 				await ViewController.DismissViewControllerAsync(true);
 			else
 				ViewController.DismissViewController(true, null);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_isDisposed)
+				return;
+
+			_isDisposed = true;
+			if (disposing)
+			{
+				if (Element != null)
+				{
+					Element.PropertyChanged -= OnElementPropertyChanged;
+
+					if (iOS.Platform.GetRenderer(Element) == this)
+						Element.ClearValue(iOS.Platform.RendererProperty);
+
+					Element = null;
+				}
+			}
+
+			base.Dispose(disposing);
 		}
 
 		class PopoverDelegate : UIPopoverPresentationControllerDelegate
