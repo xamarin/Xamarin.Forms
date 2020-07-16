@@ -7,14 +7,25 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class FrameRenderer : VisualElementRenderer<Frame>, ITabStop
 	{
-		UIView _actualView = new UIView();
+		UIView _actualView;
 		CGSize _previousSize;
+		bool _isDisposed;
 
 		UIView ITabStop.TabStop => this;
 
 		[Internals.Preserve(Conditional = true)]
 		public FrameRenderer()
 		{
+			_actualView = new FrameView();
+			AddSubview(_actualView);
+		}
+
+		public override void AddSubview(UIView view)
+		{
+			if (view != _actualView)
+				_actualView.AddSubview(view);
+			else
+				base.AddSubview(view);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Frame> e)
@@ -23,24 +34,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (e.NewElement != null)
 			{
-				// Add the subviews to the actual view.
-				foreach (var item in NativeView.Subviews)
-				{
-					_actualView.AddSubview(item);
-				}
-
-				// Make sure the gestures still work on our subview
-				if (NativeView.GestureRecognizers != null)
-				{
-					foreach (var gesture in NativeView.GestureRecognizers)
-						_actualView.AddGestureRecognizer(gesture);
-				}
-				else if (_actualView.Subviews.Length == 0)
-				{
-					_actualView.UserInteractionEnabled = false;
-				}
-
-				AddSubview(_actualView);
 				SetupLayer();
 			}
 		}
@@ -53,6 +46,7 @@ namespace Xamarin.Forms.Platform.iOS
 			    e.PropertyName == Xamarin.Forms.Frame.BorderColorProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.HasShadowProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.CornerRadiusProperty.PropertyName ||
+				e.PropertyName == Xamarin.Forms.Frame.IsClippedToBoundsProperty.PropertyName ||
 				e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
 				SetupLayer();
 		}
@@ -68,7 +62,10 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		public virtual void SetupLayer()
-		{
+		{			
+			if (_actualView == null)
+				return;
+
 			float cornerRadius = Element.CornerRadius;
 
 			if (cornerRadius == -1f)
@@ -108,9 +105,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			Layer.RasterizationScale = UIScreen.MainScreen.Scale;
 			Layer.ShouldRasterize = true;
+			Layer.MasksToBounds = false;
 
 			_actualView.Layer.RasterizationScale = UIScreen.MainScreen.Scale;
 			_actualView.Layer.ShouldRasterize = true;
+			_actualView.Layer.MasksToBounds = Element.IsClippedToBounds;
 		}
 
 		public override void LayoutSubviews()
@@ -123,7 +122,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void Draw(CGRect rect)
 		{
-			_actualView.Frame = Bounds;
+			if (_actualView != null)
+				_actualView.Frame = Bounds;
 
 			base.Draw(rect);
 
@@ -132,13 +132,17 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
+			if (_isDisposed)
+				return;
+
+			_isDisposed = true;
+
 			base.Dispose(disposing);
 
 			if (disposing)
 			{
 				if (_actualView != null)
 				{
-					
 					for (var i = 0; i < _actualView.GestureRecognizers?.Length; i++)
 						_actualView.GestureRecognizers.Remove(_actualView.GestureRecognizers[i]);
 
@@ -149,6 +153,30 @@ namespace Xamarin.Forms.Platform.iOS
 					_actualView.Dispose();
 					_actualView = null;
 				}
+			}
+		}
+
+		[Internals.Preserve(Conditional = true)]
+		class FrameView : UIView
+		{
+			public override void RemoveFromSuperview()
+			{
+				for (var i = Subviews.Length - 1; i >= 0; i--)
+				{
+					var item = Subviews[i];
+					item.RemoveFromSuperview();
+				}
+			}
+
+			public override bool PointInside(CGPoint point, UIEvent uievent)
+			{
+				foreach(var view in Subviews)
+				{
+					if (view.HitTest(ConvertPointToView(point, view), uievent) != null)
+						return true;
+				}
+
+				return false;
 			}
 		}
 	}

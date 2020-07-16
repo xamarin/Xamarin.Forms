@@ -25,12 +25,11 @@ namespace Xamarin.Forms.Platform.UWP
 		Shell _shell;
 		FlyoutBehavior _flyoutBehavior;
 		ShellItemRenderer ItemRenderer { get; }
+		IShellController ShellController => (IShellController)_shell;
 
 		public ShellRenderer()
 		{
 			Xamarin.Forms.Shell.VerifyShellUWPFlagEnabled(nameof(ShellRenderer));
-			IsBackEnabled = false;
-			IsBackButtonVisible = Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed;
 			IsSettingsVisible = false;
 			PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.LeftMinimal;
 			IsPaneOpen = false;
@@ -41,7 +40,20 @@ namespace Xamarin.Forms.Platform.UWP
 			if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneOpening"))
 				PaneOpening += (s, e) => OnPaneOpening();
 			ItemInvoked += OnMenuItemInvoked;
+			BackRequested += OnBackRequested;
 			Style = Windows.UI.Xaml.Application.Current.Resources["ShellNavigationView"] as Windows.UI.Xaml.Style;
+		}
+
+		async void OnBackRequested(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewBackRequestedEventArgs args)
+		{
+			try
+			{
+				await _shell.Navigation.PopAsync();
+			}
+			catch (Exception exc)
+			{
+				Internals.Log.Warning(nameof(Shell), $"Failed to Navigate Back: {exc}");
+			}
 		}
 
 		public Brush FlyoutBackgroundColor
@@ -82,7 +94,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			var item = args.InvokedItemContainer?.DataContext as Element;
 			if (item != null)
-				((IShellController)Element).OnFlyoutItemSelected(item);
+				ShellController.OnFlyoutItemSelected(item);
 		}
 
 		#region IVisualElementRenderer
@@ -218,7 +230,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (_shell != null)
 			{
-				(_shell as IShellController).ItemsCollectionChanged -= OnItemsCollectionChanged;
+				ShellController.ItemsCollectionChanged -= OnItemsCollectionChanged;
 			}
 
 			_shell = shell;
@@ -231,11 +243,63 @@ namespace Xamarin.Forms.Platform.UWP
 			MenuItemsSource = IterateItems();
 			SwitchShellItem(shell.CurrentItem, false);
 			IsPaneOpen = Shell.FlyoutIsPresented;
-			((IShellController)Element).AddFlyoutBehaviorObserver(this);
-			((IShellController)shell).AddAppearanceObserver(this, shell);
-			(shell as IShellController).ItemsCollectionChanged += OnItemsCollectionChanged;
+			ShellController.AddFlyoutBehaviorObserver(this);
+			ShellController.AddAppearanceObserver(this, shell);
+			ShellController.ItemsCollectionChanged += OnItemsCollectionChanged;
+			ShellController.StructureChanged += OnStructureChanged;
 			UpdateFlyoutBackgroundColor();
 			UpdateFlyoutBackdropColor();
+
+			_shell.Navigated += OnShellNavigated;
+			UpdateToolBar();
+		}
+
+		void OnShellNavigated(object sender, ShellNavigatedEventArgs e)
+		{
+			UpdateToolBar();
+		}
+
+		void UpdateToolBar()
+		{
+			if(_shell.Navigation.NavigationStack.Count > 1)
+			{
+				IsBackEnabled = true;
+				IsBackButtonVisible = Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Visible;
+			}
+			else
+			{
+				IsBackEnabled = false;
+				IsBackButtonVisible = Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed;
+			}
+
+			switch (_flyoutBehavior)
+			{
+				case FlyoutBehavior.Disabled:
+					IsPaneToggleButtonVisible = false;
+					IsPaneVisible = false;
+					PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.LeftMinimal;
+					IsPaneOpen = false;
+					break;
+
+				case FlyoutBehavior.Flyout:
+					IsPaneVisible = true;
+					IsPaneToggleButtonVisible = !IsBackEnabled;
+					bool shouldOpen = Shell.FlyoutIsPresented;
+					PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.LeftMinimal; //This will trigger opening the flyout
+					IsPaneOpen = shouldOpen;
+					break;
+
+				case FlyoutBehavior.Locked:
+					IsPaneVisible = true;
+					IsPaneToggleButtonVisible = false;
+					PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.Left;
+					break;
+			}
+		}
+
+		void OnStructureChanged(object sender, EventArgs e)
+		{
+			MenuItemsSource = IterateItems();
 		}
 
 		void OnItemsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -304,29 +368,7 @@ namespace Xamarin.Forms.Platform.UWP
 		void IFlyoutBehaviorObserver.OnFlyoutBehaviorChanged(FlyoutBehavior behavior)
 		{
 			_flyoutBehavior = behavior;
-			switch (behavior)
-			{
-				case FlyoutBehavior.Disabled:
-					IsPaneToggleButtonVisible = false;
-					IsPaneVisible = false;
-					PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.LeftMinimal;
-					IsPaneOpen = false;
-					break;
-
-				case FlyoutBehavior.Flyout:
-					IsPaneVisible = true;
-					IsPaneToggleButtonVisible = true;
-					bool shouldOpen = Shell.FlyoutIsPresented;
-					PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.LeftMinimal; //This will trigger opening the flyout
-					IsPaneOpen = shouldOpen;
-					break;
-
-				case FlyoutBehavior.Locked:
-					IsPaneVisible = true;
-					IsPaneToggleButtonVisible = false;
-					PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.Left;
-					break;
-			}
+			UpdateToolBar();
 		}
 
 		public virtual ShellFlyoutTemplateSelector CreateShellFlyoutTemplateSelector() => new ShellFlyoutTemplateSelector();

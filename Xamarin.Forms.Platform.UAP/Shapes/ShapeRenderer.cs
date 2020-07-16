@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using Xamarin.Forms.Shapes;
 using Shape = Xamarin.Forms.Shapes.Shape;
 
@@ -40,6 +41,7 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateStrokeDashOffset();
 				UpdateStrokeLineCap();
 				UpdateStrokeLineJoin();
+				UpdateStrokeMiterLimit();
 			}
 		}
 
@@ -67,6 +69,8 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateStrokeLineCap();
 			else if (args.PropertyName == Shape.StrokeLineJoinProperty.PropertyName)
 				UpdateStrokeLineJoin();
+			else if (args.PropertyName == Shape.StrokeMiterLimitProperty.PropertyName)
+				UpdateStrokeMiterLimit();
 		}
 		
 #if !WINDOWS_UWP
@@ -74,7 +78,7 @@ namespace Xamarin.Forms.Platform.WPF
 #endif	
 		void UpdateHeight()
 		{
-			Control.Height = Element.Height;
+			Control.Height = Math.Max(Element.Height, 0);
 		}
 
 #if !WINDOWS_UWP
@@ -82,7 +86,7 @@ namespace Xamarin.Forms.Platform.WPF
 #endif
 		void UpdateWidth()
 		{
-			Control.Width = Element.Width;
+			Control.Width = Math.Max(Element.Width, 0);
 		}
 
 		void UpdateAspect()
@@ -201,6 +205,11 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 
 			Control.StrokeLineJoin = wLineJoin;
+		}
+
+		void UpdateStrokeMiterLimit()
+		{
+			Control.StrokeMiterLimit = Element.StrokeMiterLimit;
 		}
 	}
 }

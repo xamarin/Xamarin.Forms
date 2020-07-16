@@ -351,7 +351,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (panGestureRecognizer != null)
 			{
-				var point = panGestureRecognizer.LocationInView(Control);
+				CGPoint point = panGestureRecognizer.LocationInView(this);
 				var navigationController = GetUINavigationController(GetViewController());
 
 				switch (panGestureRecognizer.State)
@@ -1378,6 +1378,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateIsOpen(bool isOpen)
 		{
+			if (Element == null)
+				return;
+
 			((ISwipeViewController)Element).IsOpen = isOpen;
 		}
 
