@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Controls
 				_defaultSize = new Size(500, 600);
 
 			Size = _defaultSize;
+			Color = _defaultBackground;
 			InitializeComponent();
 		}
 
