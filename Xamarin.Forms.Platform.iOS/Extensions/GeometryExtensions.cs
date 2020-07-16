@@ -13,10 +13,10 @@ namespace Xamarin.Forms.Platform.MacOS
     {
         public static PathData ToCGPath(this Geometry geometry, Transform renderTransform = null)
         {
-			PathData pathData = new PathData
-			{
-				Data = new CGPath()
-			};
+            PathData pathData = new PathData
+            {
+                Data = new CGPath()
+            };
 
             CGAffineTransform transform;
 
@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Platform.MacOS
             else if (geometry is GeometryGroup)
             {
                 GeometryGroup geometryGroup = geometry as GeometryGroup;
-				
+
                 pathData.IsNonzeroFillRule = geometryGroup.FillRule == FillRule.Nonzero;
 
                 foreach (Geometry child in geometryGroup.Children)
