@@ -87,29 +87,25 @@ namespace Xamarin.Forms.Platform.UWP
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
 			if (args.PropertyName == BasePopup.VerticalOptionsProperty.PropertyName ||
-				args.PropertyName == BasePopup.HorizontalOptionsProperty.PropertyName)
+				args.PropertyName == BasePopup.HorizontalOptionsProperty.PropertyName ||
+				args.PropertyName == BasePopup.SizeProperty.PropertyName ||
+				args.PropertyName == BasePopup.ColorProperty.PropertyName)
 			{
-				// TODO - This isn't properly updating the position of the Popup
-				InitializeStyles();
-				SetLayout();
-				ApplyStyles();
-				Show();
-			}
-			else if (args.PropertyName == BasePopup.SizeProperty.PropertyName)
-			{
-				InitializeStyles();
-				SetSize();
-				ApplyStyles();
-			}
-			else if (args.PropertyName == BasePopup.ColorProperty.PropertyName)
-			{
-				InitializeStyles();
-				SetColor();
-				SetBorderColor();
-				ApplyStyles();
+				ConfigureControl();
 			}
 
 			ElementPropertyChanged?.Invoke(this, args);
+		}
+
+		void ConfigureControl()
+		{
+			InitializeStyles();
+			SetEvents();
+			SetColor();
+			SetBorderColor();
+			SetSize();
+			SetLayout();
+			ApplyStyles();
 		}
 
 		void SetEvents()
@@ -132,9 +128,7 @@ namespace Xamarin.Forms.Platform.UWP
 		void SetLayout()
 		{
 			LightDismissOverlayMode = LightDismissOverlayMode.On;
-
-			_panelStyle.Setters.Add(new Windows.UI.Xaml.Setter(Panel.HorizontalAlignmentProperty, HorizontalAlignment.Center));
-			_panelStyle.Setters.Add(new Windows.UI.Xaml.Setter(Panel.VerticalAlignmentProperty, VerticalAlignment.Center));
+			SetDialogPosition(Element.VerticalOptions, Element.HorizontalOptions);
 		}
 
 		void SetBorderColor()
@@ -174,7 +168,6 @@ namespace Xamarin.Forms.Platform.UWP
 			else
 			{
 				var frameworkElement = Platform.Current.NavigationStack[0].ToFrameworkElement();
-				SetDialogPosition(Element.VerticalOptions, Element.HorizontalOptions);
 				FlyoutBase.SetAttachedFlyout(frameworkElement, this);
 				FlyoutBase.ShowAttachedFlyout(frameworkElement);
 			}
