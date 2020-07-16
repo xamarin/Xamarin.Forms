@@ -2,6 +2,23 @@
 {
 	public class LinearGradientBrush : GradientBrush
 	{
+		public LinearGradientBrush()
+		{
+
+		}
+
+		public LinearGradientBrush(GradientStopCollection gradientStops)
+		{
+			GradientStops = gradientStops;
+		}
+
+		public LinearGradientBrush(GradientStopCollection gradientStops, Point startPoint, Point endPoint)
+		{
+			GradientStops = gradientStops;
+			StartPoint = startPoint;
+			EndPoint = endPoint;
+		}
+
 		public override bool IsEmpty
 		{
 			get

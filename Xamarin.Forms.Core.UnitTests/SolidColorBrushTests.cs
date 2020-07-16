@@ -20,6 +20,13 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void TestConstructorUsingColor()
+		{
+			SolidColorBrush solidColorBrush = new SolidColorBrush(Color.Red);
+			Assert.AreEqual("[Color: A=1, R=1, G=0, B=0, Hue=1, Saturation=1, Luminosity=0.5]", solidColorBrush.Color.ToString(), "Color");
+		}
+
+		[Test]
 		public void TestEmptySolidColorBrush()
 		{
 			SolidColorBrush solidColorBrush = new SolidColorBrush();

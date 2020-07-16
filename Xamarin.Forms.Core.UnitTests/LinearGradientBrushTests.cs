@@ -22,6 +22,22 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void TestConstructorUsingGradientStopCollection()
+		{
+			var gradientStops = new GradientStopCollection
+			{
+				new GradientStop { Color = Color.Red, Offset = 0.1f },
+				new GradientStop { Color = Color.Orange, Offset = 0.8f }
+			};
+
+			LinearGradientBrush linearGradientBrush = new LinearGradientBrush(gradientStops, new Point(0, 0), new Point(0, 1));
+
+			Assert.AreNotEqual(0, linearGradientBrush.GradientStops.Count, "GradientStops");
+			Assert.AreEqual(0.0d, linearGradientBrush.EndPoint.X, "EndPoint.X");
+			Assert.AreEqual(1.0d, linearGradientBrush.EndPoint.Y, "EndPoint.Y");
+		}
+
+		[Test]
 		public void TestEmptyLinearGradientBrush()
 		{
 			LinearGradientBrush nullLinearGradientBrush = new LinearGradientBrush();

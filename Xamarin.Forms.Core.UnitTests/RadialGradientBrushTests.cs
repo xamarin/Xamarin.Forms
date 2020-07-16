@@ -23,6 +23,23 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void TestConstructorUsingGradientStopCollection()
+		{
+			var gradientStops = new GradientStopCollection
+			{
+				new GradientStop { Color = Color.Red, Offset = 0.1f },
+				new GradientStop { Color = Color.Orange, Offset = 0.8f }
+			};
+
+			RadialGradientBrush radialGradientBrush = new RadialGradientBrush(gradientStops, new Point(0, 0), 10);
+
+			Assert.AreNotEqual(0, radialGradientBrush.GradientStops.Count, "GradientStops");
+			Assert.AreEqual(0, radialGradientBrush.Center.X, "Center.X");
+			Assert.AreEqual(0, radialGradientBrush.Center.Y, "Center.Y");
+			Assert.AreEqual(10, radialGradientBrush.Radius, "Radius");
+		}
+
+		[Test]
 		public void TestEmptyRadialGradientBrush()
 		{
 			RadialGradientBrush nullRadialGradientBrush = new RadialGradientBrush();

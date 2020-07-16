@@ -3,7 +3,10 @@
 	[TypeConverter(typeof(BrushTypeConverter))]
 	public class SolidColorBrush : Brush
 	{
-		public SolidColorBrush() { }
+		public SolidColorBrush()
+		{
+
+		}
 
 		public SolidColorBrush(Color color)
 		{
