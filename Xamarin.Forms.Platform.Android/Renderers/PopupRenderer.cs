@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Platform.Android
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
 		}
 
-		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs args)
+		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
 			if (args.PropertyName == BasePopup.VerticalOptionsProperty.PropertyName ||
 				args.PropertyName == BasePopup.HorizontalOptionsProperty.PropertyName ||
