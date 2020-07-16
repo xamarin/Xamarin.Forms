@@ -177,7 +177,7 @@ namespace Xamarin.Forms.Material.iOS
 		{
 			var bgBrush = Element.Background;
 
-			if (bgBrush == null || bgBrush.IsEmpty)
+			if (Brush.IsNullOrEmpty(bgBrush))
 				return;
 
 			var backgroundImage = this.GetBackgroundImage(bgBrush);
@@ -265,7 +265,7 @@ namespace Xamarin.Forms.Material.iOS
 
 				var bgBrush = Element.Background;
 
-				if (bgBrush == null || bgBrush.IsEmpty)
+				if (Brush.IsNullOrEmpty(bgBrush))
 				{
 					var bgColor = Element.BackgroundColor;
 					if (bgColor.IsDefault)

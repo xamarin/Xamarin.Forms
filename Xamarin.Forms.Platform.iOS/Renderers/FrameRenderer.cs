@@ -91,7 +91,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_actualView.Layer.RemoveBackgroundLayer();
 
-			if (Element.Background != null && !Element.Background.IsEmpty)
+			if (!Brush.IsNullOrEmpty(Element.Background))
 			{
 				var backgroundLayer = this.GetBackgroundLayer(Element.Background);
 

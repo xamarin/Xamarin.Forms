@@ -10,6 +10,11 @@
 
 		public abstract bool IsEmpty { get; }
 
+		public static bool IsNullOrEmpty(Brush brush)
+		{
+			return brush == null || brush.IsEmpty;
+		}
+
 		public static readonly SolidColorBrush AliceBlue = new SolidColorBrush(Color.AliceBlue);
 		public static readonly SolidColorBrush AntiqueWhite = new SolidColorBrush(Color.AntiqueWhite);
 		public static readonly SolidColorBrush Aqua = new SolidColorBrush(Color.Aqua);

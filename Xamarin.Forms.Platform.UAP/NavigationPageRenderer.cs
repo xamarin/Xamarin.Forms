@@ -284,7 +284,7 @@ namespace Xamarin.Forms.Platform.UWP
 			var barBackground = Element.BarBackground;
 			object defaultColor = GetDefaultColor();
 
-			if (barBackground != null && !barBackground.IsEmpty)
+			if (!Brush.IsNullOrEmpty(barBackground))
 				return barBackground.ToBrush();
 
 			if (defaultColor != null)
@@ -683,7 +683,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				render.Title = _currentPage.Title;
 
-				if (Element.BarBackground != null && !Element.BarBackground.IsEmpty)
+				if (!Brush.IsNullOrEmpty(Element.BarBackground))
 					render.BarBackgroundBrush = GetBarBackgroundBrush();
 				else
 					render.BarBackgroundBrush = GetBarBackgroundColorBrush();

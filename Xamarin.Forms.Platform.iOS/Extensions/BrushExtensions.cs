@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Platform.iOS
 			// Remove previous background gradient layer if any
 			RemoveBackgroundLayer(view);
 
-			if (brush == null || brush.IsEmpty)
+			if (Brush.IsNullOrEmpty(brush))
 				return;
 
 			var backgroundLayer = GetBackgroundLayer(control, brush);

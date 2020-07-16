@@ -96,7 +96,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Element == null)
 				return;
 
-			if (brush == null || brush.IsEmpty)
+			if (Brush.IsNullOrEmpty(brush))
 				SetBackgroundColor(Element.BackgroundColor);
 			else
 			{

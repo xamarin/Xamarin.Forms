@@ -23,6 +23,49 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void TestEmptyRadialGradientBrush()
+		{
+			RadialGradientBrush nullRadialGradientBrush = new RadialGradientBrush();
+			Assert.AreEqual(true, nullRadialGradientBrush.IsEmpty, "IsEmpty");
+
+			RadialGradientBrush radialGradientBrush = new RadialGradientBrush
+			{
+				Center = new Point(0, 0),
+				Radius = 10,
+				GradientStops = new GradientStopCollection
+				{
+					new GradientStop { Color = Color.Orange, Offset = 0.1f },
+					new GradientStop { Color = Color.Red, Offset = 0.8f }
+				}
+			};
+
+			Assert.AreEqual(false, radialGradientBrush.IsEmpty, "IsEmpty");
+		}
+
+		[Test]
+		public void TestNullOrEmptyRadialGradientBrush()
+		{
+			RadialGradientBrush nullRadialGradientBrush = null;
+			Assert.AreEqual(true, Brush.IsNullOrEmpty(nullRadialGradientBrush), "IsNullOrEmpty");
+
+			RadialGradientBrush emptyRadialGradientBrush = new RadialGradientBrush();
+			Assert.AreEqual(true, Brush.IsNullOrEmpty(emptyRadialGradientBrush), "IsNullOrEmpty");
+
+			RadialGradientBrush radialGradientBrush = new RadialGradientBrush
+			{
+				Center = new Point(0, 0),
+				Radius = 10,
+				GradientStops = new GradientStopCollection
+				{
+					new GradientStop { Color = Color.Orange, Offset = 0.1f },
+					new GradientStop { Color = Color.Red, Offset = 0.8f }
+				}
+			};
+
+			Assert.AreEqual(false, Brush.IsNullOrEmpty(radialGradientBrush), "IsNullOrEmpty");
+		}
+
+		[Test]
 		public void TestRadialGradientBrushRadius()
 		{
 			RadialGradientBrush radialGradientBrush = new RadialGradientBrush();

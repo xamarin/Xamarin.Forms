@@ -185,7 +185,7 @@ namespace Xamarin.Forms.Platform.Android
 
 					paint.SetStyle(style);
 
-					if (_frame.Background != null && !_frame.Background.IsEmpty)
+					if (!Brush.IsNullOrEmpty(_frame.Background))
 					{
 						Brush background = _frame.Background;
 						paint.UpdateBackground(background, height, width);

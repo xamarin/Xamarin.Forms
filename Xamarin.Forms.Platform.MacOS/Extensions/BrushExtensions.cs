@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			// Remove previous background gradient layer if any
 			RemoveBackgroundLayer(view);
 
-			if (brush == null || brush.IsEmpty)
+			if (Brush.IsNullOrEmpty(brush))
 				return;
 
 			control.WantsLayer = true;

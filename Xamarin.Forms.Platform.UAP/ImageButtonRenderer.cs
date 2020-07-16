@@ -250,7 +250,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateImageButtonBackground()
 		{
-			if (Element.Background == null || Element.Background.IsEmpty)
+			if (Brush.IsNullOrEmpty(Element.Background))
 				Control.BackgroundColor = Element.BackgroundColor != Color.Default ? Element.BackgroundColor.ToBrush() : (WBrush)Windows.UI.Xaml.Application.Current.Resources["ButtonBackgroundThemeBrush"];
 			else
 				Control.BackgroundColor = Element.Background.ToBrush();

@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				GradientDrawable backgroundDrawable = gradientDrawable.GetConstantState().NewDrawable() as GradientDrawable;
 
-				if (brush != null && !brush.IsEmpty)
+				if (!Brush.IsNullOrEmpty(brush))
 					backgroundDrawable.UpdateBackground(brush, Height, Width);
 				else
 				{

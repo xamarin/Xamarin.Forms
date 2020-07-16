@@ -334,7 +334,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (_queryTextBox == null)
 				return;
 
-			if (Element.Background != null && !Element.Background.IsEmpty)
+			if (!Brush.IsNullOrEmpty(Element.Background))
 			{
 				_queryTextBox.Background = Element.Background.ToBrush();
 			}

@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_backgroundUIView.RemoveBackgroundLayer();
 
-			if (brush != null && !brush.IsEmpty)
+			if (!Brush.IsNullOrEmpty(brush))
 			{
 				if (_backgroundUIView == null)
 				{

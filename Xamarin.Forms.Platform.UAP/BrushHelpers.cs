@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public static void UpdateBrush(Brush brush, ref WBrush defaultbrush, Func<WBrush> getter, Action<WBrush> setter)
 		{
-			if (brush == null || brush.IsEmpty)
+			if (Brush.IsNullOrEmpty(brush))
 			{
 				if (defaultbrush == null)
 				{

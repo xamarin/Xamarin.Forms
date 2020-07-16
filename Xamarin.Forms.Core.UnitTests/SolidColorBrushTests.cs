@@ -20,6 +20,29 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void TestEmptySolidColorBrush()
+		{
+			SolidColorBrush solidColorBrush = new SolidColorBrush();
+			Assert.AreEqual(true, solidColorBrush.IsEmpty, "IsEmpty");
+
+			SolidColorBrush red = Brush.Red;
+			Assert.AreEqual(false, red.IsEmpty, "IsEmpty");
+		}
+
+		[Test]
+		public void TestNullOrEmptySolidColorBrush()
+		{
+			SolidColorBrush nullSolidColorBrush = null;
+			Assert.AreEqual(true, Brush.IsNullOrEmpty(nullSolidColorBrush), "IsNullOrEmpty");
+
+			SolidColorBrush emptySolidColorBrush = new SolidColorBrush();
+			Assert.AreEqual(true, Brush.IsNullOrEmpty(emptySolidColorBrush), "IsNullOrEmpty");
+
+			SolidColorBrush solidColorBrush = Brush.Yellow;
+			Assert.AreEqual(false, Brush.IsNullOrEmpty(solidColorBrush), "IsNullOrEmpty");
+		}
+
+		[Test]
 		public void TestSolidColorBrushFromColor()
 		{
 			SolidColorBrush solidColorBrush = new SolidColorBrush(Color.Red);

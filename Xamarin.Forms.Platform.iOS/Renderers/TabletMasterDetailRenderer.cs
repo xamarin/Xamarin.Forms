@@ -516,7 +516,7 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					Brush background = Element.Background;
 
-					if (background != null && !background.IsEmpty)
+					if (!Brush.IsNullOrEmpty(background))
 						View.UpdateBackground(Element.Background);
 					else
 					{

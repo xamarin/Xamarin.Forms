@@ -22,6 +22,49 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void TestEmptyLinearGradientBrush()
+		{
+			LinearGradientBrush nullLinearGradientBrush = new LinearGradientBrush();
+			Assert.AreEqual(true, nullLinearGradientBrush.IsEmpty, "IsEmpty");
+
+			LinearGradientBrush linearGradientBrush = new LinearGradientBrush
+			{
+				StartPoint = new Point(0, 0),
+				EndPoint = new Point(1, 0),
+				GradientStops = new GradientStopCollection
+				{
+					new GradientStop { Color = Color.Orange, Offset = 0.1f },
+					new GradientStop { Color = Color.Red, Offset = 0.8f }
+				}
+			};
+
+			Assert.AreEqual(false, linearGradientBrush.IsEmpty, "IsEmpty");
+		}
+
+		[Test]
+		public void TestNullOrEmptyLinearGradientBrush()
+		{
+			LinearGradientBrush nullLinearGradientBrush = null;
+			Assert.AreEqual(true, Brush.IsNullOrEmpty(nullLinearGradientBrush), "IsNullOrEmpty");
+
+			LinearGradientBrush emptyLinearGradientBrush = new LinearGradientBrush();
+			Assert.AreEqual(true, Brush.IsNullOrEmpty(emptyLinearGradientBrush), "IsNullOrEmpty");
+
+			LinearGradientBrush linearGradientBrush = new LinearGradientBrush
+			{
+				StartPoint = new Point(0, 0),
+				EndPoint = new Point(1, 0),
+				GradientStops = new GradientStopCollection
+				{
+					new GradientStop { Color = Color.Orange, Offset = 0.1f },
+					new GradientStop { Color = Color.Red, Offset = 0.8f }
+				}
+			};
+
+			Assert.AreEqual(false, Brush.IsNullOrEmpty(linearGradientBrush), "IsNullOrEmpty");
+		}
+
+		[Test]
 		public void TestLinearGradientBrushPoints()
 		{
 			LinearGradientBrush linearGradientBrush = new LinearGradientBrush
