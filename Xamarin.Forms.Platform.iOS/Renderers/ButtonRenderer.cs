@@ -156,16 +156,20 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			UIColor backgroundColor = Element.BackgroundColor == Color.Default ? null : Element.BackgroundColor.ToUIColor();
 
-			if (brush is SolidColorBrush solidColorBrush && !solidColorBrush.IsEmpty)
-				backgroundColor = solidColorBrush.Color.ToUIColor();
-			else
+			if (!Brush.IsNullOrEmpty(brush))
 			{
-				var backgroundImage = this.GetBackgroundImage(brush);
-				if (backgroundImage != null)
-					backgroundColor = UIColor.FromPatternImage(backgroundImage);
+				if (brush is SolidColorBrush solidColorBrush)
+					backgroundColor = solidColorBrush.Color.ToUIColor();
+				else
+				{
+					var backgroundImage = this.GetBackgroundImage(brush);
+					if (backgroundImage != null)
+						backgroundColor = UIColor.FromPatternImage(backgroundImage);
+				}
 			}
 
-			Control.BackgroundColor = backgroundColor;
+			if (Control != null)
+				Control.BackgroundColor = backgroundColor;
 		}
 
 		void SetControlPropertiesFromProxy()
