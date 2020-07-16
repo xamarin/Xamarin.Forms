@@ -74,12 +74,12 @@ namespace Xamarin.Forms.Platform.iOS
 				ModalPresentationStyle = UIModalPresentationStyle.Popover;
 
 				SetViewController();
+				SetPresentationController();
 				SetEvents();
 				SetSize();
 				SetLayout();
 				SetBackgroundColor();
 				SetView();
-				SetPresentationController();
 				AddToCurrentPageViewController();
 			}
 
@@ -88,7 +88,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
-			// todo - update properties
+			if (args.PropertyName == BasePopup.VerticalOptionsProperty.PropertyName || 
+				args.PropertyName == BasePopup.HorizontalOptionsProperty.PropertyName)
+			{
+				SetLayout();
+			}
+			else if (args.PropertyName == BasePopup.SizeProperty.PropertyName)
+			{
+				SetSize();
+			}
+			else if (args.PropertyName == BasePopup.ColorProperty.PropertyName)
+			{
+				SetBackgroundColor();
+			}
 
 			ElementPropertyChanged?.Invoke(this, args);
 		}
@@ -154,8 +166,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void SetBackgroundColor()
 		{
-			base.View.BackgroundColor = Element.BackgroundColor.ToUIColor();
-			((UIPopoverPresentationController)PresentationController).BackgroundColor = Element.BackgroundColor.ToUIColor();
+			// TODO - This is currently not working because the background of the foreground object is not set to transparent
+			base.View.BackgroundColor = Element.Color.ToUIColor();
+			((UIPopoverPresentationController)PresentationController).BackgroundColor = Element.Color.ToUIColor();
 		}
 
 		void SetView()
