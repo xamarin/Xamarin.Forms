@@ -87,12 +87,18 @@ namespace Xamarin.Forms.Platform.UWP
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
 			if (args.PropertyName == BasePopup.VerticalOptionsProperty.PropertyName ||
-				args.PropertyName == BasePopup.HorizontalOptionsProperty.PropertyName ||
-				args.PropertyName == BasePopup.SizeProperty.PropertyName)
+				args.PropertyName == BasePopup.HorizontalOptionsProperty.PropertyName)
+			{
+				// TODO - This isn't properly updating the position of the Popup
+				InitializeStyles();
+				SetLayout();
+				ApplyStyles();
+				Show();
+			}
+			else if (args.PropertyName == BasePopup.SizeProperty.PropertyName)
 			{
 				InitializeStyles();
 				SetSize();
-				SetLayout();
 				ApplyStyles();
 			}
 			else if (args.PropertyName == BasePopup.ColorProperty.PropertyName)
