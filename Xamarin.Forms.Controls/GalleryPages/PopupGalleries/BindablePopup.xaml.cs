@@ -7,7 +7,16 @@ namespace Xamarin.Forms.Controls
 	{
 		public BindablePopup()
 		{
-			Size = new Size(700, 1000);
+			if (Device.RuntimePlatform == Device.Android)
+				_defaultSize = new Size(700, 1000);
+			else if (Device.RuntimePlatform == Device.UWP)
+				_defaultSize = new Size(500, 600);
+			else if (Device.RuntimePlatform == Device.iOS)
+				_defaultSize = new Size(500, 600);
+			else
+				_defaultSize = new Size(500, 600);
+
+			Size = _defaultSize;
 			InitializeComponent();
 		}
 
@@ -60,11 +69,13 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
-		Size _defaultSize = new Size(700, 1000);
+		Size _defaultSize;
 		void Size_Clicked(object sender, System.EventArgs e)
 		{
 			if (_defaultSize.Height == Size.Height && _defaultSize.Width == Size.Width)
-				Size = new Size(800, 1100);
+				Size = new Size(
+					_defaultSize.Width + (_defaultSize.Width * .1),
+					_defaultSize.Height + (_defaultSize.Height * .1));
 			else
 				Size = _defaultSize;
 		}
