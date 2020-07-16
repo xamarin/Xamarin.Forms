@@ -154,6 +154,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void SetBackground(Brush brush)
 		{
+			if (Control == null)
+				return;
+
 			UIColor backgroundColor = Element.BackgroundColor == Color.Default ? null : Element.BackgroundColor.ToUIColor();
 
 			if (!Brush.IsNullOrEmpty(brush))
@@ -168,8 +171,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 
-			if (Control != null)
-				Control.BackgroundColor = backgroundColor;
+			Control.BackgroundColor = backgroundColor;
 		}
 
 		void SetControlPropertiesFromProxy()
