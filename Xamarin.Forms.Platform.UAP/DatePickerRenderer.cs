@@ -106,8 +106,6 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateMaximumDate();
 			else if (e.PropertyName == DatePicker.MinimumDateProperty.PropertyName)
 				UpdateMinimumDate();
-			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
-				UpdateBackground();
 			else if (e.PropertyName == DatePicker.TextColorProperty.PropertyName)
 				UpdateTextColor();
 			else if (e.PropertyName == DatePicker.CharacterSpacingProperty.PropertyName)
