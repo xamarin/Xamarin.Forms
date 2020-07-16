@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Platform.Android
 				view.SetBackground(null);
 			}
 
-			if (brush == null || brush.IsEmpty)
+			if (Brush.IsNullOrEmpty(brush))
 				return;
 
 			if (brush is LinearGradientBrush linearGradientBrush)

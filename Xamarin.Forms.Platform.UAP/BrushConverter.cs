@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.UWP
 			var brush = value as Brush;
 			var color = (Color)parameter;
 
-			return (brush == null || brush.IsEmpty) ? color.ToBrush() : brush.ToBrush();
+			return Brush.IsNullOrEmpty(brush) ? color.ToBrush() : brush.ToBrush();
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, string language)

@@ -119,7 +119,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			Brush background = Element.Background;
 
-			if (background == null || background.IsEmpty)
+			if (Brush.IsNullOrEmpty(background))
 				Control.UpdateDependencyColor(Border.BackgroundProperty, Element.BackgroundColor);
 			else
 				Control.Background = background.ToBrush();

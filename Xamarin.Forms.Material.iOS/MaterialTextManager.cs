@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Material.iOS
 
 			var brush = element.Background;
 
-			if (brush == null || brush.IsEmpty)
+			if (Brush.IsNullOrEmpty(brush))
 			{
 				// BackgroundColor
 				textField.ActiveTextInputController.BorderFillColor = MaterialColors.CreateEntryFilledInputBackgroundColor(element.BackgroundColor, element.TextColor);
@@ -84,7 +84,7 @@ namespace Xamarin.Forms.Material.iOS
 		{
 			var bgBrush = element.Background;
 
-			if (bgBrush == null || bgBrush.IsEmpty)
+			if (Brush.IsNullOrEmpty(bgBrush))
 				return;
 
 			UIImage backgroundImage = null;

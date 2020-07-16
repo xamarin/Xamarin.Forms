@@ -288,7 +288,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			Brush background = Element.Background;
 
-			if (background == null || background.IsEmpty)
+			if (Brush.IsNullOrEmpty(background))
 			{
 				if (_backgroundDrawable.UseGradients())
 				{

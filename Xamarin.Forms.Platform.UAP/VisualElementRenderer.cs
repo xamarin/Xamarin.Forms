@@ -525,7 +525,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (_control != null)
 			{
-				if (background != null && !background.IsEmpty)
+				if (!Brush.IsNullOrEmpty(background))
 					_control.Background = background.ToBrush();
 				else
 				{
@@ -540,7 +540,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else
 			{
-				if (background != null && !background.IsEmpty)
+				if (!Brush.IsNullOrEmpty(background))
 					backgroundLayer.Background = background.ToBrush();
 				else
 				{
@@ -550,7 +550,7 @@ namespace Xamarin.Forms.Platform.UWP
 						backgroundLayer.ClearValue(BackgroundProperty);
 				}
 			}
-	}
+		}
 
 		protected void UpdateAccessKey() {
 			var control = Control;

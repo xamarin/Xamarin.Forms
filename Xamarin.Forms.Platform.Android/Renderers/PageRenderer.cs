@@ -145,7 +145,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					Brush background = Element.Background;
 
-					if (background != null && !background.IsEmpty)
+					if (!Brush.IsNullOrEmpty(background))
 						this.UpdateBackground(background);
 					else
 					{

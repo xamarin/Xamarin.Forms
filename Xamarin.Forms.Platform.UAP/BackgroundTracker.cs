@@ -21,9 +21,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected override void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName
-				|| e.PropertyName == VisualElement.BackgroundProperty.PropertyName
-				|| e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
+			if (e.IsOneOf(VisualElement.BackgroundColorProperty, VisualElement.BackgroundProperty, Page.BackgroundImageSourceProperty))
 			{
 				UpdateBackground();
 			}

@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			Layer.BackgroundColor = NSColor.White.CGColor;
 			Layer.RemoveBackgroundLayer();
 
-			if (brush != null && !brush.IsEmpty)
+			if (!Brush.IsNullOrEmpty(brush))
 			{
 				if (brush is SolidColorBrush solidColorBrush)
 				{

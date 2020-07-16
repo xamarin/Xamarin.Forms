@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			Brush background = Element.Background;
 
-			if (background == null || background.IsEmpty)
+			if (Brush.IsNullOrEmpty(background))
 			{
 				Color backgroundColor = Element.BackgroundColor;
 

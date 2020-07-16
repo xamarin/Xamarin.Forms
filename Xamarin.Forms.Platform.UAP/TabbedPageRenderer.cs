@@ -399,7 +399,7 @@ namespace Xamarin.Forms.Platform.UWP
 			var controlToolbarBackground = Control.ToolbarBackground;
 			var barBackground = Element.BarBackground;
 
-			if (barBackground == null || barBackground.IsEmpty)
+			if (Brush.IsNullOrEmpty(barBackground))
 				return;
 
 			var brush = barBackground.ToBrush();

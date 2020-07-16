@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Brush brushToSet = Element.Background;
 
-			if (brushToSet != null && !brushToSet.IsEmpty)
+			if (!Brush.IsNullOrEmpty(brushToSet))
 			{
 				if (_backgroundDrawable != null)
 					_backgroundDrawable.UpdateBackground(brushToSet, Height, Width);
