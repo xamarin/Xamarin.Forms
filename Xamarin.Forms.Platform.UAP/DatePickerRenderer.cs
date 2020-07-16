@@ -143,20 +143,17 @@ namespace Xamarin.Forms.Platform.UWP
 			if (Control != null)
 				Control.Date = new DateTimeOffset(new DateTime(date.Ticks, DateTimeKind.Unspecified));
 
+			Control.MonthVisible = true;
+			Control.YearVisible = true;
+			Control.DayVisible = true;
 			if (Element.Format.Equals("") || Element.Format.Equals("d"))
 			{
-				Control.MonthVisible = true;
-				Control.YearVisible = true;
-				Control.DayVisible = true;
 				Control.MonthFormat = "month";
 				Control.YearFormat = "year";
 				Control.DayFormat = "day";
 			}
 			else if (Element.Format.Equals("D"))
 			{
-				Control.MonthVisible = true;
-				Control.YearVisible = true;
-				Control.DayVisible = true;
 				Control.MonthFormat = "month.full";
 				Control.YearFormat = "year.full";
 				Control.DayFormat = "dayofweek.full";
