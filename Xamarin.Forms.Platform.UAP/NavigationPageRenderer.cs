@@ -202,8 +202,12 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdatePadding();
 				LookupRelevantParents();
 				UpdateTitleColor();
-				UpdateNavigationBarBackgroundColor();
-				UpdateNavigationBarBackground();
+
+				if (Brush.IsNullOrEmpty(Element.BarBackground))
+					UpdateNavigationBarBackgroundColor();
+				else
+					UpdateNavigationBarBackground();
+
 				UpdateToolbarPlacement();
 				UpdateToolbarDynamicOverflowEnabled();
 				UpdateTitleIcon();
