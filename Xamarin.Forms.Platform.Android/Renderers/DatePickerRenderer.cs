@@ -175,7 +175,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		void SetDate(DateTime date)
 		{
-			EditText.Text = date.ToString(Element.Format);
+			if (Element.Format == "")
+			{
+				EditText.Text = date.ToShortDateString();
+			}
+			else
+			{
+				EditText.Text = date.ToString(Element.Format);
+			}
 		}
 
 		void UpdateCharacterSpacing()

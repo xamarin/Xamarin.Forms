@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Controls.Issues
     [Category(UITestCategories.DatePicker)]
 #endif
     [Preserve(AllMembers = true)]
-    [Issue(IssueTracker.None, 88888888, "DateTime Localization Issue",
+    [Issue(IssueTracker.Github, 11472, "DateTime Localization Issue",
         PlatformAffected.iOS | PlatformAffected.Android)]
     public class DateTimeLocalizationTests : TestNavigationPage
     {
