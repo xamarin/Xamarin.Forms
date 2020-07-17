@@ -170,7 +170,7 @@ namespace Xamarin.Forms
 			}
 
 			Thickness margin = view.Margin;
-			region.X += margin.Left;
+			region.X += isRightToLeft ? margin.Right : margin.Left;
 			region.Width -= margin.HorizontalThickness;
 			region.Y += margin.Top;
 			region.Height -= margin.VerticalThickness;

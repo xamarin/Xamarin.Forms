@@ -492,9 +492,9 @@ namespace Xamarin.Forms.Platform.Android
 				_titleViewContainer.MatchHeight = _titleViewContainer.MatchWidth = true;
 				_titleViewContainer.LayoutParameters = new Toolbar.LayoutParams(LP.MatchParent, LP.MatchParent)
 				{
-					LeftMargin = (int)context.ToPixels(titleView.Margin.Left),
+					MarginStart = (int)context.ToPixels(titleView.Margin.Left),
 					TopMargin = (int)context.ToPixels(titleView.Margin.Top),
-					RightMargin = (int)context.ToPixels(titleView.Margin.Right),
+					MarginEnd = (int)context.ToPixels(titleView.Margin.Right),
 					BottomMargin = (int)context.ToPixels(titleView.Margin.Bottom)
 				};
 

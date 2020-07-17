@@ -77,6 +77,28 @@ namespace Xamarin.Forms.Core.UnitTests
 			parent.Layout (new Rectangle (0, 0, 1000, 1000));
 			Assert.AreEqual (new Rectangle (10, 20, 100, 50), child.Bounds);
 		}
+		
+		[Test]
+		public void MarginAndFlowDirectionAffectPosition ()
+		{
+			var parent = new ContentView {
+				FlowDirection = FlowDirection.RightToLeft,
+				IsPlatformEnabled = true,
+			};
+			var child = new Button {
+				Text = "Test",
+				VerticalOptions = LayoutOptions.Start,
+				HorizontalOptions = LayoutOptions.Start,
+				IsPlatformEnabled = true,
+			};
+			
+
+			child.Margin = new Thickness (10, 20, 30, 40);
+			parent.Content = child;
+
+			parent.Layout (new Rectangle (0, 0, 1000, 1000));
+			Assert.AreEqual (new Rectangle (890, 20, 100, 50), child.Bounds);
+		}
 
 		[Test]
 		public void IntegrationTest ()

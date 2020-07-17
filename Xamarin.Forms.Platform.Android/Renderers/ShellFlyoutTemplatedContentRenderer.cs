@@ -259,9 +259,9 @@ namespace Xamarin.Forms.Platform.Android
 					_headerView.LayoutParameters = new AppBarLayout.LayoutParams(LP.MatchParent, LP.WrapContent)
 					{
 						ScrollFlags = 0,
-						LeftMargin = (int)context.ToPixels(margin.Left),
+						MarginStart = (int)context.ToPixels(margin.Left),
 						TopMargin = (int)context.ToPixels(margin.Top),
-						RightMargin = (int)context.ToPixels(margin.Right),
+						MarginEnd = (int)context.ToPixels(margin.Right),
 						BottomMargin = (int)context.ToPixels(margin.Bottom)
 					};
 					break;
@@ -269,9 +269,9 @@ namespace Xamarin.Forms.Platform.Android
 					_headerView.LayoutParameters = new AppBarLayout.LayoutParams(LP.MatchParent, LP.WrapContent)
 					{
 						ScrollFlags = AppBarLayout.LayoutParams.ScrollFlagScroll,
-						LeftMargin = (int)context.ToPixels(margin.Left),
+						MarginStart = (int)context.ToPixels(margin.Left),
 						TopMargin = (int)context.ToPixels(margin.Top),
-						RightMargin = (int)context.ToPixels(margin.Right),
+						MarginEnd = (int)context.ToPixels(margin.Right),
 						BottomMargin = (int)context.ToPixels(margin.Bottom)
 					};
 					break;
@@ -280,9 +280,9 @@ namespace Xamarin.Forms.Platform.Android
 					{
 						ScrollFlags = AppBarLayout.LayoutParams.ScrollFlagExitUntilCollapsed |
 							AppBarLayout.LayoutParams.ScrollFlagScroll,
-						LeftMargin = (int)context.ToPixels(margin.Left),
+						MarginStart = (int)context.ToPixels(margin.Left),
 						TopMargin = (int)context.ToPixels(margin.Top),
-						RightMargin = (int)context.ToPixels(margin.Right),
+						MarginEnd = (int)context.ToPixels(margin.Right),
 						BottomMargin = (int)context.ToPixels(margin.Bottom)
 					};
 					break;
