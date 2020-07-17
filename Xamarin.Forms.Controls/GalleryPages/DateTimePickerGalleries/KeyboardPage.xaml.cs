@@ -14,12 +14,12 @@ namespace Xamarin.Forms.Controls.GalleryPages.DateTimePickerGalleries
             var dep = DependencyService.Get<ILocalize>();
             if (dep != null)
             {
-                keyboardphoneculture.Text = "Phone Culture: " + dep.GetCurrentCultureInfo();
+                keyboardphoneculture.Text = "Device Culture: " + dep.GetCurrentCultureInfo();
             }
             else
             {
                 var s = System.Globalization.CultureInfo.CurrentCulture.Name;
-                keyboardphoneculture.Text = "Phone Culture: " + s;
+                keyboardphoneculture.Text = "Device Culture: " + s;
             }
         }
 
