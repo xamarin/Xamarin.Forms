@@ -181,6 +181,10 @@ namespace Xamarin.Forms.Platform.iOS
 				var strDate = dateFormatter.StringFor(_picker.Date);
 				Control.Text = strDate;
 			}
+			else if (Element.Format.Contains("/"))
+			{
+				Control.Text = Element.Date.ToString(Element.Format, CultureInfo.InvariantCulture);
+			}
 			else
 			{
 				Control.Text = Element.Date.ToString(Element.Format);
