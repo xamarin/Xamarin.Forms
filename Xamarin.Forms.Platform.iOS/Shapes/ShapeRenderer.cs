@@ -115,19 +115,19 @@ namespace Xamarin.Forms.Platform.MacOS
                 Control.ShapeLayer.UpdateStrokeDash(new nfloat[0]);
             else
             {
-				nfloat[] dashLengths;
+				nfloat[] dashArray;
 				double[] array;
 
 				if (Element.StrokeDashArray.Count % 2 == 0)
 				{
 					array = new double[Element.StrokeDashArray.Count];
-					dashLengths = new nfloat[Element.StrokeDashArray.Count];
+                    dashArray = new nfloat[Element.StrokeDashArray.Count];
 					Element.StrokeDashArray.CopyTo(array, 0);
 				}
 				else
 				{
 					array = new double[2 * Element.StrokeDashArray.Count];
-					dashLengths = new nfloat[2 * Element.StrokeDashArray.Count];
+                    dashArray = new nfloat[2 * Element.StrokeDashArray.Count];
 					Element.StrokeDashArray.CopyTo(array, 0);
 					Element.StrokeDashArray.CopyTo(array, Element.StrokeDashArray.Count);
 				}
@@ -135,9 +135,9 @@ namespace Xamarin.Forms.Platform.MacOS
 				double thickness = Element.StrokeThickness;
 
                 for (int i = 0; i < array.Length; i++)
-                    dashLengths[i] = new nfloat(thickness * array[i]);
+                    dashArray[i] = new nfloat(thickness * array[i]);
                 
-                Control.ShapeLayer.UpdateStrokeDash(dashLengths);
+                Control.ShapeLayer.UpdateStrokeDash(dashArray);
             }
         }
 
