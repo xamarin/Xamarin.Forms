@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Controls
 			else if (Device.RuntimePlatform == Device.UWP)
 				_defaultSize = new Size(500, 600);
 			else if (Device.RuntimePlatform == Device.iOS)
-				_defaultSize = new Size(500, 600);
+				_defaultSize = new Size(300, 400);
 			else
 				_defaultSize = new Size(500, 600);
 
