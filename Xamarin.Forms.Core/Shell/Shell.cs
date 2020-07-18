@@ -213,7 +213,7 @@ namespace Xamarin.Forms
 		DataTemplate IShellController.GetFlyoutItemDataTemplate(BindableObject bo)
 		{
 			BindableProperty bp = null;
-			string textBinding; 
+			string textBinding;
 			string iconBinding;
 			IStyleSelectable styleClassSource = null;
 
@@ -247,7 +247,7 @@ namespace Xamarin.Forms
 				return (DataTemplate)bo.GetValue(bp);
 			}
 
-			if(IsSet(bp))
+			if (IsSet(bp))
 			{
 				return (DataTemplate)GetValue(bp);
 			}
@@ -565,7 +565,7 @@ namespace Xamarin.Forms
 						return CurrentItem.CurrentItem.GoToAsync(navigationRequest, queryData, animate);
 					});
 				}
-				else if(navigationRequest.Request.GlobalRoutes.Count == 0 &&
+				else if (navigationRequest.Request.GlobalRoutes.Count == 0 &&
 					navigationRequest.StackRequest == NavigationRequest.WhatToDoWithTheStack.ReplaceIt &&
 					currentShellSection?.Navigation?.NavigationStack?.Count > 1)
 				{
@@ -683,21 +683,21 @@ namespace Xamarin.Forms
 				}
 			}
 
-			if(routeStack.Count > 0)
+			if (routeStack.Count > 0)
 				routeStack.Insert(0, "/");
 
 			return String.Join("/", routeStack);
 
 
 			List<string> CollapsePath(
-				string myRoute, 
+				string myRoute,
 				List<string> currentRouteStack,
 				bool userDefinedRoute)
 			{
 				for (var i = currentRouteStack.Count - 1; i >= 0; i--)
 				{
 					var route = currentRouteStack[i];
-					if (Routing.IsImplicit(route) || 
+					if (Routing.IsImplicit(route) ||
 						(Routing.IsDefault(route) && userDefinedRoute))
 						currentRouteStack.RemoveAt(i);
 				}
@@ -707,7 +707,7 @@ namespace Xamarin.Forms
 				// collapse similar leaves
 				int walkBackCurrentStackIndex = currentRouteStack.Count - (paths.Count - 1);
 
-				while(paths.Count > 1 && walkBackCurrentStackIndex >= 0)
+				while (paths.Count > 1 && walkBackCurrentStackIndex >= 0)
 				{
 					if (paths[0] == currentRouteStack[walkBackCurrentStackIndex])
 					{
@@ -1088,7 +1088,7 @@ namespace Xamarin.Forms
 				{
 					await currentContent.Navigation.PopAsync();
 				}
-				catch(Exception exc)
+				catch (Exception exc)
 				{
 					Internals.Log.Warning(nameof(Shell), $"Failed to Navigate Back: {exc}");
 				}
@@ -1118,11 +1118,8 @@ namespace Xamarin.Forms
 				{
 					baseShellItem.OnAppearing(() =>
 					{
-						Device.BeginInvokeOnMainThread(() =>
-						{
-							OnNavigated(args);
-							Navigated?.Invoke(this, args);
-						});
+						OnNavigated(args);
+						Navigated?.Invoke(this, args);
 					});
 				}
 				else
@@ -1274,7 +1271,7 @@ namespace Xamarin.Forms
 		internal FlyoutBehavior GetEffectiveFlyoutBehavior()
 		{
 			ShellItem rootItem = null;
-			return GetEffectiveValue(Shell.FlyoutBehaviorProperty, 
+			return GetEffectiveValue(Shell.FlyoutBehaviorProperty,
 				() =>
 				{
 					if (this.IsSet(FlyoutBehaviorProperty))
@@ -1484,14 +1481,14 @@ namespace Xamarin.Forms
 						ModalStack[ModalStack.Count - 2].SendAppearing();
 				}
 
-				var modalPopped =  await base.OnPopModal(animated);
-				
+				var modalPopped = await base.OnPopModal(animated);
+
 				if (ModalStack.Count == 0 && !_shell.CurrentItem.CurrentItem.IsPoppingModalStack)
 					_shell.CurrentItem.SendAppearing();
-				
+
 				return modalPopped;
 			}
-			
+
 			protected override async Task OnPushModal(Page modal, bool animated)
 			{
 				if (ModalStack.Count == 0)
@@ -1502,10 +1499,10 @@ namespace Xamarin.Forms
 
 				await base.OnPushModal(modal, animated);
 
-				modal.NavigationProxy.Inner = new NavigationImplWrapper(modal.NavigationProxy.Inner,  this);
+				modal.NavigationProxy.Inner = new NavigationImplWrapper(modal.NavigationProxy.Inner, this);
 			}
-			
-			
+
+
 			class NavigationImplWrapper : NavigationProxy
 			{
 				readonly INavigation _shellProxy;
@@ -1513,14 +1510,14 @@ namespace Xamarin.Forms
 				public NavigationImplWrapper(INavigation proxy, INavigation shellProxy)
 				{
 					Inner = proxy;
-					_shellProxy = shellProxy;				
+					_shellProxy = shellProxy;
 
 				}
 
 				protected override Task<Page> OnPopModal(bool animated) => _shellProxy.PopModalAsync(animated);
 
 				protected override Task OnPushModal(Page modal, bool animated) => _shellProxy.PushModalAsync(modal, animated);
-			}			
+			}
 		}
 	}
 }
