@@ -78,7 +78,7 @@ namespace Xamarin.Forms.Core.UITests
 
 					Debug.WriteLine(debugMessage);
 					Console.WriteLine(debugMessage);
-					App.AttachScreenshotToTestContext("NavigateToGallery Failed");
+					App.AttachScreenshotToTestContext(TestContext.CurrentContext?.Test?.FullName ?? "NavigateToGalleryFailed");
 
 					if (attempts < maxAttempts)
 					{
