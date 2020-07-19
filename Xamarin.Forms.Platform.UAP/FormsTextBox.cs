@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		InputScope _passwordInputScope;
 		InputScope _numericPasswordInputScope;
-		Windows.UI.Xaml.Controls.ScrollViewer _scrollViewer;
+		ScrollViewer _scrollViewer;
 		Windows.UI.Xaml.Controls.Grid _rootGrid;
 		Windows.UI.Xaml.VisualState _DeleteButtonVisibleState;
 		Windows.UI.Xaml.VisualStateGroup _DeleteButtonVisibleStateGroups;
