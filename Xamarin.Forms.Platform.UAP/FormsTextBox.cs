@@ -68,6 +68,7 @@ namespace Xamarin.Forms.Platform.UWP
 			RegisterPropertyChangedCallback(VerticalContentAlignmentProperty, OnVerticalContentAlignmentChanged);
 		}
 
+
 		void OnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
 		{
 			UpdateEnabled();
