@@ -65,15 +65,17 @@ namespace Xamarin.Forms.Platform.UWP
 			SelectionChanged += OnSelectionChanged;
 			IsEnabledChanged += OnIsEnabledChanged;
 			Loaded += OnLoaded;
+			SizeChanged += OnSizeChanged;
 			RegisterPropertyChangedCallback(VerticalContentAlignmentProperty, OnVerticalContentAlignmentChanged);
 		}
+
 
 		void OnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
 		{
 			UpdateEnabled();
 		}
 
-		public bool UpdateVerticalAlignmentOnLoad { get; set; } = true;
+		internal bool UpdateVerticalAlignmentOnLoad { get; set; } = true;
 
 		public bool ClearButtonVisible
 		{
@@ -176,12 +178,16 @@ namespace Xamarin.Forms.Platform.UWP
 			_scrollViewer= (Windows.UI.Xaml.Controls.ScrollViewer)GetTemplateChild("ContentElement");
 		}
 
+		void OnSizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			UpdateTemplateScrollViewerVerticalAlignment();
+		}
+
 		void OnLoaded(object sender, RoutedEventArgs e)
 		{
 			// Set the vertical alignment on load, because setting it in the FormsTextBoxStyle causes text display issues
 			// But the editor has display issues if you do set the vertical alignment here, so the flag allows renderer using
 			// the text box to control this
-			UpdateTemplateScrollViewerVerticalAlignment();
 		}
 
 		void OnVerticalContentAlignmentChanged(DependencyObject sender, DependencyProperty dp)

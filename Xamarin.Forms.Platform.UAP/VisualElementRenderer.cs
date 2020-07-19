@@ -151,7 +151,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				// Put the packager load call back in the Loaded event to resolve text visibility issues
 				// with FormsTextBox
-				Loaded += (sender, args) =>
+				//Loaded += (sender, args) =>
 				{
 					if (Packager != null)
 						Packager.Load();
