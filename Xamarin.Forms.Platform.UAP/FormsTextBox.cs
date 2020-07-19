@@ -64,11 +64,9 @@ namespace Xamarin.Forms.Platform.UWP
 			TextChanged += OnTextChanged;
 			SelectionChanged += OnSelectionChanged;
 			IsEnabledChanged += OnIsEnabledChanged;
-			Loaded += OnLoaded;
 			SizeChanged += OnSizeChanged;
 			RegisterPropertyChangedCallback(VerticalContentAlignmentProperty, OnVerticalContentAlignmentChanged);
 		}
-
 
 		void OnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
 		{
@@ -183,13 +181,6 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateTemplateScrollViewerVerticalAlignment();
 		}
 
-		void OnLoaded(object sender, RoutedEventArgs e)
-		{
-			// Set the vertical alignment on load, because setting it in the FormsTextBoxStyle causes text display issues
-			// But the editor has display issues if you do set the vertical alignment here, so the flag allows renderer using
-			// the text box to control this
-		}
-
 		void OnVerticalContentAlignmentChanged(DependencyObject sender, DependencyProperty dp)
 		{
 			UpdateTemplateScrollViewerVerticalAlignment();
@@ -197,6 +188,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateTemplateScrollViewerVerticalAlignment()
 		{
+			// This is used to set the vertical alignment after the text box has a size, setting it before causes rendering issues.
+			// But the editor has display issues if you do set the vertical alignment here, so the flag allows renderer using
+			// the text box to control this
 			if (_scrollViewer != null && UpdateVerticalAlignmentOnLoad)
 			{
 				_scrollViewer.VerticalAlignment = VerticalContentAlignment;
