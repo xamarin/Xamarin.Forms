@@ -170,7 +170,9 @@ namespace Xamarin.Forms.Controls
 
 			int maxAttempts = 2;
 			int attempts = 0;
+#if __WINDOWS__
 			bool attemptOneRestart = false;
+#endif
 			while (attempts < maxAttempts)
 			{
 				attempts += 1;
