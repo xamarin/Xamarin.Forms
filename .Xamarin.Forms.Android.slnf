@@ -21,7 +21,6 @@
       "Xamarin.Forms.Maps\\Xamarin.Forms.Maps.csproj",
       "Xamarin.Forms.Material.Android\\Xamarin.Forms.Material.Android.csproj",
       "Xamarin.Forms.Pages.Azure\\Xamarin.Forms.Pages.Azure.csproj",
-      "Xamarin.Forms.Pages.UnitTests\\Xamarin.Forms.Pages.UnitTests.csproj",
       "Xamarin.Forms.Pages\\Xamarin.Forms.Pages.csproj",
       "Xamarin.Forms.Platform.Android.AppLinks\\Xamarin.Forms.Platform.Android.AppLinks.csproj",
       "Xamarin.Forms.Platform.Android.FormsViewGroup\\Xamarin.Forms.Platform.Android.FormsViewGroup.csproj",

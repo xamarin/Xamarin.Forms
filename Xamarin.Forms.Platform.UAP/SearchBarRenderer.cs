@@ -2,27 +2,27 @@
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+using WBrush = Windows.UI.Xaml.Media.Brush;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.SearchBar;
 
 namespace Xamarin.Forms.Platform.UWP
 {
 	public class SearchBarRenderer : ViewRenderer<SearchBar, AutoSuggestBox>, ITabStopOnDescendants
 	{
-		Brush _defaultPlaceholderColorBrush;
-		Brush _defaultPlaceholderColorFocusBrush;
-		Brush _defaultTextColorBrush;
-		Brush _defaultTextColorFocusBrush;
+		WBrush _defaultPlaceholderColorBrush;
+		WBrush _defaultPlaceholderColorFocusBrush;
+		WBrush _defaultTextColorBrush;
+		WBrush _defaultTextColorFocusBrush;
 
 		bool _fontApplied;
 		bool _isDisposed;
 
 		FormsTextBox _queryTextBox;
 		FormsCancelButton _cancelButton;
-		Brush _defaultDeleteButtonForegroundColorBrush;
-		Brush _defaultDeleteButtonBackgroundColorBrush;
+		WBrush _defaultDeleteButtonForegroundColorBrush;
+		WBrush _defaultDeleteButtonBackgroundColorBrush;
 
 		protected override void OnElementChanged(ElementChangedEventArgs<SearchBar> e)
 		{
@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == SearchBar.TextProperty.PropertyName)
+			if (e.IsOneOf(SearchBar.TextProperty, SearchBar.TextTransformProperty))
 				UpdateText();
 			else if (e.PropertyName == SearchBar.PlaceholderProperty.PropertyName)
 				UpdatePlaceholder();
@@ -110,15 +110,29 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateTextColor();
 			UpdatePlaceholderColor();
 			UpdateBackgroundColor();
+			UpdateBackground();
 			UpdateIsSpellCheckEnabled();
 			UpdateInputScope();
 			UpdateMaxLength();
+			SetAutomationId(Element.AutomationId);
 
 			// If the Forms VisualStateManager is in play or the user wants to disable the Forms legacy
 			// color stuff, then the underlying textbox should just use the Forms VSM states
 			if (_queryTextBox != null)
 				_queryTextBox.UseFormsVsm = Element.HasVisualStateGroups()
 								|| !Element.OnThisPlatform().GetIsLegacyColorModeEnabled();
+		}
+
+		protected override void SetAutomationId(string id)
+		{
+			base.SetAutomationId(id);
+
+			if (_queryTextBox == null)
+				return;
+
+			// This allow us to locate the actual TextBox for Automation purposes
+			// It's more reliable to interact directly with the TextBox
+			_queryTextBox.SetAutomationPropertiesAutomationId($"{id}_AutoSuggestBox");
 		}
 
 		void OnQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs e)
@@ -234,7 +248,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateText()
 		{
-			Control.Text = Element.Text ?? string.Empty;
+			Control.Text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 		}
 
 		void UpdateTextColor()
@@ -312,6 +326,23 @@ namespace Xamarin.Forms.Platform.UWP
 			else
 			{
 				_queryTextBox.ClearValue(Windows.UI.Xaml.Controls.Control.BackgroundProperty);
+			}
+		}
+
+		protected override void UpdateBackground()
+		{
+			if (_queryTextBox == null)
+				return;
+
+			if (!Brush.IsNullOrEmpty(Element.Background))
+			{
+				_queryTextBox.Background = Element.Background.ToBrush();
+			}
+			else
+			{
+				Color backgroundColor = Element.BackgroundColor;
+				if (backgroundColor.IsDefault)
+					_queryTextBox.ClearValue(Windows.UI.Xaml.Controls.Control.BackgroundProperty);
 			}
 		}
 

@@ -2,6 +2,7 @@
 using System.Reflection;
 using Xamarin.Forms.CustomAttributes;
 using IOPath = System.IO.Path;
+using NUnit.Framework.Interfaces;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -62,7 +63,16 @@ namespace Xamarin.Forms.Controls
 		static IApp InitializeAndroidApp()
 		{
 			var fullApkPath = IOPath.Combine(TestContext.CurrentContext.TestDirectory, AppPaths.ApkPath);
-			var app = ConfigureApp.Android.ApkFile(fullApkPath).Debug().StartApp(UITest.Configuration.AppDataMode.DoNotClear);
+
+			var appConfiguration = ConfigureApp.Android.ApkFile(fullApkPath).Debug();
+
+			if (TestContext.Parameters.Exists("IncludeScreenShots") &&
+				Convert.ToBoolean(TestContext.Parameters["IncludeScreenShots"]))
+			{
+				appConfiguration = appConfiguration.EnableLocalScreenshots();
+			}
+
+			var app = appConfiguration.StartApp(UITest.Configuration.AppDataMode.DoNotClear);
 
 			if (bool.Parse((string)app.Invoke("IsPreAppCompat")))
 			{
@@ -78,10 +88,29 @@ namespace Xamarin.Forms.Controls
 #if __IOS__
 		static IApp InitializeiOSApp()
 		{
+			string UDID = null;
+
+			if(TestContext.Parameters.Exists("UDID"))
+			{
+				UDID = TestContext.Parameters["UDID"];
+			}
+
 			// Running on a device
-			var app = ConfigureApp.iOS.InstalledApp(AppPaths.BundleId).Debug()
-				//Uncomment to run from a specific iOS SIM, get the ID from XCode -> Devices
-				.StartApp(Xamarin.UITest.Configuration.AppDataMode.DoNotClear);
+			var appConfiguration = ConfigureApp.iOS.InstalledApp(AppPaths.BundleId).Debug();
+
+			if(!String.IsNullOrWhiteSpace(UDID))
+			{
+				appConfiguration = appConfiguration.DeviceIdentifier(UDID);
+			}
+
+			if (TestContext.Parameters.Exists("IncludeScreenShots") &&
+				Convert.ToBoolean(TestContext.Parameters["IncludeScreenShots"]))
+			{
+				appConfiguration = appConfiguration.EnableLocalScreenshots();
+			}
+
+			var app = appConfiguration.StartApp(Xamarin.UITest.Configuration.AppDataMode.DoNotClear);
+
 			int _iosVersion;
 			if (int.TryParse(app.Invoke("iOSVersion").ToString(), out _iosVersion))
 			{
@@ -184,7 +213,7 @@ namespace Xamarin.Forms.Controls
 					app.Tap(q => q.Button("Go to Test Cases"));
 					app.WaitForElement(q => q.Raw("* marked:'TestCasesIssueList'"));
 
-					app.EnterText(q => q.Raw("* marked:'SearchBarGo'"), cellName);
+					app.EnterText(q => q.Raw("* marked:'SearchBarGo'"), $"{cellName}");
 
 					app.WaitForElement(q => q.Raw("* marked:'SearchButton'"));
 					app.Tap(q => q.Raw("* marked:'SearchButton'"));
@@ -318,26 +347,13 @@ namespace Xamarin.Forms.Controls
 		[SetUp]
 		public void Setup()
 		{
-			if (Isolate)
-			{
-				AppSetup.BeginIsolate();
-			}
-			else
-			{
-				AppSetup.EnsureMemory();
-				AppSetup.EnsureConnection();
-			}
-
-			AppSetup.NavigateToIssue(GetType(), RunningApp);
+			(RunningApp as ScreenshotConditionalApp).TestSetup(GetType(), Isolate);
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			if (Isolate)
-			{
-				AppSetup.EndIsolate();
-			}
+			(RunningApp as ScreenshotConditionalApp).TestTearDown(Isolate);
 		}
 #endif
 
@@ -364,26 +380,13 @@ namespace Xamarin.Forms.Controls
 		[SetUp]
 		public void Setup()
 		{
-			if (Isolate)
-			{
-				AppSetup.BeginIsolate();
-			}
-			else
-			{
-				AppSetup.EnsureMemory();
-				AppSetup.EnsureConnection();
-			}
-
-			AppSetup.NavigateToIssue(GetType(), RunningApp);
+			(RunningApp as ScreenshotConditionalApp).TestSetup(GetType(), Isolate);
 		}
 
 		[TearDown]
 		public virtual void TearDown()
 		{
-			if (Isolate)
-			{
-				AppSetup.EndIsolate();
-			}
+			(RunningApp as ScreenshotConditionalApp).TestTearDown(Isolate);
 		}
 #endif
 
@@ -412,26 +415,13 @@ namespace Xamarin.Forms.Controls
 		[SetUp]
 		public void Setup()
 		{
-			if (Isolate)
-			{
-				AppSetup.BeginIsolate();
-			}
-			else
-			{
-				AppSetup.EnsureMemory();
-				AppSetup.EnsureConnection();
-			}
-
-			AppSetup.NavigateToIssue(GetType(), RunningApp);
+			(RunningApp as ScreenshotConditionalApp).TestSetup(GetType(), Isolate);
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			if (Isolate)
-			{
-				AppSetup.EndIsolate();
-			}
+			(RunningApp as ScreenshotConditionalApp).TestTearDown(Isolate);
 		}
 #endif
 
@@ -460,26 +450,13 @@ namespace Xamarin.Forms.Controls
 		[SetUp]
 		public void Setup()
 		{
-			if (Isolate)
-			{
-				AppSetup.BeginIsolate();
-			}
-			else
-			{
-				AppSetup.EnsureMemory();
-				AppSetup.EnsureConnection();
-			}
-
-			AppSetup.NavigateToIssue(GetType(), RunningApp);
+			(RunningApp as ScreenshotConditionalApp).TestSetup(GetType(), Isolate);
 		}
 
 		[TearDown]
 		public virtual void TearDown()
 		{
-			if (Isolate)
-			{
-				AppSetup.EndIsolate();
-			}
+			(RunningApp as ScreenshotConditionalApp).TestTearDown(Isolate);
 		}
 #endif
 
@@ -505,26 +482,13 @@ namespace Xamarin.Forms.Controls
 		[SetUp]
 		public void Setup()
 		{
-			if (Isolate)
-			{
-				AppSetup.BeginIsolate();
-			}
-			else
-			{
-				AppSetup.EnsureMemory();
-				AppSetup.EnsureConnection();
-			}
-
-			AppSetup.NavigateToIssue(GetType(), RunningApp);
+			(RunningApp as ScreenshotConditionalApp).TestSetup(GetType(), Isolate);
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			if (Isolate)
-			{
-				AppSetup.EndIsolate();
-			}
+			(RunningApp as ScreenshotConditionalApp).TestTearDown(Isolate);
 		}
 #endif
 
@@ -556,26 +520,13 @@ namespace Xamarin.Forms.Controls
 		[SetUp]
 		public void Setup()
 		{
-			if (Isolate)
-			{
-				AppSetup.BeginIsolate();
-			}
-			else
-			{
-				AppSetup.EnsureMemory();
-				AppSetup.EnsureConnection();
-			}
-
-			AppSetup.NavigateToIssue(GetType(), RunningApp);
+			(RunningApp as ScreenshotConditionalApp).TestSetup(GetType(), Isolate);
 		}
 
 		[TearDown]
 		public virtual void TearDown()
 		{
-			if (Isolate)
-			{
-				AppSetup.EndIsolate();
-			}
+			(RunningApp as ScreenshotConditionalApp).TestTearDown(Isolate);
 		}
 #endif
 
@@ -720,32 +671,6 @@ namespace Xamarin.Forms.Controls
 			return item;
 		}
 
-		public TabBar CreateTabBar(string shellItemTitle)
-		{
-			shellItemTitle = shellItemTitle ?? $"Item: {Items.Count}";
-			ContentPage page = new ContentPage();
-			TabBar item = new TabBar()
-			{
-				Title = shellItemTitle,
-				Items =
-				{
-					new ShellSection()
-					{
-						Items =
-						{
-							new ShellContent()
-							{
-								ContentTemplate = new DataTemplate(() => page),
-							}
-						}
-					}
-				}
-			};
-
-			Items.Add(item);
-			return item;
-		}
-
 		public ContentPage CreateContentPage(string shellItemTitle = null)
 			=> CreateContentPage<ShellItem, ShellSection>(shellItemTitle);
 
@@ -809,27 +734,15 @@ namespace Xamarin.Forms.Controls
 		[SetUp]
 		public void Setup()
 		{
-			if (Isolate)
-			{
-				AppSetup.BeginIsolate();
-			}
-			else
-			{
-				AppSetup.EnsureMemory();
-				AppSetup.EnsureConnection();
-			}
-
-			AppSetup.NavigateToIssue(GetType(), RunningApp);
+			(RunningApp as ScreenshotConditionalApp).TestSetup(GetType(), Isolate);
 		}
 
 		[TearDown]
 		public virtual void TearDown()
 		{
-			if (Isolate)
-			{
-				AppSetup.EndIsolate();
-			}
+			(RunningApp as ScreenshotConditionalApp).TestTearDown(Isolate);
 		}
+
 		public void ShowFlyout(string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, bool testForFlyoutIcon = true)
 		{
 			if (testForFlyoutIcon)

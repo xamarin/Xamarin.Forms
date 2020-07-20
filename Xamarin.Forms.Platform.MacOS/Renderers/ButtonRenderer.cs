@@ -115,7 +115,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Button.TextProperty.PropertyName || e.PropertyName == Button.TextColorProperty.PropertyName)
+			if (e.PropertyName == Button.TextProperty.PropertyName || 
+				e.PropertyName == Button.TextColorProperty.PropertyName ||
+				e.PropertyName == Button.TextTransformProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 				UpdateFont();
@@ -123,7 +125,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					e.PropertyName == Button.CornerRadiusProperty.PropertyName ||
 					e.PropertyName == Button.BorderColorProperty.PropertyName)
 				UpdateBorder();
-			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
 				UpdateBackgroundVisibility();
 			else if (e.PropertyName == Button.ImageSourceProperty.PropertyName)
 				UpdateImage();
@@ -141,9 +143,28 @@ namespace Xamarin.Forms.Platform.MacOS
 		void UpdateBackgroundVisibility()
 		{
 			var model = Element;
-			var shouldDrawImage = model.BackgroundColor == Color.Default;
+			var backgroundColor = model.BackgroundColor;
+			var background = model.Background;
+
+			var shouldDrawImage = backgroundColor == Color.Default && background == null;
+
 			if (!shouldDrawImage)
-				Control.Cell.BackgroundColor = model.BackgroundColor.ToNSColor();
+			{
+				if (background != null)
+				{
+					var backgroundLayer = this.GetBackgroundLayer(background);
+
+					if (backgroundLayer != null)
+					{
+						Layer.BackgroundColor = NSColor.Clear.CGColor;
+						Layer.InsertBackgroundLayer(backgroundLayer, 0);
+					}
+					else
+						Layer.RemoveBackgroundLayer();
+				}
+				else
+					Control.Cell.BackgroundColor = backgroundColor.ToNSColor();
+			}
 		}
 
 		void UpdateBorder()
@@ -183,13 +204,14 @@ namespace Xamarin.Forms.Platform.MacOS
 		void UpdateText()
 		{
 			var color = Element.TextColor;
+			var text = Internals.TextTransformUtilites.GetTransformedText(Element.Text, Element.TextTransform) ?? "";
 			if (color == Color.Default)
 			{
-				Control.Title = Element.Text ?? "";
+				Control.Title = text;
 			}
 			else
 			{
-				var textWithColor = new NSAttributedString(Element.Text ?? "", font: Element.Font.ToNSFont(), foregroundColor: color.ToNSColor(), paragraphStyle: new NSMutableParagraphStyle() { Alignment = NSTextAlignment.Center });
+				var textWithColor = new NSAttributedString(text ?? "", font: Element.Font.ToNSFont(), foregroundColor: color.ToNSColor(), paragraphStyle: new NSMutableParagraphStyle() { Alignment = NSTextAlignment.Center });
 				textWithColor = textWithColor.AddCharacterSpacing(Element.Text ?? string.Empty, Element.CharacterSpacing);
 				Control.AttributedTitle = textWithColor;
 			}
@@ -214,6 +236,5 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			Element?.SendReleased();
 		}
-
 	}
 }
