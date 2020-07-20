@@ -14,32 +14,12 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		bool _isDisposed;
 
-		// This looks like it should be a const under iOS Classic,
-		// but that doesn't work under iOS 
-		// ReSharper disable once BuiltInTypeReferenceStyle
-		// Under iOS Classic Resharper wants to suggest this use the built-in type ref
-		// but under iOS that suggestion won't work
-		readonly nfloat _minimumButtonHeight = 44; // Apple docs
-
-
 		[Preserve(Conditional = true)]
 		public ImageButtonRenderer() : base()
 		{
 			ButtonElementManager.Init(this);
 			BorderElementManager.Init(this);
 			ImageElementManager.Init(this);
-		}
-
-		public override SizeF SizeThatFits(SizeF size)
-		{
-			var result = base.SizeThatFits(size);
-
-			if (result.Height < _minimumButtonHeight)
-			{
-				result.Height = _minimumButtonHeight;
-			}
-
-			return result;
 		}
 
 		protected override void Dispose(bool disposing)
