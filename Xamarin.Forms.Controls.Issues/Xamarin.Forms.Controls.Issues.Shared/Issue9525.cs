@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -19,11 +20,9 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
-#if APP
 			Device.SetFlags(new List<string>(Device.Flags ?? new List<string>()) { "MediaElement_Experimental" });
 
 			PushAsync(CreateRoot());
-#endif
 		}
 		private ContentPage CreateRoot()
 		{ 
@@ -42,7 +41,7 @@ namespace Xamarin.Forms.Controls.Issues
 						new MediaElement
 						{
 							AutomationId = "Issue9525MediaElement",
-							Source="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+							Source = "https://sec.ch9.ms/ch9/80a3/6563611f-6a39-44fa-a768-1a58bdd080a3/HotRestart.mp4",
 							HeightRequest=200,
 						},
 						button
@@ -54,7 +53,7 @@ namespace Xamarin.Forms.Controls.Issues
 		private void Button_Clicked(object sender, System.EventArgs e)
 		{
 			Navigation.InsertPageBefore(CreateRoot(), CurrentPage);
-			PopAsync().Wait();
+			Navigation.RemovePage(CurrentPage);
 		}
 
 
