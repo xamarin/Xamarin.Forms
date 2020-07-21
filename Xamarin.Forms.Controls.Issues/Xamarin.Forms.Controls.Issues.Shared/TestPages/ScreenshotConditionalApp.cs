@@ -461,12 +461,20 @@ namespace Xamarin.Forms.Controls
 			get { return _app.TestServer; }
 		}
 
+#if __WINDOWS__
+		public void RestartIfAppIsClosed()
+		{
+			(_app as WinDriverApp).RestartIfAppIsClosed();
+		}
+#endif
+
 		public void TestSetup(Type testType, bool isolate)
 		{
-#if __WINDOWS__
 
-			(_app as WinDriverApp).RestartIfAppIsClosed();
+#if __WINDOWS__
+			RestartIfAppIsClosed();
 #endif
+
 			if (isolate)
 			{
 				AppSetup.BeginIsolate();
@@ -492,6 +500,12 @@ namespace Xamarin.Forms.Controls
 
 		public void AttachScreenshotToTestContext(string title = null)
 		{
+			if(!TestContext.Parameters.Exists("IncludeScreenShots") ||
+				!Convert.ToBoolean(TestContext.Parameters["IncludeScreenShots"]))
+			{
+				return;
+			}
+			
 			title = title ?? TestContext.CurrentContext.Test.FullName
 				.Replace(".", "_")
 				.Replace(" ", "_");
