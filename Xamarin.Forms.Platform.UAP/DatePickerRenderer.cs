@@ -143,26 +143,25 @@ namespace Xamarin.Forms.Platform.UWP
 			if (Control != null)
 				Control.Date = new DateTimeOffset(new DateTime(date.Ticks, DateTimeKind.Unspecified));
 
+			UpdateDay();
+			UpdateMonth();
+			UpdateYear();
+		}
+
+		void UpdateMonth()
+		{
 			Control.MonthVisible = true;
-			Control.YearVisible = true;
-			Control.DayVisible = true;
 			if (Element.Format.Equals("") || Element.Format.Equals("d"))
 			{
 				Control.MonthFormat = "month";
-				Control.YearFormat = "year";
-				Control.DayFormat = "day";
 			}
 			else if (Element.Format.Equals("D"))
 			{
 				Control.MonthFormat = "month.full";
-				Control.YearFormat = "year.full";
-				Control.DayFormat = "dayofweek.full";
 			}
 			else
 			{
 				var month = Element.Format.Count(x => x == 'M');
-				var year = Element.Format.Count(x => x == 'y');
-				var day = Element.Format.Count(x => x == 'd');
 				if (month == 0)
 					Control.MonthVisible = false;
 				else if (month <= 2)
@@ -171,20 +170,54 @@ namespace Xamarin.Forms.Platform.UWP
 					Control.MonthFormat = "month.abbreviated";
 				else
 					Control.MonthFormat = "month.full";
+			}
+		}
+
+		void UpdateDay()
+		{
+			Control.DayVisible = true;
+			if (Element.Format.Equals("") || Element.Format.Equals("d"))
+			{
+				Control.DayFormat = "day";
+			}
+			else if (Element.Format.Equals("D"))
+			{
+				Control.DayFormat = "dayofweek.full";
+			}
+			else
+			{
+				var day = Element.Format.Count(x => x == 'd');
+				if (day == 0)
+					Control.DayVisible = false;
+				else if (day == 3)
+					Control.DayFormat = "day dayofweek.abbreviated";
+				else if (day == 4)
+					Control.DayFormat = "dayofweek.full";
+				else
+					Control.DayFormat = "day";
+			}
+		}
+
+		void UpdateYear()
+		{
+			Control.YearVisible = true;
+			if (Element.Format.Equals("") || Element.Format.Equals("d"))
+			{
+				Control.YearFormat = "year";
+			}
+			else if (Element.Format.Equals("D"))
+			{
+				Control.YearFormat = "year.full";
+			}
+			else
+			{
+				var year = Element.Format.Count(x => x == 'y');
 				if (year == 0)
 					Control.YearVisible = false;
 				else if (year <= 2)
 					Control.YearFormat = "year.abbreviated";
 				else
 					Control.YearFormat = "year.full";
-				if (day == 0)
-					Control.DayVisible = false;
-				else if (day == 3)
-					Control.DayFormat = "dayofweek.abbreviated";
-				else if (day == 4)
-					Control.DayFormat = "dayofweek.full";
-				else
-					Control.DayFormat = "day";
 			}
 		}
 

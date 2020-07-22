@@ -182,7 +182,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Controls\Xamarin.Forms.Controls.csproj">
-      <Project>{cb9c96ce-125c-4a68-b6a1-c3ff1fbf93e1}</Project>
+      <Project>{EC110FB6-FD6F-40F2-89F7-3FB9379CCE2E}</Project>
       <Name>Xamarin.Forms.Controls</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.CustomAttributes\Xamarin.Forms.CustomAttributes.csproj">

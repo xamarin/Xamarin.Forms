@@ -107,7 +107,7 @@
       <Name>Xamarin.Forms.Maps</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Platform.GTK\Xamarin.Forms.Platform.GTK.csproj">
-      <Project>{1f058504-62f9-4279-ac8f-16738e0f4417}</Project>
+      <Project>{0D497738-2598-431D-8CAF-8FBF3D9F99EC}</Project>
       <Name>Xamarin.Forms.Platform.GTK</Name>
     </ProjectReference>
   </ItemGroup>
