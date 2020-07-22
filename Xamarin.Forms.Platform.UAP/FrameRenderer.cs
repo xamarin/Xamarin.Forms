@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (Control != null)
 			{
-				Control.Background = backgroundColor.IsDefault ? null : backgroundColor.ToBrush();
+				Control.Background = backgroundColor.IsDefault ? Color.White.ToBrush() : backgroundColor.ToBrush();
 			}
 		}
 
@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (Control != null)
 			{
 				if (Brush.IsNullOrEmpty(background))
-					Control.Background = backgroundColor.IsDefault ? null : backgroundColor.ToBrush();
+					Control.Background = backgroundColor.IsDefault ? Color.White.ToBrush() : backgroundColor.ToBrush();
 				else
 					Control.Background = background.ToBrush();
 			}
