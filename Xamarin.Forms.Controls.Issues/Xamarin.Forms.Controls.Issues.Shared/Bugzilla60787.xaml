@@ -13,7 +13,11 @@
 			    <Label Text="This one changes colour and loses the corner radius" />
 		    </Frame>
 
-		    <Button x:Name="btnChangeColour" Text="Change colour" />
+        <Frame  CornerRadius="10">
+          <Label TextColor="Black" Text="Default Background should be white" />
+        </Frame>
+
+      <Button x:Name="btnChangeColour" Text="Change colour" />
 
 	    </StackLayout>
 	</ContentPage.Content>
