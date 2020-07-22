@@ -26,7 +26,4 @@
     <ProjectReference Include="..\Xamarin.Forms.Platform.UAP\Xamarin.Forms.Platform.UAP.csproj">
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Remove="obj\Debug\netstandard2.0\GitInfo.cache" />
-  </ItemGroup>
 </Project>

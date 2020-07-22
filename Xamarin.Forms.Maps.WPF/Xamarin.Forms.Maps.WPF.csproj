@@ -10,11 +10,11 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj" />
-    <ProjectReference Include="..\Xamarin.Forms.Maps\Xamarin.Forms.Maps.csproj" />
-    <ProjectReference Include="..\Xamarin.Forms.Platform.WPF\Xamarin.Forms.Platform.WPF.csproj" />
+    <ProjectReference Include="..\Xamarin.Forms.Maps\Xamarin.Forms.Maps.csproj"/>
+    <ProjectReference Include="..\Xamarin.Forms.Platform.WPF\Xamarin.Forms.Platform.WPF.csproj"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Maps.MapControl.WPF" Version="1.0.0.3" />
-    <Reference Include="System.Device" />
+    <Reference Include="System.Device"/>
   </ItemGroup>
 </Project>
