@@ -169,6 +169,13 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateMaxLines();
 			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+				UpdateFlowDirection();
+		}
+
+		void UpdateFlowDirection()
+		{
+			Control.UpdateFlowDirection(Element);
 		}
 
 		void UpdateColor()
