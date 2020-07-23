@@ -462,9 +462,9 @@ namespace Xamarin.Forms.Controls
 		}
 
 #if __WINDOWS__
-		public void RestartIfAppIsClosed()
+		public bool RestartIfAppIsClosed()
 		{
-			(_app as WinDriverApp).RestartIfAppIsClosed();
+			return (_app as WinDriverApp).RestartIfAppIsClosed();
 		}
 #endif
 

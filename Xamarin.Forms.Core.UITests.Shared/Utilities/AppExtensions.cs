@@ -15,12 +15,14 @@ namespace Xamarin.UITest
 {
 	internal static class AppExtensions
 	{
-#if __WINDOWS__
-		public static void RestartIfAppIsClosed(this IApp app)
+		public static bool RestartIfAppIsClosed(this IApp app)
 		{
-			((ScreenshotConditionalApp)app).RestartIfAppIsClosed();
-		}
+#if __WINDOWS__
+			return ((ScreenshotConditionalApp)app).RestartIfAppIsClosed();
+#else
+			return false;
 #endif
+		}
 
 		public static void AttachScreenshotToTestContext(this IApp app, string title)
 		{
