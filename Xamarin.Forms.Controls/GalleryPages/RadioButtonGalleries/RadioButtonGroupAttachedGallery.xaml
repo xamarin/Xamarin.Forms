@@ -6,15 +6,33 @@
              mc:Ignorable="d"
              x:Class="Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries.RadioButtonGroupAttachedGallery">
     <ContentPage.Content>
-        <StackLayout RadioButtonGroup.GroupName="foo">
-            <Label Text="foo"/>
-            <RadioButton Text="Option A" />
-            <RadioButton Content="Option B" />
-            <RadioButton>
-                <RadioButton.Content>
-                    <Label FontSize="24" Text="Option C" RotationX="23"></Label>
-                </RadioButton.Content>
-            </RadioButton>
+        <StackLayout>
+
+            <StackLayout>
+                <Label Text="Group bar (setting GroupName individually)"/>
+                <RadioButton Text="Option A" GroupName="bar" />
+                <RadioButton Content="Option B" GroupName="bar" />
+                <RadioButton GroupName="bar">
+                    <RadioButton.Content>
+                        <Label FontSize="24" Text="Option C" RotationX="23"></Label>
+                    </RadioButton.Content>
+                </RadioButton>
+            </StackLayout>
+
+            <StackLayout RadioButtonGroup.GroupName="foo">
+                <Label Text="Group foo (using RadioButtonGroup)"/>
+                <RadioButton Text="Option A" />
+                <RadioButton Content="Option B" />
+                <RadioButton>
+                    <RadioButton.Content>
+                        <Label FontSize="24" Text="Option C" RotationX="23"></Label>
+                    </RadioButton.Content>
+                </RadioButton>
+            </StackLayout>
+
+
+            <RadioButton Content="Option D (with explicit GroupName)" GroupName="foo" />
+
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
