@@ -92,9 +92,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		}
 
-		void SendEventArgs<TRecognizer>(Action<TRecognizer> func)
+		void SendEventArgs<TRecognizer>(Action<TRecognizer> func, View view = null)
 		{
-			var view = GetView();
+			view = view ?? GetView();
 			var renderer = Platform.GetRenderer(view);
 
 			if (!renderer.View.IsAlive() && view != null)
@@ -131,18 +131,20 @@ namespace Xamarin.Forms.Platform.Android
 					return HandleDragOver(package);
 				case DragAction.Drop:
 					{
+						HandleDrop(e.LocalState, package, e.ClipData);
 						if (renderer != null && _dragSource.ContainsKey(renderer.Element))
 						{
+							HandleDropCompleted(renderer.Element as View);
 							_dragSource.Remove(renderer.Element);
 						}
 
-						HandleDrop(e.LocalState, package, e.ClipData);
 						return true;
 					}
 				case DragAction.Ended:
 					{
 						if (renderer != null && _dragSource.ContainsKey(renderer.Element))
 						{
+							HandleDropCompleted(renderer.Element as View);
 							_dragSource.Remove(renderer.Element);
 						}
 					}
@@ -157,6 +159,12 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			return false;
+		}
+
+		void HandleDropCompleted(View element)
+		{
+			var args = new DropCompletedEventArgs();
+			SendEventArgs<DragGestureRecognizer>(rec => rec.SendDropCompleted(args), element);
 		}
 
 		bool HandleDragOver(DataPackage package)

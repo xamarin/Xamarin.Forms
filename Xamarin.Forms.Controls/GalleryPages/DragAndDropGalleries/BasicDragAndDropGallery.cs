@@ -14,6 +14,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.DragAndDropGalleries
 		{
 			StackLayout stackLayout = new StackLayout();
 			CollectionView collectionView = new CollectionView();
+			collectionView.ItemsUpdatingScrollMode = ItemsUpdatingScrollMode.KeepScrollOffset;
 			ObservableCollection<string> observableCollection = new ObservableCollection<string>();
 			collectionView.ItemsSource = observableCollection;
 
