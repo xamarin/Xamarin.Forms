@@ -176,7 +176,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void SetDate(DateTime date)
 		{
-			if (Element.Format == "")
+			if (String.IsNullOrWhiteSpace(Element.Format))
 			{
 				EditText.Text = date.ToShortDateString();
 			}

@@ -169,7 +169,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_picker.SetDate(Element.Date.ToNSDate(), animate);
 
 			//can't use Element.Format because it won't display the correct format if the region and language are set differently
-			if (Element.Format.Equals("") || Element.Format.Equals("d") || Element.Format.Equals("D"))
+			if (String.IsNullOrWhiteSpace(Element.Format) || Element.Format.Equals("d") || Element.Format.Equals("D"))
 			{
 				NSDateFormatter dateFormatter = new NSDateFormatter();
 				if (Element.Format.Equals("D"))
