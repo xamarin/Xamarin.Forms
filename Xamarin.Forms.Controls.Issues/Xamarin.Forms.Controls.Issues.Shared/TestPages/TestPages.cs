@@ -222,7 +222,9 @@ namespace Xamarin.Forms.Controls
 					app.WaitForElement(q => q.Raw("* marked:'SearchButton'"));
 					app.Tap(q => q.Raw("* marked:'SearchButton'"));
 
-					if(!app.RestartIfAppIsClosed())
+					app.WaitForNoElement(q => q.Raw("* marked:'TestCasesIssueList'"));
+
+					if (!app.RestartIfAppIsClosed())
 						return;
 				}
 #if __WINDOWS__
