@@ -21,6 +21,20 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		#region UIDragInteractionDelegate
+
+
+		[Export("dragInteraction:session:willEndWithOperation:")]
+		[Preserve(Conditional = true)]
+		public void SessionWillEnd(UIDragInteraction interaction, IUIDragSession session, UIDropOperation operation)
+		{
+			if ((operation == UIDropOperation.Cancel || operation == UIDropOperation.Forbidden) &&
+				session.Items.Length > 0 &&
+				session.Items[0].LocalObject is IVisualElementRenderer ver)
+			{
+				this.HandleDropCompleted(ver.Element as View);
+			}
+		}
+
 		public UIDragItem[] GetItemsForBeginningSession(UIDragInteraction interaction, IUIDragSession session)
 		{
 			if (interaction.View is IVisualElementRenderer renderer && renderer.Element is View view)
@@ -85,6 +99,8 @@ namespace Xamarin.Forms.Platform.iOS
 				session.LocalDragSession.Items[0] is CustomDragItem cdi)
 			{
 				HandleDrop(interaction.View, cdi.DataPackage);
+				if (cdi.LocalObject is IVisualElementRenderer renderer)
+					HandleDropCompleted(renderer.Element as View);
 			}
 		}
 
@@ -162,6 +178,11 @@ namespace Xamarin.Forms.Platform.iOS
 			return returnValue ?? new UIDragItem[0];
 		}
 
+		void HandleDropCompleted(View element)
+		{
+			var args = new DropCompletedEventArgs();
+			SendEventArgs<DragGestureRecognizer>(rec => rec.SendDropCompleted(args), element);
+		}
 
 		bool HandleDragOver(View element, DataPackage dataPackage)
 		{
