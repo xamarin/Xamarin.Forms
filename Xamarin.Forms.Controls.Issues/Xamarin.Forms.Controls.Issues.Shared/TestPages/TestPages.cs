@@ -222,7 +222,9 @@ namespace Xamarin.Forms.Controls
 					app.WaitForElement(q => q.Raw("* marked:'SearchButton'"));
 					app.Tap(q => q.Raw("* marked:'SearchButton'"));
 
-					app.WaitForNoElement(q => q.Raw("* marked:'TestCasesIssueList'"));
+#if __WINDOWS__
+					app.WaitForNoElement(q => q.Raw("* marked:'TestCasesIssueList'"), timeout: TimeSpan.FromMinutes(1));
+#endif
 
 					if (!app.RestartIfAppIsClosed())
 						return;
@@ -344,7 +346,7 @@ namespace Xamarin.Forms.Controls
 	}
 #endif
 
-	public abstract class TestPage : Page
+		public abstract class TestPage : Page
 	{
 #if UITEST
 		public IApp RunningApp => AppSetup.RunningApp;
