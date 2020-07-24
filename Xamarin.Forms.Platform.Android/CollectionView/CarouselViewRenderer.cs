@@ -135,7 +135,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			_gotoPosition = -1;
 
-
 			SwapAdapter(ItemsViewAdapter, false);
 
 			UpdateInitialPosition();
@@ -268,23 +267,22 @@ namespace Xamarin.Forms.Platform.Android
 			bool removingCurrentElement = currentItemPosition == -1;
 			bool removingLastElement = e.OldStartingIndex == count;
 			bool removingFirstElement = e.OldStartingIndex == 0;
-			bool removingCurrentElementButNotFirst = removingCurrentElement && removingLastElement && Carousel.Position > 0;
 
-			if (removingCurrentElementButNotFirst)
-			{
-				carouselPosition = Carousel.Position - 1;
+			_noNeedForScroll = true;
 
-			}
-			else if (removingFirstElement && removingCurrentElement)
+			if (removingCurrentElement)
 			{
-				UpdateAdapter();
-			}
-			else if (removingFirstElement && !removingCurrentElement)
-			{
-				carouselPosition = currentItemPosition;
-				_noNeedForScroll = true;
-			}
+				if (removingFirstElement)
+					carouselPosition = 0;
+				else if (removingLastElement)
+					carouselPosition = Carousel.Position - 1;
 
+				if (Carousel.Loop)
+				{
+					UpdateAdapter();
+					ScrollToPosition(carouselPosition);
+				}
+			}
 
 			if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
 			{
@@ -296,15 +294,15 @@ namespace Xamarin.Forms.Platform.Android
 				&& currentItemPosition != -1)
 			{
 				carouselPosition = currentItemPosition;
-				//if we are adding a item and we want to stay on the same position
-				//we don't need to scroll
-				_noNeedForScroll = true;
 			}
 
 			_gotoPosition = -1;
 
-			SetCurrentItem(carouselPosition);
-			UpdatePosition(carouselPosition);
+			if (!Carousel.Loop)
+			{
+				SetCurrentItem(carouselPosition);
+				UpdatePosition(carouselPosition);
+			}
 
 			//If we are adding or removing the last item we need to update
 			//the inset that we give to items so they are centered
@@ -514,7 +512,8 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			if (_gotoPosition == -1 && !Carousel.IsDragging && !Carousel.IsScrolling)
+			var centerPosition = GetCarouselViewCurrentIndex(carouselPosition);
+			if (_gotoPosition == -1 && !Carousel.IsDragging && !Carousel.IsScrolling && centerPosition != carouselPosition)
 			{
 				_gotoPosition = carouselPosition;
 				Carousel.ScrollTo(carouselPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: Carousel.AnimatePositionChanges);
