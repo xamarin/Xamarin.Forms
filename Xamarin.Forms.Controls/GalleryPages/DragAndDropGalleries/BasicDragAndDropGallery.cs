@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.GalleryPages.DragAndDropGalleries
 {
+	[Preserve(AllMembers = true)]
 	public class BasicDragAndDropGallery : ContentPage
 	{
 		public BasicDragAndDropGallery()
