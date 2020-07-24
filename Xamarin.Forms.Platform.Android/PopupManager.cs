@@ -93,10 +93,12 @@ namespace Xamarin.Forms.Platform.Android
 
 				var builder = new DialogBuilder(Activity);
 
+				arguments.FlowDirection = FlowDirection.LeftToRight;
+
 				builder.SetTitle(arguments.Title);
 				string[] items = arguments.Buttons.ToArray();
 				builder.SetItems(items, (o, args) => arguments.Result.TrySetResult(items[args.Which]));
-
+				
 				if (arguments.Cancel != null)
 					builder.SetPositiveButton(arguments.Cancel, (o, args) => arguments.Result.TrySetResult(arguments.Cancel));
 
@@ -304,6 +306,14 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 
+			//public class RightJustifyAlertDialog : AlertDialog
+			//{
+			//	public RightJustifyAlertDialog(Context ctx)
+			//	{
+			//		base(ctx, )
+			//	}
+			//}
+
 			internal sealed class FlexibleAlertDialog
 			{
 				readonly AppCompatAlertDialog _appcompatAlertDialog;
@@ -313,12 +323,16 @@ namespace Xamarin.Forms.Platform.Android
 				public FlexibleAlertDialog(AlertDialog alertDialog)
 				{
 					_legacyAlertDialog = alertDialog;
+					_legacyAlertDialog.Window.DecorView.LayoutDirection = LayoutDirection.Rtl;
+					
 				}
 
 				public FlexibleAlertDialog(AppCompatAlertDialog alertDialog)
 				{
 					_appcompatAlertDialog = alertDialog;
 					_useAppCompat = true;
+					_appcompatAlertDialog.Window.DecorView.LayoutDirection = LayoutDirection.Rtl;
+					
 				}
 
 				public void SetTitle(string title)
@@ -338,10 +352,15 @@ namespace Xamarin.Forms.Platform.Android
 					if (_useAppCompat)
 					{
 						_appcompatAlertDialog.SetMessage(message);
+						TextView msgtext = (TextView)_appcompatAlertDialog.FindViewById(Resource.Id.message);
+						msgtext.SetForegroundGravity(GravityFlags.CenterHorizontal);
+
 					}
 					else
 					{
 						_legacyAlertDialog.SetMessage(message);
+						TextView msgtext = (TextView)_legacyAlertDialog.FindViewById(Resource.Id.message);
+						msgtext.SetForegroundGravity(GravityFlags.CenterHorizontal);
 					}
 				}
 

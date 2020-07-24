@@ -190,6 +190,19 @@ namespace Xamarin.Forms
 			return args.Result.Task;
 		}
 
+		public Task<string> DisplayActionSheet(string title, string cancel, string destruction, FlowDirection flowDirection, params string[] buttons)
+		{
+			var args = new ActionSheetArguments(title, cancel, destruction, buttons);
+			args.FlowDirection = flowDirection;
+
+			if (IsPlatformEnabled)
+				MessagingCenter.Send(this, ActionSheetSignalName, args);
+			else
+				_pendingActions.Add(() => MessagingCenter.Send(this, ActionSheetSignalName, args));
+
+			return args.Result.Task;
+		}
+
 		public Task DisplayAlert(string title, string message, string cancel)
 		{
 			return DisplayAlert(title, message, null, cancel);
