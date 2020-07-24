@@ -29,7 +29,6 @@ namespace Xamarin.Forms.Platform.MacOS
 		readonly Dictionary<IGestureRecognizer, NativeGestureRecognizer> _gestureRecognizers = new Dictionary<IGestureRecognizer, NativeGestureRecognizer>();
 
 		readonly IVisualElementRenderer _renderer;
-		DragAndDropDelegate _dragAndDropDelegate;
 
 		bool _disposed;
 		NativeView _handler;
@@ -37,6 +36,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		double _previousScale = 1.0;
 #if __MOBILE__
 		UITouchEventArgs _shouldReceiveTouch;
+		DragAndDropDelegate _dragAndDropDelegate;
 #endif
 
 		public EventTracker(IVisualElementRenderer renderer)
@@ -578,9 +578,10 @@ namespace Xamarin.Forms.Platform.MacOS
 						uIDropInteraction = uiDrop;
 				}
 			}
-#endif
+
 			bool dragFound = false;
 			bool dropFound = false;
+#endif
 			for (int i = 0; i < ElementGestureRecognizers.Count; i++)
 			{
 				IGestureRecognizer recognizer = ElementGestureRecognizers[i];
