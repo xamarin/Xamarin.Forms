@@ -4,16 +4,16 @@ namespace Xamarin.Forms
 {
 	public class DataPackageView
 	{
-		internal DataPackage DataPackage { get; }
+		DataPackage DataPackage { get; }
 		internal DataPackagePropertySetView PropertiesInternal { get; }
 		public DataPackagePropertySetView Properties { get; }
 
-		public DataPackageView(DataPackage dataPackage)
+		internal DataPackageView(DataPackage dataPackage)
 		{
 			_ = dataPackage ?? throw new System.ArgumentNullException(nameof(dataPackage));
 			DataPackage = dataPackage;
-			PropertiesInternal = new DataPackagePropertySetView(dataPackage.PropertiesInternal);
-			Properties = new DataPackagePropertySetView(dataPackage.Properties);
+			PropertiesInternal = new DataPackagePropertySetView(DataPackage.PropertiesInternal);
+			Properties = new DataPackagePropertySetView(DataPackage.Properties);
 		}
 
 		public Task<ImageSource> GetImageAsync()

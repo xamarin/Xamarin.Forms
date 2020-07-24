@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
@@ -7,11 +6,14 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.GalleryPages.DragAndDropGalleries
 {
+
+
 	[Preserve(AllMembers = true)]
-	public class BasicDragAndDropGallery : ContentPage
+	public class EnablingAndDisablingGestureTests : ContentPage
 	{
-		public BasicDragAndDropGallery()
+		public EnablingAndDisablingGestureTests()
 		{
+			Title = "Enabling and Disabling Getures";
 			StackLayout stackLayout = new StackLayout();
 			CollectionView collectionView = new CollectionView();
 			collectionView.ItemsUpdatingScrollMode = ItemsUpdatingScrollMode.KeepScrollOffset;
@@ -125,26 +127,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.DragAndDropGalleries
 			};
 
 			stackLayout.Children.Add(imageSource);
-			stackLayout.Children.Add(new Label()
-			{
-				Text = "https://github.com/xamarin/Xamarin.Forms/blob/f27f5a3650f37894d4a1ac925d6fab4dc7350087/Xamarin.Forms.ControlGallery.Android/Resources/drawable/oasis.jpg?raw=true",
-				GestureRecognizers =
-				{
-					new DragGestureRecognizer()
-					{
-						CanDrag = true
-					}
-				}
-			});
-
-			stackLayout.Children.Add(imageDestination);
 			stackLayout.Children.Add(addRemoveDragGesture);
 			stackLayout.Children.Add(toggleCanDrag);
+
+			stackLayout.Children.Add(imageDestination);
 			stackLayout.Children.Add(addRemoveDropGesture);
 			stackLayout.Children.Add(toggleCanDrop);
-			stackLayout.Children.Add(collectionView);
 
-			stackLayout.Padding = 40;
+			stackLayout.Children.Add(collectionView);
 			Content = stackLayout;
 		}
 	}

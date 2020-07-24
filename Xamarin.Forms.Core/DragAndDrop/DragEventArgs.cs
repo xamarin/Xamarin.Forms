@@ -7,6 +7,7 @@ namespace Xamarin.Forms
 		public DragEventArgs(DataPackage dataPackage)
 		{
 			Data = dataPackage;
+			AcceptedOperation = DataPackageOperation.Copy;
 		}
 
 		public DataPackage Data { get;  }

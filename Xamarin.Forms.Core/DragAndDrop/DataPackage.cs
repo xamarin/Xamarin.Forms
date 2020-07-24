@@ -6,7 +6,6 @@
 		{
 			Properties = new DataPackagePropertySet();
 			PropertiesInternal = new DataPackagePropertySet();
-			View = new DataPackageView(this);
 		}
 
 		public DataPackagePropertySet Properties { get; }
@@ -14,6 +13,23 @@
 
 		public ImageSource Image { get; set; }
 		public string Text { get; set; }
-		public DataPackageView View { get; }
+		public DataPackageView View => new DataPackageView(this.Clone());
+
+		internal DataPackage Clone()
+		{
+			DataPackage dataPackage = new DataPackage()
+			{
+				Text = Text,
+				Image = Image
+			};
+
+			foreach (var property in Properties)
+				dataPackage.Properties.Add(property.Key, property.Value);
+
+			foreach (var property in PropertiesInternal)
+				dataPackage.PropertiesInternal.Add(property.Key, property.Value);
+
+			return dataPackage;
+		}
 	}
 }
