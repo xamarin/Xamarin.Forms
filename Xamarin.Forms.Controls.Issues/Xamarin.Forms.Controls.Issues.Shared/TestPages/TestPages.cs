@@ -170,8 +170,10 @@ namespace Xamarin.Forms.Controls
 
 			int maxAttempts = 2;
 			int attempts = 0;
+
 #if __WINDOWS__
 			bool attemptOneRestart = false;
+			bool waitNoElementAttempt = false;
 #endif
 			while (attempts < maxAttempts)
 			{
@@ -223,7 +225,19 @@ namespace Xamarin.Forms.Controls
 					app.Tap(q => q.Raw("* marked:'SearchButton'"));
 
 #if __WINDOWS__
-					app.WaitForNoElement(q => q.Raw("* marked:'TestCasesIssueList'"), timeout: TimeSpan.FromMinutes(1));
+					try
+					{
+						if (!waitNoElementAttempt)
+						{
+							app.WaitForNoElement(q => q.Raw("* marked:'TestCasesIssueList'"), timeout: TimeSpan.FromMinutes(1));
+							waitNoElementAttempt = true;
+						}
+					}
+					catch
+					{
+						attempts--;
+						throw;
+					}
 #endif
 
 					if (!app.RestartIfAppIsClosed())
