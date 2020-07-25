@@ -229,8 +229,8 @@ namespace Xamarin.Forms.Controls
 					{
 						if (!waitNoElementAttempt)
 						{
-							app.WaitForNoElement(q => q.Raw("* marked:'TestCasesIssueList'"), timeout: TimeSpan.FromMinutes(1));
 							waitNoElementAttempt = true;
+							app.WaitForNoElement(q => q.Raw("* marked:'TestCasesIssueList'"), timeout: TimeSpan.FromMinutes(1));
 						}
 					}
 					catch
