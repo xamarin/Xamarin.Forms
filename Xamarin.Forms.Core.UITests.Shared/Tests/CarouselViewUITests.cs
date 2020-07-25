@@ -18,6 +18,7 @@ namespace Xamarin.Forms.Core.UITests
 		}
 
 		[TestCase("CarouselView (XAML, Horizontal)")]
+		[TestCase("CarouselView (XAML, Horizontal, Loop)")]
 		public void CarouselViewRemoveAndUpdateCurrentItem(string subgallery)
 		{
 			VisitSubGallery(subgallery);
@@ -46,6 +47,7 @@ namespace Xamarin.Forms.Core.UITests
 
 
 		[TestCase("CarouselView (XAML, Horizontal)")]
+		[TestCase("CarouselView (XAML, Horizontal, Loop)")]
 		public void CarouselViewRemoveFirstCurrentItem(string subgallery)
 		{
 			VisitSubGallery(subgallery);
@@ -60,8 +62,8 @@ namespace Xamarin.Forms.Core.UITests
 			App.Back();
 		}
 
-
 		[TestCase("CarouselView (XAML, Horizontal)")]
+		[TestCase("CarouselView (XAML, Horizontal, Loop)")]
 		public void CarouselViewGoToNextCurrentItem(string subgallery)
 		{
 			VisitSubGallery(subgallery);
@@ -82,7 +84,38 @@ namespace Xamarin.Forms.Core.UITests
 
 
 		[TestCase("CarouselView (XAML, Horizontal)")]
+		[TestCase("CarouselView (XAML, Horizontal, Loop)")]
 		public void CarouselViewRemoveLastCurrentItem(string subgallery)
+		{
+			VisitSubGallery(subgallery);
+
+			CheckPositionValue("lblPosition", "0");
+			CheckPositionValue("lblCurrentItem", "0");
+			CheckPositionValue("lblSelected", "0");
+
+			var rect = App.Query(c => c.Marked("TheCarouselView")).First().Rect;
+			var centerX = rect.CenterX;
+			var rightX = rect.X - 5;
+			App.DragCoordinates(centerX + 40, rect.CenterY, rightX, rect.CenterY);
+			App.DragCoordinates(centerX + 40, rect.CenterY, rightX, rect.CenterY);
+			App.DragCoordinates(centerX + 40, rect.CenterY, rightX, rect.CenterY);
+			App.DragCoordinates(centerX + 40, rect.CenterY, rightX, rect.CenterY);
+
+			CheckPositionValue("lblPosition", "4");
+			CheckPositionValue("lblCurrentItem", "4");
+			CheckPositionValue("lblSelected", "4");
+
+			App.Tap(x => x.Marked("btnRemove"));
+
+			CheckPositionValue("lblPosition", "3");
+			CheckPositionValue("lblCurrentItem", "3");
+			CheckPositionValue("lblSelected", "3");
+
+			App.Back();
+		}
+
+		[TestCase("CarouselView (XAML, Horizontal, Loop)")]
+		public void CarouselViewLoopAfterLastItem(string subgallery)
 		{
 			VisitSubGallery(subgallery);
 
@@ -99,15 +132,30 @@ namespace Xamarin.Forms.Core.UITests
 			App.DragCoordinates(centerX + 40, rect.CenterY, rightX, rect.CenterY);
 			App.DragCoordinates(centerX + 40, rect.CenterY, rightX, rect.CenterY);
 
+			CheckPositionValue("lblPosition", "0");
+			CheckPositionValue("lblCurrentItem", "0");
+			CheckPositionValue("lblSelected", "0");
+
+			App.Back();
+		}
+
+		[TestCase("CarouselView (XAML, Horizontal, Loop)")]
+		public void CarouselViewLoopBeforeFirstItem(string subgallery)
+		{
+			VisitSubGallery(subgallery);
+
+			CheckPositionValue("lblPosition", "0");
+			CheckPositionValue("lblCurrentItem", "0");
+			CheckPositionValue("lblSelected", "0");
+
+			var rect = App.Query(c => c.Marked("TheCarouselView")).First().Rect;
+			var centerX = rect.CenterX;
+			var rightX = rect.X - 5;
+			App.DragCoordinates(centerX - 50, rect.CenterY, centerX + 100, rect.CenterY);
+
 			CheckPositionValue("lblPosition", "4");
 			CheckPositionValue("lblCurrentItem", "4");
 			CheckPositionValue("lblSelected", "4");
-
-			App.Tap(x => x.Marked("btnRemove"));
-
-			CheckPositionValue("lblPosition", "3");
-			CheckPositionValue("lblCurrentItem", "3");
-			CheckPositionValue("lblSelected", "3");
 
 			App.Back();
 		}
@@ -210,11 +258,17 @@ namespace Xamarin.Forms.Core.UITests
 
 		void VisitSubGallery(string galleryName, bool enableIndicator = false)
 		{
-			App.ScrollUp();
-			App.ScrollUp();
-
 			if (enableIndicator)
+			{
+				var result = App.Query(c => c.Marked("EnableIndicatorView"));
+				if (result.Length == 0)
+				{
+					App.ScrollUp();
+					App.ScrollUp();
+				}
 				App.Tap(t => t.Marked("EnableIndicatorView"));
+			}
+
 
 			App.QueryUntilPresent(() =>
 			{
