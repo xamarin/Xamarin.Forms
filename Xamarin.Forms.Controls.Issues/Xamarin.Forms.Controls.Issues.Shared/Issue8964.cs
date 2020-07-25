@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Controls.Issues
 				ItemTemplate = GetCarouselTemplate(),
 				CurrentItem = _currentItem,
 				AutomationId = "carouseView",
-			//	Loop = false
+				Loop = false
 			};
 			CarouselViewUnderTest.CurrentItemChanged += CarouselViewUnderTestCurrentItemChanged;
 			CarouselViewUnderTest.PositionChanged += CarouselViewUnderTest_PositionChanged;
