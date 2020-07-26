@@ -111,6 +111,9 @@ namespace Xamarin.Forms.Platform.iOS
 				cell.BindingContext = context;
 			}
 
+			cell.AccessibilityIdentifier = context?.AutomationId;
+
+
 			_views[context] = cell.View;
 			return cell;
 		}
