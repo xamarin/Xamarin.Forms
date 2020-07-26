@@ -35,8 +35,19 @@ namespace Xamarin.Forms.Controls.GalleryPages.DragAndDropGalleries
 			stackLayout.Children.Add(CreateControls<TimePicker>(dragElementText: $"{DateTime.Now}"));
 			stackLayout.Children.Add(CreateControls<CheckBox>(dragElementText: $"{DateTime.Now.TimeOfDay}"));
 			stackLayout.Children.Add(CreateControls<Entry>(dragElementText: "https://github.com/xamarin/Xamarin.Forms/blob/f27f5a3650f37894d4a1ac925d6fab4dc7350087/Xamarin.Forms.ControlGallery.Android/Resources/drawable/oasis.jpg?raw=true"));
+			stackLayout.Children.Add(CreateControls<StackDrag>());
 
 			Content = stackLayout;
+		}
+
+		[Preserve(AllMembers = true)]
+		class StackDrag : StackLayout
+		{
+			public StackDrag()
+			{
+				Children.Add(new Image() { Source = "coffee.png" });
+				Children.Add(new Label { Text = "COFFEE" });
+			}
 		}
 
 		View CreateControls<TView>(Action<TView, TView> action = null, string dragElementText = null)
@@ -72,10 +83,15 @@ namespace Xamarin.Forms.Controls.GalleryPages.DragAndDropGalleries
 				CanDrag = true
 			};
 
-			dragRecognizer.DragStarting +=(_, __) =>
+			dragRecognizer.DragStarting += (_, args) =>
 			{
 				DraggingColor = Color.Purple;
 				OnPropertyChanged(nameof(DraggingColor));
+
+				if(view is StackDrag sd)
+				{
+					args.Data.Image = "coffee.png";
+				}
 			};
 
 			dragRecognizer.DropCompleted += (_, __) =>

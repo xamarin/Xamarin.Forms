@@ -166,8 +166,15 @@ namespace Xamarin.Forms.Platform.iOS
 						else if (element is DatePicker dp)
 							text = dp.Date.ToString();
 
-						itemProvider = new NSItemProvider(new NSString(text));
-						args.Data.Text = text;
+						if(String.IsNullOrWhiteSpace(text))
+						{
+							itemProvider = new NSItemProvider(renderer.NativeView.ConvertToImage());
+						}
+						else
+						{
+							itemProvider = new NSItemProvider(new NSString(text));
+							args.Data.Text = text;
+						}
 					}
 
 					var dragItem = new CustomDragItem(itemProvider, args.Data);
@@ -225,3 +232,4 @@ namespace Xamarin.Forms.Platform.iOS
 
 }
 #endif
+	  
