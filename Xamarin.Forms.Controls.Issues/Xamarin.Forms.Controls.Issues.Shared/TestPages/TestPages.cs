@@ -235,6 +235,7 @@ namespace Xamarin.Forms.Controls
 					}
 					catch
 					{
+						app.Restart();
 						attempts--;
 						throw;
 					}

@@ -466,6 +466,11 @@ namespace Xamarin.Forms.Controls
 		{
 			return (_app as WinDriverApp).RestartIfAppIsClosed();
 		}
+
+		public void Restart()
+		{
+			(_app as WinDriverApp).RestartApp();
+		}
 #endif
 
 		public void TestSetup(Type testType, bool isolate)
