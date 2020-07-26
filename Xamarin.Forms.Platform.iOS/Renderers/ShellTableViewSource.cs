@@ -113,7 +113,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			cell.AccessibilityIdentifier = context?.AutomationId;
 
-
 			_views[context] = cell.View;
 			return cell;
 		}

@@ -89,13 +89,10 @@ namespace Xamarin.Forms.Platform.iOS
 		void IFlyoutBehaviorObserver.OnFlyoutBehaviorChanged(FlyoutBehavior behavior)
 		{
 			_flyoutBehavior = behavior;
-			var currentState = IsOpen;
-
 			if (behavior == FlyoutBehavior.Locked)
 				IsOpen = true;
 			else if (behavior == FlyoutBehavior.Disabled)
 				IsOpen = false;
-
 			LayoutSidebar(false);
 		}
 
