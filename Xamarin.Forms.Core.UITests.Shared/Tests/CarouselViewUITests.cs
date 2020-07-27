@@ -256,6 +256,19 @@ namespace Xamarin.Forms.Core.UITests
 			App.Back();
 		}
 
+		[TestCase("CarouselView SetPosition Ctor")]
+		[TestCase("CarouselView SetPosition Appearing")]
+		//[TestCase("CarouselView (XAML, Horizontal)")]
+		public void CarouselViewSetPosition(string subgallery)
+		{
+			VisitSubGallery(subgallery, true);
+			App.WaitForElement("lblPosition");
+			var result = App.Query(c => c.Marked("lblPosition")).First().Text;
+			Assert.AreEqual("3", result);
+			App.WaitForElement("4");
+			App.Back();
+		}
+
 		void VisitSubGallery(string galleryName, bool enableIndicator = false)
 		{
 			if (enableIndicator)
