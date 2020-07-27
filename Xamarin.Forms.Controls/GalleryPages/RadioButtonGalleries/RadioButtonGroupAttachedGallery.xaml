@@ -30,9 +30,25 @@
                 </RadioButton>
             </StackLayout>
 
+            <RadioButton Content="Option D (with explicit GroupName 'foo')" GroupName="foo" />
 
-            <RadioButton Content="Option D (with explicit GroupName)" GroupName="foo" />
+            <StackLayout Orientation="Horizontal">
+                <Label Text="The radio button group below has a GroupName of "/>
+                <Label Text="{Binding GroupName}"/>
+            </StackLayout>
 
+            <StackLayout Orientation="Horizontal">
+                <Label Text="The selected radio button is "/>
+                <Label Text="{Binding Selection}"/>
+            </StackLayout>
+
+            <StackLayout RadioButtonGroup.GroupName="{Binding GroupName}" RadioButtonGroup.Selection="{Binding Selection}">
+                <RadioButton Text="Option A"></RadioButton>
+                <RadioButton Text="Option B"></RadioButton>
+                <RadioButton Text="Option C"></RadioButton>
+                <RadioButton Text="Option D"></RadioButton>
+            </StackLayout>
+            
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

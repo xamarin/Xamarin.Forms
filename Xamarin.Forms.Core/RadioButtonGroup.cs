@@ -29,6 +29,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty SelectionProperty =
 			BindableProperty.Create("Selection", typeof(RadioButton), typeof(Layout<View>), null, 
+			defaultBindingMode: BindingMode.TwoWay,
 			propertyChanged: (b, o, n) => { GetRadioButtonGroupController(b).Selection = (RadioButton)n; });
 
 		public static RadioButton GetSelection(BindableObject b)
@@ -39,9 +40,13 @@ namespace Xamarin.Forms
 		internal static void UpdateRadioButtonGroup(RadioButton radioButton)
 		{
 			string groupName = radioButton.GroupName;
+
+			Element scope;
+
 			if (!string.IsNullOrEmpty(groupName))
 			{
 				Element rootScope = GetVisualRoot(radioButton);
+				scope = rootScope;
 
 				if (GroupNameToElements == null)
 					GroupNameToElements = new Dictionary<string, List<WeakReference<RadioButton>>>(1);
@@ -69,6 +74,8 @@ namespace Xamarin.Forms
 			else // Logical parent should be the group
 			{
 				Element parent = radioButton.Parent;
+				scope = parent;
+
 				if (parent != null)
 				{
 					// Traverse logical children
@@ -83,9 +90,10 @@ namespace Xamarin.Forms
 				}
 			}
 
-
-			// TODO ezhart Okay, the group is updated; now how do we tell any interested RBGControllers that there's a new selection?
+			MessagingCenter.Send(radioButton, RadioButtonGroupSelectionChanged, new RadioButtonGroupSelectionChanged(scope));
 		}
+
+		internal const string RadioButtonGroupSelectionChanged = "RadioButtonGroupSelectionChanged";
 
 		internal static void Register(RadioButton radioButton, string groupName)
 		{
@@ -133,7 +141,7 @@ namespace Xamarin.Forms
 			newC.Selection = GetSelection(b);
 		}
 
-		static Element GetVisualRoot(Element element)
+		internal static Element GetVisualRoot(Element element)
 		{
 			Element parent = element.Parent;
 			while (parent != null && !(parent is Page))
