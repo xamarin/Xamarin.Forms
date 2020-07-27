@@ -303,6 +303,20 @@ stages:
             parameters:
               provisionatorPath : 'build/provisioning/provisioning.csx'
 
+    - stage: PoliCheck
+      displayName: 'Code Analysis'
+      jobs:
+        - job: run_poli_check
+          displayName: 'Policheck Compliance'
+        pool:
+          name: $(vs2019VmPool)
+          vmImage: $(vs2019VmImage)
+        timeoutInMinutes: 60
+        cancelTimeoutInMinutes: 5
+        steps:
+          - checkout: self
+          - template: security/policheck/v1.yml@templates 
+
   # only sign using the private server
   - ${{ if eq(variables['System.TeamProject'], 'devdiv') }}:
     - stage: nuget_signing
