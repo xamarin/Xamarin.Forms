@@ -77,10 +77,10 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdatePaneButtonColor(TogglePaneButton, false);
 			UpdatePaneButtonColor(NavigationViewBackButton, false);
 			UpdateFlyoutBackgroundColor();
-			UpdateFlyoutBackdropColor();
+			UpdateFlyoutBackdrop();
 
 			if(_flyoutBehavior == FlyoutBehavior.Flyout)
-				ShellSplitView.UpdateFlyoutBackdropColor();
+				ShellSplitView.UpdateFlyoutBackdrop();
 		}
 
 		void OnPaneClosed()
@@ -186,13 +186,13 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateFlyoutBackgroundColor();
 			}
-			//else if (e.PropertyName == Shell.FlyoutBackdropColorProperty.PropertyName)
+			//else if (e.PropertyName == Shell.FlyoutBackdropProperty.PropertyName)
 			//{
-			//	UpdateFlyoutBackdropColor();
+			//	UpdateFlyoutBackdrop();
 			//}
 		}
 
-		protected virtual void UpdateFlyoutBackdropColor()
+		protected virtual void UpdateFlyoutBackdrop()
 		{
 			if (_flyoutBehavior != FlyoutBehavior.Flyout)
 				return;
@@ -200,9 +200,9 @@ namespace Xamarin.Forms.Platform.UWP
 			var splitView = ShellSplitView;
 			if (splitView != null)
 			{
-				//splitView.FlyoutBackdropColor = _shell.FlyoutBackdropColor;
+				splitView.FlyoutBackdrop = _shell.FlyoutBackdrop;
 				if (IsPaneOpen)
-					ShellSplitView.UpdateFlyoutBackdropColor();
+					ShellSplitView.UpdateFlyoutBackdrop();
 			}
 		}
 
@@ -249,7 +249,7 @@ namespace Xamarin.Forms.Platform.UWP
 			ShellController.ItemsCollectionChanged += OnItemsCollectionChanged;
 			ShellController.StructureChanged += OnStructureChanged;
 			UpdateFlyoutBackgroundColor();
-			UpdateFlyoutBackdropColor();
+			UpdateFlyoutBackdrop();
 
 			_shell.Navigated += OnShellNavigated;
 			UpdateToolBar();

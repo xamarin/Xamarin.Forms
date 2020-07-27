@@ -14,10 +14,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void IAppearanceObserver.OnAppearanceChanged(ShellAppearance appearance)
 		{
-			//if (appearance == null)
-				_backdropColor = Color.Default;
-			//else
-			//	_backdropColor = appearance.FlyoutBackdropColor;
+			if (appearance == null)
+				_backdropBrush = Brush.Default;
+			else
+				_backdropBrush = appearance.FlyoutBackdrop;
 
 			UpdateTapoffViewBackgroundColor();
 		}
@@ -103,7 +103,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _gestureActive;
 		bool _isOpen;
 		UIViewPropertyAnimator _flyoutAnimation;
-		Color _backdropColor;
+		Brush _backdropBrush;
 
 		public UIViewAnimationCurve AnimationCurve { get; set; } = UIViewAnimationCurve.EaseOut;
 
@@ -236,11 +236,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (TapoffView == null)
 				return;
 
-			
-			if (_backdropColor != Color.Default)
-				TapoffView.BackgroundColor = _backdropColor.ToUIColor();
-			else
-				TapoffView.BackgroundColor = ColorExtensions.BackgroundColor.ColorWithAlpha(0.5f);
+			TapoffView.UpdateBackground(_backdropBrush);
 		}
 
 		void AddTapoffView()

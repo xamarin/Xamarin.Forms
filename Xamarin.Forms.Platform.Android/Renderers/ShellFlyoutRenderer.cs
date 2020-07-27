@@ -23,63 +23,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		void IAppearanceObserver.OnAppearanceChanged(ShellAppearance appearance)
 		{
-			//if (appearance == null)
-				UpdateScrimColor(Color.Transparent);
-			//else
-			//	UpdateScrimColor(appearance.FlyoutBackdropColor);
-		}
-
-		bool isContentView(AView child)
-		{
-			return ((LayoutParams)child.LayoutParameters).Gravity == (int)GravityFlags.NoGravity;
-		}
-
-		//float mScrimOpacity = 0;
-
-		public override void ComputeScroll()
-		{
-			base.ComputeScroll();
-			//int childCount = ChildCount;
-			//float scrimOpacity = 0;
-			/*for (int i = 0; i < childCount; i++)
+			if (appearance == null)
+				UpdateScrim(Brush.Transparent);
+			else
 			{
-
-				float onscreen = ((LayoutParams)GetChildAt(i).LayoutParameters);
-				scrimOpacity = Math.Max(scrimOpacity, onscreen);
-			}*/
-
-			//mScrimOpacity = scrimOpacity;
-		}
-
-		Paint mScrimPaint = new Paint();
-		protected override bool DrawChild(Canvas canvas, AView child, long drawingTime)
-		{
-
-			bool returnValue =  base.DrawChild(canvas, child, drawingTime);
-
-			var drawingContent = isContentView(child);
-			if(drawingContent)
-			{
-				int height = Height;
-				int clipLeft = 0;
-				int clipRight = Width;
-
-				LinearGradientBrush linearGradientBrush = new LinearGradientBrush();
-				linearGradientBrush.StartPoint = new Point(0, 0);
-				linearGradientBrush.EndPoint = new Point(1, 1);
-
-				linearGradientBrush.GradientStops.Add(new GradientStop(Color.FromHex("#8A2387").MultiplyAlpha(_scrimOpacity), 0.1f));
-				linearGradientBrush.GradientStops.Add(new GradientStop(Color.FromHex("#E94057").MultiplyAlpha(_scrimOpacity), 0.6f));
-				linearGradientBrush.GradientStops.Add(new GradientStop(Color.FromHex("#F27121").MultiplyAlpha(_scrimOpacity), 1.0f));
-
-				mScrimPaint.UpdateBackground(linearGradientBrush, Height, clipRight - clipLeft);
-				canvas.DrawRect(clipLeft, 0, clipRight, Height,
-					mScrimPaint); 
+				UpdateScrim(appearance.FlyoutBackdrop);
 			}
-
-			return returnValue;
 		}
-
 		#endregion IAppearanceObserver
 
 		#region IShellFlyoutRenderer
@@ -105,10 +55,10 @@ namespace Xamarin.Forms.Platform.Android
 			Shell.SetValueFromRenderer(Shell.FlyoutIsPresentedProperty, true);
 		}
 
-		float _scrimOpacity;
 		void IDrawerListener.OnDrawerSlide(AView drawerView, float slideOffset)
 		{
-			_scrimOpacity = slideOffset;
+			if(_scrimPaint != null)
+				_scrimPaint.Alpha = (int)(slideOffset * 255);
 		}
 
 		void IDrawerListener.OnDrawerStateChanged(int newState)
@@ -138,12 +88,16 @@ namespace Xamarin.Forms.Platform.Android
 		int _flyoutWidth;
 		int _currentLockMode;
 		bool _disposed;
-		Color _scrimColor;
+		Brush _scrimBrush;
+		Paint _scrimPaint;
+		int _previousHeight;
+		int _previousWidth;
+
 		FlyoutBehavior _behavior;
 
 		public ShellFlyoutRenderer(IShellContext shellContext, Context context) : base(context)
 		{
-			_scrimColor = Color.Default;
+			_scrimBrush = Brush.Default;
 			_shellContext = shellContext;
 
 			Shell.PropertyChanged += OnShellPropertyChanged;
@@ -163,6 +117,24 @@ namespace Xamarin.Forms.Platform.Android
 				return false;
 
 			return result;
+		}
+
+		protected override bool DrawChild(Canvas canvas, AView child, long drawingTime)
+		{
+			bool returnValue = base.DrawChild(canvas, child, drawingTime);
+			if (_scrimPaint != null && ((LayoutParams)child.LayoutParameters).Gravity == (int)GravityFlags.NoGravity)
+			{
+				if (_previousHeight != Height || _previousWidth != Width)
+				{
+					_scrimPaint.UpdateBackground(_scrimBrush, Height, Width);
+					_previousHeight = Height;
+					_previousWidth = Width;
+				}
+
+				canvas.DrawRect(0, 0, Width, Height, _scrimPaint);
+			}
+
+			return returnValue;
 		}
 
 		protected virtual void AttachFlyout(IShellContext context, AView content)
@@ -262,28 +234,40 @@ namespace Xamarin.Forms.Platform.Android
 					break;
 			}
 
-			UpdateScrimColor(_scrimColor);
+			UpdateScrim(_scrimBrush);
 		}
 
-		void UpdateScrimColor(Color backdropColor)
+		void UpdateScrim(Brush backdrop)
 		{
-			_scrimColor = backdropColor;
+			_scrimBrush = backdrop;
 
 			if (_behavior == FlyoutBehavior.Locked)
 			{
 				SetScrimColor(Color.Transparent.ToAndroid());
+				_scrimPaint = null;
 			}
 			else
 			{
-				if (backdropColor == Color.Default)
+				if(backdrop is SolidColorBrush solidColor)
 				{
-					unchecked
+					_scrimPaint = null;
+					var backdropColor = solidColor.Color;
+					if (backdropColor == Color.Default)
 					{
-						SetScrimColor((int)DefaultScrimColor);
+						unchecked
+						{
+							SetScrimColor((int)DefaultScrimColor);
+						}
 					}
+					else
+						SetScrimColor(backdropColor.ToAndroid());
 				}
 				else
-					SetScrimColor(_scrimColor.ToAndroid());
+				{
+					_scrimPaint = _scrimPaint ?? new Paint();
+					_scrimPaint.UpdateBackground(_scrimBrush, Height, Width);
+					SetScrimColor(Color.Transparent.ToAndroid());
+				}
 			}
 		}
 
