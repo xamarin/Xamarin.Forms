@@ -303,11 +303,11 @@ stages:
             parameters:
               provisionatorPath : 'build/provisioning/provisioning.csx'
 
-    - stage: PoliCheck
-      displayName: 'Code Analysis'
-      jobs:
-        - job: run_poli_check
-          displayName: 'Policheck Compliance'
+  - stage: PoliCheck
+    displayName: 'Code Analysis'
+    jobs:
+      - job: run_poli_check
+        displayName: 'Policheck Compliance'
         pool:
           name: $(vs2019VmPool)
           vmImage: $(vs2019VmImage)
