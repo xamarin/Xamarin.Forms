@@ -57,8 +57,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void IDrawerListener.OnDrawerSlide(AView drawerView, float slideOffset)
 		{
-			if(_scrimPaint != null)
-				_scrimPaint.Alpha = (int)(slideOffset * 255);
+			_scrimOpacity = (int)(slideOffset * 255);
 		}
 
 		void IDrawerListener.OnDrawerStateChanged(int newState)
@@ -92,6 +91,7 @@ namespace Xamarin.Forms.Platform.Android
 		Paint _scrimPaint;
 		int _previousHeight;
 		int _previousWidth;
+		int _scrimOpacity;
 
 		FlyoutBehavior _behavior;
 
@@ -131,6 +131,7 @@ namespace Xamarin.Forms.Platform.Android
 					_previousWidth = Width;
 				}
 
+				_scrimPaint.Alpha = _scrimOpacity;
 				canvas.DrawRect(0, 0, Width, Height, _scrimPaint);
 			}
 

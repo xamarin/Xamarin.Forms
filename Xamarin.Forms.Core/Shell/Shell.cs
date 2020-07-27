@@ -903,6 +903,12 @@ namespace Xamarin.Forms
 			set => SetValue(FlyoutBackgroundProperty, value);
 		}
 
+		public Brush FlyoutBackdrop
+		{
+			get => (Brush)GetValue(FlyoutBackdropProperty);
+			set => SetValue(FlyoutBackdropProperty, value);
+		}
+
 		public FlyoutBehavior FlyoutBehavior
 		{
 			get => (FlyoutBehavior)GetValue(FlyoutBehaviorProperty);

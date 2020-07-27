@@ -7,6 +7,7 @@ namespace Xamarin.Forms.Platform.UWP
 	public class ShellSplitView : SplitView
 	{
 		Brush _flyoutBackdrop;
+		WBrush _flyoutPlatformBrush;
 		WBrush _defaultBrush;
 		LightDismissOverlayMode? _defaultLightDismissOverlayMode;
 		public ShellSplitView()
@@ -24,13 +25,13 @@ namespace Xamarin.Forms.Platform.UWP
 			if (_defaultBrush == null)
 				_defaultBrush = dismissLayer.Fill;
 
-			if (_flyoutBackdrop == Brush.Default)
+			if (Brush.IsNullOrEmpty(_flyoutBackdrop))
 			{
 				dismissLayer.Fill = _defaultBrush;
 			}
 			else
 			{
-				dismissLayer.Fill = _flyoutBackdrop.ToBrush();
+				dismissLayer.Fill = _flyoutPlatformBrush;				
 			}
 		}
 
@@ -54,6 +55,8 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					LightDismissOverlayMode = LightDismissOverlayMode.On;
 				}
+
+				_flyoutPlatformBrush = _flyoutBackdrop.ToBrush();
 			}
 		}
 	}

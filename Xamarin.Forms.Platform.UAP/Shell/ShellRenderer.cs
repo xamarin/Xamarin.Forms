@@ -24,6 +24,7 @@ namespace Xamarin.Forms.Platform.UWP
 		const string NavigationViewBackButton = "NavigationViewBackButton";
 		internal const string ShellStyle = "ShellNavigationView";
 		Shell _shell;
+		Brush _flyoutBackdrop;
 		FlyoutBehavior _flyoutBehavior;
 		ShellItemRenderer ItemRenderer { get; }
 		IShellController ShellController => (IShellController)_shell;
@@ -31,6 +32,7 @@ namespace Xamarin.Forms.Platform.UWP
 		public ShellRenderer()
 		{
 			Xamarin.Forms.Shell.VerifyShellUWPFlagEnabled(nameof(ShellRenderer));
+			_flyoutBackdrop = Brush.Default;
 			IsSettingsVisible = false;
 			PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.LeftMinimal;
 			IsPaneOpen = false;
@@ -186,13 +188,9 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateFlyoutBackgroundColor();
 			}
-			//else if (e.PropertyName == Shell.FlyoutBackdropProperty.PropertyName)
-			//{
-			//	UpdateFlyoutBackdrop();
-			//}
 		}
 
-		protected virtual void UpdateFlyoutBackdrop()
+		void UpdateFlyoutBackdrop()
 		{
 			if (_flyoutBehavior != FlyoutBehavior.Flyout)
 				return;
@@ -200,7 +198,7 @@ namespace Xamarin.Forms.Platform.UWP
 			var splitView = ShellSplitView;
 			if (splitView != null)
 			{
-				splitView.FlyoutBackdrop = _shell.FlyoutBackdrop;
+				splitView.FlyoutBackdrop = _flyoutBackdrop;
 				if (IsPaneOpen)
 					ShellSplitView.UpdateFlyoutBackdrop();
 			}
@@ -249,7 +247,6 @@ namespace Xamarin.Forms.Platform.UWP
 			ShellController.ItemsCollectionChanged += OnItemsCollectionChanged;
 			ShellController.StructureChanged += OnStructureChanged;
 			UpdateFlyoutBackgroundColor();
-			UpdateFlyoutBackdrop();
 
 			_shell.Navigated += OnShellNavigated;
 			UpdateToolBar();
@@ -362,6 +359,9 @@ namespace Xamarin.Forms.Platform.UWP
 			titleBar.ForegroundColor = titleBar.ButtonForegroundColor = titleColor;
 			UpdatePaneButtonColor(TogglePaneButton, !IsPaneOpen);
 			UpdatePaneButtonColor(NavigationViewBackButton, !IsPaneOpen);
+
+			_flyoutBackdrop = appearance.FlyoutBackdrop;
+			UpdateFlyoutBackdrop();
 		}
 
 		#endregion IAppearanceObserver
