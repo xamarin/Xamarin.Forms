@@ -18,6 +18,11 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty DropCommandParameterProperty = BindableProperty.Create(nameof(DropCommandParameter), typeof(object), typeof(DragGestureRecognizer), null);
 
+		public DropGestureRecognizer()
+		{
+			ExperimentalFlags.VerifyFlagEnabled(nameof(DropGestureRecognizer), ExperimentalFlags.DragAndDropExperimental);
+		}
+
 		public event EventHandler<DragEventArgs> DragOver;
 		public event EventHandler<DropEventArgs> Drop;
 

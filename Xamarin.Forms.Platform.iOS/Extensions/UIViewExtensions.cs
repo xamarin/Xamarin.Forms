@@ -9,12 +9,12 @@ using UIKit;
 namespace Xamarin.Forms.Platform.iOS
 #else
 using UIView = AppKit.NSView;
-
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
 	public static class UIViewExtensions
 	{
+#if __MOBILE__
 		public static UIImage ConvertToImage(this UIView view)
 		{
 			if (!Forms.IsiOS10OrNewer)
@@ -33,6 +33,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				view.Layer.RenderInContext(a.CGContext);
 			});
 		}
+#endif
 
 		public static IEnumerable<UIView> Descendants(this UIView self)
 		{

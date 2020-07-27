@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms.Internals;
+﻿using System.Collections.Generic;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.GalleryPages.DragAndDropGalleries
 {
@@ -7,6 +8,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.DragAndDropGalleries
 	{
 		public DragAndDropGallery()
 		{
+			Device.SetFlags(new List<string> { ExperimentalFlags.DragAndDropExperimental });
 			Items.Add(new EnablingAndDisablingGestureTests());
 			Items.Add(new VariousDragAndDropPermutations());
 		}

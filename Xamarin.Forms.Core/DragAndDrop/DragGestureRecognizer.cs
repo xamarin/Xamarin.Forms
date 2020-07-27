@@ -20,6 +20,10 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty DragStartingCommandParameterProperty = BindableProperty.Create(nameof(DragStartingCommandParameter), typeof(object), typeof(DragGestureRecognizer), null);
 
+		public DragGestureRecognizer()
+		{
+			ExperimentalFlags.VerifyFlagEnabled(nameof(DragGestureRecognizer), ExperimentalFlags.DragAndDropExperimental);
+		}
 
 		public event EventHandler<DropCompletedEventArgs> DropCompleted;
 		public event EventHandler<DragStartingEventArgs> DragStarting;
