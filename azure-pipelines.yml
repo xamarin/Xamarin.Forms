@@ -315,7 +315,7 @@ stages:
         cancelTimeoutInMinutes: 5
         steps:
           - checkout: self
-          - template: security/policheck/v1.yml@templates 
+          - template: security/policheck/v1.yml@xamarin-templates 
 
   # only sign using the private server
   - ${{ if eq(variables['System.TeamProject'], 'devdiv') }}:
