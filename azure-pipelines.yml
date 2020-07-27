@@ -316,8 +316,37 @@ stages:
         cancelTimeoutInMinutes: 5
         steps:
           - checkout: self
+          
           - template: security/policheck/v1.yml@xamarin-templates 
+          
           - template: security/credscan/v2.yml@xamarin-templates
+          
+          - task: securedevelopmentteam.vss-secure-development-tools.build-task-antimalware.AntiMalware@3
+            displayName: Run AntiMalware (Defender) Scan
+            inputs:
+              FileDirPath: $(System.DefaultWorkingDirectory)
+              EnableServices: true
+            condition: succeededOrFailed()
+          
+          - task: securedevelopmentteam.vss-secure-development-tools.build-task-report.SdtReport@1
+            displayName: Create Security Analysis Report
+            inputs:
+              CredScan: true
+              PoliCheck: true
+            condition: succeededOrFailed()
+
+          - task: securedevelopmentteam.vss-secure-development-tools.build-task-publishsecurityanalysislogs.PublishSecurityAnalysisLogs@2
+            displayName: Publish Security Analysis Logs
+            inputs:
+              ArtifactName: CodeAnalysisLogs
+            condition: succeededOrFailed()
+
+          - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@1
+            displayName: Fail Job if Security Issues are Detected
+            inputs:
+              CredScan: true
+              PoliCheck: true
+            condition: succeededOrFailed()
 
   # only sign using the private server
   - ${{ if eq(variables['System.TeamProject'], 'devdiv') }}:
