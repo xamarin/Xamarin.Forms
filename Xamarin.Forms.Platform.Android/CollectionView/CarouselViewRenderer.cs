@@ -105,6 +105,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateIsSwipeEnabled();
 			UpdateIsBounceEnabled();
 			UpdateItemSpacing();
+			UpdateInitialPosition();
 		}
 
 		protected override RecyclerViewScrollListener<ItemsView, IItemsViewSource> CreateScrollListener()
@@ -351,7 +352,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			SetCurrentItem(_oldPosition);
 
-			ScrollToPosition(_oldPosition);
+			ScrollHelper.JumpScrollToPosition(position, Xamarin.Forms.ScrollToPosition.Center);
 		}
 
 		void UpdatePositionFromVisibilityChanges()
@@ -536,7 +537,6 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (!_initialized)
 			{
-				UpdateInitialPosition();
 				Carousel.Scrolled += CarouselViewScrolled;
 				if (Carousel.Loop)
 				{
