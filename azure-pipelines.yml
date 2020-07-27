@@ -317,6 +317,7 @@ stages:
         steps:
           - checkout: self
           - template: security/policheck/v1.yml@xamarin-templates 
+          - template: security/credscan/v2.yml@xamarin-templates
 
   # only sign using the private server
   - ${{ if eq(variables['System.TeamProject'], 'devdiv') }}:
