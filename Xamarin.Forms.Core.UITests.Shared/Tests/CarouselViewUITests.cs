@@ -151,7 +151,7 @@ namespace Xamarin.Forms.Core.UITests
 			var rect = App.Query(c => c.Marked("TheCarouselView")).First().Rect;
 			var centerX = rect.CenterX;
 			var rightX = rect.X - 5;
-			App.DragCoordinates(centerX - 50, rect.CenterY, centerX + 100, rect.CenterY);
+			App.DragCoordinates(centerX - 50, rect.CenterY, centerX + rect.Width / 2 - 10, rect.CenterY);
 
 			CheckPositionValue("lblPosition", "4");
 			CheckPositionValue("lblCurrentItem", "4");
