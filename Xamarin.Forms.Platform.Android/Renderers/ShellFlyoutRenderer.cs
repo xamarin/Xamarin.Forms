@@ -13,6 +13,7 @@ using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
 using AColor = Android.Graphics.Color;
+using Android.Graphics;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -23,9 +24,60 @@ namespace Xamarin.Forms.Platform.Android
 		void IAppearanceObserver.OnAppearanceChanged(ShellAppearance appearance)
 		{
 			//if (appearance == null)
-				UpdateScrimColor(Color.Default);
+				UpdateScrimColor(Color.Transparent);
 			//else
 			//	UpdateScrimColor(appearance.FlyoutBackdropColor);
+		}
+
+		bool isContentView(AView child)
+		{
+			return ((LayoutParams)child.LayoutParameters).Gravity == (int)GravityFlags.NoGravity;
+		}
+
+		//float mScrimOpacity = 0;
+
+		public override void ComputeScroll()
+		{
+			base.ComputeScroll();
+			//int childCount = ChildCount;
+			//float scrimOpacity = 0;
+			/*for (int i = 0; i < childCount; i++)
+			{
+
+				float onscreen = ((LayoutParams)GetChildAt(i).LayoutParameters);
+				scrimOpacity = Math.Max(scrimOpacity, onscreen);
+			}*/
+
+			//mScrimOpacity = scrimOpacity;
+		}
+
+		Paint mScrimPaint = new Paint();
+		protected override bool DrawChild(Canvas canvas, AView child, long drawingTime)
+		{
+
+			bool returnValue =  base.DrawChild(canvas, child, drawingTime);
+
+			var drawingContent = isContentView(child);
+			if(drawingContent)
+			{
+				int height = Height;
+				int clipLeft = 0;
+				int clipRight = Width;
+
+				LinearGradientBrush linearGradientBrush = new LinearGradientBrush();
+				linearGradientBrush.StartPoint = new Point(0, 0);
+				linearGradientBrush.EndPoint = new Point(1, 1);
+
+				linearGradientBrush.GradientStops.Add(new GradientStop(Color.FromHex("#8A2387").MultiplyAlpha(_scrimOpacity), 0.1f));
+				linearGradientBrush.GradientStops.Add(new GradientStop(Color.FromHex("#E94057").MultiplyAlpha(_scrimOpacity), 0.6f));
+				linearGradientBrush.GradientStops.Add(new GradientStop(Color.FromHex("#F27121").MultiplyAlpha(_scrimOpacity), 1.0f));
+
+				mScrimPaint.UpdateBackground(linearGradientBrush, Height, clipRight - clipLeft);
+				canvas.DrawRect(clipLeft, 0, clipRight, Height,
+					mScrimPaint); 
+			}
+
+			return returnValue;
 		}
 
 		#endregion IAppearanceObserver
@@ -53,8 +105,10 @@ namespace Xamarin.Forms.Platform.Android
 			Shell.SetValueFromRenderer(Shell.FlyoutIsPresentedProperty, true);
 		}
 
+		float _scrimOpacity;
 		void IDrawerListener.OnDrawerSlide(AView drawerView, float slideOffset)
 		{
+			_scrimOpacity = slideOffset;
 		}
 
 		void IDrawerListener.OnDrawerStateChanged(int newState)
