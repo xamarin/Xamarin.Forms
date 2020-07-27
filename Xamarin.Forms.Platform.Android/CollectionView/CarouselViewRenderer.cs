@@ -274,6 +274,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (removingCurrentElement)
 			{
+
+				if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+				{
+					carouselPosition = 0;
+				}
+
 				if (removingFirstElement)
 					carouselPosition = 0;
 				else if (removingLastElement)
@@ -286,10 +292,6 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 
-			if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
-			{
-				carouselPosition = 0;
-			}
 
 			//If we are adding a new item make sure to maintain the CurrentItemPosition
 			else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add
@@ -451,6 +453,10 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				var bContext = templatedCell?.Element?.BindingContext;
 				index = ItemsViewAdapter.GetPositionForItem(bContext);
+			}
+			else
+			{
+				return -1;
 			}
 
 			return index;

@@ -149,7 +149,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 		protected override void OnAppearing()
 		{
-			if (_viewModel.CarouselPosition != 3)
+			if (_viewModel.CarouselPosition != 3 && _setPositionOnAppering)
 				_viewModel.CarouselPosition = 3;
 
 			base.OnAppearing();
