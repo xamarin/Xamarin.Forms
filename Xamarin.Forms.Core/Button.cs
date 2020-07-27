@@ -184,6 +184,9 @@ namespace Xamarin.Forms
 		public void SendReleased() => ButtonElement.ElementReleased(this, this);
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendCanceled() => ButtonElement.ElementCanceled(this, this);
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		void IButtonElement.PropagateUpClicked() => Clicked?.Invoke(this, EventArgs.Empty);
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -191,6 +194,9 @@ namespace Xamarin.Forms
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		void IButtonElement.PropagateUpReleased() => Released?.Invoke(this, EventArgs.Empty);
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		void IButtonElement.PropagateUpCanceled() => Canceled?.Invoke(this, EventArgs.Empty);
 
 		public FontAttributes FontAttributes
 		{
@@ -221,6 +227,7 @@ namespace Xamarin.Forms
 		public event EventHandler Pressed;
 
 		public event EventHandler Released;
+		public event EventHandler Canceled;
 
 		public Button()
 		{

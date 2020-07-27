@@ -34,8 +34,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			control.TouchUpInside -= TouchUpInside;
 			control.TouchDown -= TouchDown;
+			control.TouchCancel -= TouchCancel;
 			control.TouchUpInside += TouchUpInside;
 			control.TouchDown += TouchDown;
+			control.TouchCancel += TouchCancel;
 		}
 
 		static void TouchUpInside(object sender, EventArgs eventArgs)
@@ -52,12 +54,20 @@ namespace Xamarin.Forms.Platform.iOS
 			OnButtonTouchDown(renderer.Element as IButtonController);
 		}
 
+		static void TouchCancel(object sender, EventArgs eventArgs)
+		{
+			var button = sender as UIButton;
+			var renderer = button.Superview as IVisualNativeElementRenderer;
+			OnButtonTouchCancel(renderer.Element as IButtonController);
+		}
+
 		public static void Dispose(IVisualNativeElementRenderer renderer)
 		{
 			var control = (UIButton)renderer.Control;
 			renderer.ElementPropertyChanged -= OnElementPropertyChanged;
 			control.TouchUpInside -= TouchUpInside;
 			control.TouchDown -= TouchDown;
+			control.TouchCancel -= TouchCancel;
 		}
 
 		static void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -84,6 +94,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			element?.SendReleased();
 			element?.SendClicked();
+		}
+
+		internal static void OnButtonTouchCancel(IButtonController element)
+		{
+			element?.SendCanceled();
 		}
 	}
 }
