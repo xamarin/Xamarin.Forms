@@ -27,6 +27,9 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 
 			bool hasItems = ItemsSource != null && ItemsSource.Count > 0;
 
+			if (!hasItems)
+				return;
+
 			int positionInList = (CarouselView.Loop && hasItems) ? position % ItemsSource.Count : position;
 
 			switch (holder)
