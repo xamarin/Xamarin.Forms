@@ -305,6 +305,7 @@ stages:
 
   - stage: PoliCheck
     displayName: 'Code Analysis'
+    dependsOn: []
     jobs:
       - job: run_poli_check
         displayName: 'Policheck Compliance'
