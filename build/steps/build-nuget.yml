@@ -15,6 +15,28 @@ steps:
       SourceFolder: '$(Build.ArtifactsDirectory)/win_build'
       TargetFolder: '$(System.DefaultWorkingDirectory)'
 
+  - ${{ if eq(variables['System.TeamProject'], 'devdiv') }}:
+    - task: APIScan@2
+      inputs:
+        softwareFolder: '$(System.DefaultWorkingDirectory)'
+        softwareName: 'Xamarin.Forms'
+        softwareVersionNum: '4.XX'
+        softwareBuildNum: '$(Build.BuildId)'
+    
+    - task: PoliCheck@1
+      inputs:
+        inputType: 'Basic'
+        targetType: 'F'
+        targetArgument: '$(Build.SourcesDirectory)'
+        result: 'PoliCheck.xml'
+    
+    - task: RoslynAnalyzers@3
+      inputs:
+        userProvideBuildInfo: 'msBuildInfo'
+        msBuildVersion: '16.0'
+        msBuildArchitecture: 'amd64'
+        rulesetName: 'Custom'
+        customRuleset: 'DevDivRoslynRequired.ruleset'
 
   - task: PowerShell@1
     displayName: 'Generate docs from docs repo'
