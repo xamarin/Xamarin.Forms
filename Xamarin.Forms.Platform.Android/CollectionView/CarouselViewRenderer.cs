@@ -352,7 +352,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			SetCurrentItem(_oldPosition);
 
-			var index = itemCount * 5000 + _oldPosition;
+			var index = Carousel.Loop ? itemCount * 5000 + _oldPosition : _oldPosition;
 			ScrollHelper.JumpScrollToPosition(index, Xamarin.Forms.ScrollToPosition.Center);
 		}
 
@@ -429,7 +429,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void CarouselViewScrolled(object sender, ItemsViewScrolledEventArgs e)
 		{
-			if (!_initialized)
+			if (!_initialized || !_isVisible)
 				return;
 
 			_noNeedForScroll = false;
