@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else
 			{
-				dismissLayer.Fill = _flyoutPlatformBrush;				
+				dismissLayer.Fill = _flyoutPlatformBrush ?? _defaultBrush;
 			}
 		}
 
@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Platform.UWP
 				if (_flyoutBackdrop != null)
 					_flyoutPlatformBrush = _flyoutBackdrop.ToBrush();
 				else
-					_flyoutPlatformBrush = Brush.Default.ToBrush();
+					_flyoutPlatformBrush = _defaultBrush;
 			}
 		}
 	}
