@@ -34,6 +34,8 @@
 							new ScatteredRadioButtonGallery(), Navigation),
 						GalleryBuilder.NavButton("RadioButton Content", () =>
 							new RadioButtonContentGallery(), Navigation),
+						GalleryBuilder.NavButton("RadioButton Content Properties", () =>
+							new ContentProperties(), Navigation),
 					}
 				}
 			};

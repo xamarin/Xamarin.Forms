@@ -14,10 +14,15 @@ namespace Xamarin.Forms
 
 			if (value is string textContent)
 			{
-				return new Label
+				var label = new Label
 				{
 					Text = textContent
 				};
+
+				label.SetBinding(Label.TextColorProperty, 
+					new Binding("TextColor", source: new RelativeBindingSource(RelativeBindingSourceMode.FindAncestor, typeof(ITextElement))));
+
+				return label;
 			}
 
 			return value;

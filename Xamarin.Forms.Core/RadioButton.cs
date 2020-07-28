@@ -153,8 +153,17 @@ namespace Xamarin.Forms
 
 		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
 		{
-			// TODO ezhart Probably need to apply this to the content if we're using templates
-			// same for these other text property changes
+			//// TODO ezhart Probably need to apply this to the content if we're using templates
+			//// same for these other text property changes
+			//if (UsingRenderer)
+			//{
+			//	return;
+			//}
+
+			//if (Content is ITextElement textElement)
+			//{
+			//	textElement.OnTextColorPropertyChanged(textElement.TextColor, newValue);
+			//}
 		}
 
 		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
@@ -404,6 +413,7 @@ namespace Xamarin.Forms
 			contentPresenter.SetBinding(ContentPresenter.ContentProperty,
 				new Binding("Content", source: RelativeBindingSource.TemplatedParent, converter: new ContentConverter()));
 			contentPresenter.SetBinding(MarginProperty, new Binding("Padding", source: RelativeBindingSource.TemplatedParent));
+			contentPresenter.SetBinding(BackgroundColorProperty, new Binding("BackgroundColor", source: RelativeBindingSource.TemplatedParent));
 
 			grid.Children.Add(normalEllipse);
 			grid.Children.Add(checkMark);
