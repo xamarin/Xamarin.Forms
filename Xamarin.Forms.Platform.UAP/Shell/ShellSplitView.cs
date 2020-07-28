@@ -56,7 +56,8 @@ namespace Xamarin.Forms.Platform.UWP
 					LightDismissOverlayMode = LightDismissOverlayMode.On;
 				}
 
-				_flyoutPlatformBrush = _flyoutBackdrop.ToBrush();
+				if (_flyoutBackdrop != null)
+					_flyoutPlatformBrush = _flyoutBackdrop.ToBrush();
 			}
 		}
 	}
