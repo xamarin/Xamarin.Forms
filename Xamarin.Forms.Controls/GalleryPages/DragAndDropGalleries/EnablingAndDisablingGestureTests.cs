@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.DragAndDropGalleries
 	{
 		public EnablingAndDisablingGestureTests()
 		{
-			Title = "Enabling and Disabling Getures";
+			Title = "Enabling and Disabling Gestures";
 			StackLayout stackLayout = new StackLayout();
 			CollectionView collectionView = new CollectionView();
 			collectionView.ItemsUpdatingScrollMode = ItemsUpdatingScrollMode.KeepScrollOffset;
