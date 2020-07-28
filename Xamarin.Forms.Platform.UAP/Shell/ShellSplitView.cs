@@ -58,6 +58,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 				if (_flyoutBackdrop != null)
 					_flyoutPlatformBrush = _flyoutBackdrop.ToBrush();
+				else
+					_flyoutPlatformBrush = Brush.Default.ToBrush();
 			}
 		}
 	}
