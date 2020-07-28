@@ -90,7 +90,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void SendEventArgs<TRecognizer>(Action<TRecognizer> func)
 		{
-			if (_control == null || _container == null)
+			if (_container == null && _control == null)
 				return;
 
 			var view = Element as View;
