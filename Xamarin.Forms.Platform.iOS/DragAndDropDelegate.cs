@@ -146,7 +146,10 @@ namespace Xamarin.Forms.Platform.iOS
 					if (renderer is IImageVisualElementRenderer iver)
 					{
 						uIImage = iver.GetImage()?.Image;
-						itemProvider = new NSItemProvider(uIImage);
+						if (uIImage != null)
+							itemProvider = new NSItemProvider(uIImage);
+						else
+							itemProvider = new NSItemProvider(new NSString(""));
 
 						if (renderer.Element is IImageElement imageElement)
 							args.Data.Image = imageElement.Source;
