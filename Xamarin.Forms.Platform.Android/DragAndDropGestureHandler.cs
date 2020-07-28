@@ -318,7 +318,7 @@ namespace Xamarin.Forms.Platform.Android
 				return new ClipData.Item(aUri);
 			}
 
-			return new ClipData.Item(source.ToString());
+			return new ClipData.Item(source?.ToString() ?? String.Empty);
 
 		}
 	}

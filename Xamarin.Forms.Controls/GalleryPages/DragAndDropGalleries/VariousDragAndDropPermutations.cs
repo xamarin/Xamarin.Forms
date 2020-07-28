@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.DragAndDropGalleries
 
 			stackLayout.Children.Add(CreateControls<Image>((drag, drop) =>
 			{
-				drag.Source = "coffee.png";
+				drag.HeightRequest = 50;
 				drag.BackgroundColor = Color.Green;
 			}));
 
