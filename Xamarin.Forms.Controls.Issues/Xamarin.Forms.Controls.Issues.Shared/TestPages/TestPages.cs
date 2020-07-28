@@ -361,7 +361,7 @@ namespace Xamarin.Forms.Controls
 	}
 #endif
 
-		public abstract class TestPage : Page
+	public abstract class TestPage : Page
 	{
 #if UITEST
 		public IApp RunningApp => AppSetup.RunningApp;

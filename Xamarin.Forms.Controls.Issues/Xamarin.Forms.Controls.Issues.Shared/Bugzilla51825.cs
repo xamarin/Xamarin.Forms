@@ -70,5 +70,5 @@ namespace Xamarin.Forms.Controls.Issues
 			Assert.AreEqual("Test", labelChange2.ReadText());
 		}
 #endif
-		}
+	}
 }
