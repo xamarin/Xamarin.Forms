@@ -1,5 +1,6 @@
 #if UITEST
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -460,8 +461,25 @@ namespace Xamarin.Forms.Controls
 			get { return _app.TestServer; }
 		}
 
+#if __WINDOWS__
+		public bool RestartIfAppIsClosed()
+		{
+			return (_app as WinDriverApp).RestartIfAppIsClosed();
+		}
+
+		public void Restart()
+		{
+			(_app as WinDriverApp).RestartApp();
+		}
+#endif
+
 		public void TestSetup(Type testType, bool isolate)
 		{
+
+#if __WINDOWS__
+			RestartIfAppIsClosed();
+#endif
+
 			if (isolate)
 			{
 				AppSetup.BeginIsolate();
@@ -487,6 +505,12 @@ namespace Xamarin.Forms.Controls
 
 		public void AttachScreenshotToTestContext(string title = null)
 		{
+			if(!TestContext.Parameters.Exists("IncludeScreenShots") ||
+				!Convert.ToBoolean(TestContext.Parameters["IncludeScreenShots"]))
+			{
+				return;
+			}
+			
 			title = title ?? TestContext.CurrentContext.Test.FullName
 				.Replace(".", "_")
 				.Replace(" ", "_");
@@ -495,7 +519,14 @@ namespace Xamarin.Forms.Controls
 
 			if (file != null)
 			{
-				TestContext.AddTestAttachment(file.FullName, TestContext.CurrentContext.Test.FullName);
+				try
+				{
+					TestContext.AddTestAttachment(file.FullName, TestContext.CurrentContext.Test.FullName);
+				}
+				catch(Exception exc)
+				{
+					Debug.WriteLine($"Failed to write {file?.FullName} {exc}");
+				}
 			}
 		}
 
