@@ -47,8 +47,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		InputScope _passwordInputScope;
 		InputScope _numericPasswordInputScope;
-		Border _borderElement;
-		Windows.UI.Xaml.Controls.ScrollViewer _scrollViewer;
+		ScrollViewer _scrollViewer;
 		Windows.UI.Xaml.Controls.Grid _rootGrid;
 		Windows.UI.Xaml.VisualState _DeleteButtonVisibleState;
 		Windows.UI.Xaml.VisualStateGroup _DeleteButtonVisibleStateGroups;
@@ -64,7 +63,7 @@ namespace Xamarin.Forms.Platform.UWP
 			TextChanged += OnTextChanged;
 			SelectionChanged += OnSelectionChanged;
 			IsEnabledChanged += OnIsEnabledChanged;
-			Loaded += OnLoaded;
+			SizeChanged += OnSizeChanged;
 			RegisterPropertyChangedCallback(VerticalContentAlignmentProperty, OnVerticalContentAlignmentChanged);
 		}
 
@@ -73,7 +72,7 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateEnabled();
 		}
 
-		public bool UpdateVerticalAlignmentOnLoad { get; set; } = true;
+		internal bool UpdateVerticalAlignmentOnLoad { get; set; } = true;
 
 		public bool ClearButtonVisible
 		{
@@ -157,14 +156,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnApplyTemplate();
 
-			if (Device.Idiom == TargetIdiom.Phone)
-			{
-				// If we're on the phone, we need to grab this from the template
-				// so we can manually handle its background when focused
-				_borderElement = (Border)GetTemplateChild("BorderElement");
-			}
-			
-			_rootGrid = (Windows.UI.Xaml.Controls.Grid)GetTemplateChild("RootGrid");
+			_rootGrid = GetTemplateChild("RootGrid") as Windows.UI.Xaml.Controls.Grid;
 			if (_rootGrid != null)
 			{
 				var stateGroups = WVisualStateManager.GetVisualStateGroups(_rootGrid).ToList();
@@ -173,14 +165,11 @@ namespace Xamarin.Forms.Platform.UWP
 					_DeleteButtonVisibleState = _DeleteButtonVisibleStateGroups.States.SingleOrDefault(s => s.Name == "ButtonVisible");
 			}
 
-			_scrollViewer= (Windows.UI.Xaml.Controls.ScrollViewer)GetTemplateChild("ContentElement");
+			_scrollViewer= GetTemplateChild("ContentElement") as ScrollViewer;
 		}
 
-		void OnLoaded(object sender, RoutedEventArgs e)
+		void OnSizeChanged(object sender, SizeChangedEventArgs e)
 		{
-			// Set the vertical alignment on load, because setting it in the FormsTextBoxStyle causes text display issues
-			// But the editor has display issues if you do set the vertical alignment here, so the flag allows renderer using
-			// the text box to control this
 			UpdateTemplateScrollViewerVerticalAlignment();
 		}
 
@@ -191,6 +180,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateTemplateScrollViewerVerticalAlignment()
 		{
+			// This is used to set the vertical alignment after the text box has a size, setting it before causes rendering issues.
+			// But the editor has display issues if you do set the vertical alignment here, so the flag allows renderer using
+			// the text box to control this
 			if (_scrollViewer != null && UpdateVerticalAlignmentOnLoad)
 			{
 				_scrollViewer.VerticalAlignment = VerticalContentAlignment;
