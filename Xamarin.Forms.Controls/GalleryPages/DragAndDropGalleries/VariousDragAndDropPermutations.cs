@@ -21,11 +21,17 @@ namespace Xamarin.Forms.Controls.GalleryPages.DragAndDropGalleries
 				drag.FontSize = 18;
 				drop.Text = "Drop";
 				drop.FontSize = 18;
-			}));			
+			}));
 
 			stackLayout.Children.Add(CreateControls<Image>((drag, drop) =>
 			{
 				drag.HeightRequest = 50;
+				drag.BackgroundColor = Color.Green;
+			}));
+
+			stackLayout.Children.Add(CreateControls<Image>((drag, drop) =>
+			{
+				drag.Source = "coffee.png";
 				drag.BackgroundColor = Color.Green;
 			}));
 
