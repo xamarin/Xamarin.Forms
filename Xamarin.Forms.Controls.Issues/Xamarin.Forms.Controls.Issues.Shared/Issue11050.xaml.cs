@@ -12,7 +12,7 @@ using Xamarin.Forms.Core.UITests;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
-	[Category(UITestCategories.Shape)]
+	[Category(UITestCategories.Shapes)]
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 11050, "[Bug][iOS][Android] Shapes: clock drawing erro", PlatformAffected.Android | PlatformAffected.iOS)]
