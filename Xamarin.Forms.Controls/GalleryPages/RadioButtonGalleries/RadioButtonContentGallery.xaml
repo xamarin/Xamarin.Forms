@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries.RadioButtonContentGallery">
+    <ContentPage.Content>
+        <StackLayout>
+            
+            <Label Text="We can set 'Text' on a RadioButton:"/>
+            <RadioButton Text="Option A" />
+
+            <Label Text="Or We can set 'Content' (in this case, a Label):"/>
+            <RadioButton>
+                <RadioButton.Content>
+                    <Label FontSize="24" Text="Option B" TextColor="Purple"></Label>
+                </RadioButton.Content>
+            </RadioButton>
+
+            <Label Text="If 'Content' is just a String, it will be translated to Text (always supported):"/>
+            <RadioButton Content="Option C" />
+
+            <Label Text="If 'Content' is a View, it will be displayed where supported (e.g., when using ControlTemplates):"/>
+            <RadioButton BackgroundColor="AntiqueWhite">
+                <RadioButton.Content>
+                    <Image Source="coffee.png"></Image>
+                </RadioButton.Content>
+            </RadioButton>
+
+            <Label Text="'Content' as a View is supported in ControlTemplates:"/>
+            <RadioButton ControlTemplate="{x:Static RadioButton.DefaultTemplate}">
+                <RadioButton.Content>
+                    <Image Source="coffee.png"></Image>
+                </RadioButton.Content>
+            </RadioButton>
+
+            <Label Text="Also, here's a group with a weird-looking custom template:"/>
+            <RadioButton GroupName="weird">
+                <RadioButton.ControlTemplate>
+                    <ControlTemplate>
+                        <StackLayout Orientation="Horizontal">
+                            <Line x:Name="NormalEllipse" InputTransparent="True" Stroke="Black" StrokeThickness="2" X1="0" Y1="0" X2="50" Y2="50"></Line>
+                            <Line x:Name="CheckMark" InputTransparent="True" TranslationX="-50" Opacity="0" Stroke="Red" StrokeThickness="2" X1="50" Y1="0" X2="0" Y2="50"></Line>
+                            <ContentPresenter></ContentPresenter>
+                        </StackLayout>
+                    </ControlTemplate>
+                </RadioButton.ControlTemplate>
+                <RadioButton.Content>
+                    <Image Source="coffee.png"></Image>
+                </RadioButton.Content>
+            </RadioButton>
+
+            <RadioButton GroupName="weird">
+                <RadioButton.ControlTemplate>
+                    <ControlTemplate>
+                        <StackLayout Orientation="Horizontal">
+                            <Line x:Name="NormalEllipse" InputTransparent="True" Stroke="Black" StrokeThickness="2" X1="0" Y1="0" X2="50" Y2="50"></Line>
+                            <Line x:Name="CheckMark" InputTransparent="True" TranslationX="-50" Opacity="0" Stroke="Red" StrokeThickness="2" X1="50" Y1="0" X2="0" Y2="50"></Line>
+                            <ContentPresenter></ContentPresenter>
+                        </StackLayout>
+                    </ControlTemplate>
+                </RadioButton.ControlTemplate>
+                <RadioButton.Content>
+                    <Image Source="coffee.png"></Image>
+                </RadioButton.Content>
+            </RadioButton>
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

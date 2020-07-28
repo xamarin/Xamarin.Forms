@@ -338,8 +338,21 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal static IVisualElementRenderer CreateRenderer(VisualElement element, Context context)
 		{
-			IVisualElementRenderer renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element, context)
-				?? new DefaultRenderer(context);
+			IVisualElementRenderer renderer = null;
+
+			if (element is TemplatedView tv)
+			{
+				if (tv.ControlTemplate != null)
+				{
+					renderer = new DefaultRenderer(context);
+				}
+			}
+
+			if (renderer == null)
+			{
+				renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element, context)
+					?? new DefaultRenderer(context);
+			}
 
 			renderer.SetElement(element);
 

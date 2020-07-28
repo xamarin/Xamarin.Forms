@@ -175,7 +175,6 @@ namespace Xamarin.Forms
 		double IFontElement.FontSizeDefaultValueCreator() =>
 			Device.GetNamedSize(NamedSize.Default, this);
 
-
 		public virtual string UpdateFormsText(string source, TextTransform textTransform)
 			=> TextTransformUtilites.GetTransformedText(source, textTransform);
 
@@ -223,9 +222,10 @@ namespace Xamarin.Forms
 				if (rendererType == null)
 				{
 					ControlTemplate = DefaultTemplate;
-					UpdateIsEnabled();
 				}
 			}
+
+			UpdateIsEnabled();
 		}
 
 		protected override void OnApplyTemplate()
