@@ -1,12 +1,49 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-			 x:Class="Xamarin.Forms.Controls.Issues.Issue2448"
-             FlowDirection="RightToLeft">
-	<StackLayout>
-        <Label Text="English Text" FontSize="Large" />
-        <Label Text="نووسینی کوردی" FontSize="Large" />
-        <Button Text="Press this button to get a display alert" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Clicked="Button_Clicked" FlowDirection="RightToLeft"/>
-        <Button Text="Press this button to get a display actionsheet" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Clicked="Button2_Clicked" FlowDirection="RightToLeft"/>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="Xamarin.Forms.Controls.Issues.Issue2448"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    FlowDirection="RightToLeft">
+    <StackLayout>
+        <Button
+            Clicked="Button1_Clicked"
+            HorizontalOptions="CenterAndExpand"
+            Text="Display Alert No Flow Direction"
+            VerticalOptions="CenterAndExpand" />
+        <Button
+            Clicked="Button2_Clicked"
+            HorizontalOptions="CenterAndExpand"
+            Text="Display Alert Flow Direction Match Parent"
+            VerticalOptions="CenterAndExpand" />
+        <Button
+            Clicked="Button3_Clicked"
+            HorizontalOptions="CenterAndExpand"
+            Text="Display Alert Flow Direction RTL"
+            VerticalOptions="CenterAndExpand" />
+        <Button
+            Clicked="Button4_Clicked"
+            HorizontalOptions="CenterAndExpand"
+            Text="Display Alert Flow Direction LTR"
+            VerticalOptions="CenterAndExpand" />
+        <Button
+            Clicked="Button5_Clicked"
+            HorizontalOptions="CenterAndExpand"
+            Text="Display ActionSheet No Flow Direction"
+            VerticalOptions="CenterAndExpand" />
+        <Button
+            Clicked="Button6_Clicked"
+            HorizontalOptions="CenterAndExpand"
+            Text="Display ActionSheet Flow Direction Match Parent"
+            VerticalOptions="CenterAndExpand" />
+        <Button
+            Clicked="Button7_Clicked"
+            HorizontalOptions="CenterAndExpand"
+            Text="Display ActionSheet Flow Direction RTL"
+            VerticalOptions="CenterAndExpand" />
+        <Button
+            Clicked="Button8_Clicked"
+            HorizontalOptions="CenterAndExpand"
+            Text="Display ActionSheet Flow Direction LTR"
+            VerticalOptions="CenterAndExpand" />
     </StackLayout>
 </ContentPage>

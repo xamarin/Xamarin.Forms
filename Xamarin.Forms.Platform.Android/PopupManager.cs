@@ -93,8 +93,6 @@ namespace Xamarin.Forms.Platform.Android
 
 				var builder = new DialogBuilder(Activity);
 
-				arguments.FlowDirection = FlowDirection.LeftToRight;
-
 				builder.SetTitle(arguments.Title);
 				string[] items = arguments.Buttons.ToArray();
 				builder.SetItems(items, (o, args) => arguments.Result.TrySetResult(items[args.Which]));
@@ -109,9 +107,21 @@ namespace Xamarin.Forms.Platform.Android
 				builder.Dispose();
 				//to match current functionality of renderer we set cancelable on outside
 				//and return null
+				dialog.SetTitleFlowDirection(arguments.FlowDirection);
 				dialog.SetCanceledOnTouchOutside(true);
 				dialog.SetCancelEvent((o, e) => arguments.SetResult(null));
 				dialog.Show();
+
+				if (arguments.FlowDirection == FlowDirection.LeftToRight)
+				{
+					var listview = dialog.GetListView();
+					listview.TextDirection = TextDirection.Ltr;
+				}
+				else if (arguments.FlowDirection == FlowDirection.RightToLeft)
+				{
+					var listview = dialog.GetListView();
+					listview.TextDirection = TextDirection.Rtl;
+				}
 			}
 
 			void OnAlertRequested(Page sender, AlertArguments arguments)
@@ -123,6 +133,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				var alert = new DialogBuilder(Activity).Create();
+				alert.SetTitleFlowDirection(arguments.FlowDirection);
 				alert.SetTitle(arguments.Title);
 				alert.SetMessage(arguments.Message);
 				if (arguments.Accept != null)
@@ -130,6 +141,17 @@ namespace Xamarin.Forms.Platform.Android
 				alert.SetButton((int)DialogButtonType.Negative, arguments.Cancel, (o, args) => arguments.SetResult(false));
 				alert.SetCancelEvent((o, args) => { arguments.SetResult(false); });
 				alert.Show();
+
+				if (arguments.FlowDirection == FlowDirection.LeftToRight)
+				{
+					TextView textView = (TextView)alert.findViewByID(Resource.Id.message);
+					textView.TextDirection = TextDirection.Ltr;
+				}
+				else if (arguments.FlowDirection == FlowDirection.RightToLeft)
+				{
+					TextView textView = (TextView)alert.findViewByID(Resource.Id.message);
+					textView.TextDirection = TextDirection.Rtl;
+				}
 			}
 
 			void OnPromptRequested(Page sender, PromptArguments arguments)
@@ -306,14 +328,6 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 
-			//public class RightJustifyAlertDialog : AlertDialog
-			//{
-			//	public RightJustifyAlertDialog(Context ctx)
-			//	{
-			//		base(ctx, )
-			//	}
-			//}
-
 			internal sealed class FlexibleAlertDialog
 			{
 				readonly AppCompatAlertDialog _appcompatAlertDialog;
@@ -323,16 +337,12 @@ namespace Xamarin.Forms.Platform.Android
 				public FlexibleAlertDialog(AlertDialog alertDialog)
 				{
 					_legacyAlertDialog = alertDialog;
-					_legacyAlertDialog.Window.DecorView.LayoutDirection = LayoutDirection.Rtl;
-					
 				}
 
 				public FlexibleAlertDialog(AppCompatAlertDialog alertDialog)
 				{
 					_appcompatAlertDialog = alertDialog;
 					_useAppCompat = true;
-					_appcompatAlertDialog.Window.DecorView.LayoutDirection = LayoutDirection.Rtl;
-					
 				}
 
 				public void SetTitle(string title)
@@ -344,6 +354,32 @@ namespace Xamarin.Forms.Platform.Android
 					else
 					{
 						_legacyAlertDialog.SetTitle(title);
+					}
+				}
+
+				public void SetTitleFlowDirection(FlowDirection flowDirection)
+				{
+					if (flowDirection == FlowDirection.LeftToRight)
+					{
+						if (_useAppCompat)
+						{
+							_appcompatAlertDialog.Window.DecorView.LayoutDirection = LayoutDirection.Ltr;
+						}
+						else
+						{
+							_legacyAlertDialog.Window.DecorView.LayoutDirection = LayoutDirection.Ltr;
+						}
+					}
+					else if (flowDirection == FlowDirection.RightToLeft)
+					{
+						if (_useAppCompat)
+						{
+							_appcompatAlertDialog.Window.DecorView.LayoutDirection = LayoutDirection.Rtl;
+						}
+						else
+						{
+							_legacyAlertDialog.Window.DecorView.LayoutDirection = LayoutDirection.Rtl;
+						}
 					}
 				}
 
@@ -373,6 +409,18 @@ namespace Xamarin.Forms.Platform.Android
 					else
 					{
 						_legacyAlertDialog.SetButton(whichButton, text, handler);
+					}
+				}
+
+				public global::Android.Views.View GetListView()
+				{
+					if (_useAppCompat)
+					{
+						return _appcompatAlertDialog.ListView;
+					}
+					else
+					{
+						return _legacyAlertDialog.ListView;
 					}
 				}
 
@@ -409,6 +457,18 @@ namespace Xamarin.Forms.Platform.Android
 					else
 					{
 						_legacyAlertDialog.SetView(view);
+					}
+				}
+
+				public global::Android.Views.View findViewByID(int id)
+				{
+					if (_useAppCompat)
+					{
+						return _appcompatAlertDialog.FindViewById(id);
+					}
+					else
+					{
+						return _legacyAlertDialog.FindViewById(id);
 					}
 				}
 
