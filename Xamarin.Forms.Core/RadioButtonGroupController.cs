@@ -4,7 +4,8 @@ namespace Xamarin.Forms
 {
 	internal class RadioButtonGroupController
 	{
-		readonly Layout<View> _layout; // TODO ezhart Move this to weak reference and use weakeventmanager for ChildAdded
+		readonly Layout<View> _layout;
+
 		string _groupName;
 		private RadioButton _selection;
 
@@ -19,11 +20,11 @@ namespace Xamarin.Forms
 			}
 
 			_layout = layout;
-			_layout.ChildAdded += ChildAdded;
+			layout.ChildAdded += ChildAdded;
 
 			if (!string.IsNullOrEmpty(_groupName))
 			{
-				UpdateGroupNames(_layout, _groupName);
+				UpdateGroupNames(layout, _groupName);
 			}
 
 			MessagingCenter.Subscribe<RadioButton, RadioButtonGroupSelectionChanged>(this, RadioButtonGroup.RadioButtonGroupSelectionChanged, HandleRadioButtonGroupSelectionChanged);
@@ -55,16 +56,18 @@ namespace Xamarin.Forms
 			UpdateGroupName(e.Element, _groupName);
 		}
 
-		void UpdateGroupName(Element element, string name, string oldName = null) 
+		void UpdateGroupName(Element element, string name, string oldName = null)
 		{
-			if (element is RadioButton radioButton)
+			if (!(element is RadioButton radioButton))
 			{
-				var currentName = radioButton.GroupName;
+				return;
+			}
 
-				if (string.IsNullOrEmpty(currentName) || currentName == oldName)
-				{
-					radioButton.GroupName = name;
-				}
+			var currentName = radioButton.GroupName;
+
+			if (string.IsNullOrEmpty(currentName) || currentName == oldName)
+			{
+				radioButton.GroupName = name;
 			}
 		}
 
@@ -88,12 +91,5 @@ namespace Xamarin.Forms
 			_groupName = groupName;
 			UpdateGroupNames(_layout, _groupName, oldName);
 		}
-	}
-
-	internal class RadioButtonGroupSelectionChanged
-	{ 
-		public Element Scope { get; }
-
-		public RadioButtonGroupSelectionChanged(Element scope) => Scope = scope;
 	}
 }

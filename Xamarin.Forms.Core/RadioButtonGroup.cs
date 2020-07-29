@@ -6,6 +6,8 @@ namespace Xamarin.Forms
 {
 	public static class RadioButtonGroup
 	{
+		internal const string RadioButtonGroupSelectionChanged = "RadioButtonGroupSelectionChanged";
+
 		internal static Dictionary<string, List<WeakReference<RadioButton>>> GroupNameToElements;
 
 		static readonly BindableProperty RadioButtonGroupControllerProperty =
@@ -92,8 +94,6 @@ namespace Xamarin.Forms
 
 			MessagingCenter.Send(radioButton, RadioButtonGroupSelectionChanged, new RadioButtonGroupSelectionChanged(scope));
 		}
-
-		internal const string RadioButtonGroupSelectionChanged = "RadioButtonGroupSelectionChanged";
 
 		internal static void Register(RadioButton radioButton, string groupName)
 		{

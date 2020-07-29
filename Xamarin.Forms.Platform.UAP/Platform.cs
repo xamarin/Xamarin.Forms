@@ -44,12 +44,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 			IVisualElementRenderer renderer = null;
 
-			if (element is TemplatedView tv)
+			if (element is TemplatedView tv && tv.ControlTemplate != null)
 			{
-				if (tv.ControlTemplate != null)
-				{
-					renderer = new DefaultRenderer();
-				}
+				renderer = new DefaultRenderer();
 			}
 
 			if (renderer == null)
