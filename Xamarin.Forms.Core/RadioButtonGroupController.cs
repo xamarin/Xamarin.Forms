@@ -27,7 +27,10 @@ namespace Xamarin.Forms
 				UpdateGroupNames(layout, _groupName);
 			}
 
-			MessagingCenter.Subscribe<RadioButton, RadioButtonGroupSelectionChanged>(this, RadioButtonGroup.RadioButtonGroupSelectionChanged, HandleRadioButtonGroupSelectionChanged);
+			MessagingCenter.Subscribe<RadioButton, RadioButtonGroupSelectionChanged>(this, 
+				RadioButtonGroup.RadioButtonGroupSelectionChanged, HandleRadioButtonGroupSelectionChanged);
+			MessagingCenter.Subscribe<RadioButton, RadioButtonGroupNameChanged>(this, RadioButtonGroup.RadioButtonGroupNameChanged,
+				HandleRadioButtonGroupNameChanged);
 		}
 
 		void HandleRadioButtonGroupSelectionChanged(RadioButton selected, RadioButtonGroupSelectionChanged args)
@@ -44,6 +47,22 @@ namespace Xamarin.Forms
 			}
 
 			_layout.SetValue(RadioButtonGroup.SelectionProperty, selected);
+		}
+
+		void HandleRadioButtonGroupNameChanged(RadioButton radioButton, RadioButtonGroupNameChanged args) 
+		{
+			if (args.OldName != _groupName)
+			{
+				return;
+			}
+
+			var controllerScope = RadioButtonGroup.GetVisualRoot(_layout);
+			if (args.Scope != controllerScope)
+			{
+				return;
+			}
+
+			_layout.ClearValue(RadioButtonGroup.SelectionProperty);
 		}
 
 		void ChildAdded(object sender, ElementEventArgs e)
@@ -82,7 +101,11 @@ namespace Xamarin.Forms
 		void SetSelection(RadioButton radioButton)
 		{
 			_selection = radioButton;
-			RadioButtonGroup.UpdateRadioButtonGroup(radioButton);
+
+			if (radioButton != null)
+			{
+				RadioButtonGroup.UpdateRadioButtonGroup(radioButton);
+			}
 		}
 
 		void SetGroupName(string groupName)

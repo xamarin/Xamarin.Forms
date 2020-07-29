@@ -296,7 +296,7 @@ namespace Xamarin.Forms
 				return (Color)color;
 			}
 			
-			if (Application.Current.RequestedTheme == OSAppTheme.Dark)
+			if (Application.Current?.RequestedTheme == OSAppTheme.Dark)
 			{
 				return Color.White;
 			}

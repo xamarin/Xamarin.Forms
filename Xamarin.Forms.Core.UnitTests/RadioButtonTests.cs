@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Core.UnitTests
 {
 	[TestFixture]
-	public class RadioButtonTests 
+	public class RadioButtonTests : BaseTestFixture
 	{
 		[SetUp]
 		public void SetUp() 
@@ -154,6 +154,59 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(radioButton1.IsChecked);
 			Assert.IsFalse(radioButton2.IsChecked);
 			Assert.IsTrue(radioButton3.IsChecked);
+		}
+
+		[Test]
+		public void RemovingSelectedButtonFromGroupClearsSelection() 
+		{
+			var radioButton1 = new RadioButton() { GroupName = "foo" };
+			var radioButton2 = new RadioButton() { GroupName = "foo" };
+			var radioButton3 = new RadioButton() { GroupName = "foo" };
+
+			radioButton1.IsChecked = true;
+			radioButton2.IsChecked = true;
+
+			Assert.IsFalse(radioButton1.IsChecked);
+			Assert.IsTrue(radioButton2.IsChecked);
+			Assert.IsFalse(radioButton3.IsChecked);
+
+			radioButton2.GroupName = "bar";
+
+			Assert.IsFalse(radioButton1.IsChecked);
+			Assert.IsTrue(radioButton2.IsChecked);
+			Assert.IsFalse(radioButton3.IsChecked);
+		}
+
+		[Test]
+		public void GroupControllerSelectionIsNullWhenSelectedButtonRemoved()
+		{
+			var layout = new Grid();
+			layout.SetValue(RadioButtonGroup.GroupNameProperty, "foo");
+			var selected = layout.GetValue(RadioButtonGroup.SelectionProperty);
+
+			Assert.Null(selected);
+
+			var radioButton1 = new RadioButton();
+			var radioButton2 = new RadioButton();
+			var radioButton3 = new RadioButton();
+
+			layout.Children.Add(radioButton1);
+			layout.Children.Add(radioButton2);
+			layout.Children.Add(radioButton3);
+
+			Assert.Null(selected);
+
+			radioButton1.IsChecked = true;
+
+			selected = layout.GetValue(RadioButtonGroup.SelectionProperty) as RadioButton;
+
+			Assert.AreEqual(selected, radioButton1);
+
+			Assert.AreEqual(radioButton1.GroupName, "foo");
+			radioButton1.GroupName = "bar";
+
+			selected = layout.GetValue(RadioButtonGroup.SelectionProperty) as RadioButton;
+			Assert.Null(selected);
 		}
 	}
 }

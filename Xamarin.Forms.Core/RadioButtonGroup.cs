@@ -7,6 +7,7 @@ namespace Xamarin.Forms
 	public static class RadioButtonGroup
 	{
 		internal const string RadioButtonGroupSelectionChanged = "RadioButtonGroupSelectionChanged";
+		internal const string RadioButtonGroupNameChanged = "RadioButtonGroupNameChanged";
 
 		internal static Dictionary<string, List<WeakReference<RadioButton>>> GroupNameToElements;
 
@@ -123,6 +124,14 @@ namespace Xamarin.Forms
 			if (GroupNameToElements.TryGetValue(groupName, out List<WeakReference<RadioButton>> elements))
 			{
 				PurgeDead(elements, radioButton);
+
+				if (radioButton.IsChecked)
+				{
+					// We've just removed a selected RadioButton from a group; we should let 
+					// any interested RadioButtonGroups know
+					MessagingCenter.Send(radioButton, RadioButtonGroupNameChanged, 
+						new RadioButtonGroupNameChanged(GetVisualRoot(radioButton), groupName));
+				}
 
 				if (elements.Count == 0)
 					GroupNameToElements.Remove(groupName);
