@@ -22,7 +22,7 @@ steps:
     displayName: 'Run APIScan'
     inputs:
       softwareFolder: '$(Build.ArtifactsDirectory)'
-      softwareName: SecureApp
+      softwareName: Xamarin.Forms
       softwareVersionNum: 5.0.0
       isLargeApp: false
     continueOnError: true
