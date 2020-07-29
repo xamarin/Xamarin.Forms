@@ -336,14 +336,14 @@ stages:
             displayName: 'Download build artifact win_build'
             inputs:
               artifactName: win_build
-              downloadPath: $(Build.ArtifactsDirectory)
+              downloadPath: $(Build.StagingDirectory)
 
-          - task: securedevelopmentteam.vss-secure-development-tools.build-task-apiscan.APIScan@1
+          - task: securedevelopmentteam.vss-secure-development-tools.build-task-apiscan.APIScan@2
             displayName: 'Run APIScan'
             inputs:
-              softwareFolder: $(Build.ArtifactsDirectory)
+              softwareFolder: '$(Build.StagingDirectory)\win_build'
               softwareName: Xamarin.Forms
-              softwareVersionNum: 5.0.0
+              softwareVersionNum: $(Build.BuildNumber)
               isLargeApp: false
           
   # only sign using the private server
