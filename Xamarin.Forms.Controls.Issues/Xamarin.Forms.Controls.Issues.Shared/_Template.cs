@@ -41,42 +41,6 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	}
 
-
-	public class _11475 : TestNavigationPage
-	{
-		ContentPage Root() 
-		{
-			var page = new ContentPage();
-
-			var button = new Button { Text = "Go" };
-
-			button.Clicked += async (sender, args) => {
-				DisplayAlert("derp", "derp", "derp");
-				await Navigation.PushAsync(Second());
-			};
-
-			page.Content = button;
-
-			return page;
-		}
-
-		ContentPage Second() 
-		{
-			var page = new ContentPage();
-
-			var label = new Label { Text = "Hey" };
-
-			page.Content = label;
-
-			return page;
-		}
-
-		protected override void Init()
-		{
-			this.PushAsync(Root());
-		}
-	}
-
 	[Preserve(AllMembers = true)]
 	public class ViewModelIssue1
 	{

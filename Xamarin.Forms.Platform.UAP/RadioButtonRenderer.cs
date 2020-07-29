@@ -166,8 +166,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateContent()
 		{
-			var text = Element.Text;
-			Control.Content = text;
+			Control.Content = Element.Text;
 		}
 
 		void UpdateFont()
