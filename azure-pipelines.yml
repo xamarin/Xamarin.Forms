@@ -324,27 +324,27 @@ stages:
               PoliCheck: true
             condition: succeededOrFailed()
 
-      - job: api_scan
-        displayName: APIScan Compliance
-        pool:
-          name: $(corpVmImage)
-        steps:
-          - checkout: none
-            clean: true
+      # - job: api_scan
+      #   displayName: APIScan Compliance
+      #   pool:
+      #     name: $(corpVmImage)
+      #   steps:
+      #     - checkout: none
+      #       clean: true
           
-          - task: DownloadBuildArtifacts@0
-            displayName: 'Download build artifact win_build'
-            inputs:
-              artifactName: win_build
-              downloadPath: $(Build.StagingDirectory)
+      #     - task: DownloadBuildArtifacts@0
+      #       displayName: 'Download build artifact win_build'
+      #       inputs:
+      #         artifactName: win_build
+      #         downloadPath: $(Build.StagingDirectory)
 
-          - task: securedevelopmentteam.vss-secure-development-tools.build-task-apiscan.APIScan@2
-            displayName: 'Run APIScan'
-            inputs:
-              softwareFolder: '$(Build.StagingDirectory)\win_build'
-              softwareName: Xamarin.Forms
-              softwareVersionNum: $(Build.BuildNumber)
-              isLargeApp: false
+      #     - task: securedevelopmentteam.vss-secure-development-tools.build-task-apiscan.APIScan@2
+      #       displayName: 'Run APIScan'
+      #       inputs:
+      #         softwareFolder: '$(Build.StagingDirectory)\win_build'
+      #         softwareName: Xamarin.Forms
+      #         softwareVersionNum: $(Build.BuildNumber)
+      #         isLargeApp: false
           
   # only sign using the private server
   - ${{ if eq(variables['System.TeamProject'], 'devdiv') }}:
