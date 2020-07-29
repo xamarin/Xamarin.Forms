@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
@@ -9,6 +10,16 @@ namespace Xamarin.Forms
 		{
 			if (value is View view)
 			{
+				if (view is ITextElement)
+				{
+					BindTextProperties(view);
+				}
+
+				if (view is IFontElement)
+				{
+					BindFontProperties(view);
+				}
+
 				return view;
 			}
 
@@ -19,8 +30,8 @@ namespace Xamarin.Forms
 					Text = textContent
 				};
 
-				label.SetBinding(Label.TextColorProperty, 
-					new Binding("TextColor", source: new RelativeBindingSource(RelativeBindingSourceMode.FindAncestor, typeof(ITextElement))));
+				BindTextProperties(label);
+				BindFontProperties(label);
 
 				return label;
 			}
@@ -31,6 +42,27 @@ namespace Xamarin.Forms
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			throw new NotImplementedException();
+		}
+
+		static void BindTextProperties(BindableObject content) 
+		{
+			BindProperty(content, TextElement.TextColorProperty, typeof(ITextElement));
+			BindProperty(content, TextElement.CharacterSpacingProperty, typeof(ITextElement));
+			BindProperty(content, TextElement.TextTransformProperty, typeof(ITextElement));
+		}
+
+		static void BindFontProperties(BindableObject content)
+		{
+			BindProperty(content, FontElement.FontAttributesProperty, typeof(IFontElement));
+			BindProperty(content, FontElement.FontSizeProperty, typeof(IFontElement));
+			BindProperty(content, FontElement.FontFamilyProperty, typeof(IFontElement));
+		}
+
+		static void BindProperty(BindableObject content, BindableProperty property, Type type) 
+		{
+			content.SetBinding(property,
+					new Binding(property.PropertyName, 
+					source: new RelativeBindingSource(RelativeBindingSourceMode.FindAncestor, type)));
 		}
 	}
 }
