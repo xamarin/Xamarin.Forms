@@ -10,30 +10,12 @@ namespace Xamarin.Forms
 		{
 			if (value is View view)
 			{
-				if (view is ITextElement)
-				{
-					BindTextProperties(view);
-				}
-
-				if (view is IFontElement)
-				{
-					BindFontProperties(view);
-				}
-
-				return view;
+				return ConfigureView(view);
 			}
 
 			if (value is string textContent)
 			{
-				var label = new Label
-				{
-					Text = textContent
-				};
-
-				BindTextProperties(label);
-				BindFontProperties(label);
-
-				return label;
+				return ConvertToLabel(textContent);
 			}
 
 			return value;
@@ -42,6 +24,34 @@ namespace Xamarin.Forms
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			throw new NotImplementedException();
+		}
+
+		View ConfigureView(View view) 
+		{
+			if (view is ITextElement)
+			{
+				BindTextProperties(view);
+			}
+
+			if (view is IFontElement)
+			{
+				BindFontProperties(view);
+			}
+
+			return view;
+		}
+
+		Label ConvertToLabel(string textContent) 
+		{
+			var label = new Label
+			{
+				Text = textContent
+			};
+
+			BindTextProperties(label);
+			BindFontProperties(label);
+
+			return label;
 		}
 
 		static void BindTextProperties(BindableObject content) 

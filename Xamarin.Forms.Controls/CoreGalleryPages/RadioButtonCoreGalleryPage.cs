@@ -23,8 +23,7 @@ namespace Xamarin.Forms.Controls
 		{
 			base.Build(stackLayout);
 
-			// TODO ezhart IsCheckedChanged, maybe?
-			//IsEnabledStateViewContainer.View.Clicked += (sender, args) => IsEnabledStateViewContainer.TitleLabel.Text += " (Tapped)";
+			IsEnabledStateViewContainer.View.CheckedChanged += (sender, args) => IsEnabledStateViewContainer.TitleLabel.Text += " (Checked Changed)";
 
 			var borderButtonContainer = new ViewContainer<RadioButton>(Test.Button.BorderColor,
 				new RadioButton

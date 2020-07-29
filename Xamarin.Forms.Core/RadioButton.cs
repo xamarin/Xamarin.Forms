@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
@@ -24,6 +25,8 @@ namespace Xamarin.Forms
 		static ControlTemplate s_defaultTemplate;
 
 		readonly Lazy<PlatformConfigurationRegistry<RadioButton>> _platformConfigurationRegistry;
+
+		static bool? s_rendererAvailable;
 
 		public event EventHandler<CheckedChangedEventArgs> CheckedChanged;
 
@@ -150,6 +153,19 @@ namespace Xamarin.Forms
 			return _platformConfigurationRegistry.Value.On<T>();
 		}
 
+		public static ControlTemplate DefaultTemplate
+		{
+			get
+			{
+				if (s_defaultTemplate == null)
+				{
+					s_defaultTemplate = new ControlTemplate(() => BuildDefaultTemplate());
+				}
+
+				return s_defaultTemplate;
+			}
+		}
+
 		void ITextElement.OnTextTransformChanged(TextTransform oldValue, TextTransform newValue)
 			=> InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 
@@ -217,9 +233,8 @@ namespace Xamarin.Forms
 
 			if (ControlTemplate == null)
 			{
-				var rendererType = Internals.Registrar.Registered.GetHandlerType(typeof(RadioButton));
-				if (rendererType == null)
-				{
+				if (!RendererAvailable)
+				{ 
 					ControlTemplate = DefaultTemplate;
 				}
 			}
@@ -261,22 +276,31 @@ namespace Xamarin.Forms
 			}
 		}
 
+		static bool RendererAvailable 
+		{ 
+			get 
+			{
+				if (!s_rendererAvailable.HasValue)
+				{
+					s_rendererAvailable = Internals.Registrar.Registered.GetHandlerType(typeof(RadioButton)) != null;
+				}
+
+				return s_rendererAvailable.Value;
+			} 
+		}
+
 		static Color ResolveThemeColor(string key) 
 		{
-			try
+			if (Application.Current.TryGetResource(key, out object color))
 			{
-				return (Color)Application.Current.Resources[key];
+				return (Color)color;
 			}
-			catch 
-			{ 
-				// TODO ezhart check for reasonable exceptions here (missing key, key isn't actually a color)
-				// and maybe log them, re-throw for everything else
-
-				// I'm not entirely convinced this is the right way to handle these colors.
+			
+			if (Application.Current.RequestedTheme == OSAppTheme.Dark)
+			{
+				return Color.White;
 			}
 
-			// TODO ezhart We need to make this return the appropriate default color based on the mode
-			// (obviously black isn't a good choice in dark mode)
 			return Color.Black;
 		}
 
@@ -310,19 +334,6 @@ namespace Xamarin.Forms
 
 				if (_checkMark != null)
 					_checkMark.Opacity = 0;
-			}
-		}
-
-		public static ControlTemplate DefaultTemplate
-		{
-			get 
-			{
-				if (s_defaultTemplate == null)
-				{
-					s_defaultTemplate = new ControlTemplate(() => BuildDefaultTemplate());
-				}
-
-				return s_defaultTemplate;
 			}
 		}
 
