@@ -12,6 +12,8 @@ namespace Xamarin.Forms
 	public class RadioButton : TemplatedView, IElementConfiguration<RadioButton>, ITextElement, IFontElement, IBorderElement
 	{
 		public const string IsCheckedVisualState = "IsChecked";
+		public const string CheckedIndicator = "CheckedIndicator";
+		public const string UncheckedButton = "UncheckedButton";
 
 		// Template Parts
 		TapGestureRecognizer _tapGestureRecognizer;
@@ -153,17 +155,6 @@ namespace Xamarin.Forms
 
 		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
 		{
-			//// TODO ezhart Probably need to apply this to the content if we're using templates
-			//// same for these other text property changes
-			//if (UsingRenderer)
-			//{
-			//	return;
-			//}
-
-			//if (Content is ITextElement textElement)
-			//{
-			//	textElement.OnTextColorPropertyChanged(textElement.TextColor, newValue);
-			//}
 		}
 
 		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
@@ -195,7 +186,6 @@ namespace Xamarin.Forms
 
 		void IBorderElement.OnBorderColorPropertyChanged(Color oldValue, Color newValue)
 		{
-			// TODO ezhart This probably need to be applied to the content
 		}
 
 		bool IBorderElement.IsCornerRadiusSet() => IsSet(BorderElement.CornerRadiusProperty);
@@ -241,8 +231,8 @@ namespace Xamarin.Forms
 		{
 			base.OnApplyTemplate();
 
-			_normalEllipse = GetTemplateChild("NormalEllipse") as Shape;
-			_checkMark = GetTemplateChild("CheckMark") as Shape;
+			_normalEllipse = GetTemplateChild(UncheckedButton) as Shape;
+			_checkMark = GetTemplateChild(CheckedIndicator) as Shape;
 		}
 
 		bool UsingRenderer => ControlTemplate == null;
@@ -411,9 +401,11 @@ namespace Xamarin.Forms
 			};
 
 			contentPresenter.SetBinding(ContentPresenter.ContentProperty,
-				new Binding("Content", source: RelativeBindingSource.TemplatedParent, converter: new ContentConverter()));
+				new Binding(ContentPresenter.ContentProperty.PropertyName, source: RelativeBindingSource.TemplatedParent, 
+				converter: new ContentConverter()));
 			contentPresenter.SetBinding(MarginProperty, new Binding("Padding", source: RelativeBindingSource.TemplatedParent));
-			contentPresenter.SetBinding(BackgroundColorProperty, new Binding("BackgroundColor", source: RelativeBindingSource.TemplatedParent));
+			contentPresenter.SetBinding(BackgroundColorProperty, new Binding(BackgroundColorProperty.PropertyName, 
+				source: RelativeBindingSource.TemplatedParent));
 
 			grid.Children.Add(normalEllipse);
 			grid.Children.Add(checkMark);
@@ -423,8 +415,8 @@ namespace Xamarin.Forms
 
 			INameScope nameScope = new NameScope();
 			NameScope.SetNameScope(frame, nameScope);
-			nameScope.RegisterName("NormalEllipse", normalEllipse);
-			nameScope.RegisterName("CheckMark", checkMark);
+			nameScope.RegisterName(UncheckedButton, normalEllipse);
+			nameScope.RegisterName(CheckedIndicator, checkMark);
 			nameScope.RegisterName("ContentPresenter", contentPresenter);
 
 			return frame;
