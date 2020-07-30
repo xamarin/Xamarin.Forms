@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
@@ -65,6 +67,9 @@ namespace Xamarin.Forms.Platform.Android
 				// Make sure the Visual property is available when the renderer is created
 				PropertyPropagationExtensions.PropagatePropertyChanged(null, View, itemsView);
 
+				// Prevents the use of Android default color for selected item
+				UseAndroidDefaultColorsForSelection = UseAndroidDefaultsSelectionColors(itemsView);
+
 				// Actually create the native renderer
 				_itemContentView.RealizeContent(View);
 
@@ -80,6 +85,60 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			itemsView.AddLogicalChild(View);
+		}
+
+
+		bool UseAndroidDefaultsSelectionColors(ItemsView itemsView)
+		{
+			// Walks through the resource dictionary to know
+			// if there are a resource dictionary that have VisualStateGroups
+			// with Selected State, overriding the Android default
+			// selection color
+
+			bool useAndroidDefaultsDrawableSelectionColors = true;
+
+			if (itemsView.FindParentOfType<Page>() is Page page)
+			{
+				foreach (var resourceDictionary in page.Resources)
+				{
+					if (resourceDictionary.Value is Style style
+							&& style.TargetType.IsAssignableFrom(View.GetType()))
+					{
+						foreach (var setter in style.Setters)
+						{
+							if (setter.Property == VisualStateManager.VisualStateGroupsProperty)
+							{
+								if (setter.Value is VisualStateGroupList visualStateGroups)
+								{
+									foreach (var group in visualStateGroups)
+									{
+										foreach (var state in group.States)
+										{
+											if (state.Name == "Selected")
+											{
+												foreach (var visualStateSetter in state.Setters)
+												{
+													if (visualStateSetter.Property == VisualElement.BackgroundColorProperty)
+													{
+														useAndroidDefaultsDrawableSelectionColors = false;
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+							else
+							{
+								continue;
+							}
+						}
+					}
+
+				}
+			}
+
+			return useAndroidDefaultsDrawableSelectionColors;
 		}
 	}
 }

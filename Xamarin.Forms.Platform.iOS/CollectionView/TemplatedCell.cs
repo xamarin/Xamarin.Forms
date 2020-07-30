@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Platform.iOS
 			ClearConstraints();
 			ConstrainedDimension = constant;
 		}
-		
+
 		protected void ClearConstraints()
 		{
 			ConstrainedSize = default;
@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var preferredAttributes = base.PreferredLayoutAttributesFittingAttributes(layoutAttributes);
 
 			// Measure this cell (including the Forms element) if there is no constrained size
-			var	size = ConstrainedSize == default(CGSize) ? Measure() : ConstrainedSize;
+			var size = ConstrainedSize == default(CGSize) ? Measure() : ConstrainedSize;
 
 			// Update the size of the root view to accommodate the Forms element
 			var nativeView = VisualElementRenderer.NativeView;
@@ -90,6 +90,15 @@ namespace Xamarin.Forms.Platform.iOS
 				// Create the content and renderer for the view 
 				var view = itemTemplate.CreateContent() as View;
 
+				// Prevents the use of default color when there are VisualStateManager with Selected state background color
+				if (!UseDefaultsSelectionColor(itemsView, view))
+				{
+					SelectedBackgroundView = new UIView
+					{
+						BackgroundColor = UIColor.Clear
+					};
+				}
+
 				// Set the binding context _before_ we create the renderer; that way, it's available during OnElementChanged
 				view.BindingContext = bindingContext;
 
@@ -102,7 +111,7 @@ namespace Xamarin.Forms.Platform.iOS
 				// emit a bunch of needless binding errors
 				itemsView.AddLogicalChild(view);
 			}
-			else 
+			else
 			{
 				// Same template, different data
 				var currentElement = VisualElementRenderer?.Element;
@@ -144,6 +153,59 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				ContentView.Subviews[n].RemoveFromSuperview();
 			}
+		}
+
+		bool UseDefaultsSelectionColor(ItemsView itemsView, View view)
+		{
+			// Walks through the resource dictionary to know
+			// if there are a resource dictionary that have VisualStateGroups
+			// with Selected State, overriding the Android default
+			// selection color
+
+			bool useDefaultSelectionColors = true;
+
+			if (itemsView.FindParentOfType<Page>() is Page page)
+			{
+				foreach (var resourceDictionary in page.Resources)
+				{
+					if (resourceDictionary.Value is Style style
+							&& style.TargetType.IsAssignableFrom(view.GetType()))
+					{
+						foreach (var setter in style.Setters)
+						{
+							if (setter.Property == VisualStateManager.VisualStateGroupsProperty)
+							{
+								if (setter.Value is VisualStateGroupList visualStateGroups)
+								{
+									foreach (var group in visualStateGroups)
+									{
+										foreach (var state in group.States)
+										{
+											if (state.Name == "Selected")
+											{
+												foreach (var visualStateSetter in state.Setters)
+												{
+													if (visualStateSetter.Property == VisualElement.BackgroundColorProperty)
+													{
+														useDefaultSelectionColors = false;
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+							else
+							{
+								continue;
+							}
+						}
+					}
+
+				}
+			}
+
+			return useDefaultSelectionColors;
 		}
 
 		public override bool Selected
