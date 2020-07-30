@@ -122,6 +122,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateLineHeight();
 				UpdateGravity();
 				UpdateMaxLines();
+				UpdateFlowDirection();
 			}
 			else
 			{	
@@ -134,6 +135,8 @@ namespace Xamarin.Forms.Platform.Android
 					UpdateMaxLines();
 				if (e.OldElement.CharacterSpacing != e.NewElement.CharacterSpacing)
 					UpdateCharacterSpacing();
+				if (e.OldElement.FlowDirection != e.NewElement.FlowDirection)
+					UpdateFlowDirection();
 			}
 			UpdateTextDecorations();
 			UpdatePadding();
