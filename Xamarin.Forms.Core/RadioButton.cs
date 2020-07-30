@@ -73,13 +73,6 @@ namespace Xamarin.Forms
 			set => SetValue(ContentProperty, value);
 		}
 
-		// Text is a convenience property for setting Content to a string
-		public string Text
-		{
-			get => GetValue(ContentProperty)?.ToString();
-			set => SetValue(ContentProperty, value);
-		}
-
 		public object Value
 		{
 			get => GetValue(ValueProperty);

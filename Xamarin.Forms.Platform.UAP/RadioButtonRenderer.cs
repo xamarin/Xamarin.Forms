@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using Windows.Devices.Radios;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
@@ -166,7 +167,12 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateContent()
 		{
-			Control.Content = Element.Text;
+			if (!(Element.Content is string text))
+			{
+				throw new InvalidOperationException($"{nameof(RadioButtonRenderer)} only supports string values for the {nameof(RadioButton)} {RadioButton.ContentProperty.PropertyName} property.");
+			}
+
+			Control.Content = text;
 		}
 
 		void UpdateFont()

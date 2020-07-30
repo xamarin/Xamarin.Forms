@@ -8,9 +8,9 @@
     <ContentPage.Content>
         <StackLayout RadioButtonGroup.GroupName="foo">
             <Label Text="All of the RadioButtons in this StackLayout will automatically be given the GroupName of 'foo'"/>
-            <RadioButton Text="Option A" />
+            <RadioButton Content="Option A" />
             <RadioButton Content="Option B" />
-            <RadioButton Text="Option C" />
+            <RadioButton Content="Option C" />
 
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -19,7 +19,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Text="This RadioButton is inside a Grid"></Label>
-                <RadioButton Text="Option D" Grid.Column="1" />
+                <RadioButton Content="Option D" Grid.Column="1" />
             </Grid>
             
         </StackLayout>

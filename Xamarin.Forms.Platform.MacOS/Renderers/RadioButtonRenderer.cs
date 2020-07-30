@@ -112,15 +112,20 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateText()
 		{
+			if (!(Element.Content is string text))
+			{
+				throw new InvalidOperationException($"{nameof(RadioButtonRenderer)} only supports string values for the {nameof(RadioButton)} {RadioButton.ContentProperty.PropertyName} property.");
+			}
+			
 			var color = Element.TextColor;
 			if (color == Color.Default)
 			{
-				Control.Title = Element.Text ?? "";
+				Control.Title = text ?? "";
 			}
 			else
 			{
 				Font font = Font.OfSize(Element.FontFamily, Element.FontSize).WithAttributes(Element.FontAttributes);
-				var textWithColor = new NSAttributedString(Element.Text ?? "", font: font.ToNSFont(), foregroundColor: color.ToNSColor(), paragraphStyle: new NSMutableParagraphStyle() { Alignment = NSTextAlignment.Center });
+				var textWithColor = new NSAttributedString(text ?? "", font: font.ToNSFont(), foregroundColor: color.ToNSColor(), paragraphStyle: new NSMutableParagraphStyle() { Alignment = NSTextAlignment.Center });
 				Control.AttributedTitle = textWithColor;
 			}
 		}

@@ -11,14 +11,14 @@
 
             <Label Text="Here, we have a few in a nested StackLayout:"></Label>
             <StackLayout Orientation="Horizontal" BackgroundColor="AliceBlue" RadioButtonGroup.GroupName="foo">
-                <RadioButton Text="A"></RadioButton>
-                <RadioButton Text="B"></RadioButton>
-                <RadioButton Text="C"></RadioButton>
+                <RadioButton Content="A"></RadioButton>
+                <RadioButton Content="B"></RadioButton>
+                <RadioButton Content="C"></RadioButton>
             </StackLayout>
 
             <Label Text="And another outside that StackLayout with the same GroupName:"></Label>
 
-            <RadioButton Text="D (None of the above)" GroupName="foo"></RadioButton>
+            <RadioButton Content="D (None of the above)" GroupName="foo"></RadioButton>
             
         </StackLayout>
     </ContentPage.Content>

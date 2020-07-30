@@ -8,15 +8,8 @@
     <ContentPage.Content>
         <StackLayout>
             
-            <Label Text="We can set 'Text' on a RadioButton:"/>
-            <RadioButton Text="Option A" />
-
-            <Label Text="Or We can set 'Content' (in this case, a Label):"/>
-            <RadioButton>
-                <RadioButton.Content>
-                    <Label FontSize="24" Text="Option B" TextColor="Purple"></Label>
-                </RadioButton.Content>
-            </RadioButton>
+            <Label Text="We can set 'Content' on a RadioButton to a string:"/>
+            <RadioButton Content="Option A" />
 
             <Label Text="If 'Content' is just a String, it will be translated to Text (always supported):"/>
             <RadioButton Content="Option C" />
@@ -24,7 +17,15 @@
             <Label Text="If 'Content' is a View, it will be displayed where supported (e.g., when using ControlTemplates):"/>
             <RadioButton BackgroundColor="AntiqueWhite">
                 <RadioButton.Content>
-                    <Image Source="coffee.png"></Image>
+                    <OnPlatform>
+                        <On Platform="iOS">
+                            <StackLayout>
+                                <Image Source="coffee.png"></Image>
+                                <Label Text="This is iOS, it always uses a ControlTemplate"/>
+                            </StackLayout>
+                        </On>
+                        <On Platform="Android,UWP,Tizen,WPF" Value="Not using ControlTemplate, so just plain old text"></On>
+                    </OnPlatform>
                 </RadioButton.Content>
             </RadioButton>
 

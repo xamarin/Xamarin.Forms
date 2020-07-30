@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using WBrush = System.Windows.Media.Brush;
 using WThickness = System.Windows.Thickness;
@@ -144,7 +145,12 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void UpdateContent()
 		{
-			Control.Content = Element.Text;
+			if (!(Element.Content is string text))
+			{
+				throw new InvalidOperationException($"{nameof(RadioButtonRenderer)} only supports string values for the {nameof(RadioButton)} {RadioButton.ContentProperty.PropertyName} property.");
+			}
+
+			Control.Content = text;
 		}
 
 		void UpdateFont()
