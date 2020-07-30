@@ -150,6 +150,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateContent();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				SetBackgroundColor(Element.BackgroundColor);
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				SetBackground(Element.Background);
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateIsSwipeEnabled();
 			else if (e.PropertyName == Specifics.SwipeTransitionModeProperty.PropertyName)
@@ -172,6 +174,17 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (_contentView != null && _contentView.BackgroundColor == UIColor.Clear)
 				_contentView.BackgroundColor = backgroundColor;
+		}
+
+		protected override void SetBackground(Brush brush)
+		{
+			Brush background = Element.Background;
+
+			if (Control != null)
+				Control.UpdateBackground(background);
+
+			if (_contentView != null && Element.Content == null && HasSwipeItems())
+				_contentView.UpdateBackground(background);
 		}
 
 		public override void TouchesEnded(NSSet touches, UIEvent evt)
@@ -351,7 +364,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (panGestureRecognizer != null)
 			{
-				var point = panGestureRecognizer.LocationInView(Control);
+				CGPoint point = panGestureRecognizer.LocationInView(this);
 				var navigationController = GetUINavigationController(GetViewController());
 
 				switch (panGestureRecognizer.State)
@@ -1378,6 +1391,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateIsOpen(bool isOpen)
 		{
+			if (Element == null)
+				return;
+
 			((ISwipeViewController)Element).IsOpen = isOpen;
 		}
 

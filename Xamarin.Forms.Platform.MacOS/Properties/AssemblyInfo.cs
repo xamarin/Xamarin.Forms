@@ -40,6 +40,7 @@ using Rectangle = Xamarin.Forms.Shapes.Rectangle;
 [assembly: ExportRenderer(typeof(TableView), typeof(TableViewRenderer))]
 [assembly: ExportRenderer(typeof(NativeViewWrapper), typeof(NativeViewWrapperRenderer))]
 [assembly: ExportRenderer(typeof(Layout), typeof(LayoutRenderer))]
+[assembly: ExportRenderer(typeof(EmbeddedFont), typeof(EmbeddedFontLoader))]
 [assembly: ExportRenderer(typeof(Ellipse), typeof(EllipseRenderer))]
 [assembly: ExportRenderer(typeof(Line), typeof(LineRenderer))]
 [assembly: ExportRenderer(typeof(Polygon), typeof(PolygonRenderer))]
