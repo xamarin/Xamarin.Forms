@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                       xmlns:local="clr-namespace:Xamarin.Forms.Controls"
+                       x:Class="Xamarin.Forms.Controls.Issues.Issue9106">
+    <StackLayout Orientation="Vertical">
+        <Button Text="Toggle IsEnabled" Command="{Binding ToggleCheckboxIsEnabledCommand}"/>
+        <CheckBox x:Name="CheckBoxUnderTest"
+                  IsChecked="{Binding CheckboxIsChecked}"
+                  IsEnabled="{Binding CheckboxIsEnabled}">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Property="Color" Value="Green" />
+                        </VisualState.Setters>
+                    </VisualState>
+
+                    <VisualState x:Name="Focused" />
+
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="Color" Value="Red" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+        </CheckBox>
+    </StackLayout>
+</local:TestContentPage>

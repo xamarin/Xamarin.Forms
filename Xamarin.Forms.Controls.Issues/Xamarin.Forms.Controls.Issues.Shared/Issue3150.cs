@@ -24,6 +24,7 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			};
 
+
 			Button button = null;
 			button = new Button()
 			{
