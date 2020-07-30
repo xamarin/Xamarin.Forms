@@ -9,9 +9,16 @@ namespace Xamarin.Forms
 	{
 		public override object ConvertFromInvariantString(string value)
 		{
-			switch (value?.ToLowerInvariant()?.Trim() ?? "")
+			if (string.IsNullOrWhiteSpace(value))
+				return null;
+
+			value = value?.Trim() ?? "";
+			var parts = value.Split('.');
+			if (parts.Length == 2 && parts[0] == nameof(Easing))
+				value = parts[parts.Length - 1];
+
+			switch (value.ToLowerInvariant().Trim())
 			{
-				case "": return null;
 				case "linear": return Linear;
 				case "sinin": return SinIn;
 				case "sinout": return SinOut;

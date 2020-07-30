@@ -17,10 +17,15 @@ namespace Xamarin.Forms.Core.XamlC
 				yield break;
 			}
 
+			value = value?.Trim() ?? "";
+			var parts = value.Split('.');
+			if (parts.Length == 2 && parts[0] == nameof(Easing))
+				value = parts[parts.Length - 1];
+
 			var assemblyTypeInfo = ("Xamarin.Forms.Core", "Xamarin.Forms", nameof(Easing));
-			var easing = value?.Trim();
+			
 			var module = context.Body.Method.Module;
-			var fieldReference = module.ImportFieldReference(assemblyTypeInfo, easing, isStatic: true, caseSensitive: false);
+			var fieldReference = module.ImportFieldReference(assemblyTypeInfo, value, isStatic: true, caseSensitive: false);
 
 			if (fieldReference != null)
 			{
