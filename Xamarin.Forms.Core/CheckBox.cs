@@ -34,10 +34,15 @@ namespace Xamarin.Forms
 
 		protected internal override void ChangeVisualState()
 		{
-			base.ChangeVisualState();
-
 			if (IsEnabled && IsChecked)
-				VisualStateManager.GoToState(this, IsCheckedVisualState);
+			{
+				if (!VisualStateManager.GoToState(this, IsCheckedVisualState))
+					VisualStateManager.GoToState(this, "Normal");
+			}
+			else
+			{ 
+				base.ChangeVisualState();
+			}
 		}
 
 		public event EventHandler<CheckedChangedEventArgs> CheckedChanged;

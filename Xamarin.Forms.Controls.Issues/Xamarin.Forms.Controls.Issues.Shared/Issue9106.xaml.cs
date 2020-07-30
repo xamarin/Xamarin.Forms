@@ -19,17 +19,6 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 9106, "[Bug] Checked CheckBox does not update VisualState properly")]
 	public partial class Issue9106 : TestContentPage
 	{
-#if UITEST
-		[Test]
-		[NUnit.Framework.Category(UITestCategories.ManualReview)]
-		public void Issue3798Test()
-		{
-			RunningApp.WaitForElement("listViewSeparatorColor");
-			RunningApp.Screenshot("Green ListView Separator");
-			RunningApp.Tap(q => q.Marked("item1"));
-			RunningApp.Screenshot("Red ListView Separator");
-		}
-#endif
 		public Issue9106()
 		{
 			InitializeComponent();
@@ -51,7 +40,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public Issue9106ViewModel()
 		{
 			CheckboxIsEnabled = false;
-			CheckboxIsChecked = false;
+			CheckboxIsChecked = true;
 		}
 
 		public ICommand ToggleCheckboxIsEnabledCommand => new Command(ToggleCheckboxIsEnabled);

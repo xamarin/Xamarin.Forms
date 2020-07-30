@@ -4,6 +4,7 @@
                        xmlns:local="clr-namespace:Xamarin.Forms.Controls"
                        x:Class="Xamarin.Forms.Controls.Issues.Issue9106">
     <StackLayout Orientation="Vertical">
+        <Label Text="Although we did not define a visual state for IsChecked, we return to Normal state when IsChecked is true and we toggle IsEnabled from false to true."/>
         <Button Text="Toggle IsEnabled" Command="{Binding ToggleCheckboxIsEnabledCommand}"/>
         <CheckBox x:Name="CheckBoxUnderTest"
                   IsChecked="{Binding CheckboxIsChecked}"
