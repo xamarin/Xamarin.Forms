@@ -146,9 +146,9 @@ namespace Xamarin.Forms
 			BindableProperty.CreateAttached("UnselectedColor", typeof(Color), typeof(Shell), Color.Default,
 				propertyChanged: OnColorValueChanged);
 
-		//public static readonly BindableProperty FlyoutBackdropColorProperty =
-		//	BindableProperty.CreateAttached("FlyoutBackdropColor", typeof(Color), typeof(Shell), Color.Default,
-		//		propertyChanged: OnColorValueChanged);
+		public static readonly BindableProperty FlyoutBackdropProperty =
+			BindableProperty.CreateAttached("FlyoutBackdrop", typeof(Brush), typeof(Shell), Brush.Default,
+				propertyChanged: OnColorValueChanged);
 
 		public static Color GetBackgroundColor(BindableObject obj) => (Color)obj.GetValue(BackgroundColorProperty);
 		public static void SetBackgroundColor(BindableObject obj, Color value) => obj.SetValue(BackgroundColorProperty, value);
@@ -180,8 +180,8 @@ namespace Xamarin.Forms
 		public static Color GetUnselectedColor(BindableObject obj) => (Color)obj.GetValue(UnselectedColorProperty);
 		public static void SetUnselectedColor(BindableObject obj, Color value) => obj.SetValue(UnselectedColorProperty, value);
 
-		//public static Color GetFlyoutBackdropColor(BindableObject obj) => (Color)obj.GetValue(FlyoutBackdropColorProperty);
-		//public static void SetFlyoutBackdropColor(BindableObject obj, Color value) => obj.SetValue(FlyoutBackdropColorProperty, value);
+		public static Brush GetFlyoutBackdrop(BindableObject obj) => (Brush)obj.GetValue(FlyoutBackdropProperty);
+		public static void SetFlyoutBackdrop(BindableObject obj, Brush value) => obj.SetValue(FlyoutBackdropProperty, value);
 
 		static void OnColorValueChanged(BindableObject bindable, object oldValue, object newValue)
 		{
@@ -634,6 +634,10 @@ namespace Xamarin.Forms
 			List<string> routeStack = new List<string>();
 
 			bool stackAtRoot = sectionStack == null || sectionStack.Count <= 1;
+			bool hasUserDefinedRoute =
+				(Routing.IsUserDefined(shellItem)) ||
+				(Routing.IsUserDefined(shellSection)) ||
+				(Routing.IsUserDefined(shellContent));
 
 			if (shellItem != null)
 			{
@@ -656,7 +660,7 @@ namespace Xamarin.Forms
 						for (int i = 1; i < sectionStack.Count; i++)
 						{
 							var page = sectionStack[i];
-							routeStack.AddRange(CollapsePath(Routing.GetRoute(page), routeStack));
+							routeStack.AddRange(CollapsePath(Routing.GetRoute(page), routeStack, hasUserDefinedRoute));
 						}
 					}
 
@@ -666,11 +670,11 @@ namespace Xamarin.Forms
 						{
 							var topPage = modalStack[i];
 
-							routeStack.AddRange(CollapsePath(Routing.GetRoute(topPage), routeStack));
+							routeStack.AddRange(CollapsePath(Routing.GetRoute(topPage), routeStack, hasUserDefinedRoute));
 
 							for (int j = 1; j < topPage.Navigation.NavigationStack.Count; j++)
 							{
-								routeStack.AddRange(CollapsePath(Routing.GetRoute(topPage.Navigation.NavigationStack[j]), routeStack));
+								routeStack.AddRange(CollapsePath(Routing.GetRoute(topPage.Navigation.NavigationStack[j]), routeStack, hasUserDefinedRoute));
 							}
 						}
 					}
@@ -683,12 +687,16 @@ namespace Xamarin.Forms
 			return String.Join("/", routeStack);
 
 
-			List<string> CollapsePath(string myRoute, List<string> currentRouteStack)
+			List<string> CollapsePath(
+				string myRoute, 
+				List<string> currentRouteStack,
+				bool userDefinedRoute)
 			{
 				for (var i = currentRouteStack.Count - 1; i >= 0; i--)
 				{
 					var route = currentRouteStack[i];
-					if (Routing.IsImplicit(route) || Routing.IsDefault(route))
+					if (Routing.IsImplicit(route) || 
+						(Routing.IsDefault(route) && userDefinedRoute))
 						currentRouteStack.RemoveAt(i);
 				}
 
@@ -730,6 +738,9 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty FlyoutBackgroundColorProperty =
 			BindableProperty.Create(nameof(FlyoutBackgroundColor), typeof(Color), typeof(Shell), Color.Default, BindingMode.OneTime);
+
+		public static readonly BindableProperty FlyoutBackgroundProperty =
+			BindableProperty.Create(nameof(FlyoutBackground), typeof(Brush), typeof(Shell), Brush.Default, BindingMode.OneTime);
 
 		public static readonly BindableProperty FlyoutHeaderBehaviorProperty =
 			BindableProperty.Create(nameof(FlyoutHeaderBehavior), typeof(FlyoutHeaderBehavior), typeof(Shell), FlyoutHeaderBehavior.Default, BindingMode.OneTime);
@@ -791,10 +802,31 @@ namespace Xamarin.Forms
 					try
 					{
 						var location = CurrentState.Location;
-						if (ShellUriHandler.GetNavigationRequest(this, ((ShellNavigationState)location).FullLocation, false) != null)
-							await GoToAsync(location, false);
+						var navRequest = ShellUriHandler.GetNavigationRequest(this, ((ShellNavigationState)location).FullLocation, false);
 
-						return;
+						if (navRequest != null)
+						{
+							var item = navRequest.Request.Item;
+							var section = navRequest.Request.Section;
+							var Content = navRequest.Request.Content;
+
+							if (IsValidRoute(item) && IsValidRoute(section) && IsValidRoute(Content))
+							{
+								await GoToAsync(location, false);
+								return;
+							}
+
+							bool IsValidRoute(BaseShellItem baseShellItem)
+							{
+								if (baseShellItem == null)
+									return true;
+
+								if (!baseShellItem.IsVisible)
+									return false;
+
+								return baseShellItem.IsPartOfVisibleTree();
+							}
+						}
 					}
 					catch (Exception exc)
 					{
@@ -865,11 +897,17 @@ namespace Xamarin.Forms
 			set => SetValue(FlyoutBackgroundColorProperty, value);
 		}
 
-		//public Color FlyoutBackdropColor
-		//{
-		//	get => (Color)GetValue(FlyoutBackdropColorProperty);
-		//	set => SetValue(FlyoutBackdropColorProperty, value);
-		//}
+		public Brush FlyoutBackground
+		{
+			get => (Brush)GetValue(FlyoutBackgroundProperty);
+			set => SetValue(FlyoutBackgroundProperty, value);
+		}
+
+		public Brush FlyoutBackdrop
+		{
+			get => (Brush)GetValue(FlyoutBackdropProperty);
+			set => SetValue(FlyoutBackdropProperty, value);
+		}
 
 		public FlyoutBehavior FlyoutBehavior
 		{
@@ -974,18 +1012,27 @@ namespace Xamarin.Forms
 
 			foreach (var shellItem in ShellController.GetItems())
 			{
+				if (!FlyoutItem.GetIsVisible(shellItem))
+					continue;
+
 				if (shellItem.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
 				{
 					IncrementGroup();
 
 					foreach (var shellSection in (shellItem as IShellItemController).GetItems())
 					{
+						if (!FlyoutItem.GetIsVisible(shellSection))
+							continue;
+
 						if (shellSection.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
 						{
 							IncrementGroup();
 
 							foreach (var shellContent in shellSection.Items)
 							{
+								if (!FlyoutItem.GetIsVisible(shellContent))
+									continue;
+
 								currentGroup.Add(shellContent);
 								if (shellContent == shellSection.CurrentItem)
 								{
