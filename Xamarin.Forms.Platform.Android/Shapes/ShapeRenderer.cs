@@ -40,6 +40,7 @@ namespace Xamarin.Forms.Platform.Android
                 UpdateStrokeDashOffset();
                 UpdateStrokeLineCap();
                 UpdateStrokeLineJoin();
+                UpdateStrokeMiterLimit();
             }
         }
 
@@ -73,6 +74,8 @@ namespace Xamarin.Forms.Platform.Android
                 UpdateStrokeLineCap();
             else if (args.PropertyName == Shape.StrokeLineJoinProperty.PropertyName)
                 UpdateStrokeLineJoin();
+            else if (args.PropertyName == Shape.StrokeMiterLimitProperty.PropertyName)
+                UpdateStrokeMiterLimit();
         }
 
         public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
@@ -97,12 +100,12 @@ namespace Xamarin.Forms.Platform.Android
 
         void UpdateFill()
         {
-            Control.UpdateFill(Element.Fill.ToAndroid());
+            Control.UpdateFill(Element.Fill);
         }
 
         void UpdateStroke()
         {
-            Control.UpdateStroke(Element.Stroke.ToAndroid());
+            Control.UpdateStroke(Element.Stroke);
         }
 
         void UpdateStrokeThickness()
@@ -161,6 +164,11 @@ namespace Xamarin.Forms.Platform.Android
 
             Control.UpdateStrokeLineJoin(aLineJoin);
         }
+
+        void UpdateStrokeMiterLimit()
+        {
+            Control.UpdateStrokeMiterLimit((float)Element.StrokeMiterLimit);
+        }
     }
 
     public class ShapeView : AView
@@ -172,8 +180,11 @@ namespace Xamarin.Forms.Platform.Android
         readonly RectF _pathFillBounds;
         readonly RectF _pathStrokeBounds;
 
-        AColor _stroke;
-        AColor _fill;
+        Brush _stroke;
+        Brush _fill;
+
+        Shader _strokeShader;
+        Shader _fillShader;
 
         float _strokeWidth;
         float[] _strokeDash;
@@ -211,7 +222,27 @@ namespace Xamarin.Forms.Platform.Android
             if (_fill != null)
             {
                 _drawable.Paint.SetStyle(Paint.Style.Fill);
-                _drawable.Paint.Color = _fill;
+
+                if (_fill is GradientBrush fillGradientBrush)
+                {
+                    if (fillGradientBrush is LinearGradientBrush linearGradientBrush)
+                        _fillShader = CreateLinearGradient(linearGradientBrush, _pathFillBounds);
+
+                    if (fillGradientBrush is RadialGradientBrush radialGradientBrush)
+                        _fillShader = CreateRadialGradient(radialGradientBrush, _pathFillBounds);
+
+                    _drawable.Paint.SetShader(_fillShader);
+                }
+                else
+                {
+                    AColor fillColor = Color.Default.ToAndroid();
+
+                    if (_fill is SolidColorBrush solidColorBrush && solidColorBrush.Color != Color.Default)
+                        fillColor = solidColorBrush.Color.ToAndroid();
+
+                    _drawable.Paint.Color = fillColor;
+                }
+
                 _drawable.Draw(canvas);
                 _drawable.Paint.SetShader(null);
             }
@@ -219,7 +250,29 @@ namespace Xamarin.Forms.Platform.Android
             if (_stroke != null)
             {
                 _drawable.Paint.SetStyle(Paint.Style.Stroke);
-                _drawable.Paint.Color = _stroke;
+
+                if (_stroke is GradientBrush strokeGradientBrush)
+                {
+                    UpdatePathStrokeBounds();
+
+                    if (strokeGradientBrush is LinearGradientBrush linearGradientBrush)
+                        _strokeShader = CreateLinearGradient(linearGradientBrush, _pathStrokeBounds);
+
+                    if (strokeGradientBrush is RadialGradientBrush radialGradientBrush)
+                        _strokeShader = CreateRadialGradient(radialGradientBrush, _pathStrokeBounds);
+
+                    _drawable.Paint.SetShader(_strokeShader);
+                }
+                else
+                {
+                    AColor strokeColor = Color.Default.ToAndroid();
+
+                    if (_stroke is SolidColorBrush solidColorBrush && solidColorBrush.Color != Color.Default)
+                        strokeColor = solidColorBrush.Color.ToAndroid();
+
+                    _drawable.Paint.Color = strokeColor;
+                }
+
                 _drawable.Draw(canvas);
                 _drawable.Paint.SetShader(null);
             }
@@ -259,18 +312,22 @@ namespace Xamarin.Forms.Platform.Android
         public void UpdateAspect(Stretch aspect)
         {
             _aspect = aspect;
+            _fillShader = null;
+            _strokeShader = null;
             Invalidate();
         }
 
-        public void UpdateFill(AColor fill)
+        public void UpdateFill(Brush fill)
         {
             _fill = fill;
+            _fillShader = null;
             Invalidate();
         }
 
-        public void UpdateStroke(AColor stroke)
+        public void UpdateStroke(Brush stroke)
         {
             _stroke = stroke;
+            _strokeShader = null;
             Invalidate();
         }
 
@@ -288,7 +345,7 @@ namespace Xamarin.Forms.Platform.Android
         }
 
         public void UpdateStrokeDashOffset(float strokeDashOffset)
-		{
+        {
             _strokeDashOffset = strokeDashOffset;
             UpdateStrokeDash();
         }
@@ -322,6 +379,12 @@ namespace Xamarin.Forms.Platform.Android
             Invalidate();
         }
 
+        public void UpdateStrokeMiterLimit(float strokeMiterLimit)
+        {
+            _drawable.Paint.StrokeMiter = strokeMiterLimit * 2;
+            UpdatePathStrokeBounds();
+        }
+
         public void UpdateSize(double width, double height)
         {
             _drawable.SetBounds(0, 0, (int)(width * _density), (int)(height * _density));
@@ -351,6 +414,7 @@ namespace Xamarin.Forms.Platform.Android
                 _pathFillBounds.SetEmpty();
             }
 
+            _fillShader = null;
             UpdatePathStrokeBounds();
         }
 
@@ -406,7 +470,66 @@ namespace Xamarin.Forms.Platform.Android
                 _pathStrokeBounds.SetEmpty();
             }
 
+            _strokeShader = null;
             Invalidate();
+        }
+
+        LinearGradient CreateLinearGradient(LinearGradientBrush linearGradientBrush, RectF pathBounds)
+        {
+            if (_path == null)
+                return null;
+
+            int[] colors = new int[linearGradientBrush.GradientStops.Count];
+            float[] offsets = new float[linearGradientBrush.GradientStops.Count];
+
+            for (int index = 0; index < linearGradientBrush.GradientStops.Count; index++)
+            {
+                colors[index] = linearGradientBrush.GradientStops[index].Color.ToAndroid();
+                offsets[index] = linearGradientBrush.GradientStops[index].Offset;
+            }
+
+            Shader.TileMode tilemode = Shader.TileMode.Clamp;
+
+            using (RectF gradientBounds = new RectF(pathBounds))
+            {
+                return new
+                    LinearGradient(
+                    (float)linearGradientBrush.StartPoint.X * gradientBounds.Width() + gradientBounds.Left,
+                    (float)linearGradientBrush.StartPoint.Y * gradientBounds.Height() + gradientBounds.Top,
+                    (float)linearGradientBrush.EndPoint.X * gradientBounds.Width() + gradientBounds.Left,
+                    (float)linearGradientBrush.EndPoint.Y * gradientBounds.Height() + gradientBounds.Top,
+                    colors,
+                    offsets,
+                    tilemode);
+            }
+        }
+
+        RadialGradient CreateRadialGradient(RadialGradientBrush radialGradientBrush, RectF pathBounds)
+        {
+            if (_path == null)
+                return null;
+
+            int gradientStopsCount = radialGradientBrush.GradientStops.Count;
+            AColor centerColor = gradientStopsCount > 0 ? radialGradientBrush.GradientStops[0].Color.ToAndroid() : Color.Default.ToAndroid();
+            AColor edgeColor = gradientStopsCount > 0 ? radialGradientBrush.GradientStops[gradientStopsCount - 1].Color.ToAndroid() : Color.Default.ToAndroid();
+
+            float[] offsets = new float[radialGradientBrush.GradientStops.Count];
+
+            for (int index = 0; index < radialGradientBrush.GradientStops.Count; index++)
+                offsets[index] = radialGradientBrush.GradientStops[index].Offset;
+
+            Shader.TileMode tilemode = Shader.TileMode.Clamp;
+
+            using (RectF gradientBounds = new RectF(pathBounds))
+            {
+                return new RadialGradient(
+                    (float)radialGradientBrush.Center.X * gradientBounds.Width() + gradientBounds.Left,
+                    (float)radialGradientBrush.Center.Y * gradientBounds.Height() + gradientBounds.Top,
+                    (float)radialGradientBrush.Radius * Math.Max(gradientBounds.Height(), gradientBounds.Width()),
+                    centerColor,
+                    edgeColor,
+                    tilemode);
+            }
         }
     }
 }
