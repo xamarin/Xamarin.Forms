@@ -5,9 +5,9 @@ using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+using WBrush = Windows.UI.Xaml.Media.Brush;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.InputView;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -15,14 +15,15 @@ namespace Xamarin.Forms.Platform.UWP
 	public class EntryRenderer : ViewRenderer<Entry, FormsTextBox>
 	{
 		bool _fontApplied;
-		Brush _backgroundColorFocusedDefaultBrush;
-		Brush _placeholderDefaultBrush;
-		Brush _textDefaultBrush;
-		Brush _defaultTextColorFocusBrush;
-		Brush _defaultPlaceholderColorFocusBrush;
+		WBrush _backgroundColorFocusedDefaultBrush;
+		WBrush _placeholderDefaultBrush;
+		WBrush _textDefaultBrush;
+		WBrush _defaultTextColorFocusBrush;
+		WBrush _defaultPlaceholderColorFocusBrush;
 		bool _cursorPositionChangePending;
 		bool _selectionLengthChangePending;
 		bool _nativeSelectionIsUpdating;
+		string _transformedText;
 
 		IElementController ElementController => Element as IElementController;
 
@@ -107,7 +108,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Entry.TextProperty.PropertyName)
+			if (e.IsOneOf(Entry.TextProperty, Entry.TextTransformProperty))
 				UpdateText();
 			else if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
 				UpdateIsPassword();
@@ -171,7 +172,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnNativeTextChanged(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs args)
 		{
-			Element.SetValueCore(Entry.TextProperty, Control.Text);
+			if (Control.Text == _transformedText)
+				return;
+			_transformedText = Element.UpdateFormsText(Control.Text, Element.TextTransform);
+			Element.SetValueCore(Entry.TextProperty, _transformedText);
 		}
 
 		void TextBoxOnKeyUp(object sender, KeyRoutedEventArgs args)
@@ -292,7 +296,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateText()
 		{
-			Control.Text = Element.Text ?? "";
+			Control.Text = _transformedText = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 		}
 
 		void UpdateTextColor()
