@@ -966,7 +966,8 @@ namespace Xamarin.Forms
 			}
 			else
 			{
-				VisualStateManager.GoToState(this, VisualStateManager.CommonStates.Normal);
+				if(!VisualStateManager.GoToState(this, VisualStateManager.CommonStates.Normal))
+					VisualStateManager.ResetCommonStatesGroupSetters(this);
 			}
 		}
 
