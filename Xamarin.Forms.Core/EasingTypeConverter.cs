@@ -17,21 +17,24 @@ namespace Xamarin.Forms
 			if (parts.Length == 2 && parts[0] == nameof(Easing))
 				value = parts[parts.Length - 1];
 
-			switch (value.ToLowerInvariant().Trim())
+			switch (value)
 			{
-				case "linear": return Linear;
-				case "sinin": return SinIn;
-				case "sinout": return SinOut;
-				case "sininout": return SinInOut;
-				case "cubicin": return CubicIn;
-				case "cubicout": return CubicOut;
-				case "cubicinout": return CubicInOut;
-				case "bouncein": return BounceIn;
-				case "bounceout": return BounceOut;
-				case "springin": return SpringIn;
-				case "springout": return SpringOut;
+				case string easing when AreEqual(easing, nameof(Linear)): return Linear;
+				case string easing when AreEqual(easing, nameof(SinIn)): return SinIn;
+				case string easing when AreEqual(easing, nameof(SinOut)): return SinOut;
+				case string easing when AreEqual(easing, nameof(SinInOut)): return SinInOut;
+				case string easing when AreEqual(easing, nameof(CubicIn)): return CubicIn;
+				case string easing when AreEqual(easing, nameof(CubicOut)): return CubicOut;
+				case string easing when AreEqual(easing, nameof(CubicInOut)): return CubicInOut;
+				case string easing when AreEqual(easing, nameof(BounceIn)): return BounceIn;
+				case string easing when AreEqual(easing, nameof(BounceOut)): return BounceOut;
+				case string easing when AreEqual(easing, nameof(SpringIn)): return SpringIn;
+				case string easing when AreEqual(easing, nameof(SpringOut)): return SpringOut;
 				default: throw new InvalidOperationException($"Cannot convert \"{value}\" into {typeof(Easing)}");
 			}
 		}
+
+		bool AreEqual(string first, string second)
+			=> first.Equals(second, StringComparison.OrdinalIgnoreCase);
 	}
 }
