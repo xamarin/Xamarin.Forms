@@ -16,7 +16,7 @@ namespace Xamarin.Forms
 
 			value = value?.Trim() ?? "";
 			var parts = value.Split('.');
-			if (parts.Length == 2 && parts[0].Equals(nameof(Easing), StringComparison.OrdinalIgnoreCase))
+			if (parts.Length == 2 && parts[0] == nameof(Easing))
 				value = parts[parts.Length - 1];
 
 			if (value.Equals(nameof(Linear), StringComparison.OrdinalIgnoreCase))
