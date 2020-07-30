@@ -37,10 +37,11 @@ namespace Xamarin.Forms
 			if (IsEnabled && IsChecked)
 			{
 				if (!VisualStateManager.GoToState(this, IsCheckedVisualState))
-					VisualStateManager.GoToState(this, "Normal");
+					if(!VisualStateManager.GoToState(this, VisualStateManager.CommonStates.Normal))
+						VisualStateManager.ResetCommonStatesGroupSetters(this);
 			}
 			else
-			{ 
+			{
 				base.ChangeVisualState();
 			}
 		}

@@ -17,6 +17,8 @@ namespace Xamarin.Forms
 			public const string Selected = "Selected";
 		}
 
+		public const string CommonStatesGroupName = "CommonStates";
+
 		public static readonly BindableProperty VisualStateGroupsProperty =
 			BindableProperty.CreateAttached("VisualStateGroups", typeof(VisualStateGroupList), typeof(VisualElement),
 				defaultValue: null, propertyChanged: VisualStateGroupsPropertyChanged,
@@ -46,6 +48,35 @@ namespace Xamarin.Forms
 		public static void SetVisualStateGroups(VisualElement visualElement, VisualStateGroupList value)
 		{
 			visualElement.SetValue(VisualStateGroupsProperty, value);
+		}
+
+		// Use this as a fallback if the user did not define all the common states and got into an undesireable state
+		public static bool ResetCommonStatesGroupSetters(VisualElement visualElement)
+		{
+			if (!visualElement.HasVisualStateGroups())
+			{
+				return false;
+			}
+
+			var groups = (IList<VisualStateGroup>)visualElement.GetValue(VisualStateGroupsProperty);
+
+			foreach (VisualStateGroup group in groups)
+			{
+				if (group.Name == CommonStatesGroupName)
+				{
+					if (group.CurrentState != null)
+					{
+						foreach (Setter setter in group.CurrentState.Setters)
+						{
+							setter.UnApply(visualElement);
+						}
+						group.CurrentState = null;
+						return true;
+					}
+				}
+			}
+
+			return false;
 		}
 
 		public static bool GoToState(VisualElement visualElement, string name)
