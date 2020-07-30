@@ -3,6 +3,7 @@ using AppKit;
 using System.ComponentModel;
 using CoreGraphics;
 using Xamarin.Forms.Platform.macOS.Controls;
+using Foundation;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
@@ -34,13 +35,24 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			// Draw min track
 			var minTrackPath = NSBezierPath.FromRoundedRect(minTrackRect, radius, radius);
-			var minTrackColor = MinimumTrackColor.IsDefault ? NSColor.ControlAccentColor : MinimumTrackColor.ToNSColor();
+
+			var defaultMinTrackColor = Color.Accent.ToNSColor();
+
+			if (Forms.IsMojaveOrNewer)
+				defaultMinTrackColor = NSColor.ControlAccentColor;
+
+			var minTrackColor = MinimumTrackColor.IsDefault ? defaultMinTrackColor : MinimumTrackColor.ToNSColor();
 			minTrackColor.SetFill();
 			minTrackPath.Fill();
 
+			var defaultMaxTrackColor = NSColor.ControlShadow;
+
+			if (Forms.IsMojaveOrNewer)
+				defaultMaxTrackColor = NSColor.SeparatorColor;
+
 			// Draw max track
 			var maxTrackPath = NSBezierPath.FromRoundedRect(maxTrackRect, radius, radius);
-			var maxTrackColor = MaximumTrackColor.IsDefault ? NSColor.ControlShadow : MaximumTrackColor.ToNSColor();
+			var maxTrackColor = MaximumTrackColor.IsDefault ? defaultMaxTrackColor : MaximumTrackColor.ToNSColor();
 			maxTrackColor.SetFill();
 			maxTrackPath.Fill();
 		}
@@ -57,11 +69,22 @@ namespace Xamarin.Forms.Platform.MacOS
 			var path = new NSBezierPath();
 			path.AppendPathWithRoundedRect(knobRect, radius, radius);
 			// Draw inside
-			var knobColor = ThumbColor.IsDefault ? NSColor.ControlLightHighlight : ThumbColor.ToNSColor();
+
+			var defaultKnobColor = NSColor.ControlLightHighlight;
+
+			if (Forms.IsMojaveOrNewer)
+				defaultKnobColor = NSColor.Highlight;
+
+			var knobColor = ThumbColor.IsDefault ? defaultKnobColor : ThumbColor.ToNSColor();
 			knobColor.SetFill();
 			path.Fill();
+
 			// Draw border
-			NSColor.ControlShadow.SetStroke();
+			if (Forms.IsMojaveOrNewer)
+				NSColor.ControlShadow.SetStroke();
+			else
+				NSColor.SeparatorColor.SetStroke();
+
 			path.Stroke();
 		}
 	}
@@ -79,8 +102,9 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (Control == null)
 				{
 					SetNativeControl(new FormsNSSlider());
-					Control.Activated += OnControlActivated;
 					Control.Cell = new FormsSliderCell();
+					Control.Action = new ObjCRuntime.Selector(nameof(ValueChanged));
+					Control.Target = this;
 				}
 
 				UpdateMaximum();
@@ -147,13 +171,18 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				_disposed = true;
 				if (Control != null)
-					Control.Activated -= OnControlActivated;
+				{
+					Control.Target = null;
+					Control.Action = null;
+				}
 			}
 
 			base.Dispose(disposing);
 		}
 
-		void OnControlActivated(object sender, EventArgs eventArgs)
+
+		[Export(nameof(ValueChanged))]
+		void ValueChanged()
 		{
 			ElementController?.SetValueFromRenderer(Slider.ValueProperty, Control.DoubleValue);
 

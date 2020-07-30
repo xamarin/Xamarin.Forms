@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{ABA078C4-F9BB-4924-8B2B-10FE0D2F5491}</ProjectGuid>
@@ -11,6 +11,11 @@
     <RootNamespace>Xamarin.Forms.Maps.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
     <AssemblyName>Xamarin.Forms.Maps.iOS</AssemblyName>
+    <!-- 
+        This is needed for non SDK style project so the IDE will pick the correct LangVersion.
+        Once this is an SDK style project it will pick this up from the Directory.Build.Props file correctly
+     -->
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -65,6 +70,9 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
+  <ItemGroup Condition="'$(Use2017)' == 'true'">
+    <Reference Include="netstandard" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Condition="'$(CI)' == 'true'" Include="Xamarin.Build.TypeRedirector" Version="0.1.2-preview" PrivateAssets="all" />
   </ItemGroup>

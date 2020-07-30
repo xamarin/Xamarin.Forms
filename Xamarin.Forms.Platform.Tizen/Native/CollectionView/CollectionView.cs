@@ -4,13 +4,15 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using ElmSharp;
 using EBox = ElmSharp.Box;
+using ERect = ElmSharp.Rect;
 using EScroller = ElmSharp.Scroller;
 using ESize = ElmSharp.Size;
 using EPoint = ElmSharp.Point;
+using ElmSharp.Wearable;
 
 namespace Xamarin.Forms.Platform.Tizen.Native
 {
-	public class CollectionView : EBox, ICollectionViewController
+	public class CollectionView : EBox, ICollectionViewController, IRotaryInteraction
 	{
 		RecyclerPool _pool = new RecyclerPool();
 		ICollectionViewLayoutManager _layoutManager;
@@ -27,8 +29,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		SnapPointsType _snapPoints;
 		ESize _itemSize = new ESize(-1, -1);
 
+		public event EventHandler<ItemsViewScrolledEventArgs> Scrolled;
+
 		public CollectionView(EvasObject parent) : base(parent)
 		{
+			AllowFocus(true);
 			SetLayoutCallback(OnLayout);
 			Scroller = CreateScroller(parent);
 			Scroller.Show();
@@ -40,6 +45,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			_innerLayout.Show();
 			Scroller.SetContent(_innerLayout);
 		}
+
+		public IRotaryActionWidget RotaryWidget { get => Scroller as IRotaryActionWidget; }
 
 		public CollectionViewSelectionMode SelectionMode
 		{
@@ -98,6 +105,18 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			}
 		}
 
+		public ScrollBarVisiblePolicy VerticalScrollBarVisiblePolicy
+		{
+			get => Scroller.VerticalScrollBarVisiblePolicy;
+			set => Scroller.VerticalScrollBarVisiblePolicy = value;
+		}
+
+		public ScrollBarVisiblePolicy HorizontalScrollBarVisiblePolicy
+		{
+			get => Scroller.HorizontalScrollBarVisiblePolicy;
+			set => Scroller.HorizontalScrollBarVisiblePolicy = value;
+		}
+
 		int ICollectionViewController.Count
 		{
 			get
@@ -116,7 +135,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		protected ESize AllocatedSize { get; set; }
 
-		Rect ViewPort => Scroller.CurrentRegion;
+		ERect ViewPort => Scroller.CurrentRegion;
 
 		public void ScrollTo(int index, ScrollToPosition position = ScrollToPosition.MakeVisible, bool animate = true)
 		{
@@ -242,6 +261,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			return Adaptor.MeasureItem(index, widthConstraint, heightConstraint);
 		}
 
+		protected virtual ViewHolder CreateViewHolder()
+		{
+			return new ViewHolder(this);
+		}
+
 		ViewHolder ICollectionViewController.RealizeView(int index)
 		{
 			if (Adaptor == null)
@@ -255,7 +279,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			else
 			{
 				var content = Adaptor.CreateNativeView(index, this);
-				holder = new ViewHolder(this);
+				holder = CreateViewHolder();
 				holder.RequestSelected += OnRequestItemSelection;
 				holder.Content = content;
 				holder.ViewCategory = Adaptor.GetViewCategory(index);
@@ -314,7 +338,14 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		protected virtual EScroller CreateScroller(EvasObject parent)
 		{
-			return new EScroller(parent);
+			if (Device.Idiom == TargetIdiom.Watch)
+			{
+				return new CircleScroller(parent, Forms.CircleSurface);
+			}
+			else
+			{
+				return new EScroller(parent);
+			}
 		}
 
 		void UpdateSelectedItemIndex()
@@ -360,6 +391,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			_itemSize = new ESize(-1, -1);
 			_layoutManager.CollectionView = this;
 			_layoutManager.SizeAllocated(AllocatedSize);
+			UpdateSnapPointsType(SnapPointsType);
 			RequestLayoutItems();
 		}
 
@@ -386,7 +418,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			_itemSize = new ESize(-1, -1);
 			Adaptor.CollectionView = this;
 			(Adaptor as INotifyCollectionChanged).CollectionChanged += OnCollectionChanged;
-			
+
+			UpdateSnapPointsType(SnapPointsType);
 			LayoutManager?.ItemSourceUpdated();
 			RequestLayoutItems();
 
@@ -472,7 +505,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			RequestLayoutItems();
 		}
 
-		Rect _lastGeometry;
+		ERect _lastGeometry;
 		void OnLayout()
 		{
 			if (_lastGeometry == Geometry)
@@ -490,6 +523,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			{
 				_layoutManager?.SizeAllocated(Geometry.Size);
 				_layoutManager?.LayoutItems(ViewPort);
+
+				UpdateSnapPointsType(SnapPointsType);
 			}
 		}
 
@@ -522,32 +557,59 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			_innerLayout.MinimumHeight = size.Height;
 		}
 
+		int _previousHorizontalOffset = 0;
+		int _previousVerticalOffset = 0;
 		void OnScrolled(object sender, EventArgs e)
 		{
-			_layoutManager.LayoutItems(Scroller.CurrentRegion);
+			_layoutManager.LayoutItems(ViewPort);
+			var args = new ItemsViewScrolledEventArgs();
+			args.FirstVisibleItemIndex = _layoutManager.GetVisibleItemIndex(ViewPort.X, ViewPort.Y);
+			args.CenterItemIndex = _layoutManager.GetVisibleItemIndex(ViewPort.X + (ViewPort.Width / 2), ViewPort.Y + (ViewPort.Height / 2));
+			args.LastVisibleItemIndex = _layoutManager.GetVisibleItemIndex(ViewPort.X + ViewPort.Width, ViewPort.Y + ViewPort.Height);
+			args.HorizontalOffset = ViewPort.X;
+			args.HorizontalDelta = ViewPort.X - _previousHorizontalOffset;
+			args.VerticalOffset = ViewPort.Y;
+			args.VerticalDelta = ViewPort.Y - _previousVerticalOffset;
+
+			Scrolled?.Invoke(this, args);
+
+			_previousHorizontalOffset = ViewPort.X;
+			_previousVerticalOffset = ViewPort.Y;
 		}
 
 		void UpdateSnapPointsType(SnapPointsType snapPoints)
 		{
-			var itemSize = new ESize(0, 0);
+			if (LayoutManager == null)
+				return;
+
+			int itemSize = 0;
 			switch (snapPoints)
 			{
 				case SnapPointsType.None:
 					Scroller.HorizontalPageScrollLimit = 0;
 					Scroller.VerticalPageScrollLimit = 0;
+					itemSize = 0;
 					break;
 				case SnapPointsType.MandatorySingle:
 					Scroller.HorizontalPageScrollLimit = 1;
 					Scroller.VerticalPageScrollLimit = 1;
-					itemSize = (this as ICollectionViewController).GetItemSize();
+					itemSize = LayoutManager.GetScrollBlockSize();
 					break;
 				case SnapPointsType.Mandatory:
 					Scroller.HorizontalPageScrollLimit = 0;
 					Scroller.VerticalPageScrollLimit = 0;
-					itemSize = (this as ICollectionViewController).GetItemSize();
+					itemSize = LayoutManager.GetScrollBlockSize();
 					break;
 			}
-			Scroller.SetPageSize(itemSize.Width, itemSize.Height);
+
+			if (LayoutManager.IsHorizontal)
+			{
+				Scroller.SetPageSize(itemSize , 0);
+			}
+			else
+			{
+				Scroller.SetPageSize(0, itemSize);
+			}
 		}
 
 		void CreateEmptyView()

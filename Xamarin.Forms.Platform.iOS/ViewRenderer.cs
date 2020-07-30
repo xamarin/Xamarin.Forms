@@ -5,6 +5,7 @@ using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 
 #if __MOBILE__
+using UIKit;
 using NativeColor = UIKit.UIColor;
 using NativeControl = UIKit.UIControl;
 using NativeView = UIKit.UIView;
@@ -135,6 +136,9 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (Control != null && e.OldElement != null && e.OldElement.BackgroundColor != e.NewElement.BackgroundColor || e.NewElement.BackgroundColor != Color.Default)
 					SetBackgroundColor(e.NewElement.BackgroundColor);
 
+				if(Control != null && e.OldElement != null && e.OldElement.Background != e.NewElement.Background)
+					SetBackground(e.NewElement.Background);
+
 				e.NewElement.FocusChangeRequested += ViewOnFocusChangeRequested;
 			}
 
@@ -150,6 +154,8 @@ namespace Xamarin.Forms.Platform.MacOS
 					UpdateIsEnabled();
 				else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 					SetBackgroundColor(Element.BackgroundColor);
+				else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+					SetBackground(Element.Background);
 				else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 					UpdateFlowDirection();
 			}
@@ -204,6 +210,14 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 		}
 
+		protected override void SetBackground(Brush brush)
+		{
+			if (IsElementOrControlEmpty)
+				return;
+
+			Control.UpdateBackground(brush);
+		}
+
 		protected void SetNativeControl(TNativeView uiview)
 		{
 			_controlChanging?.Invoke(this, EventArgs.Empty);
@@ -223,6 +237,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			UpdateBackgroundColor();
 
+			UpdateBackground();
+
 			UpdateIsEnabled();
 
 			UpdateFlowDirection();
@@ -233,6 +249,16 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 #if __MOBILE__
+		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+		{
+			base.TraitCollectionDidChange(previousTraitCollection);
+#if __XCODE11__
+			// Make sure the control adheres to changes in UI theme
+			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				Control?.SetNeedsDisplay();
+#endif
+		}
+
 		internal override void SendVisualElementInitialized(VisualElement element, NativeView nativeView)
 		{
 			base.SendVisualElementInitialized(element, Control);
@@ -246,6 +272,14 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (Element.BackgroundColor != Color.Default)
 				SetBackgroundColor(Element.BackgroundColor);
+		}
+
+		void UpdateBackground()
+		{
+			if (IsElementOrControlEmpty)
+				return;
+
+			SetBackground(Element.Background);
 		}
 
 		void UpdateIsEnabled()

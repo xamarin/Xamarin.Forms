@@ -8,7 +8,7 @@ using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android.CollectionView
 {
-	public class RecyclerViewScrollListener<TItemsView, TItemsViewSource> : RecyclerView.OnScrollListener 
+	public class RecyclerViewScrollListener<TItemsView, TItemsViewSource> : RecyclerView.OnScrollListener
 		where TItemsView : ItemsView
 		where TItemsViewSource : IItemsViewSource
 	{
@@ -16,11 +16,18 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 		int _horizontalOffset, _verticalOffset;
 		TItemsView _itemsView;
 		ItemsViewAdapter<TItemsView, TItemsViewSource> _itemsViewAdapter;
+		bool _getCenteredItemOnXAndY = false;
 
-		public RecyclerViewScrollListener(TItemsView itemsView, ItemsViewAdapter<TItemsView, TItemsViewSource> itemsViewAdapter)
+		public RecyclerViewScrollListener(TItemsView itemsView, ItemsViewAdapter<TItemsView, TItemsViewSource> itemsViewAdapter) : this(itemsView, itemsViewAdapter, false)
+		{
+
+		}
+
+		public RecyclerViewScrollListener(TItemsView itemsView, ItemsViewAdapter<TItemsView, TItemsViewSource> itemsViewAdapter, bool getCenteredItemOnXAndY)
 		{
 			_itemsView = itemsView;
 			_itemsViewAdapter = itemsViewAdapter;
+			_getCenteredItemOnXAndY = getCenteredItemOnXAndY;
 		}
 
 		public override void OnScrolled(RecyclerView recyclerView, int dx, int dy)
@@ -42,7 +49,7 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 			{
 				firstVisibleItemIndex = linearLayoutManager.FindFirstVisibleItemPosition();
 				lastVisibleItemIndex = linearLayoutManager.FindLastVisibleItemPosition();
-				centerItemIndex = CalculateCenterItemIndex(firstVisibleItemIndex, recyclerView, linearLayoutManager);
+				centerItemIndex = recyclerView.CalculateCenterItemIndex(firstVisibleItemIndex, linearLayoutManager, _getCenteredItemOnXAndY);
 			}
 
 			var context = recyclerView.Context;
@@ -77,31 +84,6 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 						_itemsView.SendRemainingItemsThresholdReached();
 					break;
 			}
-		}
-
-		static int CalculateCenterItemIndex(int firstVisibleItemIndex, RecyclerView recyclerView, LinearLayoutManager linearLayoutManager)
-		{
-			// This can happen if a layout pass has not happened yet
-			if (firstVisibleItemIndex == -1)
-				return firstVisibleItemIndex;
-
-			AView centerView;
-
-			if (linearLayoutManager.Orientation == LinearLayoutManager.Horizontal)
-			{
-				float centerX = recyclerView.Width / 2;
-				centerView = recyclerView.FindChildViewUnder(centerX, recyclerView.Top);
-			}
-			else
-			{
-				float centerY = recyclerView.Height / 2;
-				centerView = recyclerView.FindChildViewUnder(recyclerView.Left, centerY);
-			}
-
-			if (centerView != null)
-				return recyclerView.GetChildAdapterPosition(centerView);
-
-			return firstVisibleItemIndex;
 		}
 
 		protected override void Dispose(bool disposing)

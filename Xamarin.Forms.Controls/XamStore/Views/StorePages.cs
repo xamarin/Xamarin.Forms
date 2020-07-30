@@ -201,6 +201,10 @@ namespace Xamarin.Forms.Controls.XamStore
 					RemoveTopTab),
 				1, 13);
 
+			grid.Children.Add(MakeButton("Flow Direction",
+					ChangeFlowDirection),
+				2, 13);
+
 			grid.Children.Add(MakeSwitch("Nav Visible", out _navBarVisibleSwitch), 0, 14);
 			grid.Children.Add(MakeSwitch("Tab Visible", out _tabBarVisibleSwitch), 1, 14);
 
@@ -270,8 +274,17 @@ namespace Xamarin.Forms.Controls.XamStore
 			grid.Children.Add(MakeButton("bg color",
 				() => Shell.Current.FlyoutBackgroundColor = Color.DarkGreen),
 			1, 18);
-			grid.Children.Add(MakeButton("bg aFit",
-				() => Shell.Current.FlyoutBackgroundImageAspect = Aspect.AspectFit),
+			grid.Children.Add(MakeButton("bg brush",
+				() => Shell.Current.FlyoutBackground = new LinearGradientBrush
+				{
+					StartPoint = new Point(0, 0),
+					EndPoint = new Point(1, 0),
+					GradientStops = new GradientStopCollection
+					{
+						new GradientStop { Color = Color.Orange, Offset = 0.2f },
+						new GradientStop { Color = Color.OrangeRed, Offset = 0.8f }
+					}
+				}),
 			2, 18);
 			grid.Children.Add(MakeButton("bg aFill",
 				() => Shell.Current.FlyoutBackgroundImageAspect = Aspect.AspectFill),
@@ -303,14 +316,43 @@ namespace Xamarin.Forms.Controls.XamStore
 			Content = new ScrollView { Content = grid };
 
 
-            grid.Children.Add(MakeButton("Hide Nav Shadow",
+			Brush nextBrush = SolidColorBrush.Purple;
+			grid.Children.Add(MakeButton("FlyoutBackdrop Brush",
+					() =>
+					{
+						if(nextBrush == SolidColorBrush.Purple)
+						{
+							LinearGradientBrush linearGradientBrush = new LinearGradientBrush();
+							linearGradientBrush.StartPoint = new Point(0, 0);
+							linearGradientBrush.EndPoint = new Point(1, 1);
+
+							linearGradientBrush.GradientStops.Add(new GradientStop(Color.FromHex("#8A2387"), 0.1f));
+							linearGradientBrush.GradientStops.Add(new GradientStop(Color.FromHex("#E94057"), 0.6f));
+							linearGradientBrush.GradientStops.Add(new GradientStop(Color.FromHex("#F27121"), 1.0f));
+
+							nextBrush = linearGradientBrush;
+						}
+						else if(nextBrush is LinearGradientBrush)
+						{
+							nextBrush = Brush.Default;
+						}
+						else
+						{
+							nextBrush = SolidColorBrush.Purple;
+						}
+
+						Shell.SetFlyoutBackdrop(Shell.Current, nextBrush);
+					}),
+				0, 21);
+
+			grid.Children.Add(MakeButton("Hide Nav Shadow",
                     () => Shell.SetNavBarHasShadow(this, false)),
                 1, 21);
 
             grid.Children.Add(MakeButton("Show Nav Shadow",
                     () => Shell.SetNavBarHasShadow(this, true)),
                 2, 21);
-        }
+		}
 
 		Switch _navBarVisibleSwitch;
 		Switch _tabBarVisibleSwitch;
@@ -325,6 +367,16 @@ namespace Xamarin.Forms.Controls.XamStore
 					(control = new Switch {IsToggled = true})
 				}
 			};
+		}
+
+		private void ChangeFlowDirection()
+		{
+			var ve = (Shell)Parent.Parent.Parent.Parent;
+
+			if (ve.FlowDirection != FlowDirection.RightToLeft)
+				ve.FlowDirection = FlowDirection.RightToLeft;
+			else
+				ve.FlowDirection = FlowDirection.LeftToRight;
 		}
 
 		private void RemoveTopTab()

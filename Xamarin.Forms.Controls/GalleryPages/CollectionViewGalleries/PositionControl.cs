@@ -38,9 +38,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			var layout = new Grid
 			{
 				RowDefinitions = new RowDefinitionCollection {
-								new RowDefinition { Height = 30 },
-								new RowDefinition { Height = GridLength.Auto },
-								new RowDefinition { Height = GridLength.Auto },
+								new RowDefinition { Height = 20 },
+								new RowDefinition { Height = 20 },
+								new RowDefinition { Height = 20 },
 					},
 				ColumnDefinitions = new ColumnDefinitionCollection
 					{
@@ -75,7 +75,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		{
 			if (itemsCount > 0)
 				_slider.Maximum = itemsCount - 1;
+		}
 
+		public void UpdatePosition(int position)
+		{
+			_slider.Value = position;
 		}
 	}
 }

@@ -11,10 +11,10 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 		}
 
-		public SwitchCellRenderer() : this("default")
+		public SwitchCellRenderer() : this(Device.Idiom == TargetIdiom.Watch ? "1text.1icon.1" : "default")
 		{
 			MainPart = "elm.text";
-			SwitchPart = "elm.swallow.end";
+			SwitchPart = Device.Idiom == TargetIdiom.Watch ? "elm.icon" : "elm.swallow.end";
 		}
 
 		protected string MainPart { get; set; }
@@ -59,6 +59,13 @@ namespace Xamarin.Forms.Platform.Tizen
 				{
 					nativeView.PropagateEvents = false;
 				}
+
+				_cacheCandidate[nativeView] = toggle;
+				nativeView.Deleted += (sender, e) =>
+				{
+					_cacheCandidate.Remove(sender as EvasObject);
+				};
+
 				return nativeView;
 			}
 			return null;

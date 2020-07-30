@@ -12,7 +12,6 @@ namespace Xamarin.Forms.Platform.Android
 	public class SliderRenderer : ViewRenderer<Slider, SeekBar>, SeekBar.IOnSeekBarChangeListener
 	{
 		double _max, _min;
-		bool _isTrackingChange;
 		ColorStateList defaultprogresstintlist, defaultprogressbackgroundtintlist;
 		ColorFilter defaultthumbcolorfilter;
 		Drawable defaultthumb;
@@ -38,19 +37,17 @@ namespace Xamarin.Forms.Platform.Android
 
 		void SeekBar.IOnSeekBarChangeListener.OnProgressChanged(SeekBar seekBar, int progress, bool fromUser)
 		{
-			if (_isTrackingChange)
+			if (fromUser)
 				((IElementController)Element).SetValueFromRenderer(Slider.ValueProperty, Value);
 		}
 
 		void SeekBar.IOnSeekBarChangeListener.OnStartTrackingTouch(SeekBar seekBar)
 		{
-			_isTrackingChange = true;
 			((ISliderController)Element)?.SendDragStarted();
 		}
 
 		void SeekBar.IOnSeekBarChangeListener.OnStopTrackingTouch(SeekBar seekBar)
 		{
-			_isTrackingChange = false;
 			((ISliderController)Element)?.SendDragCompleted();
 		}
 
@@ -99,6 +96,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			base.OnElementPropertyChanged(sender, e);
 
 			Slider view = Element;

@@ -21,6 +21,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using AColor = Android.Graphics.Color;
+using ARect = Android.Graphics.Rect;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
 
@@ -275,7 +276,7 @@ namespace Xamarin.Forms.Platform.Android
 			var fragment = _currentRenderer.Fragment;
 
 			Profile.FramePartition("Transaction");
-			FragmentTransaction transaction = manager.BeginTransaction();
+			FragmentTransaction transaction = manager.BeginTransactionEx();
 
 			if (animate)
 				transaction.SetTransitionEx((int)global::Android.App.FragmentTransit.EnterMask);
@@ -356,11 +357,14 @@ namespace Xamarin.Forms.Platform.Android
 					color = Color.FromHex("#03A9F4").ToAndroid();
 				}
 
-				Profile.FramePartition("Create SplitDrawable");
-				var split = new SplitDrawable(color, statusBarHeight, navigationBarHeight);
-
-				Profile.FramePartition("SetBackground");
-				decorView.SetBackground(split);
+				if (!(decorView.Background is SplitDrawable splitDrawable) ||
+					splitDrawable.Color != color || splitDrawable.TopSize != statusBarHeight || splitDrawable.BottomSize != navigationBarHeight)
+				{
+					Profile.FramePartition("Create SplitDrawable");
+					var split = new SplitDrawable(color, statusBarHeight, navigationBarHeight);
+					Profile.FramePartition("SetBackground");
+					decorView.SetBackground(split);
+				}
 			}
 
 			Profile.FrameEnd("UpdtStatBarClr");
@@ -368,15 +372,15 @@ namespace Xamarin.Forms.Platform.Android
 
 		class SplitDrawable : Drawable
 		{
-			readonly int _bottomSize;
-			readonly AColor _color;
-			readonly int _topSize;
+			public int BottomSize { get; }
+			public AColor Color { get; }
+			public int TopSize { get; }
 
 			public SplitDrawable(AColor color, int topSize, int bottomSize)
 			{
-				_color = color;
-				_bottomSize = bottomSize;
-				_topSize = topSize;
+				Color = color;
+				BottomSize = bottomSize;
+				TopSize = topSize;
 			}
 
 			public override int Opacity => (int)Format.Opaque;
@@ -388,11 +392,11 @@ namespace Xamarin.Forms.Platform.Android
 				using (var paint = new Paint())
 				{
 
-					paint.Color = _color;
+					paint.Color = Color;
 
-					canvas.DrawRect(new Rect(0, 0, bounds.Right, _topSize), paint);
+					canvas.DrawRect(new ARect(0, 0, bounds.Right, TopSize), paint);
 
-					canvas.DrawRect(new Rect(0, bounds.Bottom - _bottomSize, bounds.Right, bounds.Bottom), paint);
+					canvas.DrawRect(new ARect(0, bounds.Bottom - BottomSize, bounds.Right, bounds.Bottom), paint);
 
 					paint.Dispose();
 				}
@@ -425,7 +429,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (_currentRenderer != null && _currentRenderer.Fragment.IsAlive())
 				{
-					FragmentTransaction transaction = FragmentManager.BeginTransaction();
+					FragmentTransaction transaction = FragmentManager.BeginTransactionEx();
 					transaction.RemoveEx(_currentRenderer.Fragment);
 					transaction.CommitAllowingStateLossEx();
 					FragmentManager.ExecutePendingTransactionsEx();

@@ -67,6 +67,15 @@ namespace Xamarin.Forms.Controls
 			};
 		}
 
+
+		void GetMapRegionClicked(object sender, EventArgs e)
+		{
+			if (Map.VisibleRegion == null)
+				DisplayAlert(":(", "VisibleRegion is null, move the map to get it!", "OK");
+			else
+				DisplayAlert(":)", $"Lat: {Map.VisibleRegion.Center.Latitude}, Long: {Map.VisibleRegion.Center.Longitude}, move the map to get it!", "OK");
+		}
+
 		void MarkerClicked(object sender, PinClickedEventArgs e)
 		{
 			LastMarkerClickLabel.Text = $"Last Marker Clicked: {((Pin)sender).Label}";
@@ -172,6 +181,12 @@ namespace Xamarin.Forms.Controls
 		{
 			Map.MoveToLastRegionOnLayoutChange = !Map.MoveToLastRegionOnLayoutChange;
 			((Button)sender).Text = Map.MoveToLastRegionOnLayoutChange.ToString();
+		}
+
+		void ShowTrafficToggled(object sender, ToggledEventArgs e)
+		{
+			var control = (Switch)sender;
+			Map.TrafficEnabled = control.IsToggled;
 		}
 	}
 }

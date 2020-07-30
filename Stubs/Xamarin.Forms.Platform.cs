@@ -54,11 +54,7 @@ namespace Xamarin.Forms.Platform
 	[RenderWith(typeof(ImageButtonRenderer))]
 	internal class _ImageButtonRenderer { }
 
-#if __ANDROID__
 	[RenderWith(typeof(RadioButtonRenderer))]
-#elif !TIZEN4_0
-	[RenderWith(typeof(RadioButtonRenderer))]
-#endif
 	internal class _RadioButtonRenderer { }
 
 	[RenderWith (typeof (TableViewRenderer))]
@@ -124,9 +120,7 @@ namespace Xamarin.Forms.Platform
 	internal class _CheckBoxRenderer { }
 #endif
 
-#if !TIZEN4_0
 	[RenderWith(typeof(IndicatorViewRenderer))]
-#endif
 	internal class _IndicatorViewRenderer { }
 
 #if __IOS__
@@ -180,6 +174,26 @@ namespace Xamarin.Forms.Platform
 
 	[RenderWith(typeof(SwipeViewRenderer))]
 	internal class _SwipeViewRenderer { }
+
+#if !TIZEN4_0
+	[RenderWith(typeof(PathRenderer))]
+	internal class _PathRenderer { }
+	
+	[RenderWith(typeof(EllipseRenderer))]
+	internal class _EllipseRenderer { }
+
+	[RenderWith(typeof(LineRenderer))]
+	internal class _LineRenderer { }
+
+	[RenderWith(typeof(PolylineRenderer))]
+	internal class _PolylineRenderer { }
+
+	[RenderWith(typeof(PolygonRenderer))]
+	internal class _PolygonRenderer { }
+
+	[RenderWith(typeof(RectangleRenderer))]
+	internal class _RectangleRenderer { }
+#endif
 }
 
 

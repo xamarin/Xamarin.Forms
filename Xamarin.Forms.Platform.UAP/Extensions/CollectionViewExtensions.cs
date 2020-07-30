@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using WRect = Windows.Foundation.Rect;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -20,8 +16,8 @@ namespace Xamarin.Forms.Platform.UWP
 			if (element.Visibility != Visibility.Visible)
 				return false;
 
-			var elementBounds = element.TransformToVisual(container).TransformBounds(new Rect(0, 0, element.ActualWidth, element.ActualHeight));
-			var containerBounds = new Rect(0, 0, container.ActualWidth, container.ActualHeight);
+			var elementBounds = element.TransformToVisual(container).TransformBounds(new WRect(0, 0, element.ActualWidth, element.ActualHeight));
+			var containerBounds = new WRect(0, 0, container.ActualWidth, container.ActualHeight);
 
 			switch (itemsLayoutOrientation)
 			{
@@ -34,33 +30,42 @@ namespace Xamarin.Forms.Platform.UWP
 			};
 		}
 
-		public static (int firstVisibleItemIndex, int lastVisibleItemIndex, int centerItemIndex) GetVisibleIndexes(ListViewBase listViewBase, ItemsLayoutOrientation itemsLayoutOrientation)
+		public static (int firstVisibleItemIndex, int lastVisibleItemIndex, int centerItemIndex) GetVisibleIndexes(this ListViewBase listViewBase, ItemsLayoutOrientation itemsLayoutOrientation , bool goingNext)
 		{
 			int firstVisibleItemIndex = -1;
 			int lastVisibleItemIndex = -1;
-			int centerItemIndex = -1;
-
-			var scrollViewer = listViewBase.GetFirstDescendant<ScrollViewer>();
-			var presenters = listViewBase.GetChildren<ListViewItemPresenter>();
-
-			if (presenters != null || scrollViewer == null)
+			
+			var itemsPanel = (listViewBase.ItemsPanelRoot as ItemsStackPanel);
+			if (itemsPanel != null)
 			{
-				int count = 0;
-				foreach (ListViewItemPresenter presenter in presenters)
-				{
-					if (CollectionViewExtensions.IsListViewItemVisible(presenter, scrollViewer, itemsLayoutOrientation))
-					{
-						if (firstVisibleItemIndex == -1)
-							firstVisibleItemIndex = count;
-
-						lastVisibleItemIndex = count;
-					}
-
-					count++;
-				}
-
-				centerItemIndex = (lastVisibleItemIndex + firstVisibleItemIndex) / 2;
+				firstVisibleItemIndex = itemsPanel.FirstVisibleIndex;
+				lastVisibleItemIndex = itemsPanel.LastVisibleIndex;
 			}
+			else
+			{
+				var scrollViewer = listViewBase.GetFirstDescendant<ScrollViewer>();
+				var presenters = listViewBase.GetChildren<ListViewItemPresenter>();
+
+				if (presenters != null || scrollViewer == null)
+				{
+					int count = 0;
+					foreach (ListViewItemPresenter presenter in presenters)
+					{
+						if (IsListViewItemVisible(presenter, scrollViewer, itemsLayoutOrientation))
+						{
+							if (firstVisibleItemIndex == -1)
+								firstVisibleItemIndex = count;
+
+							lastVisibleItemIndex = count;
+						}
+
+						count++;
+					}
+				}
+			}
+
+			double center = (lastVisibleItemIndex + firstVisibleItemIndex) / 2.0;
+			int centerItemIndex = goingNext ? (int)Math.Ceiling(center) : (int)Math.Floor(center);
 
 			return (firstVisibleItemIndex, lastVisibleItemIndex, centerItemIndex);
 		}

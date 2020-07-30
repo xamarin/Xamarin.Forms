@@ -11,11 +11,11 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class PageRenderer : UIViewController, IVisualElementRenderer, IEffectControlProvider, IAccessibilityElementsController, IShellContentInsetObserver
 	{
-		bool _appeared;
 		bool _disposed;
 		EventTracker _events;
 		VisualElementPackager _packager;
 		VisualElementTracker _tracker;
+		PageLifecycleManager _pageLifecycleManager;
 
 		// storing this into a local variable causes it to not get collected. Do not delete this please		
 		PageContainer _pageContainer;
@@ -49,38 +49,36 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Container == null || Element == null)
 				return null;
 
-			var children = Element.Descendants();
 			SortedDictionary<int, List<ITabStopElement>> tabIndexes = null;
-			List<NSObject> views = new List<NSObject>();
-			foreach (var child in children)
+			foreach (var child in Element.LogicalChildren)
 			{
 				if (!(child is VisualElement ve))
 					continue;
 
-				tabIndexes = ve.GetSortedTabIndexesOnParentPage(out _);
+				tabIndexes = ve.GetSortedTabIndexesOnParentPage();
 				break;
 			}
 
 			if (tabIndexes == null)
 				return null;
 
+			// Just return all elements on the page in order.
+			if (tabIndexes.Count <= 1)
+				return null;
+
+			var views = new List<NSObject>();
 			foreach (var idx in tabIndexes?.Keys)
 			{
 				var tabGroup = tabIndexes[idx];
 				foreach (var child in tabGroup)
 				{
-					if (
-						!(
-							child is VisualElement ve && ve.IsTabStop
-							&& AutomationProperties.GetIsInAccessibleTree(ve) != false // accessible == true
-							&& ve.GetRenderer()?.NativeView is UIView view)
-						 )
+					if (!(child is VisualElement ve && ve.GetRenderer()?.NativeView is UIView view))
 						continue;
 
-					var thisControl = view;
+					UIView thisControl = null;
 
-					if (view is ITabStop tabstop)
-						thisControl = tabstop.TabStop;
+					if (view is ITabStop tabStop)
+						thisControl = tabStop.TabStop;
 
 					if (thisControl == null)
 						continue;
@@ -112,6 +110,8 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateTitle();
 
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
+
+			_pageLifecycleManager = new PageLifecycleManager(Element as IPageController);
 
 			if (element != null)
 			{
@@ -189,33 +189,31 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidAppear(animated);
 
-			if (_appeared || _disposed)
+			if (_disposed)
 				return;
 
-			_appeared = true;
 			UpdateStatusBarPrefersHidden();
+
 			if (Forms.RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden)
 				SetNeedsUpdateOfHomeIndicatorAutoHidden();
 
 			if (Element.Parent is CarouselPage)
 				return;
 
-			Page.SendAppearing();
+			_pageLifecycleManager?.HandlePageAppearing();
 		}
 
 		public override void ViewDidDisappear(bool animated)
 		{
 			base.ViewDidDisappear(animated);
 
-			if (!_appeared || _disposed)
+			if (_disposed)
 				return;
-
-			_appeared = false;
 
 			if (Element.Parent is CarouselPage)
 				return;
 
-			Page.SendDisappearing();
+			_pageLifecycleManager?.HandlePageDisappearing();
 		}
 
 		public override void ViewDidLoad()
@@ -270,10 +268,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 				Element.PropertyChanged -= OnHandlePropertyChanged;
 				Platform.SetRenderer(Element, null);
-				if (_appeared)
-					Page.SendDisappearing();
 
-				_appeared = false;
+				_pageLifecycleManager?.Dispose();
+				_pageLifecycleManager = null;
 
 				if (_events != null)
 				{
@@ -316,7 +313,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnHandlePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
 				UpdateBackground();
 			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground();
@@ -356,6 +353,16 @@ namespace Xamarin.Forms.Platform.iOS
 						return UIKit.UIStatusBarAnimation.None;
 				}
 			}
+		}
+
+		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+		{
+			base.TraitCollectionDidChange(previousTraitCollection);
+
+#if __XCODE11__
+			if (Forms.IsiOS13OrNewer && previousTraitCollection.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				Application.Current?.TriggerThemeChanged(new AppThemeChangedEventArgs(Application.Current.RequestedTheme));
+#endif
 		}
 
 		bool ShouldUseSafeArea()
@@ -500,10 +507,22 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (bgImage != null)
 					NativeView.BackgroundColor = UIColor.FromPatternImage(bgImage);
-				else if (Element.BackgroundColor.IsDefault)
-					NativeView.BackgroundColor = UIColor.White;
 				else
-					NativeView.BackgroundColor = Element.BackgroundColor.ToUIColor();
+				{
+					Brush background = Element.Background;
+
+					if (!Brush.IsNullOrEmpty(background))
+						NativeView.UpdateBackground(Element.Background);
+					else
+					{
+						Color backgroundColor = Element.BackgroundColor;
+
+						if (backgroundColor.IsDefault)
+							NativeView.BackgroundColor = UIColor.White;
+						else
+							NativeView.BackgroundColor = backgroundColor.ToUIColor();
+					}
+				}
 			});
 		}
 
