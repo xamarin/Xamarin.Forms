@@ -8,13 +8,13 @@
     <ContentPage.Content>
         <StackLayout>
             
-        
             <Grid RadioButtonGroup.GroupName="{Binding GroupName}" 
-                         RadioButtonGroup.Selection="{Binding Selection}">
+                         RadioButtonGroup.SelectedValue="{Binding Selection}">
 
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>
                     <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
@@ -29,10 +29,12 @@
                 <Label Text="{Binding GroupName, StringFormat='The GroupName is {0}'}" Grid.Row="1" />
                 <Label Text="{Binding Selection, StringFormat='The Selection is {0}'}" Grid.Row="1" Grid.Column="1" />
 
-                <RadioButton Text="Option A" Grid.Row="2"></RadioButton>
-                <RadioButton Text="Option B" Grid.Row="2" Grid.Column="1"></RadioButton>
-                <RadioButton Text="Option C" Grid.Row="3"></RadioButton>
-                <RadioButton Text="Option D" Grid.Row="3" Grid.Column="1"></RadioButton>
+                <RadioButton Text="Option A" Value="A" Grid.Row="2"></RadioButton>
+                <RadioButton Text="Option B" Value="B" Grid.Row="2" Grid.Column="1"></RadioButton>
+                <RadioButton Text="Option C" Value="C" Grid.Row="3"></RadioButton>
+                <RadioButton Text="Option D" Value="D" Grid.Row="3" Grid.Column="1"></RadioButton>
+
+                <Button Margin="5" Grid.ColumnSpan="2" Grid.Row="4" Text="Set selection in view model to 'B'" Clicked="Button_Clicked"></Button>
             </Grid>
         </StackLayout>
     </ContentPage.Content>

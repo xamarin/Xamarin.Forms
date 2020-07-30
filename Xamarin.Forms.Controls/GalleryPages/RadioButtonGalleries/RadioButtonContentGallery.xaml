@@ -40,8 +40,8 @@
                 <RadioButton.ControlTemplate>
                     <ControlTemplate>
                         <StackLayout Orientation="Horizontal">
-                            <Line x:Name="NormalEllipse" InputTransparent="True" Stroke="Black" StrokeThickness="2" X1="0" Y1="0" X2="50" Y2="50"></Line>
-                            <Line x:Name="CheckMark" InputTransparent="True" TranslationX="-50" Opacity="0" Stroke="Red" StrokeThickness="2" X1="50" Y1="0" X2="0" Y2="50"></Line>
+                            <Line x:Name="UncheckedButton" InputTransparent="True" Stroke="Black" StrokeThickness="2" X1="0" Y1="0" X2="50" Y2="50"></Line>
+                            <Line x:Name="CheckedIndicator" InputTransparent="True" TranslationX="-50" Opacity="0" Stroke="Red" StrokeThickness="2" X1="50" Y1="0" X2="0" Y2="50"></Line>
                             <ContentPresenter></ContentPresenter>
                         </StackLayout>
                     </ControlTemplate>
@@ -55,8 +55,8 @@
                 <RadioButton.ControlTemplate>
                     <ControlTemplate>
                         <StackLayout Orientation="Horizontal">
-                            <Line x:Name="NormalEllipse" InputTransparent="True" Stroke="Black" StrokeThickness="2" X1="0" Y1="0" X2="50" Y2="50"></Line>
-                            <Line x:Name="CheckMark" InputTransparent="True" TranslationX="-50" Opacity="0" Stroke="Red" StrokeThickness="2" X1="50" Y1="0" X2="0" Y2="50"></Line>
+                            <Line x:Name="UncheckedButton" InputTransparent="True" Stroke="Black" StrokeThickness="2" X1="0" Y1="0" X2="50" Y2="50"></Line>
+                            <Line x:Name="CheckedIndicator" InputTransparent="True" TranslationX="-50" Opacity="0" Stroke="Red" StrokeThickness="2" X1="50" Y1="0" X2="0" Y2="50"></Line>
                             <ContentPresenter></ContentPresenter>
                         </StackLayout>
                     </ControlTemplate>

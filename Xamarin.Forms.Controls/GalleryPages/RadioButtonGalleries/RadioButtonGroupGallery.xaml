@@ -11,6 +11,17 @@
             <RadioButton Text="Option A" />
             <RadioButton Content="Option B" />
             <RadioButton Text="Option C" />
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Label Text="This RadioButton is inside a Grid"></Label>
+                <RadioButton Text="Option D" Grid.Column="1" />
+            </Grid>
+            
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

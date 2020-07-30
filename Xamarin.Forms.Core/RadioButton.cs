@@ -16,6 +16,9 @@ namespace Xamarin.Forms
 		public const string CheckedIndicator = "CheckedIndicator";
 		public const string UncheckedButton = "UncheckedButton";
 
+		internal const string GroupNameChangedMessage = "RadioButtonGroupNameChanged";
+		internal const string ValueChangedMessage = "RadioButtonValueChanged";
+
 		// Template Parts
 		TapGestureRecognizer _tapGestureRecognizer;
 		Shape _normalEllipse;
@@ -31,7 +34,11 @@ namespace Xamarin.Forms
 		public event EventHandler<CheckedChangedEventArgs> CheckedChanged;
 
 		public static readonly BindableProperty ContentProperty =
-		  BindableProperty.Create(nameof(Content), typeof(object), typeof(RadioButton), null);
+			BindableProperty.Create(nameof(Content), typeof(object), typeof(RadioButton), null);
+
+		public static readonly BindableProperty ValueProperty =
+			BindableProperty.Create(nameof(Value), typeof(object), typeof(RadioButton), null,
+			propertyChanged: (b, o, n) => ((RadioButton)b).OnValuePropertyChanged());
 
 		public static readonly BindableProperty IsCheckedProperty = BindableProperty.Create(
 			nameof(IsChecked), typeof(bool), typeof(RadioButton), false, 
@@ -71,6 +78,12 @@ namespace Xamarin.Forms
 		{
 			get => GetValue(ContentProperty)?.ToString();
 			set => SetValue(ContentProperty, value);
+		}
+
+		public object Value
+		{
+			get => GetValue(ValueProperty);
+			set => SetValue(ValueProperty, value);
 		}
 
 		public bool IsChecked
@@ -347,15 +360,65 @@ namespace Xamarin.Forms
 			CheckedChanged?.Invoke(this, new CheckedChangedEventArgs(isChecked));
 		}
 
+		void OnValuePropertyChanged()
+		{
+			if (!IsChecked || string.IsNullOrEmpty(GroupName))
+			{
+				return;
+			}
+
+			MessagingCenter.Send(this, ValueChangedMessage,
+						new RadioButtonValueChanged(RadioButtonGroup.GetVisualRoot(this)));
+		}
+
 		void OnGroupNamePropertyChanged(string oldGroupName, string newGroupName)
 		{
-			// Unregister the old group name if set
-			if (!string.IsNullOrEmpty(oldGroupName))
-				RadioButtonGroup.Unregister(this, oldGroupName);
-
-			// Register the new group name is set
 			if (!string.IsNullOrEmpty(newGroupName))
-				RadioButtonGroup.Register(this, newGroupName);
+			{
+				if (string.IsNullOrEmpty(oldGroupName))
+				{
+					MessagingCenter.Subscribe<RadioButton, RadioButtonGroupSelectionChanged>(this,
+						RadioButtonGroup.GroupSelectionChangedMessage, HandleRadioButtonGroupSelectionChanged);
+					MessagingCenter.Subscribe<Layout<View>, RadioButtonGroupValueChanged>(this,
+						RadioButtonGroup.GroupValueChangedMessage, HandleRadioButtonGroupValueChanged);
+				}
+
+				MessagingCenter.Send(this, GroupNameChangedMessage,
+					new RadioButtonGroupNameChanged(RadioButtonGroup.GetVisualRoot(this), oldGroupName));
+			}
+			else
+			{
+				if (!string.IsNullOrEmpty(oldGroupName))
+				{
+					MessagingCenter.Unsubscribe<RadioButton, RadioButtonGroupSelectionChanged>(this, RadioButtonGroup.GroupSelectionChangedMessage);
+					MessagingCenter.Unsubscribe<Layout<View>, RadioButtonGroupValueChanged>(this, RadioButtonGroup.GroupValueChangedMessage);
+				}
+			}
+		}
+
+		bool MatchesScope(RadioButtonScopeMessage message)
+		{
+			return RadioButtonGroup.GetVisualRoot(this) == message.Scope;
+		}
+
+		void HandleRadioButtonGroupSelectionChanged(RadioButton selected, RadioButtonGroupSelectionChanged args)
+		{
+			if (!IsChecked || selected == this || string.IsNullOrEmpty(GroupName) || GroupName != selected.GroupName || !MatchesScope(args))
+			{
+				return;
+			}
+
+			IsChecked = false;
+		}
+
+		void HandleRadioButtonGroupValueChanged(Layout<View> layout, RadioButtonGroupValueChanged args)
+		{
+			if (IsChecked || string.IsNullOrEmpty(GroupName) || GroupName != args.GroupName || Value != args.Value || !MatchesScope(args))
+			{
+				return;
+			}
+
+			IsChecked = true;
 		}
 
 		static View BuildDefaultTemplate()
@@ -401,7 +464,6 @@ namespace Xamarin.Forms
 				HeightRequest = 11,
 				WidthRequest = 11,
 				Opacity = 0,
-				Margin = new Thickness(1, 1, 0, 0),
 				InputTransparent = true
 			};
 

@@ -6,17 +6,25 @@ namespace Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class RadioButtonGroupBindingGallery : ContentPage
 	{
+		RadioButtonGroupBindingModel _viewModel;
+
 		public RadioButtonGroupBindingGallery()
 		{
 			InitializeComponent();
-			BindingContext = new RadioButtonGroupBindingModel() { GroupName = "group1" };
+			_viewModel = new RadioButtonGroupBindingModel() { GroupName = "group1" };
+			BindingContext = _viewModel;
+		}
+
+		private void Button_Clicked(object sender, System.EventArgs e)
+		{
+			_viewModel.Selection = "B";
 		}
 	}
 
 	public class RadioButtonGroupBindingModel : INotifyPropertyChanged
 	{
 		private string _groupName;
-		private RadioButton _selection;
+		private object _selection;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
@@ -31,17 +39,17 @@ namespace Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries
 			set 
 			{ 
 				_groupName = value; 
-				OnPropertyChanged("GroupName"); 
+				OnPropertyChanged(nameof(GroupName)); 
 			} 
 		}
 
-		public RadioButton Selection
+		public object Selection
 		{
 			get => _selection;
 			set
 			{
 				_selection = value;
-				OnPropertyChanged("Selection");
+				OnPropertyChanged(nameof(Selection));
 			}
 		}
 	}
