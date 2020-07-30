@@ -8,13 +8,13 @@
         }
 
         public static readonly BindableProperty FillProperty =
-            BindableProperty.Create(nameof(Fill), typeof(Color), typeof(Shape), null);
+            BindableProperty.Create(nameof(Fill), typeof(Brush), typeof(Shape), null);
 
         public static readonly BindableProperty StrokeProperty =
-            BindableProperty.Create(nameof(Stroke), typeof(Color), typeof(Shape), null);
+            BindableProperty.Create(nameof(Stroke), typeof(Brush), typeof(Shape), null);
 
         public static readonly BindableProperty StrokeThicknessProperty =
-            BindableProperty.Create(nameof(StrokeThickness), typeof(double), typeof(Shape), 1.0);
+            BindableProperty.Create(nameof(StrokeThickness), typeof(double), typeof(Shape), 0.0);
 
         public static readonly BindableProperty StrokeDashArrayProperty =
             BindableProperty.Create(nameof(StrokeDashArray), typeof(DoubleCollection), typeof(Shape), null,
@@ -29,19 +29,22 @@
         public static readonly BindableProperty StrokeLineJoinProperty =
 			BindableProperty.Create(nameof(StrokeLineJoin), typeof(PenLineJoin), typeof(Shape), PenLineJoin.Miter);
 
+        public static readonly BindableProperty StrokeMiterLimitProperty =
+            BindableProperty.Create(nameof(StrokeMiterLimit), typeof(double), typeof(Shape), 10.0);
+
         public static readonly BindableProperty AspectProperty =
 			BindableProperty.Create(nameof(Aspect), typeof(Stretch), typeof(Shape), Stretch.None);
 
-        public Color Fill
+        public Brush Fill
         {
             set { SetValue(FillProperty, value); }
-            get { return (Color)GetValue(FillProperty); }
+            get { return (Brush)GetValue(FillProperty); }
         }
 
-        public Color Stroke
+        public Brush Stroke
         {
             set { SetValue(StrokeProperty, value); }
-            get { return (Color)GetValue(StrokeProperty); }
+            get { return (Brush)GetValue(StrokeProperty); }
         }
 
         public double StrokeThickness
@@ -72,6 +75,12 @@
         {
             set { SetValue(StrokeLineJoinProperty, value); }
             get { return (PenLineJoin)GetValue(StrokeLineJoinProperty); }
+        }
+
+        public double StrokeMiterLimit
+        {
+            set { SetValue(StrokeMiterLimitProperty, value); }
+            get { return (double)GetValue(StrokeMiterLimitProperty); }
         }
 
         public Stretch Aspect

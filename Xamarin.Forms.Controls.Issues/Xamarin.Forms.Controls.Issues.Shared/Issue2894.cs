@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
 	[NUnit.Framework.Category(UITestCategories.Gestures)]
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
 #endif
 	public class Issue2894 : TestContentPage
 	{
@@ -232,16 +233,34 @@ namespace Xamarin.Forms.Controls.Issues
 			for (int i = 1; i < 5; i++)
 			{
 				RunningApp.Tap($"TestSpan{i}");
-				RunningApp.TapCoordinates(target.X + 5, target.Y + 5);
+
+				// These tap retries work around a Tap Coordinate bug
+				// with Xamarin.UITest >= 3.0.7
+				int tapAttempts = 0;
+				do
+				{
+					RunningApp.TapCoordinates(target.X + 5, target.Y + 5);
+					if (tapAttempts == 4)
+						RunningApp.WaitForElement($"{kGesture1}{i}");
+
+					tapAttempts++;
+				} while (RunningApp.Query($"{kGesture1}{i}").Length == 0);
+
+				tapAttempts = 0;
+
+				do
+				{
 #if __WINDOWS__
-				RunningApp.TapCoordinates(target.X + target.Width - 10, target.Y + 2);
+					RunningApp.TapCoordinates(target.X + target.Width - 10, target.Y + 2);
 #else
-				RunningApp.TapCoordinates(target.X + target.CenterX, target.Y + 2);
+					RunningApp.TapCoordinates(target.X + target.CenterX, target.Y + 2);
 #endif
+					if (tapAttempts == 4)
+						RunningApp.WaitForElement($"{kGesture1}{i}");
 
+					tapAttempts++;
 
-				RunningApp.WaitForElement($"{kGesture1}{i}");
-				RunningApp.WaitForElement($"{kGesture2}{i}");
+				} while (RunningApp.Query($"{kGesture2}{i}").Length == 0);
 			}
 
 
