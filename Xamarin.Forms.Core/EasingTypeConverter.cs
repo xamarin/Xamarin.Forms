@@ -14,27 +14,33 @@ namespace Xamarin.Forms
 
 			value = value?.Trim() ?? "";
 			var parts = value.Split('.');
-			if (parts.Length == 2 && parts[0] == nameof(Easing))
+			if (parts.Length == 2 && parts[0].Equals(nameof(Easing), StringComparison.OrdinalIgnoreCase))
 				value = parts[parts.Length - 1];
 
-			switch (value)
-			{
-				case string easing when AreEqual(easing, nameof(Linear)): return Linear;
-				case string easing when AreEqual(easing, nameof(SinIn)): return SinIn;
-				case string easing when AreEqual(easing, nameof(SinOut)): return SinOut;
-				case string easing when AreEqual(easing, nameof(SinInOut)): return SinInOut;
-				case string easing when AreEqual(easing, nameof(CubicIn)): return CubicIn;
-				case string easing when AreEqual(easing, nameof(CubicOut)): return CubicOut;
-				case string easing when AreEqual(easing, nameof(CubicInOut)): return CubicInOut;
-				case string easing when AreEqual(easing, nameof(BounceIn)): return BounceIn;
-				case string easing when AreEqual(easing, nameof(BounceOut)): return BounceOut;
-				case string easing when AreEqual(easing, nameof(SpringIn)): return SpringIn;
-				case string easing when AreEqual(easing, nameof(SpringOut)): return SpringOut;
-				default: throw new InvalidOperationException($"Cannot convert \"{value}\" into {typeof(Easing)}");
-			}
-		}
+			if (value.Equals(nameof(Linear), StringComparison.OrdinalIgnoreCase))
+				return Linear;
+			if (value.Equals(nameof(SinIn), StringComparison.OrdinalIgnoreCase))
+				return SinIn;
+			if (value.Equals(nameof(SinOut), StringComparison.OrdinalIgnoreCase))
+				return SinOut;
+			if (value.Equals(nameof(SinInOut), StringComparison.OrdinalIgnoreCase))
+				return SinInOut;
+			if (value.Equals(nameof(CubicIn), StringComparison.OrdinalIgnoreCase))
+				return CubicIn;
+			if (value.Equals(nameof(CubicOut), StringComparison.OrdinalIgnoreCase))
+				return CubicOut;
+			if (value.Equals(nameof(CubicInOut), StringComparison.OrdinalIgnoreCase))
+				return CubicInOut;
+			if (value.Equals(nameof(BounceIn), StringComparison.OrdinalIgnoreCase))
+				return BounceIn;
+			if (value.Equals(nameof(BounceOut), StringComparison.OrdinalIgnoreCase))
+				return BounceOut;
+			if (value.Equals(nameof(SpringIn), StringComparison.OrdinalIgnoreCase))
+				return SpringIn;
+			if (value.Equals(nameof(SpringOut), StringComparison.OrdinalIgnoreCase))
+				return SpringOut;
 
-		bool AreEqual(string first, string second)
-			=> first.Equals(second, StringComparison.OrdinalIgnoreCase);
+			throw new InvalidOperationException($"Cannot convert \"{value}\" into {typeof(Easing)}");
+		}
 	}
 }
