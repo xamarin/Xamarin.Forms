@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using static Xamarin.Forms.Easing;
 
 namespace Xamarin.Forms
@@ -39,6 +41,15 @@ namespace Xamarin.Forms
 				return SpringIn;
 			if (value.Equals(nameof(SpringOut), StringComparison.OrdinalIgnoreCase))
 				return SpringOut;
+
+			var fallbackValue = typeof(Easing)
+				.GetTypeInfo()
+				.DeclaredFields
+				.FirstOrDefault(f => f.Name.Equals(value, StringComparison.OrdinalIgnoreCase))
+				?.GetValue(null);
+
+			if (fallbackValue is Easing fallbackEasing)
+				return fallbackEasing;
 
 			throw new InvalidOperationException($"Cannot convert \"{value}\" into {typeof(Easing)}");
 		}
