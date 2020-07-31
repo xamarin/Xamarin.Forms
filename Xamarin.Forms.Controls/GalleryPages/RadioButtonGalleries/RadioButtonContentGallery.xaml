@@ -15,27 +15,31 @@
             <RadioButton Content="Option C" />
 
             <Label Text="If 'Content' is a View, it will be displayed where supported (e.g., when using ControlTemplates):"/>
-            <RadioButton BackgroundColor="AntiqueWhite">
-                <RadioButton.Content>
-                    <OnPlatform>
+
+            <Frame>
+                <Frame.Content>
+                    <OnPlatform x:TypeArguments="View">
                         <On Platform="iOS">
-                            <StackLayout>
-                                <Image Source="coffee.png"></Image>
-                                <Label Text="This is iOS, it always uses a ControlTemplate"/>
-                            </StackLayout>
+
+                            <RadioButton>
+                                <RadioButton.Content>
+                                    <StackLayout Orientation="Horizontal">
+                                        <Image Source="coffee.png"></Image>
+                                        <Label LineBreakMode="WordWrap" Text="iOS always uses a ControlTemplate"/>
+                                    </StackLayout>
+                                </RadioButton.Content>    
+                            </RadioButton>
+                            
                         </On>
-                        <On Platform="Android,UWP,Tizen,WPF" Value="Not using ControlTemplate, so just plain old text"></On>
+                        <On Platform="Android,UWP,Tizen,WPF">
+
+                            <RadioButton Content="Not using ControlTemplate, so just plain old text"></RadioButton>
+
+                        </On>
                     </OnPlatform>
-                </RadioButton.Content>
-            </RadioButton>
-
-            <Label Text="'Content' as a View is supported in ControlTemplates:"/>
-            <RadioButton ControlTemplate="{x:Static RadioButton.DefaultTemplate}">
-                <RadioButton.Content>
-                    <Image Source="coffee.png"></Image>
-                </RadioButton.Content>
-            </RadioButton>
-
+                </Frame.Content>
+            </Frame>
+            
             <Label Text="Also, here's a group with a weird-looking custom template:"/>
             <RadioButton GroupName="weird">
                 <RadioButton.ControlTemplate>
