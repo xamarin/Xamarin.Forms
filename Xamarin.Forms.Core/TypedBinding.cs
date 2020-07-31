@@ -96,7 +96,7 @@ namespace Xamarin.Forms.Internals
 			BindableObject target;
 #if DO_NOT_CHECK_FOR_BINDING_REUSE
 			if (!_weakTarget.TryGetTarget(out target))
-				throw new InvalidOperationException();
+				return;
 #else
 			if (!_weakTarget.TryGetTarget(out target) || target == null) {
 				Unapply();
@@ -212,7 +212,7 @@ namespace Xamarin.Forms.Internals
 					}
 				}
 				if (!BindingExpression.TryConvert(ref value, property, property.ReturnType, true)) {
-					Log.Warning("Binding", "{0} can not be converted to type '{1}'", value, property.ReturnType);
+					Log.Warning("Binding", "'{0}' can not be converted to type '{1}'.", value, property.ReturnType);
 					return;
 				}
 				target.SetValueCore(property, value, SetValueFlags.ClearDynamicResource, BindableObject.SetValuePrivateFlags.Default | BindableObject.SetValuePrivateFlags.Converted);
@@ -223,7 +223,7 @@ namespace Xamarin.Forms.Internals
 			if (needsSetter && _setter != null && isTSource) {
 				var value = GetTargetValue(target.GetValue(property), typeof(TProperty));
 				if (!BindingExpression.TryConvert(ref value, property, typeof(TProperty), false)) {
-					Log.Warning("Binding", "{0} can not be converted to type '{1}'", value, typeof(TProperty));
+					Log.Warning("Binding", "'{0}' can not be converted to type '{1}'.", value, typeof(TProperty));
 					return;
 				}
 				_setter((TSource)sourceObject, (TProperty)value);

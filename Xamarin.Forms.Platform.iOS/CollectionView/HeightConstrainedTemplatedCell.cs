@@ -6,14 +6,14 @@ namespace Xamarin.Forms.Platform.iOS
 	internal abstract partial class HeightConstrainedTemplatedCell : TemplatedCell
 	{
 		[Export("initWithFrame:")]
+		[Internals.Preserve(Conditional = true)]
 		public HeightConstrainedTemplatedCell(CGRect frame) : base(frame)
 		{
 		}
 
 		public override void ConstrainTo(CGSize constraint)
 		{
-			base.ConstrainTo(constraint);
-
+			ClearConstraints();
 			ConstrainedDimension = constraint.Height;
 		}
 

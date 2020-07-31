@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (fgcolor.IsDefault)
 				fgcolor = defaultForegroundColor;
 			if (fgcolor.IsDefault)
-				fgcolor = Color.Black; // as defined by apple docs		
+				fgcolor = ColorExtensions.LabelColor.ToColor();
 
 #if __MOBILE__
 			return new NSAttributedString(span.Text, font == Font.Default ? null : font.ToUIFont(), fgcolor.ToUIColor(), 
@@ -101,13 +101,16 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 				targetFont = span.ToNSFont();
 #endif
-
 			var fgcolor = span.TextColor;
+
 			if (fgcolor.IsDefault)
 				fgcolor = defaultForegroundColor;
-			if (fgcolor.IsDefault)
-				fgcolor = Color.Black; // as defined by apple docs
 
+			if (owner is Entry && !fgcolor.IsDefault)
+				fgcolor = defaultForegroundColor;
+
+			if (fgcolor.IsDefault)
+				fgcolor = ColorExtensions.LabelColor.ToColor();
 #if __MOBILE__
 			UIColor spanFgColor;
 			UIColor spanBgColor;
@@ -146,6 +149,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (formattedString == null)
 				return null;
+
 			var attributed = new NSMutableAttributedString();
 
 			for (int i = 0; i < formattedString.Spans.Count; i++)

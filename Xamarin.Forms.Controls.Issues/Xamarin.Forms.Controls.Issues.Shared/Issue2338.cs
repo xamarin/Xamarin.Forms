@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 
 #if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
 	[NUnit.Framework.Category(UITestCategories.LifeCycle)]
 	[NUnit.Framework.Category(UITestCategories.Navigation)]
 #endif
@@ -67,6 +68,7 @@ namespace Xamarin.Forms.Controls.Issues
 		// Various tests are commented out on certain platforms because
 		// https://github.com/xamarin/Xamarin.Forms/issues/3188
 		[Test]
+		[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
 		public async Task SwapMainPageOut()
 		{
 			await TestForSuccess(RunningApp, typeof(Issue2338_SwapMainPageDuringAppearing));

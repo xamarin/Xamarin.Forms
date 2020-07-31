@@ -37,6 +37,7 @@ using UIKit;
 [assembly: ExportRenderer(typeof(Page), typeof(PageRenderer))]
 [assembly: ExportRenderer(typeof(MasterDetailPage), typeof(PhoneMasterDetailRenderer), UIUserInterfaceIdiom.Phone)]
 [assembly: ExportRenderer(typeof(RefreshView), typeof(RefreshViewRenderer))]
+[assembly: ExportRenderer(typeof(Path), typeof(PathRenderer))]
 #endif
 
 [assembly: ExportRenderer(typeof(MasterDetailPage), typeof(TabletMasterDetailRenderer), UIUserInterfaceIdiom.Pad)]
@@ -57,6 +58,7 @@ using UIKit;
 [assembly: InternalsVisibleTo("iOSUnitTests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Platform")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Material")]
+[assembly: InternalsVisibleTo("Xamarin.Forms.Platform.iOS.UnitTests")]
 [assembly: Xamarin.Forms.Dependency(typeof(Deserializer))]
 [assembly: Xamarin.Forms.Dependency(typeof(ResourcesProvider))]
 [assembly: ResolutionGroupName("Xamarin")]

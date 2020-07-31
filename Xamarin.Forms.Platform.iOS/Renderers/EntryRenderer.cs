@@ -159,7 +159,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdatePlaceholder();
 			else if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
 				UpdatePassword();
-			else if (e.PropertyName == Entry.TextProperty.PropertyName)
+			else if (e.IsOneOf(Entry.TextProperty, Entry.TextTransformProperty))
 			{
 				UpdateText();
 				UpdateCharacterSpacing();
@@ -356,14 +356,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateAttributedPlaceholder(Control.AttributedPlaceholder.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing));
 		}
+
 		protected virtual void UpdateAttributedPlaceholder(NSAttributedString nsAttributedString) =>
 			Control.AttributedPlaceholder = nsAttributedString;
 
 		void UpdateText()
 		{
+			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 			// ReSharper disable once RedundantCheckBeforeAssignment
-			if (Control.Text != Element.Text)
-				Control.Text = Element.Text;
+			if (Control.Text != text)
+				Control.Text = text;
 		}
 
 		void UpdateCharacterSpacing()

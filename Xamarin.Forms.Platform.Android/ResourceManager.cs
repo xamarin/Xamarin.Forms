@@ -9,7 +9,7 @@ using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Xamarin.Forms.Internals;
-using Path = System.IO.Path;
+using IOPath = System.IO.Path;
 #if __ANDROID_29__
 using AndroidAppCompat = AndroidX.AppCompat.Content.Res.AppCompatResources;
 #else
@@ -219,7 +219,7 @@ namespace Xamarin.Forms.Platform.Android
 					// volley the requests better up front so that if the same request comes in it isn't requeued
 					if (initialSource is UriImageSource uri && uri.CachingEnabled)
 					{
-						cacheKey = Device.PlatformServices.GetMD5Hash(uri.Uri.ToString());
+						cacheKey = Device.PlatformServices.GetHash(uri.Uri.ToString());
 						var cacheObject = await GetCache().GetAsync(cacheKey, uri.CacheValidity, async () =>
 						{
 							var drawable = await context.GetFormsDrawableAsync(initialSource, cancellationToken);
@@ -393,7 +393,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (title == null)
 				return 0;
 
-			string name = Path.GetFileNameWithoutExtension(title);
+			string name = IOPath.GetFileNameWithoutExtension(title);
 			int id = GetId(type, name);
 			return id;
 		}
@@ -414,7 +414,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (title == null)
 				return id;
 
-			string name = Path.GetFileNameWithoutExtension(title);
+			string name = IOPath.GetFileNameWithoutExtension(title);
 
 			id = GetId(resourceType, name);
 

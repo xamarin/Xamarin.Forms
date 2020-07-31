@@ -86,6 +86,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnConfigurationChanged(newConfig);
 			ConfigurationChanged?.Invoke(this, new EventArgs());
+
+			Xamarin.Forms.Application.Current?.TriggerThemeChanged(new AppThemeChangedEventArgs(Xamarin.Forms.Application.Current.RequestedTheme));
 		}
 
 		public override bool OnOptionsItemSelected(IMenuItem item)
@@ -398,7 +400,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_needMainPageAssign)
 			{
 				_needMainPageAssign = false;
-
+				SettingMainPage();
 				SetMainPage();
 			}
 

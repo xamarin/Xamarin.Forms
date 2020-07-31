@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel;
-using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Media;
+using WRect = Windows.Foundation.Rect;
+using WSolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -39,8 +40,16 @@ namespace Xamarin.Forms.Platform.UWP
 			if (GetValue(BackgroundProperty) == null && Children.Count == 0)
 			{
 				// Forces the layout to take up actual space if it's otherwise empty
-				Background = new SolidColorBrush(Colors.Transparent);
+				Background = new WSolidColorBrush(Colors.Transparent);
 			}
+		}
+
+		protected override void UpdateBackground()
+		{
+			base.UpdateBackgroundColor();
+
+			if (!Brush.IsNullOrEmpty(Element.Background))
+				Background = Element.Background.ToBrush();
 		}
 
 		protected override AutomationPeer OnCreateAutomationPeer()
@@ -68,7 +77,7 @@ namespace Xamarin.Forms.Platform.UWP
 			Clip = null;
 			if (Element.IsClippedToBounds)
 			{
-				Clip = new RectangleGeometry { Rect = new Rect(0, 0, ActualWidth, ActualHeight) };
+				Clip = new RectangleGeometry { Rect = new WRect(0, 0, ActualWidth, ActualHeight) };
 			}
 		}
 	}

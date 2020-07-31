@@ -20,12 +20,16 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 				shell.Frame = bounds;
 
-			flyout.Frame = new CGRect(-openLimit + openPixels, 0, flyoutWidth, bounds.Height);
+			var shellWidth = shell.Frame.Width;
 
-			if (behavior != FlyoutBehavior.Locked)
+			if(shell.SemanticContentAttribute == UISemanticContentAttribute.ForceRightToLeft)
 			{
-				var shellOpacity = (nfloat)(0.5 + (0.5 * (1 - openPercent)));
-				shell.Layer.Opacity = (float)shellOpacity;
+				var positionY = shellWidth - openPixels;
+				flyout.Frame = new CGRect(positionY, 0, flyoutWidth, bounds.Height);
+			}
+			else
+			{
+				flyout.Frame = new CGRect(-openLimit + openPixels, 0, flyoutWidth, bounds.Height);
 			}
 		}
 	}

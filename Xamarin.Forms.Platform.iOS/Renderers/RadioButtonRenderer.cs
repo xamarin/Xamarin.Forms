@@ -30,6 +30,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public bool IsDisposed { get; private set; }
 
+		[Preserve(Conditional = true)]
 		public RadioButtonRenderer() : base()
 		{
 			BorderElementManager.Init(this);
@@ -137,6 +138,16 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual CALayer CreateRadioBoxLayer()
 		{
 			return new RadioButtonCALayer(Element, Control);
+		}
+
+		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+		{
+			base.TraitCollectionDidChange(previousTraitCollection);
+#if __XCODE11__
+			// Make sure the control adheres to changes in UI theme
+			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				_radioButtonLayer.SetNeedsDisplay();
+#endif
 		}
 
 		void SetRadioBoxLayer(CALayer layer)

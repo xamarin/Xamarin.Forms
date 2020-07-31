@@ -303,7 +303,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (e.PropertyName == "CurrentPage")
 				UpdateCurrentPage();
-			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
 				UpdateBackground();
 			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground();
@@ -367,9 +367,17 @@ namespace Xamarin.Forms.Platform.iOS
 				if (bgImage != null)
 					View.BackgroundColor = UIColor.FromPatternImage(bgImage);
 				else if (Element.BackgroundColor.IsDefault)
-					View.BackgroundColor = UIColor.White;
+					View.BackgroundColor = ColorExtensions.BackgroundColor;
 				else
-					View.BackgroundColor = Element.BackgroundColor.ToUIColor();
+				{
+					if (Element.BackgroundColor.IsDefault)
+						View.BackgroundColor = UIColor.White;
+					else
+						View.BackgroundColor = Element.BackgroundColor.ToUIColor();
+
+					Brush background = Element.Background;
+					View.UpdateBackground(background);
+				}
 			});
 		}
 

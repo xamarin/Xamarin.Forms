@@ -155,6 +155,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateOnColor();
 				UpdateIsChecked();
 				UpdateBackgroundColor();
+				UpdateBackground();
 			}
 
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
@@ -162,6 +163,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			if (e.PropertyName == CheckBox.ColorProperty.PropertyName)
 			{
 				UpdateOnColor();
@@ -170,9 +176,13 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateIsChecked();
 			}
-			else if (e.PropertyName == CheckBox.BackgroundColorProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 			{
 				UpdateBackgroundColor();
+			}
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			{
+				UpdateBackground();
 			}
 
 			ElementPropertyChanged?.Invoke(this, e);
@@ -190,7 +200,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			Checked = Element.IsChecked;
 		}
-
 
 		protected virtual ColorStateList GetColorStateList()
 		{
@@ -215,6 +224,13 @@ namespace Xamarin.Forms.Platform.Android
 				SetBackgroundColor(AColor.Transparent);
 			else
 				SetBackgroundColor(Element.BackgroundColor.ToAndroid());
+		}
+
+		void UpdateBackground()
+		{
+			Brush background = Element.Background;
+
+			this.UpdateBackground(background);
 		}
 
 		void UpdateOnColor()

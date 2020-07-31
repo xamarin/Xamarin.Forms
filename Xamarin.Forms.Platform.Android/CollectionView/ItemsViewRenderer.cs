@@ -14,6 +14,7 @@ using Android.Views;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.CollectionView;
 using Xamarin.Forms.Platform.Android.FastRenderers;
+using ARect = Android.Graphics.Rect;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -46,7 +47,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		RecyclerView.ItemDecoration _itemDecoration;
 
-		public ItemsViewRenderer(Context context) : base(new ContextThemeWrapper(context, Resource.Style.collectionViewStyle))
+		public ItemsViewRenderer(Context context) : base(
+			new ContextThemeWrapper(context, Resource.Style.collectionViewTheme), null, 
+			Resource.Attribute.collectionViewStyle)
 		{
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
@@ -63,7 +66,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
 			base.OnLayout(changed, l, t, r, b);
-			AViewCompat.SetClipBounds(this, new Rect(0, 0, Width, Height));
+			AViewCompat.SetClipBounds(this, new ARect(0, 0, Width, Height));
 
 			// After a direct (non-animated) scroll operation, we may need to make adjustments
 			// to align the target item; if an adjustment is pending, execute it here.
@@ -224,6 +227,10 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateBackgroundColor();
 			}
+			else if (changedProperty.Is(VisualElement.BackgroundProperty))
+			{
+				UpdateBackground();
+			}
 			else if (changedProperty.Is(VisualElement.FlowDirectionProperty))
 			{
 				UpdateFlowDirection();
@@ -319,6 +326,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateSnapBehavior();
 			UpdateBackgroundColor();
+			UpdateBackground();
 			UpdateFlowDirection();
 			UpdateItemSpacing();
 
@@ -464,6 +472,19 @@ namespace Xamarin.Forms.Platform.Android
 			SetBackgroundColor((color ?? Element.BackgroundColor).ToAndroid());
 		}
 
+		protected virtual void UpdateBackground(Brush brush = null)
+		{
+			if (Element == null)
+				return;
+
+			if (!(this is RecyclerView recyclerView))
+				return;
+
+			Brush background = Element.Background;
+
+			recyclerView.UpdateBackground(background);
+		}
+
 		protected virtual void UpdateFlowDirection()
 		{
 			if (Element == null)
@@ -582,6 +603,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
 		{
+			(GetSnapManager()?.GetCurrentSnapHelper() as SingleSnapHelper)?.ResetCurrentTargetPosition();
 			ScrollTo(args);
 		}
 
@@ -645,7 +667,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (ItemsView.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepLastItemInView)
 			{
-				ScrollTo(new ScrollToRequestEventArgs(ItemsViewAdapter.ItemCount, 0,
+				ScrollTo(new ScrollToRequestEventArgs(GetLayoutManager().ItemCount, 0,
 					Xamarin.Forms.ScrollToPosition.MakeVisible, true));
 			}
 			else if (ItemsView.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepScrollOffset)

@@ -45,10 +45,13 @@ namespace Xamarin.Forms.Platform.iOS
 					return;
 				_presented = value;
 				LayoutChildren(true);
+
 				if (value)
 					AddClickOffView();
 				else
 					RemoveClickOffView();
+
+				ToggleAccessibilityElementsHidden();
 
 				((IElementController)Element).SetValueFromRenderer(Xamarin.Forms.MasterDetailPage.IsPresentedProperty, value);
 			}
@@ -142,6 +145,8 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateBackground();
 
 			UpdatePanGesture();
+			UpdateApplyShadow(((MasterDetailPage)Element).OnThisPlatform().GetApplyShadow());
+
 		}
 
 		public override void WillRotate(UIInterfaceOrientation toInterfaceOrientation, double duration)
@@ -233,7 +238,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Presented = ((MasterDetailPage)Element).IsPresented;
 			else if (e.PropertyName == Xamarin.Forms.MasterDetailPage.IsGestureEnabledProperty.PropertyName)
 				UpdatePanGesture();
-			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
 				UpdateBackground();
 			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground();
@@ -322,10 +327,20 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (bgImage != null)
 					View.BackgroundColor = UIColor.FromPatternImage(bgImage);
-				else if (Element.BackgroundColor == Color.Default)
-					View.BackgroundColor = UIColor.White;
 				else
-					View.BackgroundColor = Element.BackgroundColor.ToUIColor();
+				{
+					Brush background = Element.Background;
+
+					if (!Brush.IsNullOrEmpty(background))
+						View.UpdateBackground(Element.Background);
+					else
+					{
+						if (Element.BackgroundColor == Color.Default)
+							View.BackgroundColor = UIColor.White;
+						else
+							View.BackgroundColor = Element.BackgroundColor.ToUIColor();
+					}
+				}
 			});
 		}
 
@@ -360,6 +375,8 @@ namespace Xamarin.Forms.Platform.iOS
 				SetNeedsUpdateOfHomeIndicatorAutoHidden();
 
 			detailRenderer.ViewController.View.Superview.BackgroundColor = Xamarin.Forms.Color.Black.ToUIColor();
+
+			ToggleAccessibilityElementsHidden();
 		}
 
 		void UpdateLeftBarButton()
@@ -399,6 +416,17 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		void ToggleAccessibilityElementsHidden()
+		{
+			var masterView = _masterController?.View;
+			if (masterView != null)
+				masterView.AccessibilityElementsHidden = !Presented;
+
+			var detailView = _detailController?.View;
+			if (detailView != null)
+				detailView.AccessibilityElementsHidden = Presented;
+		}
+
 		void UpdatePanGesture()
 		{
 			var model = (MasterDetailPage)Element;
@@ -415,11 +443,11 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-   			bool shouldReceive(UIGestureRecognizer g, UITouch t)
+			bool shouldReceive(UIGestureRecognizer g, UITouch t)
 			{
-				return !(t.View is UISlider) && !(IsSwipeView(t.View));
+				return !(t.View is UISlider) && !IsSwipeView(t.View);
 			}
-   
+
 			var center = new PointF();
 			_panGesture = new UIPanGestureRecognizer(g =>
 			{
