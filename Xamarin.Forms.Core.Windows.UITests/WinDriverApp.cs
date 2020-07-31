@@ -15,6 +15,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Appium.Windows;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Remote;
+using Xamarin.Forms.Controls.Issues;
 using Xamarin.UITest;
 using Xamarin.UITest.Queries;
 using Xamarin.UITest.Queries.Tokens;
@@ -56,16 +57,19 @@ namespace Xamarin.Forms.Core.UITests
 			TestServer = new WindowsTestServer(_session, this);
 		}
 
-		public void RestartIfAppIsClosed()
+		public bool RestartIfAppIsClosed()
 		{
 			try
 			{
 				var handle = _session.CurrentWindowHandle;
+				return false;
 			}
 			catch
 			{
 				RestartFromCrash();
 			}
+
+			return true;
 		}
 
 		public void RestartFromCrash()
@@ -329,7 +333,7 @@ namespace Xamarin.Forms.Core.UITests
 				return file;
 			}
 			catch (OpenQA.Selenium.WebDriverException we)
-			when (we.Message.Contains("Currently selected window has been closed"))
+			when (we.IsWindowClosedException())
 			{
 				return null;
 			}

@@ -64,6 +64,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Control != null)
 				{
 					Control.TouchUpInside -= OnButtonTouchUpInside;
+					Control.TouchUpOutside -= OnButtonTouchUpOutside;
 					Control.TouchDown -= OnButtonTouchDown;
 					BorderElementManager.Dispose(this);
 					_buttonLayoutManager?.Dispose();
@@ -113,6 +114,7 @@ namespace Xamarin.Forms.Platform.iOS
 					_buttonTextColorDefaultDisabled = Control.TitleColor(UIControlState.Disabled);
 
 					Control.TouchUpInside += OnButtonTouchUpInside;
+					Control.TouchUpOutside += OnButtonTouchUpOutside;
 					Control.TouchDown += OnButtonTouchDown;
 				}
 
@@ -166,8 +168,7 @@ namespace Xamarin.Forms.Platform.iOS
 				else
 				{
 					var backgroundImage = this.GetBackgroundImage(brush);
-					if (backgroundImage != null)
-						backgroundColor = UIColor.FromPatternImage(backgroundImage);
+					backgroundColor = backgroundImage != null ? UIColor.FromPatternImage(backgroundImage) : UIColor.Clear;
 				}
 			}
 
@@ -187,6 +188,11 @@ namespace Xamarin.Forms.Platform.iOS
 		void OnButtonTouchUpInside(object sender, EventArgs eventArgs)
 		{
 			ButtonElementManager.OnButtonTouchUpInside(this.Element);
+		}
+
+		void OnButtonTouchUpOutside(object sender, EventArgs eventArgs)
+		{
+			ButtonElementManager.OnButtonTouchUpOutside(this.Element);
 		}
 
 		void OnButtonTouchDown(object sender, EventArgs eventArgs)
