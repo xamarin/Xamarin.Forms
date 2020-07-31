@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.Platform;
 using Xamarin.Forms.Shapes;
 
 namespace Xamarin.Forms
@@ -23,8 +17,8 @@ namespace Xamarin.Forms
 		TapGestureRecognizer _tapGestureRecognizer;
 		Shape _normalEllipse;
 		Shape _checkMark;
-		static readonly Color RadioButtonCheckMarkThemeColor = ResolveThemeColor("RadioButtonCheckMarkThemeColor");
-		static readonly Color RadioButtonThemeColor = ResolveThemeColor("RadioButtonThemeColor");
+		static readonly Brush RadioButtonCheckMarkThemeColor = ResolveThemeColor("RadioButtonCheckMarkThemeColor");
+		static readonly Brush RadioButtonThemeColor = ResolveThemeColor("RadioButtonThemeColor");
 		static ControlTemplate s_defaultTemplate;
 
 		readonly Lazy<PlatformConfigurationRegistry<RadioButton>> _platformConfigurationRegistry;
@@ -212,6 +206,7 @@ namespace Xamarin.Forms
 
 		bool IBorderElement.IsCornerRadiusSet() => IsSet(BorderElement.CornerRadiusProperty);
 		bool IBorderElement.IsBackgroundColorSet() => IsSet(BackgroundColorProperty);
+		bool IBorderElement.IsBackgroundSet() => IsSet(BackgroundProperty);
 		bool IBorderElement.IsBorderColorSet() => IsSet(BorderElement.BorderColorProperty);
 		bool IBorderElement.IsBorderWidthSet() => IsSet(BorderElement.BorderWidthProperty);
 
@@ -295,19 +290,19 @@ namespace Xamarin.Forms
 			} 
 		}
 
-		static Color ResolveThemeColor(string key) 
+		static Brush ResolveThemeColor(string key) 
 		{
 			if (Application.Current.TryGetResource(key, out object color))
 			{
-				return (Color)color;
+				return (Brush)color;
 			}
 			
 			if (Application.Current?.RequestedTheme == OSAppTheme.Dark)
 			{
-				return Color.White;
+				return Brush.White;
 			}
 
-			return Color.Black;
+			return Brush.Black;
 		}
 
 		void SelectRadioButton(object sender, EventArgs e)
@@ -437,7 +432,7 @@ namespace Xamarin.Forms
 
 			var normalEllipse = new Ellipse
 			{
-				Fill = Color.Transparent,
+				Fill = Brush.Transparent,
 				Aspect = Stretch.Uniform,
 				HorizontalOptions = LayoutOptions.Center,
 				VerticalOptions = LayoutOptions.Center,
