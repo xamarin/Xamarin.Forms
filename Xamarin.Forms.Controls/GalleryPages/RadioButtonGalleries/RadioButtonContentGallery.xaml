@@ -39,7 +39,14 @@
                     </OnPlatform>
                 </Frame.Content>
             </Frame>
-            
+
+            <Label Text="If we select a ControlTemplate, we can use a View as Content on any platform. In this case, we're using the default template:"/>
+            <RadioButton ControlTemplate="{x:Static RadioButton.DefaultTemplate}">
+                <RadioButton.Content>
+                    <Image Source="coffee.png"/>
+                </RadioButton.Content>
+            </RadioButton>
+
             <Label Text="Also, here's a group with a weird-looking custom template:"/>
             <RadioButton GroupName="weird">
                 <RadioButton.ControlTemplate>
