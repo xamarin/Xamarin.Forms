@@ -82,7 +82,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Page> e)
 		{
-			Page view = e.NewElement;
 			base.OnElementChanged(e);
 
 			if (Id == NoId)
@@ -106,6 +105,8 @@ namespace Xamarin.Forms.Platform.Android
 			else if(e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground(true);
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+				UpdateBackground(false);
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
 				UpdateBackground(false);
 			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName)
 				UpdateHeight();
@@ -149,22 +150,30 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				else
 				{
-					Color bkgndColor = page.BackgroundColor;
-					bool isDefaultBkgndColor = bkgndColor.IsDefault;
+					Brush background = Element.Background;
 
-					// A TabbedPage has no background. See Github6384.
-					bool isInShell = page.Parent is BaseShellItem
-					|| (page.Parent is TabbedPage && page.Parent?.Parent is BaseShellItem);
-					if (isInShell && isDefaultBkgndColor)
+					if (!Brush.IsNullOrEmpty(background))
+						this.UpdateBackground(background);
+					else
 					{
-						var color = Forms.IsMarshmallowOrNewer ?
-							Context.Resources.GetColor(AColorRes.BackgroundLight, Context.Theme) :
-							new AColor(ContextCompat.GetColor(Context, global::Android.Resource.Color.BackgroundLight));
-						SetBackgroundColor(color);
-					}
-					else if (!isDefaultBkgndColor || setBkndColorEvenWhenItsDefault)
-					{
-						SetBackgroundColor(bkgndColor.ToAndroid());
+						Color backgroundColor = page.BackgroundColor;
+						bool isDefaultBackgroundColor = backgroundColor.IsDefault;
+
+						// A TabbedPage has no background. See Github6384.
+						bool isInShell = page.Parent is BaseShellItem ||
+						(page.Parent is TabbedPage && page.Parent?.Parent is BaseShellItem);
+
+						if (isInShell && isDefaultBackgroundColor)
+						{
+							var color = Forms.IsMarshmallowOrNewer ?
+								Context.Resources.GetColor(AColorRes.BackgroundLight, Context.Theme) :
+								new AColor(ContextCompat.GetColor(Context, AColorRes.BackgroundLight));
+							SetBackgroundColor(color);
+						}
+						else if (!isDefaultBackgroundColor || setBkndColorEvenWhenItsDefault)
+						{
+							SetBackgroundColor(backgroundColor.ToAndroid());
+						}
 					}
 				}
 			});
