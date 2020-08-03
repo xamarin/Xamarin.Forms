@@ -116,11 +116,19 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					var listview = dialog.GetListView();
 					listview.TextDirection = TextDirection.Ltr;
+					if (arguments.Cancel != null)
+						((dialog.GetButton((int)DialogButtonType.Positive).Parent) as global::Android.Views.View).LayoutDirection = LayoutDirection.Ltr;
+					if (arguments.Destruction != null)
+						((dialog.GetButton((int)DialogButtonType.Negative).Parent) as global::Android.Views.View).LayoutDirection = LayoutDirection.Ltr;
 				}
 				else if (arguments.FlowDirection == FlowDirection.RightToLeft)
 				{
 					var listview = dialog.GetListView();
 					listview.TextDirection = TextDirection.Rtl;
+					if (arguments.Cancel != null)
+						((dialog.GetButton((int)DialogButtonType.Positive).Parent) as global::Android.Views.View).LayoutDirection = LayoutDirection.Rtl;
+					if (arguments.Destruction != null)
+						((dialog.GetButton((int)DialogButtonType.Negative).Parent) as global::Android.Views.View).LayoutDirection = LayoutDirection.Rtl;
 				}
 			}
 
@@ -145,15 +153,17 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (arguments.FlowDirection == FlowDirection.LeftToRight)
 				{
-					
 					TextView textView = (TextView)alert.findViewByID(messageID);
 					textView.TextDirection = TextDirection.Ltr;
+					((alert.GetButton((int)DialogButtonType.Negative).Parent) as global::Android.Views.View).LayoutDirection = LayoutDirection.Ltr;
 				}
 				else if (arguments.FlowDirection == FlowDirection.RightToLeft)
 				{
 					TextView textView = (TextView)alert.findViewByID(messageID);
 					textView.TextDirection = TextDirection.Rtl;
+					((alert.GetButton((int)DialogButtonType.Negative).Parent) as global::Android.Views.View).LayoutDirection = LayoutDirection.Rtl;
 				}
+
 			}
 
 			void OnPromptRequested(Page sender, PromptArguments arguments)
@@ -407,6 +417,18 @@ namespace Xamarin.Forms.Platform.Android
 					else
 					{
 						_legacyAlertDialog.SetButton(whichButton, text, handler);
+					}
+				}
+
+				public global::Android.Widget.Button GetButton(int whichButton)
+				{
+					if (_useAppCompat)
+					{
+						return _appcompatAlertDialog.GetButton(whichButton);
+					}
+					else
+					{
+						return _legacyAlertDialog.GetButton(whichButton);
 					}
 				}
 
