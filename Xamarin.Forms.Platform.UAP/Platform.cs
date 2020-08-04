@@ -658,6 +658,15 @@ namespace Xamarin.Forms.Platform.UWP
 				VerticalScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility.Auto
 			};
 
+			if (options.FlowDirection == FlowDirection.RightToLeft)
+			{
+				alertDialog.FlowDirection = Windows.UI.Xaml.FlowDirection.RightToLeft;
+			}
+			else if (options.FlowDirection == FlowDirection.LeftToRight)
+			{
+				alertDialog.FlowDirection = Windows.UI.Xaml.FlowDirection.LeftToRight;
+			}
+
 			if (options.Cancel != null)
 				alertDialog.SecondaryButtonText = options.Cancel;
 
