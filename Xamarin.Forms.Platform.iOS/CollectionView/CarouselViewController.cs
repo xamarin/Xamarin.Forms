@@ -162,7 +162,7 @@ namespace Xamarin.Forms.Platform.iOS
 		internal NSIndexPath GetScrollToIndexPath(int position)
 		{
 			if (Carousel?.Loop == true && _carouselViewLoopManager != null)
-				return _carouselViewLoopManager.GetGoToIndex(CollectionView, Carousel.Position, position);
+				return _carouselViewLoopManager.GetGoToIndex(CollectionView, position);
 
 			return NSIndexPath.FromItemSection(position, 0);
 		}
@@ -224,6 +224,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			SetCurrentItem(carouselPosition);
 			SetPosition(carouselPosition);
+			Carousel.ScrollTo(carouselPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: false);
+
 		}
 
 		void SubscribeCollectionItemsSourceChanged(IItemsViewSource itemsSource)
@@ -308,7 +310,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (carouselPosition == _gotoPosition)
 				_gotoPosition = -1;
 
-			if (!Carousel.IsDragging)
+			if (!Carousel.IsDragging || carouselPosition != -1)
 				ScrollToPosition(carouselPosition, currentItemPosition, Carousel.AnimatePositionChanges);
 
 			SetCurrentItem(carouselPosition);
@@ -452,20 +454,28 @@ namespace Xamarin.Forms.Platform.iOS
 		public (UICollectionViewCell cell, int correctedIndex) GetCellAndCorrectIndex(UICollectionView collectionView, NSIndexPath indexPath, string reuseId)
 		{
 			var cell = collectionView.DequeueReusableCell(reuseId, indexPath) as UICollectionViewCell;
-			var correctedIndex = GetCorrectedIndex(indexPath.Row - _indexOffset);
+			var correctedIndex = GetCorrectedIndexFromIndexPath(indexPath);
 			return (cell, correctedIndex);
+		}
+
+		public int GetCorrectedIndexFromIndexPath(NSIndexPath indexPath)
+		{
+			return GetCorrectedIndex(indexPath.Row - _indexOffset);
 		}
 
 		public int GetLoopItemsCount() => LoopCount * GetItemsSourceCount();
 
-		public NSIndexPath GetGoToIndex(UICollectionView collectionView, int carouselPosition, int newPosition)
+		public NSIndexPath GetGoToIndex(UICollectionView collectionView, int newPosition)
 		{
-			var currentCarouselPosition = carouselPosition;
+			NSIndexPath centerIndexPath = GetIndexPathForCenteredItem(collectionView);
+			if (centerIndexPath == null)
+				return NSIndexPath.FromItemSection(0, 0);
+
+			var currentCarouselPosition = GetCorrectedIndexFromIndexPath(centerIndexPath);
 			var itemSourceCount = _itemsSource.ItemCount;
 
 			var diffToStart = currentCarouselPosition + (itemSourceCount - newPosition);
 			var diffToEnd = itemSourceCount - currentCarouselPosition + newPosition;
-			NSIndexPath centerIndexPath = GetIndexPathForCenteredItem(collectionView);
 
 			var increment = currentCarouselPosition - newPosition;
 			var incrementAbs = Math.Abs(increment);
