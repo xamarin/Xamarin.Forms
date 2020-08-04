@@ -81,10 +81,8 @@ namespace Xamarin.Forms
 			{
 				args.Data.Image = ie.Source;
 			}
-			else
-			{
-				args.Data.Text = element.GetStringValue();
-			}
+
+			args.Data.Text = element.GetStringValue();
 
 			return args;
 		}

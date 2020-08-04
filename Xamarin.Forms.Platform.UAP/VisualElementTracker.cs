@@ -143,9 +143,19 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			var args = new DropEventArgs(datapackage?.View);
-			SendEventArgs<DropGestureRecognizer>(rec =>
+			SendEventArgs<DropGestureRecognizer>(async rec =>
 			{
-				rec.SendDrop(args, element);
+				if (!rec.AllowDrop)
+					return;
+
+				try
+				{
+					await rec.SendDrop(args, element);
+				}
+				catch (Exception dropExc)
+				{
+					Internals.Log.Warning(nameof(DropGestureRecognizer), $"{dropExc}");
+				}
 			});
 		}
 

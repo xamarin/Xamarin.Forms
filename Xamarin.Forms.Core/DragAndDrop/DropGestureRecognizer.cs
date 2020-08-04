@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Xamarin.Forms
@@ -64,8 +65,11 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public async void SendDrop(DropEventArgs args, VisualElement element)
+		public async Task SendDrop(DropEventArgs args, VisualElement element)
 		{
+			if (!AllowDrop)
+				return;
+
 			DropCommand?.Execute(DropCommandParameter);
 			Drop?.Invoke(this, args);
 
@@ -99,8 +103,8 @@ namespace Xamarin.Forms
 					ib.Source = sourceTarget;
 				else if (Parent is Button b)
 					b.ImageSource = sourceTarget;
-				else
-					Parent.TrySetValue(text);
+				
+				Parent?.TrySetValue(text);
 			}
 		}
 	}

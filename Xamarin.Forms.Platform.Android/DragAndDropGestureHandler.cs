@@ -8,6 +8,7 @@ using AView = Android.Views.View;
 using ADragFlags = Android.Views.DragFlags;
 using System.IO;
 using Android.Sax;
+using Javax.Xml.Transform;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -203,9 +204,19 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			var args = new DropEventArgs(datapackage?.View);
-			SendEventArgs<DropGestureRecognizer>(rec =>
+			SendEventArgs<DropGestureRecognizer>(async rec =>
 			{
-				rec.SendDrop(args, element);
+				if (!rec.AllowDrop)
+					return;
+
+				try
+				{
+					await rec.SendDrop(args, element);
+				}
+				catch(Exception e)
+				{
+					Internals.Log.Warning(nameof(DropGestureRecognizer), $"{e}");
+				}
 			});
 		}
 

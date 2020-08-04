@@ -210,12 +210,19 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			var args = new DropEventArgs(datapackage?.View);
-			SendEventArgs<DropGestureRecognizer>(rec =>
+			SendEventArgs<DropGestureRecognizer>(async rec =>
 			{
 				if (!rec.AllowDrop)
 					return;
 
-				rec.SendDrop(args, element);
+				try
+				{
+					await rec.SendDrop(args, element);
+				}
+				catch (Exception e)
+				{
+					Internals.Log.Warning(nameof(DropGestureRecognizer), $"{e}");
+				}
 			}, (View)element);
 		}
 	}
