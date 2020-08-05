@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.iOS
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
-    public class RectangleRenderer : ShapeRenderer<Rect, RectangleView>
+    public class RectangleRenderer : ShapeRenderer<FormsRectangle, RectangleView>
     {
         [Internals.Preserve(Conditional = true)]
         public RectangleRenderer()
