@@ -107,29 +107,67 @@ namespace Xamarin.Forms.Platform.Android
 				builder.Dispose();
 				//to match current functionality of renderer we set cancelable on outside
 				//and return null
-				dialog.SetTitleFlowDirection(arguments.FlowDirection);
+				if (arguments.FlowDirection == FlowDirection.MatchParent)
+				{
+					if (sender.FlowDirection == FlowDirection.MatchParent)
+						dialog.SetTitleFlowDirection(Device.FlowDirection);
+					else
+						dialog.SetTitleFlowDirection(sender.FlowDirection);
+				}
+				else
+				{
+					dialog.SetTitleFlowDirection(arguments.FlowDirection);
+				}
 				dialog.SetCanceledOnTouchOutside(true);
 				dialog.SetCancelEvent((o, e) => arguments.SetResult(null));
 				dialog.Show();
 
+				LayoutDirection layoutDirection = LayoutDirection.Ltr;
+				TextDirection textDirection = TextDirection.Ltr;
+
 				if (arguments.FlowDirection == FlowDirection.LeftToRight)
 				{
-					var listview = dialog.GetListView();
-					listview.TextDirection = TextDirection.Ltr;
-					if (arguments.Cancel != null)
-						((dialog.GetButton((int)DialogButtonType.Positive).Parent) as global::Android.Views.View).LayoutDirection = LayoutDirection.Ltr;
-					if (arguments.Destruction != null)
-						((dialog.GetButton((int)DialogButtonType.Negative).Parent) as global::Android.Views.View).LayoutDirection = LayoutDirection.Ltr;
+					layoutDirection = LayoutDirection.Ltr;
+					textDirection = TextDirection.Ltr;
 				}
 				else if (arguments.FlowDirection == FlowDirection.RightToLeft)
 				{
-					var listview = dialog.GetListView();
-					listview.TextDirection = TextDirection.Rtl;
-					if (arguments.Cancel != null)
-						((dialog.GetButton((int)DialogButtonType.Positive).Parent) as global::Android.Views.View).LayoutDirection = LayoutDirection.Rtl;
-					if (arguments.Destruction != null)
-						((dialog.GetButton((int)DialogButtonType.Negative).Parent) as global::Android.Views.View).LayoutDirection = LayoutDirection.Rtl;
+					layoutDirection = LayoutDirection.Rtl;
+					textDirection = TextDirection.Rtl;
 				}
+				else
+				{
+					if (sender.FlowDirection == FlowDirection.LeftToRight)
+					{
+						layoutDirection = LayoutDirection.Ltr;
+						textDirection = TextDirection.Ltr;
+					}
+					else if (sender.FlowDirection == FlowDirection.RightToLeft)
+					{
+						layoutDirection = LayoutDirection.Rtl;
+						textDirection = TextDirection.Rtl;
+					}
+					else
+					{
+						if (Device.FlowDirection == FlowDirection.LeftToRight)
+						{
+							layoutDirection = LayoutDirection.Ltr;
+							textDirection = TextDirection.Ltr;
+						}
+						else if (Device.FlowDirection == FlowDirection.RightToLeft)
+						{
+							layoutDirection = LayoutDirection.Rtl;
+							textDirection = TextDirection.Rtl;
+						}
+					}
+				}
+
+				var listview = dialog.GetListView();
+				listview.TextDirection = textDirection;
+				if (arguments.Cancel != null)
+					((dialog.GetButton((int)DialogButtonType.Positive).Parent) as global::Android.Views.View).LayoutDirection = layoutDirection;
+				if (arguments.Destruction != null)
+					((dialog.GetButton((int)DialogButtonType.Negative).Parent) as global::Android.Views.View).LayoutDirection = layoutDirection;
 			}
 
 			void OnAlertRequested(Page sender, AlertArguments arguments)
@@ -142,7 +180,17 @@ namespace Xamarin.Forms.Platform.Android
 
 				int messageID = 16908299;
 				var alert = new DialogBuilder(Activity).Create();
-				alert.SetTitleFlowDirection(arguments.FlowDirection);
+				if (arguments.FlowDirection == FlowDirection.MatchParent)
+				{
+					if (sender.FlowDirection == FlowDirection.MatchParent)
+						alert.SetTitleFlowDirection(Device.FlowDirection);
+					else
+						alert.SetTitleFlowDirection(sender.FlowDirection);
+				}
+				else
+				{
+					alert.SetTitleFlowDirection(arguments.FlowDirection);
+				}
 				alert.SetTitle(arguments.Title);
 				alert.SetMessage(arguments.Message);
 				if (arguments.Accept != null)
@@ -151,19 +199,51 @@ namespace Xamarin.Forms.Platform.Android
 				alert.SetCancelEvent((o, args) => { arguments.SetResult(false); });
 				alert.Show();
 
+				Console.WriteLine("SENDER!!!" + sender.FlowDirection.ToString());
+
+				LayoutDirection layoutDirection = LayoutDirection.Ltr;
+				TextDirection textDirection = TextDirection.Ltr;
+
 				if (arguments.FlowDirection == FlowDirection.LeftToRight)
 				{
-					TextView textView = (TextView)alert.findViewByID(messageID);
-					textView.TextDirection = TextDirection.Ltr;
-					((alert.GetButton((int)DialogButtonType.Negative).Parent) as global::Android.Views.View).LayoutDirection = LayoutDirection.Ltr;
+					layoutDirection = LayoutDirection.Ltr;
+					textDirection = TextDirection.Ltr;
 				}
 				else if (arguments.FlowDirection == FlowDirection.RightToLeft)
 				{
-					TextView textView = (TextView)alert.findViewByID(messageID);
-					textView.TextDirection = TextDirection.Rtl;
-					((alert.GetButton((int)DialogButtonType.Negative).Parent) as global::Android.Views.View).LayoutDirection = LayoutDirection.Rtl;
+					layoutDirection = LayoutDirection.Rtl;
+					textDirection = TextDirection.Rtl;
+				}
+				else
+				{
+					if (sender.FlowDirection == FlowDirection.LeftToRight)
+					{
+						layoutDirection = LayoutDirection.Ltr;
+						textDirection = TextDirection.Ltr;
+					}
+					else if (sender.FlowDirection == FlowDirection.RightToLeft)
+					{
+						layoutDirection = LayoutDirection.Rtl;
+						textDirection = TextDirection.Rtl;
+					}
+					else
+					{
+						if (Device.FlowDirection == FlowDirection.LeftToRight)
+						{
+							layoutDirection = LayoutDirection.Ltr;
+							textDirection = TextDirection.Ltr;
+						}
+						else if (Device.FlowDirection == FlowDirection.RightToLeft)
+						{
+							layoutDirection = LayoutDirection.Rtl;
+							textDirection = TextDirection.Rtl;
+						}
+					}
 				}
 
+				TextView textView = (TextView)alert.findViewByID(messageID);
+				textView.TextDirection = textDirection;
+				((alert.GetButton((int)DialogButtonType.Negative).Parent) as global::Android.Views.View).LayoutDirection = layoutDirection;
 			}
 
 			void OnPromptRequested(Page sender, PromptArguments arguments)
