@@ -572,9 +572,25 @@ namespace Xamarin.Forms.Platform.UWP
 			MessagingCenter.Subscribe<Page, PromptArguments>(Window.Current, Page.PromptSignalName, OnPagePrompt);
 		}
 
-		static void OnPageActionSheet(object sender, ActionSheetArguments options)
+		static void OnPageActionSheet(Page sender, ActionSheetArguments options)
 		{
 			bool userDidSelect = false;
+
+			if (options.FlowDirection == FlowDirection.MatchParent)
+			{
+				if (sender.FlowDirection == FlowDirection.RightToLeft)
+					options.FlowDirection = FlowDirection.RightToLeft;
+				else if (sender.FlowDirection == FlowDirection.LeftToRight)
+					options.FlowDirection = FlowDirection.LeftToRight;
+				else
+				{
+					if (Device.FlowDirection == FlowDirection.RightToLeft)
+						options.FlowDirection = FlowDirection.RightToLeft;
+					else if (Device.FlowDirection == FlowDirection.LeftToRight)
+						options.FlowDirection = FlowDirection.LeftToRight;
+				}
+			}
+
 			var flyoutContent = new FormsFlyout(options);
 
 			var actionSheet = new Flyout
@@ -665,6 +681,20 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (options.FlowDirection == FlowDirection.LeftToRight)
 			{
 				alertDialog.FlowDirection = Windows.UI.Xaml.FlowDirection.LeftToRight;
+			}
+			else
+			{
+				if (sender.FlowDirection == FlowDirection.RightToLeft)
+					alertDialog.FlowDirection = Windows.UI.Xaml.FlowDirection.RightToLeft;
+				else if (sender.FlowDirection == FlowDirection.LeftToRight)
+					alertDialog.FlowDirection = Windows.UI.Xaml.FlowDirection.LeftToRight;
+				else
+				{
+					if (Device.FlowDirection == FlowDirection.RightToLeft)
+						alertDialog.FlowDirection = Windows.UI.Xaml.FlowDirection.RightToLeft;
+					else if (Device.FlowDirection == FlowDirection.LeftToRight)
+						alertDialog.FlowDirection = Windows.UI.Xaml.FlowDirection.LeftToRight;
+				}
 			}
 
 			if (options.Cancel != null)
