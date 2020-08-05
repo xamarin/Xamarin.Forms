@@ -90,6 +90,8 @@ namespace Xamarin.Forms.Controls
 			{
 				BarBackgroundColor = Color.Default;
 				BarTextColor = Color.Default;
+				BarFontAttributes = FontAttributes.Bold;
+				BarFontSize = 32;
 
 				return false;
 			});
@@ -122,6 +124,8 @@ namespace Xamarin.Forms.Controls
 		{
 		}
 #if APP
+
+
 		public CoreTabbedPageBase()
 		{
 			AutomationId = "TabbedPageRoot";
@@ -136,6 +140,9 @@ namespace Xamarin.Forms.Controls
 				{
 					BarBackgroundColor = Color.Default;
 					BarTextColor = Color.Default;
+					BarFontFamily = "Foo";
+					BarFontSize = 23;
+					BarFontAttributes = FontAttributes.Italic;
 
 					return false;
 				});
@@ -181,6 +188,7 @@ namespace Xamarin.Forms.Controls
 				});
 			}
 		}
+
 #endif
 
 #if UITest

@@ -44,6 +44,12 @@ namespace Xamarin.Forms
 		static readonly BindablePropertyKey RootPagePropertyKey = BindableProperty.CreateReadOnly(nameof(RootPage), typeof(Page), typeof(NavigationPage), null);
 		public static readonly BindableProperty RootPageProperty = RootPagePropertyKey.BindableProperty;
 
+		public static readonly BindableProperty BarFontFamilyProperty = BarElement.BarFontFamilyProperty;
+
+		public static readonly BindableProperty BarFontSizeProperty = BarElement.BarFontSizeProperty;
+
+		public static readonly BindableProperty BarFontAttributesProperty = BarElement.BarFontAttributesProperty;
+
 		public NavigationPage()
 		{
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<NavigationPage>>(() => new PlatformConfigurationRegistry<NavigationPage>(this));
@@ -56,7 +62,8 @@ namespace Xamarin.Forms
 			PushPage(root);
 		}
 
-		public Color BarBackgroundColor {
+		public Color BarBackgroundColor 
+		{
 			get => (Color)GetValue(BarElement.BarBackgroundColorProperty);
 			set => SetValue(BarElement.BarBackgroundColorProperty, value);
 		}
@@ -67,7 +74,27 @@ namespace Xamarin.Forms
 			set => SetValue(BarElement.BarBackgroundProperty, value);
 		}
 
-		public Color BarTextColor {
+		public string BarFontFamily
+		{
+			get => (string)GetValue(BarFontFamilyProperty);
+			set => SetValue(BarFontFamilyProperty, value);
+		}
+
+		[TypeConverter(typeof(FontSizeConverter))]
+		public double BarFontSize
+		{
+			get => (double)GetValue(BarFontSizeProperty);
+			set => SetValue(BarFontSizeProperty, value);
+		}
+
+		public FontAttributes BarFontAttributes
+		{
+			get => (FontAttributes)GetValue(BarFontAttributesProperty);
+			set => SetValue(BarFontAttributesProperty, value);
+		}
+
+		public Color BarTextColor
+		{
 			get => (Color)GetValue(BarElement.BarTextColorProperty);
 			set => SetValue(BarElement.BarTextColorProperty, value);
 		}
@@ -118,6 +145,8 @@ namespace Xamarin.Forms
 			get { return (Page)GetValue(RootPageProperty); }
 			private set { SetValue(RootPagePropertyKey, value); }
 		}
+
+		public Font Font => Font.OfSize(BarFontFamily, BarFontSize).WithAttributes(BarFontAttributes);
 
 		static void TitleViewPropertyChanging(BindableObject bindable, object oldValue, object newValue)
 		{

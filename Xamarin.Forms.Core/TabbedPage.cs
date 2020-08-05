@@ -16,6 +16,13 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty SelectedTabColorProperty = BindableProperty.Create(nameof(SelectedTabColor), typeof(Color),	typeof(TabbedPage), default(Color));
 
+		public static readonly BindableProperty BarFontFamilyProperty = BarElement.BarFontFamilyProperty;
+
+		public static readonly BindableProperty BarFontSizeProperty = BarElement.BarFontSizeProperty;
+
+		public static readonly BindableProperty BarFontAttributesProperty = BarElement.BarFontAttributesProperty;
+
+
 		readonly Lazy<PlatformConfigurationRegistry<TabbedPage>> _platformConfigurationRegistry;
 
 		public Color BarBackgroundColor {
@@ -44,6 +51,27 @@ namespace Xamarin.Forms
 			get => (Color)GetValue(SelectedTabColorProperty);
 			set => SetValue(SelectedTabColorProperty, value);
 		}
+
+		public string BarFontFamily
+		{
+			get => (string)GetValue(BarFontFamilyProperty);
+			set => SetValue(BarFontFamilyProperty, value);
+		}
+
+		[TypeConverter(typeof(FontSizeConverter))]
+		public double BarFontSize
+		{
+			get => (double)GetValue(BarFontSizeProperty);
+			set => SetValue(BarFontSizeProperty, value);
+		}
+
+		public FontAttributes BarFontAttributes
+		{
+			get => (FontAttributes)GetValue(BarFontAttributesProperty);
+			set => SetValue(BarFontAttributesProperty, value);
+		}
+
+		public Font Font => Font.OfSize(BarFontFamily, BarFontSize).WithAttributes(BarFontAttributes);
 
 		protected override Page CreateDefault(object item)
 		{

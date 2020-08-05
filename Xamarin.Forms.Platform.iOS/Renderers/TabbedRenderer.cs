@@ -24,13 +24,14 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _loaded;
 		Size _queuedSize;
 		PageLifecycleManager _pageLifecycleManager;
+		UITextAttributes _textAttributes;
 
 		Page Page => Element as Page;
 
 		[Internals.Preserve(Conditional = true)]
 		public TabbedRenderer()
 		{
-
+			_textAttributes = new UITextAttributes();
 		}
 
 		public override UIViewController SelectedViewController
@@ -62,6 +63,8 @@ namespace Xamarin.Forms.Platform.iOS
 			get { return View; }
 		}
 
+		protected bool BarIsNull => Tabbed == null || TabBar == null; 
+
 		public void SetElement(VisualElement element)
 		{
 			var oldElement = Element;
@@ -88,6 +91,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateBarTextColor();
 			UpdateSelectedTabColors();
 			UpdateBarTranslucent();
+			UpdateBarFont();
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 		}
@@ -231,6 +235,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateBarBackgroundColor();
 			UpdateBarTextColor();
 			UpdateSelectedTabColors();
+			UpdateBarFont();
 		}
 
 		void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -263,7 +268,9 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdatePrefersHomeIndicatorAutoHiddenOnPages();
 			else if (e.PropertyName == TabbedPageConfiguration.TranslucencyModeProperty.PropertyName)
 				UpdateBarTranslucent();
-
+			else if (e.PropertyName == TabbedPage.BarFontFamilyProperty.PropertyName || e.PropertyName == TabbedPage.BarFontSizeProperty.PropertyName || 
+				e.PropertyName == TabbedPage.BarFontAttributesProperty.PropertyName)
+				UpdateBarFont();
 		}
 
 		public override UIViewController ChildViewControllerForStatusBarHidden()
@@ -355,7 +362,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateBarBackgroundColor()
 		{
-			if (Tabbed == null || TabBar == null)
+			if (BarIsNull)
 				return;
 
 			var barBackgroundColor = Tabbed.BarBackgroundColor;
@@ -379,7 +386,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateBarBackground()
 		{
-			if (Tabbed == null || TabBar == null)
+			if (BarIsNull)
 				return;
 
 			var barBackground = Tabbed.BarBackground;
@@ -389,7 +396,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateBarTextColor()
 		{
-			if (Tabbed == null || TabBar == null || TabBar.Items == null)
+			if (BarIsNull || TabBar.Items == null)
 				return;
 
 			var barTextColor = Tabbed.BarTextColor;
@@ -407,7 +414,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!isDefaultColor)
 				_barTextColorWasSet = true;
 
-			var attributes = new UITextAttributes();
+			var attributes = GetTitleTextAttributes();
 
 			if (isDefaultColor)
 				attributes.TextColor = _defaultBarTextColor;
@@ -426,7 +433,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateBarTranslucent()
 		{
-			if (Tabbed == null || TabBar == null || Element == null)
+			if (BarIsNull || Element == null)
 				return;
 
 			_defaultBarTranslucent = _defaultBarTranslucent ?? TabBar.Translucent;
@@ -481,13 +488,14 @@ namespace Xamarin.Forms.Platform.iOS
 				Tag = Tabbed.Children.IndexOf(page),
 				AccessibilityIdentifier = page.AutomationId
 			};
+			renderer.ViewController.TabBarItem.SetTitleTextAttributes(GetTitleTextAttributes(), UIControlState.Normal);
 			icons?.Item1?.Dispose();
 			icons?.Item2?.Dispose();
 		}
 
 		void UpdateSelectedTabColors()
 		{
-			if (Tabbed == null || TabBar == null || TabBar.Items == null)
+			if (BarIsNull || TabBar.Items == null)
 				return;
 
 			if (Tabbed.IsSet(TabbedPage.SelectedTabColorProperty) && Tabbed.SelectedTabColor != Color.Default)
@@ -513,6 +521,30 @@ namespace Xamarin.Forms.Platform.iOS
 				TabBar.UnselectedItemTintColor = Tabbed.UnselectedTabColor.ToUIColor();
 			else
 				TabBar.UnselectedItemTintColor = UITabBar.Appearance.TintColor;
+		}
+
+		void UpdateBarFont()
+		{
+			if (!Forms.IsiOS10OrNewer || BarIsNull || TabBar.Items == null)
+				return;
+
+			UITextAttributes normalTextAttributes = GetTitleTextAttributes();
+
+			foreach (var a in TabBar.Items)
+			{
+				a.SetTitleTextAttributes(normalTextAttributes, UIControlState.Normal);
+			}
+		}
+
+		public UITextAttributes GetTitleTextAttributes()
+		{
+			if (Font.Default == Tabbed.Font)
+			{
+
+			}
+
+			_textAttributes.Font = Tabbed.Font.ToUIFont();
+			return _textAttributes;
 		}
 
 		/// <summary>
