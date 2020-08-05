@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Items[1].FlyoutDisplayOptions = FlyoutDisplayOptions.AsMultipleItems;
 		}
 
-#if UITEST
+#if UITEST && __SHELL__
 		[Test]
 		[Category(UITestCategories.Shell)]
 		public void ShellWithTopTabsFreezesWhenNavigatingFlyoutItems()
