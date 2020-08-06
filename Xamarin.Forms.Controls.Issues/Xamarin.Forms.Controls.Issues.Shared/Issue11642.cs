@@ -34,9 +34,6 @@ namespace Xamarin.Forms.Controls.Issues
 			var toggleButton = new Button() { Text = "Toggle First Group Items", Command = new Command(ToggleItemsInFirstGroup) };
 			collectionViewHeader.Children.Add(toggleButton);
 
-			var collectionItemTemplate = new StackLayout();
-			collectionItemTemplate.Children.Add(new Label() { Text = "NOOOO" });
-
 			var templateSelector = new Issue11642TemplateSelector();
 			templateSelector.TemplateOne = TemplateOne;
 			templateSelector.TemplateTwo = TemplateTwo;
