@@ -199,8 +199,6 @@ namespace Xamarin.Forms.Platform.Android
 				alert.SetCancelEvent((o, args) => { arguments.SetResult(false); });
 				alert.Show();
 
-				Console.WriteLine("SENDER!!!" + sender.FlowDirection.ToString());
-
 				LayoutDirection layoutDirection = LayoutDirection.Ltr;
 				TextDirection textDirection = TextDirection.Ltr;
 
