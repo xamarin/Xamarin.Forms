@@ -90,7 +90,7 @@ namespace Xamarin.Forms.Controls
 			{
 				BarBackgroundColor = Color.Default;
 				BarTextColor = Color.Default;
-				BarFontAttributes = FontAttributes.Bold;
+				BarFontAttributes = FontAttributes.Italic;
 				BarFontSize = 32;
 
 				return false;
