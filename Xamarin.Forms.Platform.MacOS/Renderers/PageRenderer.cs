@@ -22,22 +22,22 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateBackground()
 		{
-			this.ApplyNativeImageAsync(Page.BackgroundImageSourceProperty, bgImage =>
+			_renderer.ApplyNativeImageAsync(Page.BackgroundImageSourceProperty, bgImage =>
 			{
 				if (bgImage != null)
 				{
-					View.Layer.BackgroundColor = NSColor.FromPatternImage(bgImage).CGColor;
+					Layer.BackgroundColor = NSColor.FromPatternImage(bgImage).CGColor;
 				}
 				else
 				{
-					Brush background = Element.Background;
+					Brush background = _renderer.Element.Background;
 
 					if (!Brush.IsNullOrEmpty(background))
-						NativeView.UpdateBackground(Element.Background);
+						_renderer.NativeView.UpdateBackground(_renderer.Element.Background);
 					else
 					{
-						Color bgColor = Element.BackgroundColor;
-						View.Layer.BackgroundColor = bgColor.IsDefault ? ColorExtensions.WindowBackgroundColor.CGColor : bgColor.ToCGColor();
+						Color bgColor = _renderer.Element.BackgroundColor;
+						Layer.BackgroundColor = bgColor.IsDefault ? ColorExtensions.WindowBackgroundColor.CGColor : bgColor.ToCGColor();
 					}
 				}
 			});
