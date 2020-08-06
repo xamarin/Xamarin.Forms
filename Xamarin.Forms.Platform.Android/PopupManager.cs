@@ -478,7 +478,6 @@ namespace Xamarin.Forms.Platform.Android
 					if (_useAppCompat)
 					{
 						_appcompatAlertDialog.SetMessage(message);
-
 					}
 					else
 					{
