@@ -22,6 +22,9 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public ObservableCollection<Issue11642Group> TestItemSource { get; set; }
 		public Issue11642Group BackingGroup { get; set; }
+		public DataTemplate TemplateOne { get; set; } = new DataTemplate(() => new StackLayout() { HeightRequest = 40, BackgroundColor = Color.Blue });
+		public DataTemplate TemplateTwo { get; set; } = new DataTemplate(() => new StackLayout() { HeightRequest = 20, BackgroundColor = Color.Orange });
+		public DataTemplate TemplateThree { get; set; } = new DataTemplate(() => new StackLayout() { HeightRequest = 60, BackgroundColor = Color.Green });
 
 		protected override void Init()
 		{
@@ -34,12 +37,17 @@ namespace Xamarin.Forms.Controls.Issues
 			var collectionItemTemplate = new StackLayout();
 			collectionItemTemplate.Children.Add(new Label() { Text = "NOOOO" });
 
+			var templateSelector = new Issue11642TemplateSelector();
+			templateSelector.TemplateOne = TemplateOne;
+			templateSelector.TemplateTwo = TemplateTwo;
+			templateSelector.TemplateThree = TemplateThree;
+
 			var collectionView = new CollectionView();
 			collectionView.Header = collectionViewHeader;
 			collectionView.ItemsSource = TestItemSource;
 			collectionView.IsGrouped = true;
 			collectionView.GroupHeaderTemplate = new DataTemplate(() => new Label() { Text = "Group Name" });
-			collectionView.ItemTemplate = new DataTemplate(() => new StackLayout() { HeightRequest = 40, Padding = 10, BackgroundColor = Color.Red });
+			collectionView.ItemTemplate = templateSelector;
 
 			Content = collectionView;
 		}
@@ -54,13 +62,18 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public Issue11642Group GenerateGroup()
 		{
-			return new Issue11642Group("List 1", new List<Issue11642TestItem>()
+			return new Issue11642Group("List 1", new List<IIssue11642Test>()
 				{
-					new Issue11642TestItem(),
-					new Issue11642TestItem(),
-					new Issue11642TestItem(),
-					new Issue11642TestItem(),
-					new Issue11642TestItem(),
+					new Issue11642TestItemOne(),
+					new Issue11642TestItemOne(),
+					new Issue11642TestItemThree(),
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemOne(),
+					new Issue11642TestItemOne(),
+					new Issue11642TestItemOne(),
+					new Issue11642TestItemThree(),
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemOne(),
 				});
 		}
 
@@ -68,36 +81,83 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			return new ObservableCollection<Issue11642Group>()
 			{
-				new Issue11642Group("List 1", new List<Issue11642TestItem>()
+				new Issue11642Group("List 1", new List<IIssue11642Test>()
 				{
-					new Issue11642TestItem(),
-					new Issue11642TestItem(),
-					new Issue11642TestItem(),
-					new Issue11642TestItem(),
-					new Issue11642TestItem(),
+					new Issue11642TestItemOne(),
+					new Issue11642TestItemOne(),
+					new Issue11642TestItemThree(),
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemOne(),
+					new Issue11642TestItemOne(),
+					new Issue11642TestItemOne(),
+					new Issue11642TestItemThree(),
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemOne(),
 				}),
-				new Issue11642Group("List 2", new List<Issue11642TestItem>()
+				new Issue11642Group("List 2", new List<IIssue11642Test>()
 				{
-					new Issue11642TestItem(),
-					new Issue11642TestItem(),
+					new Issue11642TestItemThree(),
+					new Issue11642TestItemOne(),
+					new Issue11642TestItemThree(),
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemOne(),
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemOne(),
+				}),
+				new Issue11642Group("List 3", new List<IIssue11642Test>()
+				{
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemThree(),
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemThree(),
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemThree(),
 				})
 			};
 		}
 	}
 
-	public class Issue11642Group : ObservableCollection<Issue11642TestItem>
+	public class Issue11642Group : ObservableCollection<IIssue11642Test>
 	{
 		public string GroupName { get; set; }
 
-		public Issue11642Group(string groupName, List<Issue11642TestItem> items) : base(items)
+		public Issue11642Group(string groupName, List<IIssue11642Test> items) : base(items)
 		{
 			GroupName = groupName;
 		}
 	}
 
-	public class Issue11642TestItem
+	public class Issue11642TestItemOne : IIssue11642Test
 	{
-		public string ItemName { get; set; }
+	}
+
+	public class Issue11642TestItemTwo : IIssue11642Test
+	{
+	}
+
+	public class Issue11642TestItemThree : IIssue11642Test
+	{
+	}
+
+	public interface IIssue11642Test { }
+
+
+	public class Issue11642TemplateSelector : DataTemplateSelector
+	{
+		public DataTemplate TemplateOne { get; set; }
+		public DataTemplate TemplateTwo { get; set; }
+		public DataTemplate TemplateThree { get; set; }
+
+		protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
+		{
+			if (item is Issue11642TestItemOne)
+				return TemplateOne;
+			else if (item is Issue11642TestItemTwo)
+				return TemplateTwo;
+			else
+				return TemplateThree;
+		}
 	}
 
 }
