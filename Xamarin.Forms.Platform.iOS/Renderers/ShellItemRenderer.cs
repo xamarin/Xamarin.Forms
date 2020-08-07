@@ -7,6 +7,7 @@ using System.Linq;
 using Foundation;
 using ObjCRuntime;
 using UIKit;
+using Xamarin.Forms.Core;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -235,14 +236,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 					if (!renderer.IsInMoreTab)
 					{
-						ApplyBadge(renderer.ShellSection, renderer.ShellSection.BadgeText, renderer.ShellSection.IsChecked, TabBar.Items[i]);
+						ApplyBadge(renderer.ShellSection, Badge.GetBadgeText(renderer.ShellSection), renderer.ShellSection.IsChecked, TabBar.Items[i]);
 					}
 				}
 
-				if (willUseMore)
-				{
-					ApplyBadge(ShellItem, ShellItem.BadgeMoreText, ShellItem.Items.Skip(maxTabs - 1).Any(x => x.IsChecked), TabBar.Items[maxTabs - 1]);
-				}
+				// TODO: BadgeMoreText
+				////if (willUseMore)
+				////{
+				////	ApplyBadge(ShellItem, ShellItem.BadgeMoreText, ShellItem.Items.Skip(maxTabs - 1).Any(x => x.IsChecked), TabBar.Items[maxTabs - 1]);
+				////}
 			}
 
 			UpdateTabBarHidden();
@@ -258,7 +260,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void OnShellSectionPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			int maxTabs = 5; // fetch this a better way
+			////int maxTabs = 5; // fetch this a better way
 
 			if (e.PropertyName == BaseShellItem.IsEnabledProperty.PropertyName)
 			{
@@ -267,10 +269,11 @@ namespace Xamarin.Forms.Platform.iOS
 				var index = ViewControllers.ToList().IndexOf(renderer.ViewController);
 				TabBar.Items[index].Enabled = shellSection.IsEnabled;
 			}
-			else if (e.PropertyName == BaseShellItem.BadgeTextProperty.PropertyName ||
-				e.PropertyName == BaseShellItem.BadgeEffectiveTextColorProperty.PropertyName ||
-				e.PropertyName == BaseShellItem.BadgeEffectiveColorProperty.PropertyName ||
-				e.PropertyName == BaseShellItem.BadgeMoreTextProperty.PropertyName)
+			else if (e.PropertyName == Badge.BadgeTextProperty.PropertyName ||
+				e.PropertyName == Badge.BadgeTextColorProperty.PropertyName ||
+				e.PropertyName == Badge.BadgeBackgroundProperty.PropertyName)
+				// TODO: BadgeMoreText
+				////e.PropertyName == BaseShellItem.BadgeMoreTextProperty.PropertyName)
 			{
 				var shellSection = (ShellSection)sender;
 				var renderer = RendererForShellContent(shellSection);
@@ -278,11 +281,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (renderer.IsInMoreTab)
 				{
-					ApplyBadge(ShellItem, ShellItem.BadgeMoreText, ShellItem.Items.Skip(maxTabs - 1).Any(x => x.IsChecked), TabBar.Items[maxTabs - 1]);
+					// TODO: BadgeMoreText
+					////ApplyBadge(ShellItem, ShellItem.BadgeMoreText, ShellItem.Items.Skip(maxTabs - 1).Any(x => x.IsChecked), TabBar.Items[maxTabs - 1]);
 				}
 				else
 				{
-					ApplyBadge(renderer.ShellSection, renderer.ShellSection.BadgeText, renderer.ShellSection.IsChecked, TabBar.Items[index]);
+					ApplyBadge(renderer.ShellSection, Badge.GetBadgeText(renderer.ShellSection), renderer.ShellSection.IsChecked, TabBar.Items[index]);
 				}
 			}
 		}
@@ -346,14 +350,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (!renderer.IsInMoreTab)
 				{
-					ApplyBadge(renderer.ShellSection, renderer.ShellSection.BadgeText, renderer.ShellSection.IsChecked, TabBar.Items[i]);
+					ApplyBadge(renderer.ShellSection, Badge.GetBadgeText(renderer.ShellSection), renderer.ShellSection.IsChecked, TabBar.Items[i]);
 				}
 			}
 
-			if (willUseMore)
-			{
-				ApplyBadge(ShellItem, ShellItem.BadgeMoreText, ShellItem.Items.Skip(maxTabs - 1).Any(x => x.IsChecked), TabBar.Items[maxTabs - 1]);
-			}
+			// TODO: BadgeMoreText
+			////if (willUseMore)
+			////{
+			////	ApplyBadge(ShellItem, ShellItem.BadgeMoreText, ShellItem.Items.Skip(maxTabs - 1).Any(x => x.IsChecked), TabBar.Items[maxTabs - 1]);
+			////}
 		}
 
 		void GoTo(ShellSection shellSection)
@@ -454,12 +459,14 @@ namespace Xamarin.Forms.Platform.iOS
 		void ApplyBadge(BaseShellItem baseShellItem, string badgeText, bool isSelected, UITabBarItem tabBarItem)
 		{
 			tabBarItem.BadgeValue = !string.IsNullOrEmpty(badgeText) ? badgeText : null;
-			var badgeColor = baseShellItem.GetBadgeEffectiveColor(isSelected);
-			tabBarItem.BadgeColor = !badgeColor.IsDefault ? badgeColor.ToUIColor() : null;
+			var badgeColor = Badge.GetBadgeBackground(baseShellItem);
+
+			// TODO: Discuss possible workaround
+			tabBarItem.BadgeColor = !Brush.IsNullOrEmpty(badgeColor) ? (badgeColor as SolidColorBrush)?.Color.ToUIColor() : null;
 
 			var stringAttributes = new UIStringAttributes();
 
-			var badgeTextColor = baseShellItem.GetBadgeEffectiveTextColor(isSelected);
+			var badgeTextColor = Badge.GetBadgeTextColor(baseShellItem);
 
 			if (!badgeTextColor.IsDefault)
 			{

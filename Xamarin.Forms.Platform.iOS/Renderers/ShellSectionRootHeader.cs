@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using UIKit;
+using Xamarin.Forms.Core;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -107,9 +108,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 				headerCell.Selected = false;
 
-			headerCell.SetAccessibilityProperties(shellContent);
-
-			headerCell.ApplyBadge(shellContent.BadgeEffectiveColor, shellContent.BadgeText, shellContent.BadgeEffectiveTextColor);
+			headerCell.ApplyBadge(Badge.GetBadgeBackground(shellContent), Badge.GetBadgeText(shellContent), Badge.GetBadgeTextColor(shellContent));
 			_shellContentToCellMapping[shellContent] = headerCell;
 
 			return headerCell;
@@ -293,15 +292,6 @@ namespace Xamarin.Forms.Platform.iOS
 		void OnShellSectionItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			ReloadData();
-		}
-
-		void ReloadData()
-		{
-			if (_isDisposed)
-				return;
-
-			CollectionView.ReloadData();
-			CollectionView.CollectionViewLayout.InvalidateLayout();
 
 			if (e.OldItems != null)
 			{
@@ -318,6 +308,15 @@ namespace Xamarin.Forms.Platform.iOS
 					HookChildEvents(shellContent);
 				}
 			}
+		}
+
+		void ReloadData()
+		{
+			if (_isDisposed)
+				return;
+
+			CollectionView.ReloadData();
+			CollectionView.CollectionViewLayout.InvalidateLayout();
 		}
 
 		void HookEvents()
@@ -348,13 +347,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnShellContentPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == BaseShellItem.BadgeTextProperty.PropertyName ||
-				e.PropertyName == BaseShellItem.BadgeEffectiveTextColorProperty.PropertyName ||
-				e.PropertyName == BaseShellItem.BadgeEffectiveColorProperty.PropertyName)
+			if (e.PropertyName == Badge.BadgeTextProperty.PropertyName ||
+				e.PropertyName == Badge.BadgeTextColorProperty.PropertyName ||
+				e.PropertyName == Badge.BadgeBackgroundProperty.PropertyName)
 			{
 				var shellContent = (ShellContent)sender;
 				var headerCell = _shellContentToCellMapping[shellContent];
-				headerCell.ApplyBadge(shellContent.BadgeEffectiveColor, shellContent.BadgeText, shellContent.BadgeEffectiveTextColor);
+				headerCell.ApplyBadge(Badge.GetBadgeBackground(shellContent), Badge.GetBadgeText(shellContent), Badge.GetBadgeTextColor(shellContent));
 				headerCell.SetNeedsLayout();
 			}
 		}
@@ -380,15 +379,17 @@ namespace Xamarin.Forms.Platform.iOS
 
 				ContentView.AddSubview(Label);
 
+				BadgeLabelContainer = new UIView();
+				BadgeLabelContainer.ClipsToBounds = true;
+				BadgeLabelContainer.Layer.CornerRadius = 9;
+
 				BadgeLabel = new UILabel();
 				BadgeLabel.TextAlignment = UITextAlignment.Center;
 				BadgeLabel.Font = UIFont.SystemFontOfSize(13);
-				BadgeLabel.ClipsToBounds = true;
-				BadgeLabel.Layer.CornerRadius = 9;
-				BadgeLabel.BackgroundColor = UIColor.FromRGB(255, 59, 48);
 				BadgeLabel.TextColor = UIColor.White;
 
-				ContentView.AddSubview(BadgeLabel);
+				BadgeLabelContainer.AddSubview(BadgeLabel);
+				ContentView.AddSubview(BadgeLabelContainer);
 			}
 
 			public override bool Selected
@@ -405,6 +406,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			protected UILabel BadgeLabel { get; }
 
+			protected UIView BadgeLabelContainer { get; }
+
 			public override void LayoutSubviews()
 			{
 				base.LayoutSubviews();
@@ -412,12 +415,15 @@ namespace Xamarin.Forms.Platform.iOS
 				Label.Frame = Bounds;
 
 				nfloat height = BadgeLabel.IntrinsicContentSize.Height + 2;
-				nfloat width = BadgeLabel.IntrinsicContentSize.Width + 10;
+				nfloat width = BadgeLabel.IntrinsicContentSize.Width + 12;
+
+				BadgeLabel.Frame = new CGRect(0, 0, width > height ? width : height, height);
 
 				var bounds = new CGRect(0, 0, width > height ? width : height, height);
 				bounds.Offset(Label.IntrinsicContentSize.Width + ((Bounds.Width - Label.IntrinsicContentSize.Width) / 2) - 6, (Bounds.Height - Label.IntrinsicContentSize.Height) / 2.0f - 8);
 
-				BadgeLabel.Frame = bounds;
+				BadgeLabelContainer.Frame = bounds;
+				BadgeLabelContainer.UpdateBackgroundLayer();
 			}
 
 			public override CGSize SizeThatFits(CGSize size)
@@ -425,16 +431,9 @@ namespace Xamarin.Forms.Platform.iOS
 				return new CGSize(Label.SizeThatFits(size).Width + 30, 35);
 			}
 
-			public void ApplyBadge(Color color, string text, Color textColor)
+			public void ApplyBadge(Brush color, string text, Color textColor)
 			{
-				if (color == Color.Default)
-				{
-					BadgeLabel.BackgroundColor = UIColor.FromRGB(255, 59, 48);
-				}
-				else
-				{
-					BadgeLabel.BackgroundColor = color.ToUIColor();
-				}
+				BadgeLabel.UpdateBackground(Brush.IsNullOrEmpty(color) ? new SolidColorBrush(Color.FromRgb(255, 59, 48)) : color);
 
 				BadgeLabel.Text = text;
 
@@ -447,7 +446,7 @@ namespace Xamarin.Forms.Platform.iOS
 					BadgeLabel.TextColor = textColor.ToUIColor();
 				}
 
-				BadgeLabel.Hidden = string.IsNullOrEmpty(text);
+				BadgeLabelContainer.Hidden = string.IsNullOrEmpty(text);
 			}
 		}
 	}

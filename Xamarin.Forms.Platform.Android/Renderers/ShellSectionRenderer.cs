@@ -10,6 +10,7 @@ using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using Xamarin.Forms.Core;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using AView = Android.Views.View;
 
@@ -355,9 +356,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnShellContentPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == BaseShellItem.BadgeTextProperty.PropertyName ||
-				e.PropertyName == BaseShellItem.BadgeEffectiveTextColorProperty.PropertyName ||
-				e.PropertyName == BaseShellItem.BadgeEffectiveColorProperty.PropertyName)
+			if (e.PropertyName == Badge.BadgeTextProperty.PropertyName ||
+				e.PropertyName == Badge.BadgeTextColorProperty.PropertyName ||
+				e.PropertyName == Badge.BadgeBackgroundProperty.PropertyName)
 			{
 				ApplyBadge((ShellContent)sender);
 			}
@@ -376,7 +377,7 @@ namespace Xamarin.Forms.Platform.Android
 			var indexOf = this.ShellSection.Items.IndexOf(shellContent);
 			var tabView = (TabLayout.TabView)((ViewGroup)_tablayout.GetChildAt(0)).GetChildAt(indexOf);
 
-			tabView.ApplyBadge(shellContent.BadgeEffectiveColor, shellContent.BadgeText, shellContent.BadgeEffectiveTextColor);
+			tabView.ApplyBadge(Badge.GetBadgeBackground(shellContent), Badge.GetBadgeText(shellContent), Badge.GetBadgeTextColor(shellContent));
 		}
 	}
 }

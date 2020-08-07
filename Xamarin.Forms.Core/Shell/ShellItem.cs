@@ -7,6 +7,7 @@ using Xamarin.Forms.Internals;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Linq;
+using Xamarin.Forms.Core;
 
 namespace Xamarin.Forms
 {
@@ -216,12 +217,9 @@ namespace Xamarin.Forms
 			result.SetBinding(IconProperty, new Binding(nameof(Icon), BindingMode.OneWay, source: shellSection));
 			result.SetBinding(FlyoutDisplayOptionsProperty, new Binding(nameof(FlyoutDisplayOptions), BindingMode.OneTime, source: shellSection));
 			result.SetBinding(FlyoutIconProperty, new Binding(nameof(FlyoutIcon), BindingMode.OneWay, source: shellSection));
-			result.SetBinding(BadgeTextProperty, new Binding(nameof(BadgeText), BindingMode.OneWay, source: shellSection));
-			result.SetBinding(BadgeMoreTextProperty, new Binding(nameof(BadgeMoreText), BindingMode.OneWay, source: shellSection));
-			result.SetBinding(BadgeColorProperty, new Binding(nameof(BadgeColor), BindingMode.OneWay, source: shellSection));
-			result.SetBinding(BadgeUnselectedColorProperty, new Binding(nameof(BadgeUnselectedColor), BindingMode.OneWay, source: shellSection));
-			result.SetBinding(BadgeTextColorProperty, new Binding(nameof(BadgeTextColor), BindingMode.OneWay, source: shellSection));
-			result.SetBinding(BadgeUnselectedTextColorProperty, new Binding(nameof(BadgeUnselectedTextColor), BindingMode.OneWay, source: shellSection));
+			result.SetBinding(Badge.BadgeTextProperty, new Binding("BadgeText", BindingMode.OneWay, source: shellSection));
+			result.SetBinding(Badge.BadgeTextColorProperty, new Binding("BadgeTextColor", BindingMode.OneWay, source: shellSection));
+			result.SetBinding(Badge.BadgeBackgroundProperty, new Binding("BadgeBackground", BindingMode.OneWay, source: shellSection));
 
 			return result;
 		}
@@ -243,12 +241,9 @@ namespace Xamarin.Forms
 			result.SetBinding(IconProperty, new Binding(nameof(Icon), BindingMode.OneWay, source: shellSection));
 			result.SetBinding(FlyoutDisplayOptionsProperty, new Binding(nameof(FlyoutDisplayOptions), BindingMode.OneTime, source: shellSection));
 			result.SetBinding(FlyoutIconProperty, new Binding(nameof(FlyoutIcon), BindingMode.OneWay, source: shellSection));
-			result.SetBinding(BadgeTextProperty, new Binding(nameof(BadgeText), BindingMode.OneWay, source: shellSection));
-			result.SetBinding(BadgeMoreTextProperty, new Binding(nameof(BadgeMoreText), BindingMode.OneWay, source: shellSection));
-			result.SetBinding(BadgeColorProperty, new Binding(nameof(BadgeColor), BindingMode.OneWay, source: shellSection));
-			result.SetBinding(BadgeUnselectedColorProperty, new Binding(nameof(BadgeUnselectedColor), BindingMode.OneWay, source: shellSection));
-			result.SetBinding(BadgeTextColorProperty, new Binding(nameof(BadgeTextColor), BindingMode.OneWay, source: shellSection));
-			result.SetBinding(BadgeUnselectedTextColorProperty, new Binding(nameof(BadgeUnselectedTextColor), BindingMode.OneWay, source: shellSection));
+			result.SetBinding(Badge.BadgeTextProperty, new Binding("BadgeText", BindingMode.OneWay, source: shellSection));
+			result.SetBinding(Badge.BadgeTextColorProperty, new Binding("BadgeTextColor", BindingMode.OneWay, source: shellSection));
+			result.SetBinding(Badge.BadgeBackgroundProperty, new Binding("BadgeBackground", BindingMode.OneWay, source: shellSection));
 
 			return result;
 		}

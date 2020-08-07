@@ -11,6 +11,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Xamarin.Forms.Core;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
 using IMenu = Android.Views.IMenu;
@@ -347,16 +348,17 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnShellItemPropertyChanged(sender, e);
 
-			if (e.PropertyName == BaseShellItem.BadgeMoreTextProperty.PropertyName)
-			{
-				var itemCount = ShellItem.Items.Count;
-				var maxItems = _bottomView.MaxItemCount;
+			// TODO: BadgeMoreText
+			////if (e.PropertyName == BaseShellItem.BadgeMoreTextProperty.PropertyName)
+			////{
+			////	var itemCount = ShellItem.Items.Count;
+			////	var maxItems = _bottomView.MaxItemCount;
 
-				if (itemCount > maxItems)
-				{
-					ApplyBadge(ShellItem, ShellItem.BadgeMoreText, ShellItem.Items.Skip(maxItems - 1).Any(x => x.IsChecked), MoreTabId);
-				}
-			}
+			////	if (itemCount > maxItems)
+			////	{
+			////		ApplyBadge(ShellItem, ShellItem.BadgeMoreText, ShellItem.Items.Skip(maxItems - 1).Any(x => x.IsChecked), MoreTabId);
+			////	}
+			////}
 		}
 
 		protected override void OnShellSectionPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -382,10 +384,9 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				SetupMenu();
 			}
-			else if (e.PropertyName == BaseShellItem.BadgeTextProperty.PropertyName ||
-				e.PropertyName == BaseShellItem.BadgeEffectiveTextColorProperty.PropertyName ||
-				e.PropertyName == BaseShellItem.BadgeEffectiveColorProperty.PropertyName ||
-				e.PropertyName == BaseShellItem.BadgeMoreTextProperty.PropertyName)
+			else if (e.PropertyName == Badge.BadgeTextProperty.PropertyName ||
+				e.PropertyName == Badge.BadgeTextColorProperty.PropertyName ||
+				e.PropertyName == Badge.BadgeBackgroundProperty.PropertyName)
 			{
 				var content = (ShellSection)sender;
 				var index = ShellItem.Items.IndexOf(content);
@@ -393,14 +394,15 @@ namespace Xamarin.Forms.Platform.Android
 				var itemCount = ShellItem.Items.Count;
 				var maxItems = _bottomView.MaxItemCount;
 
-				if (itemCount > maxItems && index > maxItems - 2)
-				{
-					ApplyBadge(ShellItem, ShellItem.BadgeMoreText, ShellItem.Items.Skip(maxItems - 1).Any(x => x.IsChecked), MoreTabId);
-				}
-				else
+				// TODO: BadgeMoreText
+				////if (itemCount > maxItems && index > maxItems - 2)
+				////{
+				////	ApplyBadge(ShellItem, ShellItem.BadgeMoreText, ShellItem.Items.Skip(maxItems - 1).Any(x => x.IsChecked), MoreTabId);
+				////}
+				////else
 				{
 					var menuItem = _bottomView.Menu.FindItem(index);
-					ApplyBadge(content, content.BadgeText, content.IsChecked, menuItem.ItemId);
+					ApplyBadge(content, Badge.GetBadgeText(content), content.IsChecked, menuItem.ItemId);
 				}
 			}
 		}
@@ -438,14 +440,15 @@ namespace Xamarin.Forms.Platform.Android
 			for (int i = 0; i < end; i++)
 			{
 				ShellSection shellSection = shellItem.Items[i];
-				ApplyBadge(shellSection, shellSection.BadgeText, shellSection.IsChecked, i);
+				ApplyBadge(shellSection, Badge.GetBadgeText(shellSection), shellSection.IsChecked, i);
 			}
 
-			if (showMore)
-			{
-				ApplyBadge(ShellItem, ShellItem.BadgeMoreText,
-					ShellItem.Items.Skip(maxBottomItems - 1).Any(x => x.IsChecked), MoreTabId);
-			}
+			// TODO: BadgeMoreText
+			////if (showMore)
+			////{
+			////	ApplyBadge(ShellItem, ShellItem.BadgeMoreText,
+			////		ShellItem.Items.Skip(maxBottomItems - 1).Any(x => x.IsChecked), MoreTabId);
+			////}
 		}
 
 		protected virtual void UpdateShellSectionEnabled(ShellSection shellSection, IMenuItem menuItem)
@@ -461,7 +464,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				BottomNavigationItemView itemView = bottomNavigationMenuView.FindViewById<BottomNavigationItemView>(itemId);
 
-				itemView.ApplyBadge(baseShellItem.GetBadgeEffectiveColor(isSelected), badgeText, baseShellItem.GetBadgeEffectiveTextColor(isSelected));
+				itemView.ApplyBadge(Badge.GetBadgeBackground(baseShellItem), badgeText, Badge.GetBadgeTextColor(baseShellItem));
 			}
 		}
 

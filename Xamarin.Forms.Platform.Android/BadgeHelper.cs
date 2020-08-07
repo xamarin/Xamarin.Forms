@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal static class BadgeHelper
 	{
-		public static void ApplyBadge(this BottomNavigationItemView bottomNavigationView, Color color, string text,
+		public static void ApplyBadge(this BottomNavigationItemView bottomNavigationView, Brush color, string text,
 			Color textColor)
 		{
 			if (!bottomNavigationView.GetChildrenOfType<BadgeFrameLayout>().Any())
@@ -45,8 +45,8 @@ namespace Xamarin.Forms.Platform.Android
 				badgeContainer.TopMargin += 10;
 
 				badgeContainer.Visibility = !string.IsNullOrEmpty(text) ? ViewStates.Visible : ViewStates.Invisible;
-
-				badgeContainer.Background = CreateBadgeBackground(bottomNavigationView.Context, color);
+				
+				UpdateBadgeBackground(badgeContainer, bottomNavigationView.Context, color);
 				badgeContainer.AddView(CreateBadgeText(bottomNavigationView.Context, text, textColor));
 
 				badgeContainerFrameLayout.AddView(badgeContainer);
@@ -58,8 +58,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				BadgeFrameLayout badgeContainer = bottomNavigationView.GetChildrenOfType<BadgeFrameLayout>().Single();
 				badgeContainer.Visibility = !string.IsNullOrEmpty(text) ? ViewStates.Visible : ViewStates.Invisible;
-
-				((PaintDrawable)badgeContainer.Background).Paint.Color = color.IsDefault ? Color.FromRgb(255, 59, 48).ToAndroid() : color.ToAndroid();
+				
+				UpdateBadgeBackground(badgeContainer, bottomNavigationView.Context, color);
 
 				TextView textView = (TextView)badgeContainer.GetChildAt(0);
 				textView.Text = text;
@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		public static void ApplyBadge(this TabLayout.TabView tabView, Color color, string text,
+		public static void ApplyBadge(this TabLayout.TabView tabView, Brush color, string text,
 			Color textColor)
 		{
 			if (!tabView.GetChildrenOfType<BadgeFrameLayout>().Any())
@@ -88,7 +88,8 @@ namespace Xamarin.Forms.Platform.Android
 				BadgeFrameLayout badgeContainer = CreateBadgeContainer(tabView.Context);
 				badgeContainer.Visibility = !string.IsNullOrEmpty(text) ? ViewStates.Visible : ViewStates.Invisible;
 
-				badgeContainer.Background = CreateBadgeBackground(tabView.Context, color);
+				UpdateBadgeBackground(badgeContainer, tabView.Context, color);
+
 				badgeContainer.AddView(CreateBadgeText(tabView.Context, text, textColor));
 
 				badgeContainerFrameLayout.AddView(badgeContainer);
@@ -100,7 +101,7 @@ namespace Xamarin.Forms.Platform.Android
 				BadgeFrameLayout badgeContainer = tabView.GetChildrenOfType<BadgeFrameLayout>().Single();
 				badgeContainer.Visibility = !string.IsNullOrEmpty(text) ? ViewStates.Visible : ViewStates.Invisible;
 
-				((PaintDrawable)badgeContainer.Background).Paint.Color = color.IsDefault ? Color.FromRgb(255, 59, 48).ToAndroid() : color.ToAndroid();
+				UpdateBadgeBackground(badgeContainer, tabView.Context, color);
 
 				TextView textView = (TextView)badgeContainer.GetChildAt(0);
 				textView.Text = text;
@@ -144,18 +145,11 @@ namespace Xamarin.Forms.Platform.Android
 			return textView;
 		}
 
-		static PaintDrawable CreateBadgeBackground(Context context, Color color)
+		static void UpdateBadgeBackground(BadgeFrameLayout badgeContainer, Context context, Brush color)
 		{
-			var badgeFrameLayoutBackground = new PaintDrawable();
-
-			badgeFrameLayoutBackground.Paint.Color =
-				color.IsDefault ? Color.FromRgb(255, 59, 48).ToAndroid() : color.ToAndroid();
-
-			badgeFrameLayoutBackground.Shape = new RectShape();
-			badgeFrameLayoutBackground.SetCornerRadius(TypedValue.ApplyDimension(ComplexUnitType.Dip, 8,
-				context.Resources.DisplayMetrics));
-
-			return badgeFrameLayoutBackground;
+			badgeContainer.UpdateBackground(Brush.IsNullOrEmpty(color) ? new SolidColorBrush(Color.FromRgb(255, 59, 48)) : color);
+			((GradientStrokeDrawable)badgeContainer.Background).SetStroke(0, Color.Default.ToAndroid());
+			((PaintDrawable)badgeContainer.Background).SetCornerRadius(TypedValue.ApplyDimension(ComplexUnitType.Dip, 8, context.Resources.DisplayMetrics));
 		}
 
 		internal class BadgeFrameLayout : FrameLayout

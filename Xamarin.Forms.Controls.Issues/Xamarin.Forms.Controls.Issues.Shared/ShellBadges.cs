@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Controls.Issues
 		PlatformAffected.All)]
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.Shell)]
+	[Ignore("Needs rework")]
 #endif
 	public class ShellBadges : TestShell
 	{
@@ -217,12 +218,12 @@ namespace Xamarin.Forms.Controls.Issues
 
 		static void ApplyBadgeViewModel(BindableObject bindableObject)
 		{
-			bindableObject.SetBinding(BaseShellItem.BadgeTextProperty, nameof(BadgeViewModel.Text));
-			bindableObject.SetBinding(BaseShellItem.BadgeMoreTextProperty, nameof(BadgeViewModel.MoreText));
-			bindableObject.SetBinding(BaseShellItem.BadgeTextColorProperty, nameof(BadgeViewModel.TextColor));
-			bindableObject.SetBinding(BaseShellItem.BadgeUnselectedTextColorProperty, nameof(BadgeViewModel.UnselectedTextColor));
-			bindableObject.SetBinding(BaseShellItem.BadgeColorProperty, nameof(BadgeViewModel.Color));
-			bindableObject.SetBinding(BaseShellItem.BadgeUnselectedColorProperty, nameof(BadgeViewModel.UnselectedColor));
+			////bindableObject.SetBinding(BaseShellItem.BadgeTextProperty, nameof(BadgeViewModel.Text));
+			////bindableObject.SetBinding(BaseShellItem.BadgeMoreTextProperty, nameof(BadgeViewModel.MoreText));
+			////bindableObject.SetBinding(BaseShellItem.BadgeTextColorProperty, nameof(BadgeViewModel.TextColor));
+			////bindableObject.SetBinding(BaseShellItem.BadgeUnselectedTextColorProperty, nameof(BadgeViewModel.UnselectedTextColor));
+			////bindableObject.SetBinding(BaseShellItem.BadgeColorProperty, nameof(BadgeViewModel.Color));
+			////bindableObject.SetBinding(BaseShellItem.BadgeUnselectedColorProperty, nameof(BadgeViewModel.UnselectedColor));
 		}
 
 		static ShellItem CreateShellItem(string title, params ShellSection[] shellSections)

@@ -60,30 +60,6 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty IsVisibleProperty =
 			BindableProperty.Create(nameof(IsVisible), typeof(bool), typeof(BaseShellItem), true);
 
-		public static readonly BindableProperty BadgeTextProperty =
-			BindableProperty.Create(nameof(BadgeText), typeof(string), typeof(BaseShellItem), null, BindingMode.OneWay);
-
-		public static readonly BindableProperty BadgeMoreTextProperty =
-			BindableProperty.Create(nameof(BadgeMoreText), typeof(string), typeof(BaseShellItem), null, BindingMode.OneWay);
-
-		public static readonly BindableProperty BadgeTextColorProperty =
-			BindableProperty.Create(nameof(BadgeTextColor), typeof(Color), typeof(BaseShellItem), Color.Default, BindingMode.OneWay);
-
-		public static readonly BindableProperty BadgeUnselectedTextColorProperty =
-			BindableProperty.Create(nameof(BadgeUnselectedTextColor), typeof(Color), typeof(BaseShellItem), Color.Default, BindingMode.OneWay);
-
-		public static readonly BindableProperty BadgeEffectiveTextColorProperty =
-			BindableProperty.CreateReadOnly(nameof(BadgeEffectiveTextColor), typeof(Color), typeof(BaseShellItem), Color.Default, BindingMode.OneWay).BindableProperty;
-
-		public static readonly BindableProperty BadgeColorProperty =
-			BindableProperty.Create(nameof(BadgeColor), typeof(Color), typeof(BaseShellItem), Color.Default, BindingMode.OneWay);
-
-		public static readonly BindableProperty BadgeUnselectedColorProperty =
-			BindableProperty.Create(nameof(BadgeUnselectedColor), typeof(Color), typeof(BaseShellItem), Color.Default, BindingMode.OneWay);
-
-		public static readonly BindableProperty BadgeEffectiveColorProperty =
-			BindableProperty.CreateReadOnly(nameof(BadgeEffectiveColor), typeof(Color), typeof(BaseShellItem), Color.Default, BindingMode.OneWay).BindableProperty;
-
 		static void OnTabIndexPropertyChanged(BindableObject bindable, object oldValue, object newValue) =>
 			((BaseShellItem)bindable).OnTabIndexPropertyChanged((int)oldValue, (int)newValue);
 
@@ -158,66 +134,6 @@ namespace Xamarin.Forms
 				return sgi.ShellElementCollection.Contains(this);
 
 			return false;
-		}
-
-		public string BadgeText
-		{
-			get { return (string)GetValue(BadgeTextProperty); }
-			set { SetValue(BadgeTextProperty, value); }
-		}
-
-		public string BadgeMoreText
-		{
-			get { return (string)GetValue(BadgeMoreTextProperty); }
-			set { SetValue(BadgeMoreTextProperty, value); }
-		}
-
-		public Color BadgeTextColor
-		{
-			get { return (Color)GetValue(BadgeTextColorProperty); }
-			set { SetValue(BadgeTextColorProperty, value); }
-		}
-
-		public Color BadgeUnselectedTextColor
-		{
-			get { return (Color)GetValue(BadgeUnselectedTextColorProperty); }
-			set { SetValue(BadgeUnselectedTextColorProperty, value); }
-		}
-
-		public Color BadgeColor
-		{
-			get { return (Color)GetValue(BadgeColorProperty); }
-			set { SetValue(BadgeColorProperty, value); }
-		}
-
-		public Color BadgeUnselectedColor
-		{
-			get { return (Color)GetValue(BadgeUnselectedColorProperty); }
-			set { SetValue(BadgeUnselectedColorProperty, value); }
-		}
-
-		public Color BadgeEffectiveTextColor => GetBadgeEffectiveTextColor(IsChecked);
-
-		public Color GetBadgeEffectiveTextColor(bool isSelected)
-		{
-			if (isSelected)
-			{
-				return BadgeTextColor;
-			}
-
-			return !BadgeUnselectedTextColor.IsDefault ? BadgeUnselectedTextColor : BadgeTextColor;
-		}
-
-		public Color BadgeEffectiveColor => GetBadgeEffectiveColor(IsChecked);
-
-		public Color GetBadgeEffectiveColor(bool isSelected)
-		{
-			if (isSelected)
-			{
-				return BadgeColor;
-			}
-
-			return !BadgeUnselectedColor.IsDefault ? BadgeUnselectedColor : BadgeColor;
 		}
 
 		internal virtual void SendAppearing()
@@ -311,17 +227,6 @@ namespace Xamarin.Forms
 		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			base.OnPropertyChanged(propertyName);
-
-			if (propertyName == BadgeTextColorProperty.PropertyName || propertyName == BadgeUnselectedTextColorProperty.PropertyName || propertyName == IsCheckedProperty.PropertyName)
-			{
-				OnPropertyChanged(BadgeEffectiveTextColorProperty.PropertyName);
-			}
-
-			if (propertyName == BadgeColorProperty.PropertyName || propertyName == BadgeUnselectedColorProperty.PropertyName || propertyName == IsCheckedProperty.PropertyName)
-			{
-				OnPropertyChanged(BadgeEffectiveColorProperty.PropertyName);
-			}
-
 			if (Parent != null)
 			{
 				if (propertyName == Shell.ItemTemplateProperty.PropertyName || propertyName == nameof(Parent))
