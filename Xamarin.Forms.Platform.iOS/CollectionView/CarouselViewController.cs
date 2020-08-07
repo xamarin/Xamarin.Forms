@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Platform.iOS
 		List<View> _oldViews;
 		int _gotoPosition = -1;
 		CGSize _size;
+		ILoopItemsViewSource LoopItemsSource => ItemsSource as ILoopItemsViewSource;
 
 		public CarouselViewController(CarouselView itemsView, ItemsViewLayout layout) : base(itemsView, layout)
 		{
@@ -51,13 +52,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return cell;
 		}
 
-		public override nint GetItemsCount(UICollectionView collectionView, nint section)
-		{
-			if (Carousel?.Loop == true && _carouselViewLoopManager != null)
-				return _carouselViewLoopManager.GetLoopItemsCount();
-
-			return base.GetItemsCount(collectionView, section);
-		}
+		public override nint GetItemsCount(UICollectionView collectionView, nint section) => LoopItemsSource.LoopCount;
 
 		public override void ViewDidLoad()
 		{
@@ -110,7 +105,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UnsubscribeCollectionItemsSourceChanged(ItemsSource);
 			base.UpdateItemsSource();
 
-			_carouselViewLoopManager?.SetItemsSource(ItemsSource);
+			_carouselViewLoopManager?.SetItemsSource(LoopItemsSource);
 			SubscribeCollectionItemsSourceChanged(ItemsSource);
 			_initialPositionSet = false;
 			UpdateInitialPosition();
@@ -136,7 +131,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override IItemsViewSource CreateItemsViewSource()
 		{
-			var itemsSource = base.CreateItemsViewSource();
+			var itemsSource = ItemsSourceFactory.CreateForCarouselView(Carousel.ItemsSource, this, Carousel.Loop);
 			_carouselViewLoopManager?.SetItemsSource(itemsSource);
 			SubscribeCollectionItemsSourceChanged(itemsSource);
 			return itemsSource;
@@ -261,6 +256,9 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateLoop()
 		{
 			var carouselPosition = Carousel.Position;
+
+			if(LoopItemsSource != null)
+				LoopItemsSource.Loop = Carousel.Loop;
 
 			CollectionView.ReloadData();
 
@@ -418,7 +416,7 @@ namespace Xamarin.Forms.Platform.iOS
 		nfloat _cellWidth = 0.0f;
 		nfloat _cellHeight = 0.0f;
 		const int LoopCount = 3;
-		IItemsViewSource _itemsSource;
+		ILoopItemsViewSource _itemsSource;
 		bool _disposed;
 
 		public CarouselViewLoopManager(UICollectionViewFlowLayout layout)
@@ -470,8 +468,6 @@ namespace Xamarin.Forms.Platform.iOS
 			return GetCorrectedIndex(indexPath.Row - _indexOffset);
 		}
 
-		public int GetLoopItemsCount() => LoopCount * GetItemsSourceCount();
-
 		public NSIndexPath GetGoToIndex(UICollectionView collectionView, int newPosition)
 		{
 			NSIndexPath centerIndexPath = GetIndexPathForCenteredItem(collectionView);
@@ -500,7 +496,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return goToIndexPath;
 		}
 
-		public void SetItemsSource(IItemsViewSource itemsSource) => _itemsSource = itemsSource;
+		public void SetItemsSource(ILoopItemsViewSource itemsSource) => _itemsSource = itemsSource;
 
 		void CenterVerticallyIfNeeded(UICollectionView collectionView)
 		{
@@ -592,7 +588,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return centerIndexPath;
 		}
 
-		int GetItemsSourceCount() => _itemsSource.ItemCountInGroup(0);
+		int GetItemsSourceCount() => _itemsSource.ItemCount;
 
 		nfloat GetTotalContentWidth() => GetItemsSourceCount() * (_cellWidth + _cellPadding);
 
