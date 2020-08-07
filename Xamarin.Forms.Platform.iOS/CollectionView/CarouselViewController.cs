@@ -51,6 +51,14 @@ namespace Xamarin.Forms.Platform.iOS
 			return cell;
 		}
 
+		public override nint GetItemsCount(UICollectionView collectionView, nint section)
+		{
+			if (Carousel?.Loop == true && _carouselViewLoopManager != null)
+				return _carouselViewLoopManager.GetLoopItemsCount();
+
+			return base.GetItemsCount(collectionView, section);
+		}
+
 		public override void ViewDidLoad()
 		{
 			_carouselViewLoopManager = new CarouselViewLoopManager(Layout as UICollectionViewFlowLayout);
@@ -176,7 +184,7 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					var bContext = templatedCell.VisualElementRenderer?.Element?.BindingContext;
 					index = ItemsSource.GetIndexForItem(bContext).Row;
-
+			
 					SetPosition(index);
 				}
 			}
@@ -212,6 +220,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				carouselPosition = 0;
 			}
+
 			//If we are adding a new item make sure to maintain the CurrentItemPosition
 			else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add
 				&& currentItemPosition != -1)
@@ -224,6 +233,7 @@ namespace Xamarin.Forms.Platform.iOS
 			SetCurrentItem(carouselPosition);
 			SetPosition(carouselPosition);
 			Carousel.ScrollTo(carouselPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: false);
+
 		}
 
 		void SubscribeCollectionItemsSourceChanged(IItemsViewSource itemsSource)
@@ -259,10 +269,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ScrollToPosition(int goToPosition, int carouselPosition, bool animate, bool forceScroll = false)
 		{
-			NSIndexPath centerIndexPath = _carouselViewLoopManager.GetIndexPathForCenteredItem(CollectionView);
-			var currentCarouselPosition = _carouselViewLoopManager.GetCorrectedIndexFromIndexPath(centerIndexPath);
-
-			if (_gotoPosition == -1 && (goToPosition != currentCarouselPosition || forceScroll))
+			if (_gotoPosition == -1 && (goToPosition != carouselPosition || forceScroll))
 			{
 				_gotoPosition = goToPosition;
 				Carousel.ScrollTo(goToPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: animate);
@@ -339,11 +346,7 @@ namespace Xamarin.Forms.Platform.iOS
 					SetCurrentItem(position);
 				}
 
-				var goToIndexPath = GetScrollToIndexPath(position);
-				CollectionView.ScrollToItem(goToIndexPath,
-					IsHorizontal ? UICollectionViewScrollPosition.CenteredHorizontally :
-								   UICollectionViewScrollPosition.CenteredVertically,
-					false);
+				Carousel.ScrollTo(position, -1, Xamarin.Forms.ScrollToPosition.Center, false);
 			}
 
 			UpdateVisualStates();
@@ -414,6 +417,7 @@ namespace Xamarin.Forms.Platform.iOS
 		nfloat _cellPadding = 0.0f;
 		nfloat _cellWidth = 0.0f;
 		nfloat _cellHeight = 0.0f;
+		const int LoopCount = 3;
 		IItemsViewSource _itemsSource;
 		bool _disposed;
 
@@ -425,7 +429,6 @@ namespace Xamarin.Forms.Platform.iOS
 			_cellPadding = 0;
 			_cellWidth = layout.ItemSize.Width;
 			_cellHeight = layout.ItemSize.Height;
-
 		}
 
 		public void CenterIfNeeded(UICollectionView collectionView, bool isHorizontal)
@@ -467,6 +470,8 @@ namespace Xamarin.Forms.Platform.iOS
 			return GetCorrectedIndex(indexPath.Row - _indexOffset);
 		}
 
+		public int GetLoopItemsCount() => LoopCount * GetItemsSourceCount();
+
 		public NSIndexPath GetGoToIndex(UICollectionView collectionView, int newPosition)
 		{
 			NSIndexPath centerIndexPath = GetIndexPathForCenteredItem(collectionView);
@@ -506,7 +511,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (contentHeight == 0)
 				return;
 
-			var centerOffsetY = contentHeight / 2;
+			var centerOffsetY = (LoopCount * contentHeight) / 2;
 
 			var distFromCenter = centerOffsetY - currentOffset.Y;
 
@@ -540,7 +545,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (contentWidth == 0)
 				return;
 
-			var centerOffsetX = (contentWidth - collectionView.Bounds.Size.Width) / 2;
+			var centerOffsetX = (LoopCount * contentWidth - collectionView.Bounds.Size.Width) / 2;
 
 			var distFromCentre = centerOffsetX - currentOffset.X;
 
@@ -580,7 +585,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return newIndex;
 		}
 
-		public NSIndexPath GetIndexPathForCenteredItem(UICollectionView collectionView)
+		NSIndexPath GetIndexPathForCenteredItem(UICollectionView collectionView)
 		{
 			var centerPoint = new CGPoint(collectionView.Center.X + collectionView.ContentOffset.X, collectionView.Center.Y + collectionView.ContentOffset.Y);
 			var centerIndexPath = collectionView.IndexPathForItemAtPoint(centerPoint);

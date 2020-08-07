@@ -22,13 +22,10 @@
                 IsVisible="False">
                 <CarouselView.ItemTemplate>
                     <DataTemplate>
-                        <ContentView BackgroundColor="Red">
-                            <Label BackgroundColor="AliceBlue"
+                        <Label
                             Text="{Binding}"
                             FontSize="Large"
-                            VerticalOptions="Center"
-                            HorizontalOptions="Center"/>
-                        </ContentView>
+                            HorizontalOptions="CenterAndExpand"/>
                     </DataTemplate>
                 </CarouselView.ItemTemplate>
                 <CarouselView.ItemsSource>
@@ -45,6 +42,8 @@
                 AutomationId="AppearButton"
                 Text="Appear"
                 Clicked="Button_Clicked"/>
+            <Label
+                x:Name="ResultLabel"/>
         </StackLayout>
     </ContentPage.Content>
 </controls:TestContentPage>
