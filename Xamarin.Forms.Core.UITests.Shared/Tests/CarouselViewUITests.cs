@@ -7,14 +7,9 @@ namespace Xamarin.Forms.Core.UITests
 	[Category(UITestCategories.CarouselView)]
 	internal class CarouselViewUITests : BaseTestFixture
 	{
-		string _carouselViewGalleries = "CarouselView Galleries";
-
 		protected override void NavigateToGallery()
 		{
-			App.NavigateToGallery(GalleryQueries.CollectionViewGallery);
-
-			App.WaitForElement(_carouselViewGalleries);
-			App.Tap(_carouselViewGalleries);
+			App.NavigateToGallery(GalleryQueries.CarouselViewGallery);
 		}
 
 		[TestCase("CarouselView (XAML, Horizontal)")]
