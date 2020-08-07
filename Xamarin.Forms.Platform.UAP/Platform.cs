@@ -578,16 +578,13 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (options.FlowDirection == FlowDirection.MatchParent)
 			{
-				if (sender.FlowDirection == FlowDirection.RightToLeft)
-					options.FlowDirection = FlowDirection.RightToLeft;
-				else if (sender.FlowDirection == FlowDirection.LeftToRight)
-					options.FlowDirection = FlowDirection.LeftToRight;
-				else
+				if ((sender as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
 				{
-					if (Device.FlowDirection == FlowDirection.RightToLeft)
-						options.FlowDirection = FlowDirection.RightToLeft;
-					else if (Device.FlowDirection == FlowDirection.LeftToRight)
-						options.FlowDirection = FlowDirection.LeftToRight;
+					options.FlowDirection = FlowDirection.RightToLeft;
+				}
+				else if ((sender as IVisualElementController).EffectiveFlowDirection.IsLeftToRight())
+				{
+					options.FlowDirection = FlowDirection.LeftToRight;
 				}
 			}
 
@@ -684,16 +681,13 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else
 			{
-				if (sender.FlowDirection == FlowDirection.RightToLeft)
-					alertDialog.FlowDirection = Windows.UI.Xaml.FlowDirection.RightToLeft;
-				else if (sender.FlowDirection == FlowDirection.LeftToRight)
-					alertDialog.FlowDirection = Windows.UI.Xaml.FlowDirection.LeftToRight;
-				else
+				if ((sender as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
 				{
-					if (Device.FlowDirection == FlowDirection.RightToLeft)
-						alertDialog.FlowDirection = Windows.UI.Xaml.FlowDirection.RightToLeft;
-					else if (Device.FlowDirection == FlowDirection.LeftToRight)
-						alertDialog.FlowDirection = Windows.UI.Xaml.FlowDirection.LeftToRight;
+					alertDialog.FlowDirection = FlowDirection.RightToLeft;
+				}
+				else if ((sender as IVisualElementController).EffectiveFlowDirection.IsLeftToRight())
+				{
+					alertDialog.FlowDirection = FlowDirection.LeftToRight;
 				}
 			}
 
