@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override NSIndexPath[] CreateIndexesFrom(int startIndex, int count)
 		{
 			if (Loop)
-				count *= LoopCount;
+				count *= LoopBy;
 
 			var result = new NSIndexPath[count];
 
