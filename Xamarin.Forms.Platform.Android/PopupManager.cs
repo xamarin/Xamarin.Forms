@@ -109,10 +109,18 @@ namespace Xamarin.Forms.Platform.Android
 				//and return null
 				if (arguments.FlowDirection == FlowDirection.MatchParent)
 				{
-					if (sender.FlowDirection == FlowDirection.MatchParent)
-						dialog.SetTitleFlowDirection(Device.FlowDirection);
-					else
-						dialog.SetTitleFlowDirection(sender.FlowDirection);
+					//if (sender.FlowDirection == FlowDirection.MatchParent)
+					//	dialog.SetTitleFlowDirection(Device.FlowDirection);
+					//else
+					//	dialog.SetTitleFlowDirection(sender.FlowDirection);
+					if ((sender as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
+					{
+						dialog.SetTitleFlowDirection(FlowDirection.RightToLeft);
+					}
+					else if ((sender as IVisualElementController).EffectiveFlowDirection.IsLeftToRight())
+					{
+						dialog.SetTitleFlowDirection(FlowDirection.LeftToRight);
+					}
 				}
 				else
 				{
@@ -137,28 +145,15 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				else
 				{
-					if (sender.FlowDirection == FlowDirection.LeftToRight)
-					{
-						layoutDirection = LayoutDirection.Ltr;
-						textDirection = TextDirection.Ltr;
-					}
-					else if (sender.FlowDirection == FlowDirection.RightToLeft)
+					if ((sender as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
 					{
 						layoutDirection = LayoutDirection.Rtl;
 						textDirection = TextDirection.Rtl;
 					}
-					else
+					else if ((sender as IVisualElementController).EffectiveFlowDirection.IsLeftToRight())
 					{
-						if (Device.FlowDirection == FlowDirection.LeftToRight)
-						{
-							layoutDirection = LayoutDirection.Ltr;
-							textDirection = TextDirection.Ltr;
-						}
-						else if (Device.FlowDirection == FlowDirection.RightToLeft)
-						{
-							layoutDirection = LayoutDirection.Rtl;
-							textDirection = TextDirection.Rtl;
-						}
+						layoutDirection = LayoutDirection.Ltr;
+						textDirection = TextDirection.Ltr;
 					}
 				}
 
@@ -182,10 +177,18 @@ namespace Xamarin.Forms.Platform.Android
 				var alert = new DialogBuilder(Activity).Create();
 				if (arguments.FlowDirection == FlowDirection.MatchParent)
 				{
-					if (sender.FlowDirection == FlowDirection.MatchParent)
-						alert.SetTitleFlowDirection(Device.FlowDirection);
-					else
-						alert.SetTitleFlowDirection(sender.FlowDirection);
+					//if (sender.FlowDirection == FlowDirection.MatchParent)
+					//	alert.SetTitleFlowDirection(Device.FlowDirection);
+					//else
+					//	alert.SetTitleFlowDirection(sender.FlowDirection);
+					if ((sender as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
+					{
+						alert.SetTitleFlowDirection(FlowDirection.RightToLeft);
+					}
+					else if ((sender as IVisualElementController).EffectiveFlowDirection.IsLeftToRight())
+					{
+						alert.SetTitleFlowDirection(FlowDirection.LeftToRight);
+					}
 				}
 				else
 				{
@@ -214,28 +217,15 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				else
 				{
-					if (sender.FlowDirection == FlowDirection.LeftToRight)
-					{
-						layoutDirection = LayoutDirection.Ltr;
-						textDirection = TextDirection.Ltr;
-					}
-					else if (sender.FlowDirection == FlowDirection.RightToLeft)
+					if ((sender as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
 					{
 						layoutDirection = LayoutDirection.Rtl;
 						textDirection = TextDirection.Rtl;
 					}
-					else
+					else if ((sender as IVisualElementController).EffectiveFlowDirection.IsLeftToRight())
 					{
-						if (Device.FlowDirection == FlowDirection.LeftToRight)
-						{
-							layoutDirection = LayoutDirection.Ltr;
-							textDirection = TextDirection.Ltr;
-						}
-						else if (Device.FlowDirection == FlowDirection.RightToLeft)
-						{
-							layoutDirection = LayoutDirection.Rtl;
-							textDirection = TextDirection.Rtl;
-						}
+						layoutDirection = LayoutDirection.Ltr;
+						textDirection = TextDirection.Ltr;
 					}
 				}
 
