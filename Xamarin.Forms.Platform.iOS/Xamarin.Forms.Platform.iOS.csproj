@@ -285,6 +285,9 @@
     <Compile Include="Extensions\BrushExtensions.cs" />
     <Compile Include="CollectionView\CarouselUICollectionView.cs" />
     <Compile Include="CollectionView\CarouselViewDataSource.cs" />
+    <Compile Include="CollectionView\LoopObservableItemsSource.cs" />
+    <Compile Include="CollectionView\LoopListSource.cs" />
+    <Compile Include="CollectionView\ILoopItemsViewSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />
