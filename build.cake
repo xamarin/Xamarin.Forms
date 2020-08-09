@@ -553,13 +553,36 @@ Task("_cg-uwp-run-tests")
 
             NUnit3(new [] { UWP_TEST_LIBRARY }, settings);
         }
-        finally
+        catch
         {
+            SetEnvironmentVariables();
+            PrintEnvironmentVariables();
+            throw;
+        }
+        finally
+        { 
             try
             {
                 process?.Kill();
             }
             catch{}
+        }
+
+        SetEnvironmentVariables();
+
+        void SetEnvironmentVariables()
+        {
+            var doc = new System.Xml.XmlDocument();
+            doc.Load("TestResult.xml");
+            var root = doc.DocumentElement;
+            String failedTests = root.GetAttribute("failed");
+            String total = root.GetAttribute("total");
+            
+            Information("failedTests: {0}", failedTests);
+            Information("totalTests: {0}", total);
+
+            System.Environment.SetEnvironmentVariable("failedTests", failedTests);
+            System.Environment.SetEnvironmentVariable("totalTests", total);
         }
     });
 
@@ -1039,26 +1062,6 @@ Task("DeployAndroid")
         AmStartActivity("AndroidControlGallery.AndroidControlGallery/md546303760447087909496d02dc7b17ae8.Activity1");
     });
 
-Task("_PrintEnvironmentVariables")
-    .Does(() => 
-    {       
-        var envVars = EnvironmentVariables();
-
-        string path;
-        if (envVars.TryGetValue("PATH", out path))
-        {
-            Information("Path: {0}", path);
-        }
-
-        foreach(var envVar in envVars)
-        {
-            Information(
-                "Key: {0}\tValue: \"{1}\"",
-                envVar.Key,
-                envVar.Value
-                );
-        }
-    });
 
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
@@ -1157,4 +1160,24 @@ AppleSimulator GetIosSimulator()
 
     // Look for a matching simulator on the system
     return iosSimulators.First (s => s.Name == IOS_SIM_NAME && s.Runtime == IOS_SIM_RUNTIME);
+}
+
+public void PrintEnvironmentVariables()
+{
+    var envVars = EnvironmentVariables();
+
+    string path;
+    if (envVars.TryGetValue("PATH", out path))
+    {
+        Information("Path: {0}", path);
+    }
+
+    foreach(var envVar in envVars)
+    {
+        Information(
+            "Key: {0}\tValue: \"{1}\"",
+            envVar.Key,
+            envVar.Value
+            );
+    };
 }
