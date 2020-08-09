@@ -538,11 +538,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public UITextAttributes GetTitleTextAttributes()
 		{
-			if (Font.Default == Tabbed.Font)
-			{
-
-			}
-
 			_textAttributes.Font = Tabbed.Font.ToUIFont();
 			return _textAttributes;
 		}

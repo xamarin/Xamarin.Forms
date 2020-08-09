@@ -3,6 +3,8 @@ using Android.Text;
 using Android.Widget;
 using System.Collections.Generic;
 using Xamarin.Forms.Internals;
+using Android.Util;
+using Android.Graphics;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -33,6 +35,17 @@ namespace Xamarin.Forms.Platform.Android
 			textView.SetMaxLines(lines);
 		}
 
+		public static void SetFont(this TextView textView, Font font)
+			=> textView?.SetFont(font.ToTypeface(), font.ToScaledPixel());
+
+		public static void SetFont(this TextView textView, Typeface typeFace, float sizeSp)
+		{
+			if (textView == null)
+				return;
+
+			textView.Typeface = typeFace;
+			textView.SetTextSize(ComplexUnitType.Sp, sizeSp);
+		}
 		public static void SetLineBreakMode(this TextView textView, Label label)
 		{
 			var lineBreakMode = label.LineBreakMode;

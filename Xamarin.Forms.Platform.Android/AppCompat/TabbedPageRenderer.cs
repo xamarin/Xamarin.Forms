@@ -369,6 +369,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 			else if (e.PropertyName == PlatformConfiguration.AndroidSpecific.TabbedPage.IsSwipePagingEnabledProperty.PropertyName)
 				UpdateSwipePaging();
+			else if (e.PropertyName == NavigationPage.BarFontAttributesProperty.PropertyName
+				|| e.PropertyName == NavigationPage.BarFontFamilyProperty.PropertyName
+				|| e.PropertyName == NavigationPage.BarFontSizeProperty.PropertyName)
+				UpdateBarTextFont();
 		}
 
 		void SetNavigationRendererPadding(int paddingTop, int paddingBottom)
@@ -503,6 +507,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				UpdateIgnoreContainerAreas();
 			}
+
+			if(Element.Children.Count > 0)
+				UpdateBarTextFont();
 		}
 
 		FormsViewPager CreateFormsViewPager(Context context, TabbedPage tabbedPage)
@@ -967,6 +974,18 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			else
 				_tabLayout.TabTextColors = colors;
 		}
+
+		void UpdateBarTextFont()
+		{
+			if (IsDisposed || Element == null)
+				return;
+
+			if (IsBottomTabPlacement && _bottomNavigationView?.ChildCount > 0)
+				_bottomNavigationView.SetChildrenTextViewsFont(Element.Font);
+			else if (!IsBottomTabPlacement && _tabLayout?.ChildCount > 0)
+				_tabLayout.SetChildrenTextViewsFont(Element.Font);
+		}
+
 
 		void SetIconColorFilter(TabLayout.Tab tab)
 		{

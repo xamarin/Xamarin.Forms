@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using Android.Widget;
 using AView = Android.Views.View;
 using AViewGroup = Android.Views.ViewGroup;
 
@@ -21,6 +23,18 @@ namespace Xamarin.Forms.Platform.Android
 					foreach (T nextChild in myChildren)
 						yield return nextChild;
 				}
+			}
+		}
+
+		internal static void SetChildrenTextViewsFont(this AViewGroup self, Font font) 
+		{
+			var texts = self.GetChildrenOfType<TextView>();
+			if (texts?.Count() > 0)
+			{
+				var fontFace = font.ToTypeface();
+				var sizeSp = font.ToScaledPixel();
+				foreach (var text in texts)
+					text.SetFont(fontFace, sizeSp);
 			}
 		}
 	}

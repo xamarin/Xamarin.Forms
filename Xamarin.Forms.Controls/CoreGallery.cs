@@ -138,8 +138,9 @@ namespace Xamarin.Forms.Controls
 
 				Device.StartTimer(TimeSpan.FromSeconds(6), () =>
 				{
-					BarBackgroundColor = Color.Default;
+					BarBackgroundColor = Color.Gray;
 					BarTextColor = Color.Default;
+					SelectedTabColor = Color.Red;
 					BarFontFamily = "Foo";
 					BarFontSize = 23;
 					BarFontAttributes = FontAttributes.Italic;

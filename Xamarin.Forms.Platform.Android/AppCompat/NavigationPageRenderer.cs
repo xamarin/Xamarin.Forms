@@ -1086,13 +1086,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (_toolbar == null || Element == null || Element.CurrentPage == null || NavigationPage.GetTitleView(Element.CurrentPage) != null)
 				return;
 
-			var childs = _toolbar.GetChildrenOfType<TextView>();
-			if (childs?.Count() > 0)
-				foreach (var child in childs)
-				{
-					child.Typeface = Element.Font.ToTypeface();
-					child.SetTextSize(ComplexUnitType.Sp, Element.Font.ToScaledPixel());
-				}
+			_toolbar.SetChildrenTextViewsFont(Element.Font);
 		}
 
 		void UpdateTitleView()
