@@ -581,8 +581,11 @@ Task("_cg-uwp-run-tests")
             Information("failedTests: {0}", failedTests);
             Information("totalTests: {0}", total);
 
-            SetEnvironmentVariable("failedTests", failedTests);
-            SetEnvironmentVariable("totalTests", total);
+            Dictionary<string, string> variables = new Dictionary<string, string>();
+            variables.Add("failedTests", failedTests);
+            variables.Add("totalTests", total);
+
+            SetEnvironmentVariable(variables);
         }
     });
 
@@ -1182,14 +1185,23 @@ public void PrintEnvironmentVariables()
     };
 }
 
-public void SetEnvironmentVariable(string key, string value)
+public void SetEnvironmentVariable(Dictionary<string, string> propertiesToSet)
 {
     if(isCIBuild)
     {
         if(System.IO.File.Exists(@"WriteDevopsVariables.csproj"))
             System.IO.File.Delete(@"WriteDevopsVariables.csproj");
 
-        string buildString = $"<Project><Target Name=\"Build\"><Message Importance=\"high\" Text=\"##vso[task.setvariable variable={key}]{value}\" /></Target></Project>";
+        string buildString = $"<Project><Target Name=\"Build\">";
+
+        foreach (var item in propertiesToSet)
+        {
+            buildString += $"<Message Importance=\"high\" Text=\"##vso[task.setvariable variable={item.Key}]{item.Value}\" />";
+        }
+
+        buildString += $"</Target></Project>";
+
+        Information("SetEnvironmentVariable: {0}", buildString);
         System.IO.File.WriteAllText(@"WriteDevopsVariables.csproj", buildString);
         MSBuild ("WriteDevopsVariables.csproj", GetMSBuildSettings());
         System.IO.File.Delete(@"WriteDevopsVariables.csproj");
@@ -1197,6 +1209,9 @@ public void SetEnvironmentVariable(string key, string value)
     }
     else
     {
-        System.Environment.SetEnvironmentVariable(key, value);
+        foreach (var item in propertiesToSet)
+        {
+            System.Environment.SetEnvironmentVariable(item.Key, item.Value);
+        }
     }
 }
