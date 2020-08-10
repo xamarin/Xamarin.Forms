@@ -1189,6 +1189,7 @@ public void SetEnvironmentVariable(Dictionary<string, string> propertiesToSet)
 {
     if(isCIBuild)
     {
+        Information("Entering SetEnvironmentVariable");
         if(System.IO.File.Exists(@"WriteDevopsVariables.csproj"))
             System.IO.File.Delete(@"WriteDevopsVariables.csproj");
 
@@ -1196,6 +1197,7 @@ public void SetEnvironmentVariable(Dictionary<string, string> propertiesToSet)
 
         foreach (var item in propertiesToSet)
         {
+            Information("SetEnvironmentVariable: {0} {1}", item.Key, item.Value);
             buildString += $"<Message Importance=\"high\" Text=\"##vso[task.setvariable variable={item.Key}]{item.Value}\" />";
         }
 
@@ -1205,10 +1207,10 @@ public void SetEnvironmentVariable(Dictionary<string, string> propertiesToSet)
         System.IO.File.WriteAllText(@"WriteDevopsVariables.csproj", buildString);
         MSBuild ("WriteDevopsVariables.csproj", GetMSBuildSettings());
         System.IO.File.Delete(@"WriteDevopsVariables.csproj");
-
     }
     else
     {
+        Information("Boring SetEnvironmentVariable");
         foreach (var item in propertiesToSet)
         {
             System.Environment.SetEnvironmentVariable(item.Key, item.Value);
