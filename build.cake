@@ -583,6 +583,7 @@ Task("_cg-uwp-run-tests")
 
             System.Environment.SetEnvironmentVariable("failedTests", failedTests);
             System.Environment.SetEnvironmentVariable("totalTests", total);
+            PrintEnvironmentVariables();
         }
     });
 
