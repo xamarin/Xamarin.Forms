@@ -26,14 +26,6 @@ PowerShell:
 #addin "nuget:?package=Cake.AppleSimulator&version=0.2.0"
 #addin "nuget:?package=Cake.FileHelpers&version=3.2.1"
 
-// PowerShell
-#addin "nuget:?package=System.Management.Automation&version=6.1.7601.17515"
-using System.Collections;
-using System.Management.Automation;
-using System.Management.Automation.Internal;
-using System.Management.Automation.Runspaces;
-using System.Threading;
-
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
@@ -1194,17 +1186,10 @@ public void SetEnvironmentVariable(string key, string value)
 {
     if(isCIBuild)
     {
-        var runspaceConfiguration = RunspaceConfiguration.Create();
+        string buildString = $"<Project><Target Name=\"Build\"><Message Importance=\"high\" Text=\"##vso[task.setvariable variable={key}]{value}\" /></Target></Project>";
+        System.IO.File.WriteAllText(@"WriteDevopsVariables.csproj", buildString);
+        MSBuild ("WriteDevopsVariables.csproj", GetMSBuildSettings());
 
-        var runspace = RunspaceFactory.CreateRunspace(runspaceConfiguration);
-        runspace.Open();
-
-        var scriptInvoker = new RunspaceInvoke(runspace);
-
-        var pipeline = runspace.CreatePipeline();
-        var myCommand = new Command("write-host");
-        pipeline.Commands.Add(myCommand);
-        pipeline.Invoke($"##vso[task.setvariable variable={key}]{value}");
     }
     else
     {
