@@ -9,7 +9,7 @@
 		<ResourceDictionary Source="PageControlStyle.xaml" />
 		<ResourceDictionary Source="FormsProgressBarStyle.xaml" />
 		<ResourceDictionary Source="FormsTextBoxStyle.xaml" />
-		<ResourceDictionary Source="FormsCheckBoxStyle.xaml" />
+        <ResourceDictionary Source="FormsCheckBoxStyle.xaml" />
 		<ResourceDictionary Source="FormsAutoSuggestBoxStyle.xaml" />
 		<ResourceDictionary Source="MasterDetailControlStyle.xaml" />
 		<ResourceDictionary Source="TabbedPageStyle.xaml" />
@@ -24,6 +24,7 @@
 	<uwp:CollapseWhenEmptyConverter x:Key="CollapseWhenEmpty" />
     <uwp:TextLengthToVisibilityConverter x:Key="TextLengthToVisibilityConverter" />
 	<uwp:BoolToVisibilityConverter x:Key="BoolVisibilityConverter" />
+    <uwp:BrushConverter x:Key="BrushConverter" />
 	<uwp:BoolToVisibilityConverter x:Key="InvertedBoolVisibilityConverter" FalseIsVisible="True" />
 	<uwp:PageToRenderedElementConverter x:Key="PageToRenderer" />
 	<uwp:ImageConverter x:Key="ImageConverter" />

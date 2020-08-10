@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
 using Xamarin.Forms.Platform.WPF.Extensions;
 using Xamarin.Forms.Platform.WPF.Helpers;
 using Xamarin.Forms.Platform.WPF.Interfaces;
+using WBrush = System.Windows.Media.Brush;
 
 namespace Xamarin.Forms.Platform.WPF.Controls
 {
@@ -34,12 +32,13 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 		public static readonly DependencyProperty CurrentNavigationPageProperty = DependencyProperty.Register("CurrentNavigationPage", typeof(FormsNavigationPage), typeof(FormsWindow));
 		public static readonly DependencyProperty CurrentMasterDetailPageProperty = DependencyProperty.Register("CurrentMasterDetailPage", typeof(FormsMasterDetailPage), typeof(FormsWindow));
 		public static readonly DependencyProperty CurrentContentDialogProperty = DependencyProperty.Register("CurrentContentDialog", typeof(FormsContentDialog), typeof(FormsWindow));
-		public static readonly DependencyProperty TitleBarBackgroundColorProperty = DependencyProperty.Register("TitleBarBackgroundColor", typeof(Brush), typeof(FormsWindow));
-		public static readonly DependencyProperty TitleBarTextColorProperty = DependencyProperty.Register("TitleBarTextColor", typeof(Brush), typeof(FormsWindow));
+		public static readonly DependencyProperty TitleBarBackgroundColorProperty = DependencyProperty.Register("TitleBarBackgroundColor", typeof(WBrush), typeof(FormsWindow));
+		public static readonly DependencyProperty TitleBarTextColorProperty = DependencyProperty.Register("TitleBarTextColor", typeof(WBrush), typeof(FormsWindow));
 		public static readonly DependencyProperty SnackbarActionCommandProperty = DependencyProperty.Register("SnackbarActionCommand", typeof(ICommand), typeof(FormsWindow));
 		public static readonly DependencyProperty SnackbarActionButtonTextProperty = DependencyProperty.Register("SnackbarActionButtonText", typeof(string), typeof(FormsWindow));
 		public static readonly DependencyProperty SnackbarMessageProperty = DependencyProperty.Register("SnackbarMessage", typeof(string), typeof(FormsWindow));
-		public string SnackbarActionButtonText
+		
+    public string SnackbarActionButtonText
 		{
 			get { return (string)GetValue(SnackbarActionButtonTextProperty); }
 			private set { SetValue(SnackbarActionButtonTextProperty, value); }
@@ -57,15 +56,15 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 			private set { SetValue(SnackbarMessageProperty, value); }
 		}
 
-		public Brush TitleBarBackgroundColor
+		public WBrush TitleBarBackgroundColor
 		{
-			get { return (Brush)GetValue(TitleBarBackgroundColorProperty); }
+			get { return (WBrush)GetValue(TitleBarBackgroundColorProperty); }
 			private set { SetValue(TitleBarBackgroundColorProperty, value); }
 		}
 
-		public Brush TitleBarTextColor
+		public WBrush TitleBarTextColor
 		{
-			get { return (Brush)GetValue(TitleBarTextColorProperty); }
+			get { return (WBrush)GetValue(TitleBarTextColorProperty); }
 			private set { SetValue(TitleBarTextColorProperty, value); }
 		}
 
