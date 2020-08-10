@@ -565,7 +565,6 @@ Task("_cg-uwp-run-tests")
         catch
         {
             SetEnvironmentVariables();
-            PrintEnvironmentVariables();
             throw;
         }
         finally
