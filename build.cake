@@ -1186,9 +1186,13 @@ public void SetEnvironmentVariable(string key, string value)
 {
     if(isCIBuild)
     {
+        if(System.IO.File.Exists(@"WriteDevopsVariables.csproj"))
+            System.IO.File.Delete(@"WriteDevopsVariables.csproj");
+
         string buildString = $"<Project><Target Name=\"Build\"><Message Importance=\"high\" Text=\"##vso[task.setvariable variable={key}]{value}\" /></Target></Project>";
         System.IO.File.WriteAllText(@"WriteDevopsVariables.csproj", buildString);
         MSBuild ("WriteDevopsVariables.csproj", GetMSBuildSettings());
+        System.IO.File.Delete(@"WriteDevopsVariables.csproj");
 
     }
     else
