@@ -1204,7 +1204,7 @@ public void SetEnvironmentVariable(string key, string value)
         var pipeline = runspace.CreatePipeline();
         var myCommand = new Command("write-host");
         pipeline.Commands.Add(myCommand);
-        Invoke($"##vso[task.setvariable variable={key}]{value}");
+        pipeline.Invoke($"##vso[task.setvariable variable={key}]{value}");
     }
     else
     {
