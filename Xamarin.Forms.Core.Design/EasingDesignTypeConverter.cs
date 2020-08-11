@@ -3,6 +3,7 @@
 	using System.Linq;
 	using System;
 	using System.Reflection;
+	using System.ComponentModel;
 
 	public class EasingDesignTypeConverter : TypeConverter
 	{
