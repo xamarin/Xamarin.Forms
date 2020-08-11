@@ -627,7 +627,14 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateClearBtn(bool showClearButton)
 		{
 			Drawable d = showClearButton && (Element.Text?.Length > 0) ? GetCloseButtonDrawable() : null;
-			EditText.SetCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+			if((Element as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
+			{
+				EditText.SetCompoundDrawablesWithIntrinsicBounds(d, null, null, null);
+			}
+			else
+			{
+				EditText.SetCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+			}
 			_clearBtn = d;
 		}
 
