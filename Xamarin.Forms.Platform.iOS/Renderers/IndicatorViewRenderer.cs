@@ -187,6 +187,8 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			UIPager.Pages = GetMaximumVisible();
+
+			UpdateCurrentPage();
 		}
 
 		void UpdateHidesForSinglePage()

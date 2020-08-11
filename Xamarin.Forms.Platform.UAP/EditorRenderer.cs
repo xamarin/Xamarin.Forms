@@ -3,9 +3,9 @@ using System.ComponentModel;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+using WBrush = Windows.UI.Xaml.Media.Brush;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.InputView;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -13,12 +13,13 @@ namespace Xamarin.Forms.Platform.UWP
 	public class EditorRenderer : ViewRenderer<Editor, FormsTextBox>
 	{
 		bool _fontApplied;
-		Brush _backgroundColorFocusedDefaultBrush;
-		Brush _textDefaultBrush;
-		Brush _defaultTextColorFocusBrush;
-		Brush _defaultPlaceholderColorFocusBrush;
-		Brush _placeholderDefaultBrush;
-		bool _cursorPositionChangePending;
+		WBrush _backgroundColorFocusedDefaultBrush;
+		WBrush _textDefaultBrush;
+		WBrush _defaultTextColorFocusBrush;
+		WBrush _defaultPlaceholderColorFocusBrush;
+		WBrush _placeholderDefaultBrush;
+		string _transformedText;
+    bool _cursorPositionChangePending;
 		bool _selectionLengthChangePending;
 		bool _nativeSelectionIsUpdating;
 
@@ -32,7 +33,8 @@ namespace Xamarin.Forms.Platform.UWP
 				AcceptsReturn = true,
 				TextWrapping = TextWrapping.Wrap,
 				Style = Windows.UI.Xaml.Application.Current.Resources["FormsTextBoxStyle"] as Windows.UI.Xaml.Style,
-				VerticalContentAlignment = VerticalAlignment.Top
+				VerticalContentAlignment = VerticalAlignment.Top,
+				UpdateVerticalAlignmentOnLoad = false
 			};
 		}
 
@@ -68,6 +70,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateText();
 				UpdateInputScope();
 				UpdateTextColor();
+				UpdateBackground();
 				UpdateCharacterSpacing();
 				UpdateFont();
 				UpdateFlowDirection();
@@ -130,7 +133,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateFont();
 			}
-			else if (e.PropertyName == Editor.TextProperty.PropertyName)
+			else if (e.IsOneOf(Editor.TextProperty, Editor.TextTransformProperty))
 			{
 				UpdateText();
 			}
@@ -156,6 +159,19 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateCursorPosition();
 			else if(e.PropertyName == Editor.SelectionLengthProperty.PropertyName)
 				UpdateSelectionLength();
+		}
+
+		protected override void UpdateBackground()
+		{
+			base.UpdateBackground();
+
+			if (Control == null)
+			{
+				return;
+			}
+
+			BrushHelpers.UpdateBrush(Element.Background, ref _backgroundColorFocusedDefaultBrush,
+			   () => Control.BackgroundFocusBrush, brush => Control.BackgroundFocusBrush = brush);
 		}
 
 		void OnLostFocus(object sender, RoutedEventArgs e)
@@ -195,7 +211,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnNativeTextChanged(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs args)
 		{
-			Element.SetValueCore(Editor.TextProperty, Control.Text);
+			_transformedText = Element.UpdateFormsText(Control.Text, Element.TextTransform);
+			Element.SetValueCore(Editor.TextProperty, _transformedText);
 		}
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
@@ -278,7 +295,7 @@ namespace Xamarin.Forms.Platform.UWP
 	
 		void UpdateText()
 		{
-			string newText = Element.Text ?? "";
+			string newText = _transformedText = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 
 			if (Control.Text == newText)
 			{

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using UIKit;
 using Xamarin.Forms.Internals;
 
@@ -81,6 +82,28 @@ namespace Xamarin.Forms.Platform.iOS
 			// this means the pop is already done, nothing we can do
 			if (ViewControllers.Length < NavigationBar.Items.Length)
 				return true;
+
+			foreach(var tracker in _trackers)
+			{
+				if(tracker.Value.ViewController == TopViewController)
+				{
+					var behavior = Shell.GetBackButtonBehavior(tracker.Value.Page);
+					var command = behavior.GetPropertyIfSet<ICommand>(BackButtonBehavior.CommandProperty, null);
+					var commandParameter = behavior.GetPropertyIfSet<object>(BackButtonBehavior.CommandParameterProperty, null);
+
+					if (command != null)
+					{
+						if(command.CanExecute(commandParameter))
+						{
+							command.Execute(commandParameter);
+						}
+
+						return false;
+					}
+
+					break;
+				}
+			}
 
 			bool allowPop = ShouldPop();
 
@@ -536,6 +559,16 @@ namespace Xamarin.Forms.Platform.iOS
 			public NavDelegate(ShellSectionRenderer renderer)
 			{
 				_self = renderer;
+			}
+
+			// This is currently working around a Mono Interpreter bug
+			// if you remove this code please verify that hot restart still works
+			// https://github.com/xamarin/Xamarin.Forms/issues/10519
+			[Export("navigationController:animationControllerForOperation:fromViewController:toViewController:")]
+			[Foundation.Preserve(Conditional = true)]
+			public new IUIViewControllerAnimatedTransitioning GetAnimationControllerForOperation(UINavigationController navigationController, UINavigationControllerOperation operation, UIViewController fromViewController, UIViewController toViewController)
+			{
+				return null;
 			}
 
 			public override void DidShowViewController(UINavigationController navigationController, [Transient] UIViewController viewController, bool animated)

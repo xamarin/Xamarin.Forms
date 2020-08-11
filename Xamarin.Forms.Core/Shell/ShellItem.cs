@@ -19,7 +19,21 @@ namespace Xamarin.Forms
 
 		public FlyoutItem()
 		{
-			Shell.SetFlyoutBehavior(this, FlyoutBehavior.Flyout);
+
+		}
+
+		public static readonly new BindableProperty IsVisibleProperty =
+			BindableProperty.CreateAttached(nameof(IsVisible), typeof(bool), typeof(FlyoutItem), true, propertyChanged: OnFlyoutItemIsVisibleChanged);
+
+		public static bool GetIsVisible(BindableObject obj) => (bool)obj.GetValue(IsVisibleProperty);
+		public static void SetIsVisible(BindableObject obj, bool isVisible) => obj.SetValue(IsVisibleProperty, isVisible);
+
+		static void OnFlyoutItemIsVisibleChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			if (bindable is Element element)
+				element
+					.FindParentOfType<Shell>()
+					?.SendStructureChanged();
 		}
 	}
 
@@ -28,7 +42,6 @@ namespace Xamarin.Forms
 	{
 		public TabBar()
 		{
-			Shell.SetFlyoutBehavior(this, FlyoutBehavior.Disabled);
 		}
 	}
 
@@ -86,12 +99,31 @@ namespace Xamarin.Forms
 
 		// we want the list returned from here to remain point in time accurate
 		ReadOnlyCollection<ShellSection> IShellItemController.GetItems() =>
-			new ReadOnlyCollection<ShellSection>(((ShellSectionCollection)Items).VisibleItems.ToList());
+			new ReadOnlyCollection<ShellSection>(((ShellSectionCollection)Items).VisibleItemsReadOnly.ToList());
 
 		event NotifyCollectionChangedEventHandler IShellItemController.ItemsCollectionChanged
 		{
 			add { ((ShellSectionCollection)Items).VisibleItemsChanged += value; }
 			remove { ((ShellSectionCollection)Items).VisibleItemsChanged -= value; }
+		}
+
+		bool IShellItemController.ShowTabs
+		{
+			get
+			{
+				var displayedPage = CurrentItem?.DisplayedPage;
+				if (displayedPage == null)
+					return true;
+
+				Shell shell = Parent as Shell;
+				if (shell == null)
+					return true;
+
+				if (ShellItemController.GetItems().Count <= 1)
+					return false;
+
+				return shell.GetEffectiveValue<bool>(Shell.TabBarIsVisibleProperty, () => true, null, displayedPage);
+			}
 		}
 
 		#endregion IShellItemController
@@ -116,9 +148,8 @@ namespace Xamarin.Forms
 
 		public ShellItem()
 		{
-			ShellItemController.ItemsCollectionChanged += (_, args) =>
+			((ShellElementCollection)Items).VisibleItemsChangedInternal += (_, args) =>
 			{
-
 				if (args.OldItems != null)
 				{
 					foreach (Element item in args.OldItems)
@@ -150,6 +181,7 @@ namespace Xamarin.Forms
 		}
 
 		public IList<ShellSection> Items => (IList<ShellSection>)GetValue(ItemsProperty);
+		internal override ShellElementCollection ShellElementCollection => (ShellElementCollection)Items;
 
 		internal bool IsVisibleItem => Parent is Shell shell && shell?.CurrentItem == this;
 

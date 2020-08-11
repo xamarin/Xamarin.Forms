@@ -57,6 +57,9 @@ namespace Xamarin.Forms
 									propertyChanged: OnTabStopPropertyChanged,
 									defaultValueCreator: TabStopDefaultValueCreator);
 
+		public static readonly BindableProperty IsVisibleProperty =
+			BindableProperty.Create(nameof(IsVisible), typeof(bool), typeof(BaseShellItem), true);
+
 		static void OnTabIndexPropertyChanged(BindableObject bindable, object oldValue, object newValue) =>
 			((BaseShellItem)bindable).OnTabIndexPropertyChanged((int)oldValue, (int)newValue);
 
@@ -117,6 +120,22 @@ namespace Xamarin.Forms
 			set => SetValue(IsTabStopProperty, value);
 		}
 
+		public bool IsVisible
+		{
+			get => (bool)GetValue(IsVisibleProperty);
+			set => SetValue(IsVisibleProperty, value);
+		}
+
+		internal bool IsPartOfVisibleTree()
+		{
+			if (Parent is IShellController shell)
+				return shell.GetItems().Contains(this);
+			else if (Parent is ShellGroupItem sgi)
+				return sgi.ShellElementCollection.Contains(this);
+
+			return false;
+		}
+
 		internal virtual void SendAppearing()
 		{
 			if (_hasAppearing)
@@ -151,14 +170,14 @@ namespace Xamarin.Forms
 				action();
 			else
 			{
-				if(Navigation.ModalStack.Count > 0)
+				if (Navigation.ModalStack.Count > 0)
 				{
 					Navigation.ModalStack[Navigation.ModalStack.Count - 1]
 						.OnAppearing(action);
-					
+
 					return;
 				}
-				else if(Navigation.NavigationStack.Count > 1)
+				else if (Navigation.NavigationStack.Count > 1)
 				{
 					Navigation.NavigationStack[Navigation.NavigationStack.Count - 1]
 						.OnAppearing(action);
@@ -320,9 +339,9 @@ namespace Xamarin.Forms
 					Class = DefaultFlyoutItemLayoutStyle,
 				};
 
-				
+
 				var groups = new VisualStateGroupList();
-				
+
 				var commonGroup = new VisualStateGroup();
 				commonGroup.Name = "CommonStates";
 				groups.Add(commonGroup);
@@ -381,7 +400,7 @@ namespace Xamarin.Forms
 				if (Device.RuntimePlatform == Device.UWP)
 				{
 					defaultImageClass.Setters.Add(new Setter { Property = Image.HorizontalOptionsProperty, Value = LayoutOptions.Start });
-					defaultImageClass.Setters.Add(new Setter { Property = Image.MarginProperty, Value = new Thickness(12, 0, 12, 0) });					
+					defaultImageClass.Setters.Add(new Setter { Property = Image.MarginProperty, Value = new Thickness(12, 0, 12, 0) });
 				}
 
 				Binding imageBinding = new Binding(iconBinding);
