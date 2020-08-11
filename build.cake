@@ -1181,13 +1181,21 @@ public void PrintEnvironmentVariables()
 
 public void SetEnvironmentVariable(string key, string value, ICakeContext context)
 {
-    if(context.BuildSystem().IsRunningOnAzurePipelines)
+    var buildSystem = context.BuildSystem();
+
+    Information("IsRunningOnAzurePipelines: {0}", buildSystem.IsRunningOnAzurePipelines);
+    Information("IsRunningOnAzurePipelinesHosted: {0}", buildSystem.IsRunningOnAzurePipelinesHosted);
+    Information("IsRunningOnVSTS: {0}", buildSystem.IsRunningOnVSTS);
+    Information("BuildSystem: {0}", buildSystem);
+
+    if(buildSystem.IsRunningOnAzurePipelines)
     { 
         Information("Setting: {0} to {1}", key, value);
-        context.BuildSystem().AzurePipelines.Commands.SetVariable(key, value);
+        buildSystem.AzurePipelines.Commands.SetVariable(key, value);
     }
     else
     {
-            System.Environment.SetEnvironmentVariable(key, value);
+        Information("Setting: {0} to {1}", key, value);
+        buildSystem.AzurePipelines.Commands.SetVariable(key, value);
     }
 }
