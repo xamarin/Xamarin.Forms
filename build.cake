@@ -575,11 +575,11 @@ Task("_cg-uwp-run-tests")
             var doc = new System.Xml.XmlDocument();
             doc.Load("TestResult.xml");
             var root = doc.DocumentElement;
-            String failedTests = root.GetAttribute("failed");
-            String total = root.GetAttribute("total");
 
-            SetEnvironmentVariable("failedTests", failedTests, ctx);
-            SetEnvironmentVariable("totalTests", total, ctx);
+            foreach(System.Xml.XmlAttribute attr in root.Attributes)
+            {
+                SetEnvironmentVariable($"NUNIT_{attr.Name}", attr.Value, ctx);
+            }
         }
     });
 
@@ -1182,20 +1182,13 @@ public void PrintEnvironmentVariables()
 public void SetEnvironmentVariable(string key, string value, ICakeContext context)
 {
     var buildSystem = context.BuildSystem();
-
-    Information("IsRunningOnAzurePipelines: {0}", buildSystem.IsRunningOnAzurePipelines);
-    Information("IsRunningOnAzurePipelinesHosted: {0}", buildSystem.IsRunningOnAzurePipelinesHosted);
-    Information("IsRunningOnVSTS: {0}", buildSystem.IsRunningOnVSTS);
-    Information("BuildSystem: {0}", buildSystem);
-
-    if(buildSystem.IsRunningOnAzurePipelines)
-    { 
-        Information("Setting: {0} to {1}", key, value);
+    Information("Setting: {0} to {1}", key, value);
+    if(isCIBuild)
+    {
         buildSystem.AzurePipelines.Commands.SetVariable(key, value);
     }
     else
     {
-        Information("Setting: {0} to {1}", key, value);
-        buildSystem.AzurePipelines.Commands.SetVariable(key, value);
+        System.Environment.SetEnvironmentVariable(key, value);
     }
 }
