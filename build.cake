@@ -519,7 +519,7 @@ Task("cg-uwp-run-tests")
     .IsDependentOn("_cg-uwp-run-tests");
 
 Task("_cg-uwp-run-tests")
-    .Does(() =>
+    .Does((ctx) =>
     {
         System.Diagnostics.Process process = null;
         if(!isHostedAgent)
@@ -577,15 +577,9 @@ Task("_cg-uwp-run-tests")
             var root = doc.DocumentElement;
             String failedTests = root.GetAttribute("failed");
             String total = root.GetAttribute("total");
-            
-            Information("failedTests: {0}", failedTests);
-            Information("totalTests: {0}", total);
 
-            Dictionary<string, string> variables = new Dictionary<string, string>();
-            variables.Add("failedTests", failedTests);
-            variables.Add("totalTests", total);
-
-            SetEnvironmentVariable(variables);
+            SetEnvironmentVariable("failedTests", failedTests, ctx);
+            SetEnvironmentVariable("totalTests", total, ctx);
         }
     });
 
@@ -1185,35 +1179,15 @@ public void PrintEnvironmentVariables()
     };
 }
 
-public void SetEnvironmentVariable(Dictionary<string, string> propertiesToSet)
+public void SetEnvironmentVariable(string key, string value, ICakeContext context)
 {
-    if(isCIBuild)
-    {
-        Information("Entering SetEnvironmentVariable");
-        if(System.IO.File.Exists(@"WriteDevopsVariables.csproj"))
-            System.IO.File.Delete(@"WriteDevopsVariables.csproj");
-
-        string buildString = $"<Project><Target Name=\"Build\">";
-
-        foreach (var item in propertiesToSet)
-        {
-            Information("SetEnvironmentVariable: {0} {1}", item.Key, item.Value);
-            buildString += $"<Message Importance=\"high\" Text=\"##vso[task.setvariable variable={item.Key}]{item.Value}\" />";
-        }
-
-        buildString += $"</Target></Project>";
-
-        Information("SetEnvironmentVariable: {0}", buildString);
-        System.IO.File.WriteAllText(@"WriteDevopsVariables.csproj", buildString);
-        MSBuild ("WriteDevopsVariables.csproj", GetMSBuildSettings());
-        System.IO.File.Delete(@"WriteDevopsVariables.csproj");
+    if(context.BuildSystem().IsRunningOnAzurePipelines)
+    { 
+        Information("Setting: {0} to {1}", key, value);
+        context.BuildSystem().AzurePipelines.Commands.SetVariable(key, value);
     }
     else
     {
-        Information("Boring SetEnvironmentVariable");
-        foreach (var item in propertiesToSet)
-        {
-            System.Environment.SetEnvironmentVariable(item.Key, item.Value);
-        }
+            System.Environment.SetEnvironmentVariable(key, value);
     }
 }
