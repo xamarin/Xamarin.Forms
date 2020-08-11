@@ -111,10 +111,10 @@ namespace Xamarin.Forms.Platform.UWP
 			var (hasFontAlias, fontPostScriptName) = FontRegistrar.HasFont(fontFamily);
 			if (hasFontAlias)
 			{
+				var fontName = FontRegistrar.GetFontName(fontFamily);
 				var file = FontFile.FromString(IOPath.GetFileName(fontPostScriptName));
-				var formated = $"{fontPostScriptName}#{file.GetPostScriptNameWithSpaces()}";
-				yield return formated;
-				yield return fontFamily;
+				var formatted = $"{fontPostScriptName}#{fontName ?? file.GetPostScriptNameWithSpaces()}";
+				yield return formatted;
 				yield break;
 			}
 
@@ -133,8 +133,8 @@ namespace Xamarin.Forms.Platform.UWP
 				var (hasFont, filePath) = FontRegistrar.HasFont(fontFile.FileNameWithExtension());
 				if (hasFont)
 				{
-					var formated = $"{filePath}#{fontFile.GetPostScriptNameWithSpaces()}";
-					yield return formated;
+					var formatted = $"{filePath}#{fontFile.GetPostScriptNameWithSpaces()}";
+					yield return formatted;
 					yield break;
 				}
 				else
