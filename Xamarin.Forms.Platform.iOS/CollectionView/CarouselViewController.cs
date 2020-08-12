@@ -412,9 +412,7 @@ namespace Xamarin.Forms.Platform.iOS
 	class CarouselViewLoopManager : IDisposable
 	{
 		int _indexOffset = 0;
-		nfloat _cellPadding = 0.0f;
-		nfloat _cellWidth = 0.0f;
-		nfloat _cellHeight = 0.0f;
+		UICollectionViewFlowLayout _layout;
 		const int LoopCount = 3;
 		ILoopItemsViewSource _itemsSource;
 		bool _disposed;
@@ -424,9 +422,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (layout == null)
 				throw new ArgumentNullException(nameof(layout), "LoopManager expects a UICollectionViewFlowLayout");
 
-			_cellPadding = 0;
-			_cellWidth = layout.ItemSize.Width;
-			_cellHeight = layout.ItemSize.Height;
+			_layout = layout;
 		}
 
 		public void CenterIfNeeded(UICollectionView collectionView, bool isHorizontal)
@@ -500,22 +496,23 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CenterVerticallyIfNeeded(UICollectionView collectionView)
 		{
+			var cellHeight = _layout.ItemSize.Height;
+			var cellPadding = _layout.MinimumInteritemSpacing;
 			var currentOffset = collectionView.ContentOffset;
-
 			var contentHeight = GetTotalContentHeight();
+			var boundsHeight = collectionView.Bounds.Size.Height;
 
-			if (contentHeight == 0)
+			if (contentHeight == 0 || cellHeight == 0)
 				return;
 
-			var centerOffsetY = (LoopCount * contentHeight) / 2;
-
+			var centerOffsetY = (LoopCount * contentHeight - boundsHeight) / 2;
 			var distFromCenter = centerOffsetY - currentOffset.Y;
 
 			if (Math.Abs(distFromCenter) > (contentHeight / 4))
 			{
-				var cellcount = distFromCenter / (_cellHeight + _cellPadding);
+				var cellcount = distFromCenter / (cellHeight + cellPadding);
 				var shiftCells = (int)((cellcount > 0) ? Math.Floor(cellcount) : Math.Ceiling(cellcount));
-				var offsetCorrection = (Math.Abs(cellcount) % 1.0) * (_cellHeight + _cellPadding);
+				var offsetCorrection = (Math.Abs(cellcount) % 1.0) * (cellHeight + cellPadding);
 
 				if (collectionView.ContentOffset.Y < centerOffsetY)
 				{
@@ -526,30 +523,29 @@ namespace Xamarin.Forms.Platform.iOS
 					collectionView.ContentOffset = new CGPoint(currentOffset.X, centerOffsetY + offsetCorrection);
 				}
 
-				ShiftContentArray(shiftCells);
-
-				collectionView.ReloadData();
+				FinishCenterIfNeeded(collectionView,shiftCells);
 			}
 		}
 
 		void CenterHorizontalIfNeeded(UICollectionView collectionView)
 		{
+			var cellWidth = _layout.ItemSize.Width;
+			var cellPadding = _layout.MinimumInteritemSpacing;
 			var currentOffset = collectionView.ContentOffset;
+			var contentWidth = GetTotalContentWidth();
+			var boundsWidth = collectionView.Bounds.Size.Width;
 
-			nfloat contentWidth = GetTotalContentWidth();
-
-			if (contentWidth == 0)
+			if (contentWidth == 0 || cellWidth == 0)
 				return;
 
-			var centerOffsetX = (LoopCount * contentWidth - collectionView.Bounds.Size.Width) / 2;
-
+			var centerOffsetX = (LoopCount * contentWidth - boundsWidth) / 2;
 			var distFromCentre = centerOffsetX - currentOffset.X;
 
 			if (Math.Abs(distFromCentre) > (contentWidth / 4))
 			{
-				var cellcount = distFromCentre / (_cellWidth + _cellPadding);
+				var cellcount = distFromCentre / (cellWidth + cellPadding);
 				var shiftCells = (int)((cellcount > 0) ? Math.Floor(cellcount) : Math.Ceiling(cellcount));
-				var offsetCorrection = (Math.Abs(cellcount % 1.0f)) * (_cellWidth + _cellPadding);
+				var offsetCorrection = (Math.Abs(cellcount % 1.0f)) * (cellWidth + cellPadding);
 
 				if (collectionView.ContentOffset.X < centerOffsetX)
 				{
@@ -560,10 +556,16 @@ namespace Xamarin.Forms.Platform.iOS
 					collectionView.ContentOffset = new CGPoint(centerOffsetX + offsetCorrection, currentOffset.Y);
 				}
 
-				ShiftContentArray(shiftCells);
-
-				collectionView.ReloadData();
+				FinishCenterIfNeeded(collectionView, shiftCells);
 			}
+
+		}
+
+		void FinishCenterIfNeeded(UICollectionView collectionView, int shiftCells)
+		{
+			ShiftContentArray(shiftCells);
+
+			collectionView.ReloadData();
 		}
 
 		int GetCorrectedIndex(int indexToCorrect)
@@ -590,9 +592,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		int GetItemsSourceCount() => _itemsSource.ItemCount;
 
-		nfloat GetTotalContentWidth() => GetItemsSourceCount() * (_cellWidth + _cellPadding);
+		nfloat GetTotalContentWidth() => GetItemsSourceCount() * _layout.ItemSize.Width;
 
-		nfloat GetTotalContentHeight() => (GetItemsSourceCount() * (_cellHeight + _cellPadding)) - _cellPadding;
+		nfloat GetTotalContentHeight() => GetItemsSourceCount() * _layout.ItemSize.Height;
 
 		void ShiftContentArray(int shiftCells)
 		{
