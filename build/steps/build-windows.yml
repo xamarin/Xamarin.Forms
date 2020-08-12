@@ -193,12 +193,12 @@ steps:
       TargetFolder: ${{ parameters.artifactsTargetFolder }}
   
   - script: build.cmd -Target cg-uwp-build-tests  -ScriptArgs '-BUILD_CONFIGURATION="$(BuildConfiguration)"'
-    condition: eq(variables['BuildConfiguration'], 'Debug')
+    condition: eq(variables['BuildConfiguration'], 'Release')
     displayName: 'Build Tests and APPX'
 
   - task: CopyFiles@2
     displayName: 'Copy Appx Packages'
-    condition: eq(variables['BuildConfiguration'], 'Debug')
+    condition: eq(variables['BuildConfiguration'], 'Release')
     inputs:
       Contents: |
         Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/*

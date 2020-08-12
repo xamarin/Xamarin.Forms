@@ -474,7 +474,7 @@ Task ("cg-uwp-build-tests")
     );
 
     MSBuild("Xamarin.Forms.Core.Windows.UITests\\Xamarin.Forms.Core.Windows.UITests.csproj", 
-        GetMSBuildSettings().WithRestore());
+        GetMSBuildSettings(buildConfiguration:"Debug").WithRestore());
 });
 
 Task ("cg-uwp-deploy")
