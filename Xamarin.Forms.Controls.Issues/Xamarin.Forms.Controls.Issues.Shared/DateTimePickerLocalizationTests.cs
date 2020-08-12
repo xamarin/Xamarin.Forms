@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Controls.Issues
             RunningApp.ClearText("settingTime");
             RunningApp.EnterText("settingTime", time);
             RunningApp.PressEnter();
-            var text = RunningApp.WaitForElement("timeClockOptions")[0].Text;
+            var text = RunningApp.WaitForElement("timeClockOptions")[0].ReadText();
             return text;
         }
 
@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Controls.Issues
             RunningApp.ClearText("settingDate");
             RunningApp.EnterText("settingDate", date);
             RunningApp.PressEnter();
-            var text = RunningApp.WaitForElement("dateCalendarOptions")[0].Text;
+            var text = RunningApp.WaitForElement("dateCalendarOptions")[0].ReadText();
             return text;
         }
 

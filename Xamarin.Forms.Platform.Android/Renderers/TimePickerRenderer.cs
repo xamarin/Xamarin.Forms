@@ -165,7 +165,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void SetTime(TimeSpan time)
 		{
-			if (Element.Format.Equals(""))
+			if (String.IsNullOrEmpty(Element.Format))
 			{
 				var timeFormat = "t";
 				EditText.Text = DateTime.Today.Add(time).ToString(timeFormat);

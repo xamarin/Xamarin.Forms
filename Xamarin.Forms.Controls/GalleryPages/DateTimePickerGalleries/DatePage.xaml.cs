@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.DateTimePickerGalleries
 			var dep = DependencyService.Get<ILocalize>();
 			if (dep != null)
 			{
-				datesphoneculture.Text = "Device Culture: " + dep.GetCurrentCultureInfo();
+				datesphoneculture.Text = $"Device Culture: {dep.GetCurrentCultureInfo()}";
 			}
 			else
 			{

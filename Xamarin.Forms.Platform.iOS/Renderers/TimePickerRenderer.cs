@@ -202,22 +202,19 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateTime()
 		{
 			_picker.Date = new DateTime(1, 1, 1).Add(Element.Time).ToNSDate();
-			if (Element.Format.Equals(""))
+			string iOSLocale = NSLocale.CurrentLocale.CountryCode;
+			var cultureInfos = CultureInfo.GetCultures(CultureTypes.AllCultures)
+							  .Where(c => c.Name.EndsWith("-" + iOSLocale)).First();
+			if (String.IsNullOrEmpty(Element.Format))
 			{
-				string iOSLocale = NSLocale.CurrentLocale.CountryCode;
-				var cultureInfos = CultureInfo.GetCultures(CultureTypes.AllCultures)
-							  .Where(c => c.Name.EndsWith("-" + iOSLocale));
-				string timeformat = cultureInfos.First().DateTimeFormat.ShortTimePattern;
-				NSLocale locale = new NSLocale(cultureInfos.First().TwoLetterISOLanguageName);
-				Control.Text = DateTime.Today.Add(Element.Time).ToString(timeformat, cultureInfos.First());
+				string timeformat = cultureInfos.DateTimeFormat.ShortTimePattern;
+				NSLocale locale = new NSLocale(cultureInfos.TwoLetterISOLanguageName);
+				Control.Text = DateTime.Today.Add(Element.Time).ToString(timeformat, cultureInfos);
 				_picker.Locale = locale;
 			}
 			else
 			{
-				string iOSLocale = NSLocale.CurrentLocale.CountryCode;
-				var cultureInfos = CultureInfo.GetCultures(CultureTypes.AllCultures)
-							  .Where(c => c.Name.EndsWith("-" + iOSLocale));
-				Control.Text = DateTime.Today.Add(Element.Time).ToString(Element.Format, cultureInfos.First());
+				Control.Text = DateTime.Today.Add(Element.Time).ToString(Element.Format, cultureInfos);
 			}
 			if (Element.Format.Contains('H'))
 			{
