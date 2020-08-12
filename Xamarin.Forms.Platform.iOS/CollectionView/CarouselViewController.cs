@@ -497,7 +497,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void CenterVerticallyIfNeeded(UICollectionView collectionView)
 		{
 			var cellHeight = _layout.ItemSize.Height;
-			var cellPadding = _layout.MinimumInteritemSpacing;
+			var cellPadding = 0;
 			var currentOffset = collectionView.ContentOffset;
 			var contentHeight = GetTotalContentHeight();
 			var boundsHeight = collectionView.Bounds.Size.Height;
@@ -530,7 +530,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void CenterHorizontalIfNeeded(UICollectionView collectionView)
 		{
 			var cellWidth = _layout.ItemSize.Width;
-			var cellPadding = _layout.MinimumInteritemSpacing;
+			var cellPadding = 0;
 			var currentOffset = collectionView.ContentOffset;
 			var contentWidth = GetTotalContentWidth();
 			var boundsWidth = collectionView.Bounds.Size.Width;
