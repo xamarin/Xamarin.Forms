@@ -575,10 +575,16 @@ namespace Xamarin.Forms.Platform.Android
 				var x = me.GetX();
 				var y = me.GetY();
 				if (me.Action == MotionEventActions.Up
-					&& x >= (EditText.Right - rBounds.Width())
+					&& ((x >= (EditText.Right - rBounds.Width())
 					&& x <= (EditText.Right - EditText.PaddingRight)
 					&& y >= EditText.PaddingTop
-					&& y <= (EditText.Height - EditText.PaddingBottom))
+					&& y <= (EditText.Height - EditText.PaddingBottom)
+					&& (Element as IVisualElementController).EffectiveFlowDirection.IsLeftToRight())
+					|| (x >= (EditText.Left + EditText.PaddingLeft)
+					&& x <= (EditText.Left + rBounds.Width())
+					&& y >= EditText.PaddingTop
+					&& y <= (EditText.Height - EditText.PaddingBottom)
+					&& (Element as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())))
 				{
 					EditText.Text = null;
 					e.Handled = true;
