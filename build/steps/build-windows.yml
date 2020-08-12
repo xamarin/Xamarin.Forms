@@ -193,12 +193,12 @@ steps:
       TargetFolder: ${{ parameters.artifactsTargetFolder }}
   
   - script: build.cmd -Target cg-uwp-build-tests  -ScriptArgs '-BUILD_CONFIGURATION="$(BuildConfiguration)"'
-    condition: and(eq(variables['BuildConfiguration'], 'Release'), eq('${{ parameters.includePages }}', true))
+    condition: and(eq(variables['BuildConfiguration'], 'Release'), ne('${{ parameters.includePages }}', true))
     displayName: 'Build Tests and APPX'
 
   - task: CopyFiles@2
     displayName: 'Copy Appx Packages'
-    condition: and(eq(variables['BuildConfiguration'], 'Release'), eq('${{ parameters.includePages }}', true))
+    condition: and(eq(variables['BuildConfiguration'], 'Release'), ne('${{ parameters.includePages }}', true))
     inputs:
       Contents: |
         Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/*
@@ -220,7 +220,7 @@ steps:
 
   - task: CopyFiles@2
     displayName: 'Copy UITest Files'
-    condition: and(eq(variables['BuildConfiguration'], 'Release'), eq('${{ parameters.includePages }}', true))
+    condition: and(eq(variables['BuildConfiguration'], 'Release'), ne('${{ parameters.includePages }}', true))
     inputs:
       SourceFolder: Xamarin.Forms.Core.Windows.UITests/bin/Debug/
       TargetFolder: '$(build.artifactstagingdirectory)/UITests'
