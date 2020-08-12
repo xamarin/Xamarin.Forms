@@ -15,17 +15,17 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
     [Category(UITestCategories.DatePicker)]
 #endif
-    [Preserve(AllMembers = true)]
-    [Issue(IssueTracker.Github, 11472, "DateTime Localization Issue",
-        PlatformAffected.iOS | PlatformAffected.Android)]
-    public class DateTimeLocalizationTests : TestNavigationPage
-    {
-        protected override void Init()
-        {
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 11472, "DateTime Localization Issue",
+		PlatformAffected.iOS | PlatformAffected.Android)]
+	public class DateTimeLocalizationTests : TestNavigationPage
+	{
+		protected override void Init()
+		{
 #if APP
 			PushAsync(new GalleryPages.DateTimePickerGalleries.DateTimePickerGallery());
 #endif
-        }
+		}
 
 #if UITEST
 
@@ -113,5 +113,5 @@ namespace Xamarin.Forms.Controls.Issues
         }
 
 #endif
-    }
+	}
 }
