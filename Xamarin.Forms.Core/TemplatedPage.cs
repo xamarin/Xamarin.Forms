@@ -56,9 +56,9 @@ namespace Xamarin.Forms
 		{
 		}
 
-		protected override void OnChildRemoved(Element child)
+		protected override void OnChildRemoved(Element child, int oldLogicalIndex)
 		{
-			base.OnChildRemoved(child);
+			base.OnChildRemoved(child, oldLogicalIndex);
 			TemplateUtilities.OnChildRemoved(this, child);
 		}
 
