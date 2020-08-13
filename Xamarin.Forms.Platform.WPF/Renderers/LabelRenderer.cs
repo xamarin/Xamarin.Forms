@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using Xamarin.Forms.Platform.WPF.Extensions;
 using WThickness = System.Windows.Thickness;
 
 namespace Xamarin.Forms.Platform.WPF
@@ -49,7 +50,9 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName)
+			if (e.PropertyName == Label.TextProperty.PropertyName || 
+				e.PropertyName == Label.FormattedTextProperty.PropertyName ||
+				e.PropertyName == Label.TextTransformProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();
@@ -69,7 +72,12 @@ namespace Xamarin.Forms.Platform.WPF
 
 		protected override void UpdateBackground()
 		{
-			Control.UpdateDependencyColor(TextBlock.BackgroundProperty, Element.BackgroundColor);
+			Brush background = Element.Background;
+
+			if (Brush.IsNullOrEmpty(background))
+				Control.UpdateDependencyColor(TextBlock.BackgroundProperty, Element.BackgroundColor);
+			else
+				Control.Background = background.ToBrush();
 		}
 
 		void UpdateTextDecorations()
@@ -192,7 +200,7 @@ namespace Xamarin.Forms.Platform.WPF
 			if (label != null)
 			{
 				if (label.FormattedText == null)
-					Control.Text = label.Text;
+					Control.Text = label.UpdateFormsText(label.Text, label.TextTransform);
 				else
 				{
 					FormattedString formattedText = label.FormattedText ?? label.Text;
