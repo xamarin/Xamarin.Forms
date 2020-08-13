@@ -11,11 +11,11 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class PageRenderer : UIViewController, IVisualElementRenderer, IEffectControlProvider, IAccessibilityElementsController, IShellContentInsetObserver
 	{
-		bool _appeared;
 		bool _disposed;
 		EventTracker _events;
 		VisualElementPackager _packager;
 		VisualElementTracker _tracker;
+		PageLifecycleManager _pageLifecycleManager;
 
 		// storing this into a local variable causes it to not get collected. Do not delete this please		
 		PageContainer _pageContainer;
@@ -44,18 +44,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 
-		List<NSObject> DefaultOrder()
-		{
-			var views = new List<NSObject>();
-			if (Container != null)
-				views.AddRange(Container.DescendantsTree());
-			return views;
-		}
-
 		public List<NSObject> GetAccessibilityElements()
 		{
 			if (Container == null || Element == null)
-				return new List<NSObject>();
+				return null;
 
 			SortedDictionary<int, List<ITabStopElement>> tabIndexes = null;
 			foreach (var child in Element.LogicalChildren)
@@ -68,11 +60,11 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			if (tabIndexes == null)
-				return DefaultOrder();
+				return null;
 
 			// Just return all elements on the page in order.
 			if (tabIndexes.Count <= 1)
-				return DefaultOrder();
+				return null;
 
 			var views = new List<NSObject>();
 			foreach (var idx in tabIndexes?.Keys)
@@ -118,6 +110,8 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateTitle();
 
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
+
+			_pageLifecycleManager = new PageLifecycleManager(Element as IPageController);
 
 			if (element != null)
 			{
@@ -195,33 +189,31 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidAppear(animated);
 
-			if (_appeared || _disposed)
+			if (_disposed)
 				return;
 
-			_appeared = true;
 			UpdateStatusBarPrefersHidden();
+
 			if (Forms.RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden)
 				SetNeedsUpdateOfHomeIndicatorAutoHidden();
 
 			if (Element.Parent is CarouselPage)
 				return;
 
-			Page.SendAppearing();
+			_pageLifecycleManager?.HandlePageAppearing();
 		}
 
 		public override void ViewDidDisappear(bool animated)
 		{
 			base.ViewDidDisappear(animated);
 
-			if (!_appeared || _disposed)
+			if (_disposed)
 				return;
-
-			_appeared = false;
 
 			if (Element.Parent is CarouselPage)
 				return;
 
-			Page.SendDisappearing();
+			_pageLifecycleManager?.HandlePageDisappearing();
 		}
 
 		public override void ViewDidLoad()
@@ -276,10 +268,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 				Element.PropertyChanged -= OnHandlePropertyChanged;
 				Platform.SetRenderer(Element, null);
-				if (_appeared)
-					Page.SendDisappearing();
 
-				_appeared = false;
+				_pageLifecycleManager?.Dispose();
+				_pageLifecycleManager = null;
 
 				if (_events != null)
 				{
@@ -322,7 +313,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnHandlePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
 				UpdateBackground();
 			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground();
@@ -387,13 +378,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateUseSafeArea()
 		{
-			if (Element == null)
+			if (Element == null || _pageLifecycleManager == null)
 				return;
 
 			if (_userOverriddenSafeArea)
 				return;
 
 			if (!IsPartOfShell && !Forms.IsiOS11OrNewer)
+				return;
+
+			if (IsPartOfShell && !_pageLifecycleManager.Appeared)
 				return;
 
 			var tabThickness = _tabThickness;
@@ -516,10 +510,22 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (bgImage != null)
 					NativeView.BackgroundColor = UIColor.FromPatternImage(bgImage);
-				else if (Element.BackgroundColor.IsDefault)
-					NativeView.BackgroundColor = ColorExtensions.BackgroundColor;
 				else
-					NativeView.BackgroundColor = Element.BackgroundColor.ToUIColor();
+				{
+					Brush background = Element.Background;
+
+					if (!Brush.IsNullOrEmpty(background))
+						NativeView.UpdateBackground(Element.Background);
+					else
+					{
+						Color backgroundColor = Element.BackgroundColor;
+
+						if (backgroundColor.IsDefault)
+							NativeView.BackgroundColor = UIColor.White;
+						else
+							NativeView.BackgroundColor = backgroundColor.ToUIColor();
+					}
+				}
 			});
 		}
 

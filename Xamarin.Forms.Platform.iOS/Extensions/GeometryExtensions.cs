@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using CoreGraphics;
 using Xamarin.Forms.Shapes;
-using Rect = Xamarin.Forms.Rectangle;
 
 #if __MOBILE__
 namespace Xamarin.Forms.Platform.iOS
@@ -12,14 +11,19 @@ namespace Xamarin.Forms.Platform.MacOS
 {
     public static class GeometryExtensions
     {
-        public static PathData ToCGPath(this Geometry geometry)
+        public static PathData ToCGPath(this Geometry geometry, Transform renderTransform = null)
         {
-			PathData pathData = new PathData
-			{
-				Data = new CGPath()
-			};
+            PathData pathData = new PathData
+            {
+                Data = new CGPath()
+            };
 
-			CGAffineTransform transform = CGAffineTransform.MakeIdentity();
+            CGAffineTransform transform;
+
+            if (renderTransform == null)
+                transform = CGAffineTransform.MakeIdentity();
+            else
+                transform = renderTransform.ToCGAffineTransform();
 
             if (geometry is LineGeometry)
             {
@@ -47,12 +51,12 @@ namespace Xamarin.Forms.Platform.MacOS
             else if (geometry is GeometryGroup)
             {
                 GeometryGroup geometryGroup = geometry as GeometryGroup;
-				
+
                 pathData.IsNonzeroFillRule = geometryGroup.FillRule == FillRule.Nonzero;
 
                 foreach (Geometry child in geometryGroup.Children)
                 {
-                    PathData pathChild = child.ToCGPath();
+                    PathData pathChild = child.ToCGPath(renderTransform);
                     pathData.Data.AddPath(pathChild.Data);
                 }
             }

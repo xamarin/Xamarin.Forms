@@ -4,9 +4,16 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Graphics.Imaging;
+using Windows.Storage.Streams;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Xamarin.Forms.Internals;
 using WCompositeTransform = Windows.UI.Xaml.Media.CompositeTransform;
 using WScaleTransform = Windows.UI.Xaml.Media.ScaleTransform;
@@ -29,6 +36,8 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _isPinching;
 		bool _wasPanGestureStartedSent;
 		bool _wasPinchGestureStartedSent;
+
+		static bool HasClip;
 
 		public VisualElementTracker()
 		{
@@ -77,6 +86,120 @@ namespace Xamarin.Forms.Platform.UWP
 					UpdatingGestureRecognizers();
 				}
 			}
+		}
+
+		void SendEventArgs<TRecognizer>(Action<TRecognizer> func)
+		{
+			if (_container == null && _control == null)
+				return;
+
+			var view = Element as View;
+			var gestures =
+				view?
+					.GestureRecognizers?
+					.OfType<TRecognizer>();
+
+			if (gestures == null)
+				return;
+
+			foreach (var gesture in gestures)
+			{
+				func(gesture);
+			}
+		}
+
+		void HandleDragOver(object sender, Windows.UI.Xaml.DragEventArgs e)
+		{
+			var package = e.DataView.Properties["_XFPropertes_DONTUSE"] as DataPackage;
+			var dragEventArgs = new DragEventArgs(package);
+
+			SendEventArgs<DropGestureRecognizer>(rec =>
+			{
+				if(!rec.AllowDrop)
+				{
+					e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.None;
+					return;
+				}
+
+				e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy;
+				rec.SendDragOver(dragEventArgs);
+			});
+		}
+
+		void HandleDropCompleted(UIElement sender, Windows.UI.Xaml.DropCompletedEventArgs e)
+		{
+			var args = new DropCompletedEventArgs();
+			SendEventArgs<DragGestureRecognizer>(rec => rec.SendDropCompleted(args));
+		}
+
+		void HandleDrop(object sender, Windows.UI.Xaml.DragEventArgs e)
+		{
+			var datapackage = e.DataView.Properties["_XFPropertes_DONTUSE"] as DataPackage;
+			VisualElement element = null;
+
+			if (sender is IVisualElementRenderer renderer)
+			{
+				element = renderer.Element;
+			}
+
+			var args = new DropEventArgs(datapackage?.View);
+			SendEventArgs<DropGestureRecognizer>(async rec =>
+			{
+				if (!rec.AllowDrop)
+					return;
+
+				try
+				{
+					await rec.SendDrop(args, element);
+				}
+				catch (Exception dropExc)
+				{
+					Internals.Log.Warning(nameof(DropGestureRecognizer), $"{dropExc}");
+				}
+			});
+		}
+
+		void HandleDragStarting(UIElement sender, Windows.UI.Xaml.DragStartingEventArgs e)
+		{
+			SendEventArgs<DragGestureRecognizer>(rec =>
+			{
+				if (!rec.CanDrag)
+				{
+					e.Cancel = true;
+					return;
+				}
+
+				var renderer = sender as IVisualElementRenderer;
+				var args = rec.SendDragStarting(renderer?.Element);
+				e.Data.Properties["_XFPropertes_DONTUSE"] = args.Data;
+
+				if (!args.Handled && renderer != null)
+				{
+					if (renderer.GetNativeElement() is Windows.UI.Xaml.Controls.Image nativeImage &&
+						nativeImage.Source is BitmapImage bi && bi.UriSource != null)
+					{
+						e.Data.SetBitmap(RandomAccessStreamReference.CreateFromUri(bi.UriSource));
+					}
+					else if(!String.IsNullOrWhiteSpace(args.Data.Text))
+					{
+						Uri uri;
+						if (Uri.TryCreate(args.Data.Text, UriKind.Absolute, out uri))
+						{
+							if (args.Data.Text.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+								e.Data.SetWebLink(uri);
+							else
+								e.Data.SetApplicationLink(uri);
+						}
+						else
+						{
+							e.Data.SetText(args.Data.Text);
+						}
+					}
+				}
+
+				e.Cancel = args.Cancel;
+				e.AllowedOperations = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy;
+			});
 		}
 
 		public TElement Element
@@ -133,6 +256,10 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (_container != null)
 			{
+				_container.DragStarting -= HandleDragStarting;
+				_container.DropCompleted -= HandleDropCompleted;
+				_container.DragOver -= HandleDragOver;
+				_container.Drop -= HandleDrop;
 				_container.Tapped -= OnTap;
 				_container.DoubleTapped -= OnDoubleTap;
 				_container.ManipulationDelta -= OnManipulationDelta;
@@ -522,14 +649,35 @@ namespace Xamarin.Forms.Platform.UWP
 
 		static void UpdateClip(VisualElement view, FrameworkElement frameworkElement)
 		{
+			if (!ShouldUpdateClip(view, frameworkElement))
+				return;
+
 			var geometry = view.Clip;
+
+			HasClip = geometry != null;
 
 			if (CompositionHelper.IsCompositionGeometryTypePresent)
 				frameworkElement.ClipVisual(geometry);
 			else
 				frameworkElement.Clip(geometry);
 		}
-	
+
+		static bool ShouldUpdateClip(VisualElement view, FrameworkElement frameworkElement)
+		{
+			if (view == null || frameworkElement == null)
+				return false;
+
+			var formsGeometry = view.Clip;
+
+			if (formsGeometry != null)
+				return true;
+
+			if (formsGeometry == null && HasClip)
+				return true;
+
+			return false;
+		}
+
 		static void UpdateOpacity(VisualElement view, FrameworkElement frameworkElement)
 		{
 			frameworkElement.Opacity = view.Opacity;
@@ -603,6 +751,36 @@ namespace Xamarin.Forms.Platform.UWP
 			frameworkElement.Visibility = view.IsVisible ? Visibility.Visible : Visibility.Collapsed;
 		}
 
+		void UpdateDragAndDropGestureRecognizers()
+		{
+			if (_container == null)
+				return;
+
+			var view = Element as View;
+			IList<IGestureRecognizer> gestures = view?.GestureRecognizers;
+
+			if (gestures == null)
+				return;
+
+			_container.CanDrag = gestures.GetGesturesFor<DragGestureRecognizer>()
+				.FirstOrDefault()?.CanDrag ?? false;
+
+			_container.AllowDrop = gestures.GetGesturesFor<DropGestureRecognizer>()
+				.FirstOrDefault()?.AllowDrop ?? false;
+
+			if (_container.CanDrag)
+			{
+				_container.DragStarting += HandleDragStarting;
+				_container.DropCompleted += HandleDropCompleted;
+			}
+
+			if(_container.AllowDrop)
+			{
+				_container.DragOver += HandleDragOver;
+				_container.Drop += HandleDrop;
+			}
+		}
+
 		void UpdatingGestureRecognizers()
 		{
 			var view = Element as View;
@@ -612,6 +790,7 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 
 			ClearContainerEventHandlers();
+			UpdateDragAndDropGestureRecognizers();
 
 			var children = (view as IGestureController)?.GetChildElements(Point.Zero);
 			IList<TapGestureRecognizer> childGestures = children?.GetChildGesturesFor<TapGestureRecognizer>().ToList();
