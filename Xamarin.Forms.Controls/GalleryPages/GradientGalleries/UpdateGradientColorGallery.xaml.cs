@@ -12,9 +12,20 @@ namespace Xamarin.Forms.Controls.GalleryPages.GradientGalleries
 			_random = new Random();
 		}
 
-		void OnUpdateColorsClicked(object sender, EventArgs e)
+		void OnUpdateSolidColorClicked(object sender, EventArgs e)
 		{
-			GradientStop firstStop = linearBrush.GradientStops[GetRandomGradientStop()];
+			SolidBrush.Color = GetRandomColor();
+		}
+
+		void OnUpdateLinearColorsClicked(object sender, EventArgs e)
+		{
+			GradientStop randomStop = LinearBrush.GradientStops[GetRandomGradientStop()];
+			randomStop.Color = GetRandomColor();
+		}
+
+		void OnUpdateRadialColorsClicked(object sender, EventArgs e)
+		{
+			GradientStop firstStop = RadialBrush.GradientStops[GetRandomGradientStop()];
 			firstStop.Color = GetRandomColor();
 		}
 
