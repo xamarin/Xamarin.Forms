@@ -105,17 +105,17 @@ namespace Xamarin.Forms.Controls.Issues
 		public void PaddingIsSetOnPageBeforeItsVisible()
 		{
 			RunningApp.WaitForElement("Success");
-			RunningApp.WaitForElement("PushPage");
+			RunningApp.Tap("PushPage");
 			RunningApp.WaitForElement("Success");
-			RunningApp.WaitForElement("PushPage");
+			RunningApp.Tap("PushPage");
 			RunningApp.WaitForElement("Success");
-			RunningApp.WaitForElement("PushPage");
+			RunningApp.Tap("PushPage");
 			TapBackArrow();
-			RunningApp.WaitForElement("PushPage");
+			RunningApp.WaitForElement("Success");
 			TapBackArrow();
-			RunningApp.WaitForElement("PushPage");
+			RunningApp.WaitForElement("Success");
 			TapBackArrow();
-			RunningApp.WaitForElement("PushPage");
+			RunningApp.WaitForElement("Success");
 		}
 #endif
 	}
