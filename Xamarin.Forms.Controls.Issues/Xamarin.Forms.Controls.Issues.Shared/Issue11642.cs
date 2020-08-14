@@ -110,6 +110,36 @@ namespace Xamarin.Forms.Controls.Issues
 					new Issue11642TestItemTwo(),
 					new Issue11642TestItemTwo(),
 					new Issue11642TestItemThree(),
+				}),
+				new Issue11642Group("List 4", new List<IIssue11642Test>()
+				{
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemThree(),
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemThree(),
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemThree(),
+				}),
+				new Issue11642Group("List 5", new List<IIssue11642Test>()
+				{
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemThree(),
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemThree(),
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemThree(),
+				}),
+				new Issue11642Group("List 6", new List<IIssue11642Test>()
+				{
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemThree(),
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemThree(),
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemTwo(),
+					new Issue11642TestItemThree(),
 				})
 			};
 		}
