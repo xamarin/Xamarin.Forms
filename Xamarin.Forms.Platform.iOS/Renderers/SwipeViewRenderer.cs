@@ -138,6 +138,9 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.LayoutSubviews();
 
+			if (Bounds.X < 0 || Bounds.Y < 0)
+				Bounds = new CGRect(0, 0, Bounds.Width, Bounds.Height);
+
 			if (_contentView != null && _contentView.Frame.IsEmpty)
 				_contentView.Frame = Bounds;
 		}
