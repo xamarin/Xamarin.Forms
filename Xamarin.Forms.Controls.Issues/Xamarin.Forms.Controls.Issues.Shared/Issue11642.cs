@@ -6,16 +6,9 @@ using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using System.Collections.ObjectModel;
-#if UITEST
-using NUnit.Framework;
-using Xamarin.UITest;
-#endif
 
 namespace Xamarin.Forms.Controls.Issues
 {
-#if UITEST
-	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
-#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 11642, "Android - Grouped CollectionView - Removing all items from a large list and adding them back to the group renders oddly", PlatformAffected.Android)]
 	public class Issue11642 : TestContentPage

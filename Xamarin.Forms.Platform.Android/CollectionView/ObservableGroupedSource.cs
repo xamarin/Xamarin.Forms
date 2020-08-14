@@ -442,7 +442,7 @@ namespace Xamarin.Forms.Platform.Android
 			var itemCount = 0;
 			for (int n = 0; n < groupCount; n++)
 			{
-				// add 1 to accomodate the group header + itemSource.Count from _groups[groupStartIndex + n]
+				// add 1 to accommodate the group header that is counted in _groups[groupStartIndex + n].Count
 				itemCount += ((_groupSource[groupStartIndex + n] as IList).Count + 1);
 			}
 			return itemCount;
