@@ -437,12 +437,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var renderer = Platform.CreateRenderer(page);
 			Platform.SetRenderer(page, renderer);
-
-			if(_renderers.ContainsKey(shellContent))
-			{
-				throw new Exception("BAD");
-			}
-
 			_renderers[shellContent] = renderer;
 
 			return renderer;

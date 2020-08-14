@@ -27,15 +27,6 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 #endif
 				var view = bindable as VisualElement;
-
-
-#if DEBUG
-				if (view.IsPlatformEnabled && newvalue != null)
-				{
-					
-				}
-#endif
-
 				if (view != null)
 					view.IsPlatformEnabled = newvalue != null;
 			});
