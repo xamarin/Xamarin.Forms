@@ -107,54 +107,19 @@ namespace Xamarin.Forms.Platform.Android
 				builder.Dispose();
 				//to match current functionality of renderer we set cancelable on outside
 				//and return null
-				if (arguments.FlowDirection == FlowDirection.MatchParent)
-				{
-					if ((sender as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
-					{
-						dialog.SetTitleFlowDirection(FlowDirection.RightToLeft);
-					}
-					else if ((sender as IVisualElementController).EffectiveFlowDirection.IsLeftToRight())
-					{
-						dialog.SetTitleFlowDirection(FlowDirection.LeftToRight);
-					}
-				}
-				else
-				{
-					dialog.SetTitleFlowDirection(arguments.FlowDirection);
-				}
+				if (arguments.FlowDirection == FlowDirection.MatchParent && sender is IVisualElementController ve)
+					dialog.Window.DecorView.UpdateFlowDirection(ve);
+				else if (arguments.FlowDirection == FlowDirection.LeftToRight)
+					dialog.Window.DecorView.LayoutDirection = LayoutDirection.Ltr;
+				else if (arguments.FlowDirection == FlowDirection.RightToLeft)
+					dialog.Window.DecorView.LayoutDirection = LayoutDirection.Rtl;
+
 				dialog.SetCanceledOnTouchOutside(true);
 				dialog.SetCancelEvent((o, e) => arguments.SetResult(null));
 				dialog.Show();
 
-				LayoutDirection layoutDirection = LayoutDirection.Ltr;
-				TextDirection textDirection = TextDirection.Ltr;
-
-				if (arguments.FlowDirection == FlowDirection.LeftToRight)
-				{
-					layoutDirection = LayoutDirection.Ltr;
-					textDirection = TextDirection.Ltr;
-				}
-				else if (arguments.FlowDirection == FlowDirection.RightToLeft)
-				{
-					layoutDirection = LayoutDirection.Rtl;
-					textDirection = TextDirection.Rtl;
-				}
-				else
-				{
-					if ((sender as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
-					{
-						layoutDirection = LayoutDirection.Rtl;
-						textDirection = TextDirection.Rtl;
-					}
-					else if ((sender as IVisualElementController).EffectiveFlowDirection.IsLeftToRight())
-					{
-						layoutDirection = LayoutDirection.Ltr;
-						textDirection = TextDirection.Ltr;
-					}
-				}
-
-				var listview = dialog.GetListView();
-				listview.TextDirection = textDirection;
+				dialog.GetListView().TextDirection = GetTextDirection(sender, arguments.FlowDirection);
+				LayoutDirection layoutDirection = GetLayoutDirection(sender, arguments.FlowDirection);
 				if (arguments.Cancel != null)
 					((dialog.GetButton((int)DialogButtonType.Positive).Parent) as global::Android.Views.View).LayoutDirection = layoutDirection;
 				if (arguments.Destruction != null)
@@ -171,21 +136,13 @@ namespace Xamarin.Forms.Platform.Android
 
 				int messageID = 16908299;
 				var alert = new DialogBuilder(Activity).Create();
-				if (arguments.FlowDirection == FlowDirection.MatchParent)
-				{
-					if ((sender as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
-					{
-						alert.SetTitleFlowDirection(FlowDirection.RightToLeft);
-					}
-					else if ((sender as IVisualElementController).EffectiveFlowDirection.IsLeftToRight())
-					{
-						alert.SetTitleFlowDirection(FlowDirection.LeftToRight);
-					}
-				}
-				else
-				{
-					alert.SetTitleFlowDirection(arguments.FlowDirection);
-				}
+				if (arguments.FlowDirection == FlowDirection.MatchParent && sender is IVisualElementController ve)
+					alert.Window.DecorView.UpdateFlowDirection(ve);
+				else if (arguments.FlowDirection == FlowDirection.LeftToRight)
+					alert.Window.DecorView.LayoutDirection = LayoutDirection.Ltr;
+				else if (arguments.FlowDirection == FlowDirection.RightToLeft)
+					alert.Window.DecorView.LayoutDirection = LayoutDirection.Rtl;
+
 				alert.SetTitle(arguments.Title);
 				alert.SetMessage(arguments.Message);
 				if (arguments.Accept != null)
@@ -194,36 +151,41 @@ namespace Xamarin.Forms.Platform.Android
 				alert.SetCancelEvent((o, args) => { arguments.SetResult(false); });
 				alert.Show();
 
-				LayoutDirection layoutDirection = LayoutDirection.Ltr;
-				TextDirection textDirection = TextDirection.Ltr;
+				TextView textView = (TextView)alert.findViewByID(messageID);
+				textView.TextDirection = GetTextDirection(sender, arguments.FlowDirection);
+				((alert.GetButton((int)DialogButtonType.Negative).Parent) as global::Android.Views.View).LayoutDirection = GetLayoutDirection(sender, arguments.FlowDirection);
+			}
 
-				if (arguments.FlowDirection == FlowDirection.LeftToRight)
-				{
-					layoutDirection = LayoutDirection.Ltr;
-					textDirection = TextDirection.Ltr;
-				}
-				else if (arguments.FlowDirection == FlowDirection.RightToLeft)
-				{
-					layoutDirection = LayoutDirection.Rtl;
-					textDirection = TextDirection.Rtl;
-				}
+			private LayoutDirection GetLayoutDirection(Page sender, FlowDirection flowDirection)
+			{
+				if (flowDirection == FlowDirection.LeftToRight)
+					return LayoutDirection.Ltr;
+				else if (flowDirection == FlowDirection.RightToLeft)
+					return LayoutDirection.Rtl;
 				else
 				{
 					if ((sender as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
-					{
-						layoutDirection = LayoutDirection.Rtl;
-						textDirection = TextDirection.Rtl;
-					}
+						return LayoutDirection.Rtl;
 					else if ((sender as IVisualElementController).EffectiveFlowDirection.IsLeftToRight())
-					{
-						layoutDirection = LayoutDirection.Ltr;
-						textDirection = TextDirection.Ltr;
-					}
+						return LayoutDirection.Ltr;
 				}
+				return LayoutDirection.Ltr;
+			}
 
-				TextView textView = (TextView)alert.findViewByID(messageID);
-				textView.TextDirection = textDirection;
-				((alert.GetButton((int)DialogButtonType.Negative).Parent) as global::Android.Views.View).LayoutDirection = layoutDirection;
+			private TextDirection GetTextDirection(Page sender, FlowDirection flowDirection)
+			{
+				if (flowDirection == FlowDirection.LeftToRight)
+					return TextDirection.Ltr;
+				else if (flowDirection == FlowDirection.RightToLeft)
+					return TextDirection.Rtl;
+				else
+				{
+					if ((sender as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
+						return TextDirection.Rtl;
+					else if ((sender as IVisualElementController).EffectiveFlowDirection.IsLeftToRight())
+						return TextDirection.Ltr;
+				}
+				return TextDirection.Ltr;
 			}
 
 			void OnPromptRequested(Page sender, PromptArguments arguments)
@@ -426,32 +388,6 @@ namespace Xamarin.Forms.Platform.Android
 					else
 					{
 						_legacyAlertDialog.SetTitle(title);
-					}
-				}
-
-				public void SetTitleFlowDirection(FlowDirection flowDirection)
-				{
-					if (flowDirection == FlowDirection.LeftToRight)
-					{
-						if (_useAppCompat)
-						{
-							_appcompatAlertDialog.Window.DecorView.LayoutDirection = LayoutDirection.Ltr;
-						}
-						else
-						{
-							_legacyAlertDialog.Window.DecorView.LayoutDirection = LayoutDirection.Ltr;
-						}
-					}
-					else if (flowDirection == FlowDirection.RightToLeft)
-					{
-						if (_useAppCompat)
-						{
-							_appcompatAlertDialog.Window.DecorView.LayoutDirection = LayoutDirection.Rtl;
-						}
-						else
-						{
-							_legacyAlertDialog.Window.DecorView.LayoutDirection = LayoutDirection.Rtl;
-						}
 					}
 				}
 

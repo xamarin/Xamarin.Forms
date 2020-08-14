@@ -16,60 +16,46 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 		}
 
-		void Button1_Clicked(object sender, EventArgs args)
-		{
 #if APP
+		void AlertNoFlow_Clicked(object sender, EventArgs args)
+		{
 			var alert = DisplayAlert("Alert", "You have been alerted", "OK");
-#endif
 		}
 
-		void Button2_Clicked(object sender, EventArgs args)
+		void AlertMatchParent_Clicked(object sender, EventArgs args)
 		{
-#if APP
 			var alert = DisplayAlert("Alert", "You have been alerted", "OK", FlowDirection.MatchParent);
-#endif
 		}
 
-		void Button3_Clicked(object sender, EventArgs args)
+		void AlertRTL_Clicked(object sender, EventArgs args)
 		{
-#if APP
 			var alert = DisplayAlert("Alert", "You have been alerted", "OK", FlowDirection.RightToLeft);
-#endif
 		}
 
-		void Button4_Clicked(object sender, EventArgs args)
+		void AlertLTR_Clicked(object sender, EventArgs args)
 		{
-#if APP
 			var alert = DisplayAlert("Alert", "You have been alerted", "OK", FlowDirection.LeftToRight);
-#endif
 		}
 
-		void Button5_Clicked(object sender, EventArgs args)
+		void ActionsheetNoFlow_Clicked(object sender, EventArgs args)
 		{
-#if APP
 			var alert = DisplayActionSheet("ActionSheet: SavePhoto?", "Cancel", "Delete", "Photo Roll", "Email");
-#endif
 		}
 
-		void Button6_Clicked(object sender, EventArgs args)
+		void ActionsheetMatchParent_Clicked(object sender, EventArgs args)
 		{
-#if APP
 			var alert = DisplayActionSheet("ActionSheet: SavePhoto?", "Cancel", "Delete", FlowDirection.MatchParent, "Photo Roll", "Email");
-#endif
 		}
 
-		void Button7_Clicked(object sender, EventArgs args)
+		void ActionsheetRTL_Clicked(object sender, EventArgs args)
 		{
-#if APP
 			var alert = DisplayActionSheet("ActionSheet: SavePhoto?", "Cancel", "Delete", FlowDirection.RightToLeft, "Photo Roll", "Email");
-#endif
 		}
 
-		void Button8_Clicked(object sender, EventArgs args)
+		void ActionsheetLTR_Clicked(object sender, EventArgs args)
 		{
-#if APP
 			var alert = DisplayActionSheet("ActionSheet: SavePhoto?", "Cancel", "Delete", FlowDirection.LeftToRight, "Photo Roll", "Email");
-#endif
 		}
+#endif
 	}
 }
