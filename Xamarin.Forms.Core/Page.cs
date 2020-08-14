@@ -212,7 +212,7 @@ namespace Xamarin.Forms
 			return DisplayAlert(title, message, null, cancel, flowDirection);
 		}
 
-		public Task<bool> DisplayAlert(string title, string message, string accept, string cancel, FlowDirection flowDirection = FlowDirection.MatchParent)
+		public Task<bool> DisplayAlert(string title, string message, string accept, string cancel, FlowDirection flowDirection)
 		{
 			if (string.IsNullOrEmpty(cancel))
 				throw new ArgumentNullException("cancel");
