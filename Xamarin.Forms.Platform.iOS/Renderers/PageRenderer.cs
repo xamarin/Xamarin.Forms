@@ -172,7 +172,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidLayoutSubviews();
 
-			if (_disposed)
+			if (_disposed || Element == null)
 				return;
 
 			if (Element.Parent is BaseShellItem)
@@ -195,7 +195,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidAppear(animated);
 
-			if (_appeared || _disposed)
+			if (_appeared || _disposed || Element == null)
 				return;
 
 			_appeared = true;
@@ -213,7 +213,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidDisappear(animated);
 
-			if (!_appeared || _disposed)
+			if (!_appeared || _disposed || Element == null)
 				return;
 
 			_appeared = false;

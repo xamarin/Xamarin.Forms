@@ -26,6 +26,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	public class Issue11723 : TestShell
 	{
+		int labelIndex = 0;
 		ContentPage CreateContentPage()
 		{
 			var page = new ContentPage()
@@ -36,11 +37,8 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						new Label()
 						{
-							Text = "As you navigate this text should show up in the correct spot. If it's hidden and then shows up this test has failed."
-						},
-						new Label()
-						{
-							AutomationId = "LabelResult"
+							Text = "As you navigate this text should show up in the correct spot. If it's hidden and then shows up this test has failed.",
+							AutomationId = $"InitialText{labelIndex}"
 						},
 						new Button()
 						{
@@ -48,50 +46,28 @@ namespace Xamarin.Forms.Controls.Issues
 							AutomationId = "PushPage",
 							Command = new Command(async () =>
 							{
+								labelIndex++;
 								await Navigation.PushAsync(CreateContentPage());
+							})
+						},
+						new Button()
+						{
+							Text = "Pop Page",
+							AutomationId = "PopPage",
+							Command = new Command(async () =>
+							{
+								labelIndex--;
+								await Navigation.PopAsync();
 							})
 						}
 					}
 				}
 			};
 
-			page.PropertyChanged += OnPagePropertyChanged;
+			SetNavBarIsVisible(page, false);
+			PlatformConfiguration.iOSSpecific.Page.SetUseSafeArea(page, true);
+
 			return page;
-		}
-
-		bool navigated = false;
-		protected override void OnNavigating(ShellNavigatingEventArgs args)
-		{
-			navigated = false;
-			base.OnNavigating(args);
-		}
-
-		protected override void OnNavigated(ShellNavigatedEventArgs args)
-		{
-			base.OnNavigated(args);
-			Device.BeginInvokeOnMainThread(() => navigated = true);
-		}
-
-		void OnPagePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-		{
-			if(sender is ContentPage page && e.PropertyName == "Padding")
-			{
-				page.PropertyChanged -= OnPagePropertyChanged;
-
-				var label = page.Content
-					.LogicalChildren
-					.OfType<Label>()
-					.First(x=> x.AutomationId == "LabelResult");
-
-				if (navigated)
-				{
-					label.Text = "Failed";
-				}
-				else
-				{
-					label.Text = "Success";
-				}
-			}
 		}
 
 		protected override void Init()
@@ -100,22 +76,32 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 
-#if UITEST
+#if UITEST && __IOS__
 		[Test]
 		public void PaddingIsSetOnPageBeforeItsVisible()
 		{
-			RunningApp.WaitForElement("Success");
+			var initialTextPosition = RunningApp.WaitForFirstElement($"InitialText0").Rect;
 			RunningApp.Tap("PushPage");
-			RunningApp.WaitForElement("Success");
+			CompareTextLocation(initialTextPosition, 1);
 			RunningApp.Tap("PushPage");
-			RunningApp.WaitForElement("Success");
+			CompareTextLocation(initialTextPosition, 2);
 			RunningApp.Tap("PushPage");
-			TapBackArrow();
-			RunningApp.WaitForElement("Success");
-			TapBackArrow();
-			RunningApp.WaitForElement("Success");
-			TapBackArrow();
-			RunningApp.WaitForElement("Success");
+			CompareTextLocation(initialTextPosition, 3);
+			RunningApp.Tap("PopPage");
+			CompareTextLocation(initialTextPosition, 2);
+			RunningApp.Tap("PopPage");
+			CompareTextLocation(initialTextPosition, 1);
+
+		}
+
+		void CompareTextLocation(UITest.Queries.AppRect initialRect, int i)
+		{
+			var newRect = RunningApp.WaitForFirstElement($"InitialText{i}").Rect;
+
+			Assert.AreEqual(newRect.X, initialRect.X, $"Error With Test :{i}");
+			Assert.AreEqual(newRect.Y, initialRect.Y, $"Error With Test :{i}");
+			Assert.AreEqual(newRect.CenterX, initialRect.CenterX, $"Error With Test :{i}");
+			Assert.AreEqual(newRect.CenterY, initialRect.CenterY, $"Error With Test :{i}");
 		}
 #endif
 	}
