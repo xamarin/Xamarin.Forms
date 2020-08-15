@@ -76,7 +76,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 
-#if UITEST && __IOS__
+#if UITEST
 		[Test]
 		public void PaddingIsSetOnPageBeforeItsVisible()
 		{
