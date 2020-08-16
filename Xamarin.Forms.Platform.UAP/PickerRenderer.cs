@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
+using WBrush = Windows.UI.Xaml.Media.Brush;
 using WSelectionChangedEventArgs = Windows.UI.Xaml.Controls.SelectionChangedEventArgs;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		bool _fontApplied;
 		bool _isAnimating;
-		Brush _defaultBrush;
+		WBrush _defaultBrush;
 
 		protected override void Dispose(bool disposing)
 		{
@@ -57,6 +57,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTitle();
 				UpdateSelectedIndex();
 				UpdateCharacterSpacing();
+				UpdateHorizontalTextAlignment();
+				UpdateVerticalTextAlignment();
 			}
 
 			base.OnElementChanged(e);
@@ -76,6 +78,10 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTextColor();
 			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == Picker.HorizontalTextAlignmentProperty.PropertyName || e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+				UpdateHorizontalTextAlignment();
+			else if (e.PropertyName == Picker.VerticalTextAlignmentProperty.PropertyName)
+				UpdateVerticalTextAlignment();			
 		}
 
 		void ControlOnLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -219,6 +225,15 @@ namespace Xamarin.Forms.Platform.UWP
 			Control.Header = null;
 			Control.HeaderTemplate = string.IsNullOrEmpty(Element.Title) ? null : (Windows.UI.Xaml.DataTemplate)Windows.UI.Xaml.Application.Current.Resources["ComboBoxHeader"];
 			Control.DataContext = Element;
+		}
+
+		void UpdateHorizontalTextAlignment()
+		{
+			Control.HorizontalContentAlignment = Element.HorizontalTextAlignment.ToNativeHorizontalAlignment();
+		}
+		void UpdateVerticalTextAlignment()
+		{
+			Control.VerticalContentAlignment = Element.VerticalTextAlignment.ToNativeVerticalAlignment();
 		}
 	}
 }

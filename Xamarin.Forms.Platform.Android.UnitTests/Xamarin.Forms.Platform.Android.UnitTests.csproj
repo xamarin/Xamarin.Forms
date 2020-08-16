@@ -54,6 +54,7 @@
     <Compile Include="IsEnabledTests.cs" />
     <Compile Include="Issues.cs" />
     <Compile Include="IsVisibleTests.cs" />
+    <Compile Include="ObservrableItemsSourceTests.cs" />
     <Compile Include="OpacityTests.cs" />
     <Compile Include="RendererTests.cs" />
     <Compile Include="PlatformTestFixture.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="TextTests.cs" />
     <Compile Include="TranslationTests.cs" />
     <Compile Include="ButtonTests.cs" />
+    <Compile Include="BackgroundTests.cs" />
     <Compile Include="TestActivity.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -9,6 +9,7 @@ using Xamarin.Forms.Platform.WPF.Controls;
 using WButton = System.Windows.Controls.Button;
 using WImage = System.Windows.Controls.Image;
 using WThickness = System.Windows.Thickness;
+using WAutomationProperties = System.Windows.Automation.AutomationProperties;
 
 namespace Xamarin.Forms.Platform.WPF
 {
@@ -53,7 +54,9 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Button.TextProperty.PropertyName || e.PropertyName == Button.ImageSourceProperty.PropertyName)
+			if (e.PropertyName == Button.TextProperty.PropertyName || 
+				e.PropertyName == Button.ImageSourceProperty.PropertyName ||
+				e.PropertyName == Button.TextTransformProperty.PropertyName)
 				UpdateContent();
 			else if (e.PropertyName == Button.TextColorProperty.PropertyName)
 				UpdateTextColor();
@@ -95,7 +98,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 		async void UpdateContent()
 		{
-			var text = Element.Text;
+			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 			var elementImage = await Element.ImageSource.ToWindowsImageSourceAsync();
 
 			// No image, just the text
@@ -132,6 +135,10 @@ namespace Xamarin.Forms.Platform.WPF
 				VerticalAlignment = VerticalAlignment.Center,
 				HorizontalAlignment = HorizontalAlignment.Center
 			};
+
+			// narrator doesn't pick up text content when nested in a layout so set automation name unless set explicitly
+			if(string.IsNullOrEmpty(WAutomationProperties.GetName(Control)))
+				WAutomationProperties.SetName(Control, text);
 
 			var spacing = layout.Spacing;
 
