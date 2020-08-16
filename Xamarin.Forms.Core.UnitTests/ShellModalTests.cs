@@ -351,14 +351,16 @@ namespace Xamarin.Forms.Core.UnitTests
 			Shell shell = new Shell();
 			shell.Items.Add(CreateShellItem(shellItemRoute: "NewRoute", shellSectionRoute: "Section", shellContentRoute: "Content"));
 
+			Page page = null;
+
 			shell.Navigated += (_, __) =>
 			{
-				var page = shell.CurrentPage;
-				Assert.IsNotNull(page);
-				Assert.AreEqual(page.GetType(), typeof(ModalTestPage));
+				page = shell.CurrentPage;
 			};
 
 			await shell.GoToAsync("ModalTestPage");
+			Assert.IsNotNull(page);
+			Assert.AreEqual(page.GetType(), typeof(ModalTestPage));
 		}
 
 

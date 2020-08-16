@@ -1554,14 +1554,16 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.Items.Add(item1);
 			Routing.RegisterRoute("cat", typeof(ContentPage));
 
+			Page page = null;
+
 			shell.Navigated += (_, __) =>
 			{
-				var page = shell.CurrentPage;
-				Assert.IsNotNull(page);
-				Assert.AreEqual(page.GetType(), typeof(ContentPage));
+				page = shell.CurrentPage;
 			};
 
 			await shell.GoToAsync("cat");
+			Assert.IsNotNull(page);
+			Assert.AreEqual(page.GetType(), typeof(ContentPage));
 		}
 
 		[Test]
@@ -1585,26 +1587,30 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.Items.Add(one);
 			shell.Items.Add(two);
 
+			Page page = null;
+
 			shell.Navigated += (_, __) =>
 			{
-				var page = shell.CurrentPage;
-				Assert.IsNotNull(page);
-				Assert.AreEqual(page.GetType(), typeof(ShellTestPage));
+				page = shell.CurrentPage;
 			};
+
 			shell.GoToAsync(new ShellNavigationState("//two/tabfour/"));
+			Assert.IsNotNull(page);
+			Assert.AreEqual(page.GetType(), typeof(ShellTestPage));
 		}
 
 		[Test]
 		public void GetCurrentPageOnInit()
 		{
 			var shell = new Shell();
+			Page page = null;
 			shell.Navigated += (_, __) =>
 			{
-				var page = shell.CurrentPage;
-				Assert.IsNotNull(page);
+				page = shell.CurrentPage;
 			};
 			var tabone = MakeSimpleShellSection("tabone", "content");
 			shell.Items.Add(tabone);
+			Assert.IsNotNull(page);
 		}
 
 
