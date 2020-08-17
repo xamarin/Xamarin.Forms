@@ -13,7 +13,7 @@ using System.Linq;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST && __ANDROID__
-	[Category(UITestCategories.Shapes)]
+	[Category(UITestCategories.Shape)]
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 11190, "[Bug] Shapes: ArcSegment throwing on iOS, doing nothing on Android", PlatformAffected.Android | PlatformAffected.iOS)]
