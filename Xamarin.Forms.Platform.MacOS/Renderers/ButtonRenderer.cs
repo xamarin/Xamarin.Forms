@@ -8,6 +8,8 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	public class ButtonRenderer : ViewRenderer<Button, NSButton>
 	{
+		const float DefaultCornerRadius = 6;
+
 		class FormsNSButton : NSButton
 		{
 			class FormsNSButtonCell : NSButtonCell
@@ -94,7 +96,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				{
 					var btn = new FormsNSButton();
 					btn.SetButtonType(NSButtonType.MomentaryPushIn);
-					btn.BezelStyle = NSBezelStyle.Rounded;
+					btn.BezelStyle = NSBezelStyle.RoundRect;
 					btn.Pressed += HandleButtonPressed;
 					btn.Released += HandleButtonReleased;
 					SetNativeControl(btn);
@@ -125,7 +127,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					e.PropertyName == Button.CornerRadiusProperty.PropertyName ||
 					e.PropertyName == Button.BorderColorProperty.PropertyName)
 				UpdateBorder();
-			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
 				UpdateBackgroundVisibility();
 			else if (e.PropertyName == Button.ImageSourceProperty.PropertyName)
 				UpdateImage();
@@ -143,9 +145,28 @@ namespace Xamarin.Forms.Platform.MacOS
 		void UpdateBackgroundVisibility()
 		{
 			var model = Element;
-			var shouldDrawImage = model.BackgroundColor == Color.Default;
+			var backgroundColor = model.BackgroundColor;
+			var background = model.Background;
+
+			var shouldDrawImage = backgroundColor == Color.Default && background == null;
+
 			if (!shouldDrawImage)
-				Control.Cell.BackgroundColor = model.BackgroundColor.ToNSColor();
+			{
+				if (background != null)
+				{
+					var backgroundLayer = this.GetBackgroundLayer(background);
+
+					if (backgroundLayer != null)
+					{
+						Layer.BackgroundColor = NSColor.Clear.CGColor;
+						Layer.InsertBackgroundLayer(backgroundLayer, 0);
+					}
+					else
+						Layer.RemoveBackgroundLayer();
+				}
+				else
+					Control.Cell.BackgroundColor = backgroundColor.ToNSColor();
+			}
 		}
 
 		void UpdateBorder()
@@ -157,7 +178,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				uiButton.Layer.BorderColor = button.BorderColor.ToCGColor();
 
 			uiButton.Layer.BorderWidth = (float)button.BorderWidth;
-			uiButton.Layer.CornerRadius = button.CornerRadius;
+			uiButton.Layer.CornerRadius = button.CornerRadius > 0 ? button.CornerRadius : DefaultCornerRadius;
 
 			UpdateBackgroundVisibility();
 		}
@@ -217,6 +238,5 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			Element?.SendReleased();
 		}
-
 	}
 }

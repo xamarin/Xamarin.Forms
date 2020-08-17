@@ -51,6 +51,7 @@ namespace Xamarin.Forms.Core.UITests
 		[TearDown]
 		protected virtual void TestTearDown()
 		{
+			App.AttachScreenshotIfOutcomeFailed();
 		}
 
 		protected abstract void NavigateToGallery();
@@ -77,6 +78,7 @@ namespace Xamarin.Forms.Core.UITests
 
 					Debug.WriteLine(debugMessage);
 					Console.WriteLine(debugMessage);
+					App.AttachScreenshotToTestContext(TestContext.CurrentContext?.Test?.FullName ?? "NavigateToGalleryFailed");
 
 					if (attempts < maxAttempts)
 					{

@@ -123,6 +123,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateLineHeight();
 				UpdateGravity();
 				UpdateMaxLines();
+				UpdateFlowDirection();
 			}
 			else
 			{	
@@ -135,6 +136,8 @@ namespace Xamarin.Forms.Platform.Android
 					UpdateMaxLines();
 				if (e.OldElement.CharacterSpacing != e.NewElement.CharacterSpacing)
 					UpdateCharacterSpacing();
+				if (e.OldElement.FlowDirection != e.NewElement.FlowDirection)
+					UpdateFlowDirection();
 			}
 			UpdateTextDecorations();
 			UpdatePadding();
@@ -173,6 +176,13 @@ namespace Xamarin.Forms.Platform.Android
 				UpdatePadding();
 			else if (e.PropertyName == PlatformConfiguration.AndroidSpecific.Label.BreakStrategyProperty.PropertyName)
 				UpdateBreakStrategy();
+			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+				UpdateFlowDirection();
+		}
+
+		void UpdateFlowDirection()
+		{
+			Control.UpdateFlowDirection(Element);
 		}
 
 		void UpdateColor()
