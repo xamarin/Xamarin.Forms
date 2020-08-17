@@ -83,6 +83,7 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				Size request = Element.Measure(elementDesiredWidth, elementDesiredHeight, MeasureFlags.IncludeMargins).Request;
 
+
 				if (request.Width < 0)
 					request.Width = 0.0;
 
