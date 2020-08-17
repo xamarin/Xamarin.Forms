@@ -214,6 +214,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
 			{
 				carouselPosition = 0;
+				Carousel.SetValueFromRenderer(CarouselView.CurrentItemProperty, null);
 			}
 
 			//If we are adding a new item make sure to maintain the CurrentItemPosition
@@ -221,6 +222,11 @@ namespace Xamarin.Forms.Platform.iOS
 				&& currentItemPosition != -1)
 			{
 				carouselPosition = currentItemPosition;
+			}
+
+			if(Carousel.Loop)
+			{
+				CollectionView.ReloadItems(CollectionView.IndexPathsForVisibleItems);
 			}
 
 			_gotoPosition = -1;
