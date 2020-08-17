@@ -15,7 +15,6 @@ namespace Xamarin.Forms.Platform.iOS
 		CarouselViewLoopManager _carouselViewLoopManager;
 		bool _initialPositionSet;
 		bool _viewInitialized;
-		bool _updatingScrollOffset;
 		List<View> _oldViews;
 		int _gotoPosition = -1;
 		CGSize _size;
@@ -83,9 +82,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (Carousel?.Loop == true && _carouselViewLoopManager != null)
 			{
-				_updatingScrollOffset = true;
 				_carouselViewLoopManager.CenterIfNeeded(CollectionView, IsHorizontal);
-				_updatingScrollOffset = false;
 			}
 			UpdateInitialPosition();
 		}
@@ -168,9 +165,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CarouselViewScrolled(object sender, ItemsViewScrolledEventArgs e)
 		{
-			if (_updatingScrollOffset)
-				return;
-
 			var index = e.CenterItemIndex;
 			if (Carousel?.Loop == true)
 			{
@@ -338,6 +332,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (currentItem != null)
 				{
 					position = ItemsSource.GetIndexForItem(currentItem).Row;
+					SetPosition(position);
 				}
 				else
 				{
