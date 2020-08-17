@@ -175,9 +175,12 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateLineBreakMode();
 				UpdateHorizontalTextAlignment();
 				UpdateText();
-				UpdateTextDecorations();
+
+				// Update TextColor and Font before we do anything else to avoid losing the color in subsequent calls (at least on MacOS)
 				UpdateTextColor();
 				UpdateFont();
+
+				UpdateTextDecorations();
 				UpdateMaxLines();
 				UpdateCharacterSpacing();
 				UpdatePadding();
@@ -572,10 +575,7 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MOBILE__
 				Control.TextColor = textColor.ToUIColor(ColorExtensions.LabelColor);
 #else
-			var alignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
-			var textWithColor = new NSAttributedString(Element.Text ?? "", font: Element.ToNSFont(), foregroundColor: textColor.ToNSColor(ColorExtensions.Black), paragraphStyle: new NSMutableParagraphStyle() { Alignment = alignment });
-			textWithColor = textWithColor.AddCharacterSpacing(Element.Text ?? string.Empty, Element.CharacterSpacing);
-			Control.AttributedStringValue = textWithColor;
+			Control.TextColor = textColor.ToNSColor(ColorExtensions.Black);
 #endif
 			UpdateLayout();
 		}
