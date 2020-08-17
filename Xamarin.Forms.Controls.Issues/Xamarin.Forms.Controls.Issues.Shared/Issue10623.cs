@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
-	[Category(UITestCategories.Shapes)]
+	[Category(UITestCategories.Shape)]
 #endif
     [Preserve(AllMembers = true)]
     [Issue(IssueTracker.Github, 10623, "Tap Gesture not working on iOS [Bug]", PlatformAffected.iOS)]
@@ -38,8 +38,8 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Size = 30,
 				Max = 5,
-				FillColor = Color.Gold,
-				StrokeColor = Color.Silver,
+				FillColor = Brush.Gold,
+				StrokeColor = Brush.Silver,
 				StrokeThickness = 2,
                 HorizontalOptions = LayoutOptions.Center
 			};
@@ -174,7 +174,7 @@ namespace Xamarin.Forms.Controls.Issues
             {
                 Points = _halfStarPoints,
                 Fill = _fillColor,
-                Stroke = Color.Transparent,
+                Stroke = Brush.Transparent,
                 StrokeThickness = 0,
             };
 
@@ -226,15 +226,15 @@ namespace Xamarin.Forms.Controls.Issues
         }
 
 
-        Color _fillColor = Color.Yellow;
-        public Color FillColor
+        Brush _fillColor = Brush.Yellow;
+        public Brush FillColor
         {
             get => _fillColor;
             set => Set(ref _fillColor, value);
         }
 
-        Color _strokeColor = Color.Black;
-        public Color StrokeColor
+        Brush _strokeColor = Brush.Black;
+        public Brush StrokeColor
         {
             get => _strokeColor;
             set => Set(ref _strokeColor, value);
