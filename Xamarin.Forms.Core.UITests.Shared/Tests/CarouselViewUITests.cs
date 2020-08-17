@@ -267,17 +267,17 @@ namespace Xamarin.Forms.Core.UITests
 
 		void VisitSubGallery(string galleryName, bool enableIndicator = false)
 		{
-			if (enableIndicator)
-			{
-				var result = App.Query(c => c.Marked("EnableIndicatorView"));
-				if (result.Length == 0)
-				{
-					App.ScrollUp();
-					App.ScrollUp();
-				}
-				App.Tap(t => t.Marked("EnableIndicatorView"));
-			}
 
+			var result = App.Query(c => c.Marked("EnableIndicatorView"));
+			if (result.Length == 0)
+			{
+				App.ScrollUp();
+				App.ScrollUp();
+			}
+			
+			if (enableIndicator)
+				App.Tap(t => t.Marked("EnableIndicatorView"));
+			
 
 			App.QueryUntilPresent(() =>
 			{
