@@ -283,6 +283,7 @@ namespace Xamarin.Forms.Core.UITests
 			Assert.AreEqual("1", App.Query(c => c.Marked("lblPosition")).First().Text);
 			App.DragCoordinates(centerX + 40, rect.CenterY, rightX, rect.CenterY);
 			Assert.AreEqual("2", App.Query(c => c.Marked("lblPosition")).First().Text);
+			App.Back();
 		}
 
 		void VisitSubGallery(string galleryName, bool enableIndicator = false)
