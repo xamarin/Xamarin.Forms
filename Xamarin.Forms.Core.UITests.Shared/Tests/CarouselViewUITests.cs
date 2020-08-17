@@ -265,6 +265,26 @@ namespace Xamarin.Forms.Core.UITests
 			App.Back();
 		}
 
+		[TestCase("ObservableCollection and CarouselView")]
+		public void CarouselViewObservableCollection(string subgallery)
+		{
+			VisitSubGallery(subgallery, false);
+			App.WaitForElement("lblPosition");
+			Assert.AreEqual("0", App.Query(c => c.Marked("lblPosition")).First().Text);
+			App.Tap("btnNewObservable");
+			Assert.AreEqual("0", App.Query(c => c.Marked("lblPosition")).First().Text);
+			var rect = App.Query(c => c.Marked("TheCarouselView")).First().Rect;
+			var centerX = rect.CenterX;
+			var rightX = rect.X - 5;
+			App.DragCoordinates(centerX + 40, rect.CenterY, rightX, rect.CenterY);
+			App.Tap("btnAddObservable");
+			Assert.AreEqual("0", App.Query(c => c.Marked("lblPosition")).First().Text);
+			App.DragCoordinates(centerX + 40, rect.CenterY, rightX, rect.CenterY);
+			Assert.AreEqual("1", App.Query(c => c.Marked("lblPosition")).First().Text);
+			App.DragCoordinates(centerX + 40, rect.CenterY, rightX, rect.CenterY);
+			Assert.AreEqual("2", App.Query(c => c.Marked("lblPosition")).First().Text);
+		}
+
 		void VisitSubGallery(string galleryName, bool enableIndicator = false)
 		{
 
@@ -274,10 +294,10 @@ namespace Xamarin.Forms.Core.UITests
 				App.ScrollUp();
 				App.ScrollUp();
 			}
-			
+
 			if (enableIndicator)
 				App.Tap(t => t.Marked("EnableIndicatorView"));
-			
+
 
 			App.QueryUntilPresent(() =>
 			{

@@ -130,6 +130,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			var oldItemViewAdapter = ItemsViewAdapter;
 			UnsubscribeCollectionItemsSourceChanged(oldItemViewAdapter);
+			if(oldItemViewAdapter != null)
+			{
+				Carousel.SetValueFromRenderer(FormsCarouselView.PositionProperty, 0);
+				Carousel.SetValueFromRenderer(FormsCarouselView.CurrentItemProperty, null);
+			}
 
 			ItemsViewAdapter = new CarouselViewAdapter<ItemsView, IItemsViewSource>(Carousel,
 				(view, context) => new SizedItemContentView(Context, GetItemWidth, GetItemHeight));
@@ -270,10 +275,10 @@ namespace Xamarin.Forms.Platform.Android
 			bool removingFirstElement = e.OldStartingIndex == 0;
 
 			_noNeedForScroll = true;
+			_gotoPosition = -1;
 
 			if (removingCurrentElement)
 			{
-
 				if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
 				{
 					carouselPosition = 0;
@@ -290,16 +295,12 @@ namespace Xamarin.Forms.Platform.Android
 					ScrollToPosition(carouselPosition);
 				}
 			}
-
-
 			//If we are adding a new item make sure to maintain the CurrentItemPosition
 			else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add
 				&& currentItemPosition != -1)
 			{
 				carouselPosition = currentItemPosition;
 			}
-
-			_gotoPosition = -1;
 
 			if (!Carousel.Loop)
 			{
