@@ -340,7 +340,7 @@ namespace Xamarin.Forms.Platform.Android
 			var newStartIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _groupSource.IndexOf(args.NewItems[0]);
 			var oldStartIndex = args.OldStartingIndex > -1 ? args.OldStartingIndex : _groupSource.IndexOf(args.OldItems[0]);
 
-			var newItemCount = CountItemsInGroups(newStartIndex, groupCount);
+			var newItemCount = CountItemsInNewGroups(newStartIndex, groupCount);
 			var oldItemCount = CountItemsInGroups(oldStartIndex, groupCount);
 
 			if (newItemCount != oldItemCount)
@@ -433,6 +433,17 @@ namespace Xamarin.Forms.Platform.Android
 			for (int n = 0; n < groupCount; n++)
 			{
 				itemCount += _groups[groupStartIndex + n].Count;
+			}
+			return itemCount;
+		}
+
+		int CountItemsInNewGroups(int groupStartIndex, int groupCount)
+		{
+			var itemCount = 0;
+			for (int n = 0; n < groupCount; n++)
+			{
+				// add 1 to accommodate the group header that is counted in _groups[groupStartIndex + n].Count
+				itemCount += ((_groupSource[groupStartIndex + n] as IList).Count + 1);
 			}
 			return itemCount;
 		}
