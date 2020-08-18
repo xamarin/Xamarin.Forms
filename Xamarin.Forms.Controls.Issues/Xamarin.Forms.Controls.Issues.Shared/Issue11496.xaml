@@ -19,7 +19,7 @@
             Padding="12"
             BackgroundColor="Black"
             TextColor="White"
-            Text="If you don't see a red line between each item when swipe, the test has passed."/>
+            Text="If tapping an item appear a dialog, the test has passed."/>
         <StackLayout
             Orientation="Vertical"
             BindableLayout.ItemsSource="{Binding Items}">
