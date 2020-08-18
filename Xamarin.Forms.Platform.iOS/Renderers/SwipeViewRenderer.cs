@@ -175,14 +175,14 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else
 				BackgroundColor = backgroundColor;
-
-			if (_contentView != null && _contentView.BackgroundColor == UIColor.Clear)
-				_contentView.BackgroundColor = backgroundColor;
 		}
 
 		protected override void SetBackground(Brush brush)
 		{
 			Brush background = Element.Background;
+
+			if (Brush.IsNullOrEmpty(background))
+				return;
 
 			if (Control != null)
 				Control.UpdateBackground(background);
