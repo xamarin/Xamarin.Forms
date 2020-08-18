@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			{
 				HeightRequest = 200,
 				WidthRequest = 200,
-				Stroke = Color.Black
+				Stroke = Brush.Black
 			};
 
 			PathFigure figure = new PathFigure();
