@@ -283,8 +283,6 @@
     <Compile Include="Shapes\PolylineRenderer.cs" />
     <Compile Include="Shapes\RectangleRenderer.cs" />
     <Compile Include="Extensions\BrushExtensions.cs" />
-    <Compile Include="CollectionView\CarouselUICollectionView.cs" />
-    <Compile Include="CollectionView\CarouselViewDataSource.cs" />
     <Compile Include="CollectionView\LoopObservableItemsSource.cs" />
     <Compile Include="CollectionView\LoopListSource.cs" />
     <Compile Include="CollectionView\ILoopItemsViewSource.cs" />
