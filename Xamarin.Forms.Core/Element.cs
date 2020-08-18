@@ -330,7 +330,7 @@ namespace Xamarin.Forms
 				OnDescendantAdded(element);
 		}
 
-		[Obsolete("Obsolete in 4.8.0")]
+		[Obsolete("OnChildRemoved(Element) is obsolete as of version 4.8.0. Please use OnChildRemoved(Element, int) instead.")]
 		protected virtual void OnChildRemoved(Element child) => OnChildRemoved(child, -1);
 
 		protected virtual void OnChildRemoved(Element child, int oldLogicalIndex)

@@ -529,7 +529,10 @@ namespace Xamarin.Forms
 			base.OnChildAdded(child);
 			OnVisibleChildAdded(child);
 		}
-				
+
+		[Obsolete("OnChildRemoved(Element) is obsolete as of version 4.8.0. Please use OnChildRemoved(Element, int) instead.")]
+		protected override void OnChildRemoved(Element child) => OnChildRemoved(child, -1);
+
 		protected override void OnChildRemoved(Element child, int oldLogicalIndex)
 		{
 			if(child is IShellContentController sc && sc.Page.IsPlatformEnabled)

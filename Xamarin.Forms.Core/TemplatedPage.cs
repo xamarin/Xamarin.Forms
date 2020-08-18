@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Xamarin.Forms
@@ -55,6 +56,9 @@ namespace Xamarin.Forms
 		protected virtual void OnApplyTemplate()
 		{
 		}
+
+		[Obsolete("OnChildRemoved(Element) is obsolete as of version 4.8.0. Please use OnChildRemoved(Element, int) instead.")]
+		protected override void OnChildRemoved(Element child) => OnChildRemoved(child, -1);
 
 		protected override void OnChildRemoved(Element child, int oldLogicalIndex)
 		{
