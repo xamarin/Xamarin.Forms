@@ -15,6 +15,7 @@ using AButton = Android.Support.V7.Widget.AppCompatButton;
 #endif
 using Android.Views;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Platform.Android.AppCompat;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using APointF = Android.Graphics.PointF;
 using ATextAlignment = Android.Views.TextAlignment;
@@ -34,6 +35,7 @@ namespace Xamarin.Forms.Platform.Android
 		readonly Dictionary<ISwipeItem, object> _swipeItems;
 		readonly Context _context;
 		View _scrollParent;
+		FormsViewPager _viewPagerParent;
 		AView _contentView;
 		LinearLayoutCompat _actionView;
 		SwipeTransitionMode _swipeTransitionMode;
@@ -84,6 +86,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateIsSwipeEnabled();
 				UpdateSwipeTransitionMode();
 				UpdateBackgroundColor();
+				UpdateBackground();
 			}
 
 			if (e.OldElement != null)
@@ -108,6 +111,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateContent();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				UpdateBackground();
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateIsSwipeEnabled();
 			else if (e.PropertyName == Specifics.SwipeTransitionModeProperty.PropertyName)
@@ -156,10 +161,23 @@ namespace Xamarin.Forms.Platform.Android
 				_contentView?.SetWindowBackground();
 		}
 
+		protected override void UpdateBackground()
+		{
+			Brush background = Element.Background;
+
+			this.UpdateBackground(background);
+
+			if (Element.Content == null)
+				_contentView?.UpdateBackground(background);
+		}
+
 		protected override void OnAttachedToWindow()
 		{
 			base.OnAttachedToWindow();
 
+			if (Control != null && Control.Parent != null && _viewPagerParent == null)
+				_viewPagerParent = Control.Parent.GetParentOfType<FormsViewPager>();
+		
 			if (Element != null && _scrollParent == null)
 			{
 				_scrollParent = Element.FindParentOfType<ScrollView>();
@@ -277,7 +295,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override bool OnInterceptTouchEvent(MotionEvent e)
 		{
-			return false;
+			return ShouldInterceptTouch(e);
 		}
 
 		public override bool DispatchTouchEvent(MotionEvent e)
@@ -493,6 +511,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (!ValidateSwipeDirection() || _isResettingSwipe)
 				return false;
 
+			EnableParentGesture(false);
 			_swipeOffset = GetSwipeOffset(_initialPoint, point);
 			UpdateIsOpen(_swipeOffset != 0);
 
@@ -509,6 +528,8 @@ namespace Xamarin.Forms.Platform.Android
 		bool ProcessTouchUp()
 		{
 			_isTouchDown = false;
+
+			EnableParentGesture(true);
 
 			if (!_isSwiping)
 				return false;
@@ -1308,6 +1329,12 @@ namespace Xamarin.Forms.Platform.Android
 				item.OnInvoked();
 		}
 
+		void EnableParentGesture(bool isGestureEnabled)
+		{
+			if (_viewPagerParent != null)
+				_viewPagerParent.EnableGesture = isGestureEnabled;
+		}
+
 		void OnOpenRequested(object sender, OpenSwipeEventArgs e)
 		{
 			if (_contentView == null)
@@ -1352,8 +1379,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateIsOpen(bool isOpen)
 		{
-			if (Element is ISwipeViewController swipeViewController)
-				swipeViewController.IsOpen = isOpen;
+			if (Element == null) 
+				return;
+
+			((ISwipeViewController)Element).IsOpen = isOpen;
 		}
 
 		void OnCloseRequested(object sender, EventArgs e)

@@ -1,4 +1,5 @@
 ﻿using System;
+using ElmSharp;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -33,13 +34,29 @@ namespace Xamarin.Forms.Platform.Tizen
 				Control.Scrolled += OnScrolled;
 				Control.Scroll.DragStart += OnDragStart;
 				Control.Scroll.DragStop += OnDragStop;
-				_animationStart = new ElmSharp.SmartEvent(Control.Scroll, Control.Scroll.RealHandle, "scroll,anim,start");
+				_animationStart = new SmartEvent(Control.Scroll, Control.Scroll.RealHandle, ThemeConstants.Scroller.Signals.StartScrollAnimation);
 				_animationStart.On += OnScrollStart;
-				_animationStop = new ElmSharp.SmartEvent(Control.Scroll, Control.Scroll.RealHandle, "scroll,anim,stop");
+				_animationStop = new SmartEvent(Control.Scroll, Control.Scroll.RealHandle, ThemeConstants.Scroller.Signals.StopScrollAnimation);
 				_animationStop.On += OnScrollStop;
 			}
 			UpdatePositionFromElement(false);
 			UpdateCurrentItemFromElement(false);
+		}
+
+		protected override void UpdateHorizontalScrollBarVisibility()
+		{
+			var visibility = Element.HorizontalScrollBarVisibility;
+			if (visibility == ScrollBarVisibility.Default)
+				visibility = ScrollBarVisibility.Never;
+			Control.HorizontalScrollBarVisiblePolicy = visibility.ToNative();
+		}
+
+		protected override void UpdateVerticalScrollBarVisibility()
+		{
+			var visibility = Element.VerticalScrollBarVisibility;
+			if (visibility == ScrollBarVisibility.Default)
+				visibility = ScrollBarVisibility.Never;
+			Control.VerticalScrollBarVisiblePolicy = visibility.ToNative();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -58,24 +75,24 @@ namespace Xamarin.Forms.Platform.Tizen
 			base.Dispose(disposing);
 		}
 
-		void OnDragStart(object sender, System.EventArgs e)
+		void OnDragStart(object sender, EventArgs e)
 		{
 			Element.SetIsDragging(true);
 			Element.IsScrolling = true;
 		}
 
-		void OnDragStop(object sender, System.EventArgs e)
+		void OnDragStop(object sender, EventArgs e)
 		{
 			Element.SetIsDragging(false);
 			Element.IsScrolling = false;
 		}
 
-		void OnScrollStart(object sender, System.EventArgs e)
+		void OnScrollStart(object sender, EventArgs e)
 		{
 			Element.IsScrolling = true;
 		}
 
-		void OnScrollStop(object sender, System.EventArgs e)
+		void OnScrollStop(object sender, EventArgs e)
 		{
 			var scrollerIndex = Control.LayoutManager.IsHorizontal ? Control.Scroll.HorizontalPageIndex : Control.Scroll.VerticalPageIndex;
 			Element.SetValueFromRenderer(CarouselView.PositionProperty, scrollerIndex);
@@ -150,17 +167,17 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (Element.IsSwipeEnabled)
 			{
-				Control.Scroll.ScrollBlock = ElmSharp.ScrollBlock.None;
+				Control.Scroll.ScrollBlock = ScrollBlock.None;
 			}
 			else
 			{
 				if (Control.LayoutManager.IsHorizontal)
 				{
-					Control.Scroll.ScrollBlock = ElmSharp.ScrollBlock.Horizontal;
+					Control.Scroll.ScrollBlock = ScrollBlock.Horizontal;
 				}
 				else
 				{
-					Control.Scroll.ScrollBlock = ElmSharp.ScrollBlock.Vertical;
+					Control.Scroll.ScrollBlock = ScrollBlock.Vertical;
 				}
 			}
 		}
