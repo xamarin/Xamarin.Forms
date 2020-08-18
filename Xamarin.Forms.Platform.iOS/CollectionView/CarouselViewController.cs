@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
 using CoreGraphics;
 using Foundation;
@@ -106,7 +107,6 @@ namespace Xamarin.Forms.Platform.iOS
 			base.UpdateItemsSource();
 
 			_carouselViewLoopManager?.SetItemsSource(LoopItemsSource);
-			SubscribeCollectionItemsSourceChanged(ItemsSource);
 			_initialPositionSet = false;
 			UpdateInitialPosition();
 		}
@@ -179,7 +179,7 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					var bContext = templatedCell.VisualElementRenderer?.Element?.BindingContext;
 					index = ItemsSource.GetIndexForItem(bContext).Row;
-			
+
 					SetPosition(index);
 				}
 			}
@@ -191,13 +191,13 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateVisualStates();
 		}
 
-		void CollectionItemsSourceChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		void CollectionItemsSourceChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			var carouselPosition = Carousel.Position;
 			var currentItemPosition = ItemsSource.GetIndexForItem(Carousel.CurrentItem).Row;
 			var count = ItemsSource.ItemCount;
 
-			bool removingCurrentElement = currentItemPosition == -1;
+			bool removingCurrentElement = currentItemPosition == -1 && e.Action == NotifyCollectionChangedAction.Remove;
 			bool removingLastElement = e.OldStartingIndex == count;
 			bool removingFirstElement = e.OldStartingIndex == 0;
 			bool removingCurrentElementButNotFirst = removingCurrentElement && removingLastElement && Carousel.Position > 0;
@@ -211,30 +211,33 @@ namespace Xamarin.Forms.Platform.iOS
 				carouselPosition = currentItemPosition;
 			}
 
-			if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+			if (e.Action == NotifyCollectionChangedAction.Reset)
 			{
 				carouselPosition = 0;
 				Carousel.SetValueFromRenderer(CarouselView.CurrentItemProperty, null);
 			}
 
 			//If we are adding a new item make sure to maintain the CurrentItemPosition
-			else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add
+			else if (e.Action == NotifyCollectionChangedAction.Add
 				&& currentItemPosition != -1)
 			{
 				carouselPosition = currentItemPosition;
 			}
 
-			if(Carousel.Loop)
-			{
-				CollectionView.ReloadItems(CollectionView.IndexPathsForVisibleItems);
-			}
-
 			_gotoPosition = -1;
+
+			if (count > 0)
+			{
+				Carousel.ScrollTo(carouselPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: false);
+
+				if (removingCurrentElement)
+				{
+					CollectionView.ReloadItems(CollectionView.IndexPathsForVisibleItems);
+				}
+			}
 
 			SetCurrentItem(carouselPosition);
 			SetPosition(carouselPosition);
-			Carousel.ScrollTo(carouselPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: false);
-
 		}
 
 		void SubscribeCollectionItemsSourceChanged(IItemsViewSource itemsSource)
@@ -263,7 +266,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var carouselPosition = Carousel.Position;
 
-			if(LoopItemsSource != null)
+			if (LoopItemsSource != null)
 				LoopItemsSource.Loop = Carousel.Loop;
 
 			CollectionView.ReloadData();
@@ -305,7 +308,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateFromCurrentItem()
 		{
-			if (Carousel.CurrentItem == null)
+			if (Carousel?.CurrentItem == null || ItemsSource?.ItemCount == 0)
 				return;
 
 			var currentItemPosition = GetIndexForItem(Carousel.CurrentItem).Row;
@@ -317,6 +320,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateFromPosition()
 		{
+			var itemsCount = ItemsSource?.ItemCount;
+			if (itemsCount == 0)
+				return;
+
 			var currentItemPosition = GetIndexForItem(Carousel.CurrentItem).Row;
 			var carouselPosition = Carousel.Position;
 			if (carouselPosition == _gotoPosition)
@@ -529,7 +536,7 @@ namespace Xamarin.Forms.Platform.iOS
 					collectionView.ContentOffset = new CGPoint(currentOffset.X, centerOffsetY + offsetCorrection);
 				}
 
-				FinishCenterIfNeeded(collectionView,shiftCells);
+				FinishCenterIfNeeded(collectionView, shiftCells);
 			}
 		}
 
