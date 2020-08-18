@@ -24,6 +24,8 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 11209, "[Bug] [iOS][SwipeView] Swipe view not handling tap gesture events until swiped", PlatformAffected.Android)]
 	public partial class Issue11209 : TestContentPage
 	{
+		const string SwipeViewContent = "SwipeViewContent";
+		const string Success = "Success";
 
 		public Issue11209()
 		{
@@ -51,28 +53,40 @@ namespace Xamarin.Forms.Controls.Issues
 			await Navigation.PushAsync(new Issue11209SecondPage());
 		}
 #endif
-	}
 
-	[Preserve(AllMembers = true)]
-	public class Issue11209SecondPage : ContentPage
-	{
-		public Issue11209SecondPage()
+#if UITEST
+		[Category(UITestCategories.SwipeView)]
+		[Test]
+		public void TapSwipeViewAndNavigateTest()
 		{
-			Title = "Issue 11209";
+			RunningApp.WaitForElement(SwipeViewContent);
+			RunningApp.Tap(SwipeViewContent);
+			RunningApp.WaitForElement(Success);
+		}
+#endif
 
-			var layout = new StackLayout();
-
-			var instructions = new Label
+		[Preserve(AllMembers = true)]
+		public class Issue11209SecondPage : ContentPage
+		{
+			public Issue11209SecondPage()
 			{
-				Padding = 12,
-				BackgroundColor = Color.Black,
-				TextColor = Color.White,
-				Text = "If navigated tapping an item from the CollectionView, the test has passed."
-			};
+				Title = "Issue 11209";
 
-			layout.Children.Add(instructions);
+				var layout = new StackLayout();
 
-			Content = layout;
+				var instructions = new Label
+				{
+					AutomationId = Success,
+					Padding = 12,
+					BackgroundColor = Color.Black,
+					TextColor = Color.White,
+					Text = "If navigated tapping an item from the CollectionView, the test has passed."
+				};
+
+				layout.Children.Add(instructions);
+
+				Content = layout;
+			}
 		}
 	}
 }
