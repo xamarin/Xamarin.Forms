@@ -17,7 +17,7 @@
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <Slider x:Name="slider" Margin="5" Value="{Binding Position, Mode=TwoWay}" Maximum="{Binding Count}" Grid.ColumnSpan="2"/>
+        <!--<Slider x:Name="slider" Margin="5" Value="{Binding Position, Mode=TwoWay}" Maximum="{Binding Count}" Grid.ColumnSpan="2"/>-->
         <Label Text="Position:" Grid.Row="1" Grid.Column="0" />
         <Label Text="{Binding Path=Position , Source={x:Reference Name=carousel}}"  AutomationId="lblPosition" Grid.Row="1" Grid.Column="1" />
         <Label Text="CurrentItem :"  Grid.Row="2" Grid.Column="0" />
