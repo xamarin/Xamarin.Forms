@@ -668,6 +668,10 @@ namespace Xamarin.Forms.Platform.Android
 				var diffToStart = currentCarouselPosition + (itemSourceCount - newPosition);
 				var diffToEnd = itemSourceCount - currentCarouselPosition + newPosition;
 				var centerView = recyclerView.GetCenteredView();
+
+				if (centerView == null)
+					return -1;
+
 				var centerPosition = linearLayoutManager.GetPosition(centerView);
 				var increment = currentCarouselPosition - newPosition;
 				var incrementAbs = System.Math.Abs(increment);
