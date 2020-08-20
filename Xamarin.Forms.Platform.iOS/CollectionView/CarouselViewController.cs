@@ -168,32 +168,22 @@ namespace Xamarin.Forms.Platform.iOS
 			return NSIndexPath.FromItemSection(position, 0);
 		}
 
+		internal int GetIndexFromIndexPath(NSIndexPath indexPath)
+		{
+			if (Carousel?.Loop == true && _carouselViewLoopManager != null)
+				return _carouselViewLoopManager.GetCorrectedIndexFromIndexPath(indexPath);
+
+			return indexPath.Row;
+		}
+
 		void CarouselViewScrolled(object sender, ItemsViewScrolledEventArgs e)
 		{
 			if (_updatingScrollOffset)
 				return;
 
-			var index = e.CenterItemIndex;
-
-			if (Carousel?.Loop == true)
-				UpdatePositionFromLoopScroll(index);
-			else
-				SetPosition(index);
+			SetPosition(e.CenterItemIndex);
 
 			UpdateVisualStates();
-		}
-
-		void UpdatePositionFromLoopScroll(int index)
-		{
-			//we can't rely on the IndexPath we need to get the real item and check the index
-			var cell = CollectionView.CellForItem(NSIndexPath.FromItemSection(index, 0));
-			//if no cell was found it could be cause that IndexPath is being removed
-			if (cell is TemplatedCell templatedCell)
-			{
-				var item = templatedCell.VisualElementRenderer?.Element?.BindingContext;
-				index = ItemsSource.GetIndexForItem(item).Row;
-				SetPosition(index);
-			}
 		}
 
 		void CollectionItemsSourceChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -312,15 +302,17 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void SetPosition(int position)
 		{
-			var carouselPosition = Carousel.Position;
+			if (position == -1)
+				return;
+
 			//we arrived center
 			if (position == _gotoPosition)
 				_gotoPosition = -1;
 
-			if (_gotoPosition == -1 && carouselPosition != position)
-			{
+			//If _gotoPosition is != -1 we are scrolling to that possition
+			if (_gotoPosition == -1 && Carousel.Position != position)
 				Carousel.SetValueFromRenderer(CarouselView.PositionProperty, position);
-			}
+
 		}
 
 		void SetCurrentItem(int carouselPosition)

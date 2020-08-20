@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				ItemTemplate = itemTemplate,
 				IsScrollAnimated = true,
 				IsBounceEnabled = true,
-				AutomationId = "TheCarouselView"
+				AutomationId = "TheCarouselView",
 			};
 
 			carouselView.SetBinding(ItemsView.ItemsSourceProperty, "Items");
@@ -57,8 +57,19 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				BindingContext = carouselView,
 				AutomationId = "lblPosition"
 			};
+			var lblCenterIndex = new Label
+			{
+				HorizontalOptions = LayoutOptions.Center,
+				BindingContext = carouselView,
+				AutomationId = "lblCenterIndex"
+			};
 
 			lblPosition.SetBinding(Label.TextProperty, nameof(CarouselView.Position));
+
+			carouselView.Scrolled += (s, e) =>
+			{
+				lblCenterIndex.Text = $"First {e.FirstVisibleItemIndex} CenterIndex: {e.CenterItemIndex} Last: {e.LastVisibleItemIndex}";
+			};
 
 			var clearButton = new Button
 			{
@@ -91,6 +102,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			threadObservableButton.SetBinding(Button.CommandProperty, "TheadCommand");
 
 			stack.Children.Add(lblPosition);
+			stack.Children.Add(lblCenterIndex);
 			stack.Children.Add(clearButton);
 			stack.Children.Add(newObservableButton);
 			stack.Children.Add(addObservableButton);
