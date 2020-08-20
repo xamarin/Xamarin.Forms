@@ -12,7 +12,6 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly Action<Element> _onElementSelected;
 		List<List<Element>> _groups;
 		Dictionary<Element, View> _views;
-		int _footerCount;
 
 		IShellController ShellController => (IShellController)_context.Shell;
 
@@ -124,12 +123,6 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 		public override UIView GetViewForFooter(UITableView tableView, nint section)
 		{
-			if (_footerCount >= Groups.Count - 2)
-			{
-				_footerCount = 0;
-				return new UIView();
-			}
-			_footerCount++;
 			return new SeparatorView();
 		}
 
