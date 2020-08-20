@@ -489,5 +489,16 @@ namespace Xamarin.Forms
 
 			return frame;
 		}
+
+		public string ContentAsString() 
+		{
+			var content = Content;
+			if (content is View)
+			{
+				Log.Warning("RadioButton", $"Warning - {Device.RuntimePlatform} does not support {nameof(View)} as the {ContentProperty.PropertyName} property of {nameof(RadioButton)}; the return value of the ToString() method will be displayed instead.");
+			}
+
+			return content?.ToString();
+		}
 	}
 }

@@ -310,7 +310,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			Control.Text = Element.Content?.ToString();
+			Control.Text = Element.ContentAsString();
 		}
 
 		void IOnCheckedChangeListener.OnCheckedChanged(CompoundButton buttonView, bool isChecked)

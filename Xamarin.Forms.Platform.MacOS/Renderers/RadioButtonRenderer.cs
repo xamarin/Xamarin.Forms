@@ -112,7 +112,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateContent()
 		{
-			var text = Element.Content?.ToString();
+			var text = Element.ContentAsString();
 
 			var color = Element.TextColor;
 			if (color == Color.Default)

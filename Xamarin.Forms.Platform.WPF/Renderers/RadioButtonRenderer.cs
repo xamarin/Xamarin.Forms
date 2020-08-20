@@ -145,7 +145,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void UpdateContent()
 		{
-			Control.Content = Element?.Content?.ToString();
+			Control.Content = Element?.ContentAsString();
 		}
 
 		void UpdateFont()
