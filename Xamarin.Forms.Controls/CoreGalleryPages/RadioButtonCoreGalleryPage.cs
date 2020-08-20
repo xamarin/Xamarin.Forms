@@ -9,8 +9,13 @@ namespace Xamarin.Forms.Controls
 		protected override bool SupportsTapGestureRecognizer => true;
 		protected override void InitializeElement(RadioButton element)
 		{
-			Device.SetFlags(new List<string> { ExperimentalFlags.RadioButtonExperimental });
 			element.Content = "RadioButton";
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Device.SetFlags(new List<string> { ExperimentalFlags.RadioButtonExperimental, ExperimentalFlags.BrushExperimental });
 		}
 
 		protected override void OnDisappearing()
