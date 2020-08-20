@@ -18,6 +18,12 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
+			var vm = new ViewModelIssue7996();
+			BindingContext = vm;
+			var textLabel1 = new Label
+			{
+				Text = "Select culture:"
+			};
 			var picker = new Picker();
 			picker.ItemsSource = new[]
 			{
@@ -31,20 +37,48 @@ namespace Xamarin.Forms.Controls.Issues
 					CultureInfo.CurrentUICulture = culture;
 				}
 			};
+			
+			var textLabel2 = new Label
+			{
+				Text = "Resolved Binding Value:"
+			};
+			var bindingLable = new Label();
+			bindingLable.SetBinding(Label.TextProperty, new Binding(nameof(ViewModelIssue7996.MyDecimal), BindingMode.TwoWay));
+
+			var textLabel3 = new Label
+			{
+				Text = "Actual Value:"
+			};
+			var bindingLable2 = new Label();
+			bindingLable2.SetBinding(Label.TextProperty, new Binding(nameof(ViewModelIssue7996.MyDecimal), BindingMode.TwoWay));
+
+			var textLabel4 = new Label
+			{
+				Text = "Enter a number and watch result:"
+			};
 			var entry = new Entry();
-			entry.SetBinding(Entry.TextProperty, new Binding(nameof(ViewModelIssue7996.MyDecimal), BindingMode.TwoWay));
+			entry.Text = vm.MyDecimal.ToString();
+			entry.TextChanged += (s, e) =>
+			{
+				bindingLable.Text = e.NewTextValue;
+			};
 
 			var stackLayout = new StackLayout
 			{
 				Children =
 				{
+					textLabel1,
 					picker,
-					entry
+					textLabel2,
+					bindingLable,
+					textLabel3,
+					bindingLable2,
+					textLabel4,
+					entry,
 				}
 			};
 
 			Content = stackLayout;
-			BindingContext = new ViewModelIssue7996();
 		}
 	}
 
