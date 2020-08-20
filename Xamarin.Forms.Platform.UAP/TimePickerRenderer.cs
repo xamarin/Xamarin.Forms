@@ -164,7 +164,7 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateTime()
 		{
 			Control.Time = Element.Time;
-			if (Element.Format.Contains('H'))
+			if (Element.Format?.Contains('H') == true)
 			{
 				Control.ClockIdentifier = "24HourClock";
 			}

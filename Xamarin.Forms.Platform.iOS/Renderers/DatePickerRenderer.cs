@@ -172,7 +172,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (String.IsNullOrWhiteSpace(Element.Format) || Element.Format.Equals("d") || Element.Format.Equals("D"))
 			{
 				NSDateFormatter dateFormatter = new NSDateFormatter();
-				if (Element.Format.Equals("D"))
+				if (Element.Format?.Equals("D") == true)
 				{
 					dateFormatter.DateStyle = NSDateFormatterStyle.Long;
 					var strDate = dateFormatter.StringFor(_picker.Date);

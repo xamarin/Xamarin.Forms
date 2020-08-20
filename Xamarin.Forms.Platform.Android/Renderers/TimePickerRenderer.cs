@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Platform.Android
 		
 		bool Is24HourView
 		{
-			get => (DateFormat.Is24HourFormat(Context) && Element.Format == (string)TimePicker.FormatProperty.DefaultValue) || Element.Format.Contains('H');
+			get => (DateFormat.Is24HourFormat(Context) && Element.Format == (string)TimePicker.FormatProperty.DefaultValue) || Element.Format?.Contains('H') == true;
 		}
 
 		public TimePickerRendererBase(Context context) : base(context)
