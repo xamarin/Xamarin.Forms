@@ -105,7 +105,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			UnsubscribeCollectionItemsSourceChanged(ItemsSource);
 			base.UpdateItemsSource();
-
+			//we don't need to Subscribe becasse base calls CreateItemsViewSource
 			_carouselViewLoopManager?.SetItemsSource(LoopItemsSource);
 			_initialPositionSet = false;
 			UpdateInitialPosition();
@@ -139,11 +139,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected void BoundsSizeChanged()
 		{
+			//we might be rotating our phone
 			ItemsViewLayout.ConstrainTo(CollectionView.Bounds.Size);
 
 			//We call ReloadData so our VisibleCells also update their size
 			CollectionView.ReloadData();
 
+			//if the size changed center the item
 			Carousel.ScrollTo(Carousel.Position, position: Xamarin.Forms.ScrollToPosition.Center, animate: false);
 		}
 
@@ -172,72 +174,89 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			var index = e.CenterItemIndex;
-			if (Carousel?.Loop == true)
-			{
-				var cell = CollectionView.CellForItem(NSIndexPath.FromItemSection(e.CenterItemIndex, 0));
-				if (cell is TemplatedCell templatedCell)
-				{
-					var bContext = templatedCell.VisualElementRenderer?.Element?.BindingContext;
-					index = ItemsSource.GetIndexForItem(bContext).Row;
 
-					SetPosition(index);
-				}
-			}
+			if (Carousel?.Loop == true)
+				UpdatePositionFromLoopScroll(index);
 			else
-			{
 				SetPosition(index);
-			}
 
 			UpdateVisualStates();
 		}
 
+		void UpdatePositionFromLoopScroll(int index)
+		{
+			//we can't rely on the IndexPath we need to get the real item and check the index
+			var cell = CollectionView.CellForItem(NSIndexPath.FromItemSection(index, 0));
+			//if no cell was found it could be cause that IndexPath is being removed
+			if (cell is TemplatedCell templatedCell)
+			{
+				var item = templatedCell.VisualElementRenderer?.Element?.BindingContext;
+				index = ItemsSource.GetIndexForItem(item).Row;
+				SetPosition(index);
+			}
+		}
+
 		void CollectionItemsSourceChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			var carouselPosition = Carousel.Position;
+			int carouselPosition = Carousel.Position;
+			int newPosition = carouselPosition;
 			var currentItemPosition = ItemsSource.GetIndexForItem(Carousel.CurrentItem).Row;
 			var count = ItemsSource.ItemCount;
 
-			bool removingCurrentElement = currentItemPosition == -1 && e.Action == NotifyCollectionChangedAction.Remove;
-			bool removingLastElement = e.OldStartingIndex == count;
-			bool removingFirstElement = e.OldStartingIndex == 0;
-			bool removingCurrentElementButNotFirst = removingCurrentElement && removingLastElement && Carousel.Position > 0;
-
-			if (removingCurrentElementButNotFirst)
-			{
-				carouselPosition = Carousel.Position - 1;
-			}
-			else if (removingFirstElement && !removingCurrentElement)
-			{
-				carouselPosition = currentItemPosition;
-			}
+			if (e.Action == NotifyCollectionChangedAction.Remove)
+				newPosition = GetPositionWhenRemovingItems(e.OldStartingIndex, carouselPosition, currentItemPosition, count);
 
 			if (e.Action == NotifyCollectionChangedAction.Reset)
-			{
-				carouselPosition = 0;
-				Carousel.SetValueFromRenderer(CarouselView.CurrentItemProperty, null);
-			}
+				newPosition = GetPositionWhenResetItems();
 
-			//If we are adding a new item make sure to maintain the CurrentItemPosition
-			else if (e.Action == NotifyCollectionChangedAction.Add
-				&& currentItemPosition != -1)
-			{
-				carouselPosition = currentItemPosition;
-			}
+			if (e.Action == NotifyCollectionChangedAction.Add)
+				newPosition = GetPositionWhenAddingItems(carouselPosition, currentItemPosition);
 
 			_gotoPosition = -1;
 
 			if (count > 0)
-			{
-				Carousel.ScrollTo(carouselPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: false);
+				ScrollToPosition(newPosition, carouselPosition, false);
 
-				if (removingCurrentElement)
-				{
-					CollectionView.ReloadItems(CollectionView.IndexPathsForVisibleItems);
-				}
+			SetCurrentItem(newPosition);
+			SetPosition(newPosition);
+		}
+
+		int GetPositionWhenAddingItems(int carouselPosition, int currentItemPosition)
+		{
+			//If we are adding a new item make sure to maintain the CurrentItemPosition
+			return currentItemPosition != -1 ? currentItemPosition : carouselPosition;
+		}
+
+		int GetPositionWhenResetItems()
+		{
+			//If we are reseting the collection Position should go to 0
+			Carousel.SetValueFromRenderer(CarouselView.CurrentItemProperty, null);
+			return 0;
+		}
+
+		int GetPositionWhenRemovingItems(int oldStartingIndex, int carouselPosition, int currentItemPosition, int count)
+		{
+			bool removingCurrentElement = currentItemPosition == -1;
+
+			bool removingFirstElement = oldStartingIndex == 0;
+			bool removingLastElement = oldStartingIndex == count;
+
+			bool removingCurrentElementAndLast = removingCurrentElement && removingLastElement && Carousel.Position > 0;
+			if (removingCurrentElementAndLast)
+			{
+				//If we are removing the last element update the position
+				carouselPosition = Carousel.Position - 1;
+			}
+			else if (removingFirstElement && !removingCurrentElement)
+			{
+				//If we are not removing the current element set position to the CurrentItem
+				carouselPosition = currentItemPosition;
 			}
 
-			SetCurrentItem(carouselPosition);
-			SetPosition(carouselPosition);
+			if (removingCurrentElement)
+				CollectionView.ReloadItems(CollectionView.IndexPathsForVisibleItems);
+		
+			return carouselPosition;
 		}
 
 		void SubscribeCollectionItemsSourceChanged(IItemsViewSource itemsSource)
@@ -276,6 +295,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ScrollToPosition(int goToPosition, int carouselPosition, bool animate, bool forceScroll = false)
 		{
+
+			if (Carousel.Loop)
+				carouselPosition = _carouselViewLoopManager.GetCorrectPositionForCenterItem(CollectionView);
+
+			//no center item found, collection could be empty
+			if (carouselPosition == -1)
+				return;
+
 			if (_gotoPosition == -1 && (goToPosition != carouselPosition || forceScroll))
 			{
 				_gotoPosition = goToPosition;
@@ -475,6 +502,14 @@ namespace Xamarin.Forms.Platform.iOS
 		public int GetCorrectedIndexFromIndexPath(NSIndexPath indexPath)
 		{
 			return GetCorrectedIndex(indexPath.Row - _indexOffset);
+		}
+
+		public int GetCorrectPositionForCenterItem(UICollectionView collectionView)
+		{
+			NSIndexPath centerIndexPath = GetIndexPathForCenteredItem(collectionView);
+			if (centerIndexPath == null)
+				return -1;
+			return GetCorrectedIndexFromIndexPath(centerIndexPath);
 		}
 
 		public NSIndexPath GetGoToIndex(UICollectionView collectionView, int newPosition)
