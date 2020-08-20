@@ -138,6 +138,11 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
+		void CheckDateFormat()
+		{
+			return String.IsNullOrWhiteSpace(Element.Format) || Element.Format.Equals("d");
+		}
+
 		void UpdateDate(DateTime date)
 		{
 			if (Control != null)
@@ -151,7 +156,7 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateMonth()
 		{
 			Control.MonthVisible = true;
-			if (String.IsNullOrWhiteSpace(Element.Format) || Element.Format.Equals("d"))
+			if (CheckDateFormat())
 			{
 				Control.MonthFormat = "month";
 			}
@@ -176,7 +181,7 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateDay()
 		{
 			Control.DayVisible = true;
-			if (String.IsNullOrWhiteSpace(Element.Format) || Element.Format.Equals("d"))
+			if (CheckDateFormat())
 			{
 				Control.DayFormat = "day";
 			}
@@ -201,7 +206,7 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateYear()
 		{
 			Control.YearVisible = true;
-			if (String.IsNullOrWhiteSpace(Element.Format) || Element.Format.Equals("d"))
+			if (CheckDateFormat())
 			{
 				Control.YearFormat = "year";
 			}

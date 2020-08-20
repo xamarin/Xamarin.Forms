@@ -204,7 +204,10 @@ namespace Xamarin.Forms.Platform.iOS
 			_picker.Date = new DateTime(1, 1, 1).Add(Element.Time).ToNSDate();
 			string iOSLocale = NSLocale.CurrentLocale.CountryCode;
 			var cultureInfos = CultureInfo.GetCultures(CultureTypes.AllCultures)
-							  .Where(c => c.Name.EndsWith("-" + iOSLocale)).First();
+							  .Where(c => c.Name.EndsWith("-" + iOSLocale)).FirstOrDefault();
+			if (cultureInfos == null)
+				cultureInfos = CultureInfo.InvariantCulture;
+			
 			if (String.IsNullOrEmpty(Element.Format))
 			{
 				string timeformat = cultureInfos.DateTimeFormat.ShortTimePattern;
@@ -216,13 +219,14 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				Control.Text = DateTime.Today.Add(Element.Time).ToString(Element.Format, cultureInfos);
 			}
-			if (Element.Format.Contains('H'))
+
+			if (Element.Format?.Contains('H') == true)
 			{
 				var ci = new System.Globalization.CultureInfo("de-DE");
 				NSLocale locale = new NSLocale(ci.TwoLetterISOLanguageName);
 				_picker.Locale = locale;
 			}
-			else if (Element.Format.Contains('h'))
+			else if (Element.Format?.Contains('h') == true)
 			{
 				var ci = new System.Globalization.CultureInfo("en-US");
 				NSLocale locale = new NSLocale(ci.TwoLetterISOLanguageName);
