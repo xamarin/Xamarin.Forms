@@ -61,6 +61,13 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty BorderWidthProperty = BorderElement.BorderWidthProperty;
 
+		// If Content is set to a string, the string will be displayed using the native Text property
+		// on platforms which support that; in a ControlTemplate it will be automatically converted
+		// to a Label. If Content is set to a View, the View will be displayed on platforms which 
+		// support Content natively or in the ContentPresenter of the ControlTemplate, if a ControlTemplate
+		// is set. If a ControlTemplate is not set and the platform does not natively support arbitrary
+		// Content, the ToString() representation of Content will be displayed.
+		// For all types other than View and string, the ToString() representation of Content will be displayed.
 		public object Content
 		{
 			get => GetValue(ContentProperty);
