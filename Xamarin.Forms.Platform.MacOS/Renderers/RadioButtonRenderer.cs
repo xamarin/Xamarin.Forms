@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					Control.Activated += OnButtonActivated;
 				}
 
-				UpdateText();
+				UpdateContent();
 				UpdateFont();
 				UpdateBorder();
 			}
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == RadioButton.ContentProperty.PropertyName || e.PropertyName == RadioButton.TextColorProperty.PropertyName)
-				UpdateText();
+				UpdateContent();
 			else if (e.PropertyName == RadioButton.FontAttributesProperty.PropertyName
 					|| e.PropertyName == RadioButton.FontFamilyProperty.PropertyName
 					|| e.PropertyName == RadioButton.FontSizeProperty.PropertyName)
@@ -110,13 +110,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			Control.Font = font.ToNSFont();
 		}
 
-		void UpdateText()
+		void UpdateContent()
 		{
-			if (!(Element.Content is string text))
-			{
-				throw new InvalidOperationException($"{nameof(RadioButtonRenderer)} only supports string values for the {nameof(RadioButton)} {RadioButton.ContentProperty.PropertyName} property.");
-			}
-			
+			var text = Element.Content?.ToString();
+
 			var color = Element.TextColor;
 			if (color == Color.Default)
 			{

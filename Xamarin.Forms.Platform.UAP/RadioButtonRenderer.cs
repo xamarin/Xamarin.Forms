@@ -3,6 +3,7 @@ using System.ComponentModel;
 using Windows.Devices.Radios;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
+using static Xamarin.Forms.Platform.UWP.ViewToRendererConverter;
 using WBrush = Windows.UI.Xaml.Media.Brush;
 using WThickness = Windows.UI.Xaml.Thickness;
 
@@ -167,12 +168,15 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateContent()
 		{
-			if (!(Element.Content is string text))
+			var content = Element?.Content;
+
+			if (content is View view)
 			{
-				throw new InvalidOperationException($"{nameof(RadioButtonRenderer)} only supports string values for the {nameof(RadioButton)} {RadioButton.ContentProperty.PropertyName} property.");
+				Control.Content = new WrapperControl(view);
+				return;
 			}
 
-			Control.Content = text;
+			Control.Content = content?.ToString();
 		}
 
 		void UpdateFont()

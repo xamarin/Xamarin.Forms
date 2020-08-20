@@ -19,27 +19,32 @@
             <Frame>
                 <Frame.Content>
                     <OnPlatform x:TypeArguments="View">
-                        <On Platform="iOS">
+                        <On Platform="iOS,UWP">
 
                             <RadioButton>
                                 <RadioButton.Content>
                                     <StackLayout Orientation="Horizontal">
                                         <Image Source="coffee.png"></Image>
-                                        <Label LineBreakMode="WordWrap" Text="iOS always uses a ControlTemplate"/>
+                                        <Label LineBreakMode="WordWrap" Text="This platform can handle Views as Content"/>
                                     </StackLayout>
                                 </RadioButton.Content>    
                             </RadioButton>
                             
                         </On>
-                        <On Platform="Android,UWP,Tizen,WPF">
-
-                            <RadioButton Content="Not using ControlTemplate, so just plain old text"></RadioButton>
-
+                        <On Platform="Android,Tizen,WPF">
+                            <RadioButton Content="Can't use View for Content on this platform, so just plain old text"></RadioButton>
                         </On>
                     </OnPlatform>
                 </Frame.Content>
             </Frame>
 
+            <Label Text="This will display the Content (coffee cup) where it can, and fall back to the string representation where it cannot:"></Label>
+            <RadioButton>
+                <RadioButton.Content>
+                    <Image Source="coffee.png"/>
+                </RadioButton.Content>
+            </RadioButton>
+            
             <Label Text="If we select a ControlTemplate, we can use a View as Content on any platform. In this case, we're using the default template:"/>
             <RadioButton ControlTemplate="{x:Static RadioButton.DefaultTemplate}">
                 <RadioButton.Content>
@@ -52,7 +57,7 @@
                 <RadioButton.ControlTemplate>
                     <ControlTemplate>
                         <StackLayout Orientation="Horizontal">
-                            <Line x:Name="UncheckedButton" InputTransparent="True" Stroke="Black" StrokeThickness="2" X1="0" Y1="0" X2="50" Y2="50"></Line>
+                            <Line x:Name="Button" InputTransparent="True" Stroke="Black" StrokeThickness="2" X1="0" Y1="0" X2="50" Y2="50"></Line>
                             <Line x:Name="CheckedIndicator" InputTransparent="True" TranslationX="-50" Opacity="0" Stroke="Red" StrokeThickness="2" X1="50" Y1="0" X2="0" Y2="50"></Line>
                             <ContentPresenter></ContentPresenter>
                         </StackLayout>
@@ -67,7 +72,7 @@
                 <RadioButton.ControlTemplate>
                     <ControlTemplate>
                         <StackLayout Orientation="Horizontal">
-                            <Line x:Name="UncheckedButton" InputTransparent="True" Stroke="Black" StrokeThickness="2" X1="0" Y1="0" X2="50" Y2="50"></Line>
+                            <Line x:Name="Button" InputTransparent="True" Stroke="Black" StrokeThickness="2" X1="0" Y1="0" X2="50" Y2="50"></Line>
                             <Line x:Name="CheckedIndicator" InputTransparent="True" TranslationX="-50" Opacity="0" Stroke="Red" StrokeThickness="2" X1="50" Y1="0" X2="0" Y2="50"></Line>
                             <ContentPresenter></ContentPresenter>
                         </StackLayout>

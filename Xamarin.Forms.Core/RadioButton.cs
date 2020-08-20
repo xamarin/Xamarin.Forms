@@ -8,7 +8,7 @@ namespace Xamarin.Forms
 	{
 		public const string IsCheckedVisualState = "IsChecked";
 		public const string CheckedIndicator = "CheckedIndicator";
-		public const string UncheckedButton = "UncheckedButton";
+		public const string UncheckedButton = "Button";
 
 		internal const string GroupNameChangedMessage = "RadioButtonGroupNameChanged";
 		internal const string ValueChangedMessage = "RadioButtonValueChanged";

@@ -71,12 +71,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void UpdateText(bool isInitialized)
 		{
-			if (!(Element.Content is string text))
-			{
-				throw new InvalidOperationException($"{nameof(RadioButtonRenderer)} only supports string values for the {nameof(RadioButton)} {RadioButton.ContentProperty.PropertyName} property.");
-			}
-
-			_span.Text = text;
+			_span.Text = Element.Content?.ToString();
 			if (!isInitialized)
 				ApplyTextAndStyle();
 		}

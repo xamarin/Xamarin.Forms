@@ -145,12 +145,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void UpdateContent()
 		{
-			if (!(Element.Content is string text))
-			{
-				throw new InvalidOperationException($"{nameof(RadioButtonRenderer)} only supports string values for the {nameof(RadioButton)} {RadioButton.ContentProperty.PropertyName} property.");
-			}
-
-			Control.Content = text;
+			Control.Content = Element?.Content?.ToString();
 		}
 
 		void UpdateFont()
