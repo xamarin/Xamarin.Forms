@@ -249,9 +249,9 @@ namespace Xamarin.Forms.Platform.Android
 			return itemHeight;
 		}
 
-		void UpdateIsSwipeEnabled() => _isSwipeEnabled = Carousel.IsSwipeEnabled;
+		void UpdateIsSwipeEnabled() => _isSwipeEnabled = Carousel?.IsSwipeEnabled ?? false;
 
-		void UpdateIsBounceEnabled() => OverScrollMode = Carousel.IsBounceEnabled ? OverScrollMode.Always : OverScrollMode.Never;
+		void UpdateIsBounceEnabled() => OverScrollMode = Carousel?.IsBounceEnabled == true ? OverScrollMode.Always : OverScrollMode.Never;
 
 		void UpdatePeekAreaInsets() => UpdateAdapter();
 
@@ -434,7 +434,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			_noNeedForScroll = false;
 			var index = e.CenterItemIndex;
-			if (Carousel.Loop)
+			if (Carousel?.Loop == true)
 			{
 				index = GetCarouselViewCurrentIndex(index);
 			}
