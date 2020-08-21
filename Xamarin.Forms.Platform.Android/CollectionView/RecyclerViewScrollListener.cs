@@ -41,6 +41,45 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 			_horizontalOffset += dx;
 			_verticalOffset += dy;
 
+
+			var (First, Center, Last) = GetVisibleItemsIndex(recyclerView);
+
+			var context = recyclerView.Context;
+			var itemsViewScrolledEventArgs = new ItemsViewScrolledEventArgs
+			{
+				HorizontalDelta = context.FromPixels(dx),
+				VerticalDelta = context.FromPixels(dy),
+				HorizontalOffset = context.FromPixels(_horizontalOffset),
+				VerticalOffset = context.FromPixels(_verticalOffset),
+				FirstVisibleItemIndex = First,
+				CenterItemIndex = Center,
+				LastVisibleItemIndex = Last
+			};
+
+			_itemsView.SendScrolled(itemsViewScrolledEventArgs);
+
+			// Don't send RemainingItemsThresholdReached event for non-linear layout managers
+			// This can also happen if a layout pass has not happened yet
+			if (Last == -1)
+				return;
+
+			switch (_itemsView.RemainingItemsThreshold)
+			{
+				case -1:
+					return;
+				case 0:
+					if (Last == _itemsViewAdapter.ItemCount - 1)
+						_itemsView.SendRemainingItemsThresholdReached();
+					break;
+				default:
+					if (_itemsViewAdapter.ItemCount - 1 - Last <= _itemsView.RemainingItemsThreshold)
+						_itemsView.SendRemainingItemsThresholdReached();
+					break;
+			}
+		}
+
+		protected virtual (int First, int Center, int Last) GetVisibleItemsIndex(RecyclerView recyclerView)
+		{
 			var firstVisibleItemIndex = -1;
 			var lastVisibleItemIndex = -1;
 			var centerItemIndex = -1;
@@ -51,39 +90,7 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 				lastVisibleItemIndex = linearLayoutManager.FindLastVisibleItemPosition();
 				centerItemIndex = recyclerView.CalculateCenterItemIndex(firstVisibleItemIndex, linearLayoutManager, _getCenteredItemOnXAndY);
 			}
-
-			var context = recyclerView.Context;
-			var itemsViewScrolledEventArgs = new ItemsViewScrolledEventArgs
-			{
-				HorizontalDelta = context.FromPixels(dx),
-				VerticalDelta = context.FromPixels(dy),
-				HorizontalOffset = context.FromPixels(_horizontalOffset),
-				VerticalOffset = context.FromPixels(_verticalOffset),
-				FirstVisibleItemIndex = firstVisibleItemIndex,
-				CenterItemIndex = centerItemIndex,
-				LastVisibleItemIndex = lastVisibleItemIndex
-			};
-
-			_itemsView.SendScrolled(itemsViewScrolledEventArgs);
-
-			// Don't send RemainingItemsThresholdReached event for non-linear layout managers
-			// This can also happen if a layout pass has not happened yet
-			if (lastVisibleItemIndex == -1)
-				return;
-
-			switch (_itemsView.RemainingItemsThreshold)
-			{
-				case -1:
-					return;
-				case 0:
-					if (lastVisibleItemIndex == _itemsViewAdapter.ItemCount - 1)
-						_itemsView.SendRemainingItemsThresholdReached();
-					break;
-				default:
-					if (_itemsViewAdapter.ItemCount - 1 - lastVisibleItemIndex <= _itemsView.RemainingItemsThreshold)
-						_itemsView.SendRemainingItemsThresholdReached();
-					break;
-			}
+			return (firstVisibleItemIndex, centerItemIndex, lastVisibleItemIndex);
 		}
 
 		protected override void Dispose(bool disposing)
