@@ -130,7 +130,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var oldItemViewAdapter = ItemsViewAdapter;
 			UnsubscribeCollectionItemsSourceChanged(oldItemViewAdapter);
-			if(oldItemViewAdapter != null)
+			if (oldItemViewAdapter != null)
 			{
 				Carousel.SetValueFromRenderer(FormsCarouselView.PositionProperty, 0);
 				Carousel.SetValueFromRenderer(FormsCarouselView.CurrentItemProperty, null);
@@ -611,6 +611,38 @@ namespace Xamarin.Forms.Platform.Android
 					//We save that ScrollToEventARgs and call it again
 					_carouselViewLoopManager.CheckPendingScrollToEvents(recyclerView);
 				}
+			}
+
+			protected override (int First, int Center, int Last) GetVisibleItemsIndex(RecyclerView recyclerView)
+			{
+				var firstVisibleItemIndex = -1;
+				var lastVisibleItemIndex = -1;
+				var centerItemIndex = -1;
+
+				if (recyclerView.GetLayoutManager() is LinearLayoutManager linearLayoutManager)
+				{
+					var firstView = recyclerView.FindViewHolderForAdapterPosition(linearLayoutManager.FindFirstVisibleItemPosition());
+					var lastView = recyclerView.FindViewHolderForAdapterPosition(linearLayoutManager.FindLastVisibleItemPosition());
+					var centerView = recyclerView.GetCenteredView();
+					firstVisibleItemIndex = GetIndexFromTemplatedCell(firstView.ItemView);
+					lastVisibleItemIndex = GetIndexFromTemplatedCell(lastView.ItemView);
+					centerItemIndex = GetIndexFromTemplatedCell(centerView);
+				}
+
+				return (firstVisibleItemIndex, centerItemIndex, lastVisibleItemIndex);
+			}
+
+			int GetIndexFromTemplatedCell(global::Android.Views.View view)
+			{
+				int itemIndex = -1;
+
+				if (view is ItemContentView templatedCell)
+				{
+					var bContext = templatedCell?.Element?.BindingContext;
+					itemIndex = ItemsViewAdapter.GetPositionForItem(bContext);
+				}
+
+				return itemIndex;
 			}
 		}
 

@@ -12,11 +12,11 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 		where TItemsView : ItemsView
 		where TItemsViewSource : IItemsViewSource
 	{
+		protected ItemsViewAdapter<TItemsView, TItemsViewSource> ItemsViewAdapter;
 		bool _disposed;
 		int _horizontalOffset, _verticalOffset;
 		TItemsView _itemsView;
-		ItemsViewAdapter<TItemsView, TItemsViewSource> _itemsViewAdapter;
-		bool _getCenteredItemOnXAndY = false;
+		readonly bool _getCenteredItemOnXAndY = false;
 
 		public RecyclerViewScrollListener(TItemsView itemsView, ItemsViewAdapter<TItemsView, TItemsViewSource> itemsViewAdapter) : this(itemsView, itemsViewAdapter, false)
 		{
@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 		public RecyclerViewScrollListener(TItemsView itemsView, ItemsViewAdapter<TItemsView, TItemsViewSource> itemsViewAdapter, bool getCenteredItemOnXAndY)
 		{
 			_itemsView = itemsView;
-			_itemsViewAdapter = itemsViewAdapter;
+			ItemsViewAdapter = itemsViewAdapter;
 			_getCenteredItemOnXAndY = getCenteredItemOnXAndY;
 		}
 
@@ -40,7 +40,6 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 			// See https://stackoverflow.com/questions/27507715/android-how-to-get-the-current-x-offset-of-recyclerview
 			_horizontalOffset += dx;
 			_verticalOffset += dy;
-
 
 			var (First, Center, Last) = GetVisibleItemsIndex(recyclerView);
 
@@ -68,11 +67,11 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 				case -1:
 					return;
 				case 0:
-					if (Last == _itemsViewAdapter.ItemCount - 1)
+					if (Last == ItemsViewAdapter.ItemCount - 1)
 						_itemsView.SendRemainingItemsThresholdReached();
 					break;
 				default:
-					if (_itemsViewAdapter.ItemCount - 1 - Last <= _itemsView.RemainingItemsThreshold)
+					if (ItemsViewAdapter.ItemCount - 1 - Last <= _itemsView.RemainingItemsThreshold)
 						_itemsView.SendRemainingItemsThresholdReached();
 					break;
 			}
@@ -101,7 +100,7 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 			if (disposing)
 			{
 				_itemsView = null;
-				_itemsViewAdapter = null;
+				ItemsViewAdapter = null;
 			}
 
 			_disposed = true;
