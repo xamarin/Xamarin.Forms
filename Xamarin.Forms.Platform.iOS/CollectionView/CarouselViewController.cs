@@ -245,7 +245,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (removingCurrentElement)
 				CollectionView.ReloadItems(CollectionView.IndexPathsForVisibleItems);
-		
+
 			return carouselPosition;
 		}
 
@@ -285,13 +285,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ScrollToPosition(int goToPosition, int carouselPosition, bool animate, bool forceScroll = false)
 		{
+			//no center item found, collection could be empty
+			if (Carousel.IsDragging || carouselPosition == -1)
+				return;
 
 			if (Carousel.Loop)
 				carouselPosition = _carouselViewLoopManager.GetCorrectPositionForCenterItem(CollectionView);
-
-			//no center item found, collection could be empty
-			if (carouselPosition == -1)
-				return;
 
 			if (_gotoPosition == -1 && (goToPosition != carouselPosition || forceScroll))
 			{
@@ -348,8 +347,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (carouselPosition == _gotoPosition)
 				_gotoPosition = -1;
 
-			if (!Carousel.IsDragging || carouselPosition != -1)
-				ScrollToPosition(carouselPosition, currentItemPosition, Carousel.AnimatePositionChanges);
+			ScrollToPosition(carouselPosition, currentItemPosition, Carousel.AnimatePositionChanges);
 
 			SetCurrentItem(carouselPosition);
 		}
