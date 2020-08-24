@@ -174,9 +174,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				UpdateLineBreakMode();
 				UpdateText();
-				UpdateTextDecorations();
 				UpdateTextColor();
 				UpdateFont();
+				UpdateTextDecorations();
 				UpdateMaxLines();
 				UpdateCharacterSpacing();
 				UpdatePadding();
