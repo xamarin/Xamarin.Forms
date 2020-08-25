@@ -26,10 +26,6 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 				ContentPage instance = (ContentPage)Activator.CreateInstance(pageType);
 				frame.Navigate(instance);
 				Window.Current.Content = frame;
-				Window.Current.SizeChanged += (sender, args) =>
-				{
-					instance.Layout(new Rectangle(0, 0, args.Size.Width, args.Size.Height));
-				};
 				Window.Current.Activate();
 
 				newViewId = ApplicationView.GetForCurrentView().Id;
