@@ -1,39 +1,59 @@
 using System;
 using System.Collections.Generic;
 using ElmSharp;
+using Xamarin.Forms.Internals;
 using EColor = ElmSharp.Color;
 using EImage = ElmSharp.Image;
-using ERect = ElmSharp.Rect;
-using NBox = Xamarin.Forms.Platform.Tizen.Native.Box;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
 	public class NavigationView : Background, INavigationView
 	{
-		NBox _box;
-		EImage _bg;
+		static EColor s_defaultBackgroundColor = EColor.White;
+
+		Box _mainLayout;
+		Scroller _scroller;
+
+		EImage _backgroundImage;
 		Aspect _bgImageAspect;
 		ImageSource _bgImageSource;
-		EvasObject _header;
-		GenList _menu;
-		GenItemClass _defaultClass;
-		EColor _backgroundColor;
-		EColor _defaultBackgroundColor = ThemeConstants.Shell.ColorClass.DefaultNavigationViewBackgroundColor;
-		List<Group> _groups;
-		IDictionary<Item, Element> _flyoutMenu = new Dictionary<Item, Element>();
 
-		public NavigationView(EvasObject parent) : base(parent)
+		View _header;
+		EvasObject _nativeHeader;
+
+		GenList _menu;
+		GenItemClass _templateClass;
+
+		EColor _backgroundColor;
+
+		Element _lastSelected;
+		Dictionary<Element, View> _cachedView = new Dictionary<Element, View>();
+
+		List<List<Element>> _cachedGroups;
+
+		public NavigationView(EvasObject parent, Shell shell) : base(parent)
 		{
-			Initialize(parent);
-			_box.LayoutUpdated += (s, e) =>
-			{
-				UpdateChildGeometry();
-			};
-			base.BackgroundColor = _defaultBackgroundColor;
-			_menu.BackgroundColor = _defaultBackgroundColor;
+			Shell = shell;
+			InitializeComponent(parent);
 		}
 
 		public event EventHandler<SelectedItemChangedEventArgs> SelectedItemChanged;
+
+		public EvasObject NativeView => this;
+
+		public IShellController ShellController => Shell;
+		public Shell Shell { get; }
+
+		FlyoutHeaderBehavior _headerBehavior = FlyoutHeaderBehavior.Fixed;
+		public FlyoutHeaderBehavior HeaderBehavior
+		{
+			get => _headerBehavior;
+			set
+			{
+				_headerBehavior = value;
+				UpdateHeaderBehavior();
+			}
+		}
 
 		public override EColor BackgroundColor
 		{
@@ -44,13 +64,8 @@ namespace Xamarin.Forms.Platform.Tizen
 			set
 			{
 				_backgroundColor = value;
-				EColor effectiveColor = _backgroundColor.IsDefault ? _defaultBackgroundColor : _backgroundColor;
+				EColor effectiveColor = _backgroundColor.IsDefault ? s_defaultBackgroundColor : _backgroundColor;
 				base.BackgroundColor = effectiveColor;
-
-				if(_bg == null)
-				{
-					_menu.BackgroundColor = effectiveColor;
-				}
 			}
 		}
 
@@ -63,10 +78,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			set
 			{
 				_bgImageAspect = value;
-				if (_bg != null)
-				{
-					_bg.ApplyAspect(_bgImageAspect);
-				}
+				_backgroundImage?.ApplyAspect(_bgImageAspect);
 			}
 		}
 
@@ -79,27 +91,11 @@ namespace Xamarin.Forms.Platform.Tizen
 			set
 			{
 				_bgImageSource = value;
-				if (_bgImageSource != null)
-				{
-					if (_bg == null)
-					{
-						_bg = new EImage(this);
-					}
-					_menu.BackgroundColor = EColor.Transparent;
-					this.SetBackgroundPart(_bg);
-					_bg.ApplyAspect(_bgImageAspect);
-					_ = _bg.LoadFromImageSourceAsync(_bgImageSource);
-				}
-				else
-				{
-					EColor effectiveColor = _backgroundColor.IsDefault ? _defaultBackgroundColor : _backgroundColor;
-					_menu.BackgroundColor = effectiveColor;
-					this.SetBackgroundPart(null);
-				}
+				UpdateBackgroundImage();
 			}
 		}
 
-		public EvasObject Header
+		public View Header
 		{
 			get
 			{
@@ -107,193 +103,336 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 			set
 			{
-				if (_header != null)
-				{
-					_box.UnPack(_header);
-					_header.Hide();
-				}
-				_header = value;
-
-				if (_header != null)
-				{
-					_box.PackStart(_header);
-					if (!_header.IsVisible)
-					{
-						_header.Show();
-					}
-				}
-
-				UpdateChildGeometry();
+				UpdateHeader(value);
 			}
 		}
 
 		public void BuildMenu(List<List<Element>> flyoutGroups)
 		{
-			var groups = new List<Group>();
-			_flyoutMenu.Clear();
-
-			for (int i = 0; i < flyoutGroups.Count; i++)
+			if (!IsMenuItemChanged(flyoutGroups))
 			{
-				var flyoutGroup = flyoutGroups[i];
-				var items = new List<Item>();
-				for (int j = 0; j < flyoutGroup.Count; j++)
-				{
-					string title = null;
-					ImageSource icon = null;
-					if (flyoutGroup[j] is BaseShellItem shellItem)
-					{
-						title = shellItem.Title;
-
-						if (shellItem.FlyoutIcon is FileImageSource flyoutIcon)
-						{
-							icon = flyoutIcon;
-						}
-					}
-					else if (flyoutGroup[j] is MenuItem menuItem)
-					{
-						title = menuItem.Text;
-						if (menuItem.IconImageSource != null)
-						{
-							icon = menuItem.IconImageSource;
-						}
-					}
-					Item item = new Item(title, icon);
-					items.Add(item);
-
-					_flyoutMenu.Add(item, flyoutGroup[j]);
-				}
-				var group = new Group(items);
-				groups.Add(group);
+				return;
 			}
-			_groups = groups;
-			UpdateMenu();
+			_cachedGroups = flyoutGroups;
+
+			_menu.Clear();
+			_cachedView.Clear();
+			_lastSelected = null;
+			foreach (var group in flyoutGroups)
+			{
+				bool isFirst = true;
+				foreach (var element in group)
+				{
+					var item = _menu.Append(_templateClass, element);
+					if (isFirst)
+					{
+						isFirst = false;
+					}
+					else
+					{
+						item.SetBottomlineColor(EColor.Transparent);
+					}
+					item.SetBackgroundColor(EColor.Transparent);
+				}
+			}
 		}
 
-		void Initialize(EvasObject parent)
+		void InitializeComponent(EvasObject parent)
 		{
-			_box = new Native.Box(parent)
+			base.BackgroundColor = s_defaultBackgroundColor;
+
+			_scroller = new Scroller(parent)
+			{
+				AlignmentX = -1,
+				AlignmentY = -1,
+				WeightX = 1,
+				WeightY = 1,
+				ScrollBlock = ScrollBlock.Horizontal,
+			};
+			_scroller.Show();
+
+			_mainLayout = new Box(parent)
 			{
 				AlignmentX = -1,
 				AlignmentY = -1,
 				WeightX = 1,
 				WeightY = 1
 			};
-			SetContent(_box);
+			_mainLayout.SetLayoutCallback(OnLayout);
+			_mainLayout.Show();
+
+			_scroller.SetContent(_mainLayout);
+			SetContent(_scroller);
 
 			_menu = new GenList(parent)
 			{
+				Homogeneous = false,
+				SelectionMode = GenItemSelectionMode.Always,
 				BackgroundColor = EColor.Transparent,
-			}.SetSolidStyle();
+				Style = "solid/default",
+				ListMode = GenListMode.Scroll,
+			};
 
 			_menu.ItemSelected += (s, e) =>
 			{
-				_flyoutMenu.TryGetValue(e.Item.Data as Item, out Element element);
-
-				SelectedItemChanged?.Invoke(this, new SelectedItemChangedEventArgs(element, -1));
+				if (_lastSelected != null)
+				{
+					VisualStateManager.GoToState(_cachedView[_lastSelected], "Normal");
+				}
+				var item = e.Item.Data as Element;
+				_lastSelected = item;
+				VisualStateManager.GoToState(_cachedView[_lastSelected], "Selected");
+				SelectedItemChanged?.Invoke(this, new SelectedItemChangedEventArgs(item, -1));
 			};
 
 			_menu.Show();
-			_box.PackEnd(_menu);
+			_mainLayout.PackEnd(_menu);
 
-			_defaultClass = new GenItemClass(ThemeConstants.GenItemClass.Styles.DoubleLabel)
+			_templateClass = new GenItemClass(ThemeConstants.GenItemClass.Styles.Full)
 			{
-				GetTextHandler = (obj, part) =>
-				{
-					if (part == ThemeConstants.GenItemClass.Parts.Text)
-					{
-						return ((Item)obj).Title;
-					}
-					else
-					{
-						return null;
-					}
-				},
-				GetContentHandler = (obj, part) =>
-				{
-					if (part == ThemeConstants.GenItemClass.Parts.Icon)
-					{
-						var icon = ((Item)obj).Icon;
-						if (icon != null)
-						{
-							var image = new Native.Image(parent)
-							{
-								MinimumWidth = Forms.ConvertToScaledPixel(24),
-								MinimumHeight = Forms.ConvertToScaledPixel(24)
-							};
-							var result = image.LoadFromImageSourceAsync(icon);
-							return image;
-						}
-						else
-						{
-							return null;
-						}
-					}
-					else
-					{
-						return null;
-					}
-				}
+				GetContentHandler = GetTemplatedContent,
 			};
 		}
 
-		void UpdateMenu()
+		EvasObject GetTemplatedContent(object data, string part)
 		{
-			_menu.Clear();
-
-			if (_groups != null)
+			Element item = data as Element;
+			View view;
+			if (!_cachedView.TryGetValue(item, out view))
+			{ 
+				view = (View)GetFlyoutItemDataTemplate(item).CreateContent(item, Shell);
+				view.Parent = Shell;
+				view.BindingContext = item;
+				_cachedView[item] = view;
+			}
+			if (item == _lastSelected)
 			{
-				for (int i = 0; i < _groups.Count; i++)
+				VisualStateManager.GoToState(view, "Selected");
+			}
+			else
+			{
+				VisualStateManager.GoToState(view, "Normal");
+			}
+
+			return GetNativeView(view);
+		}
+
+		EvasObject GetNativeView(View view)
+		{
+			var measuredSize = view.Measure(Forms.ConvertToScaledDP(Geometry.Width), Forms.ConvertToScaledDP(Geometry.Height));
+			var renderer = Platform.GetOrCreateRenderer(view);
+			(renderer as LayoutRenderer)?.RegisterOnLayoutUpdated();
+			renderer.NativeView.MinimumHeight = Forms.ConvertToScaledPixel(measuredSize.Request.Height);
+			return renderer.NativeView;
+		}
+
+		DataTemplate GetFlyoutItemDataTemplate(BindableObject bo)
+		{
+			string textBinding;
+			string iconBinding;
+			if (bo is IMenuItemController)
+			{
+
+				if (bo is MenuItem mi && mi.Parent != null && mi.Parent.IsSet(Shell.MenuItemTemplateProperty))
 				{
-					for (int j = 0; j < _groups[i].Items.Count; j++)
-					{
-						var item = _menu.Append(_defaultClass, _groups[i].Items[j]);
-						if (j != 0)
-						{
+					return Shell.GetMenuItemTemplate(mi.Parent);
+				}
+				else if (bo.IsSet(Shell.MenuItemTemplateProperty))
+				{
+					return Shell.GetMenuItemTemplate(bo);
+				}
 
-							item.SetBottomlineColor(EColor.Transparent);
-						}
+				if (Shell.MenuItemTemplate != null)
+					return Shell.MenuItemTemplate;
 
-						item.SetBackgroundColor(EColor.Transparent);
-					}
+				textBinding = "Text";
+				iconBinding = "Icon";
+			}
+			else
+			{
+				if (Shell.GetItemTemplate(bo) != null)
+					return Shell.GetItemTemplate(bo);
+				else if (Shell.ItemTemplate != null)
+					return Shell.ItemTemplate;
+
+				textBinding = "Title";
+				iconBinding = "FlyoutIcon";
+			}
+			return new DataTemplate(() =>
+			{
+				var grid = new Grid
+				{
+					HeightRequest = 60,
+				};
+
+				ColumnDefinitionCollection columnDefinitions = new ColumnDefinitionCollection();
+				columnDefinitions.Add(new ColumnDefinition { Width = 40 });
+				columnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
+				grid.ColumnDefinitions = columnDefinitions;
+
+				var image = new Image
+				{
+					VerticalOptions = LayoutOptions.Center,
+					HorizontalOptions = LayoutOptions.Center,
+					HeightRequest = 25,
+					WidthRequest = 25,
+					Margin = new Thickness(10, 0, 0, 0),
+				};
+				image.SetBinding(Image.SourceProperty, new Binding(iconBinding));
+				grid.Children.Add(image);
+
+				var label = new Label
+				{
+					FontSize = 25,
+					VerticalTextAlignment = TextAlignment.Center,
+					TextColor = Xamarin.Forms.Color.Black.MultiplyAlpha(0.87),
+					Margin = new Thickness(10, 0, 0, 0),
+				};
+				label.SetBinding(Label.TextProperty, new Binding(textBinding));
+
+				grid.Children.Add(label, 1, 0);
+
+				var groups = new VisualStateGroupList();
+
+				var commonGroup = new VisualStateGroup();
+				commonGroup.Name = "CommonStates";
+				groups.Add(commonGroup);
+
+				var normalState = new VisualState();
+				normalState.Name = "Normal";
+				commonGroup.States.Add(normalState);
+
+				var selectedState = new VisualState();
+				selectedState.Name = "Selected";
+				selectedState.Setters.Add(new Setter
+				{
+					Property = VisualElement.BackgroundColorProperty,
+					Value = new Color(0.95)
+				});
+
+				commonGroup.States.Add(selectedState);
+				VisualStateManager.SetVisualStateGroups(grid, groups);
+				return grid;
+			});
+		}
+
+		void UpdateBackgroundImage()
+		{
+			if (BackgroundImageSource == null)
+			{
+				if (_backgroundImage != null)
+				{
+					this.SetBackgroundPart(null);
+					_backgroundImage = null;
 				}
 			}
+			else
+			{
+				if (_backgroundImage == null)
+				{
+					_backgroundImage = new EImage(this);
+					this.SetBackgroundPart(_backgroundImage);
+				}
+				_backgroundImage.LoadFromImageSourceAsync(BackgroundImageSource).GetAwaiter().OnCompleted(() =>
+				{
+					_backgroundImage.ApplyAspect(_bgImageAspect);
+				});
+			}
 		}
 
-		void UpdateChildGeometry()
+		void UpdateHeader(View header)
 		{
-			int headerHeight = 0;
 			if (_header != null)
 			{
-				headerHeight = _header.MinimumHeight;
-				_header.Geometry = new ERect(Geometry.X, Geometry.Y, Geometry.Width, headerHeight);
+				_header.MeasureInvalidated -= OnHeaderSizeChanged;
 			}
-			_menu.Geometry = new ERect(Geometry.X, Geometry.Y + headerHeight, Geometry.Width, Geometry.Height - headerHeight);
+			if (_nativeHeader != null)
+			{
+				_mainLayout.UnPack(_nativeHeader);
+				_nativeHeader.Unrealize();
+				_nativeHeader = null;
+			}
+
+			if (header != null)
+			{
+				header.MeasureInvalidated += OnHeaderSizeChanged;
+				var renderer = Platform.GetOrCreateRenderer(header);
+				(renderer as LayoutRenderer)?.RegisterOnLayoutUpdated();
+				_nativeHeader = renderer.NativeView;
+				_mainLayout.PackEnd(_nativeHeader);
+			}
+			_header = header;
 		}
-	}
 
-	public class Item
-	{
-		public string Title { get; set; }
-
-		public ImageSource Icon { get; set; }
-
-		public Item(string title, ImageSource icon = null)
+		void UpdateHeaderBehavior()
 		{
-			Title = title;
-			Icon = icon;
+			if (HeaderBehavior == FlyoutHeaderBehavior.Scroll || HeaderBehavior == FlyoutHeaderBehavior.CollapseOnScroll)
+			{
+				_menu.ListMode = GenListMode.Expand;
+			}
+			else
+			{
+				_menu.ListMode = GenListMode.Scroll;
+			}
+			OnLayout();
 		}
-	}
 
-	public class Group
-	{
-		public string Title { get; set; }
-
-		public List<Item> Items { get; set; }
-
-		public Group(List<Item> items, string title = null)
+		bool IsMenuItemChanged(List<List<Element>> flyoutGroups)
 		{
-			Items = items;
-			Title = title;
+			if (_cachedGroups == null)
+				return true;
+
+			if (_cachedGroups.Count != flyoutGroups.Count)
+				return true;
+
+			for (int i = 0; i < flyoutGroups.Count; i++)
+			{
+				if (_cachedGroups[i].Count != flyoutGroups[i].Count)
+					return true;
+
+				for (int j = 0; j < flyoutGroups[i].Count; j++)
+				{
+					if (_cachedGroups[i][j] != flyoutGroups[i][j])
+						return true;
+				}
+			}
+			return false;
+		}
+
+		void OnHeaderSizeChanged(object sender, EventArgs e)
+		{
+			OnLayout();
+		}
+
+		void OnLayout()
+		{
+			if (Geometry.Width == 0 || Geometry.Height == 0)
+				return;
+			var bound = Geometry;
+			int headerHeight = 0;
+			if (Header != null)
+			{
+				var requestSize = Header.Measure(Forms.ConvertToScaledDP(bound.Width), Forms.ConvertToScaledDP(bound.Height));
+				headerHeight = Forms.ConvertToScaledPixel(requestSize.Request.Height);
+				var headerBound = Geometry;
+				headerBound.Height = headerHeight;
+				_nativeHeader.Geometry = headerBound;
+			}
+
+			bound.Y += headerHeight;
+
+			if (HeaderBehavior == FlyoutHeaderBehavior.Scroll || HeaderBehavior == FlyoutHeaderBehavior.CollapseOnScroll)
+			{
+				bound.Height = _menu.MinimumHeight;
+			}
+			else
+			{
+				bound.Height -= headerHeight;
+			}
+			_menu.Geometry = bound;
+
+			_mainLayout.MinimumWidth = _scroller.Geometry.Width;
+			_mainLayout.MinimumHeight = headerHeight + bound.Height;
 		}
 	}
 }
