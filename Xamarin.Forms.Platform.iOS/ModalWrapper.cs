@@ -27,6 +27,13 @@ namespace Xamarin.Forms.Platform.iOS
 					result = UIKit.UIModalPresentationStyle.FullScreen;
 				}
 #endif
+				if (result == UIKit.UIModalPresentationStyle.FullScreen)
+				{
+					Color modalBkgndColor = ((Page)_modal.Element).BackgroundColor;
+
+					if (modalBkgndColor.A > 0)
+						result = UIKit.UIModalPresentationStyle.OverFullScreen;
+				}
 
 				ModalPresentationStyle = result;
 			}
