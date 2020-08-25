@@ -284,13 +284,14 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		void ScrollToPosition(int goToPosition, int carouselPosition, bool animate, bool forceScroll = false)
-		{
+		{	
+			if (Carousel.Loop)
+				carouselPosition = _carouselViewLoopManager?.GetCorrectPositionForCenterItem(CollectionView) ?? -1;
+
 			//no center item found, collection could be empty
+			//also if we are dragging we don't need to ScrollTo
 			if (Carousel.IsDragging || carouselPosition == -1)
 				return;
-
-			if (Carousel.Loop)
-				carouselPosition = _carouselViewLoopManager.GetCorrectPositionForCenterItem(CollectionView);
 
 			if (_gotoPosition == -1 && (goToPosition != carouselPosition || forceScroll))
 			{
