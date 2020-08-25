@@ -48,16 +48,6 @@ namespace Xamarin.Forms.Internals
 			return fontLookupCache[font] = (false, null);
 		}
 
-		public static string GetFontName(string font)
-		{
-			if (EmbeddedFonts.TryGetValue(font, out var foundFont))
-			{
-				return foundFont.attribute.FontName;
-			}
-
-			return null;
-		}
-
 		static Stream GetEmbeddedResourceStream(Assembly assembly, string resourceFileName)
 		{
 			var resourceNames = assembly.GetManifestResourceNames();

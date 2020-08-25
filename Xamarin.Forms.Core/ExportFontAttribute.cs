@@ -6,7 +6,6 @@ namespace Xamarin.Forms
 	public class ExportFontAttribute : Attribute
 	{
 		public string Alias { get; set; }
-		public string FontName { get; set; } // Required for some UWP fonts
 
 		public ExportFontAttribute(string fontFileName)
 		{
