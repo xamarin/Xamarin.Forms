@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 			CarouselView = itemsView;
 		}
 
-		public override int ItemCount => CarouselView.Loop && !(ItemsSource is EmptySource) ? int.MaxValue : ItemsSource.Count;
+		public override int ItemCount => CarouselView.Loop && !(ItemsSource is EmptySource) && ItemsSource.Count > 0 ? int.MaxValue : ItemsSource.Count;
 
 		public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
 		{
