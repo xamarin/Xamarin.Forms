@@ -31,7 +31,12 @@ namespace Xamarin.Forms.Platform.MacOS
                 return;
 
             // Rounding Correction on Height
+#if __MOBILE__
             var roundingCorrection = UIScreen.MainScreen.Scale;
+#else			
+			var roundingCorrection = NSScreen.MainScreen.BackingScaleFactor;
+#endif
+			
             finalSize = new RectangleF((float)finalSize.X, (float)finalSize.Y, (float)finalSize.Width, (float)finalSize.Height + (float)roundingCorrection);
 
 #if __MOBILE__
