@@ -285,6 +285,7 @@
     <Compile Include="CollectionView\LoopObservableItemsSource.cs" />
     <Compile Include="CollectionView\LoopListSource.cs" />
     <Compile Include="CollectionView\ILoopItemsViewSource.cs" />
+    <Compile Include="Renderers\IDisconnectable.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />
