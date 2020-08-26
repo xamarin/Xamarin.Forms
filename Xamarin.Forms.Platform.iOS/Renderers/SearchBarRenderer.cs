@@ -215,7 +215,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnSearchButtonClicked(object sender, EventArgs e)
 		{
-			Element.OnSearchButtonPressed();
+			Element?.OnSearchButtonPressed();
 			Control?.ResignFirstResponder();
 		}
 
