@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -1564,6 +1564,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			await shell.GoToAsync("cat");
 			Assert.IsNotNull(page);
 			Assert.AreEqual(page.GetType(), typeof(ContentPage));
+			Assert.AreEqual(shell.Navigation.NavigationStack[1], page);
 		}
 
 		[Test]
@@ -1597,6 +1598,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.GoToAsync(new ShellNavigationState("//two/tabfour/"));
 			Assert.IsNotNull(page);
 			Assert.AreEqual(page.GetType(), typeof(ShellTestPage));
+			Assert.AreEqual((tabfour as IShellSectionController).PresentedPage, page);
 		}
 
 		[Test]
