@@ -138,7 +138,7 @@ string[] netFrameworkSdksLocalInstall = new string[]
     "https://go.microsoft.com/fwlink/?linkid=2099470", //NET461 SDK
     "https://go.microsoft.com/fwlink/?linkid=874338", //NET472 SDK
     "https://go.microsoft.com/fwlink/?linkid=2099465", //NET47
-    "https://download.microsoft.com/download/A/1/D/A1D07600-6915-4CB8-A931-9A980EF47BB7/NDP47-DevPack-KB3186612-ENU.exe" //net47 targeting pack
+    "https://download.microsoft.com/download/A/1/D/A1D07600-6915-4CB8-A931-9A980EF47BB7/NDP47-DevPack-KB3186612-ENU.exe", //net47 targeting pack
     "https://go.microsoft.com/fwlink/?linkid=2088517", //NET48 SDK
 };
 
