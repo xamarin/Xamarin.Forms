@@ -764,6 +764,99 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
+		[Test]
+		public void FlyoutGroupsNumbersForDifferentFlyoutDisplayOptions()
+		{
+			var shell = new Shell();
+			var shellItem = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsMultipleItems, };
+			var shellItem2 = new ShellItem();
+			var shellSection = new ShellSection() { Title = "can navigate to" };
+			shellSection.Items.Add(new ContentPage());
+
+			var shellSection2 = new ShellSection() { Title = "can navigate to" };
+			shellSection2.Items.Add(new ContentPage());
+
+			var implicitSection = CreateShellSection(new ContentPage(), asImplicit: true);
+
+			shellItem.Items.Add(shellSection);
+			shellItem.Items.Add(shellSection2);
+			shellItem.Items.Add(implicitSection);
+			shellItem2.Items.Add(shellSection);
+			shellItem2.Items.Add(shellSection2);
+			shellItem2.Items.Add(implicitSection);
+
+			shell.Items.Add(shellItem);
+			shell.Items.Add(shellItem2);
+			IShellController shellController = (IShellController)shell;
+			var groups = shellController.GenerateFlyoutGrouping();
+
+			Assert.AreEqual(groups.Count, 2);
+			Assert.AreEqual(groups[0].Count, 3);
+			Assert.AreEqual(groups[1].Count, 1);
+		}
+
+		[Test]
+		public void FlyoutGroupsNumbersForFlyoutDisplayOptionsAsMultipleItems()
+		{
+			var shell = new Shell();
+			var shellItem = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsMultipleItems, };
+			var shellItem2 = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsMultipleItems, };
+			var shellSection = new ShellSection() { Title = "can navigate to" };
+			shellSection.Items.Add(new ContentPage());
+
+			var shellSection2 = new ShellSection() { Title = "can navigate to" };
+			shellSection2.Items.Add(new ContentPage());
+
+			var implicitSection = CreateShellSection(new ContentPage(), asImplicit: true);
+
+			shellItem.Items.Add(shellSection);
+			shellItem.Items.Add(shellSection2);
+			shellItem.Items.Add(implicitSection);
+			shellItem2.Items.Add(shellSection);
+			shellItem2.Items.Add(shellSection2);
+			shellItem2.Items.Add(implicitSection);
+
+			shell.Items.Add(shellItem);
+			shell.Items.Add(shellItem2);
+			IShellController shellController = (IShellController)shell;
+			var groups = shellController.GenerateFlyoutGrouping();
+
+			Assert.AreEqual(groups.Count, 2);
+			Assert.AreEqual(groups[0].Count, 3);
+			Assert.AreEqual(groups[1].Count, 3);
+		}
+
+		[Test]
+		public void FlyoutGroupsNumbersForFlyoutDisplayOptionsAsSingleItems()
+		{
+			var shell = new Shell();
+			var shellItem = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsSingleItem, };
+			var shellItem2 = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsSingleItem, };
+			var shellSection = new ShellSection() { Title = "can navigate to" };
+			shellSection.Items.Add(new ContentPage());
+
+			var shellSection2 = new ShellSection() { Title = "can navigate to" };
+			shellSection2.Items.Add(new ContentPage());
+
+			var implicitSection = CreateShellSection(new ContentPage(), asImplicit: true);
+
+			shellItem.Items.Add(shellSection);
+			shellItem.Items.Add(shellSection2);
+			shellItem.Items.Add(implicitSection);
+			shellItem2.Items.Add(shellSection);
+			shellItem2.Items.Add(shellSection2);
+			shellItem2.Items.Add(implicitSection);
+
+			shell.Items.Add(shellItem);
+			shell.Items.Add(shellItem2);
+			IShellController shellController = (IShellController)shell;
+			var groups = shellController.GenerateFlyoutGrouping();
+
+			Assert.AreEqual(groups.Count, 1);
+			Assert.AreEqual(groups[0].Count, 2);
+			//Assert.AreEqual(groups[1].Count, 3);
+		}
+
 
 		[Test]
 		public async Task UriNavigationTests()
