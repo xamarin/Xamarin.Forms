@@ -117,7 +117,7 @@ else
     
 Information("MSBuildArguments: {0}", MSBuildArguments);
 
-string androidSdks = EnvironmentVariable("ANDROID_API_SDKS", "platforms;android-28,platforms;android-29,build-tools;29.0.3");
+string androidSdks = EnvironmentVariable("ANDROID_API_SDKS", "platform-tools,platforms;android-28,platforms;android-29,build-tools;29.0.3,platforms;android-30");
 
 if(buildForVS2017)
     androidSdks = "platforms;android-28,platforms;android-29,build-tools;29.0.3";
