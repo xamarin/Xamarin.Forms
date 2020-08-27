@@ -15,7 +15,7 @@ namespace Xamarin.Forms
 	[ContentProperty(nameof(Items))]
 	public class Shell : Page, IShellController, IPropertyPropagationController, IPageContainer<Page>
 	{
-		public Page CurrentPage => (CurrentSection as IShellSectionController).PresentedPage;
+		public Page CurrentPage => (CurrentSection as IShellSectionController)?.PresentedPage;
 
 		public static readonly BindableProperty BackButtonBehaviorProperty =
 			BindableProperty.CreateAttached("BackButtonBehavior", typeof(BackButtonBehavior), typeof(Shell), null, BindingMode.OneTime,
