@@ -132,7 +132,8 @@ namespace Xamarin.Forms.DualScreen
 			List<Windows.Foundation.Rect> spanningRects = null;
 
 #if UWP_19041
-			spanningRects = applicationView.GetSpanningRects().ToList();
+			// This will make a come back with winui2.5
+			//spanningRects = applicationView.GetSpanningRects().ToList();
 #endif
 
 			if (spanningRects?.Count == 2)
