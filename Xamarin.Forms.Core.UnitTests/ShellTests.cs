@@ -770,20 +770,15 @@ namespace Xamarin.Forms.Core.UnitTests
 			var shell = new Shell();
 			var shellItem = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsMultipleItems, };
 			var shellItem2 = new ShellItem();
-			var shellSection = new ShellSection() { Title = "can navigate to" };
-			shellSection.Items.Add(new ContentPage());
+			var shellSection1 = CreateShellSection(new ContentPage());
+			var shellSection2 = CreateShellSection(new ContentPage());
+			var shellSection3 = CreateShellSection(new ContentPage(), asImplicit: true);
+			var shellSection4 = CreateShellSection(new ContentPage());
 
-			var shellSection2 = new ShellSection() { Title = "can navigate to" };
-			shellSection2.Items.Add(new ContentPage());
-
-			var implicitSection = CreateShellSection(new ContentPage(), asImplicit: true);
-
-			shellItem.Items.Add(shellSection);
+			shellItem.Items.Add(shellSection1);
 			shellItem.Items.Add(shellSection2);
-			shellItem.Items.Add(implicitSection);
-			shellItem2.Items.Add(shellSection);
-			shellItem2.Items.Add(shellSection2);
-			shellItem2.Items.Add(implicitSection);
+			shellItem2.Items.Add(shellSection3);
+			shellItem2.Items.Add(shellSection4);
 
 			shell.Items.Add(shellItem);
 			shell.Items.Add(shellItem2);
@@ -791,7 +786,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var groups = shellController.GenerateFlyoutGrouping();
 
 			Assert.AreEqual(groups.Count, 2);
-			Assert.AreEqual(groups[0].Count, 3);
+			Assert.AreEqual(groups[0].Count, 2);
 			Assert.AreEqual(groups[1].Count, 1);
 		}
 
@@ -801,20 +796,15 @@ namespace Xamarin.Forms.Core.UnitTests
 			var shell = new Shell();
 			var shellItem = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsMultipleItems, };
 			var shellItem2 = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsMultipleItems, };
-			var shellSection = new ShellSection() { Title = "can navigate to" };
-			shellSection.Items.Add(new ContentPage());
+			var shellSection1 = CreateShellSection(new ContentPage());
+			var shellSection2 = CreateShellSection(new ContentPage());
+			var shellSection3 = CreateShellSection(new ContentPage(), asImplicit: true);
+			var shellSection4 = CreateShellSection(new ContentPage());
 
-			var shellSection2 = new ShellSection() { Title = "can navigate to" };
-			shellSection2.Items.Add(new ContentPage());
-
-			var implicitSection = CreateShellSection(new ContentPage(), asImplicit: true);
-
-			shellItem.Items.Add(shellSection);
+			shellItem.Items.Add(shellSection1);
 			shellItem.Items.Add(shellSection2);
-			shellItem.Items.Add(implicitSection);
-			shellItem2.Items.Add(shellSection);
-			shellItem2.Items.Add(shellSection2);
-			shellItem2.Items.Add(implicitSection);
+			shellItem2.Items.Add(shellSection3);
+			shellItem2.Items.Add(shellSection4);
 
 			shell.Items.Add(shellItem);
 			shell.Items.Add(shellItem2);
@@ -822,8 +812,8 @@ namespace Xamarin.Forms.Core.UnitTests
 			var groups = shellController.GenerateFlyoutGrouping();
 
 			Assert.AreEqual(groups.Count, 2);
-			Assert.AreEqual(groups[0].Count, 3);
-			Assert.AreEqual(groups[1].Count, 3);
+			Assert.AreEqual(groups[0].Count, 2);
+			Assert.AreEqual(groups[1].Count, 2);
 		}
 
 		[Test]
@@ -832,20 +822,16 @@ namespace Xamarin.Forms.Core.UnitTests
 			var shell = new Shell();
 			var shellItem = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsSingleItem, };
 			var shellItem2 = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsSingleItem, };
-			var shellSection = new ShellSection() { Title = "can navigate to" };
-			shellSection.Items.Add(new ContentPage());
+			var shellSection1 = CreateShellSection(new ContentPage());
+			var shellSection2 = CreateShellSection(new ContentPage());
+			var shellSection3 = CreateShellSection(new ContentPage(), asImplicit: true);
+			var shellSection4 = CreateShellSection(new ContentPage());
 
-			var shellSection2 = new ShellSection() { Title = "can navigate to" };
-			shellSection2.Items.Add(new ContentPage());
-
-			var implicitSection = CreateShellSection(new ContentPage(), asImplicit: true);
-
-			shellItem.Items.Add(shellSection);
+			shellItem.Items.Add(shellSection1);
 			shellItem.Items.Add(shellSection2);
-			shellItem.Items.Add(implicitSection);
-			shellItem2.Items.Add(shellSection);
-			shellItem2.Items.Add(shellSection2);
-			shellItem2.Items.Add(implicitSection);
+			shellItem2.Items.Add(shellSection3);
+			shellItem2.Items.Add(shellSection4);
+
 
 			shell.Items.Add(shellItem);
 			shell.Items.Add(shellItem2);
@@ -854,7 +840,6 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.AreEqual(groups.Count, 1);
 			Assert.AreEqual(groups[0].Count, 2);
-			//Assert.AreEqual(groups[1].Count, 3);
 		}
 
 
