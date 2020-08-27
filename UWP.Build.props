@@ -13,10 +13,10 @@
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('uap10.0')) ">
     <DefineConstants>$(DefineConstants);UWP</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework) == '10.0.14393.0'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0.14393'">
     <DefineConstants>$(DefineConstants);UWP_14393</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" $(TargetFramework) != '10.0.14393.0' ">
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'uap10.0.16299' ">
     <DefineConstants>$(DefineConstants);UWP_18362;UWP_19041;UWP_14393;UWP_16299</DefineConstants>
   </PropertyGroup>
 </Project>
