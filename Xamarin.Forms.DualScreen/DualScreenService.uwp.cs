@@ -131,7 +131,7 @@ namespace Xamarin.Forms.DualScreen
 			var applicationView = ApplicationView.GetForCurrentView();
 			List<Windows.Foundation.Rect> spanningRects = null;
 
-#if UWP_19000
+#if UWP_19041
 			spanningRects = applicationView.GetSpanningRects().ToList();
 #endif
 
