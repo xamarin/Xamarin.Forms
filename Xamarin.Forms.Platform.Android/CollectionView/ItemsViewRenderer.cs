@@ -273,6 +273,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateEmptyView();
 			AddOrUpdateScrollListener();
+			UpdateSnapBehavior();
 		}
 
 		protected virtual TAdapter CreateAdapter()
@@ -324,7 +325,6 @@ namespace Xamarin.Forms.Platform.Android
 			ItemsLayout = GetItemsLayout();
 			SetLayoutManager(SelectLayoutManager(ItemsLayout));
 
-			UpdateSnapBehavior();
 			UpdateBackgroundColor();
 			UpdateBackground();
 			UpdateFlowDirection();
@@ -343,6 +343,7 @@ namespace Xamarin.Forms.Platform.Android
 			ItemsView.ScrollToRequested += ScrollToRequested;
 
 			AddOrUpdateScrollListener();
+			UpdateSnapBehavior();
 		}
 
 		protected virtual RecyclerViewScrollListener<TItemsView, TItemsViewSource> CreateScrollListener()
