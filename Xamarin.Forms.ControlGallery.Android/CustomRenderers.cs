@@ -30,9 +30,9 @@ using NestedScrollView = global::AndroidX.Core.Widget.NestedScrollView;
 using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
 using NestedScrollView = global::Android.Support.V4.Widget.NestedScrollView;
 #endif
-using System.IO;
 using AMenuItemCompat = global::Android.Support.V4.View.MenuItemCompat;
 using Android.Support.V4.Content;
+using IOPath = System.IO.Path;
 
 [assembly: ExportRenderer(typeof(Issue5461.ScrollbarFadingEnabledFalseScrollView), typeof(ScrollbarFadingEnabledFalseScrollViewRenderer))]
 [assembly: ExportRenderer(typeof(Issue1942.CustomGrid), typeof(Issue1942GridRenderer))]
@@ -58,6 +58,7 @@ using Android.Support.V4.Content;
 [assembly: ExportRenderer(typeof(Issue9360.Issue9360NavigationPage), typeof(Issue9360NavigationPageRenderer))]
 [assembly: ExportRenderer(typeof(Issue8801.PopupStackLayout), typeof(Issue8801StackLayoutRenderer))]
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.Tests.TestClasses.CustomButton), typeof(CustomButtonRenderer))]
+[assembly: ExportRenderer(typeof(ScrolView11185), typeof(ScrollViewFadeRenderer))]
 
 #if PRE_APPLICATION_CLASS
 #elif FORMS_APPLICATION_ACTIVITY
@@ -66,6 +67,15 @@ using Android.Support.V4.Content;
 #endif
 namespace Xamarin.Forms.ControlGallery.Android
 {
+	public sealed class ScrollViewFadeRenderer : ScrollViewRenderer
+	{
+		public ScrollViewFadeRenderer(Context context) : base(context)
+		{
+			HorizontalFadingEdgeEnabled = true;
+			SetFadingEdgeLength(200);
+		}
+	}
+
 	public class Issue8801StackLayoutRenderer : VisualElementRenderer<StackLayout>
 	{
 		public Issue8801StackLayoutRenderer(Context context) : base(context)
@@ -104,7 +114,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 				if (toolBarItem.IconImageSource is FileImageSource fileImageSource)
 				{
-					var name = Path.GetFileNameWithoutExtension(fileImageSource.File);
+					var name = IOPath.GetFileNameWithoutExtension(fileImageSource.File);
 					var id = Xamarin.Forms.Platform.Android.ResourceManager.GetDrawableByName(name);
 					if (id != 0)
 					{

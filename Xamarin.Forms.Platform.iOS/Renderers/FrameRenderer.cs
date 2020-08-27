@@ -1,21 +1,31 @@
 using System.ComponentModel;
 using System.Drawing;
-using CoreAnimation;
 using CoreGraphics;
-using Foundation;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
 	public class FrameRenderer : VisualElementRenderer<Frame>, ITabStop
 	{
-		ShadowView _shadowView;
+		UIView _actualView;
+		CGSize _previousSize;
+		bool _isDisposed;
+
 		UIView ITabStop.TabStop => this;
 
 		[Internals.Preserve(Conditional = true)]
 		public FrameRenderer()
 		{
+			_actualView = new FrameView();
+			AddSubview(_actualView);
+		}
 
+		public override void AddSubview(UIView view)
+		{
+			if (view != _actualView)
+				_actualView.AddSubview(view);
+			else
+				base.AddSubview(view);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Frame> e)
@@ -23,7 +33,9 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnElementChanged(e);
 
 			if (e.NewElement != null)
+			{
 				SetupLayer();
+			}
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -31,9 +43,11 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName ||
-			    e.PropertyName == Xamarin.Forms.Frame.BorderColorProperty.PropertyName ||
+				e.PropertyName == VisualElement.BackgroundProperty.PropertyName ||
+				e.PropertyName == Xamarin.Forms.Frame.BorderColorProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.HasShadowProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.CornerRadiusProperty.PropertyName ||
+				e.PropertyName == Xamarin.Forms.Frame.IsClippedToBoundsProperty.PropertyName ||
 				e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
 				SetupLayer();
 		}
@@ -49,127 +63,136 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		public virtual void SetupLayer()
-		{
+		{			
+			if (_actualView == null)
+				return;
+
 			float cornerRadius = Element.CornerRadius;
 
 			if (cornerRadius == -1f)
 				cornerRadius = 5f; // default corner radius
 
-			Layer.CornerRadius = cornerRadius;
-			Layer.MasksToBounds = Layer.CornerRadius > 0;
+			_actualView.Layer.CornerRadius = cornerRadius;
+			_actualView.Layer.MasksToBounds = cornerRadius > 0;
 
 			if (Element.BackgroundColor == Color.Default)
-				Layer.BackgroundColor = ColorExtensions.BackgroundColor.CGColor;
-			else
-				Layer.BackgroundColor = Element.BackgroundColor.ToCGColor();
-
-			if (Element.BorderColor == Color.Default)
-				Layer.BorderColor = UIColor.Clear.CGColor;
+				_actualView.Layer.BackgroundColor = ColorExtensions.BackgroundColor.CGColor;
 			else
 			{
-				Layer.BorderColor = Element.BorderColor.ToCGColor();
-				Layer.BorderWidth = 1;
+				// BackgroundColor gets set on the base class too which messes with
+				// the corner radius, shadow, etc. so override that behaviour here
+				BackgroundColor = UIColor.Clear;
+				_actualView.Layer.BackgroundColor = Element.BackgroundColor.ToCGColor();
+			}
+
+			_actualView.Layer.RemoveBackgroundLayer();
+
+			if (!Brush.IsNullOrEmpty(Element.Background))
+			{
+				var backgroundLayer = this.GetBackgroundLayer(Element.Background);
+
+				if (backgroundLayer != null)
+				{
+					_actualView.Layer.BackgroundColor = UIColor.Clear.CGColor;
+					Layer.InsertBackgroundLayer(backgroundLayer, 0);
+					backgroundLayer.CornerRadius = cornerRadius;
+				}
+			}
+
+			if (Element.BorderColor == Color.Default)
+				_actualView.Layer.BorderColor = UIColor.Clear.CGColor;
+			else
+			{
+				_actualView.Layer.BorderColor = Element.BorderColor.ToCGColor();
+				_actualView.Layer.BorderWidth = 1;
 			}
 
 			if (Element.HasShadow)
 			{
-				if (_shadowView == null)
-				{
-					_shadowView = new ShadowView(Layer);
-					SetNeedsLayout();
-				}
-				_shadowView.UpdateBackgroundColor();
-				_shadowView.Layer.CornerRadius = Layer.CornerRadius;
-				_shadowView.Layer.BorderColor = Layer.BorderColor;
-				_shadowView.Hidden = !Element.IsVisible;
-			}
-			else
-			{
-				if (_shadowView != null)
-				{
-					_shadowView.RemoveFromSuperview();
-					_shadowView.Dispose();
-					_shadowView = null;
-				}
-			}
-
-			Layer.RasterizationScale = UIScreen.MainScreen.Scale;
-			Layer.ShouldRasterize = true;
-		}
-
-		public override void LayoutSubviews()
-		{
-			if (_shadowView != null)
-			{
-				if (_shadowView.Superview == null && Superview != null)
-					Superview.InsertSubviewBelow(_shadowView, this);
-
-				_shadowView?.SetNeedsLayout();
-			}
-			base.LayoutSubviews();
-		}
-
-		protected override void Dispose(bool disposing)
-		{
-			base.Dispose(disposing);
-			if (disposing)
-			{
-				if (_shadowView != null)
-				{
-					_shadowView.RemoveFromSuperview();
-					_shadowView.Dispose();
-					_shadowView = null;
-				}
-			}
-		}
-
-
-		[Preserve(Conditional = true)]
-		class ShadowView : UIView
-		{
-			CALayer _shadowee;
-			CGRect _previousBounds;
-			CGRect _previousFrame;
-
-			[Preserve(Conditional = true)]
-			public ShadowView(CALayer shadowee)
-			{
-				_shadowee = shadowee;
 				Layer.ShadowRadius = 5;
 				Layer.ShadowColor = UIColor.Black.CGColor;
 				Layer.ShadowOpacity = 0.8f;
 				Layer.ShadowOffset = new SizeF();
-				Layer.BorderWidth = 1;
-				UserInteractionEnabled = false;
+			}
+			else
+			{
+				Layer.ShadowOpacity = 0;
 			}
 
-			public void UpdateBackgroundColor()
-			{
-				//Putting a transparent background under any shadowee having a background with alpha < 1
-				//Giving the Shadow a background of the same color when shadowee background == 1.
-				//The latter will result in a 'darker' shadow as you would expect from something that
-				//isn't transparent. This also mimics the look as it was before with non-transparent Frames.
-				if (_shadowee.BackgroundColor.Alpha < 1)
-					BackgroundColor = UIColor.Clear;
-				else
-					BackgroundColor = new UIColor(_shadowee.BackgroundColor);
-			}
+			Layer.RasterizationScale = UIScreen.MainScreen.Scale;
+			Layer.ShouldRasterize = true;
+			Layer.MasksToBounds = false;
 
-			public override void LayoutSubviews()
+			_actualView.Layer.RasterizationScale = UIScreen.MainScreen.Scale;
+			_actualView.Layer.ShouldRasterize = true;
+			_actualView.Layer.MasksToBounds = Element.IsClippedToBounds;
+		}
+
+		public override void LayoutSubviews()
+		{
+			if (_previousSize != Bounds.Size)
+				SetNeedsDisplay();
+
+			base.LayoutSubviews();
+		}
+
+		public override void Draw(CGRect rect)
+		{
+			if (_actualView != null)
+				_actualView.Frame = Bounds;
+
+			base.Draw(rect);
+
+			_previousSize = Bounds.Size;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_isDisposed)
+				return;
+
+			_isDisposed = true;
+
+			base.Dispose(disposing);
+
+			if (disposing)
 			{
-				if (_shadowee.Bounds != _previousBounds || _shadowee.Frame != _previousFrame)
+				if (_actualView != null)
 				{
-					base.LayoutSubviews();
-					SetBounds();
+					for (var i = 0; i < _actualView.GestureRecognizers?.Length; i++)
+						_actualView.GestureRecognizers.Remove(_actualView.GestureRecognizers[i]);
+
+					for (var j = 0; j < _actualView.Subviews.Length; j++)
+						_actualView.Subviews.Remove(_actualView.Subviews[j]);
+
+					_actualView.RemoveFromSuperview();
+					_actualView.Dispose();
+					_actualView = null;
+				}
+			}
+		}
+
+		[Internals.Preserve(Conditional = true)]
+		class FrameView : UIView
+		{
+			public override void RemoveFromSuperview()
+			{
+				for (var i = Subviews.Length - 1; i >= 0; i--)
+				{
+					var item = Subviews[i];
+					item.RemoveFromSuperview();
 				}
 			}
 
-			void SetBounds()
+			public override bool PointInside(CGPoint point, UIEvent uievent)
 			{
-				Layer.Frame = _shadowee.Frame;
-				Layer.Bounds = _shadowee.Bounds;
-				_previousBounds = _shadowee.Bounds;
-				_previousFrame = _shadowee.Frame;
+				foreach(var view in Subviews)
+				{
+					if (view.HitTest(ConvertPointToView(point, view), uievent) != null)
+						return true;
+				}
+
+				return false;
 			}
 		}
 	}

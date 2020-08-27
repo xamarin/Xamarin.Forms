@@ -16,6 +16,10 @@ using Xamarin.Forms.Core.UITests;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 4915, "Unify the image handling")]
 	public class Issue4915 : TestTabbedPage

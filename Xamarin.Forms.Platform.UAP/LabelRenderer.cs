@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Documents;
 using Xamarin.Forms.Platform.UAP;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.Label;
+using WRect = Windows.Foundation.Rect;
 using WThickness = Windows.UI.Xaml.Thickness;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -68,7 +69,7 @@ namespace Xamarin.Forms.Platform.UWP
 				return finalSize;
 
 			double childHeight = Math.Max(0, Math.Min(Element.Height, Control.DesiredSize.Height));
-			var rect = new Rect();
+			var rect = new WRect();
 
 			switch (Element.VerticalTextAlignment)
 			{
@@ -158,7 +159,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.IsOneOf(Label.TextProperty,  Label.FormattedTextProperty, Label.TextTypeProperty))
+			if (e.IsOneOf(Label.TextProperty, Label.FormattedTextProperty, Label.TextTransformProperty, Label.TextTypeProperty))
 				UpdateText(Control);
 			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
 				UpdateColor(Control);
@@ -351,7 +352,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				if (formatted == null)
 				{
-					textBlock.Text = label.Text ?? string.Empty;
+					textBlock.Text = label.UpdateFormsText(label.Text, label.TextTransform);
 				}
 				else
 				{

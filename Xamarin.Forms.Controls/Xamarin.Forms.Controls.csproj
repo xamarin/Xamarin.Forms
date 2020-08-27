@@ -27,7 +27,7 @@
     <None Remove="Fonts\fa-regular-400.ttf" />
     <None Remove="Fonts\PTM55FT.ttf" />
   </ItemGroup>
-  <ItemGroup  Condition="$(FromSource) == 'true'">
+  <ItemGroup Condition="$(FromSource) == 'true'">
     <!-- A reference to the entire .NET Framework is automatically included -->
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj" />
     <ProjectReference Include="..\Xamarin.Forms.CustomAttributes\Xamarin.Forms.CustomAttributes.csproj" />
@@ -43,7 +43,7 @@
     <EmbeddedResource Include="coffee.png" />
     <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
     <PackageReference Include="NUnit" Version="3.12.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Xam.Plugin.DeviceInfo" Version="3.0.2" />
     <EmbeddedResource Include="Fonts\CuteFont-Regular.ttf">
       <SubType></SubType>
@@ -63,6 +63,12 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Update="GalleryPages\DragAndDropGalleries\DragAndDropBetweenLayouts.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="GalleryPages\DragAndDropGalleries\DragPaths.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="GalleryPages\RadioButtonGalleries\RadioButtonGroupGalleryPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
@@ -91,6 +97,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="GalleryPages\GradientGalleries\LinearGradientPointsGallery.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="GalleryPages\TwoPaneViewGalleries\GridUsingDualScreenInfo.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Media;
 using WDatePicker = System.Windows.Controls.DatePicker;
 
 namespace Xamarin.Forms.Platform.WPF
@@ -12,22 +9,38 @@ namespace Xamarin.Forms.Platform.WPF
 	{
 		protected override void OnElementChanged(ElementChangedEventArgs<DatePicker> e)
 		{
+			if (e.OldElement != null)
+			{
+				if (Control != null)
+				{
+					Control.GotKeyboardFocus -= OnGotKeyboardFocus;
+					Control.SelectedDateChanged -= OnNativeSelectedDateChanged;
+				}
+			}
+
 			if (e.NewElement != null)
 			{
-				if (Control == null) // construct and SetNativeControl and suscribe control event
-				{
-					SetNativeControl(new WDatePicker());
-					Control.SelectedDateChanged += OnNativeSelectedDateChanged;
-				}
+				SetNativeControl(new WDatePicker());
+				Control.GotKeyboardFocus += OnGotKeyboardFocus;
+				Control.SelectedDateChanged += OnNativeSelectedDateChanged;
 
-				// Update control property 
+				// Update control properties 
 				UpdateDate();
 				UpdateMinimumDate();
 				UpdateMaximumDate();
 				UpdateTextColor();
+				UpdateFontSize();
+				UpdateFontFamily();
+				UpdateFontAttributes();
 			}
 
 			base.OnElementChanged(e);
+		}
+
+		void OnGotKeyboardFocus(object sender, System.Windows.Input.KeyboardFocusChangedEventArgs e)
+		{
+			if (!Control.IsDropDownOpen)
+				Control.IsDropDownOpen = true;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -42,8 +55,14 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateMinimumDate();
 			else if (e.PropertyName == DatePicker.TextColorProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == DatePicker.FontSizeProperty.PropertyName)
+				UpdateFontSize();
+			else if (e.PropertyName == DatePicker.FontFamilyProperty.PropertyName)
+				UpdateFontFamily();
+			else if (e.PropertyName == DatePicker.FontAttributesProperty.PropertyName)
+				UpdateFontAttributes();
 		}
-		
+
 		void UpdateDate()
 		{
 			Control.SelectedDate = Element.Date;
@@ -62,6 +81,24 @@ namespace Xamarin.Forms.Platform.WPF
 		void UpdateTextColor()
 		{
 			Control.UpdateDependencyColor(WDatePicker.ForegroundProperty, Element.TextColor);
+		}
+
+		void UpdateFontFamily()
+		{
+			if (!string.IsNullOrEmpty(Element.FontFamily))
+				Control.FontFamily = new FontFamily(new Uri("pack://application:,,,/"), Element.FontFamily);
+			else
+				Control.FontFamily = (FontFamily)System.Windows.Application.Current.Resources["FontFamilyNormal"];
+		}
+
+		void UpdateFontSize()
+		{
+			Control.FontSize = Element.FontSize;
+		}
+
+		void UpdateFontAttributes()
+		{
+			Control.ApplyFontAttributes(Element.FontAttributes);
 		}
 
 		void OnNativeSelectedDateChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)

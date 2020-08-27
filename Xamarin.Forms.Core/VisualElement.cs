@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Shapes;
 
 namespace Xamarin.Forms
 {
@@ -56,6 +57,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty ScaleYProperty = BindableProperty.Create(nameof(ScaleY), typeof(double), typeof(VisualElement), 1d);
 
 		internal static readonly BindableProperty TransformProperty = BindableProperty.Create("Transform", typeof(string), typeof(VisualElement), null, propertyChanged: OnTransformChanged);
+
+		public static readonly BindableProperty ClipProperty = BindableProperty.Create(nameof(Clip), typeof(Geometry), typeof(VisualElement), null);
 
 		public static readonly BindableProperty VisualProperty =
 			BindableProperty.Create(nameof(Visual), typeof(IVisual), typeof(VisualElement), Forms.VisualMarker.MatchParent,
@@ -151,6 +154,46 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty OpacityProperty = BindableProperty.Create("Opacity", typeof(double), typeof(VisualElement), 1d, coerceValue: (bindable, value) => ((double)value).Clamp(0, 1));
 
 		public static readonly BindableProperty BackgroundColorProperty = BindableProperty.Create("BackgroundColor", typeof(Color), typeof(VisualElement), Color.Default);
+
+		public static readonly BindableProperty BackgroundProperty = BindableProperty.Create(nameof(Background), typeof(Brush), typeof(VisualElement), Brush.Default,
+			propertyChanging: (bindable, oldvalue, newvalue) =>
+			{
+				if (oldvalue != null)
+					(bindable as VisualElement)?.StopNotifyingBackgroundChanges();
+			},
+			propertyChanged: (bindable, oldvalue, newvalue) =>
+			{
+				if (newvalue != null)
+					(bindable as VisualElement)?.NotifyBackgroundChanges();
+			});
+
+		void NotifyBackgroundChanges()
+		{
+			if (Background != null)
+			{
+				Background.PropertyChanging += OnBackgroundChanging;
+				Background.PropertyChanged += OnBackgroundChanged;
+			}
+		}
+
+		void StopNotifyingBackgroundChanges()
+		{
+			if (Background != null)
+			{
+				Background.PropertyChanged -= OnBackgroundChanged;
+				Background.PropertyChanging -= OnBackgroundChanging;
+			}
+		}
+
+		void OnBackgroundChanging(object sender, PropertyChangingEventArgs e)
+		{
+			OnPropertyChanging(nameof(Background));
+		}
+
+		void OnBackgroundChanged(object sender, PropertyChangedEventArgs e)
+		{
+			OnPropertyChanged(nameof(Background));
+		}
 
 		internal static readonly BindablePropertyKey BehaviorsPropertyKey = BindableProperty.CreateReadOnly("Behaviors", typeof(IList<Behavior>), typeof(VisualElement), default(IList<Behavior>),
 			defaultValueCreator: bindable =>
@@ -275,13 +318,6 @@ namespace Xamarin.Forms
 
 		internal VisualElement()
 		{
-			if (Application.Current != null)
-				Application.Current.RequestedThemeChanged += (s, a) => OnRequestedThemeChanged(a.RequestedTheme);
-		}
-
-		protected virtual void OnRequestedThemeChanged(OSAppTheme newValue)
-		{
-			ExperimentalFlags.VerifyFlagEnabled(nameof(VisualElement), ExperimentalFlags.AppThemeExperimental, nameof(OnRequestedThemeChanged));
 		}
 
 		public double AnchorX
@@ -300,6 +336,13 @@ namespace Xamarin.Forms
 		{
 			get { return (Color)GetValue(BackgroundColorProperty); }
 			set { SetValue(BackgroundColorProperty, value); }
+		}
+
+		[TypeConverter(typeof(BrushTypeConverter))]
+		public Brush Background
+		{
+			get { return (Brush)GetValue(BackgroundProperty); }
+			set { SetValue(BackgroundProperty, value); }
 		}
 
 		public IList<Behavior> Behaviors
@@ -471,6 +514,13 @@ namespace Xamarin.Forms
 		{
 			get { return _mockY == -1 ? (double)GetValue(YProperty) : _mockY; }
 			private set { SetValue(YPropertyKey, value); }
+		}
+
+		[TypeConverter(typeof(PathGeometryConverter))]
+		public Geometry Clip
+		{
+			get { return (Geometry)GetValue(ClipProperty); }
+			set { SetValue(ClipProperty, value); }
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ElmSharp;
+using ERect = ElmSharp.Rect;
 using ESize = ElmSharp.Size;
 
 namespace Xamarin.Forms.Platform.Tizen.Native
@@ -11,7 +12,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		ESize _allocatedSize;
 		ESize _scrollCanvasSize;
 		bool _isLayouting;
-		Rect _last;
+		ERect _last;
 		Dictionary<int, RealizedItem> _realizedItem = new Dictionary<int, RealizedItem>();
 
 		List<int> _itemSizes;
@@ -20,18 +21,32 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		bool _hasUnevenRows;
 		int _baseItemSize;
 
+		ESize _headerSize;
+		EvasObject _header;
+		ESize _footerSize;
+		EvasObject _footer;
+
+
 		public GridLayoutManager(bool isHorizontal, int span = 1) : this(isHorizontal, span, ItemSizingStrategy.MeasureFirstItem) { }
 
-		public GridLayoutManager(bool isHorizontal, int span, ItemSizingStrategy sizingStrategy)
+		public GridLayoutManager(bool isHorizontal, int span, ItemSizingStrategy sizingStrategy) : this(isHorizontal, span, sizingStrategy, 0, 0) { }
+
+		public GridLayoutManager(bool isHorizontal, int span, ItemSizingStrategy sizingStrategy, int verticalSpacing, int horizontalSpacing)
 		{
 			IsHorizontal = isHorizontal;
 			Span = span;
 			_hasUnevenRows = sizingStrategy == ItemSizingStrategy.MeasureAllItems;
+			VerticalItemSpacing = verticalSpacing;
+			HorizontalItemSpacing = horizontalSpacing;
 		}
 
 		public int Span { get; private set; }
 
 		public bool IsHorizontal { get; }
+
+		public int VerticalItemSpacing { get; }
+
+		public int HorizontalItemSpacing { get; }
 
 		public ICollectionViewController CollectionView { get; set; }
 
@@ -51,13 +66,14 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				return _scrollCanvasSize;
 
 			int totalItemSize = 0;
+
 			if (_hasUnevenRows)
 			{
-				totalItemSize = _accumulatedItemSizes[_accumulatedItemSizes.Count - 1];
+				totalItemSize = _accumulatedItemSizes[_accumulatedItemSizes.Count - 1] + FooterSizeWithSpacing;
 			}
 			else
 			{
-				totalItemSize = (int)Math.Ceiling(CollectionView.Count / (double)Span) * BaseItemSize;
+				totalItemSize = (int)Math.Ceiling(CollectionView.Count / (double)Span) * (BaseItemSize + ItemSpacing) - ItemSpacing + ItemStartPoint + FooterSizeWithSpacing;
 			}
 
 			if (IsHorizontal)
@@ -70,6 +86,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			}
 
 			return _scrollCanvasSize;
+		}
+
+		public int GetScrollBlockSize()
+		{
+			return BaseItemSize + ItemSpacing;
 		}
 
 		int BaseItemSize
@@ -88,6 +109,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			}
 		}
 
+		int ItemSpacing => IsHorizontal ? HorizontalItemSpacing : VerticalItemSpacing;
+
 		int ItemWidthConstraint => IsHorizontal ? _allocatedSize.Width * 100 : ColumnSize;
 		int ItemHeightConstraint => IsHorizontal ? ColumnSize : _allocatedSize.Height * 100;
 
@@ -95,11 +118,43 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 			get
 			{
-				return IsHorizontal ? _allocatedSize.Height / Span : _allocatedSize.Width / Span;
+				return (IsHorizontal ? _allocatedSize.Height / Span : _allocatedSize.Width / Span) - ((Span - 1) * ColumnSpacing / Span);
 			}
 		}
 
-		bool ShouldRearrange(Rect viewport)
+		int ColumnSpacing => IsHorizontal ? VerticalItemSpacing : HorizontalItemSpacing;
+
+		int FooterSize => IsHorizontal ? _footerSize.Width : _footerSize.Height;
+
+		int HeaderSize => IsHorizontal ? _headerSize.Width : _headerSize.Height;
+
+		int ItemStartPoint
+		{
+			get
+			{
+				var startPoint = HeaderSize;
+				if (startPoint > 0)
+				{
+					startPoint += ItemSpacing;
+				}
+				return startPoint;
+			}
+		}
+
+		int FooterSizeWithSpacing
+		{
+			get
+			{
+				var size = FooterSize;
+				if (size > 0)
+				{
+					size += ItemSpacing;
+				}
+				return size;
+			}
+		}
+
+		bool ShouldRearrange(ERect viewport)
 		{
 			if (_isLayouting)
 				return false;
@@ -113,7 +168,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			return false;
 		}
 
-		public void LayoutItems(Rect bound, bool force)
+		public void LayoutItems(ERect bound, bool force)
 		{
 			if (_allocatedSize.Width <= 0 || _allocatedSize.Height <= 0)
 				return;
@@ -125,8 +180,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			}
 			_isLayouting = true;
 			_last = bound;
-			
-			int padding = Span * 2;
+
+			int padding = Span;
 			int startIndex = Math.Max(GetStartIndex(bound) - padding, 0);
 			int endIndex = Math.Min(GetEndIndex(bound) + padding, CollectionView.Count - 1);
 
@@ -241,7 +296,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			}
 		}
 
-		public Rect GetItemBound(int index)
+		public ERect GetItemBound(int index)
 		{
 			int rowIndex = index / Span;
 			int columnIndex = index % Span;
@@ -254,15 +309,15 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			if (!_hasUnevenRows)
 			{
 				itemSize = BaseItemSize;
-				rowStartPoint = rowIndex * BaseItemSize;
-				columnStartPoint = columnIndex * columnSize;
+				rowStartPoint = ItemStartPoint + rowIndex * (BaseItemSize + ItemSpacing);
+				columnStartPoint = columnIndex * (columnSize + ColumnSpacing);
 			}
 			else if (_cached[index])
 			{
 				var updatedMaxItemSize = GetMaxItemSize(index);
 				itemSize = _itemSizes[index];
 				rowStartPoint = _accumulatedItemSizes[rowIndex] - updatedMaxItemSize + (updatedMaxItemSize - itemSize) / 2;
-				columnStartPoint = columnSize * columnIndex;
+				columnStartPoint = columnIndex * (columnSize + ColumnSpacing);
 			}
 			else
 			{
@@ -300,14 +355,14 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 					CollectionView.ContentSizeUpdated();
 				}
 				rowStartPoint = _accumulatedItemSizes[rowIndex] - updatedMaxItemSize + (updatedMaxItemSize - itemSize) / 2;
-				columnStartPoint = columnSize * columnIndex;
+				columnStartPoint = columnIndex * (columnSize + ColumnSpacing);
 
 				_cached[index] = true;
 			}
 
 			return IsHorizontal ?
-				new Rect(rowStartPoint, columnStartPoint, itemSize, columnSize) :
-				new Rect(columnStartPoint, rowStartPoint, columnSize, itemSize);
+				new ERect(rowStartPoint, columnStartPoint, itemSize, columnSize) :
+				new ERect(columnStartPoint, rowStartPoint, columnSize, itemSize);
 		}
 
 		public void Reset()
@@ -346,11 +401,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			if (_scrollCanvasSize.Width < x || _scrollCanvasSize.Height < y)
 				return CollectionView.Count - 1;
 
-			int first = (IsHorizontal ? x : y) / BaseItemSize;
+			int first = (IsHorizontal ? x : y) / (BaseItemSize + ItemSpacing);
 			if (_hasUnevenRows)
 				first = _accumulatedItemSizes.FindIndex(current => (IsHorizontal ? x : y) <= current);
 
-			int second = (IsHorizontal ? y : x) / ColumnSize;
+			int second = (IsHorizontal ? y : x) / (ColumnSize + ColumnSpacing);
 			if (second == Span)
 				second -= 1;
 
@@ -361,11 +416,103 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			return CollectionView.Count - 1;
 		}
 
+		public void SetHeader(EvasObject header, ESize size)
+		{
+			bool contentSizeChanged = false;
+			if (IsHorizontal)
+			{
+				if (_headerSize.Width != size.Width)
+					contentSizeChanged = true;
+			}
+			else
+			{
+				if (_headerSize.Height != size.Height)
+					contentSizeChanged = true;
+			}
+
+			_header = header;
+			_headerSize = size;
+
+			if (contentSizeChanged)
+			{
+				InitializeMeasureCache();
+				CollectionView.ContentSizeUpdated();
+			}
+
+			var position = CollectionView.ParentPosition;
+			if (_header != null)
+			{
+				var bound = new ERect(position.X, position.Y, _headerSize.Width, _headerSize.Height);
+				if (IsHorizontal)
+				{
+					bound.Height = _allocatedSize.Height;
+				}
+				else
+				{
+					bound.Width = _allocatedSize.Width;
+				}
+				_header.Geometry = bound;
+			}
+		}
+
+		public void SetFooter(EvasObject footer, ESize size)
+		{
+			bool contentSizeChanged = false;
+			if (IsHorizontal)
+			{
+				if (_footerSize.Width != size.Width)
+					contentSizeChanged = true;
+			}
+			else
+			{
+				if (_footerSize.Height != size.Height)
+					contentSizeChanged = true;
+			}
+
+			_footer = footer;
+			_footerSize = size;
+
+			if (contentSizeChanged)
+			{
+				InitializeMeasureCache();
+				CollectionView.ContentSizeUpdated();
+			}
+
+			UpdateFooterPosition();
+		}
+
+		void UpdateFooterPosition()
+		{
+			if (_footer == null)
+				return;
+
+			var position = CollectionView.ParentPosition;
+			if (IsHorizontal)
+			{
+				position.X += (GetScrollCanvasSize().Width - _footerSize.Width);
+			}
+			else
+			{
+				position.Y += (GetScrollCanvasSize().Height - _footerSize.Height);
+			}
+
+			var bound = new ERect(position.X, position.Y, _footerSize.Width, _footerSize.Height);
+			if (IsHorizontal)
+			{
+				bound.Height = _allocatedSize.Height;
+			}
+			else
+			{
+				bound.Width = _allocatedSize.Width;
+			}
+			_footer.Geometry = bound;
+		}
+
 		void InitializeMeasureCache()
 		{
 			_baseItemSize = 0;
 			_scrollCanvasSize = new ESize(0, 0);
-			_last = new Rect(0, 0, 0, 0);
+			_last = new ERect(0, 0, 0, 0);
 
 			if (!_hasUnevenRows)
 				return;
@@ -385,7 +532,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				if (i % Span == 0)
 				{
 					int accIndex = i / Span;
-					_accumulatedItemSizes.Add((accIndex > 0 ? _accumulatedItemSizes[accIndex - 1] : 0) + _itemSizes[i]);
+					_accumulatedItemSizes.Add((accIndex > 0 ? (_accumulatedItemSizes[accIndex - 1] + ItemSpacing) : ItemStartPoint) + _itemSizes[i]);
 				}
 			}
 		}
@@ -397,7 +544,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			for (int i = 0; i < n; i++)
 			{
 				int accIndex = i / Span;
-				int prevSize = accIndex > 0 ? _accumulatedItemSizes[accIndex - 1] : 0;
+				int prevSize = accIndex > 0 ? (_accumulatedItemSizes[accIndex - 1] + ItemSpacing) : 0;
 				if (i % Span == 0)
 				{
 					_accumulatedItemSizes.Add(prevSize);
@@ -448,6 +595,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 					_scrollCanvasSize.Height += diff;
 				}
 			}
+			UpdateFooterPosition();
 		}
 
 		int GetMaxItemSize(int index)
@@ -462,48 +610,48 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			return max;
 		}
 
-
-		int GetStartIndex(Rect bound, int itemSize)
+		int GetStartIndex(ERect bound, int itemSize)
 		{
-			return ViewPortStartPoint(bound) / itemSize * Span;
+			return (ViewPortStartPoint(bound) - ItemStartPoint) / itemSize * Span;
 		}
 
-		int GetStartIndex(Rect bound)
+		int GetStartIndex(ERect bound)
 		{
 			if (!_hasUnevenRows)
 			{
-				return GetStartIndex(bound, BaseItemSize);
+				return GetStartIndex(bound, BaseItemSize + ItemSpacing);
 			}
 
 			return FindFirstGreaterOrEqualTo(_accumulatedItemSizes, ViewPortStartPoint(bound)) * Span;
 		}
 
-		int GetEndIndex(Rect bound, int itemSize)
+		int GetEndIndex(ERect bound, int itemSize)
 		{
-			return (int)Math.Ceiling(ViewPortEndPoint(bound) / (double)itemSize) * Span;
+			return (int)Math.Ceiling(ViewPortEndPoint(bound) / (double)itemSize) * Span - 1;
 		}
 
-		int GetEndIndex(Rect bound)
+		int GetEndIndex(ERect bound)
 		{
 			if (!_hasUnevenRows)
 			{
-				return GetEndIndex(bound, BaseItemSize);
+				return GetEndIndex(bound, BaseItemSize + ItemSpacing);
 			}
+			var tmp = FindFirstGreaterOrEqualTo(_accumulatedItemSizes, ViewPortEndPoint(bound));
 
-			return FindFirstGreaterOrEqualTo(_accumulatedItemSizes, ViewPortEndPoint(bound)) * Span;
+			return (FindFirstGreaterOrEqualTo(_accumulatedItemSizes, ViewPortEndPoint(bound)) + 1) * Span - 1;
 		}
 
-		int ViewPortStartPoint(Rect viewPort)
+		int ViewPortStartPoint(ERect viewPort)
 		{
 			return IsHorizontal ? viewPort.X : viewPort.Y;
 		}
 
-		int ViewPortEndPoint(Rect viewPort)
+		int ViewPortEndPoint(ERect viewPort)
 		{
 			return ViewPortStartPoint(viewPort) + ViewPortSize(viewPort);
 		}
 
-		int ViewPortSize(Rect viewPort)
+		int ViewPortSize(ERect viewPort)
 		{
 			return IsHorizontal ? viewPort.Width : viewPort.Height;
 		}
