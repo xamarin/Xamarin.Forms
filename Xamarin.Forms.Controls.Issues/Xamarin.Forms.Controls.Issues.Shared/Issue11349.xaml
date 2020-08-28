@@ -34,6 +34,7 @@
                                                 <Grid>
                                                     <Label
                                                         Text="SwipeItemView"
+                                                        TextColor="White"
                                                         HorizontalOptions="Center"
                                                         VerticalOptions="Center"/>
                                                 </Grid>
