@@ -309,8 +309,13 @@ namespace Xamarin.Forms.Platform.Android
 				if (CanProcessTouchSwipeItems(touchUpPoint))
 					ProcessTouchSwipeItems(touchUpPoint);
 				else
+				{
+					if (!_isSwiping && _isOpen && TouchInsideContent(touchUpPoint))
+						ResetSwipe();
+
 					PropagateParentTouch();
-			}	
+				}
+			}
 
 			return base.DispatchTouchEvent(e);
 		}
