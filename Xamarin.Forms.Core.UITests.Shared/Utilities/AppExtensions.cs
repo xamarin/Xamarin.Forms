@@ -16,11 +16,19 @@ namespace Xamarin.UITest
 	internal static class AppExtensions
 	{
 #if __WINDOWS__
-		public static void RestartIfAppIsClosed(this IApp app)
+		public static void Restart(this IApp app)
 		{
-			((ScreenshotConditionalApp)app).RestartIfAppIsClosed();
+			((ScreenshotConditionalApp)app).Restart();
 		}
 #endif
+		public static bool RestartIfAppIsClosed(this IApp app)
+		{
+#if __WINDOWS__
+			return ((ScreenshotConditionalApp)app).RestartIfAppIsClosed();
+#else
+			return false;
+#endif
+		}
 
 		public static void AttachScreenshotToTestContext(this IApp app, string title)
 		{
@@ -140,6 +148,8 @@ namespace Xamarin.Forms.Core.UITests
 {
 	internal static class AppExtensions
 	{
+		const string goToTestButtonQuery = "* marked:'GoToTestButton'";
+
 		public static AppRect ScreenBounds(this IApp app)
 		{
 			return app.Query(Queries.Root()).First().Rect;
@@ -155,14 +165,13 @@ namespace Xamarin.Forms.Core.UITests
 			NavigateToGallery(app, page, null);
 		}
 
-		public static void NavigateToGallery(this IApp app, string page, string visual)
+		public static void NavigateTo(this IApp app, string text)
 		{
-			const string goToTestButtonQuery = "* marked:'GoToTestButton'";
+			NavigateTo(app, text, null);
+		}
 
-			app.WaitForElement(q => q.Raw(goToTestButtonQuery), "Timed out waiting for Go To Test button to appear", TimeSpan.FromMinutes(2));
-
-			var text = Regex.Match(page, "'(?<text>[^']*)'").Groups["text"].Value;
-
+		public static void NavigateTo(this IApp app, string text, string visual)
+		{
 			app.WaitForElement("SearchBar");
 			app.ClearText(q => q.Raw("* marked:'SearchBar'"));
 			app.EnterText(q => q.Raw("* marked:'SearchBar'"), text);
@@ -179,7 +188,14 @@ namespace Xamarin.Forms.Core.UITests
 				app.Tap(q => q.Raw(goToTestButtonQuery));
 			}
 
-			app.WaitForNoElement(o => o.Raw(goToTestButtonQuery), "Timed out waiting for Go To Test button to disappear", TimeSpan.FromMinutes(2));
+			app.WaitForNoElement(o => o.Raw(goToTestButtonQuery), "Timed out waiting for Go To Test button to disappear", TimeSpan.FromMinutes(1));
+		}
+
+		public static void NavigateToGallery(this IApp app, string page, string visual)
+		{
+			app.WaitForElement(q => q.Raw(goToTestButtonQuery), "Timed out waiting for Go To Test button to appear", TimeSpan.FromMinutes(2));
+			var text = Regex.Match(page, "'(?<text>[^']*)'").Groups["text"].Value;
+			NavigateTo(app, text, visual);
 		}
 
 

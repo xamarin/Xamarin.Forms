@@ -25,6 +25,7 @@ PowerShell:
 #addin "nuget:?package=Cake.Boots&version=1.0.2.437"
 #addin "nuget:?package=Cake.AppleSimulator&version=0.2.0"
 #addin "nuget:?package=Cake.FileHelpers&version=3.2.1"
+
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
@@ -469,11 +470,13 @@ Task ("cg-uwp-build-tests")
             .WithProperty("PackageCertificateThumbprint", "a59087cc92a9a8117ffdb5255eaa155748f9f852")
             .WithProperty("PackageCertificateKeyFile", "Xamarin.Forms.ControlGallery.WindowsUniversal_TemporaryKey.pfx")
             .WithProperty("PackageCertificatePassword", "")
+            // The platform unit tests can't run when UseDotNetNativeToolchain is set to true so we force it off here
+            .WithProperty("UseDotNetNativeToolchain", "false")
             .WithRestore()
     );
 
     MSBuild("Xamarin.Forms.Core.Windows.UITests\\Xamarin.Forms.Core.Windows.UITests.csproj", 
-        GetMSBuildSettings().WithRestore());
+        GetMSBuildSettings(buildConfiguration:"Debug").WithRestore());
 });
 
 Task ("cg-uwp-deploy")
@@ -518,7 +521,7 @@ Task("cg-uwp-run-tests")
     .IsDependentOn("_cg-uwp-run-tests");
 
 Task("_cg-uwp-run-tests")
-    .Does(() =>
+    .Does((ctx) =>
     {
         System.Diagnostics.Process process = null;
         if(!isHostedAgent)
@@ -553,13 +556,32 @@ Task("_cg-uwp-run-tests")
 
             NUnit3(new [] { UWP_TEST_LIBRARY }, settings);
         }
-        finally
+        catch
         {
+            SetEnvironmentVariables();
+            throw;
+        }
+        finally
+        { 
             try
             {
                 process?.Kill();
             }
             catch{}
+        }
+
+        SetEnvironmentVariables();
+
+        void SetEnvironmentVariables()
+        {
+            var doc = new System.Xml.XmlDocument();
+            doc.Load("TestResult.xml");
+            var root = doc.DocumentElement;
+
+            foreach(System.Xml.XmlAttribute attr in root.Attributes)
+            {
+                SetEnvironmentVariable($"NUNIT_{attr.Name}", attr.Value, ctx);
+            }
         }
     });
 
@@ -1039,33 +1061,13 @@ Task("DeployAndroid")
         AmStartActivity("AndroidControlGallery.AndroidControlGallery/md546303760447087909496d02dc7b17ae8.Activity1");
     });
 
-Task("_PrintEnvironmentVariables")
-    .Does(() => 
-    {       
-        var envVars = EnvironmentVariables();
-
-        string path;
-        if (envVars.TryGetValue("PATH", out path))
-        {
-            Information("Path: {0}", path);
-        }
-
-        foreach(var envVar in envVars)
-        {
-            Information(
-                "Key: {0}\tValue: \"{1}\"",
-                envVar.Key,
-                envVar.Value
-                );
-        }
-    });
 
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Build")
+    .IsDependentOn("NugetPack")
     ;
 
 //////////////////////////////////////////////////////////////////////
@@ -1157,4 +1159,38 @@ AppleSimulator GetIosSimulator()
 
     // Look for a matching simulator on the system
     return iosSimulators.First (s => s.Name == IOS_SIM_NAME && s.Runtime == IOS_SIM_RUNTIME);
+}
+
+public void PrintEnvironmentVariables()
+{
+    var envVars = EnvironmentVariables();
+
+    string path;
+    if (envVars.TryGetValue("PATH", out path))
+    {
+        Information("Path: {0}", path);
+    }
+
+    foreach(var envVar in envVars)
+    {
+        Information(
+            "Key: {0}\tValue: \"{1}\"",
+            envVar.Key,
+            envVar.Value
+            );
+    };
+}
+
+public void SetEnvironmentVariable(string key, string value, ICakeContext context)
+{
+    var buildSystem = context.BuildSystem();
+    Information("Setting: {0} to {1}", key, value);
+    if(isCIBuild)
+    {
+        buildSystem.AzurePipelines.Commands.SetVariable(key, value);
+    }
+    else
+    {
+        System.Environment.SetEnvironmentVariable(key, value);
+    }
 }

@@ -167,6 +167,7 @@
     <Compile Include="CollectionView\WidthConstrainedTemplatedCell.cs" />
     <Compile Include="CollectionView\VerticalSupplementaryView.cs" />
     <Compile Include="DisposeHelpers.cs" />
+    <Compile Include="DragAndDropDelegate.cs" />
     <Compile Include="EffectUtilities.cs" />
     <Compile Include="ExportCellAttribute.cs" />
     <Compile Include="ExportImageSourceHandlerAttribute.cs" />
@@ -282,6 +283,7 @@
     <Compile Include="Shapes\PolylineRenderer.cs" />
     <Compile Include="Shapes\RectangleRenderer.cs" />
     <Compile Include="Extensions\BrushExtensions.cs" />
+    <Compile Include="Renderers\IDisconnectable.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />
