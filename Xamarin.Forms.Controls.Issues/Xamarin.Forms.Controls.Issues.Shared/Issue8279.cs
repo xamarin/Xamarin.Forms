@@ -25,11 +25,13 @@ namespace Xamarin.Forms.Controls.Issues
 		const string ScrollWithItemWithGroup = "ScrollWithItemWithGroup";
 		const string ScrollWithNoItemNoGroup = "ScrollWithNoItemNoGroup";
 		const string ScrollWithNoItemEmptyGroup = "ScrollWithNoItemEmptyGroup";
+		const string Reset = "Reset";
 
 		protected override void Init()
 		{
 
 		}
+
 		public Issue8279()
         {
 #if APP
@@ -100,10 +102,17 @@ namespace Xamarin.Forms.Controls.Issues
 				Command = new Command(() => List.ScrollTo(null, emptyGroup, ScrollToPosition.MakeVisible, true))
 			};
 
+			var resetButton = new Button()
+			{
+				Text = "Reset",
+				AutomationId = Reset,
+				Command = new Command(() => List.ScrollTo(null, firstGroup, ScrollToPosition.Center, true))
+			};
+
 			Content = new StackLayout () {
 				VerticalOptions = LayoutOptions.StartAndExpand,
 				HorizontalOptions = LayoutOptions.FillAndExpand,
-				Children = { button1, button2, button3, button4, button5, List },
+				Children = { resetButton, button1, button2, button3, button4, button5, List },
 			};
 #endif
 		}
@@ -112,6 +121,8 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void ScrollWithNoItemButGroupTest()
 		{
+			RunningApp.WaitForElement(Reset);
+			RunningApp.Tap(Reset);
 			RunningApp.WaitForElement(ScrollWithNoItemButGroup);
 			RunningApp.Tap(ScrollWithNoItemButGroup);
 			// This will fail if the list didn't scroll. If it did scroll, it will succeed
@@ -121,6 +132,8 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void ScrollWithItemButNoGroupTest()
 		{
+			RunningApp.WaitForElement(Reset);
+			RunningApp.Tap(Reset);
 			RunningApp.WaitForElement(ScrollWithItemButNoGroup);
 			RunningApp.Tap(ScrollWithItemButNoGroup);
 			// This will fail if the list didn't scroll. If it did scroll, it will succeed
@@ -130,6 +143,8 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void ScrollWithItemWithGroupTest()
 		{
+			RunningApp.WaitForElement(Reset);
+			RunningApp.Tap(Reset);
 			RunningApp.WaitForElement(ScrollWithItemWithGroup);
 			RunningApp.Tap(ScrollWithItemWithGroup);
 			// This will fail if the list didn't scroll. If it did scroll, it will succeed
@@ -139,15 +154,19 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void ScrollWithNoItemNoGroupTest()
 		{
+			RunningApp.WaitForElement(Reset);
+			RunningApp.Tap(Reset);
 			RunningApp.WaitForElement(ScrollWithNoItemNoGroup);
 			RunningApp.Tap(ScrollWithNoItemNoGroup);
 			// This will pass if the list didn't scroll and remain on the same state
-			RunningApp.WaitForElement(q => q.Marked("Header 3"), timeout: TimeSpan.FromSeconds(2));
+			RunningApp.WaitForElement(q => q.Marked("Header 1"), timeout: TimeSpan.FromSeconds(2));
 		}
 
 		[Test]
 		public void ScrollWithNoItemEmptyGroupTest()
 		{
+			RunningApp.WaitForElement(Reset);
+			RunningApp.Tap(Reset);
 			RunningApp.WaitForElement(ScrollWithNoItemEmptyGroup);
 			RunningApp.Tap(ScrollWithNoItemEmptyGroup);
 			// This will fail if the list didn't scroll. If it did scroll, it will succeed
