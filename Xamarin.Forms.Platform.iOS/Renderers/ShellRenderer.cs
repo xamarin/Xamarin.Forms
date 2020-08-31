@@ -286,7 +286,6 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Shell.CurrentItem == null)
 			{
 				return;
-				//throw new InvalidOperationException("Shell CurrentItem should not be null");
 			}
 			else if (_currentShellItemRenderer == null)
 			{
