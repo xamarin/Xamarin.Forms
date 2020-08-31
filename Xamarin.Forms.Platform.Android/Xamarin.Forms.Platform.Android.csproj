@@ -31,12 +31,6 @@
     <AndroidResource Link="Resources\Layout\Tabbar.axml" Include="Resources\Layout\AndroidX\Tabbar.axml" />
     <AndroidResource Link="Resources\Layout\Toolbar.axml" Include="Resources\Layout\AndroidX\Toolbar.axml" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'MonoAndroid90'">
-    <AndroidResource Link="Resources\Layout\BottomTabLayout.axml" Include="Resources\Layout\Android\BottomTabLayout.axml" />
-    <AndroidResource Link="Resources\Layout\FlyoutContent.axml" Include="Resources\Layout\Android\FlyoutContent.axml" />
-    <AndroidResource Link="Resources\Layout\RootLayout.axml" Include="Resources\Layout\Android\RootLayout.axml" />
-    <AndroidResource Link="Resources\Layout\ShellContent.axml" Include="Resources\Layout\Android\ShellContent.axml" />
-  </ItemGroup>
   <ItemGroup>
     <None Remove="Resources\values\attrs.xml" />
   </ItemGroup>
@@ -54,11 +48,6 @@
     <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.1.0.1" />
     <PackageReference Include="Xamarin.Google.Android.Material" Version="1.0.0.1" />
     <PackageReference Include="Xamarin.AndroidX.Legacy.Support.V4" Version="1.0.0.1" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'MonoAndroid90'">
-    <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.Android.Support.v4" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="28.0.0.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
