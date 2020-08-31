@@ -380,12 +380,6 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public void DefaultShellRoutesWorksWithNavigation()
-		{
-
-		}
-
-		[Test]
 		public async Task ConvertToStandardFormat()
 		{
 			var shell = new Shell();
