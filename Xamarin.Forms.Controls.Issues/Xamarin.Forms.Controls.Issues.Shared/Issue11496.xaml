@@ -49,5 +49,5 @@
                 </DataTemplate>
             </BindableLayout.ItemTemplate>
         </StackLayout>
-    </StackLayout> 
+    </StackLayout>
 </controls:TestContentPage>
