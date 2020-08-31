@@ -34,7 +34,7 @@
 
   <!-- This is used by the libraries -->
   <PropertyGroup Condition="'$(AndroidTargetFrameworks)' == ''">
-    <AndroidTargetFrameworks>MonoAndroid90;MonoAndroid10.0;</AndroidTargetFrameworks>
+    <AndroidTargetFrameworks>MonoAndroid10.0;</AndroidTargetFrameworks>
   </PropertyGroup>
 
   <!-- Auto install any missing Android SDKs -->
