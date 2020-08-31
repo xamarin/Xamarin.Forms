@@ -39,11 +39,7 @@
     <NoWarn>
     </NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Use2017)' == 'true' ">
-    <DefineConstants>$(DefineConstants);__XCODE10__</DefineConstants>
-    <OutputPath>$(OutputPath)\2017</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Use2017)' != 'true' ">
+  <PropertyGroup>
     <DefineConstants>$(DefineConstants);__XCODE11__</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
@@ -334,8 +330,4 @@
       <Name>Xamarin.Forms.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup Condition="'$(Use2017)' == 'true'">
-    <Reference Include="netstandard" />
-  </ItemGroup>
-  <ItemGroup />
 </Project>

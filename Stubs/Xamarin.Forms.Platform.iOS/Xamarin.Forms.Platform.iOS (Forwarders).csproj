@@ -62,7 +62,4 @@
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
-  <ItemGroup Condition="'$(Use2017)' == 'true'">
-    <Reference Include="netstandard" />
-  </ItemGroup>
 </Project>
