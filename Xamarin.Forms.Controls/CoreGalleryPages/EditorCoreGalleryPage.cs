@@ -21,13 +21,15 @@ namespace Xamarin.Forms.Controls
 			var textChangedContainer = new EventViewContainer<Editor>(Test.Editor.TextChanged, new Editor());
 			textChangedContainer.View.TextChanged += (sender, args) => textChangedContainer.EventFired();
 			var placeholderContainer = new ViewContainer<Editor>(Test.Editor.Placeholder, new Editor { Placeholder = "Placeholder" });
+
+			var placeholderColorContainer = new ViewContainer<Editor>(Test.Editor.PlaceholderColor, new Editor { Placeholder = "I should have red placeholder", PlaceholderColor = Color.Red });
 			var textFontAttributesContainer = new ViewContainer<Editor>(Test.Editor.FontAttributes, new Editor { Text = "I have italic text", FontAttributes = FontAttributes.Italic });
 			var textFamilyContainer1 = new ViewContainer<Editor>(Test.Editor.FontFamily, new Editor { Text = "I have Comic Sans text in Win & Android", FontFamily = "Comic Sans MS" });
 			var textFamilyContainer2 = new ViewContainer<Editor>(Test.Editor.FontFamily, new Editor { Text = "I have bold Chalkboard text in iOS", FontFamily = "ChalkboardSE-Regular", FontAttributes = FontAttributes.Bold });
 			var textFontSizeContainer = new ViewContainer<Editor>(Test.Editor.FontSize, new Editor { Text = "I have default size text" });
 			var textFontSizeDefaultContainer = new ViewContainer<Editor>(Test.Editor.FontSize, new Editor { Text = "I also have default size text" });
 			textFontSizeDefaultContainer.View.FontSize = Device.GetNamedSize(NamedSize.Default, textFontSizeDefaultContainer.View);
-			var textFontSizeLargeContainer = new ViewContainer<Editor>(Test.Editor.FontSize, new Editor { Text = "I have size 48 (huge) text", FontSize = 48 });
+			var textFontSizeLargeContainer = new ViewContainer<Editor>(Test.Editor.FontSize, new Editor { Text = "I have size 48 (huge) text", FontSize = 48, Placeholder = "This is a placeholder" });
 
 			var textColorContainer = new ViewContainer<Editor>(Test.Editor.TextColor,
 				new Editor { Text = "I should have red text", TextColor = Color.Red });
@@ -46,6 +48,7 @@ namespace Xamarin.Forms.Controls
 			Add(textContainer);
 			Add(textChangedContainer);
 			Add(placeholderContainer);
+			Add(placeholderColorContainer);
 			Add(textFontAttributesContainer);
 			Add(textFamilyContainer1);
 			Add(textFamilyContainer2);

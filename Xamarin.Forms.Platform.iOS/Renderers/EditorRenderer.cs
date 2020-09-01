@@ -10,10 +10,11 @@ namespace Xamarin.Forms.Platform.iOS
 	public class EditorRenderer : EditorRendererBase<UITextView>
 	{
 		// Using same placeholder color as for the Entry
-		readonly UIColor _defaultPlaceholderColor = ColorExtensions.SeventyPercentGrey;
+		readonly UIColor _defaultPlaceholderColor = ColorExtensions.PlaceholderColor;
 
 		UILabel _placeholderLabel;
 
+		[Preserve(Conditional = true)]
 		public EditorRenderer()
 		{
 			Frame = new RectangleF(0, 20, 320, 40);
@@ -41,7 +42,9 @@ namespace Xamarin.Forms.Platform.iOS
 				// create label so it can get updated during the initial setup loop
 				_placeholderLabel = new UILabel
 				{
-					BackgroundColor = UIColor.Clear
+					BackgroundColor = UIColor.Clear,
+					Frame = new RectangleF(0, 0, Frame.Width, Frame.Height),
+					Lines = 0
 				};
 			}
 
@@ -62,6 +65,8 @@ namespace Xamarin.Forms.Platform.iOS
 		protected internal override void UpdatePlaceholderText()
 		{
 			_placeholderLabel.Text = Element.Placeholder;
+
+			_placeholderLabel.SizeToFit();
 		}
 
 		protected internal override void UpdateCharacterSpacing()
@@ -71,7 +76,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if(textAttr != null)
 				TextView.AttributedText = textAttr;
 
-			var placeHolder = TextView.AttributedText.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
+			var placeHolder = _placeholderLabel.AttributedText.AddCharacterSpacing(Element.Placeholder, Element.CharacterSpacing);
 
 			if(placeHolder != null)
 				_placeholderLabel.AttributedText = placeHolder;
@@ -216,7 +221,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Editor.TextProperty.PropertyName)
+			if (e.IsOneOf(Editor.TextProperty, Editor.TextTransformProperty))
 			{
 				UpdateText();
 				UpdateCharacterSpacing();
@@ -325,9 +330,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected internal virtual void UpdateText()
 		{
-			if (TextView.Text != Element.Text)
+			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
+			if (TextView.Text != text)
 			{
-				TextView.Text = Element.Text;
+				TextView.Text = text;
 			}
 		}
 
@@ -345,7 +351,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var textColor = Element.TextColor;
 
 			if (textColor.IsDefault)
-				TextView.TextColor = UIColor.Black;
+				TextView.TextColor = ColorExtensions.LabelColor;
 			else
 				TextView.TextColor = textColor.ToUIColor();
 		}

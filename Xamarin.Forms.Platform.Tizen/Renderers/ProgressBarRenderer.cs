@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.Tizen
 {
 	public class ProgressBarRenderer : ViewRenderer<ProgressBar, EProgressBar>
 	{
-		static readonly EColor s_defaultColor = new EColor(129, 198, 255);
+		static readonly EColor s_defaultColor = ThemeConstants.ProgressBar.ColorClass.Default;
 
 		public ProgressBarRenderer()
 		{
@@ -56,7 +56,11 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			var themeStyle = SpecificVE.GetStyle(Element);
 			if (!string.IsNullOrEmpty(themeStyle))
+			{
 				Control.Style = themeStyle;
+				UpdateBackgroundColor(false);
+				UpdateProgressColor(false);
+			}
 		}
 
 		void UpdateAll()

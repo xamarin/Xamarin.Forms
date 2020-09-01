@@ -1,7 +1,12 @@
 ﻿using Android.Content;
 using Android.Graphics.Drawables;
 using Android.OS;
+#if __ANDROID_29__
+using Google.Android.Material.BottomNavigation;
+using Google.Android.Material.BottomSheet;
+#else
 using Android.Support.Design.Widget;
+#endif
 using Android.Views;
 using Android.Widget;
 using System;
@@ -51,6 +56,7 @@ namespace Xamarin.Forms.Platform.Android
 		BottomNavigationViewTracker _bottomNavigationTracker;
 		BottomSheetDialog _bottomSheetDialog;
 		bool _disposed;
+		public IShellItemController ShellItemController => ShellItem;
 
 		public ShellItemRenderer(IShellContext shellContext) : base(shellContext)
 		{
@@ -68,7 +74,10 @@ namespace Xamarin.Forms.Platform.Android
 			_bottomView.SetOnNavigationItemSelectedListener(this);
 
 			if (ShellItem == null)
-				throw new ArgumentException("Active Shell Item not set. Have you added any Shell Items to your Shell?", nameof(ShellItem));
+				throw new InvalidOperationException("Active Shell Item not set. Have you added any Shell Items to your Shell?");
+
+			if (ShellItem.CurrentItem == null)
+				throw new InvalidOperationException($"Content not found for active {ShellItem}. Title: {ShellItem.Title}. Route: {ShellItem.Route}.");
 
 			HookEvents(ShellItem);
 			SetupMenu();
@@ -149,7 +158,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			return CreateMoreBottomSheet((int index, BottomSheetDialog dialog) =>
 			{
-				selectCallback(ShellItem.Items[index], dialog);
+				selectCallback(ShellItemController.GetItems()[index], dialog);
 			});
 		}
 
@@ -162,10 +171,11 @@ namespace Xamarin.Forms.Platform.Android
 			bottomSheetLayout.Orientation = Orientation.Vertical;
 
 			// handle the more tab
-			for (int i = _bottomView.MaxItemCount - 1; i < ShellItem.Items.Count; i++)
+			var items = ((IShellItemController)ShellItem).GetItems();
+			for (int i = _bottomView.MaxItemCount - 1; i < items.Count; i++)
 			{
 				var closure_i = i;
-				var shellContent = ShellItem.Items[i];
+				var shellContent = items[i];
 
 				using (var innerLayout = new LinearLayout(Context))
 				{
@@ -243,7 +253,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnShellSectionChanged();
 
-			var index = ShellItem.Items.IndexOf(ShellSection);
+			var index = ((IShellItemController)ShellItem).GetItems().IndexOf(ShellSection);
 			using (var menu = _bottomView.Menu)
 			{
 				index = Math.Min(index, menu.Size() - 1);
@@ -279,7 +289,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else
 			{
-				var shellSection = ShellItem.Items[id];
+				var shellSection = ((IShellItemController)ShellItem).GetItems()[id];
 				if (item.IsChecked)
 				{
 					OnTabReselected(shellSection);
@@ -295,7 +305,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnMoreItemSelected(int shellSectionIndex, BottomSheetDialog dialog)
 		{
-			OnMoreItemSelected(ShellItem.Items[shellSectionIndex], dialog);
+			OnMoreItemSelected(ShellItemController.GetItems()[shellSectionIndex], dialog);
 		}
 
 		protected virtual void OnMoreItemSelected(ShellSection shellSection, BottomSheetDialog dialog)
@@ -310,10 +320,11 @@ namespace Xamarin.Forms.Platform.Android
 		List<(string title, ImageSource icon, bool tabEnabled)> CreateTabList(ShellItem shellItem)
 		{
 			var items = new List<(string title, ImageSource icon, bool tabEnabled)>();
+			var shellItems = ((IShellItemController)shellItem).GetItems();
 
-			for (int i = 0; i < shellItem.Items.Count; i++)
+			for (int i = 0; i < shellItems.Count; i++)
 			{
-				var item = shellItem.Items[i];
+				var item = shellItems[i];
 				items.Add((item.Title, item.Icon, item.IsEnabled));
 			}
 			return items;
@@ -345,9 +356,9 @@ namespace Xamarin.Forms.Platform.Android
 			if (e.PropertyName == BaseShellItem.IsEnabledProperty.PropertyName)
 			{
 				var content = (ShellSection)sender;
-				var index = ShellItem.Items.IndexOf(content);
+				var index = ((IShellItemController)ShellItem).GetItems().IndexOf(content);
 
-				var itemCount = ShellItem.Items.Count;
+				var itemCount = ((IShellItemController)ShellItem).GetItems().Count;
 				var maxItems = _bottomView.MaxItemCount;
 
 				if (itemCount > maxItems && index > maxItems - 2)
@@ -371,7 +382,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void SetupMenu(IMenu menu, int maxBottomItems, ShellItem shellItem)
 		{
-			var currentIndex = shellItem.Items.IndexOf(ShellSection);
+			var currentIndex = ((IShellItemController)ShellItem).GetItems().IndexOf(ShellSection);
 			var items = CreateTabList(shellItem);
 
 			BottomNavigationViewUtils.SetupMenu(
@@ -409,14 +420,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (DisplayedPage == null)
 				return;
 
-			bool visible = Shell.GetTabBarIsVisible(DisplayedPage);
-			using (var menu = _bottomView.Menu)
-			{
-				if (menu.Size() == 1)
-					visible = false;
-			}
-
-			_bottomView.Visibility = visible ? ViewStates.Visible : ViewStates.Gone;
+			_bottomView.Visibility = ShellItemController.ShowTabs ? ViewStates.Visible : ViewStates.Gone;
 		}
 	}
 }

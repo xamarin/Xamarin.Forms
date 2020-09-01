@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 		AView ITabStop.TabStop => this;
 
-		protected IndicatorView IndicatorsView;
+		protected IndicatorView IndicatorView;
 
 		int? _defaultLabelFor;
 		bool _disposed;
@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Platform.Android
 		AColor _pageIndicatorTintColor;
 		bool IsVisible => Visibility != ViewStates.Gone;
 
-		public VisualElement Element => IndicatorsView;
+		public VisualElement Element => IndicatorView;
 
 		public VisualElementTracker Tracker => _visualElementTracker;
 
@@ -50,6 +50,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public IndicatorViewRenderer(Context context) : base(context)
 		{
+			SetGravity(GravityFlags.Center);
 			_visualElementRenderer = new VisualElementRenderer(this);
 		}
 
@@ -76,7 +77,7 @@ namespace Xamarin.Forms.Platform.Android
 				throw new ArgumentException($"{nameof(element)} must be of type {typeof(IndicatorView).Name}");
 			}
 
-			var oldElement = IndicatorsView;
+			var oldElement = IndicatorView;
 			var newElement = (IndicatorView)element;
 
 			TearDownOldElement(oldElement);
@@ -140,9 +141,10 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateIndicatorTemplate();
 			}
-			else if (changedProperty.Is(IndicatorView.IndicatorsShapeProperty) ||
-					 changedProperty.Is(IndicatorView.IndicatorColorProperty) ||
-					 changedProperty.Is(IndicatorView.SelectedIndicatorColorProperty))
+			else if (changedProperty.IsOneOf(IndicatorView.IndicatorsShapeProperty,
+											IndicatorView.IndicatorColorProperty,
+											IndicatorView.IndicatorSizeProperty,
+											IndicatorView.SelectedIndicatorColorProperty))
 			{
 				ResetIndicators();
 			}
@@ -157,6 +159,15 @@ namespace Xamarin.Forms.Platform.Android
 			else if (changedProperty.Is(IndicatorView.CountProperty))
 			{
 				UpdateItemsSource();
+			}
+			else if (changedProperty.Is(IndicatorView.MaximumVisibleProperty))
+			{
+				UpdateIndicatorCount();
+				ResetIndicators();
+			}
+			else if (changedProperty.PropertyName == IndicatorView.HideSingleProperty.PropertyName)
+			{
+				UpdateHidesForSinglePage();
 			}
 		}
 
@@ -174,13 +185,13 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (newElement == null)
 			{
-				IndicatorsView = null;
+				IndicatorView = null;
 				return;
 			}
 
-			IndicatorsView = newElement;
+			IndicatorView = newElement;
 
-			IndicatorsView.PropertyChanged += OnElementPropertyChanged;
+			IndicatorView.PropertyChanged += OnElementPropertyChanged;
 
 			if (Tracker == null)
 			{
@@ -191,29 +202,22 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateBackgroundColor();
 
-			if (IndicatorsView.IndicatorTemplate != null)
+			if (IndicatorView.IndicatorTemplate != null)
 				UpdateIndicatorTemplate();
 			else
 				UpdateItemsSource();
 
 			ElevationHelper.SetElevation(this, newElement);
-		}
 
-		void IndicatorsViewItemSourcePropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
-		{
-			if (changedProperty.Is(ItemsView.ItemsSourceProperty))
-			{
-				UpdateItemsSource();
-			}
-			else if (changedProperty.Is(SelectableItemsView.SelectedItemProperty))
-			{
-				UpdateSelectedIndicator();
-			}
+			UpdateSelectedIndicator();
+			UpdateHidesForSinglePage();
 		}
 
 		void UpdateSelectedIndicator()
 		{
-			_selectedIndex = IndicatorsView.Position;
+			var maxVisible = GetMaximumVisible();
+			var position = IndicatorView.Position;
+			_selectedIndex = Math.Max(0, position >= maxVisible ? maxVisible - 1 : position);
 			UpdateIndicators();
 		}
 
@@ -238,7 +242,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (!IsVisible)
 				return;
 
-			var count = IndicatorsView.Count;
+			var count = GetMaximumVisible();
+
 			var childCount = ChildCount;
 
 			for (int i = childCount; i < count; i++)
@@ -259,7 +264,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				RemoveViewAt(ChildCount - 1);
 			}
-			IndicatorsView.NativeSizeChanged();
+			IndicatorView.NativeSizeChanged();
 		}
 
 		void ResetIndicators()
@@ -267,13 +272,13 @@ namespace Xamarin.Forms.Platform.Android
 			if (!IsVisible)
 				return;
 
-			_pageIndicatorTintColor = IndicatorsView.IndicatorColor.ToAndroid();
-			_currentPageIndicatorTintColor = IndicatorsView.SelectedIndicatorColor.ToAndroid();
-			_shapeType = IndicatorsView.IndicatorsShape == IndicatorShape.Circle ? AShapeType.Oval : AShapeType.Rectangle;
+			_pageIndicatorTintColor = IndicatorView.IndicatorColor.ToAndroid();
+			_currentPageIndicatorTintColor = IndicatorView.SelectedIndicatorColor.ToAndroid();
+			_shapeType = IndicatorView.IndicatorsShape == IndicatorShape.Circle ? AShapeType.Oval : AShapeType.Rectangle;
 			_pageShape = null;
 			_currentPageShape = null;
 
-			if (IndicatorsView.IndicatorTemplate == null)
+			if (IndicatorView.IndicatorTemplate == null)
 				UpdateShapes();
 			else
 				UpdateIndicatorTemplate();
@@ -283,17 +288,17 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateIndicatorTemplate()
 		{
-			if (IndicatorsView.IndicatorLayout == null)
+			if (IndicatorView.IndicatorLayout == null)
 				return;
 
-			var renderer = IndicatorsView.IndicatorLayout.GetRenderer() ?? Platform.CreateRendererWithContext(IndicatorsView.IndicatorLayout, Context);
-			Platform.SetRenderer(IndicatorsView.IndicatorLayout, renderer);
+			var renderer = IndicatorView.IndicatorLayout.GetRenderer() ?? Platform.CreateRendererWithContext(IndicatorView.IndicatorLayout, Context);
+			Platform.SetRenderer(IndicatorView.IndicatorLayout, renderer);
 
 			RemoveAllViews();
 			AddView(renderer.View);
 
-			var indicatorLayoutSizeRequest = IndicatorsView.IndicatorLayout.Measure(double.PositiveInfinity, double.PositiveInfinity, MeasureFlags.IncludeMargins);
-			IndicatorsView.IndicatorLayout.Layout(new Rectangle(0, 0, indicatorLayoutSizeRequest.Request.Width, indicatorLayoutSizeRequest.Request.Height));
+			var indicatorLayoutSizeRequest = IndicatorView.IndicatorLayout.Measure(double.PositiveInfinity, double.PositiveInfinity, MeasureFlags.IncludeMargins);
+			IndicatorView.IndicatorLayout.Layout(new Rectangle(0, 0, indicatorLayoutSizeRequest.Request.Width, indicatorLayoutSizeRequest.Request.Height));
 		}
 
 		void UpdateIndicators()
@@ -313,6 +318,12 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		void UpdateHidesForSinglePage()
+		{
+			ResetIndicators();
+			UpdateIndicatorCount();
+		}
+
 		void UpdateShapes()
 		{
 			if (_currentPageShape != null)
@@ -324,7 +335,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		Drawable GetShape(AColor color)
 		{
-			var indicatorSize = IndicatorsView.IndicatorSize;
+			var indicatorSize = IndicatorView.IndicatorSize;
 			ShapeDrawable shape;
 
 			if (_shapeType == AShapeType.Oval)
@@ -337,6 +348,18 @@ namespace Xamarin.Forms.Platform.Android
 			shape.Paint.Color = color;
 
 			return shape;
+		}
+
+		int GetMaximumVisible()
+		{
+			var minValue = Math.Min(IndicatorView.MaximumVisible, IndicatorView.Count);
+			var maximumVisible = minValue <= 0 ? 0 : minValue;
+			bool hideSingle = IndicatorView.HideSingle;
+
+			if (maximumVisible == 1 && hideSingle)
+				maximumVisible = 0;
+
+			return maximumVisible;
 		}
 	}
 }

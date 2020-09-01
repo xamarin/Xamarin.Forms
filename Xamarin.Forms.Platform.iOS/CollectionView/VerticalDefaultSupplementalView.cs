@@ -9,11 +9,13 @@ namespace Xamarin.Forms.Platform.iOS
 		public static NSString ReuseId = new NSString("Xamarin.Forms.Platform.iOS.VerticalDefaultSupplementalView");
 
 		[Export("initWithFrame:")]
+		[Internals.Preserve(Conditional = true)]
 		public VerticalDefaultSupplementalView(CGRect frame) : base(frame)
 		{
 			Label.Font = UIFont.PreferredHeadline;
 
 			Constraint = Label.WidthAnchor.ConstraintEqualTo(Frame.Width);
+			Constraint.Priority = (float)UILayoutPriority.DefaultHigh;
 			Constraint.Active = true;
 		}
 

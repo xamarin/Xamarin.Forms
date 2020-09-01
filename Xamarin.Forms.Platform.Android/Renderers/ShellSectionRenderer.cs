@@ -1,8 +1,21 @@
 using Android.OS;
 using Android.Runtime;
-using Android.Support.Design.Widget;
-using Android.Support.V4.View;
+
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+using AndroidX.Fragment.App;
+using AndroidX.CoordinatorLayout.Widget;
+using AndroidX.ViewPager.Widget;
+using Google.Android.Material.Tabs;
+using AndroidX.AppCompat.Widget;
+using AndroidX.Core.View;
+#else
 using Android.Support.V4.Widget;
+using Fragment = Android.Support.V4.App.Fragment;
+using Toolbar = Android.Support.V7.Widget.Toolbar;
+using Android.Support.V4.View;
+using Android.Support.Design.Widget;
+#endif
 using Android.Views;
 using System;
 using System.Collections.Specialized;
@@ -10,9 +23,7 @@ using System.ComponentModel;
 using System.Linq;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using AView = Android.Views.View;
-using Fragment = Android.Support.V4.App.Fragment;
 using LP = Android.Views.ViewGroup.LayoutParams;
-using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -22,6 +33,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ViewPager.IOnPageChangeListener.OnPageScrolled(int position, float positionOffset, int positionOffsetPixels)
 		{
+			if(!_selecting && ShellSection?.CurrentItem != null)
+			{
+				UpdateCurrentItem(ShellSection.CurrentItem);
+			}
 		}
 
 		void ViewPager.IOnPageChangeListener.OnPageScrollStateChanged(int state)
@@ -35,7 +50,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			// TODO : Find a way to make this cancellable
 			var shellSection = ShellSection;
-			var shellContent = shellSection.Items[position];
+			var shellContent = SectionController.GetItems()[position];
 
 			if (shellContent == shellSection.CurrentItem)
 				return;
@@ -48,8 +63,9 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateCurrentItem(shellContent);
 			}
-			else
+			else if(shellSection?.CurrentItem != null)
 			{
+				var currentPosition = SectionController.GetItems().IndexOf(shellSection.CurrentItem);
 				_selecting = true;
 
 				// Android doesn't really appreciate you calling SetCurrentItem inside a OnPageSelected callback.
@@ -58,10 +74,10 @@ namespace Xamarin.Forms.Platform.Android
 
 				Device.BeginInvokeOnMainThread(() =>
 				{
-					if (position < _viewPager.ChildCount && _toolbarTracker != null)
+					if (currentPosition < _viewPager.ChildCount && _toolbarTracker != null)
 					{
-						_viewPager.SetCurrentItem(position, false);
-						UpdateCurrentItem(shellContent);
+						_viewPager.SetCurrentItem(currentPosition, false);
+						UpdateCurrentItem(shellSection.CurrentItem);
 					}
 
 					_selecting = false;
@@ -124,12 +140,16 @@ namespace Xamarin.Forms.Platform.Android
 
 		Fragment IShellObservableFragment.Fragment => this;
 		public ShellSection ShellSection { get; set; }
+		IShellSectionController SectionController => (IShellSectionController)ShellSection;
 
 		public override AView OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 		{
 			var shellSection = ShellSection;
 			if (shellSection == null)
 				return null;
+
+			if (shellSection.CurrentItem == null)
+				throw new InvalidOperationException($"Content not found for active {shellSection}. Title: {shellSection.Title}. Route: {shellSection.Route}.");
 
 			var root = inflater.Inflate(Resource.Layout.RootLayout, null).JavaCast<CoordinatorLayout>();
 
@@ -147,18 +167,31 @@ namespace Xamarin.Forms.Platform.Android
 
 			_tablayout.SetupWithViewPager(_viewPager);
 
-			var currentPage = ((IShellContentController)shellSection.CurrentItem).GetOrCreateContent();
-			var currentIndex = ShellSection.Items.IndexOf(ShellSection.CurrentItem);
+			Page currentPage = null;
+			int currentIndex = -1;
+			var currentItem = ShellSection.CurrentItem;
+
+			while (currentIndex < 0 && SectionController.GetItems().Count > 0 && ShellSection.CurrentItem != null)
+			{
+				currentItem = ShellSection.CurrentItem;
+				currentPage = ((IShellContentController)shellSection.CurrentItem).GetOrCreateContent();
+
+				// current item hasn't changed
+				if(currentItem == shellSection.CurrentItem)
+					currentIndex = SectionController.GetItems().IndexOf(currentItem);
+			}
 
 			_toolbarTracker = _shellContext.CreateTrackerForToolbar(_toolbar);
 			_toolbarTracker.Page = currentPage;
 
 			_viewPager.CurrentItem = currentIndex;
 
-			if (shellSection.Items.Count == 1)
+			if (SectionController.GetItems().Count == 1)
 			{
 				_tablayout.Visibility = ViewStates.Gone;
 			}
+
+			_tablayout.LayoutChange += OnTabLayoutChange;
 
 			_tabLayoutAppearanceTracker = _shellContext.CreateTabLayoutAppearanceTracker(ShellSection);
 			_toolbarAppearanceTracker = _shellContext.CreateToolbarAppearanceTracker();
@@ -166,6 +199,24 @@ namespace Xamarin.Forms.Platform.Android
 			HookEvents();
 
 			return _rootView = root;
+		}
+
+		void OnTabLayoutChange(object sender, AView.LayoutChangeEventArgs e)
+		{
+			if (_disposed)
+				return;
+
+			var items = SectionController.GetItems();
+			for (int i = 0; i < _tablayout.TabCount; i++)
+			{
+				if (items.Count <= i)
+					break;
+
+				var tab = _tablayout.GetTabAt(i);
+
+				if(tab.View != null)
+					FastRenderers.AutomationPropertiesProvider.AccessibilitySettingsChanged(tab.View, items[i]);
+			}
 		}
 
 		void Destroy()
@@ -179,7 +230,7 @@ namespace Xamarin.Forms.Platform.Android
 				_viewPager.Adapter = null;
 				adapter.Dispose();
 
-
+				_tablayout.LayoutChange -= OnTabLayoutChange;
 				_toolbarAppearanceTracker.Dispose();
 				_tabLayoutAppearanceTracker.Dispose();
 				_toolbarTracker.Dispose();
@@ -225,7 +276,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		protected virtual void OnItemsCollectionChagned(object sender, NotifyCollectionChangedEventArgs e) =>
-			_tablayout.Visibility = (ShellSection.Items.Count > 1) ? ViewStates.Visible : ViewStates.Gone;
+			_tablayout.Visibility = (SectionController.GetItems().Count > 1) ? ViewStates.Visible : ViewStates.Gone;
 
 		protected virtual void OnShellItemPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -234,7 +285,10 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.PropertyName == ShellSection.CurrentItemProperty.PropertyName)
 			{
-				var newIndex = ShellSection.Items.IndexOf(ShellSection.CurrentItem);
+				var newIndex = SectionController.GetItems().IndexOf(ShellSection.CurrentItem);
+
+				if (SectionController.GetItems().Count != _viewPager.ChildCount)
+					_viewPager.Adapter.NotifyDataSetChanged();
 
 				if (newIndex >= 0)
 				{
@@ -257,14 +311,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		void HookEvents()
 		{
-			((INotifyCollectionChanged)ShellSection.Items).CollectionChanged += OnItemsCollectionChagned;
+			SectionController.ItemsCollectionChanged += OnItemsCollectionChagned;
 			((IShellController)_shellContext.Shell).AddAppearanceObserver(this, ShellSection);
 			ShellSection.PropertyChanged += OnShellItemPropertyChanged;
 		}
 
 		void UnhookEvents()
 		{
-			((INotifyCollectionChanged)ShellSection.Items).CollectionChanged -= OnItemsCollectionChagned;
+			SectionController.ItemsCollectionChanged -= OnItemsCollectionChagned;
 			((IShellController)_shellContext?.Shell)?.RemoveAppearanceObserver(this);
 			ShellSection.PropertyChanged -= OnShellItemPropertyChanged;
 		}

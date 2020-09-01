@@ -185,6 +185,7 @@ namespace Xamarin.Forms.Platform.Android
 					PowerManager.ActionPowerSaveModeChanged));
 
 				_powerSaveReceiverRegistered = true;
+				_powerSaveModeBroadcastReceiver.CheckAnimationEnabledStatus();
 			}
 
 			OnStateChanged();
@@ -263,7 +264,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_previousState == AndroidApplicationLifecycleState.OnCreate && _currentState == AndroidApplicationLifecycleState.OnStart)
 				_application.SendStart();
-			else if (_previousState == AndroidApplicationLifecycleState.OnStop && _currentState == AndroidApplicationLifecycleState.OnRestart)
+			else if (_previousState == AndroidApplicationLifecycleState.OnRestart && _currentState == AndroidApplicationLifecycleState.OnStart)	
 				_application.SendResume();
 			else if (_previousState == AndroidApplicationLifecycleState.OnPause && _currentState == AndroidApplicationLifecycleState.OnStop)
 				_application.SendSleep();

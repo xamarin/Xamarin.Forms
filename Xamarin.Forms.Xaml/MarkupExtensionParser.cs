@@ -22,6 +22,8 @@ namespace Xamarin.Forms.Xaml
 				markupExtension = new OnPlatformExtension();
 			else if (match == "OnIdiom")
 				markupExtension = new OnIdiomExtension();
+			else if (match == "AppThemeBinding")
+				markupExtension = new AppThemeBindingExtension();
 			else if (match == "DataTemplate")
 				markupExtension = new DataTemplateExtension();
 			else
@@ -42,14 +44,17 @@ namespace Xamarin.Forms.Xaml
 			if (remaining == "}")
 				return markupExtension.ProvideValue(serviceProvider);
 
-			string piece;
-			while ((piece = GetNextPiece(ref remaining, out char next)) != null)
-				HandleProperty(piece, serviceProvider, ref remaining, next != '=');
+			Property value;
+			do {
+				value = ParseProperty(serviceProvider, ref remaining);
+				SetPropertyValue(value.name, value.strValue, value.value, serviceProvider);
+			}
+			while (!value.last);
 
 			return markupExtension.ProvideValue(serviceProvider);
 		}
 
-		protected override void SetPropertyValue(string prop, string strValue, object value, IServiceProvider serviceProvider)
+		private void SetPropertyValue(string prop, string strValue, object value, IServiceProvider serviceProvider)
 		{
 			MethodInfo setter;
 			if (prop == null) {

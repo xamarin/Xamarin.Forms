@@ -27,9 +27,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-#if APP
-			Device.SetFlags(new List<string>(Device.Flags ?? new List<string>()) { "IndicatorView_Experimental" });
-#endif
 			var layout = new StackLayout();
 
 			var instructions = new Label
@@ -69,7 +66,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Margin = new Thickness(0, 0, 0, 24)
 			};
 
-			IndicatorView.SetItemsSourceBy(indicatorView, carouselView);
+			carouselView.IndicatorView = indicatorView;
 
 			layout.Children.Add(instructions);
 			layout.Children.Add(updateButton);

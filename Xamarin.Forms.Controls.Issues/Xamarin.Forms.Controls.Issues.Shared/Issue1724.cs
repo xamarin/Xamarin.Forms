@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1724, "[Enhancement] ImageButton", PlatformAffected.All)]
 	public class Issue1724 : TestContentPage
@@ -95,7 +98,7 @@ namespace Xamarin.Forms.Controls.Issues
 					new Label(){ Text = "Do you see image from a Uri?" },
 					new ImageButton()
 					{
-						Source = "https://raw.githubusercontent.com/xamarin/Xamarin.Forms/master/Xamarin.Forms.Controls/coffee.png",
+						Source = "https://raw.githubusercontent.com/xamarin/Xamarin.Forms/main/Xamarin.Forms.Controls/coffee.png",
 						BackgroundColor = Color.ForestGreen
 					},
 					new Label(){ Text = "Invalid Image Uri just to test it doesn't crash" },

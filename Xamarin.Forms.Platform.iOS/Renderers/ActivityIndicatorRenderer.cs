@@ -1,18 +1,57 @@
+using CoreGraphics;
 using System.ComponentModel;
 using System.Drawing;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
+	public sealed class UIActivityIndicatorViewDelegate : UIActivityIndicatorView
+    {
+        ActivityIndicator _element;
+        public UIActivityIndicatorViewDelegate(RectangleF point, ActivityIndicator element) : base(point)
+            => _element = element;
+
+        public override void Draw(CGRect rect)
+        {
+            base.Draw(rect);
+            if (_element?.IsRunning == true)
+                StartAnimating();
+        }
+
+        public override void LayoutSubviews()
+        {
+            base.LayoutSubviews();
+            if (_element?.IsRunning == true)
+                StartAnimating();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            _element = null;
+        }
+    }
+	
 	public class ActivityIndicatorRenderer : ViewRenderer<ActivityIndicator, UIActivityIndicatorView>
 	{
+		[Internals.Preserve(Conditional = true)]
+		public ActivityIndicatorRenderer()
+		{
+
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<ActivityIndicator> e)
 		{
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new UIActivityIndicatorView(RectangleF.Empty) { ActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray });
+#if __XCODE11__
+					if(Forms.IsiOS13OrNewer)
+						SetNativeControl(new UIActivityIndicatorViewDelegate(RectangleF.Empty, e.NewElement) { ActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.Medium });
+					else
+#endif
+						SetNativeControl(new UIActivityIndicatorViewDelegate(RectangleF.Empty, e.NewElement) { ActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray });
 				}
 
 				UpdateColor();
@@ -39,6 +78,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateIsRunning()
 		{
+			if (Control?.Superview == null)
+                return;
+				
 			if (Element.IsRunning)
 				Control.StartAnimating();
 			else

@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (Control == null)
 			{
-				SetNativeControl(new NScroller(Forms.NativeParent));
+				SetNativeControl(CreateNativeControl());
 				Control.Scrolled += OnScrolled;
 				_scrollCanvas = new NBox(Control);
 				_scrollCanvas.LayoutUpdated += OnContentLayoutUpdated;
@@ -59,6 +59,19 @@ namespace Xamarin.Forms.Platform.Tizen
 			UpdateAll();
 
 			base.OnElementChanged(e);
+		}
+
+		protected virtual NScroller CreateNativeControl()
+		{
+
+			if (Device.Idiom == TargetIdiom.Watch)
+			{
+				return new Native.Watch.WatchScroller(Forms.NativeParent, Forms.CircleSurface);
+			}
+			else
+			{
+				return new NScroller(Forms.NativeParent);
+			}
 		}
 
 		protected override void Dispose(bool disposing)
@@ -183,24 +196,27 @@ namespace Xamarin.Forms.Platform.Tizen
 				y = itemPosition.Y;
 			}
 
-			Rect region = new Rectangle(x, y, Element.Width, Element.Height).ToPixel();
+			ERect region = new Rectangle(x, y, Element.Width, Element.Height).ToPixel();
 			await Control.ScrollToAsync(region, e.ShouldAnimate);
 			Element.SendScrollFinished();
 		}
 
 		void UpdateVerticalScrollBarVisibility()
 		{
-			Control.VerticalScrollBarVisiblePolicy = ScrollBarVisibilityToTizen(Element.VerticalScrollBarVisibility);
+			Control.VerticalScrollBarVisiblePolicy = Element.VerticalScrollBarVisibility.ToNative();
 		}
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
 			var orientation = Element.Orientation;
 			if (orientation == ScrollOrientation.Horizontal || orientation == ScrollOrientation.Both)
-				Control.HorizontalScrollBarVisiblePolicy = ScrollBarVisibilityToTizen(Element.HorizontalScrollBarVisibility);
+				Control.HorizontalScrollBarVisiblePolicy = Element.HorizontalScrollBarVisibility.ToNative();
 		}
+	}
 
-		ScrollBarVisiblePolicy ScrollBarVisibilityToTizen(ScrollBarVisibility visibility)
+	static class ScrollBarExtensions
+	{
+		public static ScrollBarVisiblePolicy ToNative(this ScrollBarVisibility visibility)
 		{
 			switch (visibility)
 			{

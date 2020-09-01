@@ -1,8 +1,8 @@
 ﻿using System;
-using Windows.Foundation;
 using Windows.Graphics.Display;
 using Windows.UI.Xaml;
 using Xamarin.Forms.Internals;
+using WRect = Windows.Foundation.Rect;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -10,6 +10,7 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		DisplayInformation _information;
 		bool _isDisposed;
+		DualScreen.IDualScreenService DualScreenService => DependencyService.Get<DualScreen.IDualScreenService>();
 
 		public WindowsDeviceInfo()
 		{
@@ -36,7 +37,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			get
 			{
-				Rect windowSize = Window.Current.Bounds;
+				WRect windowSize = Window.Current.Bounds;
 				return new Size(windowSize.Width, windowSize.Height);
 			}
 		}
@@ -67,6 +68,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		static DeviceOrientation GetDeviceOrientation(DisplayOrientations orientations)
 		{
+
 			switch (orientations)
 			{
 				case DisplayOrientations.Landscape:
@@ -85,7 +87,14 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnOrientationChanged(DisplayInformation sender, object args)
 		{
-			CurrentOrientation = GetDeviceOrientation(sender.CurrentOrientation);
+			if (DualScreenService?.IsSpanned == true)
+			{
+				CurrentOrientation = (DualScreenService.IsLandscape) ? DeviceOrientation.Landscape : DeviceOrientation.Portrait;
+			}
+			else
+			{
+				CurrentOrientation = GetDeviceOrientation(sender.CurrentOrientation);
+			}
 		}
 	}
 }

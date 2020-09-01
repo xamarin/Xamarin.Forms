@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Core;
-using Windows.ApplicationModel.LockScreen;
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.Storage;
@@ -18,9 +17,11 @@ using Windows.Storage.Search;
 using Windows.Storage.Streams;
 using Windows.System;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
+using IOPath = System.IO.Path;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -28,10 +29,12 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		const string WrongThreadError = "RPC_E_WRONG_THREAD";
 		readonly CoreDispatcher _dispatcher;
+		readonly UISettings _uiSettings = new UISettings();
 
 		protected WindowsBasePlatformServices(CoreDispatcher dispatcher)
 		{
 			_dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+			_uiSettings.ColorValuesChanged += UISettingsColorValuesChanged;
 		}
 
 		public async void BeginInvokeOnMainThread(Action action)
@@ -63,7 +66,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				try
 				{
-					Assembly assembly = Assembly.Load(new AssemblyName { Name = Path.GetFileNameWithoutExtension(file.Name) });
+					Assembly assembly = Assembly.Load(new AssemblyName { Name = IOPath.GetFileNameWithoutExtension(file.Name) });
 
 					assemblies.Add(assembly);
 				}
@@ -91,31 +94,32 @@ namespace Xamarin.Forms.Platform.UWP
 			return assemblies.ToArray();
 		}
 
-		public string GetMD5Hash(string input)
-		{
-			HashAlgorithmProvider algorithm = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
-			IBuffer buffer = algorithm.HashData(Encoding.Unicode.GetBytes(input).AsBuffer());
-			return CryptographicBuffer.EncodeToHexString(buffer);
-		}
+		public string GetHash(string input) => Crc64.GetHash(input);
+
+		string IPlatformServices.GetMD5Hash(string input) => GetHash(input);
 
 		public double GetNamedSize(NamedSize size, Type targetElementType, bool useOldSizes)
 		{
 			return size.GetFontSize();
 		}
 
+		public Color GetNamedColor(string name)
+		{
+			if (!Windows.UI.Xaml.Application.Current?.Resources.ContainsKey(name) ?? true)
+				return Color.Default;
+
+			return ((Windows.UI.Color)Windows.UI.Xaml.Application.Current?.Resources[name]).ToFormsColor();
+		}
+
 		public async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
 		{
 			using (var client = new HttpClient())
 			{
-				HttpResponseMessage streamResponse = await client.GetAsync(uri.AbsoluteUri).ConfigureAwait(false);
+				// Do not remove this await otherwise the client will dispose before
+				// the stream even starts
+				var result = await StreamWrapper.GetStreamAsync(uri, cancellationToken, client).ConfigureAwait(false);
 
-				if (!streamResponse.IsSuccessStatusCode)
-				{
-					Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {streamResponse.StatusCode}");
-					return null;
-				}
-
-				return await streamResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
+				return result;
 			}
 		}
 
@@ -160,6 +164,11 @@ namespace Xamarin.Forms.Platform.UWP
 		public SizeRequest GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
 		{
 			return Platform.GetNativeSize(view, widthConstraint, heightConstraint);
+		}
+
+		async void UISettingsColorValuesChanged(UISettings sender, object args)
+		{
+			await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Application.Current?.TriggerThemeChanged(new AppThemeChangedEventArgs(Application.Current.RequestedTheme)));
 		}
 
 		async Task TryAllDispatchers(Action action)
@@ -246,5 +255,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			return await taskCompletionSource.Task;
 		}
+
+		public OSAppTheme RequestedTheme => Windows.UI.Xaml.Application.Current.RequestedTheme == ApplicationTheme.Dark ? OSAppTheme.Dark : OSAppTheme.Light;
 	}
 }

@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected TViewController Controller { get; private set; }
 
+		[Internals.Preserve(Conditional = true)]
 		protected ItemsViewRenderer()
 		{
 			AutoPackage = false;
@@ -66,6 +67,10 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateItemsUpdatingScrollMode();
 			}
+			else if (changedProperty.Is(VisualElement.FlowDirectionProperty))
+			{
+				UpdateFlowDirection();
+			}
 		}
 
 		protected abstract ItemsViewLayout SelectLayout();
@@ -90,12 +95,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateLayout();
 			Controller = CreateController(newElement, _layout);
-			 
-
 			SetNativeControl(Controller.View);
 			Controller.CollectionView.BackgroundColor = UIColor.Clear;
 			UpdateHorizontalScrollBarVisibility();
 			UpdateVerticalScrollBarVisibility();
+			UpdateItemsUpdatingScrollMode();
+			UpdateFlowDirection();
 
 			// Listen for ScrollTo requests
 			newElement.ScrollToRequested += ScrollToRequested;
@@ -121,8 +126,20 @@ namespace Xamarin.Forms.Platform.iOS
 			_layout.ItemsUpdatingScrollMode = ItemsView.ItemsUpdatingScrollMode;
 		}
 
+		protected virtual void UpdateFlowDirection()
+		{
+			if (Element == null)
+			{
+				return;
+			}
+
+			Controller.CollectionView.UpdateFlowDirection(Element);
+			Controller.Layout.InvalidateLayout();
+		}
+
 		protected virtual void UpdateItemsSource()
 		{
+			UpdateItemsUpdatingScrollMode();
 			Controller.UpdateItemsSource();
 		}
 

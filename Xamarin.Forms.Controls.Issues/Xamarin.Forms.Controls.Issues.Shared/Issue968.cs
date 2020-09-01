@@ -3,12 +3,16 @@ using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
+using Xamarin.Forms.Core.UITests;
 using NUnit.Framework;
 using Xamarin.UITest;
 #endif
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[Category(UITestCategories.ManualReview)]
+#endif
 	[Preserve (AllMembers = true)]
 	[Issue (IssueTracker.Github, 968, "StackLayout does not relayout on device rotation", PlatformAffected.iOS, NavigationBehavior.PushModalAsync)]
 	public class Issue968 : TestContentPage
@@ -19,7 +23,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var layout = new StackLayout {
 				Padding = new Thickness (20),
-				BackgroundColor = Color.Gray
+				BackgroundColor = Color.Gray,
+				AutomationId = "TestReady"
 			};
 
 			layout.Children.Add (new BoxView {
@@ -41,6 +46,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[UiTest (typeof(StackLayout))]
 		public void Issue968TestsRotationRelayoutIssue ()
 		{
+			RunningApp.WaitForElement("TestReady");
 			RunningApp.SetOrientationLandscape ();
 			RunningApp.Screenshot ("Rotated to Landscape");
 			RunningApp.WaitForElement (q => q.Marked ("You should see me after rotating"));

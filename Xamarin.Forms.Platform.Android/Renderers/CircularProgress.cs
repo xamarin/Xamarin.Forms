@@ -49,31 +49,43 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else
 			{
-				(Indeterminate ? IndeterminateDrawable : ProgressDrawable).SetColorFilter(color.ToAndroid(), PorterDuff.Mode.SrcIn);
+				(Indeterminate ? IndeterminateDrawable : ProgressDrawable).SetColorFilter(color.ToAndroid(), FilterMode.SrcIn);
 			}
 		}
 
-		public void SetBackgroundColor(Color color)
+		public void SetBackground(Color color, Brush brush)
 		{
-			_backgroudColor = color.IsDefault ? AColor.Transparent : color.ToAndroid();
-			(Background as GradientDrawable)?.SetColor(_backgroudColor);
+			if (Background is GradientDrawable gradientDrawable)
+			{
+				GradientDrawable backgroundDrawable = gradientDrawable.GetConstantState().NewDrawable() as GradientDrawable;
+
+				if (!Brush.IsNullOrEmpty(brush))
+					backgroundDrawable.UpdateBackground(brush, Height, Width);
+				else
+				{
+					_backgroudColor = color.IsDefault ? AColor.Transparent : color.ToAndroid();
+					backgroundDrawable.SetColor(_backgroudColor);
+				}
+
+				Background = backgroundDrawable;
+			}
 		}
 
-		AnimatedVectorDrawable CurrentDrawable => IndeterminateDrawable.Current as AnimatedVectorDrawable;
+		AnimatedVectorDrawable AnimatedDrawable => IndeterminateDrawable.Current as AnimatedVectorDrawable;
 
 		public bool IsRunning
 		{
-			get => CurrentDrawable?.IsRunning ?? false;
+			get => AnimatedDrawable?.IsRunning ?? false;
 			set
 			{
-				if (CurrentDrawable == null)
+				if (AnimatedDrawable == null)
 					return;
 
 				_isRunning = value;
-				if (_isRunning && !CurrentDrawable.IsRunning)
-						CurrentDrawable.Start();
-				else if (CurrentDrawable.IsRunning)
-						CurrentDrawable.Stop();
+				if (_isRunning && !AnimatedDrawable.IsRunning)
+						AnimatedDrawable.Start();
+				else if (AnimatedDrawable.IsRunning)
+						AnimatedDrawable.Stop();
 				
 				PostInvalidate();
 			}

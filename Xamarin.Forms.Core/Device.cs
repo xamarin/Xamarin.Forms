@@ -62,7 +62,7 @@ namespace Xamarin.Forms
 			get
 			{
 				if (info == null)
-					throw new InvalidOperationException("You MUST call Xamarin.Forms.Init(); prior to using it.");
+					throw new InvalidOperationException("You must call Xamarin.Forms.Forms.Init(); prior to using this property.");
 				return info;
 			}
 			set { info = value; }
@@ -84,7 +84,7 @@ namespace Xamarin.Forms
 			get
 			{
 				if (s_platformServices == null)
-					throw new InvalidOperationException("You MUST call Xamarin.Forms.Init(); prior to using it.");
+					throw new InvalidOperationException("You must call Xamarin.Forms.Forms.Init(); prior to using this property.");
 				return s_platformServices;
 			}
 			set { s_platformServices = value; }
@@ -224,7 +224,7 @@ namespace Xamarin.Forms
 			return iOS;
 		}
 
-		[Obsolete("OpenUri is obsolete as of version 4.3.0. Use Launcher.OpenUri (or CanOpen, or TryOpen) from Xamarin.Essentials")]
+		[Obsolete("OpenUri is obsolete as of version 4.3.0. Use Launcher.OpenAsync (or CanOpenAsync, or TryOpenAsync) from Xamarin.Essentials instead.")]
 		public static void OpenUri(Uri uri)
 		{
 			PlatformServices.OpenUriAction(uri);
@@ -245,6 +245,11 @@ namespace Xamarin.Forms
 		public static double GetNamedSize(NamedSize size, Type targetElementType, bool useOldSizes)
 		{
 			return PlatformServices.GetNamedSize(size, targetElementType, useOldSizes);
+		}
+
+		public static Color GetNamedColor(string name)
+		{
+			return PlatformServices.GetNamedColor(name);
 		}
 
 		internal static Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)

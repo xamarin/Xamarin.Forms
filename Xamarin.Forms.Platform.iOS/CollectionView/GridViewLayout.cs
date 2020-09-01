@@ -39,7 +39,9 @@ namespace Xamarin.Forms.Platform.iOS
 					? _itemsLayout.HorizontalItemSpacing
 					: _itemsLayout.VerticalItemSpacing);
 
-			spacing = spacing * (_itemsLayout.Span - 1);
+			spacing = ReduceSpacingToFitIfNeeded(availableSpace, spacing, _itemsLayout.Span);
+
+			spacing *= (_itemsLayout.Span - 1);
 
 			ConstrainedDimension = (availableSpace - spacing) / _itemsLayout.Span;
 
@@ -101,6 +103,16 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var layoutAttributesForRectElements = base.LayoutAttributesForElementsInRect(rect);
 
+			if (NeedsSingleItemHorizontalAlignmentAdjustment(layoutAttributesForRectElements))
+			{
+				// If there's exactly one item in a vertically scrolling grid, for some reason UICollectionViewFlowLayout
+				// tries to center it. This corrects that issue.
+				var currentFrame = layoutAttributesForRectElements[0].Frame;
+				var newFrame = new CGRect(CollectionView.Frame.Left + CollectionView.ContentInset.Right,
+				currentFrame.Top, currentFrame.Width, currentFrame.Height);
+				layoutAttributesForRectElements[0].Frame = newFrame;
+			}
+
 			if (!NeedsPartialColumnAdjustment())
 			{
 				return layoutAttributesForRectElements;
@@ -127,6 +139,105 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return layoutAttributesForAllCells;
+		}
+
+		public override UICollectionViewLayoutInvalidationContext GetInvalidationContext(UICollectionViewLayoutAttributes preferredAttributes, UICollectionViewLayoutAttributes originalAttributes)
+		{
+			var invalidationContext = base.GetInvalidationContext(preferredAttributes, originalAttributes);
+
+			if (invalidationContext.InvalidatedItemIndexPaths == null)
+			{
+				return invalidationContext;
+			}
+
+			if (invalidationContext.InvalidatedItemIndexPaths.Length == 0)
+			{
+				return invalidationContext;
+			}
+
+			if (ScrollDirection == UICollectionViewScrollDirection.Horizontal
+				&& preferredAttributes.Frame.Width - originalAttributes.Frame.Width > 1)
+			{
+				// If this is a horizontal grid and we're laying out or adjusting a cell 
+				// and we've decided it needs to be wider, then this might throw off the alignment of
+				// any cells above it in the layout. We'll need to recenter those cells
+				CenterAlignCellsInColumn(preferredAttributes);
+
+				// (Technically speaking, we _could_ simply add the cells above the current cell to the invalidationContext;
+				// after invalidation, they would be realigned correctly. But doing that causes subsequent calls to 
+				// GetInvalidationContext to happen every time a new column needs layout, and those calls will include
+				// _every single subsequent cell in the collection_ in the invalidation list. For very large collections,
+				// this gets really slow and the scrolling becomes jerky. This one-time realignment is much faster.
+			}
+
+			return invalidationContext;
+		}
+
+		public override nfloat GetMinimumInteritemSpacingForSection(UICollectionView collectionView, UICollectionViewLayout layout, nint section)
+		{
+			var requestedSpacing = ScrollDirection == UICollectionViewScrollDirection.Horizontal
+				? (nfloat)_itemsLayout.VerticalItemSpacing
+				: (nfloat)_itemsLayout.HorizontalItemSpacing;
+
+			var availableSpace = ScrollDirection == UICollectionViewScrollDirection.Horizontal
+				? collectionView.Frame.Height
+				: collectionView.Frame.Width;
+
+			return ReduceSpacingToFitIfNeeded(availableSpace, requestedSpacing, _itemsLayout.Span);
+		}
+
+		void CenterAlignCellsInColumn(UICollectionViewLayoutAttributes preferredAttributes) 
+		{
+			// Determine the set of cells above this one
+			var index = preferredAttributes.IndexPath;
+			var span = _itemsLayout.Span;
+
+			var column = index.Item / span;
+			var start = (int)column * span;
+
+			// If this is the first cell in the column, we don't need to adjust
+			if (index.Item > start)
+			{
+				var currentCenter = preferredAttributes.Frame.GetMidX();
+
+				// Work our way through the column
+				for (int n = start; n < index.Item; n++)
+				{
+					// Get the layout attributes for each cell
+					var path = NSIndexPath.FromItemSection(n, index.Section);
+					var attr = LayoutAttributesForItem(path);
+
+					// And see if the midpoints line up with the new layout attributes for the current cell
+					var center = attr.Frame.GetMidX();
+
+					if (currentCenter - center > 1)
+					{
+						// If the midpoints don't line up (withing a tolerance), adjust the cell's frame
+						var cell = CollectionView.CellForItem(path);
+						cell.Frame = new CGRect(currentCenter - cell.Frame.Width / 2, cell.Frame.Top, cell.Frame.Width, cell.Frame.Height);
+					}
+				}
+			}
+		}
+
+		bool NeedsSingleItemHorizontalAlignmentAdjustment(UICollectionViewLayoutAttributes[] layoutAttributesForRectElements) 
+		{
+			if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
+			{
+				return false;
+			}
+
+			if (layoutAttributesForRectElements.Length != 1)
+			{
+				return false;
+			}
+
+			if (layoutAttributesForRectElements[0].Frame.Top != CollectionView.Frame.Top + CollectionView.ContentInset.Bottom)
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		bool NeedsPartialColumnAdjustment(int section = 0)
@@ -167,6 +278,17 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return true;
+		}
+
+		static nfloat ReduceSpacingToFitIfNeeded(nfloat available, nfloat requestedSpacing, int span) 
+		{
+			if (span == 1)
+			{
+				return requestedSpacing;
+			}
+
+			var maxSpacing = (available - span) / (span - 1);
+			return (nfloat)Math.Min(requestedSpacing, maxSpacing);
 		}
 	}
 }

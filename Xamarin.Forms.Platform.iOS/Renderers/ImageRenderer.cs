@@ -8,6 +8,7 @@ using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
 using RectangleF = CoreGraphics.CGRect;
+using PreserveAttribute = Foundation.PreserveAttribute;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -32,6 +33,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		bool _isDisposed;
 
+		[Preserve(Conditional = true)]
 		public ImageRenderer() : base()
 		{
 			ImageElementManager.Init(this);
@@ -128,6 +130,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 	public sealed class FileImageSourceHandler : IImageSourceHandler, IAnimationSourceHandler
 	{
+		[Preserve(Conditional = true)]
+		public FileImageSourceHandler()
+		{
+		}
+
 		public Task<UIImage> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1f)
 		{
 			UIImage image = null;
@@ -158,6 +165,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 	public sealed class StreamImagesourceHandler : IImageSourceHandler, IAnimationSourceHandler
 	{
+		[Preserve(Conditional = true)]
+		public StreamImagesourceHandler()
+		{
+		}
+
 		public async Task<UIImage> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1f)
 		{
 			UIImage image = null;
@@ -193,6 +205,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 	public sealed class ImageLoaderSourceHandler : IImageSourceHandler, IAnimationSourceHandler
 	{
+		[Preserve(Conditional = true)]
+		public ImageLoaderSourceHandler()
+		{
+		}
+
 		public async Task<UIImage> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1f)
 		{
 			UIImage image = null;
@@ -228,8 +245,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 	public sealed class FontImageSourceHandler : IImageSourceHandler
 	{
-		//should this be the default color on the BP for iOS? 
-		readonly Color _defaultColor = Color.White;
+		readonly Color _defaultColor = ColorExtensions.LabelColor.ToColor();
+
+		[Preserve(Conditional = true)]
+		public FontImageSourceHandler()
+		{
+		}
 
 		public Task<UIImage> LoadImageAsync(
 			ImageSource imagesource,
@@ -240,7 +261,9 @@ namespace Xamarin.Forms.Platform.iOS
 			var fontsource = imagesource as FontImageSource;
 			if (fontsource != null)
 			{
-				var font = UIFont.FromName(fontsource.FontFamily ?? string.Empty, (float)fontsource.Size) ??
+				//This will allow lookup from the Embedded Fonts
+				var cleansedname = FontExtensions.CleanseFontName(fontsource.FontFamily);
+				var font = UIFont.FromName(cleansedname ?? string.Empty, (float)fontsource.Size) ??
 					UIFont.SystemFontOfSize((float)fontsource.Size);
 				var iconcolor = fontsource.Color.IsDefault ? _defaultColor : fontsource.Color;
 				var attString = new NSAttributedString(fontsource.Glyph, font: font, foregroundColor: iconcolor.ToUIColor());
@@ -257,7 +280,7 @@ namespace Xamarin.Forms.Platform.iOS
 				image = UIGraphics.GetImageFromCurrentImageContext();
 				UIGraphics.EndImageContext();
 
-				if (iconcolor != _defaultColor)
+				if (image != null && iconcolor != _defaultColor)
 					image = image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
 			}
 			return Task.FromResult(image);

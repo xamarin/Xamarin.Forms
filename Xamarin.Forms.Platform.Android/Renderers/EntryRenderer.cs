@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics.Drawables;
+#if __ANDROID_29__
+using AndroidX.Core.Content;
+#else
 using Android.Support.V4.Content;
+#endif
 using Android.Text;
 using Android.Text.Method;
 using Android.Util;
@@ -130,10 +134,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ITextWatcher.OnTextChanged(ICharSequence s, int start, int before, int count)
 		{
-			if (string.IsNullOrEmpty(Element.Text) && s.Length() == 0)
-				return;
-
-			((IElementController)Element).SetValueFromRenderer(Entry.TextProperty, s.ToString());
+			Internals.TextTransformUtilites.SetPlainText(Element, s?.ToString());
 		}
 
 		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
@@ -178,7 +179,7 @@ namespace Xamarin.Forms.Platform.Android
 			_selectionLengthChangePending = Element.IsSet(Entry.SelectionLengthProperty);
 
 			UpdatePlaceHolderText();
-			EditText.Text = Element.Text;
+			UpdateText();
 			UpdateInputType();
 			UpdateColor();
 			UpdateCharacterSpacing();
@@ -220,27 +221,31 @@ namespace Xamarin.Forms.Platform.Android
 			base.Dispose(disposing);
 		}
 
+		protected virtual void UpdatePlaceHolderText()
+		{
+			if (EditText.Hint == Element.Placeholder)
+				return;
 
-		protected virtual void UpdatePlaceHolderText() => EditText.Hint = Element.Placeholder;
+			EditText.Hint = Element.Placeholder;
+			if (EditText.IsFocused)
+			{
+				EditText.ShowKeyboard();
+			}
+		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			if (e.PropertyName == Entry.PlaceholderProperty.PropertyName)
 				UpdatePlaceHolderText();
 			else if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
 				UpdateInputType();
-			else if (e.PropertyName == Entry.TextProperty.PropertyName)
-			{
-				if (EditText.Text != Element.Text)
-				{
-					EditText.Text = Element.Text;
-					if (EditText.IsFocused)
-					{
-						EditText.SetSelection(EditText.Text.Length);
-						EditText.ShowKeyboard();
-					}
-				}
-			}
+			else if (e.IsOneOf(Entry.TextProperty, Entry.TextTransformProperty))
+				UpdateText();
 			else if (e.PropertyName == Entry.TextColorProperty.PropertyName)
 				UpdateColor();
 			else if (e.PropertyName == InputView.KeyboardProperty.PropertyName)
@@ -251,7 +256,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateInputType();
 			else if (e.PropertyName == Entry.HorizontalTextAlignmentProperty.PropertyName)
 				UpdateHorizontalTextAlignment();
-			else if(e.PropertyName == Entry.VerticalTextAlignmentProperty.PropertyName)
+			else if (e.PropertyName == Entry.VerticalTextAlignmentProperty.PropertyName)
 				UpdateVerticalTextAlignment();
 			else if (e.PropertyName == Entry.CharacterSpacingProperty.PropertyName)
 				UpdateCharacterSpacing();
@@ -526,6 +531,21 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.FocusableInTouchMode = isReadOnly;
 			EditText.Focusable = isReadOnly;
 		}
+
+		void UpdateText()
+		{
+			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
+			
+			if (EditText.Text == text)
+				return;
+			
+			EditText.Text = text;
+			if (EditText.IsFocused)
+			{
+				EditText.SetSelection(text.Length);
+				EditText.ShowKeyboard();
+			}
+		}
 	}
 
 	// Entry clear button management
@@ -555,10 +575,10 @@ namespace Xamarin.Forms.Platform.Android
 				var x = me.GetX();
 				var y = me.GetY();
 				if (me.Action == MotionEventActions.Up
-				    && x >= (EditText.Right - rBounds.Width())
-				    && x <= (EditText.Right - EditText.PaddingRight)
-				    && y >= EditText.PaddingTop
-				    && y <= (EditText.Height - EditText.PaddingBottom))
+					&& x >= (EditText.Right - rBounds.Width())
+					&& x <= (EditText.Right - EditText.PaddingRight)
+					&& y >= EditText.PaddingTop
+					&& y <= (EditText.Height - EditText.PaddingBottom))
 				{
 					EditText.Text = null;
 					e.Handled = true;

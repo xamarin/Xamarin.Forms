@@ -131,6 +131,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected MasterDetailPage MasterDetailPage => _masterDetailPage ?? (_masterDetailPage = (MasterDetailPage)Element);
 
+		[Internals.Preserve(Conditional = true)]
+		public TabletMasterDetailRenderer()
+		{
+
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (_disposed)
@@ -366,7 +372,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewWillLayoutSubviews()
 		{
 			base.ViewWillLayoutSubviews();
-			_masterController.View.BackgroundColor = UIColor.White;
+			_masterController.View.BackgroundColor = ColorExtensions.BackgroundColor;
 		}
 
 		public override void WillRotate(UIInterfaceOrientation toInterfaceOrientation, double duration)
@@ -454,6 +460,8 @@ namespace Xamarin.Forms.Platform.iOS
 				ToggleMaster();
 			else if (e.PropertyName == Xamarin.Forms.MasterDetailPage.IsGestureEnabledProperty.PropertyName)
 				base.PresentsWithGesture = this.MasterDetailPage.IsGestureEnabled;
+			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				UpdateBackground();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection();
 			else if (e.Is(MasterDetailPage.MasterBehaviorProperty))
@@ -504,10 +512,20 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (bgImage != null)
 					View.BackgroundColor = UIColor.FromPatternImage(bgImage);
-				else if (Element.BackgroundColor == Color.Default)
-					View.BackgroundColor = UIColor.White;
 				else
-					View.BackgroundColor = Element.BackgroundColor.ToUIColor();
+				{
+					Brush background = Element.Background;
+
+					if (!Brush.IsNullOrEmpty(background))
+						View.UpdateBackground(Element.Background);
+					else
+					{
+						if (Element.BackgroundColor == Color.Default)
+							View.BackgroundColor = UIColor.White;
+						else
+							View.BackgroundColor = Element.BackgroundColor.ToUIColor();
+					}
+				}
 			});
 		}
 

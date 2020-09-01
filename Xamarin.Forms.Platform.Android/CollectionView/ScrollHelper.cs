@@ -1,6 +1,12 @@
 using System;
 using Android.Graphics;
+using ARect = Android.Graphics.Rect;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -122,7 +128,7 @@ namespace Xamarin.Forms.Platform.Android
 			_recyclerView.ScrollToPosition(index);
 		}
 
-		Rect GetViewRect(int index)
+		ARect GetViewRect(int index)
 		{
 			var holder = _recyclerView.FindViewHolderForAdapterPosition(index);
 			var view = holder?.ItemView;
@@ -132,7 +138,7 @@ namespace Xamarin.Forms.Platform.Android
 				return null;
 			}
 
-			var viewRect = new Rect();
+			var viewRect = new ARect();
 			view.GetGlobalVisibleRect(viewRect);
 
 			return viewRect;
@@ -151,7 +157,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var offset = 0;
 
-			var rvRect = new Rect();
+			var rvRect = new ARect();
 			_recyclerView.GetGlobalVisibleRect(rvRect);
 
 			if (scrollToPosition == ScrollToPosition.Center)
@@ -179,7 +185,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var offset = 0;
 
-			var rvRect = new Rect();
+			var rvRect = new ARect();
 			_recyclerView.GetGlobalVisibleRect(rvRect);
 
 			if (scrollToPosition == ScrollToPosition.Center)

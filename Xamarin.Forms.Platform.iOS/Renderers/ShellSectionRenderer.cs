@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using UIKit;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class ShellSectionRenderer : UINavigationController, IShellSectionRenderer, IAppearanceObserver
+	public class ShellSectionRenderer : UINavigationController, IShellSectionRenderer, IAppearanceObserver, IDisconnectable
 	{
 		#region IShellContentRenderer
 
@@ -31,6 +32,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		IShellSectionController ShellSectionController => ShellSection;
+
 		public UIViewController ViewController => this;
 
 		#endregion IShellContentRenderer
@@ -47,7 +50,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		#endregion IAppearanceObserver
 
-		readonly IShellContext _context;
+		IShellContext _context;
 
 		readonly Dictionary<Element, IShellPageRendererTracker> _trackers =
 			new Dictionary<Element, IShellPageRendererTracker>();
@@ -69,14 +72,38 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			Delegate = new NavDelegate(this);
 			_context = context;
+			_context.Shell.PropertyChanged += HandleShellPropertyChanged;
 		}
-		
+
 		[Export("navigationBar:shouldPopItem:")]
+		[Internals.Preserve(Conditional = true)]
 		public bool ShouldPopItem(UINavigationBar navigationBar, UINavigationItem item)
-		{
+		{	
 			// this means the pop is already done, nothing we can do
 			if (ViewControllers.Length < NavigationBar.Items.Length)
 				return true;
+
+			foreach(var tracker in _trackers)
+			{
+				if(tracker.Value.ViewController == TopViewController)
+				{
+					var behavior = Shell.GetBackButtonBehavior(tracker.Value.Page);
+					var command = behavior.GetPropertyIfSet<ICommand>(BackButtonBehavior.CommandProperty, null);
+					var commandParameter = behavior.GetPropertyIfSet<object>(BackButtonBehavior.CommandParameterProperty, null);
+
+					if (command != null)
+					{
+						if(command.CanExecute(commandParameter))
+						{
+							command.Execute(commandParameter);
+						}
+
+						return false;
+					}
+
+					break;
+				}
+			}
 
 			bool allowPop = ShouldPop();
 
@@ -103,8 +130,26 @@ namespace Xamarin.Forms.Platform.iOS
 			return false;
 		}
 
+		public override void ViewWillAppear(bool animated)
+		{
+			if (_disposed)
+				return;
+
+			UpdateFlowDirection();
+			base.ViewWillAppear(animated);
+		}
+
+		internal void UpdateFlowDirection()
+		{
+			View.UpdateFlowDirection(_context.Shell);
+			NavigationBar.UpdateFlowDirection(_context.Shell);
+		}
+
 		public override void ViewDidLayoutSubviews()
 		{
+			if (_disposed)
+				return;
+
 			base.ViewDidLayoutSubviews();
 
 			_appearanceTracker.UpdateLayout(this);
@@ -118,8 +163,37 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidLoad()
 		{
+			if (_disposed)
+				return;
+
 			base.ViewDidLoad();
 			InteractivePopGestureRecognizer.Delegate = new GestureDelegate(this, ShouldPop);
+			UpdateFlowDirection();
+		}
+
+
+
+		void IDisconnectable.Disconnect()
+		{
+			(_renderer as IDisconnectable)?.Disconnect();
+
+			if (_displayedPage != null)
+				_displayedPage.PropertyChanged -= OnDisplayedPagePropertyChanged;
+
+			if (_shellSection != null)
+			{
+				_shellSection.PropertyChanged -= HandlePropertyChanged;
+				((IShellSectionController)ShellSection).NavigationRequested -= OnNavigationRequested;
+				((IShellSectionController)ShellSection).RemoveDisplayedPageObserver(this);
+			}
+
+
+			if (_context.Shell != null)
+			{
+				_context.Shell.PropertyChanged -= HandleShellPropertyChanged;
+				((IShellController)_context.Shell).RemoveAppearanceObserver(this);
+			}
+
 		}
 
 		protected override void Dispose(bool disposing)
@@ -127,29 +201,20 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_disposed)
 				return;
 
-			base.Dispose(disposing);
-
-
 			if (disposing)
 			{
+				this.RemoveFromParentViewController();
 				_disposed = true;
 				_renderer.Dispose();
 				_appearanceTracker.Dispose();
-				_shellSection.PropertyChanged -= HandlePropertyChanged;
-
-				if (_displayedPage != null)
-					_displayedPage.PropertyChanged -= OnDisplayedPagePropertyChanged;
-
-				((IShellSectionController)_shellSection).NavigationRequested -= OnNavigationRequested;
-				((IShellController)_context.Shell).RemoveAppearanceObserver(this);
-				((IShellSectionController)ShellSection).RemoveDisplayedPageObserver(this);
+				(this as IDisconnectable).Disconnect();
 
 				foreach (var tracker in ShellSection.Stack)
 				{
 					if (tracker == null)
 						continue;
 
-					DisposePage(tracker);
+					DisposePage(tracker, true);
 				}
 			}
 
@@ -158,6 +223,15 @@ namespace Xamarin.Forms.Platform.iOS
 			_shellSection = null;
 			_appearanceTracker = null;
 			_renderer = null;
+			_context = null;
+
+			base.Dispose(disposing);
+		}
+
+		protected virtual void HandleShellPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.Is(VisualElement.FlowDirectionProperty))
+				UpdateFlowDirection();
 		}
 
 		protected virtual void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -334,15 +408,20 @@ namespace Xamarin.Forms.Platform.iOS
 			var page = e.Page;
 
 			var renderer = Platform.GetRenderer(page);
+			var viewController = renderer?.ViewController;
 
-			if (renderer != null)
+			if (viewController == null && _trackers.ContainsKey(page))
+				viewController = _trackers[page].ViewController;
+
+			if (viewController != null)
 			{
-				if (renderer.ViewController == TopViewController)
+				if (viewController == TopViewController)
 				{
 					e.Animated = false;
 					OnPopRequested(e);
 				}
-				ViewControllers = ViewControllers.Remove(renderer.ViewController);
+
+				ViewControllers = ViewControllers.Remove(viewController);
 				DisposePage(page);
 			}
 		}
@@ -365,13 +444,17 @@ namespace Xamarin.Forms.Platform.iOS
 			});
 		}
 
-		void DisposePage(Page page)
+		void DisposePage(Page page, bool calledFromDispose = false)
 		{
 			if (_trackers.TryGetValue(page, out var tracker))
 			{
+				if(!calledFromDispose && tracker.ViewController != null && ViewControllers.Contains(tracker.ViewController))
+					ViewControllers = ViewControllers.Remove(_trackers[page].ViewController);
+
 				tracker.Dispose();
 				_trackers.Remove(page);
 			}
+
 
 			var renderer = Platform.GetRenderer(page);
 			if (renderer != null)
@@ -493,6 +576,16 @@ namespace Xamarin.Forms.Platform.iOS
 			public NavDelegate(ShellSectionRenderer renderer)
 			{
 				_self = renderer;
+			}
+
+			// This is currently working around a Mono Interpreter bug
+			// if you remove this code please verify that hot restart still works
+			// https://github.com/xamarin/Xamarin.Forms/issues/10519
+			[Export("navigationController:animationControllerForOperation:fromViewController:toViewController:")]
+			[Foundation.Preserve(Conditional = true)]
+			public new IUIViewControllerAnimatedTransitioning GetAnimationControllerForOperation(UINavigationController navigationController, UINavigationControllerOperation operation, UIViewController fromViewController, UIViewController toViewController)
+			{
+				return null;
 			}
 
 			public override void DidShowViewController(UINavigationController navigationController, [Transient] UIViewController viewController, bool animated)

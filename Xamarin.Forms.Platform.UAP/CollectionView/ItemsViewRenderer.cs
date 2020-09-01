@@ -1,15 +1,14 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.Foundation;
 using Xamarin.Forms.Internals;
+using UwpApp = Windows.UI.Xaml.Application;
+using UwpDataTemplate = Windows.UI.Xaml.DataTemplate;
 using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
-using UWPApp = Windows.UI.Xaml.Application;
-using UWPDataTemplate = Windows.UI.Xaml.DataTemplate;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -21,14 +20,15 @@ namespace Xamarin.Forms.Platform.UWP
 		UwpScrollBarVisibility? _defaultHorizontalScrollVisibility;
 		UwpScrollBarVisibility? _defaultVerticalScrollVisibility;
 		FrameworkElement _emptyView;
-		View _formsEmptyView;
+		View _formsEmptyView; 
+		bool _emptyViewDisplayed;
 		ScrollViewer _scrollViewer;
-		double _previousHorizontalOffset;
-		double _previousVerticalOffset;
+		internal double _previousHorizontalOffset;
+		internal double _previousVerticalOffset;
 
 		protected ListViewBase ListViewBase { get; private set; }
-		protected UWPDataTemplate ViewTemplate => (UWPDataTemplate)UWPApp.Current.Resources["View"];
-		protected UWPDataTemplate ItemsViewTemplate => (UWPDataTemplate)UWPApp.Current.Resources["ItemsViewDefaultTemplate"];
+		protected UwpDataTemplate ViewTemplate => (UwpDataTemplate)UwpApp.Current.Resources["View"];
+		protected UwpDataTemplate ItemsViewTemplate => (UwpDataTemplate)UwpApp.Current.Resources["ItemsViewDefaultTemplate"];
 
 		protected ItemsViewRenderer()
 		{
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateVerticalScrollBarVisibility();
 			}
-			else if (changedProperty.IsOneOf(Xamarin.Forms.ItemsView.EmptyViewProperty, 
+			else if (changedProperty.IsOneOf(Xamarin.Forms.ItemsView.EmptyViewProperty,
 				Xamarin.Forms.ItemsView.EmptyViewTemplateProperty))
 			{
 				UpdateEmptyView();
@@ -144,7 +144,7 @@ namespace Xamarin.Forms.Platform.UWP
 					IsSourceGrouped = false
 				};
 			}
-			
+
 			return new CollectionViewSource
 			{
 				Source = itemsSource,
@@ -388,8 +388,33 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			(ListViewBase as IEmptyView)?.SetEmptyView(_emptyView, _formsEmptyView);
-
+			
 			UpdateEmptyViewVisibility();
+		}
+
+		protected virtual void UpdateItemsLayout()
+		{
+			if (_scrollViewer != null)
+				_scrollViewer.ViewChanged -= OnScrollViewChanged;
+
+			if (ListViewBase != null)
+			{
+				ListViewBase.ItemsSource = null;
+				ListViewBase = null;
+			}
+
+			ListViewBase = SelectListViewBase();
+			ListViewBase.IsSynchronizedWithCurrentItem = false;
+
+			FindScrollViewer(ListViewBase);
+
+			SetNativeControl(ListViewBase);
+
+			UpdateItemTemplate();
+			UpdateItemsSource();
+			UpdateVerticalScrollBarVisibility();
+			UpdateHorizontalScrollBarVisibility();
+			UpdateEmptyView();
 		}
 
 		FrameworkElement RealizeEmptyViewTemplate(object bindingContext, DataTemplate emptyViewTemplate)
@@ -413,82 +438,90 @@ namespace Xamarin.Forms.Platform.UWP
 
 		FrameworkElement RealizeEmptyView(View view)
 		{
-			_formsEmptyView = view;
+			_formsEmptyView = view ?? throw new ArgumentNullException(nameof(view));
 			return view.GetOrCreateRenderer().ContainerElement;
 		}
 
 		protected virtual void UpdateEmptyViewVisibility()
 		{
-			if (_emptyView != null && ListViewBase is IEmptyView emptyView)
-			{
-				emptyView.EmptyViewVisibility = (CollectionViewSource?.View?.Count ?? 0) == 0
-					? Visibility.Visible
-					: Visibility.Collapsed;
+			bool isEmpty = (CollectionViewSource?.View?.Count ?? 0) == 0;
 
-				if (emptyView.EmptyViewVisibility == Visibility.Visible)
+			if (isEmpty)
+			{
+				if (_formsEmptyView != null)
 				{
-					if (ActualWidth >= 0 && ActualHeight >= 0)
-					{
-						_formsEmptyView?.Layout(new Rectangle(0, 0, ActualWidth, ActualHeight));
-					}
+					if (_emptyViewDisplayed)
+						ItemsView.RemoveLogicalChild(_formsEmptyView);
+
+					if (ItemsView.EmptyViewTemplate == null)
+						ItemsView.AddLogicalChild(_formsEmptyView);
 				}
+
+				if (_emptyView != null && ListViewBase is IEmptyView emptyView)
+				{
+					emptyView.EmptyViewVisibility = Visibility.Visible;
+
+					if (ActualWidth >= 0 && ActualHeight >= 0)
+						_formsEmptyView?.Layout(new Rectangle(0, 0, ActualWidth, ActualHeight));
+				}
+
+				_emptyViewDisplayed = true;
+			}
+			else
+			{
+				if (_emptyViewDisplayed)
+				{
+					if (_emptyView != null && ListViewBase is IEmptyView emptyView)
+						emptyView.EmptyViewVisibility = Visibility.Collapsed;
+
+					ItemsView.RemoveLogicalChild(_formsEmptyView);
+				}
+
+				_emptyViewDisplayed = false;
 			}
 		}
 
-		void OnScrollViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+		internal void HandleScroll(ScrollViewer scrollViewer)
 		{
 			var itemsViewScrolledEventArgs = new ItemsViewScrolledEventArgs
 			{
-				HorizontalOffset = _scrollViewer.HorizontalOffset,
-				HorizontalDelta = _scrollViewer.HorizontalOffset - _previousHorizontalOffset,
-				VerticalOffset = _scrollViewer.VerticalOffset,
-				VerticalDelta = _scrollViewer.VerticalOffset - _previousVerticalOffset,
+				HorizontalOffset = scrollViewer.HorizontalOffset,
+				HorizontalDelta = scrollViewer.HorizontalOffset - _previousHorizontalOffset,
+				VerticalOffset = scrollViewer.VerticalOffset,
+				VerticalDelta = scrollViewer.VerticalOffset - _previousVerticalOffset,
 			};
 
-			_previousHorizontalOffset = _scrollViewer.HorizontalOffset;
-			_previousVerticalOffset = _scrollViewer.VerticalOffset;
+			_previousHorizontalOffset = scrollViewer.HorizontalOffset;
+			_previousVerticalOffset = scrollViewer.VerticalOffset;
 
-			int firstVisibleItemIndex = -1;
-			int lastVisibleItemIndex = -1;
-
-			var presenters = ListViewBase.GetChildren<ListViewItemPresenter>();
-
-			if (presenters != null)
+			var layoutOrientaton = ItemsLayoutOrientation.Vertical;
+			bool goingNext = true;
+			switch (Layout)
 			{
-				int count = 0;
-				foreach (ListViewItemPresenter presenter in presenters)
-				{
-					if (IsListViewItemVisible(presenter, _scrollViewer))
-					{
-						if (firstVisibleItemIndex == -1)
-							firstVisibleItemIndex = count;
-
-						lastVisibleItemIndex = count;
-					}
-
-					count++;
-				}
-
-				itemsViewScrolledEventArgs.FirstVisibleItemIndex = firstVisibleItemIndex;
-				itemsViewScrolledEventArgs.CenterItemIndex = (lastVisibleItemIndex + firstVisibleItemIndex) / 2;
-				itemsViewScrolledEventArgs.LastVisibleItemIndex = lastVisibleItemIndex;
+				case LinearItemsLayout linearItemsLayout:
+					layoutOrientaton = linearItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal ? ItemsLayoutOrientation.Horizontal : ItemsLayoutOrientation.Vertical;
+					goingNext = itemsViewScrolledEventArgs.HorizontalDelta > 0;
+					break;
+				case GridItemsLayout gridItemsLayout:
+					layoutOrientaton = gridItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal ? ItemsLayoutOrientation.Horizontal : ItemsLayoutOrientation.Vertical;
+					goingNext = itemsViewScrolledEventArgs.VerticalDelta > 0;
+					break;
+				default:
+					break;
 			}
+
+			var visibleIndexes = ListViewBase.GetVisibleIndexes(layoutOrientaton, goingNext);
+
+			itemsViewScrolledEventArgs.FirstVisibleItemIndex = visibleIndexes.firstVisibleItemIndex;
+			itemsViewScrolledEventArgs.CenterItemIndex = visibleIndexes.centerItemIndex;
+			itemsViewScrolledEventArgs.LastVisibleItemIndex = visibleIndexes.lastVisibleItemIndex;
 
 			Element.SendScrolled(itemsViewScrolledEventArgs);
 		}
 
-		bool IsListViewItemVisible(FrameworkElement element, FrameworkElement container)
+		void OnScrollViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
 		{
-			if (element == null || container == null)
-				return false;
-
-			if (element.Visibility != Visibility.Visible)
-				return false;
-
-			var elementBounds = element.TransformToVisual(container).TransformBounds(new Rect(0, 0, element.ActualWidth, element.ActualHeight));
-			var containerBounds = new Rect(0, 0, container.ActualWidth, container.ActualHeight);
-
-			return elementBounds.Top < containerBounds.Bottom && elementBounds.Bottom > containerBounds.Top;
+			HandleScroll(_scrollViewer);
 		}
 	}
 }

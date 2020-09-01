@@ -38,7 +38,9 @@ using Xamarin.Forms.Platform.Android;
 [assembly: ExportRenderer (typeof (CarouselPage), typeof (CarouselPageRenderer))]
 [assembly: ExportRenderer (typeof (Page), typeof (PageRenderer))]
 [assembly: ExportRenderer (typeof (MasterDetailPage), typeof (MasterDetailRenderer))]
+[assembly: ExportRenderer (typeof (MediaElement), typeof(MediaElementRenderer))]
 [assembly: ExportRenderer (typeof (RefreshView), typeof (RefreshViewRenderer))]
+[assembly: ExportRenderer(typeof(Path), typeof(PathRenderer))]
 #endif
 
 [assembly: ExportRenderer(typeof(Shell), typeof(ShellRenderer))]
@@ -50,6 +52,7 @@ using Xamarin.Forms.Platform.Android;
 [assembly: ExportCell(typeof(TextCell), typeof(TextCellRenderer))]
 [assembly: ExportCell(typeof(ImageCell), typeof(ImageCellRenderer))]
 [assembly: ExportCell(typeof(ViewCell), typeof(ViewCellRenderer))]
+[assembly: ExportRenderer(typeof(EmbeddedFont), typeof(EmbeddedFontLoader))]
 [assembly: ExportImageSourceHandler(typeof(FileImageSource), typeof(FileImageSourceHandler))]
 [assembly: ExportImageSourceHandler(typeof(StreamImageSource), typeof(StreamImagesourceHandler))]
 [assembly: ExportImageSourceHandler(typeof(UriImageSource), typeof(ImageLoaderSourceHandler))]
@@ -59,3 +62,5 @@ using Xamarin.Forms.Platform.Android;
 [assembly: Preserve]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Platform")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Material")]
+[assembly: InternalsVisibleTo("Xamarin.Forms.DualScreen")]
+[assembly: InternalsVisibleTo("Xamarin.Forms.Platform.Android.UnitTests")]

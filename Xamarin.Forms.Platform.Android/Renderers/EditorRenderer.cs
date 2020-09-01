@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
-		[Obsolete("This constructor is obsolete as of version 2.5. Please use EntryRenderer(Context) instead.")]
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use EditorRenderer(Context) instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public EditorRenderer()
 		{
@@ -50,6 +50,18 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			_textColorSwitcher = _textColorSwitcher ?? new TextColorSwitcher(EditText.TextColors, Element.UseLegacyColorManagement());
 			_textColorSwitcher.UpdateTextColor(EditText, Element.TextColor);
+		}
+
+		protected override void OnAttachedToWindow()
+		{
+			base.OnAttachedToWindow();
+
+			if (EditText.IsAlive() && EditText.Enabled)
+			{
+				// https://issuetracker.google.com/issues/37095917
+				EditText.Enabled = false;
+				EditText.Enabled = true;
+			}
 		}
 	}
 
@@ -83,11 +95,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ITextWatcher.OnTextChanged(ICharSequence s, int start, int before, int count)
 		{
-			if (string.IsNullOrEmpty(Element.Text) && s.Length() == 0)
-				return;
-
-			if (Element.Text != s.ToString())
-				((IElementController)Element).SetValueFromRenderer(Editor.TextProperty, s.ToString());
+			Internals.TextTransformUtilites.SetPlainText(Element, s?.ToString());
 		}
 
 		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
@@ -142,7 +150,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == Editor.TextProperty.PropertyName)
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
+			if (e.PropertyName == Editor.TextProperty.PropertyName || e.PropertyName == Editor.TextTransformProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == InputView.KeyboardProperty.PropertyName)
 				UpdateInputType();
@@ -249,11 +262,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateText()
 		{
-			string newText = Element.Text ?? "";
+			string newText = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 
 			if (EditText.Text == newText)
 				return;
 
+			newText = TrimToMaxLength(newText);
 			EditText.Text = newText;
 			EditText.SetSelection(newText.Length);
 		}
@@ -291,12 +305,19 @@ namespace Xamarin.Forms.Platform.Android
 
 			currentFilters.Add(new InputFilterLengthFilter(Element.MaxLength));
 
-			EditText?.SetFilters(currentFilters.ToArray());
+			if (EditText == null)
+				return;
 
-			var currentControlText = EditText?.Text;
+			EditText.SetFilters(currentFilters.ToArray());
+			EditText.Text = TrimToMaxLength(EditText.Text);
+		}
 
-			if (currentControlText.Length > Element.MaxLength)
-				EditText.Text = currentControlText.Substring(0, Element.MaxLength);
+		string TrimToMaxLength(string currentText)
+		{
+			if (currentText == null || currentText.Length <= Element.MaxLength)
+				return currentText;
+
+			return currentText.Substring(0, Element.MaxLength);
 		}
 
 		void UpdateIsReadOnly()

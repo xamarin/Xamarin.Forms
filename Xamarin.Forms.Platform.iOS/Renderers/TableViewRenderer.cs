@@ -12,6 +12,12 @@ namespace Xamarin.Forms.Platform.iOS
 		UIView _originalBackgroundView;
 		RectangleF _previousFrame;
 
+		[Internals.Preserve(Conditional = true)]
+		public TableViewRenderer()
+		{
+
+		}
+
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			return Control.GetSizeRequest(widthConstraint, heightConstraint, DefaultRowHeight, DefaultRowHeight);
@@ -102,7 +108,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateRowHeight();
 			else if (e.PropertyName == TableView.HasUnevenRowsProperty.PropertyName)
 				SetSource();
-			else if (e.PropertyName == TableView.BackgroundColorProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
 				UpdateBackgroundView();
 		}
 
@@ -121,6 +127,16 @@ namespace Xamarin.Forms.Platform.iOS
 			base.UpdateNativeWidget();
 		}
 
+		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+		{
+			base.TraitCollectionDidChange(previousTraitCollection);
+#if __XCODE11__
+			// Make sure the cells adhere to changes UI theme
+			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				Control.ReloadData();
+#endif
+		}
+
 		void SetSource()
 		{
 			var modeledView = Element;
@@ -130,6 +146,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateBackgroundView()
 		{
 			Control.BackgroundView = Element.BackgroundColor == Color.Default ? _originalBackgroundView : null;
+			Control.BackgroundView.UpdateBackground(Element.Background);
 		}
 
 		void UpdateRowHeight()

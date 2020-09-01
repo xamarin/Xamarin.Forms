@@ -43,6 +43,12 @@ namespace Xamarin.Forms.Platform.MacOS
 			Label.TextTypeProperty.PropertyName
 		};
 
+		[Internals.Preserve(Conditional = true)]
+		public LabelRenderer()
+		{
+
+		}
+
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			if (!_perfectSizeValid)
@@ -219,6 +225,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdatePadding();
 			else if (e.PropertyName == Label.TextTypeProperty.PropertyName)
 				UpdateText();
+			else if (e.PropertyName == Label.TextTransformProperty.PropertyName)
+				UpdateText();
 		}
 
 		protected override NativeLabel CreateNativeControl()
@@ -242,9 +250,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				return;
 
 			if (Element?.TextType != TextType.Text)
-				return;
-
-			if (!Element.IsSet(Label.TextDecorationsProperty))
 				return;
 
 #if __MOBILE__
@@ -279,10 +284,11 @@ namespace Xamarin.Forms.Platform.MacOS
 				newAttributedText.AddAttribute(underlineStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
 
 #if __MOBILE__
-			UpdateCharacterSpacing();
+			Control.AttributedText = newAttributedText;
 #else
 			Control.AttributedStringValue = newAttributedText;
 #endif
+			UpdateCharacterSpacing();
 			_perfectSizeValid = false;
 		}
 
@@ -316,7 +322,21 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 				Layer.BackgroundColor = color.ToCGColor();
 #endif
+		}
 
+		protected override void SetBackground(Brush brush)
+		{
+			var backgroundLayer = this.GetBackgroundLayer(brush);
+
+			if (backgroundLayer != null)
+			{
+#if __MOBILE__
+				Layer.BackgroundColor = UIColor.Clear.CGColor;
+#endif
+				Layer.InsertBackgroundLayer(backgroundLayer, 0);
+			}
+			else
+				Layer.RemoveBackgroundLayer();
 		}
 
 		void UpdateHorizontalTextAlignment()
@@ -379,20 +399,24 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateCharacterSpacing()
 		{
-#if __MOBILE__
 			if (IsElementOrControlEmpty)
 				return;
 
 			if (Element?.TextType != TextType.Text)
 				return;
-
+#if __MOBILE__
 			var textAttr = Control.AttributedText.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
 
 			if (textAttr != null)
 				Control.AttributedText = textAttr;
-				
-			_perfectSizeValid = false;
+#else
+   			var textAttr = Control.AttributedStringValue.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
+
+			if (textAttr != null)
+				Control.AttributedStringValue = textAttr;
 #endif
+
+			_perfectSizeValid = false;
 		}
 
 		void UpdateText()
@@ -424,10 +448,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 			else
 			{
+				var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 #if __MOBILE__
-				Control.Text = Element.Text;
+				Control.Text = text;
 #else
-				Control.StringValue = Element.Text ?? "";
+				Control.StringValue = text ?? "";
 #endif
 			}
 			UpdateLayout();
@@ -450,38 +475,71 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			string text = Element.Text ?? string.Empty;
 
+			var attr = GetNSAttributedStringDocumentAttributes();
 #if __MOBILE__
-			var attr = new NSAttributedStringDocumentAttributes
-			{
-				DocumentType = NSDocumentType.HTML
-			};
 
 			NSError nsError = null;
 
 			Control.AttributedText = new NSAttributedString(text, attr, ref nsError);
-
 #else
-			var attr = new NSAttributedStringDocumentAttributes
-			{
-				DocumentType = NSDocumentType.HTML
-			};
-
 			var htmlData = new NSMutableData();
 			htmlData.SetData(text);
 
 			Control.AttributedStringValue = new NSAttributedString(htmlData, attr, out _);
 #endif
 			_perfectSizeValid = false;
+
+			// Setting AttributedText will reset style-related properties, so we'll need to update them again
+			UpdateTextColor();
+			UpdateFont();
+		}
+
+		protected virtual NSAttributedStringDocumentAttributes GetNSAttributedStringDocumentAttributes()
+		{
+			return new NSAttributedStringDocumentAttributes
+			{
+				DocumentType = NSDocumentType.HTML,
+				StringEncoding = NSStringEncoding.UTF8
+			};
+		}
+
+		static bool FontIsDefault(Label label) 
+		{
+			if (label.IsSet(Label.FontAttributesProperty))
+			{
+				return false;
+			}
+
+			if (label.IsSet(Label.FontFamilyProperty))
+			{
+				return false;
+			}
+
+			if (label.IsSet(Label.FontSizeProperty))
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		void UpdateFont()
 		{
-			if (Element?.TextType != TextType.Text)
+			if(Element == null)
+			{
 				return;
+			}
 
 			if (IsTextFormatted)
 			{
 				UpdateFormattedText();
+				return;
+			}
+
+			if (Element.TextType == TextType.Html && FontIsDefault(Element))
+			{
+				// If no explicit font properties have been specified and we're display HTML,
+				// let the HTML determine the typeface
 				return;
 			}
 
@@ -495,9 +553,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateTextColor()
 		{
-			if (Element?.TextType != TextType.Text)
-				return;
-
 			if (IsTextFormatted)
 			{
 				UpdateFormattedText();
@@ -506,14 +561,25 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			var textColor = (Color)Element.GetValue(Label.TextColorProperty);
 
-			// default value of color documented to be black in iOS docs
+			if (textColor.IsDefault && Element.TextType == TextType.Html)
+			{
+				// If no explicit text color has been specified and we're displaying HTML, 
+				// let the HTML determine the colors
+				return;		
+			}
+
+				// default value of color documented to be black in iOS docs
 #if __MOBILE__
-			Control.TextColor = textColor.ToUIColor(ColorExtensions.Black);
+				Control.TextColor = textColor.ToUIColor(ColorExtensions.LabelColor);
 #else
-			Control.TextColor = textColor.ToNSColor(ColorExtensions.Black);
+			var alignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
+			var textWithColor = new NSAttributedString(Element.Text ?? "", font: Element.ToNSFont(), foregroundColor: textColor.ToNSColor(ColorExtensions.TextColor), paragraphStyle: new NSMutableParagraphStyle() { Alignment = alignment });
+			textWithColor = textWithColor.AddCharacterSpacing(Element.Text ?? string.Empty, Element.CharacterSpacing);
+			Control.AttributedStringValue = textWithColor;
 #endif
 			UpdateLayout();
 		}
+
 		void UpdateLayout()
 		{
 #if __MOBILE__

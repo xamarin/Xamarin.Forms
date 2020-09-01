@@ -16,6 +16,7 @@ using UwpThickness = Windows.UI.Xaml.Thickness;
 using UwpStyle = Windows.UI.Xaml.Style;
 using Windows.UI.Xaml.Media;
 using UwpApplication = Windows.UI.Xaml.Application;
+using UwpSolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -32,6 +33,9 @@ namespace Xamarin.Forms.Platform.UWP
 		internal ShellItem ShellItem { get; set; }
 
 		internal ShellRenderer ShellContext { get; set; }
+
+		IShellItemController ShellItemController => ShellItem;
+		IShellController ShellController => ShellContext?.Shell;
 
 		public ShellItemRenderer(ShellRenderer shellContext)
 		{
@@ -95,7 +99,15 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			UnhookEvents(ShellItem);
 			ShellItem = newItem;
+
+			if (newItem.CurrentItem == null)
+				throw new InvalidOperationException($"Content not found for active {newItem}. Title: {newItem.Title}. Route: {newItem.Route}.");
+
 			ShellSection = newItem.CurrentItem;
+
+			if (ShellSection.CurrentItem == null)
+				throw new InvalidOperationException($"Content not found for active {ShellSection}. Title: {ShellSection.Title}. Route: {ShellSection.Route}.");
+
 			HookEvents(newItem);
 		}
 
@@ -104,11 +116,14 @@ namespace Xamarin.Forms.Platform.UWP
 			double inset = 10;
 			if (ShellContext.IsPaneToggleButtonVisible)
 				inset += 45;
-			if (Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Controls.NavigationView", "IsBackButtonVisible"))
+
+			if (Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Microsoft.UI.Xaml.Controls.NavigationView", "IsBackButtonVisible"))
 			{
-				if (ShellContext.IsBackButtonVisible != Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed)
+				if (ShellContext.IsBackButtonVisible != Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed &&
+					ShellContext.IsBackEnabled)
 					inset += 45;
 			}
+
 			_HeaderArea.Padding = new UwpThickness(inset, 0, 0, 0);
 		}
 
@@ -116,11 +131,13 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			_BottomBar.Children.Clear();
 			_BottomBar.ColumnDefinitions.Clear();
-			if (ShellItem?.Items.Count > 1)
+			var items = ShellItemController?.GetItems();
+
+			if (items?.Count > 1)
 			{
-				for (int i = 0; i < ShellItem.Items.Count; i++)
+				for (int i = 0; i < items.Count; i++)
 				{
-					var section = ShellItem.Items[i];
+					var section = items[i];
 					var btn = new AppBarButton()
 					{
 						Label = section.Title,
@@ -128,8 +145,31 @@ namespace Xamarin.Forms.Platform.UWP
 						MinWidth = 68,
 						MaxWidth = 200
 					};
-					if (section.Icon is FileImageSource fis)
-						btn.Icon = new BitmapIcon() { UriSource = new Uri("ms-appx:///" + fis.File) };
+
+					switch (section.Icon)
+					{
+						case FileImageSource fileImageSource:
+							btn.Icon = new BitmapIcon() { UriSource = new Uri("ms-appx:///" + fileImageSource.File) };
+							break;
+
+						case FontImageSource fontImageSource:
+
+							var icon = new FontIcon()
+							{
+								Glyph = fontImageSource.Glyph,
+								FontFamily = new FontFamily(fontImageSource.FontFamily),
+								FontSize = fontImageSource.Size,
+							};
+
+							if (!fontImageSource.Color.IsDefault)
+							{
+								icon.Foreground = fontImageSource.Color.ToBrush();
+							}
+
+							btn.Icon = icon;
+							break;
+					}
+
 					btn.Click += (s, e) => OnShellSectionClicked(section);
 					_BottomBar.ColumnDefinitions.Add(new UwpColumnDefinition() { Width = new UwpGridLength(1, UwpGridUnitType.Star) });
 					SetColumn(btn, i);
@@ -166,9 +206,9 @@ namespace Xamarin.Forms.Platform.UWP
 					titleColor = appearance.TitleColor.ToWindowsColor();
 			}
 			_BottomBarArea.Background = _HeaderArea.Background =
-				new SolidColorBrush(tabBarBackgroundColor);
-			_Title.Foreground = new SolidColorBrush(titleColor);
-			var tabbarForeground = new SolidColorBrush(tabBarForegroundColor);
+				new UwpSolidColorBrush(tabBarBackgroundColor);
+			_Title.Foreground = new UwpSolidColorBrush(titleColor);
+			var tabbarForeground = new UwpSolidColorBrush(tabBarForegroundColor);
 			foreach (var button in _BottomBar.Children.OfType<AppBarButton>())
 				button.Foreground = tabbarForeground;
 			if (SectionRenderer is IAppearanceObserver iao)
@@ -205,8 +245,9 @@ namespace Xamarin.Forms.Platform.UWP
 		void HookEvents(ShellItem shellItem)
 		{
 			shellItem.PropertyChanged += OnShellItemPropertyChanged;
-			((INotifyCollectionChanged)shellItem.Items).CollectionChanged += OnShellItemsChanged;
-			foreach (var shellSection in shellItem.Items)
+			ShellItemController.ItemsCollectionChanged += OnShellItemsChanged;
+			ShellController.StructureChanged += OnShellStructureChanged;
+			foreach (var shellSection in ShellItemController.GetItems())
 			{
 				HookChildEvents(shellSection);
 			}
@@ -216,11 +257,13 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (shellItem != null)
 			{
-				foreach (var shellSection in shellItem.Items)
+				foreach (var shellSection in ShellItemController.GetItems())
 				{
 					UnhookChildEvents(shellSection);
 				}
-				((INotifyCollectionChanged)shellItem.Items).CollectionChanged -= OnShellItemsChanged;
+
+				ShellController.StructureChanged -= OnShellStructureChanged;
+				ShellItemController.ItemsCollectionChanged -= OnShellItemsChanged;
 				ShellItem.PropertyChanged -= OnShellItemPropertyChanged;
 				ShellSection = null;
 				ShellItem = null;
@@ -264,9 +307,20 @@ namespace Xamarin.Forms.Platform.UWP
 			SwitchSection(ShellNavigationSource.ShellSectionChanged, newSection, null, oldSection != null);
 		}
 
+		void OnShellStructureChanged(object sender, EventArgs e)
+		{
+			UpdateBottomBarVisibility();
+		}
+
 		void SwitchSection(ShellNavigationSource source, ShellSection section, Page page, bool animate = true)
 		{
-			SectionRenderer.NavigateToShellSection(source, section, animate);
+			if (section == null)
+				throw new InvalidOperationException($"Content not found for active {ShellItem} - {ShellItem.Title}.");
+
+			if (section.CurrentItem == null)
+				throw new InvalidOperationException($"Content not found for active {section} - {section.Title}.");
+
+			SectionRenderer.NavigateToShellSection(source, section, page, animate);
 		}
 
 		Page DisplayedPage { get; set; }
@@ -324,7 +378,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateBottomBarVisibility()
 		{
-			_BottomBar.Visibility = DisplayedPage == null || Shell.GetTabBarIsVisible(DisplayedPage) ? Visibility.Visible : Visibility.Collapsed;
+			bool isVisible = ShellItemController?.ShowTabs ?? false;
+			_BottomBar.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
 		}
 
 		void UpdateToolbar()

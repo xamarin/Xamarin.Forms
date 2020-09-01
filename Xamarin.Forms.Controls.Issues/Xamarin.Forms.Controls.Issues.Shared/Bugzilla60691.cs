@@ -1,4 +1,4 @@
-﻿using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using System.Threading.Tasks;
 
@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 	// this doesn't fail on Uwp but it leaves a browser window open and breaks later tests
 	[Category(UITestCategories.UwpIgnore)]
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
 #endif
 	public class Bugzilla60691 : TestContentPage
 	{
@@ -36,7 +37,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		[Test]
 		[Ignore("This test opens a system dialog in iOS11+ that cannot be dismissed by UITest and covers subsequent tests.")]
-		public async void Bugzilla60691_Tel()
+		public async Task Bugzilla60691_Tel()
 		{
 			RunningApp.WaitForElement(q => q.Marked("tel"));
 			RunningApp.Tap(q => q.Marked("tel"));

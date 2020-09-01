@@ -1,16 +1,21 @@
-﻿#if __ANDROID_28__
+﻿
 using System;
 using System.ComponentModel;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.Core.View;
+using MaterialCardView = Google.Android.Material.Card.MaterialCardView;
+#else
 using Android.Support.V4.View;
+using MaterialCardView = Android.Support.Design.Card.MaterialCardView;
+#endif
 using Android.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using Xamarin.Forms.Material.Android;
 using AView = Android.Views.View;
-using MaterialCardView = Android.Support.Design.Card.MaterialCardView;
 using Xamarin.Forms.Platform.Android;
-
+using Android.Graphics.Drawables;
 
 namespace Xamarin.Forms.Material.Android
 {
@@ -30,6 +35,8 @@ namespace Xamarin.Forms.Material.Android
 		readonly GestureManager _gestureManager;
 		readonly EffectControlProvider _effectControlProvider;
 		readonly MotionEventHelper _motionEventHelper;
+		Drawable _defaultBackgroundDrawable;
+		GradientDrawable _backgroundGradientDrawable;
 
 		public MaterialFrameRenderer(Context context)
 			: base(MaterialContextThemeWrapper.Create(context))
@@ -90,6 +97,12 @@ namespace Xamarin.Forms.Material.Android
 				_visualElementPackager?.Dispose();
 				_visualElementPackager = null;
 
+				_defaultBackgroundDrawable?.Dispose();
+				_defaultBackgroundDrawable = null;
+
+				_backgroundGradientDrawable?.Dispose();
+				_backgroundGradientDrawable = null;
+
 				var count = ChildCount;
 				for (var i = 0; i < count; i++)
 				{
@@ -134,7 +147,7 @@ namespace Xamarin.Forms.Material.Android
 				UpdateShadow();
 				UpdateCornerRadius();
 				UpdateBorder();
-				UpdateBackgroundColor();
+				UpdateBackground();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
 			}
@@ -150,8 +163,8 @@ namespace Xamarin.Forms.Material.Android
 				UpdateCornerRadius();
 			else if (e.PropertyName == Frame.BorderColorProperty.PropertyName)
 				UpdateBorder();
-			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
-				UpdateBackgroundColor();
+			else if (e.IsOneOf(VisualElement.BackgroundColorProperty, VisualElement.BackgroundProperty))
+				UpdateBackground();
 		}
 
 		protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
@@ -232,19 +245,41 @@ namespace Xamarin.Forms.Material.Android
 			SetContentPadding(0, 0, 0, 0);
 		}
 
-		void UpdateBackgroundColor()
+		void UpdateBackground()
 		{
 			if (_disposed || Element == null)
 				return;
 
-			var bgColor = Element.BackgroundColor;
-			if (bgColor.IsDefault && _defaultBackgroundColor == null)
-				return;
+			var bgBrush = Element.Background;
 
-			if (_defaultBackgroundColor == null)
-				_defaultBackgroundColor = CardBackgroundColor.DefaultColor;
+			if (Brush.IsNullOrEmpty(bgBrush))
+			{
+				var bgColor = Element.BackgroundColor;
 
-			SetCardBackgroundColor(bgColor.IsDefault ? _defaultBackgroundColor.Value : bgColor.ToAndroid());
+				if (bgColor.IsDefault && _defaultBackgroundColor == null)
+					return;
+
+				if (_defaultBackgroundDrawable != null)
+					Background = _defaultBackgroundDrawable;
+
+				if (_defaultBackgroundColor == null)
+					_defaultBackgroundColor = CardBackgroundColor.DefaultColor;
+
+				SetCardBackgroundColor(bgColor.IsDefault ? _defaultBackgroundColor.Value : bgColor.ToAndroid());
+			}
+			else
+			{
+				if (_defaultBackgroundDrawable == null)
+					_defaultBackgroundDrawable = Background;
+
+				_backgroundGradientDrawable = new GradientDrawable();
+				_backgroundGradientDrawable.SetShape(ShapeType.Rectangle);
+
+				_backgroundGradientDrawable.SetCornerRadius(Radius);
+				_backgroundGradientDrawable.UpdateBackground(bgBrush, Height, Width);
+
+				Background = _backgroundGradientDrawable;
+			}
 		}
 
 		// IVisualElementRenderer
@@ -283,4 +318,3 @@ namespace Xamarin.Forms.Material.Android
 		AView ITabStop.TabStop => this;
 	}
 }
-#endif

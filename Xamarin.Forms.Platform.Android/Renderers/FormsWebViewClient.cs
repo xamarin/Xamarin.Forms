@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Net;
 using Android.Graphics;
 using Android.Runtime;
 using Android.Webkit;
@@ -34,9 +35,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override void OnPageStarted(WView view, string url, Bitmap favicon)
 		{
-			if (_renderer == null || string.IsNullOrWhiteSpace(url) || url == WebViewRenderer.AssetBaseUrl)
+			if (_renderer?.Element == null || string.IsNullOrWhiteSpace(url) || url == WebViewRenderer.AssetBaseUrl)
 				return;
 
+			_renderer.SyncNativeCookiesToElement(url);
 			var cancel = false;
 			if (!url.Equals(_renderer.UrlCanceled, StringComparison.OrdinalIgnoreCase))
 				cancel = SendNavigatingCanceled(url);
@@ -70,6 +72,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (navigate)
 			{
 				var args = new WebNavigatedEventArgs(_renderer.GetCurrentWebNavigationEvent(), source, url, _navigationResult);
+				_renderer.SyncNativeCookiesToElement(url);
 				_renderer.ElementController.SendNavigated(args);
 			}
 

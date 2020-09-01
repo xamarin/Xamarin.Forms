@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
+using Xamarin.Forms.Platform.WPF.Extensions;
+using WThickness = System.Windows.Thickness;
 
 namespace Xamarin.Forms.Platform.WPF
 {
@@ -50,6 +47,8 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateContent();
 				UpdateBorder();
 				UpdateCornerRadius();
+				UpdatePadding();
+				UpdateShadow();
 			}
 
 			base.OnElementChanged(e);
@@ -59,19 +58,18 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Frame.ContentProperty.PropertyName)
+			if (e.PropertyName == ContentView.ContentProperty.PropertyName)
 				UpdateContent();
-			else if (e.PropertyName == Frame.BorderColorProperty.PropertyName || e.PropertyName == Frame.HasShadowProperty.PropertyName)
+			else if (e.PropertyName == Frame.BorderColorProperty.PropertyName)
 				UpdateBorder();
+			else if (e.PropertyName == Frame.HasShadowProperty.PropertyName)
+				UpdateShadow();
 			else if (e.PropertyName == Frame.CornerRadiusProperty.PropertyName)
 				UpdateCornerRadius();
+			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
+				UpdatePadding();
 		}
-
-		protected override void UpdateBackground()
-		{
-			Control.UpdateDependencyColor(Border.BackgroundProperty, Element.BackgroundColor);
-		}
-
+		 
 		void UpdateContent()
 		{
 			if (_currentView != null)
@@ -93,9 +91,38 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 			else
 			{
-				Control.UpdateDependencyColor(Border.BorderBrushProperty, new Color(0, 0, 0, 0));
+				Control.UpdateDependencyColor(Border.BorderBrushProperty, Color.Transparent);
 				Control.BorderThickness = new System.Windows.Thickness(0);
 			}
+		}
+
+		protected virtual void UpdateShadow()
+		{ 
+			if (Element.HasShadow)
+			{
+				Control.Effect = new DropShadowEffect()
+				{
+					Color = Colors.Gray,
+					Direction = 320,
+					Opacity = 0.5,
+					BlurRadius = 6,
+					ShadowDepth = 2
+				};
+			}
+			else if(Control.Effect is DropShadowEffect)
+			{
+				Control.Effect = null;
+			}
+		}
+
+		protected override void UpdateBackground()
+		{
+			Brush background = Element.Background;
+
+			if (Brush.IsNullOrEmpty(background))
+				Control.UpdateDependencyColor(Border.BackgroundProperty, Element.BackgroundColor);
+			else
+				Control.Background = background.ToBrush();
 		}
 
 		void UpdateCornerRadius()
@@ -103,6 +130,14 @@ namespace Xamarin.Forms.Platform.WPF
 			Control.CornerRadius = new System.Windows.CornerRadius(Element.CornerRadius >= 0 ? Element.CornerRadius : 0);
 			_rounding.CornerRadius = Control.CornerRadius;
 		}
+
+		void UpdatePadding()
+		{
+			Control.Padding = new WThickness(
+				Element.Padding.Left,
+				Element.Padding.Top,
+				Element.Padding.Right,
+				Element.Padding.Bottom);
+		}
 	}
 }
-

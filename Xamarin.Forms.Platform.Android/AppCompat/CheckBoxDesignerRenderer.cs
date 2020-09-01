@@ -1,7 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.Core.Widget;
+#else
 using Android.Support.V7.Widget;
+using Android.Support.V4.Widget;
+#endif
 using AView = Android.Views.View;
 using Android.Views;
 using Xamarin.Forms.Internals;
@@ -13,7 +19,6 @@ using Xamarin.Forms.Platform.Android.FastRenderers;
 using Android.OS;
 using Android.Widget;
 using Android.Content.Res;
-using Android.Support.V4.Widget;
 using AAttribute = Android.Resource.Attribute;
 using ACheckBox = Android.Widget.CheckBox;
 
@@ -150,6 +155,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateOnColor();
 				UpdateIsChecked();
 				UpdateBackgroundColor();
+				UpdateBackground();
 			}
 
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
@@ -165,9 +171,13 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateIsChecked();
 			}
-			else if (e.PropertyName == CheckBox.BackgroundColorProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 			{
 				UpdateBackgroundColor();
+			}
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			{
+				UpdateBackground();
 			}
 
 			ElementPropertyChanged?.Invoke(this, e);
@@ -210,6 +220,13 @@ namespace Xamarin.Forms.Platform.Android
 				SetBackgroundColor(AColor.Transparent);
 			else
 				SetBackgroundColor(Element.BackgroundColor.ToAndroid());
+		}
+
+		void UpdateBackground()
+		{
+			Brush background = Element.Background;
+
+			this.UpdateBackground(background);
 		}
 
 		void UpdateOnColor()

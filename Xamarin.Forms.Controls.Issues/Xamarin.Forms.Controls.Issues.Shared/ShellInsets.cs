@@ -30,8 +30,12 @@ namespace Xamarin.Forms.Controls.Issues
 		const string EntryTest = nameof(EntryTest);
 		const string EntryToClick = "EntryToClick";
 		const string EntryToClick2 = "EntryToClick2";
+		const string CreateTopTabButton = "CreateTopTabButton";
+		const string CreateBottomTabButton = "CreateBottomTabButton";
+		
 		const string EntrySuccess = "EntrySuccess";
 		const string ResetKeyboard = "Hide Keyboard";
+		const string ResetKeyboard2 = "Hide Keyboard 2";
 		const string Reset = "Reset";
 
 		const string ToggleSafeArea = "ToggleSafeArea";
@@ -147,7 +151,7 @@ namespace Xamarin.Forms.Controls.Issues
 			PropertyChangedEventHandler propertyChangedEventHandler = null;
 			propertyChangedEventHandler = (sender, args) =>
 			{
-				if(args.PropertyName == PlatformConfiguration.iOSSpecific.Page.SafeAreaInsetsProperty.PropertyName)
+				if (args.PropertyName == PlatformConfiguration.iOSSpecific.Page.SafeAreaInsetsProperty.PropertyName)
 				{
 					if (page.On<iOS>().SafeAreaInsets().Top > 0)
 					{
@@ -283,11 +287,22 @@ namespace Xamarin.Forms.Controls.Issues
 							},
 							new Button()
 							{
-								Text = ResetKeyboard
+								Text = ResetKeyboard,
+								AutomationId = ResetKeyboard2
 
 							},
-							new Button(){ Text = "Top Tab", Command = new Command(() => AddTopTab("top"))},
-							new Button(){ Text = "Bottom Tab", Command = new Command(() => AddBottomTab("bottom"))},
+							new Button()
+							{
+								Text = "Top Tab",
+								AutomationId = CreateTopTabButton,
+								Command = new Command(() => AddTopTab("top"))
+							},
+							new Button()
+							{
+								Text = "Bottom Tab",
+								AutomationId = CreateBottomTabButton,
+								Command = new Command(() => AddBottomTab("bottom"))
+							},
 							new Entry()
 							{
 								AutomationId = EntryToClick2
@@ -330,10 +345,10 @@ namespace Xamarin.Forms.Controls.Issues
 				entry = RunningApp.Query(EntrySuccess);
 
 				if (entry.Length > 0)
-					Assert.Less(entry[0].Rect.Y, originalPosition.Y);
+					Assert.LessOrEqual(entry[0].Rect.Y, originalPosition.Y);
 			}
 
-			RunningApp.Tap(ResetKeyboard);
+			RunningApp.Tap(ResetKeyboard2);
 			var finalPosition = RunningApp.WaitForElement(EntrySuccess)[0].Rect;
 
 			// verify that label has returned to about the same spot
@@ -392,6 +407,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Assert.Greater(somePadding[0].Rect.Y, zeroPadding[0].Rect.Y);
 		}
+		
 #endif
 	}
 }

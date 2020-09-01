@@ -33,11 +33,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UIGraphics.BeginImageContext(size);
 			var context = UIGraphics.GetCurrentContext();
-			context.SetFillColor(1, 0, 0, 1);
+			context.SetFillColor(ColorExtensions.Red.CGColor);
 			context.FillRect(rect);
 			DestructiveBackground = UIGraphics.GetImageFromCurrentImageContext();
 
-			context.SetFillColor(UIColor.LightGray.ToColor().ToCGColor());
+			context.SetFillColor(ColorExtensions.LightGray.CGColor);
 			context.FillRect(rect);
 
 			NormalBackground = UIGraphics.GetImageFromCurrentImageContext();
@@ -472,9 +472,12 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (e.PropertyName == "HasContextActions")
 			{
-				var parentListView = _cell.RealParent as ListView;
-				var recycling = parentListView != null && 
+				if (_cell == null)
+					return;
+
+				var recycling = _cell.RealParent is ListView parentListView &&
 					((parentListView.CachingStrategy & ListViewCachingStrategy.RecycleElement) != 0);
+
 				if (!recycling)
 					ReloadRow();
 			}

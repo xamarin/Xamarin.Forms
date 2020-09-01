@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
+using Xamarin.Forms.Platform.WPF.Extensions;
 using Xamarin.Forms.Platform.WPF.Helpers;
 
 namespace Xamarin.Forms.Platform.WPF
@@ -37,12 +33,6 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 
 			base.OnElementChanged(e);
-		}
-
-		protected override void Appearing()
-		{
-			base.Appearing();
-			Element.Layout(new Rectangle(0, 0, Control.ActualWidth, Control.ActualHeight));
 		}
 
 		void HandleChildAdded(object sender, ElementEventArgs e)
@@ -123,20 +113,17 @@ namespace Xamarin.Forms.Platform.WPF
 
 		protected override void UpdateBackground()
 		{
-			Control.UpdateDependencyColor(FormsPanel.BackgroundProperty, Element.BackgroundColor);
-		}
+			Brush background = Element.Background;
 
-		protected override void UpdateNativeWidget()
-		{
-			base.UpdateNativeWidget();
-			UpdateClipToBounds();
+			if (Brush.IsNullOrEmpty(background))
+				Control.UpdateDependencyColor(FormsPanel.BackgroundProperty, Element.BackgroundColor);
+			else
+				Control.Background = background.ToBrush();
 		}
 
 		void UpdateClipToBounds()
 		{
-			Control.Clip = null;
-			if (Element.IsClippedToBounds)
-				Control.Clip = new RectangleGeometry { Rect = new Rect(0, 0, Control.ActualWidth, Control.ActualHeight) };
+			Control.ClipToBounds = Element.IsClippedToBounds;
 		}
 
 		bool _isDisposed;

@@ -13,6 +13,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.Animation)]
+	[Category(UITestCategories.ManualReview)]
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 8004, "Add a ScaleXTo and ScaleYTo animation extension method", PlatformAffected.All)]
@@ -27,7 +28,8 @@ namespace Xamarin.Forms.Controls.Issues
 			var label = new Label
 			{
 				Text = "Click the button below to animate the BoxView using individual ScaleXTo and ScaleYTo extension methods.",
-				TextColor = Color.Black
+				TextColor = Color.Black,
+				AutomationId = "TestReady"
 			};
 
 			var button = new Button
@@ -73,6 +75,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public async Task AnimateScaleOfBoxView()
 		{
+			RunningApp.WaitForElement("TestReady");
 			RunningApp.Screenshot("Small blue box");
 
 			// Check the box and button elements.

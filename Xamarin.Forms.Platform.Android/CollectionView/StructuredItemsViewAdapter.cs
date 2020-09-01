@@ -1,7 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
 using Android.Content;
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+using AndroidX.RecyclerView.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
 using ViewGroup = Android.Views.ViewGroup;
 
 namespace Xamarin.Forms.Platform.Android
@@ -12,7 +17,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		Size? _size;
 
-		internal StructuredItemsViewAdapter(TItemsView itemsView, 
+		protected internal StructuredItemsViewAdapter(TItemsView itemsView, 
 			Func<View, Context, ItemContentView> createItemContentView = null) : base(itemsView, createItemContentView)
 		{
 			UpdateHasHeader();
@@ -134,7 +139,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (content is View formsView)
 			{
-				return SimpleViewHolder.FromFormsView(formsView, context);
+				var viewHolder = SimpleViewHolder.FromFormsView(formsView, context);
+
+				// Propagate the binding context, visual, etc. from the ItemsView to the header/footer
+				ItemsView.AddLogicalChild(viewHolder.View);
+
+				return viewHolder;
 			}
 
 			// No template, Footer is not a Forms View, so just display Footer.ToString

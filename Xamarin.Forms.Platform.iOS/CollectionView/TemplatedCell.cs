@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Platform.iOS
 		Size _size;
 
 		[Export("initWithFrame:")]
+		[Internals.Preserve(Conditional = true)]
 		protected TemplatedCell(CGRect frame) : base(frame)
 		{
 		}
@@ -29,16 +30,20 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ConstrainTo(CGSize constraint)
 		{
+			ClearConstraints();
 			ConstrainedSize = constraint;
 		}
 
 		public override void ConstrainTo(nfloat constant)
 		{
+			ClearConstraints();
 			ConstrainedDimension = constant;
-
-			// Reset constrained size in case ItemSizingStrategy changes
-			// and we want to measure each item
-			ConstrainedSize = default(CGSize);
+		}
+		
+		protected void ClearConstraints()
+		{
+			ConstrainedSize = default;
+			ConstrainedDimension = default;
 		}
 
 		public override UICollectionViewLayoutAttributes PreferredLayoutAttributesFittingAttributes(
@@ -84,23 +89,26 @@ namespace Xamarin.Forms.Platform.iOS
 
 				// Create the content and renderer for the view 
 				var view = itemTemplate.CreateContent() as View;
+
+				// Set the binding context _before_ we create the renderer; that way, it's available during OnElementChanged
+				view.BindingContext = bindingContext;
+
 				var renderer = TemplateHelpers.CreateRenderer(view);
 				SetRenderer(renderer);
-			}
 
-			var currentElement = VisualElementRenderer?.Element;
-
-			// Bind the view to the data item
-			if (currentElement != null)
-				currentElement.BindingContext = bindingContext;
-
-			if (itemTemplate != _currentTemplate)
-			{
-				// And make the Element a "child" of the ItemsView
+				// And make the new Element a "child" of the ItemsView
 				// We deliberately do this _after_ setting the binding context for the new element;
 				// if we do it before, the element briefly inherits the ItemsView's bindingcontext and we 
 				// emit a bunch of needless binding errors
-				itemsView.AddLogicalChild(currentElement);
+				itemsView.AddLogicalChild(view);
+			}
+			else 
+			{
+				// Same template, different data
+				var currentElement = VisualElementRenderer?.Element;
+
+				if (currentElement != null)
+					currentElement.BindingContext = bindingContext;
 			}
 
 			_currentTemplate = itemTemplate;

@@ -1,12 +1,18 @@
 ﻿using System;
 using Android.Graphics;
+#if __ANDROID_29__
+using AndroidX.RecyclerView.Widget;
+using AndroidX.AppCompat.Widget;
+#else
 using Android.Support.V7.Widget;
+#endif
+using ARect = Android.Graphics.Rect;
 using AView = Android.Views.View;
 using FormsCarouselView = Xamarin.Forms.CarouselView;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class CarouselSpacingItemDecoration : RecyclerView.ItemDecoration
+	public class CarouselSpacingItemDecoration : RecyclerView.ItemDecoration
 	{
 		readonly FormsCarouselView _carouselView;
 		readonly ItemsLayoutOrientation _orientation;
@@ -38,7 +44,7 @@ namespace Xamarin.Forms.Platform.Android
 			_carouselView = carouselView;
 		}
 
-		public override void GetItemOffsets(Rect outRect, AView view, RecyclerView parent, RecyclerView.State state)
+		public override void GetItemOffsets(ARect outRect, AView view, RecyclerView parent, RecyclerView.State state)
 		{
 			base.GetItemOffsets(outRect, view, parent, state);
 

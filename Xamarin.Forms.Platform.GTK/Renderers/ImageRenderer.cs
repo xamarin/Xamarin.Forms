@@ -1,10 +1,16 @@
-﻿using Gdk;
+using Gdk;
 using System;
 using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Drawing.Text;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms.Platform.GTK.Extensions;
+using DrawingFont = System.Drawing.Font;
+using IOPath = System.IO.Path;
 
 namespace Xamarin.Forms.Platform.GTK.Renderers
 {
@@ -44,6 +50,9 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				SetImage(e.OldElement);
 				SetAspect();
 				SetOpacity();
+				SetScaleX();
+				SetScaleY();
+				SetRotation();
 			}
 
 			base.OnElementChanged(e);
@@ -59,6 +68,14 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				SetOpacity();
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				SetAspect();
+			else if (e.PropertyName == Image.ScaleProperty.PropertyName)
+				SetScale();
+			else if (e.PropertyName == Image.ScaleXProperty.PropertyName)
+				SetScaleX();
+			else if (e.PropertyName == Image.ScaleYProperty.PropertyName)
+				SetScaleY();
+			else if (e.PropertyName == Image.RotationProperty.PropertyName)
+				SetRotation();
 		}
 
 		protected override void OnSizeAllocated(Gdk.Rectangle allocation)
@@ -124,6 +141,26 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 			Control.SetAlpha(opacity);
 		}
+
+		void SetScale()
+		{
+			Control.Scale = Element.Scale;
+		}
+
+		void SetScaleX()
+		{
+			Control.ScaleX = Element.ScaleX;
+		}
+
+		void SetScaleY()
+		{
+			Control.ScaleY = Element.ScaleY;
+		}
+
+		void SetRotation()
+		{
+			Control.Rotation = Element.Rotation;
+		}
 	}
 
 	public interface IImageSourceHandler : IRegisterable
@@ -135,8 +172,8 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 	public sealed class FileImageSourceHandler : IImageSourceHandler
 	{
 		public Task<Pixbuf> LoadImageAsync(
-			ImageSource imagesource, 
-			CancellationToken cancelationToken = default(CancellationToken), 
+			ImageSource imagesource,
+			CancellationToken cancelationToken = default(CancellationToken),
 			float scale = 1f)
 		{
 			Pixbuf image = null;
@@ -147,7 +184,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				var file = filesource.File;
 				if (!string.IsNullOrEmpty(file))
 				{
-					var imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file);
+					var imagePath = IOPath.Combine(AppDomain.CurrentDomain.BaseDirectory, file);
 
 					if (File.Exists(imagePath))
 					{
@@ -168,8 +205,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 			var streamsource = imagesource as StreamImageSource;
 			if (streamsource?.Stream == null) return null;
-			using (
-				var streamImage = await((IStreamImageSource)streamsource)
+			using (var streamImage = await ((IStreamImageSource)streamsource)
 				.GetStreamAsync(cancelationToken).ConfigureAwait(false))
 			{
 				if (streamImage != null)
@@ -207,4 +243,59 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			return image;
 		}
 	}
+
+
+	public sealed class FontImageSourceHandler : IImageSourceHandler
+	{
+		public Task<Pixbuf> LoadImageAsync(ImageSource imageSource,
+			CancellationToken cancellationToken = new CancellationToken(), float scale = 1)
+		{
+			if (!(imageSource is FontImageSource fontImageSource))
+				return null;
+
+			Pixbuf pixbuf;
+			using (var bmp = new Bitmap((int)fontImageSource.Size, (int)fontImageSource.Size))
+			{
+				using (var g = Graphics.FromImage(bmp))
+				{
+					var fontFamily = GetFontFamily(fontImageSource);
+					var font = new DrawingFont(fontFamily, (int)fontImageSource.Size * .5f);
+					var fontColor = fontImageSource.Color != Color.Default
+						? fontImageSource.Color
+						: Color.White;
+					g.DrawString(fontImageSource.Glyph, font, new SolidBrush(fontColor), 0, 0);
+				}
+
+				using (var stream = new MemoryStream())
+				{
+					bmp.Save(stream, ImageFormat.Jpeg);
+					pixbuf = new Pixbuf(stream.ToArray());
+				}
+			}
+
+			return Task.FromResult(pixbuf);
+		}
+
+		static FontFamily GetFontFamily(FontImageSource fontImageSource)
+		{
+			var privateFontCollection = new PrivateFontCollection();
+			FontFamily fontFamily;
+			if (fontImageSource.FontFamily.Contains("#"))
+			{
+				var fontPathAndFamily = fontImageSource.FontFamily.Split('#');
+				privateFontCollection.AddFontFile(fontPathAndFamily[0]);
+				fontFamily = fontPathAndFamily.Length > 1 ?
+					privateFontCollection.Families.FirstOrDefault(f => f.Name.Equals(fontPathAndFamily[1], StringComparison.InvariantCultureIgnoreCase)) ?? privateFontCollection.Families[0] : 
+					privateFontCollection.Families[0];
+			}
+			else
+			{
+				privateFontCollection.AddFontFile(fontImageSource.FontFamily);
+				fontFamily = privateFontCollection.Families[0];
+			}
+
+			return fontFamily;
+		}
+	}
 }
+

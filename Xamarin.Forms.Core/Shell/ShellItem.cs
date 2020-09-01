@@ -6,15 +6,34 @@ using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Linq;
 
 namespace Xamarin.Forms
 {
 	[EditorBrowsable(EditorBrowsableState.Always)]
 	public class FlyoutItem : ShellItem
 	{
+		public const string LabelStyle = "FlyoutItemLabelStyle";
+		public const string ImageStyle = "FlyoutItemImageStyle";
+		public const string LayoutStyle = "FlyoutItemLayoutStyle";
+
 		public FlyoutItem()
 		{
-			Shell.SetFlyoutBehavior(this, FlyoutBehavior.Flyout);
+
+		}
+
+		public static readonly new BindableProperty IsVisibleProperty =
+			BindableProperty.CreateAttached(nameof(IsVisible), typeof(bool), typeof(FlyoutItem), true, propertyChanged: OnFlyoutItemIsVisibleChanged);
+
+		public static bool GetIsVisible(BindableObject obj) => (bool)obj.GetValue(IsVisibleProperty);
+		public static void SetIsVisible(BindableObject obj, bool isVisible) => obj.SetValue(IsVisibleProperty, isVisible);
+
+		static void OnFlyoutItemIsVisibleChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			if (bindable is Element element)
+				element
+					.FindParentOfType<Shell>()
+					?.SendStructureChanged();
 		}
 	}
 
@@ -23,7 +42,6 @@ namespace Xamarin.Forms
 	{
 		public TabBar()
 		{
-			Shell.SetFlyoutBehavior(this, FlyoutBehavior.Disabled);
 		}
 	}
 
@@ -41,12 +59,14 @@ namespace Xamarin.Forms
 
 		#region IShellItemController
 
+		IShellItemController ShellItemController => this;
+
 		internal Task GoToPart(NavigationRequest request, Dictionary<string, string> queryData)
 		{
 			var shellSection = request.Request.Section;
 
 			if (shellSection == null)
-				shellSection = Items[0];
+				shellSection = ShellItemController.GetItems()[0];
 
 			Shell.ApplyQueryAttributes(shellSection, queryData, request.Request.Content == null);
 
@@ -77,6 +97,35 @@ namespace Xamarin.Forms
 			return accept;
 		}
 
+		// we want the list returned from here to remain point in time accurate
+		ReadOnlyCollection<ShellSection> IShellItemController.GetItems() =>
+			new ReadOnlyCollection<ShellSection>(((ShellSectionCollection)Items).VisibleItemsReadOnly.ToList());
+
+		event NotifyCollectionChangedEventHandler IShellItemController.ItemsCollectionChanged
+		{
+			add { ((ShellSectionCollection)Items).VisibleItemsChanged += value; }
+			remove { ((ShellSectionCollection)Items).VisibleItemsChanged -= value; }
+		}
+
+		bool IShellItemController.ShowTabs
+		{
+			get
+			{
+				var displayedPage = CurrentItem?.DisplayedPage;
+				if (displayedPage == null)
+					return true;
+
+				Shell shell = Parent as Shell;
+				if (shell == null)
+					return true;
+
+				if (ShellItemController.GetItems().Count <= 1)
+					return false;
+
+				return shell.GetEffectiveValue<bool>(Shell.TabBarIsVisibleProperty, () => true, null, displayedPage);
+			}
+		}
+
 		#endregion IShellItemController
 
 		#region IPropertyPropagationController
@@ -99,7 +148,29 @@ namespace Xamarin.Forms
 
 		public ShellItem()
 		{
-			((INotifyCollectionChanged)Items).CollectionChanged += ItemsCollectionChanged;
+			((ShellElementCollection)Items).VisibleItemsChangedInternal += (_, args) =>
+			{
+				if (args.OldItems != null)
+				{
+					foreach (Element item in args.OldItems)
+					{
+						OnVisibleChildRemoved(item);
+					}
+				}
+
+				if(args.NewItems != null)
+				{
+					foreach (Element item in args.NewItems)
+					{
+						OnVisibleChildAdded(item);
+					}
+				}
+
+				SendStructureChanged();
+			};
+
+			(Items as INotifyCollectionChanged).CollectionChanged += ItemsCollectionChanged;
+
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<ShellItem>>(() => new PlatformConfigurationRegistry<ShellItem>(this));
 		}
 
@@ -110,12 +181,15 @@ namespace Xamarin.Forms
 		}
 
 		public IList<ShellSection> Items => (IList<ShellSection>)GetValue(ItemsProperty);
+		internal override ShellElementCollection ShellElementCollection => (ShellElementCollection)Items;
+
+		internal bool IsVisibleItem => Parent is Shell shell && shell?.CurrentItem == this;
 
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => _logicalChildren ?? (_logicalChildren = new ReadOnlyCollection<Element>(_children));
 
 		internal void SendStructureChanged()
 		{
-			if (Parent is Shell shell)
+			if (Parent is Shell shell && IsVisibleItem)
 			{
 				shell.SendStructureChanged();
 			}
@@ -123,6 +197,11 @@ namespace Xamarin.Forms
 
 		internal static ShellItem CreateFromShellSection(ShellSection shellSection)
 		{
+			if (shellSection.Parent != null)
+			{
+				return (ShellItem)shellSection.Parent;
+			}
+
 			ShellItem result = null;
 
 			if (shellSection is Tab)
@@ -137,13 +216,10 @@ namespace Xamarin.Forms
 			result.SetBinding(IconProperty, new Binding(nameof(Icon), BindingMode.OneWay, source: shellSection));
 			result.SetBinding(FlyoutDisplayOptionsProperty, new Binding(nameof(FlyoutDisplayOptions), BindingMode.OneTime, source: shellSection));
 			result.SetBinding(FlyoutIconProperty, new Binding(nameof(FlyoutIcon), BindingMode.OneWay, source: shellSection));
-			
+
 			return result;
 		}
 
-#if DEBUG
-		[Obsolete ("Please dont use this in core code... its SUPER hard to debug when this happens", true)]
-#endif
 		public static implicit operator ShellItem(ShellSection shellSection)
 		{
 			return CreateFromShellSection(shellSection);
@@ -164,19 +240,10 @@ namespace Xamarin.Forms
 			return result;
 		}
 
-#if DEBUG
-		[Obsolete("Please dont use this in core code... its SUPER hard to debug when this happens", true)]
-#endif
 		public static implicit operator ShellItem(ShellContent shellContent) => (ShellSection)shellContent;
 
-#if DEBUG
-		[Obsolete("Please dont use this in core code... its SUPER hard to debug when this happens", true)]
-#endif
 		public static implicit operator ShellItem(TemplatedPage page) => (ShellSection)(ShellContent)page;
 
-#if DEBUG
-		[Obsolete("Please dont use this in core code... its SUPER hard to debug when this happens", true)]
-#endif
 		public static implicit operator ShellItem(MenuItem menuItem) => new MenuShellItem(menuItem);
 
 		public IPlatformElementConfiguration<T, ShellItem> On<T>() where T : IConfigPlatform
@@ -187,19 +254,29 @@ namespace Xamarin.Forms
 		protected override void OnChildAdded(Element child)
 		{
 			base.OnChildAdded(child);
-			if (CurrentItem == null)
-				SetValueFromRenderer(CurrentItemProperty, child);
+			OnVisibleChildAdded(child);
 		}
 
 		protected override void OnChildRemoved(Element child)
 		{
 			base.OnChildRemoved(child);
+			OnVisibleChildRemoved(child);
+		}
+
+		void OnVisibleChildAdded(Element child)
+		{
+			if (CurrentItem == null && ((IShellItemController)this).GetItems().Contains(child))
+				SetValueFromRenderer(CurrentItemProperty, child);
+		}
+
+		void OnVisibleChildRemoved(Element child)
+		{
 			if (CurrentItem == child)
 			{
-				if (Items.Count == 0)
+				if (ShellItemController.GetItems().Count == 0)
 					ClearValue(CurrentItemProperty);
 				else
-					SetValueFromRenderer(CurrentItemProperty, Items[0]);
+					SetValueFromRenderer(CurrentItemProperty, ShellItemController.GetItems()[0]);
 			}
 		}
 
@@ -209,19 +286,25 @@ namespace Xamarin.Forms
 				oldShellItem.SendDisappearing();
 
 			var shellItem = (ShellItem)bindable;
-			if (shellItem.Parent is Shell parentShell && parentShell.CurrentItem == shellItem)
+
+			if (newValue == null)
+				return;
+
+			if (shellItem.Parent is Shell)
 			{
 				if (newValue is BaseShellItem newShellItem)
 					newShellItem.SendAppearing();
 			}
 
-			if (shellItem.Parent is IShellController shell)
+			if (shellItem.Parent is IShellController shell && shellItem.IsVisibleItem)
 			{
 				shell.UpdateCurrentState(ShellNavigationSource.ShellSectionChanged);
 			}
 
 			shellItem.SendStructureChanged();
-			((IShellController)shellItem?.Parent)?.AppearanceChanged(shellItem, false);
+
+			if(shellItem.IsVisibleItem)
+				((IShellController)shellItem?.Parent)?.AppearanceChanged(shellItem, false);
 		}
 
 		void ItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -237,14 +320,12 @@ namespace Xamarin.Forms
 				foreach (Element element in e.OldItems)
 					OnChildRemoved(element);
 			}
-
-			SendStructureChanged();
 		}
 
 		internal override void SendAppearing()
 		{
 			base.SendAppearing();
-			if(CurrentItem != null && Parent is Shell shell && shell.CurrentItem == this)
+			if (CurrentItem != null && Parent is Shell shell && shell.CurrentItem == this)
 			{
 				CurrentItem.SendAppearing();
 			}

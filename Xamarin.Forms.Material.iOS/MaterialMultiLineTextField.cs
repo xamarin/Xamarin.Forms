@@ -12,12 +12,18 @@ namespace Xamarin.Forms.Material.iOS
 	{
 		CGSize _contentSize;
 
-		public MaterialMultilineTextField(IMaterialEntryRenderer element, IFontElement fontElement) => MaterialTextManager.Init(element, this, fontElement);
+		public MaterialMultilineTextField(IMaterialEntryRenderer element, IFontElement fontElement)
+		{
+			ContainerScheme = new ContainerScheme();
+			MaterialTextManager.Init(element, this, fontElement);
+		}
 
+		public ContainerScheme ContainerScheme { get; }
 		public SemanticColorScheme ColorScheme { get; set; }
 		public TypographyScheme TypographyScheme { get; set; }
 		public MTextInputControllerBase ActiveTextInputController { get; set; }
 		public ITextInput TextInput => this;
+		public CGSize? BackgroundSize { get; set; }
 
 		public override CGRect Frame
 		{
@@ -92,8 +98,10 @@ namespace Xamarin.Forms.Material.iOS
 		}
 
 		internal bool AutoSizeWithChanges { get; set; } = false;
+
 		internal void ApplyTypographyScheme(IFontElement fontElement) => MaterialTextManager.ApplyTypographyScheme(this, fontElement);
 		internal void ApplyTheme(IMaterialEntryRenderer element) => MaterialTextManager.ApplyTheme(this, element);
+		internal void ApplyThemeIfNeeded(IMaterialEntryRenderer element) => MaterialTextManager.ApplyThemeIfNeeded(this, element);
 		internal void UpdatePlaceholder(IMaterialEntryRenderer element) => MaterialTextManager.UpdatePlaceholder(this, element);
 		internal void UpdateTextColor(IMaterialEntryRenderer element) => MaterialTextManager.UpdateTextColor(this, element);
 	}

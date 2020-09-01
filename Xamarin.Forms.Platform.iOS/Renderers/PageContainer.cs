@@ -1,7 +1,7 @@
 using Foundation;
+using ObjCRuntime;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -9,8 +9,9 @@ namespace Xamarin.Forms.Platform.iOS
 	internal class PageContainer : UIView, IUIAccessibilityContainer
 	{
 		readonly IAccessibilityElementsController _parent;
-		List<NSObject> _accessibilityElements = new List<NSObject>();
+		NSArray _accessibilityElements = null;
 		bool _disposed;
+		bool _loaded;
 
 		public PageContainer(IAccessibilityElementsController parent)
 		{
@@ -23,30 +24,40 @@ namespace Xamarin.Forms.Platform.iOS
 			IsAccessibilityElement = false;
 		}
 
-		List<NSObject> AccessibilityElements
+		public override bool IsAccessibilityElement
 		{
+			get => false;
+			set => base.IsAccessibilityElement = value;
+		}
+
+		[Internals.Preserve(Conditional = true)]
+		public virtual NSArray AccessibilityElements
+		{
+			[Export("accessibilityElements", ArgumentSemantic.Copy)]
 			get
 			{
+				if (_loaded)
+					return _accessibilityElements;
+				
 				// lazy-loading this list so that the expensive call to GetAccessibilityElements only happens when VoiceOver is on.
-				if (_accessibilityElements == null)
+				if (_accessibilityElements == null || _accessibilityElements.Count == 0)
 				{
-					_accessibilityElements = _parent.GetAccessibilityElements();
-					if (_accessibilityElements == null)
+					var elements =_parent.GetAccessibilityElements();
+					if(elements != null)
 					{
-						NSObject defaultElements = AccessibilityContainer.GetAccessibilityElements();
-						if (defaultElements != null)
-							_accessibilityElements = NSArray.ArrayFromHandle<NSObject>(defaultElements.Handle).ToList();
+						_accessibilityElements = NSArray.FromNSObjects(elements.ToArray());
 					}
 				}
+
+				_loaded = true;
 				return _accessibilityElements;
 			}
 		}
 
-		IUIAccessibilityContainer AccessibilityContainer => this;
-
 		public void ClearAccessibilityElements()
 		{
 			_accessibilityElements = null;
+			_loaded = false;
 		}
 
 		protected override void Dispose(bool disposing)
@@ -57,30 +68,6 @@ namespace Xamarin.Forms.Platform.iOS
 				_disposed = true;
 			}
 			base.Dispose(disposing);
-		}
-
-		[Export("accessibilityElementCount")]
-		nint AccessibilityElementCount()
-		{
-			if (AccessibilityElements == null)
-				return 0;
-
-			// Note: this will only be called when VoiceOver is enabled
-			return AccessibilityElements.Count;
-		}
-
-		[Export("accessibilityElementAtIndex:")]
-		NSObject GetAccessibilityElementAt(nint index)
-		{
-			// Note: this will only be called when VoiceOver is enabled
-			return AccessibilityElements[(int)index];
-		}
-
-		[Export("indexOfAccessibilityElement:")]
-		int GetIndexOfAccessibilityElement(NSObject element)
-		{
-			// Note: this will only be called when VoiceOver is enabled
-			return AccessibilityElements.IndexOf(element);
 		}
 	}
 }

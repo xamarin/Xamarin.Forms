@@ -3,23 +3,22 @@ using System.ComponentModel;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+using WBrush = Windows.UI.Xaml.Media.Brush;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.InputView;
 
 namespace Xamarin.Forms.Platform.UWP
 {
 	public class EditorRenderer : ViewRenderer<Editor, FormsTextBox>
 	{
-		private static FormsTextBox _copyOfTextBox;
-		static Windows.Foundation.Size _zeroSize = new Windows.Foundation.Size(0, 0);
 		bool _fontApplied;
-		Brush _backgroundColorFocusedDefaultBrush;
-		Brush _textDefaultBrush;
-		Brush _defaultTextColorFocusBrush;
-		Brush _defaultPlaceholderColorFocusBrush;
-		Brush _placeholderDefaultBrush;
+		WBrush _backgroundColorFocusedDefaultBrush;
+		WBrush _textDefaultBrush;
+		WBrush _defaultTextColorFocusBrush;
+		WBrush _defaultPlaceholderColorFocusBrush;
+		WBrush _placeholderDefaultBrush;
+		string _transformedText;
 
 		IEditorController ElementController => Element;
 
@@ -31,7 +30,8 @@ namespace Xamarin.Forms.Platform.UWP
 				AcceptsReturn = true,
 				TextWrapping = TextWrapping.Wrap,
 				Style = Windows.UI.Xaml.Application.Current.Resources["FormsTextBoxStyle"] as Windows.UI.Xaml.Style,
-				VerticalContentAlignment = VerticalAlignment.Top
+				VerticalContentAlignment = VerticalAlignment.Top,
+				UpdateVerticalAlignmentOnLoad = false
 			};
 		}
 
@@ -52,14 +52,18 @@ namespace Xamarin.Forms.Platform.UWP
 					// color stuff, then the underlying textbox should just use the Forms VSM states
 					textBox.UseFormsVsm = e.NewElement.HasVisualStateGroups()
 						|| !e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
+
+					// The default is DetectFromContent, which we don't want because it can
+					// override the FlowDirection settings. 
+					textBox.TextAlignment = Windows.UI.Xaml.TextAlignment.Left;
 				}
 
 				UpdateText();
 				UpdateInputScope();
 				UpdateTextColor();
+				UpdateBackground();
 				UpdateCharacterSpacing();
 				UpdateFont();
-				UpdateTextAlignment();
 				UpdateFlowDirection();
 				UpdateMaxLength();
 				UpdateDetectReadingOrderFromContent();
@@ -114,7 +118,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateFont();
 			}
-			else if (e.PropertyName == Editor.TextProperty.PropertyName)
+			else if (e.IsOneOf(Editor.TextProperty, Editor.TextTransformProperty))
 			{
 				UpdateText();
 			}
@@ -124,7 +128,6 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 			{
-				UpdateTextAlignment();
 				UpdateFlowDirection();
 			}
 			else if (e.PropertyName == InputView.MaxLengthProperty.PropertyName)
@@ -137,6 +140,19 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdatePlaceholderColor();
 			else if (e.PropertyName == InputView.IsReadOnlyProperty.PropertyName)
 				UpdateIsReadOnly();
+		}
+
+		protected override void UpdateBackground()
+		{
+			base.UpdateBackground();
+
+			if (Control == null)
+			{
+				return;
+			}
+
+			BrushHelpers.UpdateBrush(Element.Background, ref _backgroundColorFocusedDefaultBrush,
+			   () => Control.BackgroundFocusBrush, brush => Control.BackgroundFocusBrush = brush);
 		}
 
 		void OnLostFocus(object sender, RoutedEventArgs e)
@@ -176,67 +192,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnNativeTextChanged(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs args)
 		{
-			Element.SetValueCore(Editor.TextProperty, Control.Text);
-		}
-
-		/*
-		 * Purely invalidating the layout as text is added to the TextBox will not cause it to expand.
-		 * If the TextBox is set to WordWrap and it is part of the layout it will refuse to Measure itself beyond its established width.
-		 * Even giving it infinite constraints will cause it to always set its DesiredSize to the same width but with a vertical growth.
-		 * The only way I was able to grow it was by setting layout renderers width explicitly to some value but then it just set its own Width to that Width which is not helpful.
-		 * Even vertically it would measure oddly in cases of rapid text changes.
-		 * Holding down the backspace key or enter key would cause the final result to be not quite right.
-		 * Both of these issues were fixed by just creating a static TextBox that is not part of the layout which let me just measure
-		 * the size of the text as it would fit into the TextBox unconstrained and then just return that Size from the GetDesiredSize call.
-		 * */
-		Size GetCopyOfSize(FormsTextBox control, Windows.Foundation.Size constraint)
-		{
-			if (_copyOfTextBox == null)
-			{
-				_copyOfTextBox = CreateTextBox();
-
-				// This causes the copy to be initially setup correctly. 
-				// I found that if the first measure of this copy occurs with Text then it will just keep defaulting to a measure with no text.
-				_copyOfTextBox.Measure(_zeroSize);
-			}
-
-			_copyOfTextBox.Text = control.Text;
-			_copyOfTextBox.FontSize = control.FontSize;
-			_copyOfTextBox.FontFamily = control.FontFamily;
-			_copyOfTextBox.FontStretch = control.FontStretch;
-			_copyOfTextBox.FontStyle = control.FontStyle;
-			_copyOfTextBox.FontWeight = control.FontWeight;
-			_copyOfTextBox.Margin = control.Margin;
-			_copyOfTextBox.Padding = control.Padding;
-
-			// have to reset the measure to zero before it will re-measure itself
-			_copyOfTextBox.Measure(_zeroSize);
-			_copyOfTextBox.Measure(constraint);
-
-			Size result = new Size
-			(
-				Math.Ceiling(_copyOfTextBox.DesiredSize.Width),
-				Math.Ceiling(_copyOfTextBox.DesiredSize.Height)
-			);
-
-			return result;
-		}
-
-
-		SizeRequest CalculateDesiredSizes(FormsTextBox control, Windows.Foundation.Size constraint, EditorAutoSizeOption sizeOption)
-		{
-			if (sizeOption == EditorAutoSizeOption.TextChanges)
-			{
-				Size result = GetCopyOfSize(control, constraint);
-				control.Measure(constraint);
-				return new SizeRequest(result);
-			}
-			else
-			{
-				control.Measure(constraint);
-				Size result = new Size(Math.Ceiling(control.DesiredSize.Width), Math.Ceiling(control.DesiredSize.Height));
-				return new SizeRequest(result);
-			}
+			_transformedText = Element.UpdateFormsText(Control.Text, Element.TextTransform);
+			Element.SetValueCore(Editor.TextProperty, _transformedText);
 		}
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
@@ -246,7 +203,10 @@ namespace Xamarin.Forms.Platform.UWP
 			if (Children.Count == 0 || child == null)
 				return new SizeRequest();
 
-			return CalculateDesiredSizes(child, new Windows.Foundation.Size(widthConstraint, heightConstraint), Element.AutoSize);
+			var constraint = new Windows.Foundation.Size(widthConstraint, heightConstraint);
+			child.Measure(constraint);
+			var result = FormsTextBox.GetCopyOfSize(child, constraint);
+			return new SizeRequest(result);
 		}
 
 		void UpdateFont()
@@ -313,9 +273,10 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			Control.CharacterSpacing = Element.CharacterSpacing.ToEm();
 		}
+	
 		void UpdateText()
 		{
-			string newText = Element.Text ?? "";
+			string newText = _transformedText = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 
 			if (Control.Text == newText)
 			{
@@ -324,11 +285,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 			Control.Text = newText;
 			Control.SelectionStart = Control.Text.Length;
-		}
-
-		void UpdateTextAlignment()
-		{
-			Control.UpdateTextAlignment(Element);
 		}
 
 		void UpdateTextColor()

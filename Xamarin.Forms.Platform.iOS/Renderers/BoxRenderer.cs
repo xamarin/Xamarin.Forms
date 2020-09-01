@@ -15,14 +15,25 @@ namespace Xamarin.Forms.Platform.iOS
 		nfloat _bottomLeft;
 		nfloat _bottomRight;
 
+		const float PI = (float)Math.PI;
+		const float PIAndAHalf = PI * 1.5f;
+		const float HalfPI = PI * .5f;
+		const float TwoPI = PI * 2;
+
+		[Internals.Preserve(Conditional = true)]
+		public BoxRenderer()
+		{
+
+		}
+
 		public override void Draw(RectangleF rect)
 		{
 			UIBezierPath bezierPath = new UIBezierPath();
 
-			bezierPath.AddArc(new CoreGraphics.CGPoint((float)Bounds.X + Bounds.Width - _topRight, (float)Bounds.Y + _topRight), _topRight, (float)(Math.PI * 1.5), (float)Math.PI * 2, true);
-			bezierPath.AddArc(new CoreGraphics.CGPoint((float)Bounds.X + Bounds.Width - _bottomRight, (float)Bounds.Y + Bounds.Height - _bottomRight), _bottomRight, 0, (float)(Math.PI * .5), true);
-			bezierPath.AddArc(new CoreGraphics.CGPoint((float)Bounds.X + _bottomLeft, (float)Bounds.Y + Bounds.Height - _bottomLeft), _bottomLeft, (float)(Math.PI * .5), (float)Math.PI, true);
-			bezierPath.AddArc(new CoreGraphics.CGPoint((float)Bounds.X + _topLeft, (float)Bounds.Y + _topLeft), (float)_topLeft, (float)Math.PI, (float)(Math.PI * 1.5), true);
+			bezierPath.AddArc(new CoreGraphics.CGPoint(Bounds.X + Bounds.Width - _topRight, Bounds.Y + _topRight), _topRight, PIAndAHalf, TwoPI, true);
+			bezierPath.AddArc(new CoreGraphics.CGPoint(Bounds.X + Bounds.Width - _bottomRight, Bounds.Y + Bounds.Height - _bottomRight), _bottomRight, 0, HalfPI, true);
+			bezierPath.AddArc(new CoreGraphics.CGPoint(Bounds.X + _bottomLeft, Bounds.Y + Bounds.Height - _bottomLeft), _bottomLeft, HalfPI, PI, true);
+			bezierPath.AddArc(new CoreGraphics.CGPoint(Bounds.X + _topLeft, Bounds.Y + _topLeft), _topLeft, PI, PIAndAHalf, true);
 
 			_colorToRenderer.SetFill();
 			bezierPath.Fill();
@@ -35,7 +46,10 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void LayoutSubviews()
 		{
 			if (_previousSize != Bounds.Size)
+			{
+				SetBackground(Element.Background);
 				SetNeedsDisplay();
+			}
 
 			base.LayoutSubviews();
 		}
@@ -68,10 +82,32 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			var elementColor = Element.Color;
+
 			if (!elementColor.IsDefault)
 				_colorToRenderer = elementColor.ToUIColor();
 			else
 				_colorToRenderer = color.ToUIColor();
+
+			SetNeedsDisplay();
+		}
+
+		protected override void SetBackground(Brush brush)
+		{
+			if (Element == null)
+				return;
+
+			if (Brush.IsNullOrEmpty(brush))
+				SetBackgroundColor(Element.BackgroundColor);
+			else
+			{
+				if (brush is SolidColorBrush solidColorBrush)
+					_colorToRenderer = solidColorBrush.Color.ToUIColor();
+				else
+				{
+					var backgroundImage = this.GetBackgroundImage(brush);
+					_colorToRenderer = backgroundImage != null ? UIColor.FromPatternImage(backgroundImage) : UIColor.Clear;
+				}
+			}
 
 			SetNeedsDisplay();
 		}
@@ -83,10 +119,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var elementCornerRadius = Element.CornerRadius;
 
-			_topLeft = (float)elementCornerRadius.TopLeft;
-			_topRight = (float)elementCornerRadius.TopRight;
-			_bottomLeft = (float)elementCornerRadius.BottomLeft;
-			_bottomRight = (float)elementCornerRadius.BottomRight;
+			_topLeft = (nfloat)elementCornerRadius.TopLeft;
+			_topRight = (nfloat)elementCornerRadius.TopRight;
+			_bottomLeft = (nfloat)elementCornerRadius.BottomLeft;
+			_bottomRight = (nfloat)elementCornerRadius.BottomRight;
 
 			SetNeedsDisplay();
 		}

@@ -1,12 +1,9 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using Android.Content.Res;
 using AView = Android.Views.View;
 using Android.Graphics.Drawables;
-using Android.OS;
-using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using AButton = Android.Widget.Button;
 using AColor = Android.Graphics.Color;
 
 namespace Xamarin.Forms.Platform.Android
@@ -19,7 +16,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _drawableEnabled;
 		bool _disposed;
 		IBorderVisualElementRenderer _renderer;
-		private IBorderElement _borderElement;
+		IBorderElement _borderElement;
 
 		VisualElement Element => _renderer?.Element;
 		AView Control => _renderer?.View;
@@ -82,10 +79,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			bool cornerRadiusIsDefault = !BorderElement.IsCornerRadiusSet() || (BorderElement.CornerRadius == (int)BorderElement.CornerRadiusDefaultValue || BorderElement.CornerRadius == BorderDrawable.DefaultCornerRadius);
 			bool backgroundColorIsDefault = !BorderElement.IsBackgroundColorSet() || BorderElement.BackgroundColor == (Color)VisualElement.BackgroundColorProperty.DefaultValue;
+			bool backgroundIsDefault = !BorderElement.IsBackgroundSet() || BorderElement.Background == (Brush)VisualElement.BackgroundProperty.DefaultValue;
 			bool borderColorIsDefault = !BorderElement.IsBorderColorSet() || BorderElement.BorderColor == (Color)BorderElement.BorderColorDefaultValue;
 			bool borderWidthIsDefault = !BorderElement.IsBorderWidthSet() || BorderElement.BorderWidth == (double)BorderElement.BorderWidthDefaultValue;
 
 			if (backgroundColorIsDefault
+				&& backgroundIsDefault
 				&& cornerRadiusIsDefault
 				&& borderColorIsDefault
 				&& borderWidthIsDefault)
@@ -153,7 +152,6 @@ namespace Xamarin.Forms.Platform.Android
 					if (Forms.IsLollipopOrNewer)
 					{
 						var rippleColor = _backgroundDrawable.PressedBackgroundColor.ToAndroid();
-
 						_rippleDrawable = new RippleDrawable(ColorStateList.ValueOf(rippleColor), _backgroundDrawable, null);
 						Control.SetBackground(_rippleDrawable);
 					}
@@ -221,10 +219,16 @@ namespace Xamarin.Forms.Platform.Android
 
 		void BorderElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (_renderer.View.IsDisposed())
+			{
+				return;
+			}
+
 			if (e.PropertyName.Equals(Button.BorderColorProperty.PropertyName) ||
 				e.PropertyName.Equals(Button.BorderWidthProperty.PropertyName) ||
 				e.PropertyName.Equals(Button.CornerRadiusProperty.PropertyName) ||
 				e.PropertyName.Equals(VisualElement.BackgroundColorProperty.PropertyName) ||
+				e.PropertyName.Equals(VisualElement.BackgroundProperty.PropertyName) ||
 				e.PropertyName.Equals(Specifics.Button.UseDefaultPaddingProperty.PropertyName) ||
 				e.PropertyName.Equals(Specifics.Button.UseDefaultShadowProperty.PropertyName) ||
 				e.PropertyName.Equals(Specifics.ImageButton.IsShadowEnabledProperty.PropertyName) ||
@@ -236,6 +240,5 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateDrawable();
 			}
 		}
-
 	}
 }

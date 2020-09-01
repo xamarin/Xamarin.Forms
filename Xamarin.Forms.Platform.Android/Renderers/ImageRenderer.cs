@@ -70,13 +70,18 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override async void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == Image.SourceProperty.PropertyName)
 				await TryUpdateBitmap();
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				UpdateAspect();
-			else if (e.IsOneOf(Image.IsAnimationPlayingProperty))
+			else if (e.Is(Image.IsAnimationPlayingProperty))
 				UpdateAnimations();
 		}
 
