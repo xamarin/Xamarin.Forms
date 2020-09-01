@@ -262,11 +262,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				if (bar == null)
-#if __ANDROID_29__
-					throw new InvalidOperationException("ToolbarResource must be set to a Android.Support.V7.Widget.Toolbar");
-#else
 					throw new InvalidOperationException("ToolbarResource must be set to a androidx.appcompat.widget.Toolbar");
-#endif
 			}
 			else 
 			{
