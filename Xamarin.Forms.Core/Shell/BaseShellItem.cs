@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
+using Xamarin.Forms.Core;
 using Xamarin.Forms.StyleSheets;
 
 namespace Xamarin.Forms
@@ -96,6 +98,24 @@ namespace Xamarin.Forms
 		{
 			get { return Routing.GetRoute(this); }
 			set { Routing.SetRoute(this, value); }
+		}
+
+		public string BadgeText
+		{
+			get { return Badge.GetBadgeText(this); }
+			set { Badge.SetBadgeText(this, value); }
+		}
+
+		public Brush BadgeBackground
+		{
+			get { return Badge.GetBadgeBackground(this); }
+			set { Badge.SetBadgeBackground(this, value); }
+		}
+
+		public Color BadgeTextColor
+		{
+			get { return Badge.GetBadgeTextColor(this); }
+			set { Badge.SetBadgeTextColor(this, value); }
 		}
 
 		public string Title
@@ -432,6 +452,25 @@ namespace Xamarin.Forms
 					defaultLabelClass.Setters.Add(new Setter { Property = Label.HorizontalTextAlignmentProperty, Value = TextAlignment.Start });
 				}
 
+				var badgeLabel = new Label();
+				badgeLabel.SetBinding(Label.TextProperty, nameof(BaseShellItem.BadgeText));
+
+				Frame badgeFrame = new Frame();
+				badgeFrame.SetBinding(Frame.IsVisibleProperty, nameof(BaseShellItem.BadgeText), converter: new IsNotNullOrEmptyConverter());
+				badgeFrame.Margin = new Thickness(0, 0, 8, 0);
+				badgeFrame.SetBinding(Frame.BackgroundProperty, nameof(BaseShellItem.BadgeBackground), converter: new UseFallbackBrushIfNullOrEmptyBrushConverter(new SolidColorBrush(Color.FromRgb(255, 59, 48))));
+				badgeFrame.CornerRadius = 10;
+				badgeFrame.HasShadow = false;
+				badgeFrame.Padding = new Thickness(6, 2);
+				badgeFrame.Content = badgeLabel;
+				badgeFrame.VerticalOptions = LayoutOptions.Center;
+				badgeFrame.HorizontalOptions = LayoutOptions.End;
+
+				grid.Children.Add(badgeFrame, 2, 0);
+
+				badgeLabel.FontSize = 10;
+				badgeLabel.SetBinding(Label.TextColorProperty, nameof(BaseShellItem.BadgeTextColor), converter: new UseFallbackColorIfDefaultColorConverter(Color.White));
+
 				INameScope nameScope = new NameScope();
 				NameScope.SetNameScope(grid, nameScope);
 				nameScope.RegisterName("FlyoutItemLayout", grid);
@@ -443,6 +482,48 @@ namespace Xamarin.Forms
 				return grid;
 			});
 		}
+	}
+
+	public class IsNotNullOrEmptyConverter : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return !string.IsNullOrEmpty((string)value);
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+	}
+
+	public class UseFallbackBrushIfNullOrEmptyBrushConverter : IValueConverter
+	{
+		public Brush FallbackBrush { get; }
+
+		public UseFallbackBrushIfNullOrEmptyBrushConverter(Brush fallbackBrush)
+		{
+			FallbackBrush = fallbackBrush;
+		}
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
+			Brush.IsNullOrEmpty((Brush)value) ? FallbackBrush : (Brush)value;
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+			=> throw new NotImplementedException();
+	}
+
+	public class UseFallbackColorIfDefaultColorConverter : IValueConverter
+	{
+		public Color FallbackColor { get; }
+
+		public UseFallbackColorIfDefaultColorConverter(Color fallbackColor)
+		{
+			FallbackColor = fallbackColor;
+		}
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
+			((Color)value).IsDefault ? FallbackColor : (Color)value;
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+			=> throw new NotImplementedException();
 	}
 
 	public interface IQueryAttributable
