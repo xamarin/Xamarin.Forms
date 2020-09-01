@@ -15,7 +15,13 @@
     <OutputPath>bin\$(Configuration)\$(TargetFramework)</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Resources\Resource.Designer.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\Xamarin.Forms.Platform.cs" Link="Xamarin.Forms.Platform.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Resource.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">

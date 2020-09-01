@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Controls
 			var bold = new Label { Text = "Bold Label" };
 			var italic = new Label { Text = "Italic Label" };
 			var bolditalic = new Label { Text = "Bold Italic Label" };
-			var customFont = new Label { Text = "Custom Font" };
+			var customFont = new Label { Text = "Custom Font 123456789" };
 			var italicfont = new Label { Text = "Custom Italic Font" };
 			var boldfont = new Label { Text = "Custom Bold Font" };
 			var bolditalicfont = new Label { Text = "Custom Bold Italic Font" };
@@ -54,7 +54,9 @@ namespace Xamarin.Forms.Controls
 			formatted.FormattedText.Spans.Add(underlineSpan);
 			formatted.FormattedText.Spans.Add(strikeSpan);
 
-			var missingfont = new Label { Text = "Missing font: use default" };
+			var missingfont = new Label { Text = "Missing font: use default 123456789" };
+
+			var missingfont2 = new Label { Text = "Missing font 2: use default 123456789" };
 
 #pragma warning disable 618
 			micro.Font = Font.SystemFontOfSize (NamedSize.Micro);
@@ -90,7 +92,7 @@ namespace Xamarin.Forms.Controls
 				fontName = "Georgia";
 				break;
 			case Device.Android:
-				fontName = "sans-serif-light";
+				fontName = "montserrat_medium#Montserrat-Medium";
 				break;
 			case Device.UWP:
 				fontName = "Comic Sans MS";
@@ -99,6 +101,7 @@ namespace Xamarin.Forms.Controls
 			var font = Font.OfSize (fontName, NamedSize.Medium);
 #pragma warning disable 618
 			customFont.Font = font;
+			customFont.FontSize = 24;
 #pragma warning restore 618
 
 #pragma warning disable 618
@@ -119,6 +122,7 @@ namespace Xamarin.Forms.Controls
 
 #pragma warning disable 618
 			missingfont.Font = Font.OfSize ("FooBar", 20);
+			missingfont2.Font = Font.OfSize("foo#bar",20);
 #pragma warning restore 618
 			center.HorizontalTextAlignment = TextAlignment.Center;
 			right.HorizontalTextAlignment = TextAlignment.End;
@@ -167,6 +171,7 @@ namespace Xamarin.Forms.Controls
 						boldfont,
 						bolditalicfont,
 						missingfont,
+						missingfont2
 					}
 				}
 			};
