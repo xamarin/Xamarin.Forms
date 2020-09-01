@@ -56,6 +56,7 @@ namespace Xamarin.Forms.Platform.Android
 		BottomNavigationViewTracker _bottomNavigationTracker;
 		BottomSheetDialog _bottomSheetDialog;
 		bool _disposed;
+		public IShellItemController ShellItemController => ShellItem;
 
 		public ShellItemRenderer(IShellContext shellContext) : base(shellContext)
 		{
@@ -157,7 +158,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			return CreateMoreBottomSheet((int index, BottomSheetDialog dialog) =>
 			{
-				selectCallback(ShellItem.Items[index], dialog);
+				selectCallback(ShellItemController.GetItems()[index], dialog);
 			});
 		}
 
@@ -174,7 +175,7 @@ namespace Xamarin.Forms.Platform.Android
 			for (int i = _bottomView.MaxItemCount - 1; i < items.Count; i++)
 			{
 				var closure_i = i;
-				var shellContent = ShellItem.Items[i];
+				var shellContent = items[i];
 
 				using (var innerLayout = new LinearLayout(Context))
 				{
@@ -304,7 +305,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnMoreItemSelected(int shellSectionIndex, BottomSheetDialog dialog)
 		{
-			OnMoreItemSelected(ShellItem.Items[shellSectionIndex], dialog);
+			OnMoreItemSelected(ShellItemController.GetItems()[shellSectionIndex], dialog);
 		}
 
 		protected virtual void OnMoreItemSelected(ShellSection shellSection, BottomSheetDialog dialog)
@@ -319,10 +320,11 @@ namespace Xamarin.Forms.Platform.Android
 		List<(string title, ImageSource icon, bool tabEnabled)> CreateTabList(ShellItem shellItem)
 		{
 			var items = new List<(string title, ImageSource icon, bool tabEnabled)>();
+			var shellItems = ((IShellItemController)shellItem).GetItems();
 
-			for (int i = 0; i < shellItem.Items.Count; i++)
+			for (int i = 0; i < shellItems.Count; i++)
 			{
-				var item = shellItem.Items[i];
+				var item = shellItems[i];
 				items.Add((item.Title, item.Icon, item.IsEnabled));
 			}
 			return items;
@@ -418,14 +420,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (DisplayedPage == null)
 				return;
 
-			bool visible = Shell.GetTabBarIsVisible(DisplayedPage);
-			using (var menu = _bottomView.Menu)
-			{
-				if (menu.Size() == 1)
-					visible = false;
-			}
-
-			_bottomView.Visibility = visible ? ViewStates.Visible : ViewStates.Gone;
+			_bottomView.Visibility = ShellItemController.ShowTabs ? ViewStates.Visible : ViewStates.Gone;
 		}
 	}
 }

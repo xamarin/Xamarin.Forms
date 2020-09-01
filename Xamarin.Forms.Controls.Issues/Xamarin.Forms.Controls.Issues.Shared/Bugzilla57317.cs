@@ -13,17 +13,22 @@ using Xamarin.Forms.Core.UITests;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 57317, "Modifying Cell.ContextActions can crash on Android", PlatformAffected.Android)]
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
+#endif
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 57317, "Modifying Cell.ContextActions can crash on Android", PlatformAffected.Android)]
 	public class Bugzilla57317 : TestContentPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
 			var tableView = new TableView();
 			var tableSection = new TableSection();
 			var switchCell = new TextCell
 			{
-				Text = "Cell"
+				Text = "Cell",
+				AutomationId = "Cell"
 			};
 
 			var menuItem = new MenuItem
@@ -40,14 +45,14 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-		public void Bugzilla57317Test ()
+		public void Bugzilla57317Test()
 		{
-			RunningApp.WaitForElement (c => c.Marked ("Cell"));
+			RunningApp.WaitForFirstElement("Cell");
 
 			RunningApp.ActivateContextMenu("Cell");
 
-			RunningApp.WaitForElement (c => c.Marked ("Self-Deleting item"));
-			RunningApp.Tap (c => c.Marked ("Self-Deleting item"));
+			RunningApp.WaitForFirstElement("Self-Deleting item");
+			RunningApp.Tap(c => c.Marked("Self-Deleting item"));
 		}
 #endif
 	}

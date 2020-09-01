@@ -138,8 +138,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.LayoutSubviews();
 
-			if (Element.Content != null)
-				Element.Content.Layout(Bounds.ToRectangle());
+			if (Bounds.X < 0 || Bounds.Y < 0)
+				Bounds = new CGRect(0, 0, Bounds.Width, Bounds.Height);
+
+			if (_contentView != null && _contentView.Frame.IsEmpty)
+				_contentView.Frame = Bounds;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -150,6 +153,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateContent();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				SetBackgroundColor(Element.BackgroundColor);
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				SetBackground(Element.Background);
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateIsSwipeEnabled();
 			else if (e.PropertyName == Specifics.SwipeTransitionModeProperty.PropertyName)
@@ -172,6 +177,17 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (_contentView != null && _contentView.BackgroundColor == UIColor.Clear)
 				_contentView.BackgroundColor = backgroundColor;
+		}
+
+		protected override void SetBackground(Brush brush)
+		{
+			Brush background = Element.Background;
+
+			if (Control != null)
+				Control.UpdateBackground(background);
+
+			if (_contentView != null && Element.Content == null && HasSwipeItems())
+				_contentView.UpdateBackground(background);
 		}
 
 		public override void TouchesEnded(NSSet touches, UIEvent evt)
@@ -351,7 +367,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (panGestureRecognizer != null)
 			{
-				var point = panGestureRecognizer.LocationInView(Control);
+				CGPoint point = panGestureRecognizer.LocationInView(this);
 				var navigationController = GetUINavigationController(GetViewController());
 
 				switch (panGestureRecognizer.State)
@@ -471,6 +487,13 @@ namespace Xamarin.Forms.Platform.iOS
 			_swipeItemsRect.Clear();
 
 			var items = GetSwipeItemsByDirection();
+
+			if (items == null || items.Count == 0)
+				return;
+
+			if (_originalBounds == CGRect.Empty)
+				_originalBounds = _contentView.Frame;
+
 			int i = 0;
 			float previousWidth = 0;
 
@@ -486,12 +509,12 @@ namespace Xamarin.Forms.Platform.iOS
 					switch (_swipeDirection)
 					{
 						case SwipeDirection.Left:
-							child.Frame = new CGRect(_contentView.Frame.Width - (swipeItemWidth + previousWidth), 0, i + 1 * swipeItemWidth, swipeItemHeight);
+							child.Frame = new CGRect(_contentView.Frame.Width - (swipeItemWidth + previousWidth), _originalBounds.Y, i + 1 * swipeItemWidth, swipeItemHeight);
 							break;
 						case SwipeDirection.Right:
 						case SwipeDirection.Up:
 						case SwipeDirection.Down:
-							child.Frame = new CGRect(previousWidth, 0, i + 1 * swipeItemWidth, swipeItemHeight);
+							child.Frame = new CGRect(previousWidth, _originalBounds.Y, i + 1 * swipeItemWidth, swipeItemHeight);
 							break;
 					}
 
@@ -755,9 +778,6 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_isTouchDown = false;
 
-			if (CanProcessTouchSwipeItems(point))
-				ProcessTouchSwipeItems(point);
-
 			if (!_isSwiping)
 				return;
 
@@ -830,7 +850,6 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_contentView == null)
 				return;
 
-			_originalBounds = _contentView.Bounds;
 			var offset = ValidateSwipeOffset(_swipeOffset);
 			_isOpen = offset != 0;
 
@@ -959,6 +978,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_swipeItems.Clear();
 			_swipeThreshold = 0;
 			_swipeOffset = 0;
+			_originalBounds = CGRect.Empty;
 
 			if (_actionView != null)
 			{
@@ -1374,6 +1394,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateIsOpen(bool isOpen)
 		{
+			if (Element == null)
+				return;
+
 			((ISwipeViewController)Element).IsOpen = isOpen;
 		}
 

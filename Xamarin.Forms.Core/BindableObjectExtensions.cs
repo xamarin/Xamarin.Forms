@@ -68,20 +68,8 @@ namespace Xamarin.Forms
 			return returnIfNotSet;
 		}
 
-		public static void SetOnAppTheme<T>(this BindableObject self, BindableProperty targetProperty, T light, T dark, T defaultValue = default)
-		{
-			ExperimentalFlags.VerifyFlagEnabled(nameof(BindableObjectExtensions), ExperimentalFlags.AppThemeExperimental, nameof(BindableObjectExtensions), nameof(SetOnAppTheme));
+		public static void SetOnAppTheme<T>(this BindableObject self, BindableProperty targetProperty, T light, T dark) => self.SetBinding(targetProperty, new AppThemeBinding { Light = light, Dark = dark});
 
-			var appTheme = new OnAppTheme<T> { Light = light, Dark = dark, Default = defaultValue };
-			self.SetBinding(targetProperty, appTheme);
-		}
-
-		public static void SetAppThemeColor(this BindableObject self, BindableProperty targetProperty, Color light, Color dark, Color defaultValue = default)
-		{
-			ExperimentalFlags.VerifyFlagEnabled(nameof(BindableObjectExtensions), ExperimentalFlags.AppThemeExperimental, nameof(BindableObjectExtensions), nameof(SetAppThemeColor));
-
-			var appTheme = new AppThemeColor { Light = light, Dark = dark, Default = defaultValue };
-			self.SetBinding(targetProperty, appTheme);
-		}
+		public static void SetAppThemeColor(this BindableObject self, BindableProperty targetProperty, Color light, Color dark) => SetOnAppTheme(self, targetProperty, light, dark);
 	}
 }

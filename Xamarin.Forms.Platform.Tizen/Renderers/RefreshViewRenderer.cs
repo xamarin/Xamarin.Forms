@@ -2,15 +2,16 @@
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using ERect = ElmSharp.Rect;
 using TWebView = Tizen.WebView.WebView;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
 	class RefreshIcon : ContentView
 	{
-		public static readonly int IconSize = 48;
-		static readonly Color DefaultColor = Color.FromHex("#6200EE");
-		static readonly string IconPath = "Xamarin.Forms.Platform.Tizen.Resource.refresh_48dp.png";
+		public const int IconSize = ThemeConstants.RefreshView.Resources.IconSize;
+		static readonly Color DefaultColor = ThemeConstants.RefreshView.ColorClass.DefaultColor;
+		const string IconPath = ThemeConstants.RefreshView.Resources.IconPath;
 
 		bool _isPlaying;
 		Image _icon;
@@ -204,7 +205,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			Control.Children.Add(_refreshLayoutRenderer.NativeView);
 			var measured = _refreshLayout.Measure(Element.Width, Element.Height);
 			var parentBound = NativeView.Geometry;
-			var bound = new Rect
+			var bound = new ERect
 			{
 				X = parentBound.X,
 				Y = parentBound.Y,

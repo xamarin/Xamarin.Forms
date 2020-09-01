@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ElmSharp;
 using EColor = ElmSharp.Color;
 using EImage = ElmSharp.Image;
+using ERect = ElmSharp.Rect;
 using NBox = Xamarin.Forms.Platform.Tizen.Native.Box;
 
 namespace Xamarin.Forms.Platform.Tizen
@@ -17,7 +18,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		GenList _menu;
 		GenItemClass _defaultClass;
 		EColor _backgroundColor;
-		EColor _defaultBackgroundColor = EColor.White;
+		EColor _defaultBackgroundColor = ThemeConstants.Shell.ColorClass.DefaultNavigationViewBackgroundColor;
 		List<Group> _groups;
 		IDictionary<Item, Element> _flyoutMenu = new Dictionary<Item, Element>();
 
@@ -85,7 +86,7 @@ namespace Xamarin.Forms.Platform.Tizen
 						_bg = new EImage(this);
 					}
 					_menu.BackgroundColor = EColor.Transparent;
-					SetPartContent("elm.swallow.background", _bg);
+					this.SetBackgroundPart(_bg);
 					_bg.ApplyAspect(_bgImageAspect);
 					_ = _bg.LoadFromImageSourceAsync(_bgImageSource);
 				}
@@ -93,7 +94,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				{
 					EColor effectiveColor = _backgroundColor.IsDefault ? _defaultBackgroundColor : _backgroundColor;
 					_menu.BackgroundColor = effectiveColor;
-					SetPartContent("elm.swallow.background", null);
+					this.SetBackgroundPart(null);
 				}
 			}
 		}
@@ -182,8 +183,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			_menu = new GenList(parent)
 			{
 				BackgroundColor = EColor.Transparent,
-				Style = "solid/default",
-			};
+			}.SetSolidStyle();
 
 			_menu.ItemSelected += (s, e) =>
 			{
@@ -195,11 +195,11 @@ namespace Xamarin.Forms.Platform.Tizen
 			_menu.Show();
 			_box.PackEnd(_menu);
 
-			_defaultClass = new GenItemClass("double_label")
+			_defaultClass = new GenItemClass(ThemeConstants.GenItemClass.Styles.DoubleLabel)
 			{
 				GetTextHandler = (obj, part) =>
 				{
-					if (part == "elm.text")
+					if (part == ThemeConstants.GenItemClass.Parts.Text)
 					{
 						return ((Item)obj).Title;
 					}
@@ -210,7 +210,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				},
 				GetContentHandler = (obj, part) =>
 				{
-					if (part == "elm.swallow.icon")
+					if (part == ThemeConstants.GenItemClass.Parts.Icon)
 					{
 						var icon = ((Item)obj).Icon;
 						if (icon != null)
@@ -249,10 +249,11 @@ namespace Xamarin.Forms.Platform.Tizen
 						var item = _menu.Append(_defaultClass, _groups[i].Items[j]);
 						if (j != 0)
 						{
-							item.SetPartColor("bottomline", EColor.Transparent);
+
+							item.SetBottomlineColor(EColor.Transparent);
 						}
 
-						item.SetPartColor("bg", EColor.Transparent);
+						item.SetBackgroundColor(EColor.Transparent);
 					}
 				}
 			}
@@ -264,9 +265,9 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (_header != null)
 			{
 				headerHeight = _header.MinimumHeight;
-				_header.Geometry = new Rect(Geometry.X, Geometry.Y, Geometry.Width, headerHeight);
+				_header.Geometry = new ERect(Geometry.X, Geometry.Y, Geometry.Width, headerHeight);
 			}
-			_menu.Geometry = new Rect(Geometry.X, Geometry.Y + headerHeight, Geometry.Width, Geometry.Height - headerHeight);
+			_menu.Geometry = new ERect(Geometry.X, Geometry.Y + headerHeight, Geometry.Width, Geometry.Height - headerHeight);
 		}
 	}
 
