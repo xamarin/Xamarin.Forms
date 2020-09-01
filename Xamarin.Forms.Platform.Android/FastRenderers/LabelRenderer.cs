@@ -3,6 +3,7 @@ using System.ComponentModel;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
+using Android.OS;
 #if __ANDROID_29__
 using AndroidX.Core.View;
 #else
@@ -12,6 +13,7 @@ using Android.Text;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
@@ -270,6 +272,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					UpdateMaxLines();
 
 				UpdatePadding();
+				UpdateBreakStrategy();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
 			}
@@ -308,6 +311,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateMaxLines();
 			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == PlatformConfiguration.AndroidSpecific.Label.BreakStrategyProperty.PropertyName)
+				UpdateBreakStrategy();
 		}
 
 		void UpdateColor()
@@ -457,6 +462,19 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				(int)Context.ToPixels(Element.Padding.Bottom));
 
 			_lastSizeRequest = null;
+		}
+
+		void UpdateBreakStrategy()
+		{
+			if (Element == null || Control == null)
+				return;
+
+			if (Forms.SdkInt >= BuildVersionCodes.M)
+			{
+				var breakStrategy = Element.OnThisPlatform().BreakStrategy();
+				var _currentBreakStrategy = breakStrategy.ToAndroidBreakStrategy();
+				BreakStrategy = _currentBreakStrategy;
+			}
 		}
 	}
 }
