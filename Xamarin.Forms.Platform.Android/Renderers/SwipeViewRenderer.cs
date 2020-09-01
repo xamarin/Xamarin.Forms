@@ -4,17 +4,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics.Drawables;
-#if __ANDROID_29__
-using AndroidX.Core.Widget;
-using AndroidX.RecyclerView.Widget;
 using AndroidX.AppCompat.Widget;
 using AButton = AndroidX.AppCompat.Widget.AppCompatButton;
-#else
-using Android.Support.V7.Widget;
-using AButton = Android.Support.V7.Widget.AppCompatButton;
-#endif
 using Android.Views;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Platform.Android.AppCompat;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using APointF = Android.Graphics.PointF;
 using ATextAlignment = Android.Views.TextAlignment;
@@ -34,6 +28,7 @@ namespace Xamarin.Forms.Platform.Android
 		readonly Dictionary<ISwipeItem, object> _swipeItems;
 		readonly Context _context;
 		View _scrollParent;
+		FormsViewPager _viewPagerParent;
 		AView _contentView;
 		LinearLayoutCompat _actionView;
 		SwipeTransitionMode _swipeTransitionMode;
@@ -173,6 +168,9 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnAttachedToWindow();
 
+			if (Control != null && Control.Parent != null && _viewPagerParent == null)
+				_viewPagerParent = Control.Parent.GetParentOfType<FormsViewPager>();
+		
 			if (Element != null && _scrollParent == null)
 			{
 				_scrollParent = Element.FindParentOfType<ScrollView>();
@@ -506,6 +504,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (!ValidateSwipeDirection() || _isResettingSwipe)
 				return false;
 
+			EnableParentGesture(false);
 			_swipeOffset = GetSwipeOffset(_initialPoint, point);
 			UpdateIsOpen(_swipeOffset != 0);
 
@@ -522,6 +521,8 @@ namespace Xamarin.Forms.Platform.Android
 		bool ProcessTouchUp()
 		{
 			_isTouchDown = false;
+
+			EnableParentGesture(true);
 
 			if (!_isSwiping)
 				return false;
@@ -1319,6 +1320,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (isEnabled)
 				item.OnInvoked();
+		}
+
+		void EnableParentGesture(bool isGestureEnabled)
+		{
+			if (_viewPagerParent != null)
+				_viewPagerParent.EnableGesture = isGestureEnabled;
 		}
 
 		void OnOpenRequested(object sender, OpenSwipeEventArgs e)
