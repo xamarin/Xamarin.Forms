@@ -182,7 +182,7 @@
 
   <Target Name="ValidateTargetFrameworkVersionForForms" Condition="'$(XFDisableTargetFrameworkValidation)' != 'True'">
     <PropertyGroup>
-      <MinTargetFrameworkVersionForForms>9.0</MinTargetFrameworkVersionForForms>
+      <MinTargetFrameworkVersionForForms>10.0</MinTargetFrameworkVersionForForms>
       <TargetFrameworkVersionWithoutV>$(TargetFrameworkVersion.TrimStart('vV'))</TargetFrameworkVersionWithoutV>
     </PropertyGroup>
     <Error Code="XF005"  Condition="$(TargetFrameworkVersionWithoutV) &lt; $(MinTargetFrameworkVersionForForms)"
