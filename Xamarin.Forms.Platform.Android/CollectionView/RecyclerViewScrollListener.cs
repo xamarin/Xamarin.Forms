@@ -1,26 +1,27 @@
-﻿#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
-using AndroidX.RecyclerView.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
-using AView = Android.Views.View;
+﻿using AndroidX.RecyclerView.Widget;
 
 namespace Xamarin.Forms.Platform.Android.CollectionView
 {
-	public class RecyclerViewScrollListener<TItemsView, TItemsViewSource> : RecyclerView.OnScrollListener 
+	public class RecyclerViewScrollListener<TItemsView, TItemsViewSource> : RecyclerView.OnScrollListener
 		where TItemsView : ItemsView
 		where TItemsViewSource : IItemsViewSource
 	{
+		protected ItemsViewAdapter<TItemsView, TItemsViewSource> ItemsViewAdapter;
 		bool _disposed;
 		int _horizontalOffset, _verticalOffset;
 		TItemsView _itemsView;
-		ItemsViewAdapter<TItemsView, TItemsViewSource> _itemsViewAdapter;
+		readonly bool _getCenteredItemOnXAndY = false;
 
-		public RecyclerViewScrollListener(TItemsView itemsView, ItemsViewAdapter<TItemsView, TItemsViewSource> itemsViewAdapter)
+		public RecyclerViewScrollListener(TItemsView itemsView, ItemsViewAdapter<TItemsView, TItemsViewSource> itemsViewAdapter) : this(itemsView, itemsViewAdapter, false)
+		{
+
+		}
+
+		public RecyclerViewScrollListener(TItemsView itemsView, ItemsViewAdapter<TItemsView, TItemsViewSource> itemsViewAdapter, bool getCenteredItemOnXAndY)
 		{
 			_itemsView = itemsView;
-			_itemsViewAdapter = itemsViewAdapter;
+			ItemsViewAdapter = itemsViewAdapter;
+			_getCenteredItemOnXAndY = getCenteredItemOnXAndY;
 		}
 
 		public override void OnScrolled(RecyclerView recyclerView, int dx, int dy)
@@ -34,16 +35,7 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 			_horizontalOffset += dx;
 			_verticalOffset += dy;
 
-			var firstVisibleItemIndex = -1;
-			var lastVisibleItemIndex = -1;
-			var centerItemIndex = -1;
-
-			if (recyclerView.GetLayoutManager() is LinearLayoutManager linearLayoutManager)
-			{
-				firstVisibleItemIndex = linearLayoutManager.FindFirstVisibleItemPosition();
-				lastVisibleItemIndex = linearLayoutManager.FindLastVisibleItemPosition();
-				centerItemIndex = CalculateCenterItemIndex(firstVisibleItemIndex, recyclerView, linearLayoutManager);
-			}
+			var (First, Center, Last) = GetVisibleItemsIndex(recyclerView);
 
 			var context = recyclerView.Context;
 			var itemsViewScrolledEventArgs = new ItemsViewScrolledEventArgs
@@ -52,16 +44,16 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 				VerticalDelta = context.FromPixels(dy),
 				HorizontalOffset = context.FromPixels(_horizontalOffset),
 				VerticalOffset = context.FromPixels(_verticalOffset),
-				FirstVisibleItemIndex = firstVisibleItemIndex,
-				CenterItemIndex = centerItemIndex,
-				LastVisibleItemIndex = lastVisibleItemIndex
+				FirstVisibleItemIndex = First,
+				CenterItemIndex = Center,
+				LastVisibleItemIndex = Last
 			};
 
 			_itemsView.SendScrolled(itemsViewScrolledEventArgs);
 
 			// Don't send RemainingItemsThresholdReached event for non-linear layout managers
 			// This can also happen if a layout pass has not happened yet
-			if (lastVisibleItemIndex == -1)
+			if (Last == -1)
 				return;
 
 			switch (_itemsView.RemainingItemsThreshold)
@@ -69,39 +61,29 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 				case -1:
 					return;
 				case 0:
-					if (lastVisibleItemIndex == _itemsViewAdapter.ItemCount - 1)
+					if (Last == ItemsViewAdapter.ItemCount - 1)
 						_itemsView.SendRemainingItemsThresholdReached();
 					break;
 				default:
-					if (_itemsViewAdapter.ItemCount - 1 - lastVisibleItemIndex <= _itemsView.RemainingItemsThreshold)
+					if (ItemsViewAdapter.ItemCount - 1 - Last <= _itemsView.RemainingItemsThreshold)
 						_itemsView.SendRemainingItemsThresholdReached();
 					break;
 			}
 		}
 
-		static int CalculateCenterItemIndex(int firstVisibleItemIndex, RecyclerView recyclerView, LinearLayoutManager linearLayoutManager)
+		protected virtual (int First, int Center, int Last) GetVisibleItemsIndex(RecyclerView recyclerView)
 		{
-			// This can happen if a layout pass has not happened yet
-			if (firstVisibleItemIndex == -1)
-				return firstVisibleItemIndex;
+			var firstVisibleItemIndex = -1;
+			var lastVisibleItemIndex = -1;
+			var centerItemIndex = -1;
 
-			AView centerView;
-
-			if (linearLayoutManager.Orientation == LinearLayoutManager.Horizontal)
+			if (recyclerView.GetLayoutManager() is LinearLayoutManager linearLayoutManager)
 			{
-				float centerX = recyclerView.Width / 2;
-				centerView = recyclerView.FindChildViewUnder(centerX, recyclerView.Top);
+				firstVisibleItemIndex = linearLayoutManager.FindFirstVisibleItemPosition();
+				lastVisibleItemIndex = linearLayoutManager.FindLastVisibleItemPosition();
+				centerItemIndex = recyclerView.CalculateCenterItemIndex(firstVisibleItemIndex, linearLayoutManager, _getCenteredItemOnXAndY);
 			}
-			else
-			{
-				float centerY = recyclerView.Height / 2;
-				centerView = recyclerView.FindChildViewUnder(recyclerView.Left, centerY);
-			}
-
-			if (centerView != null)
-				return recyclerView.GetChildAdapterPosition(centerView);
-
-			return firstVisibleItemIndex;
+			return (firstVisibleItemIndex, centerItemIndex, lastVisibleItemIndex);
 		}
 
 		protected override void Dispose(bool disposing)
@@ -112,7 +94,7 @@ namespace Xamarin.Forms.Platform.Android.CollectionView
 			if (disposing)
 			{
 				_itemsView = null;
-				_itemsViewAdapter = null;
+				ItemsViewAdapter = null;
 			}
 
 			_disposed = true;

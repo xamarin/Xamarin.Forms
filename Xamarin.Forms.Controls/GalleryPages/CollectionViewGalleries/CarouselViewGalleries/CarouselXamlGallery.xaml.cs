@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries
@@ -7,17 +8,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 	[Preserve(AllMembers = true)]
 	public partial class CarouselXamlGallery : ContentPage
 	{
-		public CarouselXamlGallery()
+		public CarouselXamlGallery(bool useLooping)
 		{
 			InitializeComponent();
-			BindingContext = new CarouselViewModel(CarouselXamlSampleType.Peek);
-			carouselNormal.BindingContext = new CarouselViewModel(CarouselXamlSampleType.Normal);
-		}
-
-		protected override void OnAppearing()
-		{
-			base.OnAppearing();
-			(BindingContext as CarouselViewModel).Position = 2;
+			BindingContext = new CarouselViewModel(CarouselXamlSampleType.Peek, useLooping);
 		}
 	}
 
@@ -31,12 +25,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 	[Preserve(AllMembers = true)]
 	internal class CarouselViewModel : ViewModelBase2
 	{
+		bool _isLoop;
 		int _count;
 		int _position;
 		ObservableCollection<CarouselItem> _items;
 		CarouselXamlSampleType _type;
-		public CarouselViewModel(CarouselXamlSampleType type, int initialItems = 5)
+		public CarouselViewModel(CarouselXamlSampleType type, bool loop, int initialItems = 5)
 		{
+			IsLoop = loop;
 			_type = type;
 
 			var items = new List<CarouselItem>();
@@ -45,7 +41,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				switch (_type)
 				{
 					case CarouselXamlSampleType.Peek:
-						items.Add(new CarouselItem(i, "cardBackground"));
+						items.Add(new CarouselItem(i, "cardBackground.png"));
 						break;
 					default:
 						items.Add(new CarouselItem(i));
@@ -56,14 +52,13 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			MessagingCenter.Subscribe<ExampleTemplateCarousel>(this, "remove", (obj) => Items.Remove(obj.BindingContext as CarouselItem));
 
 			Items = new ObservableCollection<CarouselItem>(items);
-			Items.CollectionChanged += ItemsCollectionChanged;
 			Count = Items.Count - 1;
-
 		}
 
-		void ItemsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		public bool IsLoop
 		{
-			Count = Items.Count - 1;
+			get { return _isLoop; }
+			set { SetProperty(ref _isLoop, value); }
 		}
 
 		public int Count
@@ -83,6 +78,49 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			get { return _items; }
 			set { SetProperty(ref _items, value); }
 		}
+
+		CarouselItem _selected;
+		public CarouselItem Selected
+		{
+			get { return _selected; }
+			set { SetProperty(ref _selected, value); }
+		}
+
+		public ICommand RemoveCommand => new Command(() =>
+		{
+			Items.Remove(Selected);
+			Count = Items.Count - 1;
+		});
+
+		public ICommand PreviousCommand => new Command(() =>
+		{
+			var indexCurrent = Items.IndexOf(Selected);
+			if (indexCurrent > 0)
+			{
+				var newItem = Items[indexCurrent - 1];
+				Selected = newItem;
+			}
+			if (indexCurrent == 0)
+			{
+				var newItem = Items[Items.Count - 1];
+				Selected = newItem;
+			}
+		});
+
+		public ICommand NextCommand => new Command(() =>
+		{
+			var indexCurrent = Items.IndexOf(Selected);
+			if (indexCurrent < Items.Count - 1)
+			{
+				var newItem = Items[indexCurrent + 1];
+				Selected = newItem;
+			}
+			if (indexCurrent == Items.Count - 1)
+			{
+				var newItem = Items[0];
+				Selected = newItem;
+			}
+		});
 	}
 
 	[Preserve(AllMembers = true)]

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 using Xamarin.Forms.Internals;
+using CoreAnimation;
 
 #if __MOBILE__
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -242,9 +243,11 @@ namespace Xamarin.Forms.Platform.MacOS
 
 
 		[Foundation.Export("tabForward:")]
+		[Internals.Preserve(Conditional = true)]
 		void TabForward(UIKeyCommand cmd) => FocusSearch(forwardDirection: true);
 
 		[Foundation.Export("tabBackward:")]
+		[Internals.Preserve(Conditional = true)]
 		void TabBackward(UIKeyCommand cmd) => FocusSearch(forwardDirection: false);
 #endif
 
@@ -262,6 +265,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (element.BackgroundColor != Color.Default || (oldElement != null && element.BackgroundColor != oldElement.BackgroundColor))
 					SetBackgroundColor(element.BackgroundColor);
+
+				if (element.Background != null && (!element.Background.IsEmpty || (oldElement != null && element.Background != oldElement.Background)))
+					SetBackground(element.Background);
 
 				UpdateClipToBounds();
 
@@ -314,13 +320,20 @@ namespace Xamarin.Forms.Platform.MacOS
 		public override void LayoutSubviews()
 		{
 			base.LayoutSubviews();
+
 			if (_blur != null && Superview != null)
 			{
-				_blur.Frame = Bounds;
+				_blur.Frame = Frame;
 				if (_blur.Superview == null)
 					Superview.Add(_blur);
 			}
+
+			bool hasBackground = Element?.Background != null && !Element.Background.IsEmpty;
+
+			if (hasBackground)
+				NativeView.UpdateBackgroundLayer();
 		}
+
 #else
 		public override void MouseDown(NSEvent theEvent)
 		{
@@ -392,6 +405,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				SetBackgroundColor(Element.BackgroundColor);
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				SetBackground(Element.Background);
 			else if (e.PropertyName == Xamarin.Forms.Layout.IsClippedToBoundsProperty.PropertyName)
 				UpdateClipToBounds();
 			else if (e.PropertyName == VisualElement.IsTabStopProperty.PropertyName)
@@ -453,6 +468,11 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 		}
 
+		protected virtual void SetBackground(Brush brush)
+		{
+			NativeView.UpdateBackground(brush);
+		}
+
 #if __MOBILE__
 		protected virtual void SetBlur(BlurEffectStyle blur)
 		{
@@ -496,6 +516,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual void UpdateNativeWidget()
 		{
+
 		}
 
 		internal virtual void SendVisualElementInitialized(VisualElement element, NativeView nativeView)

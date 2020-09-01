@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using ElmSharp;
+using ERect = ElmSharp.Rect;
 using EScroller = ElmSharp.Scroller;
 
 namespace Xamarin.Forms.Platform.Tizen.Native
@@ -13,11 +14,15 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 		}
 
+		protected Scroller()
+		{
+		}
+
 		protected override void OnRealized()
 		{
 			base.OnRealized();
-			new SmartEvent(this, RealHandle, "scroll,anim,start").On += (s, e) => _isAnimation = true;
-			new SmartEvent(this, RealHandle, "scroll,anim,stop").On += (s, e) =>
+			new SmartEvent(this, RealHandle, ThemeConstants.Scroller.Signals.StartScrollAnimation).On += (s, e) => _isAnimation = true;
+			new SmartEvent(this, RealHandle, ThemeConstants.Scroller.Signals.StopScrollAnimation).On += (s, e) =>
 			{
 				if (_animationTaskComplateSource != null)
 				{
@@ -46,7 +51,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			return animated && _isAnimation ? _animationTaskComplateSource.Task : Task.CompletedTask;
 		}
 
-		public Task ScrollToAsync(Rect rect, bool animated)
+		public Task ScrollToAsync(ERect rect, bool animated)
 		{
 			CheckTaskCompletionSource();
 			ScrollTo(rect, animated);

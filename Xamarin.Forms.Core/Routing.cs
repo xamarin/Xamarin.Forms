@@ -9,7 +9,8 @@ namespace Xamarin.Forms
 		static int s_routeCount = 0;
 		static Dictionary<string, RouteFactory> s_routes = new Dictionary<string, RouteFactory>();
 
-		internal const string ImplicitPrefix = "IMPL_";
+		const string ImplicitPrefix = "IMPL_";
+		const string DefaultPrefix = "D_FAULT_";
 		const string _pathSeparator = "/";
 
 		internal static string GenerateImplicitRoute(string source)
@@ -26,7 +27,24 @@ namespace Xamarin.Forms
 		{
 			return IsImplicit(GetRoute(source));
 		}
-		
+		internal static bool IsDefault(string source)
+		{
+			return source.StartsWith(DefaultPrefix, StringComparison.Ordinal);
+		}
+
+		internal static bool IsDefault(BindableObject source)
+		{
+			return IsDefault(GetRoute(source));
+		}
+
+		internal static bool IsUserDefined(BindableObject source)
+		{
+			if (source == null)
+				return false;
+
+			return !(IsDefault(source) || IsImplicit(source));
+		}
+
 		internal static void Clear()
 		{
 			s_routes.Clear();
@@ -38,7 +56,7 @@ namespace Xamarin.Forms
 
 		static object CreateDefaultRoute(BindableObject bindable)
 		{
-			return bindable.GetType().Name + ++s_routeCount;
+			return $"{DefaultPrefix}{bindable.GetType().Name}{++s_routeCount}";
 		}
 
 		internal static string[] GetRouteKeys()
@@ -83,16 +101,36 @@ namespace Xamarin.Forms
 			return $"{source}/";
 		}
 
-		internal static Uri RemoveImplicit(Uri uri)
+		internal static Uri Remove(Uri uri, bool implicitRoutes, bool defaultRoutes)
 		{
-			uri = ShellUriHandler.FormatUri(uri);
+			uri = ShellUriHandler.FormatUri(uri, null);
 
 			string[] parts = uri.OriginalString.TrimEnd(_pathSeparator[0]).Split(_pathSeparator[0]);
 
+			bool userDefinedRouteAdded = false;
 			List<string> toKeep = new List<string>();
 			for (int i = 0; i < parts.Length; i++)
-				if (!IsImplicit(parts[i]))
+			{
+				// This means there are no routes defined on the shell but the user has navigated to a global route
+				// so we need to attach the final route where the user left the shell
+				if (s_routes.ContainsKey(parts[i]) && !userDefinedRouteAdded && i > 0)
+				{
+					toKeep.Add(parts[i - 1]);
+				}
+
+				if (!(IsDefault(parts[i]) && defaultRoutes) && !(IsImplicit(parts[i]) && implicitRoutes))
+				{
+					if (!String.IsNullOrWhiteSpace(parts[i]))
+						userDefinedRouteAdded = true;
+
 					toKeep.Add(parts[i]);
+				}
+			}
+
+			if(!userDefinedRouteAdded && parts.Length > 0)
+			{
+				toKeep.Add(parts[parts.Length - 1]);
+			}
 
 			return new Uri(string.Join(_pathSeparator, toKeep), UriKind.Relative);
 		}

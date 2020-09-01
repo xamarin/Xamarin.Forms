@@ -38,6 +38,7 @@ namespace Xamarin.Forms
 		{
 			{ typeof(Uri), new UriTypeConverter() },
 			{ typeof(Color), new ColorTypeConverter() },
+			{ typeof(Easing), new EasingTypeConverter() },
 		};
 
 		static readonly Dictionary<Type, IValueConverter> KnownIValueConverters = new Dictionary<Type, IValueConverter>
@@ -60,6 +61,8 @@ namespace Xamarin.Forms
 			{ typeof(float), new[] { typeof(string), typeof(double) } },
 			{ typeof(ulong), new[] { typeof(string), typeof(float), typeof(double), typeof(decimal) } },
 		};
+
+		public static readonly object UnsetValue = new object();
 
 		BindableProperty(string propertyName, Type returnType, Type declaringType, object defaultValue, BindingMode defaultBindingMode = BindingMode.OneWay,
 								 ValidateValueDelegate validateValue = null, BindingPropertyChangedDelegate propertyChanged = null, BindingPropertyChangingDelegate propertyChanging = null,

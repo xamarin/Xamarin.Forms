@@ -2,17 +2,10 @@
 using System.ComponentModel;
 using Android.Content;
 using Android.OS;
-#if __ANDROID_29__
 using AndroidX.Core.View;
 using AndroidX.Core.Widget;
 using AndroidX.RecyclerView.Widget;
 using AndroidX.SwipeRefreshLayout.Widget;
-using AndroidX.AppCompat.Widget;
-#else
-using Android.Support.V4.Widget;
-using Android.Support.V4.View;
-using Android.Support.V7.Widget;
-#endif
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Internals;
@@ -68,6 +61,19 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		public override bool CanChildScrollUp() => CanScrollUp(_renderer.View);
+
+		protected override void OnLayout(bool changed, int l, int t, int r, int b)
+		{
+			base.OnLayout(changed, l, t, r, b);
+
+			var refreshViewContent = RefreshView?.Content;
+
+			if (refreshViewContent == null)
+				return;
+
+			IVisualElementRenderer renderer = Platform.GetRenderer(refreshViewContent);
+			renderer?.UpdateLayout();
+		}
 
 		public void SetElement(VisualElement element)
 		{
@@ -203,7 +209,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateIsEnabled();
 			else if (e.PropertyName == RefreshView.IsRefreshingProperty.PropertyName)
 				UpdateIsRefreshing();
-			else if (e.IsOneOf(RefreshView.RefreshColorProperty, VisualElement.BackgroundColorProperty))
+			else if (e.IsOneOf(RefreshView.RefreshColorProperty, VisualElement.BackgroundColorProperty, VisualElement.BackgroundProperty))
 				UpdateColors();
 
 			ElementPropertyChanged?.Invoke(sender, e);

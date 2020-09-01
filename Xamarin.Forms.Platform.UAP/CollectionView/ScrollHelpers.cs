@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
+using Windows.Media.PlayTo;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using UWPPoint = Windows.Foundation.Point;
@@ -85,7 +88,10 @@ namespace Xamarin.Forms.Platform.UWP
 		static async Task AdjustToEndAsync(ListViewBase list, ScrollViewer scrollViewer, object targetItem)
 		{
 			var point = new UWPPoint(scrollViewer.HorizontalOffset, scrollViewer.VerticalOffset);
-			var targetContainer = list.ContainerFromItem(targetItem) as UIElement;
+
+			if (!(list.ContainerFromItem(targetItem) is UIElement targetContainer))
+				return;
+
 			point = AdjustToEnd(point, targetContainer.DesiredSize, scrollViewer);
 			await JumpToOffsetAsync(scrollViewer, point.X, point.Y);
 		}
@@ -115,7 +121,10 @@ namespace Xamarin.Forms.Platform.UWP
 		static async Task AdjustToCenterAsync(ListViewBase list, ScrollViewer scrollViewer, object targetItem)
 		{
 			var point = new UWPPoint(scrollViewer.HorizontalOffset, scrollViewer.VerticalOffset);
-			var targetContainer = list.ContainerFromItem(targetItem) as UIElement;
+
+			if (!(list.ContainerFromItem(targetItem) is UIElement targetContainer))
+				return;
+
 			point = AdjustToCenter(point, targetContainer.DesiredSize, scrollViewer);
 			await JumpToOffsetAsync(scrollViewer, point.X, point.Y);
 		}
@@ -131,6 +140,13 @@ namespace Xamarin.Forms.Platform.UWP
 
 			try
 			{
+				if (scrollViewer.HorizontalOffset == targetHorizontalOffset
+					&& scrollViewer.VerticalOffset == targetVerticalOffset)
+				{
+					// We're already centered, no need to adjust
+					tcs.TrySetResult(null);
+				}
+
 				scrollViewer.ViewChanged += ViewChanged;
 				scrollViewer.ChangeView(targetHorizontalOffset, targetVerticalOffset, null, true);
 				await tcs.Task;
@@ -151,6 +167,9 @@ namespace Xamarin.Forms.Platform.UWP
 			// virtualization, but it'll be close enough to give us a direction to scroll toward
 			await JumpToItemAsync(list, targetItem, ScrollToPosition.Start);
 			var targetContainer = list.ContainerFromItem(targetItem) as UIElement;
+			if (targetContainer == null)
+				return new UWPPoint(0, 0);
+
 			var transform = targetContainer.TransformToVisual(scrollViewer.Content as UIElement);
 
 			// Return to the original position
@@ -158,6 +177,21 @@ namespace Xamarin.Forms.Platform.UWP
 
 			// Return the transformed point
 			return transform.TransformPoint(Zero);
+		}
+
+		internal static void JumpToIndexAsync(ListViewBase list, int index, ScrollToPosition scrollToPosition) 
+		{
+			var scrollViewer = list.GetFirstDescendant<ScrollViewer>();
+			var con = list.ContainerFromIndex(index);
+			if (con is UIElement uIElement)
+			{
+				var width = uIElement.DesiredSize.Width;
+
+				var current = scrollViewer.HorizontalOffset;
+				var delta = (index * width) - current;
+
+				scrollViewer.ChangeView(current + delta, scrollViewer.VerticalOffset, scrollViewer.ZoomFactor, true);
+			}
 		}
 
 		public static async Task JumpToItemAsync(ListViewBase list, object targetItem, ScrollToPosition scrollToPosition)
@@ -184,7 +218,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				tcs.TrySetResult(null);
 			}
-
+			
 			try
 			{
 				scrollViewer.ViewChanged += ViewChanged;

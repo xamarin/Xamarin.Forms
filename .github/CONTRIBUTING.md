@@ -18,16 +18,18 @@ Check out [A Beginner's Guide for Contributing to Xamarin.Forms](https://devblog
 
 If you're looking for something to work on, please browse [open issues](https://github.com/xamarin/Xamarin.Forms/issues). Any issue that is not already assigned is up for grabs. You can also look for issues tagged <a href="https://github.com/xamarin/Xamarin.Forms/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22" class="label v-align-text-top labelstyle-159818 linked-labelstyle-159818" data-ga-click="Maintainer label education banner, dismiss, repository_nwo:xamarin/Xamarin.Forms; context:issues; label_name:help wanted; public:true; repo_has_help_wanted_label:true; repo_has_good_first_issue_label:false; shows_go_to_labels:true" data-octo-click="maintainer_label_education" data-octo-dimensions="action:click_label,actor_id:41873,user_id:790012,repository_id:54213490,repository_nwo:xamarin/Xamarin.Forms,context:issues,label_name:help wanted,public:true,repo_has_help_wanted_label:true,repo_has_good_first_issue_label:false,shows_go_to_labels:true" style="background-color: #159818; color: #fff" title="Label: help wanted">help wanted</a> and <a href="https://github.com/xamarin/Xamarin.Forms/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22" class="label v-align-text-top labelstyle-7057ff linked-labelstyle-7057ff" data-ga-click="Maintainer label education banner, dismiss, repository_nwo:xamarin/Xamarin.Forms; context:issues; label_name:good first issue; public:true; repo_has_help_wanted_label:true; repo_has_good_first_issue_label:false; shows_go_to_labels:true" data-octo-click="maintainer_label_education" data-octo-dimensions="action:click_label,actor_id:41873,user_id:790012,repository_id:54213490,repository_nwo:xamarin/Xamarin.Forms,context:issues,label_name:good first issue,public:true,repo_has_help_wanted_label:true,repo_has_good_first_issue_label:false,shows_go_to_labels:true" style="background-color: #7057ff; color: #fff" title="Label: good first issue">good first issue</a>. Before you select an enhancement to work on, see Status of Proposals below. Make sure you're working on something in the Ready For Implementation category!
 
-Follow the style used by the [.NET Foundation](https://github.com/dotnet/corefx/blob/master/Documentation/coding-guidelines/coding-style.md), with two primary exceptions:
+Follow the style used by the [.NET Foundation](https://github.com/dotnet/runtime/blob/master/docs/coding-guidelines/coding-style.md), with two primary exceptions:
 
 - We do not use the `private` keyword, as it is the default accessibility level in C#.
 - We use hard tabs over spaces.
 
-Read and follow our [Pull Request template](https://github.com/xamarin/Xamarin.Forms/blob/master/PULL_REQUEST_TEMPLATE.md).
+Read and follow our [Pull Request template](PULL_REQUEST_TEMPLATE.md).
 
 ### Pull Request Requirements
 
- We use red-green-refactor test driven development. If you're planning to work on a bug fix, please be sure to create a test case in the UI tests suite (or unit tests, if you're working on Core/XAML code) that proves that the behavior is broken and then proves that the behavior was resolved after your changes. If at all possible, the test should be automated. If the test cannot be automated, then it should include manual testing instructions on screen.
+We use red-green-refactor test driven development. If you're planning to work on a bug fix, please be sure to create a test case in the UI tests suite (or unit tests, if you're working on Core/XAML code) that proves that the behavior is broken and then proves that the behavior was resolved after your changes. If at all possible, the test should be automated. If the test cannot be automated, then it should include manual testing instructions on screen.
+
+Please check the "Allow edits from maintainers" checkbox on your pull request. This allows us to quickly make minor fixes and resolve conflicts for you.
 
 ## Proposals/Enhancements/Suggestions
 
@@ -70,6 +72,6 @@ Once a pull request has two approvals, it will receive an "approved" label. As l
 Bug fixes should be targeted at the earliest appropriate branch.
 - The _current stable branch_ corresponds to the latest stable version available on NuGet.org. This branch will now only accept regressions or fixes that meet a very high bar and low risk.
 - The _current prerelease branch_ corresponds to the latest prerelease version available on NuGet.org. This branch will only accept bug fixes without API changes or breaking changes, with the exception of any API that is under an experimental flag.
-- _Master_ corresponds to a version that is not yet tagged. This is also the "nightly" branch. This is where anything that doesn't fit into the stable or prerelease branches should be targeted.
+- _Main_ corresponds to a version that is not yet tagged. This is also the "nightly" branch. This is where anything that doesn't fit into the stable or prerelease branches should be targeted.
 
-Commits will be merged up from stable to prerelease to master branches on a regular basis (typically every Monday and whenever a new release is tagged).
+Commits will be merged up from stable to prerelease to main branches on a regular basis (typically every Monday and whenever a new release is tagged).

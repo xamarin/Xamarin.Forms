@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Shapes;
 
 namespace Xamarin.Forms
 {
@@ -56,6 +57,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty ScaleYProperty = BindableProperty.Create(nameof(ScaleY), typeof(double), typeof(VisualElement), 1d);
 
 		internal static readonly BindableProperty TransformProperty = BindableProperty.Create("Transform", typeof(string), typeof(VisualElement), null, propertyChanged: OnTransformChanged);
+
+		public static readonly BindableProperty ClipProperty = BindableProperty.Create(nameof(Clip), typeof(Geometry), typeof(VisualElement), null);
 
 		public static readonly BindableProperty VisualProperty =
 			BindableProperty.Create(nameof(Visual), typeof(IVisual), typeof(VisualElement), Forms.VisualMarker.MatchParent,
@@ -152,6 +155,46 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty BackgroundColorProperty = BindableProperty.Create("BackgroundColor", typeof(Color), typeof(VisualElement), Color.Default);
 
+		public static readonly BindableProperty BackgroundProperty = BindableProperty.Create(nameof(Background), typeof(Brush), typeof(VisualElement), Brush.Default,
+			propertyChanging: (bindable, oldvalue, newvalue) =>
+			{
+				if (oldvalue != null)
+					(bindable as VisualElement)?.StopNotifyingBackgroundChanges();
+			},
+			propertyChanged: (bindable, oldvalue, newvalue) =>
+			{
+				if (newvalue != null)
+					(bindable as VisualElement)?.NotifyBackgroundChanges();
+			});
+
+		void NotifyBackgroundChanges()
+		{
+			if (Background != null)
+			{
+				Background.PropertyChanging += OnBackgroundChanging;
+				Background.PropertyChanged += OnBackgroundChanged;
+			}
+		}
+
+		void StopNotifyingBackgroundChanges()
+		{
+			if (Background != null)
+			{
+				Background.PropertyChanged -= OnBackgroundChanged;
+				Background.PropertyChanging -= OnBackgroundChanging;
+			}
+		}
+
+		void OnBackgroundChanging(object sender, PropertyChangingEventArgs e)
+		{
+			OnPropertyChanging(nameof(Background));
+		}
+
+		void OnBackgroundChanged(object sender, PropertyChangedEventArgs e)
+		{
+			OnPropertyChanged(nameof(Background));
+		}
+
 		internal static readonly BindablePropertyKey BehaviorsPropertyKey = BindableProperty.CreateReadOnly("Behaviors", typeof(IList<Behavior>), typeof(VisualElement), default(IList<Behavior>),
 			defaultValueCreator: bindable =>
 			{
@@ -187,7 +230,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IsFocusedProperty = IsFocusedPropertyKey.BindableProperty;
 
-		public static readonly BindableProperty FlowDirectionProperty = BindableProperty.Create(nameof(FlowDirection), typeof(FlowDirection), typeof(VisualElement), FlowDirection.MatchParent, propertyChanged: FlowDirectionChanged);
+		public static readonly BindableProperty FlowDirectionProperty = BindableProperty.Create(nameof(FlowDirection), typeof(FlowDirection), typeof(VisualElement), FlowDirection.MatchParent, propertyChanging:FlowDirectionChanging, propertyChanged: FlowDirectionChanged);
 
 		public static readonly BindableProperty TabIndexProperty =
 			BindableProperty.Create(nameof(TabIndex),
@@ -218,7 +261,6 @@ namespace Xamarin.Forms
 			((VisualElement)bindable).TabStopDefaultValueCreator();
 
 		IFlowDirectionController FlowController => this;
-		IPropertyPropagationController PropertyPropagationController => this;
 
 		public FlowDirection FlowDirection
 		{
@@ -232,13 +274,21 @@ namespace Xamarin.Forms
 			get { return _effectiveFlowDirection; }
 			set
 			{
-				if (value == _effectiveFlowDirection)
-					return;
-				
-				_effectiveFlowDirection = value;
-				InvalidateMeasureInternal(InvalidationTrigger.Undefined);
-				OnPropertyChanged(FlowDirectionProperty.PropertyName);
+				SetEffectiveFlowDirection(value, true);
 			}
+		}
+
+		void SetEffectiveFlowDirection(EffectiveFlowDirection value, bool fireFlowDirectionPropertyChanged)
+		{
+			if (value == _effectiveFlowDirection)
+				return;
+
+			_effectiveFlowDirection = value;
+			InvalidateMeasureInternal(InvalidationTrigger.Undefined);
+
+			if (fireFlowDirectionPropertyChanged)
+				OnPropertyChanged(FlowDirectionProperty.PropertyName);
+
 		}
 
 		EffectiveFlowDirection IVisualElementController.EffectiveFlowDirection => FlowController.EffectiveFlowDirection;
@@ -268,7 +318,6 @@ namespace Xamarin.Forms
 
 		internal VisualElement()
 		{
-			
 		}
 
 		public double AnchorX
@@ -287,6 +336,13 @@ namespace Xamarin.Forms
 		{
 			get { return (Color)GetValue(BackgroundColorProperty); }
 			set { SetValue(BackgroundColorProperty, value); }
+		}
+
+		[TypeConverter(typeof(BrushTypeConverter))]
+		public Brush Background
+		{
+			get { return (Brush)GetValue(BackgroundProperty); }
+			set { SetValue(BackgroundProperty, value); }
 		}
 
 		public IList<Behavior> Behaviors
@@ -460,6 +516,13 @@ namespace Xamarin.Forms
 			private set { SetValue(YPropertyKey, value); }
 		}
 
+		[TypeConverter(typeof(PathGeometryConverter))]
+		public Geometry Clip
+		{
+			get { return (Geometry)GetValue(ClipProperty); }
+			set { SetValue(ClipProperty, value); }
+		}
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public bool Batched
 		{
@@ -526,6 +589,9 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
+		internal event EventHandler PlatformEnabledChanged;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public bool IsPlatformEnabled
 		{
 			get { return _isPlatformEnabled; }
@@ -541,8 +607,9 @@ namespace Xamarin.Forms
 				InvalidateStateTriggers(IsPlatformEnabled);
 
 				OnIsPlatformEnabledChanged();
+				PlatformEnabledChanged?.Invoke(this, EventArgs.Empty);
 			}
-		}		
+		}
 
 		internal LayoutConstraint SelfConstraint
 		{
@@ -831,6 +898,9 @@ namespace Xamarin.Forms
 
 		internal void InvalidateStateTriggers(bool attach)
 		{
+			if (!this.HasVisualStateGroups())
+				return;
+
 			var groups = (IList<VisualStateGroup>)GetValue(VisualStateManager.VisualStateGroupsProperty);
 
 			if (groups.Count == 0)
@@ -841,9 +911,9 @@ namespace Xamarin.Forms
 					foreach (var stateTrigger in state.StateTriggers)
 					{
 						if(attach)
-							stateTrigger.OnAttached();
+							stateTrigger.SendAttached();
 						else
-							stateTrigger.OnDetached();
+							stateTrigger.SendDetached();
 					}
 		}
 
@@ -871,14 +941,6 @@ namespace Xamarin.Forms
 		internal virtual void OnIsVisibleChanged(bool oldValue, bool newValue)
 		{
 			InvalidateMeasureInternal(InvalidationTrigger.Undefined);
-		}
-
-		internal override void OnResourcesChanged(object sender, ResourcesChangedEventArgs e)
-		{
-			if (e == ResourcesChangedEventArgs.StyleSheets)
-				ApplyStyleSheets();
-			else
-				base.OnResourcesChanged(sender, e);
 		}
 
 		internal override void OnParentResourcesChanged(IEnumerable<KeyValuePair<string, object>> values)
@@ -968,18 +1030,24 @@ namespace Xamarin.Forms
 			(self as IPropertyPropagationController)?.PropagatePropertyChanged(VisualElement.VisualProperty.PropertyName);
 		}
 
-		static void FlowDirectionChanged(BindableObject bindable, object oldValue, object newValue)
+		static void FlowDirectionChanging(BindableObject bindable, object oldValue, object newValue)
 		{
 			var self = bindable as IFlowDirectionController;
 
 			if (self.EffectiveFlowDirection.IsExplicit() && oldValue == newValue)
 				return;
 
-			var newFlowDirection = (FlowDirection)newValue;
+			var newFlowDirection = ((FlowDirection)newValue).ToEffectiveFlowDirection(isExplicit: true);
 
-			self.EffectiveFlowDirection = newFlowDirection.ToEffectiveFlowDirection(isExplicit: true);
+			if (self is VisualElement ve)
+				ve.SetEffectiveFlowDirection(newFlowDirection, false);
+			else
+				self.EffectiveFlowDirection = newFlowDirection;
+		}
 
-			(self as IPropertyPropagationController)?.PropagatePropertyChanged(VisualElement.FlowDirectionProperty.PropertyName);
+		static void FlowDirectionChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			(bindable as IPropertyPropagationController)?.PropagatePropertyChanged(VisualElement.FlowDirectionProperty.PropertyName);
 		}
 
 

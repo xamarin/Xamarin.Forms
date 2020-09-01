@@ -10,14 +10,8 @@ using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.OS;
-#if __ANDROID_29__
-using AndroidX.Fragment.App;
 using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 using AndroidX.Legacy.App;
-#else
-using Android.Support.V4.App;
-using FragmentManager = Android.Support.V4.App.FragmentManager;
-#endif
 using Android.Util;
 using Android.Views;
 using Android.Widget;
@@ -1205,6 +1199,7 @@ namespace Xamarin.Forms.Platform.Android
 			
 			IOnTouchListener _touchListener;
 			bool _disposed;
+			bool _hasLayoutOccurred;
 
 			[Obsolete("This constructor is obsolete as of version 2.5. Please use DefaultRenderer(Context) instead.")]
 			[EditorBrowsable(EditorBrowsableState.Never)]
@@ -1303,6 +1298,14 @@ namespace Xamarin.Forms.Platform.Android
 					SetOnTouchListener(null); 
 
 				base.Dispose(disposing);
+			}
+
+			bool ILayoutChanges.HasLayoutOccurred => _hasLayoutOccurred;
+
+			protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
+			{
+				base.OnLayout(changed, left, top, right, bottom);
+				_hasLayoutOccurred = true;
 			}
 		}
 

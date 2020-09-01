@@ -24,6 +24,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty BarBackgroundColorProperty = BarElement.BarBackgroundColorProperty;
 
+		public static readonly BindableProperty BarBackgroundProperty = BarElement.BarBackgroundProperty;
+
 		public static readonly BindableProperty BarTextColorProperty = BarElement.BarTextColorProperty;
 
 		public static readonly BindableProperty TitleIconImageSourceProperty = BindableProperty.CreateAttached("TitleIconImageSource", typeof(ImageSource), typeof(NavigationPage), default(ImageSource));
@@ -31,6 +33,8 @@ namespace Xamarin.Forms
 		[Obsolete("TitleIconProperty is obsolete as of 4.0.0. Please use TitleIconImageSourceProperty instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static readonly BindableProperty TitleIconProperty = TitleIconImageSourceProperty;
+
+		public static readonly BindableProperty IconColorProperty = BindableProperty.CreateAttached("IconColor", typeof(Color), typeof(NavigationPage), Color.Default);
 
 		public static readonly BindableProperty TitleViewProperty = BindableProperty.CreateAttached("TitleView", typeof(View), typeof(NavigationPage), null, propertyChanging: TitleViewPropertyChanging);
 
@@ -55,6 +59,12 @@ namespace Xamarin.Forms
 		public Color BarBackgroundColor {
 			get => (Color)GetValue(BarElement.BarBackgroundColorProperty);
 			set => SetValue(BarElement.BarBackgroundColorProperty, value);
+		}
+
+		public Brush BarBackground
+		{
+			get => (Brush)GetValue(BarElement.BarBackgroundProperty);
+			set => SetValue(BarElement.BarBackgroundProperty, value);
 		}
 
 		public Color BarTextColor {
@@ -157,6 +167,16 @@ namespace Xamarin.Forms
 		public static View GetTitleView(BindableObject bindable)
 		{
 			return (View)bindable.GetValue(TitleViewProperty);
+		}
+
+		public static Color GetIconColor(BindableObject bindable)
+		{
+			if (bindable == null)
+			{
+				return Color.Default;		
+			}
+
+			return (Color)bindable.GetValue(IconColorProperty);
 		}
 
 		public Task<Page> PopAsync()
@@ -276,6 +296,11 @@ namespace Xamarin.Forms
 		public static void SetTitleView(BindableObject bindable, View value)
 		{
 			bindable.SetValue(TitleViewProperty, value);
+		}
+
+		public static void SetIconColor(BindableObject bindable, Color value)
+		{
+			bindable.SetValue(IconColorProperty, value);
 		}
 
 		protected override bool OnBackButtonPressed()

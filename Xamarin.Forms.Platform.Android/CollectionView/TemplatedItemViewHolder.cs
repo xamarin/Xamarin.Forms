@@ -34,6 +34,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void Recycle(ItemsView itemsView)
 		{
+			if (View == null)
+			{
+				return;
+			}
+
 			itemsView.RemoveLogicalChild(View);
 			View.BindingContext = null;
 		}
@@ -57,8 +62,12 @@ namespace Xamarin.Forms.Platform.Android
 				// available during OnElementChanged
 				View.BindingContext = itemBindingContext;
 
+				// Make sure the Visual property is available when the renderer is created
+				PropertyPropagationExtensions.PropagatePropertyChanged(null, View, itemsView);
+
 				// Actually create the native renderer
 				_itemContentView.RealizeContent(View);
+
 				_selectedTemplate = template;
 			}
 

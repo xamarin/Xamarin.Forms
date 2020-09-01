@@ -6,7 +6,10 @@ using Xamarin.Forms.Internals;
 using static System.String;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using System.Threading.Tasks;
-
+using System.Net;
+using Windows.Web.Http;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -66,10 +69,36 @@ if(bases.length == 0){
 
 			if (!uri.IsAbsoluteUri)
 			{
-				uri = new Uri(LocalScheme +  url, UriKind.RelativeOrAbsolute);
+				uri = new Uri(LocalScheme + url, UriKind.RelativeOrAbsolute);
 			}
 
-			Control.Source = uri;
+			var cookies = Element.Cookies?.GetCookies(uri);
+			if (cookies != null)
+			{
+				SyncNativeCookies(url);
+
+				try
+				{
+					var httpRequestMessage = new Windows.Web.Http.HttpRequestMessage(Windows.Web.Http.HttpMethod.Get, uri);
+					Control.NavigateWithHttpRequestMessage(httpRequestMessage);
+				}
+				catch (System.Exception exc)
+				{
+					Internals.Log.Warning(nameof(WebViewRenderer), $"Failed to load: {uri} {exc}");
+				}
+			}
+			else
+			{
+				try
+				{
+					//No Cookies so just navigate...
+					Control.Source = uri;
+				}
+				catch (System.Exception exc)
+				{
+					Internals.Log.Warning(nameof(WebViewRenderer), $"Failed to load: {uri} {exc}");
+				}
+			}
 		}
 
 		protected override void Dispose(bool disposing)
@@ -136,6 +165,127 @@ if(bases.length == 0){
 			}
 		}
 
+		HashSet<string> _loadedCookies = new HashSet<string>();
+
+		Uri CreateUriForCookies(string url)
+		{
+			if (url == null)
+				return null;
+
+			Uri uri;
+
+			if (url.Length > 2000)
+				url = url.Substring(0, 2000);
+
+			if (Uri.TryCreate(url, UriKind.Absolute, out uri))
+			{
+				if (String.IsNullOrWhiteSpace(uri.Host))
+					return null;
+
+				return uri;
+			}
+
+			return null;
+		}
+
+		HttpCookieCollection GetCookiesFromNativeStore(string url)
+		{
+			var uri = CreateUriForCookies(url);
+			CookieContainer existingCookies = new CookieContainer();
+			var filter = new Windows.Web.Http.Filters.HttpBaseProtocolFilter();			
+			var nativeCookies = filter.CookieManager.GetCookies(uri);
+			return nativeCookies;
+		}
+
+		void InitialCookiePreloadIfNecessary(string url)
+		{
+			var myCookieJar = Element.Cookies;
+			if (myCookieJar == null)
+				return;
+
+			var uri = new System.Uri(url);
+
+			if (!_loadedCookies.Add(uri.Host))
+				return;
+
+			var cookies = myCookieJar.GetCookies(uri);
+
+			if (cookies != null)
+			{
+				var existingCookies = GetCookiesFromNativeStore(url);
+				foreach (HttpCookie cookie in existingCookies)
+				{
+					if (cookies[cookie.Name] == null)
+						myCookieJar.SetCookies(uri, cookie.ToString());
+				}
+			}
+		}
+
+		void SyncNativeCookiesToElement(string url)
+		{
+			var myCookieJar = Element.Cookies;
+			if (myCookieJar == null)
+				return;
+
+			var uri = CreateUriForCookies(url);
+
+			if (uri == null)
+				return;
+
+			var cookies = myCookieJar.GetCookies(uri);
+			var retrieveCurrentWebCookies = GetCookiesFromNativeStore(url);
+
+			var filter = new Windows.Web.Http.Filters.HttpBaseProtocolFilter();
+			var nativeCookies = filter.CookieManager.GetCookies(uri);
+
+			foreach (Cookie cookie in cookies)
+			{
+				var httpCookie = nativeCookies
+					.FirstOrDefault(x => x.Name == cookie.Name);
+
+				if (httpCookie == null)
+					cookie.Expired = true;
+				else
+					cookie.Value = httpCookie.Value;
+			}
+
+			SyncNativeCookies(url);
+		}
+
+		void SyncNativeCookies(string url)
+		{
+			var uri = CreateUriForCookies(url);
+			if (uri == null)
+				return;
+
+			var myCookieJar = Element.Cookies;
+			if (myCookieJar == null)
+				return;
+
+			InitialCookiePreloadIfNecessary(url);
+			var cookies = myCookieJar.GetCookies(uri);
+			if (cookies == null)
+				return;
+
+			var retrieveCurrentWebCookies = GetCookiesFromNativeStore(url);
+
+			var filter = new Windows.Web.Http.Filters.HttpBaseProtocolFilter();
+			foreach (Cookie cookie in cookies)
+			{
+				HttpCookie httpCookie = new HttpCookie(cookie.Name, cookie.Domain, cookie.Path);
+				httpCookie.Value = cookie.Value;
+				filter.CookieManager.SetCookie(httpCookie, false);
+			}
+
+			foreach (HttpCookie cookie in retrieveCurrentWebCookies)
+			{
+				if (cookies[cookie.Name] != null)
+					continue;
+
+				filter.CookieManager.DeleteCookie(cookie);
+			}
+		}
+
 		void Load()
 		{
 			if (Element.Source != null)
@@ -146,7 +296,18 @@ if(bases.length == 0){
 
 		async void OnEvalRequested(object sender, EvalRequested eventArg)
 		{
-			await Control.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () => await Control.InvokeScriptAsync("eval", new[] { eventArg.Script }));
+			await Control.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, 
+				async () =>
+				{
+					try
+					{
+						await Control.InvokeScriptAsync("eval", new[] { eventArg.Script });
+					}
+					catch(Exception exc)
+					{
+						Log.Warning(nameof(WebView), $"Eval of script failed: {exc} Script: {eventArg.Script}");
+					}
+				});
 		}
 
 		async Task<string> OnEvaluateJavaScriptRequested(string script)
@@ -178,6 +339,7 @@ if(bases.length == 0){
 
 		void OnReloadRequested(object sender, EventArgs eventArgs)
 		{
+			SyncNativeCookies(Control?.Source?.ToString());
 			Control.Refresh();
 		}
 
@@ -227,6 +389,7 @@ if(bases.length == 0){
 			((IElementController)Element).SetValueFromRenderer(WebView.SourceProperty, source);
 			_updating = false;
 
+			SyncNativeCookiesToElement(source.Url);
 			Element.SendNavigated(new WebNavigatedEventArgs(evnt, source, source.Url, result));
 
 			UpdateCanGoBackForward();

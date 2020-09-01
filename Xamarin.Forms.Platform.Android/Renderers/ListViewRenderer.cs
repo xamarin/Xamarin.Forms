@@ -1,11 +1,7 @@
 using System.ComponentModel;
 using Android.Content;
-#if __ANDROID_29__
 using AndroidX.Core.Widget;
 using AndroidX.SwipeRefreshLayout.Widget;
-#else
-using Android.Support.V4.Widget;
-#endif
 using Android.Views;
 using AListView = Android.Widget.ListView;
 using AView = Android.Views.View;
@@ -199,6 +195,20 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateHorizontalScrollBarVisibility();
 				UpdateVerticalScrollBarVisibility();
 			}
+		}
+
+		internal void ClickOn(AView viewCell)
+		{
+			if (Control == null)
+			{
+				return;
+			}
+
+			var position = Control.GetPositionForView(viewCell);
+			var id = Control.GetItemIdAtPosition(position);
+
+			viewCell.PerformHapticFeedback(FeedbackConstants.ContextClick);
+			_adapter.OnItemClick(Control, viewCell, position, id);
 		}
 
 		internal void LongClickOn(AView viewCell)

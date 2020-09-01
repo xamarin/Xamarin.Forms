@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using Windows.UI.Text;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Xamarin.Forms.Core;
 using Xamarin.Forms.Internals;
+using IOPath = System.IO.Path;
 using WApplication = Windows.UI.Xaml.Application;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -12,6 +12,7 @@ namespace Xamarin.Forms.Platform.UWP
 	public static class FontExtensions
 	{
 		static Dictionary<string, FontFamily> FontFamilies = new Dictionary<string, FontFamily>();
+		static double DefaultFontSize = double.NegativeInfinity;
 
 		public static void ApplyFont(this Control self, Font font)
 		{
@@ -52,7 +53,11 @@ namespace Xamarin.Forms.Platform.UWP
 			switch (size)
 			{
 				case NamedSize.Default:
-					return (double)WApplication.Current.Resources["ControlContentThemeFontSize"];
+					if(DefaultFontSize == double.NegativeInfinity)
+					{
+						DefaultFontSize = (double)WApplication.Current.Resources["ControlContentThemeFontSize"];
+					}
+					return DefaultFontSize;
 				case NamedSize.Micro:
 					return 15.667;
 				case NamedSize.Small:
@@ -102,6 +107,17 @@ namespace Xamarin.Forms.Platform.UWP
 
 		static IEnumerable<string> GetAllFontPossibilities(string fontFamily)
 		{
+			//First check Alias
+			var (hasFontAlias, fontPostScriptName) = FontRegistrar.HasFont(fontFamily);
+			if (hasFontAlias)
+			{
+				var file = FontFile.FromString(IOPath.GetFileName(fontPostScriptName));
+				var formated = $"{fontPostScriptName}#{file.GetPostScriptNameWithSpaces()}";
+				yield return formated;
+				yield return fontFamily;
+				yield break;
+			}
+
 			const string path = "Assets/Fonts/";
 			string[] extensions = new[]
 			{

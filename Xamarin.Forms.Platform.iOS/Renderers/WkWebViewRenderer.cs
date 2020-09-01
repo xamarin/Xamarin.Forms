@@ -1,6 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
+using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using Foundation;
 using ObjCRuntime;
@@ -94,12 +99,22 @@ namespace Xamarin.Forms.Platform.iOS
 				LoadHtmlString(html, baseUrl == null ? new NSUrl(NSBundle.MainBundle.BundlePath, true) : new NSUrl(baseUrl, true));
 		}
 
-		public void LoadUrl(string url)
+		public async void LoadUrl(string url)
 		{
-			var uri = new Uri(url);
-			var safeHostUri = new Uri($"{uri.Scheme}://{uri.Authority}", UriKind.Absolute);
-			var safeRelativeUri = new Uri($"{uri.PathAndQuery}{uri.Fragment}", UriKind.Relative);
-			LoadRequest(new NSUrlRequest(new Uri(safeHostUri, safeRelativeUri)));
+			try
+			{
+				var uri = new Uri(url);
+				var safeHostUri = new Uri($"{uri.Scheme}://{uri.Authority}", UriKind.Absolute);
+				var safeRelativeUri = new Uri($"{uri.PathAndQuery}{uri.Fragment}", UriKind.Relative);
+				NSUrlRequest request = new NSUrlRequest(new Uri(safeHostUri, safeRelativeUri));
+
+				await SyncNativeCookies(url);
+				LoadRequest(request);
+			}
+			catch (Exception exc)
+			{
+				Log.Warning(nameof(WkWebViewRenderer), $"Unable to Load Url {exc}");
+			}
 		}
 
 		public override void LayoutSubviews()
@@ -136,6 +151,271 @@ namespace Xamarin.Forms.Platform.iOS
 			var changed = ElementChanged;
 			if (changed != null)
 				changed(this, e);
+		}
+
+		HashSet<string> _loadedCookies = new HashSet<string>();
+
+		Uri CreateUriForCookies(string url)
+		{
+			if (url == null)
+				return null;
+
+			Uri uri;
+
+			if (url.Length > 2000)
+				url = url.Substring(0, 2000);
+
+			if (Uri.TryCreate(url, UriKind.Absolute, out uri))
+			{
+				if (String.IsNullOrWhiteSpace(uri.Host))
+					return null;
+
+				return uri;
+			}
+
+			return null;
+		}
+
+		async Task<List<NSHttpCookie>> GetCookiesFromNativeStore(string url)
+		{
+			NSHttpCookie[] _initialCookiesLoaded = null;
+			if (Forms.IsiOS11OrNewer)
+			{
+				_initialCookiesLoaded = await Configuration.WebsiteDataStore.HttpCookieStore.GetAllCookiesAsync();
+			}
+			else
+			{
+				// I haven't found a different way to get the cookies pre ios 11
+				var cookieString = await WebView.EvaluateJavaScriptAsync("document.cookie");
+
+				if (cookieString != null)
+				{
+					CookieContainer extractCookies = new CookieContainer();
+					var uri = CreateUriForCookies(url);
+
+					foreach (var cookie in cookieString.Split(';'))
+						extractCookies.SetCookies(uri, cookie);
+
+					var extracted = extractCookies.GetCookies(uri);
+					_initialCookiesLoaded = new NSHttpCookie[extracted.Count];
+					for(int i = 0; i < extracted.Count; i++)
+					{
+						_initialCookiesLoaded[i] = new NSHttpCookie(extracted[i]);
+					}
+				}
+			}
+
+			_initialCookiesLoaded = _initialCookiesLoaded ?? new NSHttpCookie[0];
+
+			List<NSHttpCookie> existingCookies = new List<NSHttpCookie>();
+			string domain = CreateUriForCookies(url).Host;
+			foreach (var cookie in _initialCookiesLoaded)
+			{
+				// we don't care that much about this being accurate
+				// the cookie container will split the cookies up more correctly
+				if (!cookie.Domain.Contains(domain) && !domain.Contains(cookie.Domain))
+					continue;
+
+				existingCookies.Add(cookie);
+			}
+
+			return existingCookies;
+		}
+
+		async Task InitialCookiePreloadIfNecessary(string url)
+		{
+			var myCookieJar = WebView.Cookies;
+			if (myCookieJar == null)
+				return;
+
+			var uri = CreateUriForCookies(url);
+
+			if (uri == null)
+				return;
+
+			if (!_loadedCookies.Add(uri.Host))
+				return;
+
+			// pre ios 11 we sync cookies after navigated
+			if (!Forms.IsiOS11OrNewer)
+				return;
+
+			var cookies = myCookieJar.GetCookies(uri);
+			var existingCookies = await GetCookiesFromNativeStore(url);
+			foreach (var nscookie in existingCookies)
+			{
+				if (cookies[nscookie.Name] == null)
+				{
+					string cookieH = $"{nscookie.Name}={nscookie.Value}; domain={nscookie.Domain}; path={nscookie.Path}";
+					myCookieJar.SetCookies(uri, cookieH);
+				}
+			}
+		}
+
+		internal async Task SyncNativeCookiesToElement(string url)
+		{
+			if (String.IsNullOrWhiteSpace(url))
+				return;
+
+			var myCookieJar = WebView.Cookies;
+			if (myCookieJar == null)
+				return;
+
+			var uri = CreateUriForCookies(url);
+			if (uri == null)
+				return;
+
+			var cookies = myCookieJar.GetCookies(uri);
+			var retrieveCurrentWebCookies = await GetCookiesFromNativeStore(url);
+
+			foreach (var nscookie in retrieveCurrentWebCookies)
+			{
+				if (cookies[nscookie.Name] == null)
+				{
+					string cookieH = $"{nscookie.Name}={nscookie.Value}; domain={nscookie.Domain}; path={nscookie.Path}";
+
+					myCookieJar.SetCookies(uri, cookieH);
+				}
+			}
+
+			foreach (Cookie cookie in cookies)
+			{
+				NSHttpCookie nSHttpCookie = null;
+
+				foreach(var findCookie in retrieveCurrentWebCookies)
+				{
+					if(findCookie.Name == cookie.Name)
+					{
+						nSHttpCookie = findCookie;
+						break;
+					}
+				}
+
+				if (nSHttpCookie == null)
+					cookie.Expired = true;
+				else
+					cookie.Value = nSHttpCookie.Value;
+			}
+
+			await SyncNativeCookies(url);
+		}
+
+		async Task SyncNativeCookies(string url)
+		{
+			var uri = CreateUriForCookies(url);
+
+			if (uri == null)
+				return;
+
+			var myCookieJar = WebView.Cookies;
+			if (myCookieJar == null)
+				return;
+
+			await InitialCookiePreloadIfNecessary(url);
+			var cookies = myCookieJar.GetCookies(uri);
+			if (cookies == null)
+				return;
+
+			var retrieveCurrentWebCookies = await GetCookiesFromNativeStore(url);
+
+			List<NSHttpCookie> deleteCookies = new List<NSHttpCookie>();
+			foreach (var cookie in retrieveCurrentWebCookies)
+			{
+				if (cookies[cookie.Name] != null)
+					continue;
+
+				deleteCookies.Add(cookie);
+			}
+
+			List<Cookie> cookiesToSet = new List<Cookie>();
+			foreach (Cookie cookie in cookies)
+			{
+				bool changeCookie = true;
+
+				// This code is used to only push updates to cookies that have changed.
+				// This doesn't quite work on on iOS 10 if we have to delete any cookies.
+				// I haven't found a way on iOS 10 to remove individual cookies. 
+				// The trick we use on Android with writing a cookie that expires doesn't work
+				// So on iOS10 if the user wants to remove any cookies we just delete 
+				// the cookie for the entire domain inside of DeleteCookies and then rewrite
+				// all the cookies
+				if (Forms.IsiOS11OrNewer || deleteCookies.Count == 0)
+				{
+					foreach (var nsCookie in retrieveCurrentWebCookies)
+					{
+						// if the cookie value hasn't changed don't set it again
+						if (nsCookie.Domain == cookie.Domain &&
+							nsCookie.Name == cookie.Name &&
+							nsCookie.Value == cookie.Value)
+						{
+							changeCookie = false;
+							break;
+						}
+					}
+				}
+
+				if (changeCookie)
+					cookiesToSet.Add(cookie);
+			}
+
+			await SetCookie(cookiesToSet);
+			await DeleteCookies(deleteCookies);
+		}
+
+		async Task SetCookie(List<Cookie> cookies)
+		{
+			if (Forms.IsiOS11OrNewer)
+			{
+				foreach(var cookie in cookies)
+					await Configuration.WebsiteDataStore.HttpCookieStore.SetCookieAsync(new NSHttpCookie(cookie));
+			}
+			else
+			{
+				Configuration.UserContentController.RemoveAllUserScripts();
+
+				if (cookies.Count > 0)
+				{
+					WKUserScript wKUserScript = new WKUserScript(new NSString(GetCookieString(cookies)), WKUserScriptInjectionTime.AtDocumentStart, false);
+
+					Configuration.UserContentController.AddUserScript(wKUserScript);
+				}
+			}
+		}
+
+		async Task DeleteCookies(List<NSHttpCookie> cookies)
+		{
+			if (Forms.IsiOS11OrNewer)
+			{
+				foreach (var cookie in cookies)
+					await Configuration.WebsiteDataStore.HttpCookieStore.DeleteCookieAsync(cookie);
+			}
+			else
+			{
+				var wKWebsiteDataStore = WKWebsiteDataStore.DefaultDataStore;
+
+				// This is the only way I've found to delete cookies on pre ios 11
+				// I tried to set an expired cookie but it doesn't delete the cookie
+				// So, just deleting the whole domain is the best option I've found
+				WKWebsiteDataStore.DefaultDataStore.FetchDataRecordsOfTypes(WKWebsiteDataStore.AllWebsiteDataTypes, (NSArray records) =>
+				{
+					for (nuint i = 0; i < records.Count; i++)
+					{
+						var record = records.GetItem<WKWebsiteDataRecord>(i);
+
+						foreach(var deleteme in cookies)
+						{
+							if (record.DisplayName.Contains(deleteme.Domain) || deleteme.Domain.Contains(record.DisplayName))
+							{
+								WKWebsiteDataStore.DefaultDataStore.RemoveDataOfTypes(record.DataTypes,
+									  new[] { record }, () => { });
+
+								break;
+							}
+
+						}
+					}
+				});
+			}
 		}
 
 		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -188,8 +468,18 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateCanGoBackForward();
 		}
 
-		void OnReloadRequested(object sender, EventArgs eventArgs)
+		async void OnReloadRequested(object sender, EventArgs eventArgs)
 		{
+			try
+			{
+			
+				await SyncNativeCookies(Url?.AbsoluteUrl?.ToString());
+			}
+			catch (Exception exc)
+			{
+				Log.Warning(nameof(WkWebViewRenderer), $"Syncing Existing Cookies Failed: {exc}");
+			}
+
 			Reload();
 		}
 
@@ -197,6 +487,49 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			((IWebViewController)WebView).CanGoBack = CanGoBack;
 			((IWebViewController)WebView).CanGoForward = CanGoForward;
+		}
+
+		string GetCookieString(List<Cookie> existingCookies)
+		{
+			StringBuilder cookieBuilder = new StringBuilder();
+			foreach (System.Net.Cookie jCookie in existingCookies)
+			{
+				cookieBuilder.Append("document.cookie = '");
+				cookieBuilder.Append(jCookie.Name);
+				cookieBuilder.Append("=");
+
+				if (jCookie.Expired)
+				{
+					cookieBuilder.Append($"; Max-Age=0");
+					cookieBuilder.Append($"; expires=Sun, 31 Dec 2000 00:00:00 UTC");
+				}
+				else
+				{
+					cookieBuilder.Append(jCookie.Value);
+					cookieBuilder.Append($"; Max-Age={jCookie.Expires.Subtract(DateTime.UtcNow).TotalSeconds}");
+				}
+
+				if (!String.IsNullOrWhiteSpace(jCookie.Domain))
+				{
+					cookieBuilder.Append($"; Domain={jCookie.Domain}");
+				}
+				if (!String.IsNullOrWhiteSpace(jCookie.Domain))
+				{
+					cookieBuilder.Append($"; Path={jCookie.Path}");
+				}
+				if (jCookie.Secure)
+				{
+					cookieBuilder.Append($"; Secure");
+				}
+				if (jCookie.HttpOnly)
+				{
+					cookieBuilder.Append($"; HttpOnly");
+				}
+
+				cookieBuilder.Append("';");
+			}
+
+			return cookieBuilder.ToString();
 		}
 
 		class CustomWebViewNavigationDelegate : WKNavigationDelegate
@@ -235,11 +568,25 @@ namespace Xamarin.Forms.Platform.iOS
 				_renderer._ignoreSourceChanges = true;
 				WebView.SetValueFromRenderer(WebView.SourceProperty, new UrlWebViewSource { Url = url });
 				_renderer._ignoreSourceChanges = false;
+				ProcessNavigated(url);
+			}
+
+			async void ProcessNavigated(string url)
+			{
+				try
+				{
+					if(_renderer?.WebView?.Cookies != null)
+						await _renderer.SyncNativeCookiesToElement(url);
+				}
+				catch(Exception exc)
+				{
+					Log.Warning(nameof(WkWebViewRenderer), $"Failed to Sync Cookies {exc}");
+				}
 
 				var args = new WebNavigatedEventArgs(_lastEvent, WebView.Source, url, WebNavigationResult.Success);
 				WebView.SendNavigated(args);
-
 				_renderer.UpdateCanGoBackForward();
+
 			}
 
 			public override void DidStartProvisionalNavigation(WKWebView webView, WKNavigation navigation)
@@ -310,7 +657,7 @@ namespace Xamarin.Forms.Platform.iOS
 			public override void RunJavaScriptConfirmPanel(WKWebView webView, string message, WKFrameInfo frame, Action<bool> completionHandler)
 			{
 				PresentAlertController(
-					webView, 
+					webView,
 					message,
 					okAction: _ => completionHandler(true),
 					cancelAction: _ => completionHandler(false)
@@ -321,7 +668,7 @@ namespace Xamarin.Forms.Platform.iOS
 				WKWebView webView, string prompt, string defaultText, WKFrameInfo frame, Action<string> completionHandler)
 			{
 				PresentAlertController(
-					webView, 
+					webView,
 					prompt,
 					defaultText: defaultText,
 					okAction: x => completionHandler(x.TextFields[0].Text),
@@ -337,7 +684,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (webView.Url != null && webView.Url.AbsoluteString != $"file://{NSBundle.MainBundle.BundlePath}/")
 					return $"{webView.Url.Scheme}://{webView.Url.Host}";
-				
+
 				return new NSString(NSBundle.MainBundle.BundlePath).LastPathComponent;
 			}
 

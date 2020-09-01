@@ -2,35 +2,9 @@
 
 namespace Xamarin.Forms.DualScreen
 {
-	public enum TwoPaneViewMode
-	{
-		SinglePane, Wide, Tall
-	}
-
-	public enum TwoPaneViewTallModeConfiguration
-	{
-		SinglePane,
-		TopBottom,
-		BottomTop,
-	}
-
-	public enum TwoPaneViewWideModeConfiguration
-	{
-		SinglePane,
-		LeftRight,
-		RightLeft,
-	}
-
-	public enum TwoPaneViewPriority
-	{
-		Pane1,
-		Pane2
-	}
-
 	[ContentProperty("")]
 	public partial class TwoPaneView : Grid
 	{
-
 		static TwoPaneView()
 		{
 #if UWP
@@ -52,7 +26,6 @@ namespace Xamarin.Forms.DualScreen
 		};
 
 		TwoPaneViewLayoutGuide _twoPaneViewLayoutGuide;
-		VisualStateGroup _modeStates;
 		ContentView _content1;
 		ContentView _content2;
 		ViewMode _currentMode;
@@ -209,20 +182,6 @@ namespace Xamarin.Forms.DualScreen
 			ColumnSpacing = 0;
 			RowSpacing = 0;
 
-			_modeStates = new VisualStateGroup()
-			{
-				Name = "ModeStates"
-			};
-
-			_modeStates.States.Add(new VisualState() { Name = "ViewMode_OneOnly" });
-			_modeStates.States.Add(new VisualState() { Name = "ViewMode_TwoOnly" });
-			_modeStates.States.Add(new VisualState() { Name = "ViewMode_LeftRight" });
-			_modeStates.States.Add(new VisualState() { Name = "ViewMode_RightLeft" });
-			_modeStates.States.Add(new VisualState() { Name = "ViewMode_TopBottom" });
-			_modeStates.States.Add(new VisualState() { Name = "ViewMode_BottomTop" });
-
-			VisualStateManager.SetVisualStateGroups(this, new VisualStateGroupList() { _modeStates });
-
 			RowDefinitions = new RowDefinitionCollection() { new RowDefinition(), new RowDefinition(), new RowDefinition() };
 			ColumnDefinitions = new ColumnDefinitionCollection() { new ColumnDefinition(), new ColumnDefinition(), new ColumnDefinition() };
 
@@ -287,9 +246,13 @@ namespace Xamarin.Forms.DualScreen
 				return;
 
 			if (_hasMeasured)
+			{
 				base.LayoutChildren(x, y, width, height);
+			}
 			else
+			{
 				UpdateMode();
+			}
 		}
 
 		void UpdateMode(bool invalidateLayout = true)
@@ -363,25 +326,19 @@ namespace Xamarin.Forms.DualScreen
 					switch (_currentMode)
 					{
 						case ViewMode.Pane1Only:
-							VisualStateManager.GoToState(this, "ViewMode_OneOnly");
 							break;
 						case ViewMode.Pane2Only:
-							VisualStateManager.GoToState(this, "ViewMode_TwoOnly");
 							break;
 						case ViewMode.LeftRight:
-							VisualStateManager.GoToState(this, "ViewMode_LeftRight");
 							newViewMode = TwoPaneViewMode.Wide;
 							break;
 						case ViewMode.RightLeft:
-							VisualStateManager.GoToState(this, "ViewMode_RightLeft");
 							newViewMode = TwoPaneViewMode.Wide;
 							break;
 						case ViewMode.TopBottom:
-							VisualStateManager.GoToState(this, "ViewMode_TopBottom");
 							newViewMode = TwoPaneViewMode.Tall;
 							break;
 						case ViewMode.BottomTop:
-							VisualStateManager.GoToState(this, "ViewMode_BottomTop");
 							newViewMode = TwoPaneViewMode.Tall;
 							break;
 					}
@@ -484,7 +441,7 @@ namespace Xamarin.Forms.DualScreen
 				case ViewMode.LeftRight:
 					SetRowColumn(_content1, 0, 0);
 					SetRowColumn(_content2, 0, 2);
-					_content2.IsVisible = true;
+					_content1.IsVisible = true;
 					_content2.IsVisible = true;
 
 					if (!isLayoutSpanned)
@@ -502,7 +459,7 @@ namespace Xamarin.Forms.DualScreen
 				case ViewMode.RightLeft:
 					SetRowColumn(_content1, 0, 2);
 					SetRowColumn(_content2, 0, 0);
-					_content2.IsVisible = true;
+					_content1.IsVisible = true;
 					_content2.IsVisible = true;
 
 					if (!isLayoutSpanned)
@@ -520,7 +477,7 @@ namespace Xamarin.Forms.DualScreen
 				case ViewMode.TopBottom:
 					SetRowColumn(_content1, 0, 0);
 					SetRowColumn(_content2, 2, 0);
-					_content2.IsVisible = true;
+					_content1.IsVisible = true;
 					_content2.IsVisible = true;
 
 					if (!isLayoutSpanned)
@@ -539,7 +496,7 @@ namespace Xamarin.Forms.DualScreen
 				case ViewMode.BottomTop:
 					SetRowColumn(_content1, 2, 0);
 					SetRowColumn(_content2, 0, 0);
-					_content2.IsVisible = true;
+					_content1.IsVisible = true;
 					_content2.IsVisible = true;
 
 					if (!isLayoutSpanned)

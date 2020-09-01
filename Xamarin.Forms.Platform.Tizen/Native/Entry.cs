@@ -67,6 +67,26 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		public event EventHandler<TextChangedEventArgs> TextChanged;
 
 		/// <summary>
+		/// Occurs when the text block get focused.
+		/// </summary>
+		public event EventHandler TextBlockFocused;
+
+		/// <summary>
+		/// Occurs when the text block loses focus
+		/// </summary>
+		public event EventHandler TextBlockUnfocused;
+
+		/// <summary>
+		/// Occurs when the layout of entry get focused.
+		/// </summary>
+		public event EventHandler EntryLayoutFocused;
+
+		/// <summary>
+		/// Occurs when the layout of entry loses focus
+		/// </summary>
+		public event EventHandler EntryLayoutUnfocused;
+
+		/// <summary>
 		/// Gets or sets the text.
 		/// </summary>
 		/// <value>The text.</value>
@@ -79,6 +99,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 			set
 			{
+
 				if (value != _span.Text)
 				{
 					var old = _span.Text;
@@ -312,19 +333,18 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 			ESize rawSize;
 			ESize formattedSize;
-			var edjeTextBlock = EdjeObject["elm.guide"];
 
 			// if there's no text, but there's a placeholder, use it for measurements
-			if (string.IsNullOrEmpty(Text) && !string.IsNullOrEmpty(Placeholder) && edjeTextBlock != null)
+			if (string.IsNullOrEmpty(Text) && !string.IsNullOrEmpty(Placeholder))
 			{
-				rawSize = edjeTextBlock.TextBlockNativeSize;
-				formattedSize = edjeTextBlock.TextBlockFormattedSize;
+				rawSize = this.GetPlaceHolderTextBlockNativeSize();
+				formattedSize = this.GetPlaceHolderTextBlockFormattedSize();
 			}
 			else
 			{
 				// there's text in the entry, use it instead
-				rawSize = TextHelper.GetRawTextBlockSize(this);
-				formattedSize = TextHelper.GetFormattedTextBlockSize(this);
+				rawSize = this.GetTextBlockNativeSize();
+				formattedSize = this.GetTextBlockFormattedSize();
 			}
 
 			// restore the original size
@@ -362,6 +382,26 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 #endif
 			return size;
 
+		}
+
+		protected virtual void OnTextBlockFocused()
+		{
+			TextBlockFocused?.Invoke(this, EventArgs.Empty);
+		}
+
+		protected virtual void OnTextBlcokUnfocused()
+		{
+			TextBlockUnfocused?.Invoke(this, EventArgs.Empty);
+		}
+
+		protected virtual void OnEntryLayoutFocused()
+		{
+			EntryLayoutFocused?.Invoke(this, EventArgs.Empty);
+		}
+
+		protected virtual void OnEntryLayoutUnfocused()
+		{
+			EntryLayoutUnfocused?.Invoke(this, EventArgs.Empty);
 		}
 
 		protected virtual void OnTextChanged(string oldValue, string newValue)
@@ -477,7 +517,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 #if __MATERIAL__
 			base.Label = markupText;
 #else
-			SetPartText("elm.guide", markupText ?? "");
+			this.SetPlaceHolderTextPart(markupText ?? "");
 #endif
 		}
 	}

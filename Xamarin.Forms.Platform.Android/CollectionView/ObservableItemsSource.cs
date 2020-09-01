@@ -18,6 +18,9 @@ namespace Xamarin.Forms.Platform.Android
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
 		}
 
+
+		internal event NotifyCollectionChangedEventHandler CollectionItemsSourceChanged;
+
 		public int Count => ItemsCount() + (HasHeader ? 1 : 0) + (HasFooter ? 1 : 0);
 
 		public bool HasHeader { get; set; }
@@ -42,7 +45,10 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			for (int n = 0; n < ItemsCount(); n++)
 			{
-				if (ElementAt(n) == item)
+				var elementByIndex = ElementAt(n);
+				var isEqual = elementByIndex == item || (elementByIndex != null && item != null && elementByIndex.Equals(item));
+
+				if (isEqual)
 				{
 					return AdjustPositionForHeader(n);
 				}
@@ -91,6 +97,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				CollectionChanged(args);
 			}
+			
 		}
 
 		void CollectionChanged(NotifyCollectionChangedEventArgs args)
@@ -115,6 +122,7 @@ namespace Xamarin.Forms.Platform.Android
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
+			CollectionItemsSourceChanged?.Invoke(this, args);
 		}
 
 		void Move(NotifyCollectionChangedEventArgs args)

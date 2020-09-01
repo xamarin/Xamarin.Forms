@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -269,7 +270,25 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.IsTrue(invalidOperationThrown);
 		}
-		
+
+
+		[Test]
+		public async Task AppearingAndDisappearingFiresOnShellWithModal()
+		{
+			Shell shell = new Shell();
+			shell.NavigationProxy.Inner = new NavigationProxy();
+			var lifeCyclePage = new ShellLifeCycleTests.LifeCyclePage();
+			shell.Items.Add(CreateShellItem(lifeCyclePage, shellItemRoute: "item", shellSectionRoute: "section", shellContentRoute: "content"));
+
+			var shellLifeCycleState = new ShellLifeCycleTests.ShellLifeCycleState(shell);
+			await shell.GoToAsync("ModalTestPage");
+			await shell.Navigation.ModalStack[0].Navigation.PopModalAsync();
+			shellLifeCycleState.AllTrue();
+			await shell.GoToAsync("ModalTestPage");
+			shellLifeCycleState.AllFalse();
+		}
+
+
 		[Test]
 		public async Task IsAppearingFiredOnLastModalPageOnly()
 		{
@@ -297,6 +316,53 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("1234", testPage.SomeQueryParameter);
 		}
 
+		[Test]
+		public async Task NavigatingAndNavigatedFiresForShellModal()
+		{
+			Shell shell = new Shell();
+			shell.Items.Add(CreateShellItem(shellItemRoute: "NewRoute", shellSectionRoute: "Section", shellContentRoute: "Content"));
+
+			ShellNavigatingEventArgs shellNavigatingEventArgs = null;
+			ShellNavigatedEventArgs shellNavigatedEventArgs = null;
+
+			shell.Navigating += (_, args) =>
+			{
+				shellNavigatingEventArgs = args;
+			};
+
+			shell.Navigated += (_, args) =>
+			{
+				shellNavigatedEventArgs = args;
+			};
+
+			await shell.GoToAsync("ModalTestPage");
+
+			Assert.IsNotNull(shellNavigatingEventArgs, "Shell.Navigating never fired");
+			Assert.IsNotNull(shellNavigatedEventArgs, "Shell.Navigated never fired");
+
+			Assert.AreEqual("//NewRoute/Section/Content", shellNavigatingEventArgs.Current.FullLocation.ToString());
+			Assert.AreEqual("//NewRoute/Section/Content/ModalTestPage", shellNavigatedEventArgs.Current.FullLocation.ToString());
+
+		}
+
+		[Test]
+		public async Task GetCurrentPageInModalNavigation()
+		{
+			Shell shell = new Shell();
+			shell.Items.Add(CreateShellItem(shellItemRoute: "NewRoute", shellSectionRoute: "Section", shellContentRoute: "Content"));
+
+			Page page = null;
+
+			shell.Navigated += (_, __) =>
+			{
+				page = shell.CurrentPage;
+			};
+
+			await shell.GoToAsync("ModalTestPage");
+			Assert.IsNotNull(page);
+			Assert.AreEqual(page.GetType(), typeof(ModalTestPage));
+		}
+
 
 		[QueryProperty("SomeQueryParameter", "SomeQueryParameter")]
 		public class ModalTestPageBase : ShellLifeCycleTests.LifeCyclePage
@@ -310,6 +376,17 @@ namespace Xamarin.Forms.Core.UnitTests
 			public ModalTestPageBase()
 			{
 				Shell.SetPresentationMode(this, PresentationMode.Modal);
+			}
+
+			protected override void OnAppearing()
+			{
+				base.OnAppearing();
+			}
+			
+
+			protected override void OnParentSet()
+			{
+				base.OnParentSet();
 			}
 		}
 

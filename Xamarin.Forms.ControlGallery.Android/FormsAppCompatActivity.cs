@@ -18,7 +18,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 	[Activity(Label = "Control Gallery", Icon = "@drawable/icon", Theme = "@style/MyTheme",
 		MainLauncher = true, HardwareAccelerated = true, 
-		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
+		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.UiMode)]
 	[IntentFilter(new[] { Intent.ActionView },
 		Categories = new[]
 		{
@@ -44,15 +44,12 @@ namespace Xamarin.Forms.ControlGallery.Android
 			base.OnCreate(bundle);
 
 #if TEST_EXPERIMENTAL_RENDERERS
-			// Fake_Flag is here so we can test for flag initialization issues
-			Forms.SetFlags("Fake_Flag"/*, "CollectionView_Experimental", "Shell_Experimental"*/); 
 #else
 			Forms.SetFlags("UseLegacyRenderers", "SwipeView_Experimental", "MediaElement_Experimental");
 #endif
 			Forms.Init(this, bundle);
 
 			FormsMaps.Init(this, bundle);
-			DualScreen.DualScreenService.Init(this);
 			FormsMaterial.Init(this, bundle);
 			AndroidAppLinks.Init(this);
 			Forms.ViewInitialized += (sender, e) => {
@@ -95,13 +92,22 @@ namespace Xamarin.Forms.ControlGallery.Android
 				return null;
 			});
 
+			DependencyService.Register<IMultiWindowService, MultiWindowService>();
+			
 			LoadApplication(_app);
-			if (Forms.Flags.Contains("FastRenderers_Experimental"))
+
+#if !TEST_EXPERIMENTAL_RENDERERS
+			if ((int)Build.VERSION.SdkInt >= 21)
 			{
-				var masterPage = ((_app.MainPage as MasterDetailPage)?.Master as ContentPage);
-				if (masterPage != null)
-					masterPage.Content = new Label { Text = "Fast Renderers" };
+				// Show a purple status bar if we're looking at legacy renderers
+				Window.SetStatusBarColor(Color.MediumPurple.ToAndroid());
 			}
+#endif
+		}
+
+		public void ReloadApplication()
+		{
+			LoadApplication(_app);
 		}
 
 		protected override void OnResume()
@@ -114,6 +120,25 @@ namespace Xamarin.Forms.ControlGallery.Android
 		public bool IsPreAppCompat()
 		{
 			return false;
+		}
+
+		[Java.Interop.Export("BackgroundApp")]
+		public void BackgroundApp()
+		{
+			Intent intent = new Intent();
+			intent.SetAction(Intent.ActionMain);
+			intent.AddCategory(Intent.CategoryHome);
+			this.StartActivity(intent);
+		}
+
+		[Java.Interop.Export("ForegroundApp")]
+		public void ForegroundApp()
+		{
+			// this only works pre API 29
+			Intent intent = new Intent(ApplicationContext, typeof(Activity1));
+			intent.SetAction(Intent.ActionMain);
+			intent.AddCategory(Intent.CategoryLauncher);
+			this.ApplicationContext.StartActivity(intent);
 		}
 	}
 }

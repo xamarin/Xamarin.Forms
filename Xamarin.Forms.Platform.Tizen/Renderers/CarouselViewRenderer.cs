@@ -1,16 +1,26 @@
-﻿namespace Xamarin.Forms.Platform.Tizen
+﻿using System;
+using ElmSharp;
+using System.Collections.Generic;
+using System.ComponentModel;
+using Xamarin.Forms.Platform.Tizen.Native;
+
+namespace Xamarin.Forms.Platform.Tizen
 {
 	public class CarouselViewRenderer : ItemsViewRenderer<CarouselView, Native.CarouselView>
 	{
+		List<View> _oldViews = new List<View>();
+		SmartEvent _animationStart;
+
 		public CarouselViewRenderer()
 		{
 			RegisterPropertyHandler(CarouselView.ItemsLayoutProperty, UpdateItemsLayout);
 			RegisterPropertyHandler(CarouselView.IsBounceEnabledProperty, UpdateIsBounceEnabled);
 			RegisterPropertyHandler(CarouselView.IsSwipeEnabledProperty, UpdateIsSwipeEnabled);
-			RegisterPropertyHandler(CarouselView.PositionProperty, UpdatePosition);
+			RegisterPropertyHandler(CarouselView.PositionProperty, UpdatePositionFromElement);
+			RegisterPropertyHandler(CarouselView.CurrentItemProperty, UpdateCurrentItemFromElement);
 		}
 
-		protected override Native.CarouselView CreateNativeControl(ElmSharp.EvasObject parent)
+		protected override Native.CarouselView CreateNativeControl(EvasObject parent)
 		{
 			return new Native.CarouselView(parent);
 		}
@@ -23,14 +33,41 @@
 		protected override void OnElementChanged(ElementChangedEventArgs<CarouselView> e)
 		{
 			base.OnElementChanged(e);
-			Control.Scroll.Scrolled += OnScrollStart;
-			Control.Scroll.PageScrolled += OnScrollStop;
+			if (e.NewElement != null)
+			{
+				Control.Scrolled += OnScrolled;
+				Control.Scroll.DragStart += OnDragStart;
+				Control.Scroll.DragStop += OnDragStop;
+				_animationStart = new SmartEvent(Control.Scroll, Control.Scroll.RealHandle, ThemeConstants.Scroller.Signals.StartScrollAnimation);
+				_animationStart.On += OnScrollStart;
+			}
+			UpdatePositionFromElement(false);
+			UpdateCurrentItemFromElement(false);
 		}
 
-		protected override void OnItemSelectedFromUI(object sender, SelectedItemChangedEventArgs e)
+		protected override void UpdateHorizontalScrollBarVisibility()
 		{
-			Element.Position = e.SelectedItemIndex;
-			Element.CurrentItem = e.SelectedItem;
+			var visibility = Element.HorizontalScrollBarVisibility;
+			if (visibility == ScrollBarVisibility.Default)
+				visibility = ScrollBarVisibility.Never;
+			Control.HorizontalScrollBarVisiblePolicy = visibility.ToNative();
+		}
+
+		protected override void UpdateVerticalScrollBarVisibility()
+		{
+			var visibility = Element.VerticalScrollBarVisibility;
+			if (visibility == ScrollBarVisibility.Default)
+				visibility = ScrollBarVisibility.Never;
+			Control.VerticalScrollBarVisiblePolicy = visibility.ToNative();
+		}
+
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			base.OnElementPropertyChanged(sender, e);
+			if (e.PropertyName == nameof(Element.ItemsSource))
+			{
+				Element.Position = 0;
+			}
 		}
 
 		protected override void Dispose(bool disposing)
@@ -39,39 +76,122 @@
 			{
 				if (Element != null)
 				{
-					Control.Scroll.Scrolled -= OnScrollStart;
-					Control.Scroll.PageScrolled -= OnScrollStop;
+					Control.Scrolled -= OnScrolled;
+					Control.Scroll.DragStart -= OnDragStart;
+					Control.Scroll.DragStop -= OnDragStop;
+					_animationStart.On -= OnScrollStart;
 				}
 			}
 			base.Dispose(disposing);
 		}
 
-		void OnScrollStart(object sender, System.EventArgs e)
+		void OnDragStart(object sender, EventArgs e)
 		{
-			if (!Element.IsDragging)
+			Element.SetIsDragging(true);
+			Element.IsScrolling = true;
+		}
+
+		void OnDragStop(object sender, EventArgs e)
+		{
+			Element.SetIsDragging(false);
+			Element.IsScrolling = false;
+		}
+
+		void OnScrollStart(object sender, EventArgs e)
+		{
+			Element.IsScrolling = true;
+		}
+
+		void OnScrolled(object sender, ItemsViewScrolledEventArgs e)
+		{
+			var scrolledIndex = e.CenterItemIndex;
+			Element.SetValueFromRenderer(CarouselView.PositionProperty, scrolledIndex);
+			Element.SetValueFromRenderer(CarouselView.CurrentItemProperty, Control.Adaptor[scrolledIndex]);
+			Control.Adaptor.RequestItemSelected(Control.Adaptor[scrolledIndex]);
+			Element.IsScrolling = false;
+
+			if (Control.Adaptor is ItemTemplateAdaptor adaptor)
 			{
-				Element.SetIsDragging(true);
+				var newViews = new List<View>();
+				var carouselPosition = Element.Position;
+				var previousPosition = carouselPosition - 1;
+				var nextPosition = carouselPosition + 1;
+
+				for (int i = e.FirstVisibleItemIndex; i <= e.LastVisibleItemIndex; i++)
+				{
+					var itemView = adaptor.GetTemplatedView(i);
+					if (itemView == null)
+					{
+						continue;
+					}
+
+					if (i == carouselPosition)
+					{
+						VisualStateManager.GoToState(itemView, CarouselView.CurrentItemVisualState);
+					}
+					else if (i == previousPosition)
+					{
+						VisualStateManager.GoToState(itemView, CarouselView.PreviousItemVisualState);
+					}
+					else if (i == nextPosition)
+					{
+						VisualStateManager.GoToState(itemView, CarouselView.NextItemVisualState);
+					}
+					else
+					{
+						VisualStateManager.GoToState(itemView, CarouselView.DefaultItemVisualState);
+					}
+
+					newViews.Add(itemView);
+
+					if (!Element.VisibleViews.Contains(itemView))
+					{
+						Element.VisibleViews.Add(itemView);
+					}
+				}
+
+				foreach (var itemView in _oldViews)
+				{
+					if (!newViews.Contains(itemView))
+					{
+						VisualStateManager.GoToState(itemView, CarouselView.DefaultItemVisualState);
+						if (Element.VisibleViews.Contains(itemView))
+						{
+							Element.VisibleViews.Remove(itemView);
+						}
+					}
+				}
+				_oldViews = newViews;
 			}
 		}
 
-		void OnScrollStop(object sender, System.EventArgs e)
+		void UpdateCurrentItemFromElement(bool isInitializing)
 		{
-			if (Element.IsDragging)
-			{
-				Element.SetIsDragging(false);
-			}
-		}
-
-		void UpdatePosition(bool initialize)
-		{
-			if (initialize)
-			{
+			if (isInitializing)
 				return;
-			}
-			if (Element.Position > -1 && Element.Position < Control.Adaptor.Count)
+
+			if (Element.CurrentItem != null)
+				ScrollTo(Control.Adaptor.GetItemIndex(Element.CurrentItem));
+		}
+
+		void UpdatePositionFromElement(bool isInitializing)
+		{
+			if (isInitializing)
+				return;
+
+			ScrollTo(Element.Position);
+		}
+
+		void ScrollTo(int position)
+		{
+			if (Element.IsScrolling)
+				return;
+
+			if (position > -1 && position < Control.Adaptor.Count)
 			{
-				Control.Adaptor.RequestItemSelected(Element.Position);
-				Element.CurrentItem = Control.Adaptor[Element.Position];
+				var scrollerIndex = Control.LayoutManager.IsHorizontal ? Control.Scroll.HorizontalPageIndex : Control.Scroll.VerticalPageIndex;
+				if (position != scrollerIndex)
+					Control.ScrollTo(position);
 			}
 		}
 
@@ -101,17 +221,17 @@
 		{
 			if (Element.IsSwipeEnabled)
 			{
-				Control.Scroll.ScrollBlock = ElmSharp.ScrollBlock.None;
+				Control.Scroll.ScrollBlock = ScrollBlock.None;
 			}
 			else
 			{
 				if (Control.LayoutManager.IsHorizontal)
 				{
-					Control.Scroll.ScrollBlock = ElmSharp.ScrollBlock.Horizontal;
+					Control.Scroll.ScrollBlock = ScrollBlock.Horizontal;
 				}
 				else
 				{
-					Control.Scroll.ScrollBlock = ElmSharp.ScrollBlock.Vertical;
+					Control.Scroll.ScrollBlock = ScrollBlock.Vertical;
 				}
 			}
 		}

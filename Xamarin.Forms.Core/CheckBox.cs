@@ -24,7 +24,6 @@ namespace Xamarin.Forms
 			set => SetValue(ColorProperty, value);
 		}
 
-
 		public CheckBox() => _platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<CheckBox>>(() => new PlatformConfigurationRegistry<CheckBox>(this));
 
 		public bool IsChecked
@@ -60,6 +59,7 @@ namespace Xamarin.Forms
 		double IBorderElement.BorderWidthDefaultValue => 0;
 		bool IBorderElement.IsCornerRadiusSet() => false;
 		bool IBorderElement.IsBackgroundColorSet() => IsSet(BackgroundColorProperty);
+		bool IBorderElement.IsBackgroundSet() => IsSet(BackgroundProperty);
 		bool IBorderElement.IsBorderColorSet() => false;
 		bool IBorderElement.IsBorderWidthSet() => false;
 	}

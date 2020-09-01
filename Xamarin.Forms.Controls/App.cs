@@ -17,7 +17,6 @@ namespace Xamarin.Forms.Controls
 	public class App : Application
 	{
 		public const string AppName = "XamarinFormsControls";
-		static string s_insightsKey;
 
 		// ReSharper disable once InconsistentNaming
 		public static int IOSVersion = -1;
@@ -245,6 +244,11 @@ namespace Xamarin.Forms.Controls
 		public void Reset()
 		{
 			SetMainPage(CreateDefaultMainPage());
+		}
+
+		public void PlatformTest() 
+		{
+			SetMainPage(new GalleryPages.PlatformTestsGallery.PlatformTestsConsole());
 		}
 	}
 }

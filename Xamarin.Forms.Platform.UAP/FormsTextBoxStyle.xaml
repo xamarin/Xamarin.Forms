@@ -8,11 +8,11 @@
 		<Setter Property="MinWidth" Value="{ThemeResource TextControlThemeMinWidth}" />
 		<Setter Property="MinHeight" Value="{ThemeResource TextControlThemeMinHeight}" />
 		<Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
-		<Setter Property="ForegroundFocusBrush" Value="{ThemeResource SystemControlForegroundChromeBlackHighBrush}" />
+        <Setter Property="ForegroundFocusBrush" Value="{ThemeResource SystemColorWindowTextColor}" />
 		<Setter Property="PlaceholderForegroundBrush" Value="{ThemeResource SystemControlPageTextBaseMediumBrush}" />
 		<Setter Property="PlaceholderForegroundFocusBrush" Value="{ThemeResource SystemControlPageTextChromeBlackMediumLowBrush}" />
 		<Setter Property="Background" Value="{ThemeResource SystemControlBackgroundAltHighBrush}" />
-		<Setter Property="BackgroundFocusBrush" Value="{ThemeResource SystemControlBackgroundChromeWhiteBrush}" />
+        <Setter Property="BackgroundFocusBrush" Value="{ThemeResource TextControlBackground}" />
 		<Setter Property="BorderBrush" Value="{ThemeResource SystemControlForegroundChromeDisabledLowBrush}" />
 		<Setter Property="SelectionHighlightColor" Value="{ThemeResource SystemControlHighlightAccentBrush}" />
 		<Setter Property="BorderThickness" Value="{ThemeResource TextControlBorderThemeThickness}" />
@@ -26,7 +26,7 @@
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="uwp:FormsTextBox">
-					<Grid>
+					<Grid x:Name="RootGrid">
 						<Grid.Resources>
 							<Style x:Name="DeleteButtonStyle" TargetType="Button">
 								<Setter Property="Template">
@@ -67,7 +67,7 @@
 													</VisualStateGroup>
 												</VisualStateManager.VisualStateGroups>
 												<TextBlock x:Name="GlyphElement" AutomationProperties.AccessibilityView="Raw"
-												           Foreground="{ThemeResource SystemControlForegroundChromeBlackMediumBrush}" FontStyle="Normal"
+												           Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" FontStyle="Normal"
 												           FontSize="12" FontFamily="{ThemeResource SymbolThemeFontFamily}" HorizontalAlignment="Center"
 												           Text="&#xE10A;" VerticalAlignment="Center" />
 											</Grid>
@@ -211,8 +211,7 @@
 						                  ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}"
 						                  Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" FontWeight="Normal"
 						                  Margin="0,0,0,8" Grid.Row="0" Visibility="Collapsed" x:DeferLoadStrategy="Lazy" />
-						<ScrollViewer x:Name="ContentElement" AutomationProperties.AccessibilityView="Raw"
-                                     
+                        <ScrollViewer x:Name="ContentElement" AutomationProperties.AccessibilityView="Raw"
 						              HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
 						              HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
 						              IsTabStop="False" IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}"
@@ -221,7 +220,7 @@
 						              Margin="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Grid.Row="1"
 						              VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
 						              VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}" ZoomMode="Disabled"
-                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
 						<ContentControl x:Name="PlaceholderTextContentPresenter" Grid.ColumnSpan="2"
 						                Content="{TemplateBinding PlaceholderText}"
 						                Foreground="{TemplateBinding PlaceholderForegroundBrush}" IsHitTestVisible="False"

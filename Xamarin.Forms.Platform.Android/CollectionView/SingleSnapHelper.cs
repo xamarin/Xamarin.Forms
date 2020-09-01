@@ -1,9 +1,4 @@
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
 using AndroidX.RecyclerView.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
 using AView = Android.Views.View;
 using ALayoutDirection = Android.Views.LayoutDirection;
 
@@ -12,7 +7,10 @@ namespace Xamarin.Forms.Platform.Android
 	internal class SingleSnapHelper : PagerSnapHelper
 	{
 		// CurrentTargetPosition will have this value until the user scrolls around
+		// Or if we request a ScrollTo position
+		// Or if the number of items on the ItemsSource changes
 		protected int CurrentTargetPosition = -1;
+		int _previousCount = 0;
 
 		protected static OrientationHelper CreateOrientationHelper(RecyclerView.LayoutManager layoutManager)
 		{
@@ -59,13 +57,22 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override int FindTargetSnapPosition(RecyclerView.LayoutManager layoutManager, int velocityX, int velocityY)
 		{
+			var itemCount = layoutManager.ItemCount;
+
+			//reset CurrentTargetPosition if ItemCount Changed is requested
+			//We could be adding a item before the CurrentTargetPosition
+			if (_previousCount != itemCount)
+			{
+				CurrentTargetPosition = -1;
+				_previousCount = itemCount;
+			}
+
 			if (CurrentTargetPosition == -1)
 			{
 				CurrentTargetPosition = base.FindTargetSnapPosition(layoutManager, velocityX, velocityY);
 				return CurrentTargetPosition;
 			}
 
-			var itemCount = layoutManager.ItemCount;
 			var increment = 1;
 
 			if (layoutManager.CanScrollHorizontally())
@@ -85,7 +92,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (IsLayoutReversed(layoutManager))
 			{
-				increment = increment * -1;
+				increment *= -1;
 			}
 
 			if (CurrentTargetPosition == itemCount - 1 && increment == 1)
@@ -96,6 +103,12 @@ namespace Xamarin.Forms.Platform.Android
 			CurrentTargetPosition = CurrentTargetPosition + increment;
 
 			return CurrentTargetPosition;
+		}
+
+		internal void ResetCurrentTargetPosition()
+		{
+			//reset CurrentTargetPosition if ScrollTo is requested
+			CurrentTargetPosition = -1;
 		}
 	}
 }

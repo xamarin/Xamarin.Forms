@@ -6,15 +6,9 @@ using Android.Views.InputMethods;
 using AApplicationInfoFlags = Android.Content.PM.ApplicationInfoFlags;
 using AActivity = Android.App.Activity;
 
-#if __ANDROID_29__
 using AndroidX.Fragment.App;
 using AndroidX.AppCompat.App;
 using AFragmentManager = AndroidX.Fragment.App.FragmentManager;
-#else
-using AFragmentManager = Android.Support.V4.App.FragmentManager;
-using Android.Support.V4.App;
-using Android.Support.V7.App;
-#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -130,14 +124,32 @@ namespace Xamarin.Forms.Platform.Android
 			if (_isDesignerContext.HasValue)
 				return _isDesignerContext.Value;
 
+			context.SetDesignerContext();
+			return _isDesignerContext.Value;
+		}
+
+		internal static void SetDesignerContext(this Context context)
+		{
+			if (_isDesignerContext.HasValue)
+				return;
+
 			if (context == null)
 				_isDesignerContext = false;
 			else if ($"{context}".Contains("com.android.layoutlib.bridge.android.BridgeContext"))
 				_isDesignerContext = true;
-			else if (context is ContextWrapper contextWrapper)
-				return contextWrapper.BaseContext.IsDesignerContext();
 			else
 				_isDesignerContext = false;
+		}
+
+		internal static void SetDesignerContext(global::Android.Views.View view)
+		{
+			_isDesignerContext = view.IsInEditMode;
+		}
+
+		internal static bool IsDesignerContext(this global::Android.Views.View view)
+		{
+			if (!_isDesignerContext.HasValue)
+				SetDesignerContext(view);
 
 			return _isDesignerContext.Value;
 		}

@@ -10,7 +10,7 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class ShellItemRenderer : UITabBarController, IShellItemRenderer, IAppearanceObserver, IUINavigationControllerDelegate
+	public class ShellItemRenderer : UITabBarController, IShellItemRenderer, IAppearanceObserver, IUINavigationControllerDelegate, IDisconnectable
 	{
 		#region IShellItemRenderer
 
@@ -113,37 +113,60 @@ namespace Xamarin.Forms.Platform.iOS
 			};
 		}
 
+		void IDisconnectable.Disconnect()
+		{
+			if (_sectionRenderers != null)
+			{
+				foreach (var kvp in _sectionRenderers.ToList())
+				{
+					var renderer = kvp.Value as IDisconnectable;
+					renderer?.Disconnect();
+					kvp.Value.ShellSection.PropertyChanged -= OnShellSectionPropertyChanged;
+				}
+			}
+
+			if (_displayedPage != null)
+				_displayedPage.PropertyChanged -= OnDisplayedPagePropertyChanged;
+
+			if (_currentSection != null)
+				((IShellSectionController)_currentSection).RemoveDisplayedPageObserver(this);
+
+
+			if(ShellItem != null)
+				ShellItem.PropertyChanged -= OnElementPropertyChanged;
+
+			if(_context?.Shell is IShellController shellController)
+				shellController.RemoveAppearanceObserver(this);
+
+			if(ShellItemController != null)
+				ShellItemController.ItemsCollectionChanged -= OnItemsCollectionChanged;
+		}
+
 		protected override void Dispose(bool disposing)
 		{
-			base.Dispose(disposing);
+			if (_disposed)
+				return;
 
-			if (disposing && !_disposed)
+			_disposed = true;
+
+			if (disposing)
 			{
-				_disposed = true;
+				(this as IDisconnectable).Disconnect();
+
 				foreach (var kvp in _sectionRenderers.ToList())
 				{
 					var renderer = kvp.Value;
 					RemoveRenderer(renderer);
-					renderer.Dispose();
 				}
 
-				if (_displayedPage != null)
-					_displayedPage.PropertyChanged -= OnDisplayedPagePropertyChanged;
-
-				if (_currentSection != null)
-					((IShellSectionController)_currentSection).RemoveDisplayedPageObserver(this);
-
-
 				_sectionRenderers.Clear();
-				ShellItem.PropertyChanged -= OnElementPropertyChanged;
-				((IShellController)_context.Shell).RemoveAppearanceObserver(this);
-				ShellItemController.ItemsCollectionChanged -= OnItemsCollectionChanged;
-
 				CurrentRenderer = null;
 				_shellItem = null;
 				_currentSection = null;
 				_displayedPage = null;
 			}
+
+			base.Dispose(disposing);
 		}
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -207,7 +230,7 @@ namespace Xamarin.Forms.Platform.iOS
 					GoTo(ShellItem.CurrentItem);
 			}
 
-			SetTabBarHidden(ViewControllers.Length == 1);
+			UpdateTabBarHidden();
 		}
 
 		protected virtual void OnShellItemSet(ShellItem shellItem)
@@ -272,9 +295,7 @@ namespace Xamarin.Forms.Platform.iOS
 			ViewControllers = viewControllers;
 			CustomizableViewControllers = Array.Empty<UIViewController>();
 
-			// No sense showing a bar that has a single icon
-			if (ViewControllers.Length == 1)
-				SetTabBarHidden(true);
+			UpdateTabBarHidden();
 
 			// Make sure we are at the right item
 			GoTo(ShellItem.CurrentItem);
@@ -345,6 +366,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (_sectionRenderers.Remove(renderer.ViewController))
 				renderer.ShellSection.PropertyChanged -= OnShellSectionPropertyChanged;
+
+			renderer?.Dispose();
+
+			if (CurrentRenderer == renderer)
+				CurrentRenderer = null;
 		}
 
 		IShellSectionRenderer RendererForShellContent(ShellSection shellSection)
@@ -366,34 +392,18 @@ namespace Xamarin.Forms.Platform.iOS
 			return null;
 		}
 
-		void SetTabBarHidden(bool hidden)
+		public override void ViewWillLayoutSubviews()
 		{
-			TabBar.Hidden = hidden;
-
-			if (CurrentRenderer == null)
-				return;
-
-			// now we must do the uikit jiggly dance to make sure the safe area updates. Failure
-			// to perform the jiggle may result in the page not insetting properly when unhiding
-			// the TabBar
-
-			// a devious 1 pixel inset vertically
-			CurrentRenderer.ViewController.View.Frame = View.Bounds.Inset(0, 1);
-
-			// and quick as a whip we return it back to what it was with its insets being all proper
-			CurrentRenderer.ViewController.View.Frame = View.Bounds;
+			UpdateTabBarHidden();
+			base.ViewWillLayoutSubviews();
 		}
 
 		void UpdateTabBarHidden()
 		{
-			if (_displayedPage == null || ShellItem == null)
+			if (ShellItemController == null)
 				return;
 
-			var hidden = !Shell.GetTabBarIsVisible(_displayedPage);
-			if (ShellItemController.GetItems().Count > 1)
-			{
-				SetTabBarHidden(hidden);
-			}
+			TabBar.Hidden = !ShellItemController.ShowTabs;
 		}
 	}
 }

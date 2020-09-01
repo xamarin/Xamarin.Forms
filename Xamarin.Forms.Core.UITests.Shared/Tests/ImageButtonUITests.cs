@@ -84,6 +84,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		[Test]
 		[UiTest(typeof(ImageButton), "Clicked")]
+		[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
 		public void Clicked()
 		{
 			var remote = new EventViewContainerRemote(App, Test.ImageButton.Clicked, PlatformViewType);
@@ -101,6 +102,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		[Test]
 		[UiTest(typeof(ImageButton), "Pressed")]
+		[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
 		public void Pressed()
 		{
 			var remote = new EventViewContainerRemote(App, Test.ImageButton.Pressed, PlatformViewType);
@@ -152,5 +154,44 @@ namespace Xamarin.Forms.Core.UITests
 			var remote = new ViewContainerRemote(App, Test.ImageButton.Image, PlatformViewType);
 			remote.GoTo();
 		}
+
+#if __ANDROID__ || __IOS__
+		[Ignore("This is covered by the platform tests")]
+		public override void _Opacity() { }
+#endif
+
+#if __ANDROID__ || __IOS__ || __WINDOWS__
+		[Ignore("This is covered by the platform tests")]
+		public override void _IsEnabled() { }
+#endif
+
+#if __ANDROID__ || __IOS__ || __WINDOWS__
+		[Ignore("This is covered by the platform tests")]
+		public override void _Rotation() { }
+
+		[Ignore("This is covered by the platform tests")]
+		public override void _RotationX() { }
+
+		[Ignore("This is covered by the platform tests")]
+		public override void _RotationY() { }
+#endif
+
+#if __ANDROID__
+		[Ignore("This is covered by the platform tests")]
+		public override void _TranslationX() { }
+
+		[Ignore("This is covered by the platform tests")]
+		public override void _TranslationY() { }
+#endif
+
+#if __IOS__ || __WINDOWS__
+		[Ignore("This is covered by the platform tests")]
+		public override void _Scale() { }
+#endif
+
+#if __ANDROID__ || __IOS__
+		[Ignore("This is covered by the platform tests")]
+		public override void _IsVisible() { }
+#endif
 	}
 }

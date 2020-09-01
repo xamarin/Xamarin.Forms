@@ -5,7 +5,6 @@
     <SkipMicrosoftUIXamlCheckTargetPlatformVersion>true</SkipMicrosoftUIXamlCheckTargetPlatformVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <GenerateLibraryLayout Condition="'$(Use2017)' == 'true'">true</GenerateLibraryLayout>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -28,6 +27,10 @@
   </PropertyGroup>
   <ItemGroup Condition=" '$(OS)' == 'Windows_NT' ">
     <Page Include="FormsAutoSuggestBoxStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Shell\ShellPageWrapper.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -68,11 +71,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Resources.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="PromptDialog.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Shell\ShellStyles.xaml">
+    <Page Include="Resources.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -94,7 +97,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup Condition=" '$(OS)' == 'Windows_NT' AND $(TargetFramework.StartsWith('uap10.0')) AND $(TargetPlatformMinVersion) &gt;= '10.0.16299.0'">
+    <Page Include="Shell\ShellStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup Condition="'$(OS)' == 'Windows_NT' AND $(TargetFramework.StartsWith('uap10.0')) AND $(TargetPlatformMinVersion) &lt; '10.0.16299.0'">
+    <Page Remove="Shell\ShellStyles.xaml">
+    </Page>
+  </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Xamarin.Forms.Core\Crc64.cs" Link="Crc64.cs" />
     <Compile Include="..\Xamarin.Forms.Core\StreamWrapper.cs" Link="StreamWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -103,15 +117,13 @@
     <ProjectReference Include="..\Xamarin.Forms.Xaml\Xamarin.Forms.Xaml.csproj">
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup Condition=" '$(OS)' == 'Windows_NT' ">
-    <PackageReference Include="Microsoft.UI.Xaml" Condition="$(TargetFramework) == 'uap10.0.14393'">
-      <Version>2.1.190606001</Version>
+  <ItemGroup Condition=" '$(OS)' == 'Windows_NT' AND $(TargetFramework.StartsWith('uap10.0'))  ">
+    <!-- Conditions duplicated on PackageReference to make VS Mac happy -->
+    <PackageReference Include="Microsoft.UI.Xaml" Condition="'$(OS)' == 'Windows_NT' AND $(TargetPlatformMinVersion) &lt; '10.0.16299.0'" Version="2.1.190606001">
     </PackageReference>
-    <PackageReference Include="Microsoft.UI.Xaml" Condition="$(TargetFramework) == 'uap10.0.16299'">
-      <Version>2.3.191211002</Version>
+    <PackageReference Include="Microsoft.UI.Xaml" Condition="'$(OS)' == 'Windows_NT' AND $(TargetPlatformMinVersion) &gt;= '10.0.16299.0'" Version="2.4.2">
     </PackageReference>
-    <PackageReference Include="Win2D.uwp">
-      <Version>1.20.0</Version>
+    <PackageReference Include="Win2D.uwp" Condition="'$(OS)' == 'Windows_NT'" Version="1.20.0">
     </PackageReference>
   </ItemGroup>
 </Project>

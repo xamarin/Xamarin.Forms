@@ -28,21 +28,6 @@ namespace Xamarin.Forms.Core.UITests
 
 		}
 
-		// [Test]
-		// [UiTest (Test.VisualElement.BackgroundColor)]
-		// [UiTestBroken (BrokenReason.UITestBug, "UITest Issue #107")]
-		public virtual void _BackgroundColor()
-		{
-			//TODO: this was failing and is changing in next version of calabash (UI-Test-pre nuget) to a json rgb
-			//			var remote = RemoteFactory.CreateRemote<ViewContainerRemote> (App, "BackgroundColor", PlatformViewType);
-			//			remote.GoTo ();
-			//			if (App is iOSApp) {
-			//				var backgroundColor = remote.GetProperty<Color> (View.BackgroundColorProperty);
-			//				Assert.AreEqual (Color.Blue, backgroundColor);
-			//			}
-
-		}
-
 		[Test]
 		[UiTest(typeof(VisualElement), "Focus")]
 		public abstract void _Focus();
@@ -135,6 +120,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		[Test]
 		[UiTest(typeof(VisualElement), "Opacity")]
+		[Category(UITestCategories.UwpIgnore)]
 		public virtual void _Opacity()
 		{
 			var remote = new ViewContainerRemote(App, Test.VisualElement.Opacity, PlatformViewType);
@@ -153,6 +139,7 @@ namespace Xamarin.Forms.Core.UITests
 		[Test]
 		[UiTest(typeof(VisualElement), "Rotation")]
 		[UiTestBroken(BrokenReason.CalabashBug, "Calabash bug")]
+		[Category(UITestCategories.UwpIgnore)]
 		public virtual void _Rotation()
 		{
 			var remote = new ViewContainerRemote(App, Test.VisualElement.Rotation, PlatformViewType);
@@ -174,6 +161,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		[Test]
 		[UiTest(typeof(VisualElement), "RotationX")]
+		[Category(UITestCategories.UwpIgnore)]
 		public virtual void _RotationX()
 		{
 			var remote = new ViewContainerRemote(App, Test.VisualElement.RotationX, PlatformViewType);
@@ -195,6 +183,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		[Test]
 		[UiTest(typeof(VisualElement), "RotationY")]
+		[Category(UITestCategories.UwpIgnore)]
 		public virtual void _RotationY()
 		{
 			var remote = new ViewContainerRemote(App, Test.VisualElement.RotationY, PlatformViewType);
@@ -216,6 +205,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		[Test]
 		[UiTest(typeof(VisualElement), "Scale")]
+		[Category(UITestCategories.UwpIgnore)]
 		public virtual void _Scale()
 		{
 			var remote = new ViewContainerRemote(App, Test.VisualElement.Scale, PlatformViewType);
@@ -230,12 +220,12 @@ namespace Xamarin.Forms.Core.UITests
 			Matrix generatedMatrix = NumericExtensions.BuildScaleMatrix(0.5f);
 			Assert.AreEqual(generatedMatrix, scaleMatrix);
 #endif
-
 		}
 
 		[Test]
 		[UiTest(typeof(VisualElement), "TranslationX")]
 		[Category(UITestCategories.ManualReview)]
+		[Category(UITestCategories.UwpIgnore)]
 		public virtual void _TranslationX()
 		{
 			var remote = new ViewContainerRemote(App, Test.VisualElement.TranslationX, PlatformViewType);
@@ -248,6 +238,7 @@ namespace Xamarin.Forms.Core.UITests
 		[Test]
 		[UiTest(typeof(VisualElement), "TranslationY")]
 		[Category(UITestCategories.ManualReview)]
+		[Category(UITestCategories.UwpIgnore)]
 		public virtual void _TranslationY()
 		{
 			var remote = new ViewContainerRemote(App, Test.VisualElement.TranslationY, PlatformViewType);

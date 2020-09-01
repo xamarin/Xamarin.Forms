@@ -1,12 +1,6 @@
 using System;
 using Android.Content;
-using Android.Content.Res;
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
 using AndroidX.RecyclerView.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
 using Android.Views;
 using Object = Java.Lang.Object;
 
@@ -208,13 +202,18 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (template != null)
 			{
-				var footerContentView = new ItemContentView(context);
-				return new TemplatedItemViewHolder(footerContentView, template, isSelectionEnabled: false);
+				var itemContentView = new ItemContentView(context);
+				return new TemplatedItemViewHolder(itemContentView, template, isSelectionEnabled: false);
 			}
 
 			if (content is View formsView)
 			{
-				return SimpleViewHolder.FromFormsView(formsView, context);
+				var viewHolder = SimpleViewHolder.FromFormsView(formsView, context);
+
+				// Propagate the binding context, visual, etc. from the ItemsView to the header/footer
+				ItemsView.AddLogicalChild(viewHolder.View);
+
+				return viewHolder;
 			}
 
 			// No template, Footer is not a Forms View, so just display Footer.ToString
@@ -234,7 +233,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				// EmptyView is a Forms View; display that
-				return SimpleViewHolder.FromFormsView(formsView, context, () => GetWidth(parent), () => GetHeight(parent));
+				return SimpleViewHolder.FromFormsView(formsView, context, () => GetWidth(parent), () => GetHeight(parent), ItemsView);
 			}
 
 			var itemContentView = new SizedItemContentView(parent.Context, () => GetWidth(parent), () => GetHeight(parent));

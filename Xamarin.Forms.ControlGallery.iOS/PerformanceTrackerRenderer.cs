@@ -35,6 +35,7 @@ using Xamarin.Forms.Platform.iOS;
 [assembly: ExportRenderer(typeof(TimePicker), typeof(PerformanceTrackingTimePicker))]
 [assembly: ExportRenderer(typeof(WebView), typeof(PerformanceTrackingWebView))]
 [assembly: ExportRenderer(typeof(Entry), typeof(PerformanceTrackingMaterialEntry), new[] { typeof(VisualMarker.MaterialVisual) })]
+
 [assembly: ExportRenderer(typeof(Frame), typeof(PerformanceTrackingFrame))]
 
 namespace Xamarin.Forms.ControlGallery.iOS

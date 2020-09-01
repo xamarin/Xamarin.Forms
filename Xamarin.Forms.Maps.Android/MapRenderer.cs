@@ -11,17 +11,14 @@ using Android.Content.PM;
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
 using Android.OS;
-#if __ANDROID_29__
 using AndroidX.Core.Content;
-#else
-using Android.Support.V4.Content;
-#endif
 using Java.Lang;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
 using Math = System.Math;
 using APolyline = Android.Gms.Maps.Model.Polyline;
 using APolygon = Android.Gms.Maps.Model.Polygon;
+using ACircle = Android.Gms.Maps.Model.Circle;
 
 namespace Xamarin.Forms.Maps.Android
 {
@@ -38,6 +35,7 @@ namespace Xamarin.Forms.Maps.Android
 		List<Marker> _markers;
 		List<APolyline> _polylines;
 		List<APolygon> _polygons;
+		List<ACircle> _circles;
 
 		public MapRenderer(Context context) : base(context)
 		{
@@ -101,6 +99,7 @@ namespace Xamarin.Forms.Maps.Android
 				if (NativeMap != null)
 				{
 					NativeMap.MyLocationEnabled = false;
+					NativeMap.TrafficEnabled = false;
 					NativeMap.SetOnCameraMoveListener(null);
 					NativeMap.MarkerClick -= OnMarkerClick;
 					NativeMap.InfoWindowClick -= OnInfoWindowClick;
@@ -193,6 +192,10 @@ namespace Xamarin.Forms.Maps.Android
 				gmap.UiSettings.ZoomControlsEnabled = Map.HasZoomEnabled;
 				gmap.UiSettings.ZoomGesturesEnabled = Map.HasZoomEnabled;
 			}
+			else if (e.PropertyName == Map.TrafficEnabledProperty.PropertyName)
+			{
+				gmap.TrafficEnabled = Map.TrafficEnabled;
+			}
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
@@ -211,14 +214,15 @@ namespace Xamarin.Forms.Maps.Android
 			}
 			else if (changed)
 			{
-				if (NativeMap != null)
-				{
-					UpdateVisibleRegion(NativeMap.CameraPosition.Target);
-				}
-
 				if (Element.MoveToLastRegionOnLayoutChange)
 					MoveToRegion(Element.LastMoveToRegion, false);
 			}
+
+			if (NativeMap != null)
+			{
+				UpdateVisibleRegion(NativeMap.CameraPosition.Target);
+			}
+
 		}
 
 		protected virtual void OnMapReady(GoogleMap map)
@@ -233,6 +237,7 @@ namespace Xamarin.Forms.Maps.Android
 			map.InfoWindowClick += OnInfoWindowClick;
 			map.MapClick += OnMapClick;
 
+			map.TrafficEnabled = Map.TrafficEnabled;
 			map.UiSettings.ZoomControlsEnabled = Map.HasZoomEnabled;
 			map.UiSettings.ZoomGesturesEnabled = Map.HasZoomEnabled;
 			map.UiSettings.ScrollGesturesEnabled = Map.HasScrollEnabled;
@@ -303,7 +308,22 @@ namespace Xamarin.Forms.Maps.Android
 
 		protected Marker GetMarkerForPin(Pin pin)
 		{
-			return _markers?.Find(m => m.Id == (string)pin.MarkerId);
+			Marker targetMarker = null;
+
+			if (_markers != null)
+			{
+				for (int i = 0; i < _markers.Count; i++)
+				{
+					var marker = _markers[i];
+					if (marker.Id == (string)pin.MarkerId)
+					{
+						targetMarker = marker;
+						break;
+					}
+				}
+			}
+
+			return targetMarker;
 		}
 
 		protected Pin GetPinForMarker(Marker marker)
@@ -398,23 +418,41 @@ namespace Xamarin.Forms.Maps.Android
 			}
 		}
 
-		void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+		void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			switch (notifyCollectionChangedEventArgs.Action)
+			if (Device.IsInvokeRequired)
+			{
+				Device.BeginInvokeOnMainThread(() => PinCollectionChanged(e));
+			}
+			else
+			{
+				PinCollectionChanged(e);
+			}
+		}
+
+		void PinCollectionChanged(NotifyCollectionChangedEventArgs e)
+		{
+			switch (e.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
-					AddPins(notifyCollectionChangedEventArgs.NewItems);
+					AddPins(e.NewItems);
 					break;
 				case NotifyCollectionChangedAction.Remove:
-					RemovePins(notifyCollectionChangedEventArgs.OldItems);
+					RemovePins(e.OldItems);
 					break;
 				case NotifyCollectionChangedAction.Replace:
-					RemovePins(notifyCollectionChangedEventArgs.OldItems);
-					AddPins(notifyCollectionChangedEventArgs.NewItems);
+					RemovePins(e.OldItems);
+					AddPins(e.NewItems);
 					break;
 				case NotifyCollectionChangedAction.Reset:
-					_markers?.ForEach(m => m.Remove());
-					_markers = null;
+					if (_markers != null)
+					{
+						for (int i = 0; i < _markers.Count; i++)
+							_markers[i].Remove();
+
+						_markers = null;
+					}
+
 					AddPins((IList)Element.Pins);
 					break;
 				case NotifyCollectionChangedAction.Move:
@@ -511,10 +549,27 @@ namespace Xamarin.Forms.Maps.Android
 					PolygonOnPropertyChanged(polygon, e);
 					break;
 				}
+				case Circle circle:
+				{
+					CircleOnPropertyChanged(circle, e);
+					break;
+				}
 			}
 		}
 
 		void OnMapElementCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (Device.IsInvokeRequired)
+			{
+				Device.BeginInvokeOnMainThread(() => MapElementCollectionChanged(e));
+			}
+			else
+			{
+				MapElementCollectionChanged(e);
+			}
+		}
+
+		void MapElementCollectionChanged(NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action)
 			{
@@ -531,14 +586,26 @@ namespace Xamarin.Forms.Maps.Android
 				case NotifyCollectionChangedAction.Reset:
 					if (_polylines != null)
 					{
-						foreach (var nativePolyline in _polylines)
-						{
-							nativePolyline.Remove();
+						for(int i = 0; i < _polylines.Count; i++)
+							_polylines[i].Remove();
 
-							var formsPolyline = GetFormsPolyline(nativePolyline);
-							if (formsPolyline != null)
-								formsPolyline.PropertyChanged -= MapElementPropertyChanged;
-						}
+						_polylines = null;
+					}
+
+					if (_polygons != null)
+					{
+						for (int i = 0; i < _polygons.Count; i++)
+							_polygons[i].Remove();
+
+						_polygons = null;
+					}
+
+					if (_circles != null)
+					{
+						for (int i = 0; i < _circles.Count; i++)
+							_circles[i].Remove();
+
+						_circles = null;
 					}
 
 					AddMapElements(Element.MapElements);
@@ -560,6 +627,9 @@ namespace Xamarin.Forms.Maps.Android
 					case Polygon polygon:
 						AddPolygon(polygon);
 						break;
+					case Circle circle:
+						AddCircle(circle);
+						break;
 				}
 			}
 		}
@@ -577,6 +647,9 @@ namespace Xamarin.Forms.Maps.Android
 						break;
 					case Polygon polygon:
 						RemovePolygon(polygon);
+						break;
+					case Circle circle:
+						RemoveCircle(circle);
 						break;
 				}
 			}
@@ -601,7 +674,22 @@ namespace Xamarin.Forms.Maps.Android
 
 		protected APolyline GetNativePolyline(Polyline polyline)
 		{
-			return _polylines?.Find(p => p.Id == (string)polyline.MapElementId);
+			APolyline targetPolyline = null;
+
+			if (_polylines != null)
+			{
+				for (int i = 0; i < _polylines.Count; i++)
+				{
+					var native = _polylines[i];
+					if (native.Id == (string)polyline.MapElementId)
+					{
+						targetPolyline = native;
+						break;
+					}
+				}
+			}
+
+			return targetPolyline;
 		}
 
 		protected Polyline GetFormsPolyline(APolyline polyline)
@@ -708,7 +796,22 @@ namespace Xamarin.Forms.Maps.Android
 
 		protected APolygon GetNativePolygon(Polygon polygon)
 		{
-			return _polygons?.Find(p => p.Id == (string)polygon.MapElementId);
+			APolygon targetPolygon = null;
+
+			if (_polygons != null)
+			{
+				for (int i = 0; i < _polygons.Count; i++)
+				{
+					var native = _polygons[i];
+					if (native.Id == (string)polygon.MapElementId)
+					{
+						targetPolygon = native;
+						break;
+					}
+				}
+			}
+
+			return targetPolygon;
 		}
 
 		protected Polygon GetFormsPolygon(APolygon polygon)
@@ -786,6 +889,127 @@ namespace Xamarin.Forms.Maps.Android
 		}
 
 		#endregion
+
+		#region Circles
+
+		protected virtual CircleOptions CreateCircleOptions(Circle circle)
+		{
+			var opts = new CircleOptions()
+				.InvokeCenter(new LatLng(circle.Center.Latitude, circle.Center.Longitude))
+				.InvokeRadius(circle.Radius.Meters)
+				.InvokeStrokeWidth(circle.StrokeWidth);
+
+			if (!circle.StrokeColor.IsDefault)
+				opts.InvokeStrokeColor(circle.StrokeColor.ToAndroid());
+
+			if (!circle.FillColor.IsDefault)
+				opts.InvokeFillColor(circle.FillColor.ToAndroid());
+
+			return opts;
+		}
+
+		protected ACircle GetNativeCircle(Circle circle)
+		{
+			ACircle targetCircle = null;
+
+			if (_circles != null)
+			{
+				for (int i = 0; i < _circles.Count; i++)
+				{
+					var native = _circles[i];
+					if (native.Id == (string)circle.MapElementId)
+					{
+						targetCircle = native;
+						break;
+					}
+				}
+			}
+
+			return targetCircle;
+		}
+
+		protected Circle GetFormsCircle(ACircle circle)
+		{
+			Circle targetCircle = null;
+
+			for (int i = 0; i < Element.MapElements.Count; i++)
+			{
+				var mapElement = Element.MapElements[i];
+				if ((string)mapElement.MapElementId == circle.Id)
+				{
+					targetCircle = mapElement as Circle;
+					break;
+				}
+			}
+
+			return targetCircle;
+		}
+
+		void CircleOnPropertyChanged(Circle formsCircle, PropertyChangedEventArgs e)
+		{
+			var nativeCircle = GetNativeCircle(formsCircle);
+
+			if (nativeCircle == null)
+			{
+				return;
+			}
+
+			if (e.PropertyName == Circle.FillColorProperty.PropertyName)
+			{
+				nativeCircle.FillColor = formsCircle.FillColor.ToAndroid();
+			}
+			else if (e.PropertyName == Circle.CenterProperty.PropertyName)
+			{
+				nativeCircle.Center = new LatLng(formsCircle.Center.Latitude, formsCircle.Center.Longitude);
+			}
+			else if (e.PropertyName == Circle.RadiusProperty.PropertyName)
+			{
+				nativeCircle.Radius = formsCircle.Radius.Meters;
+			}
+			else if (e.PropertyName == MapElement.StrokeColorProperty.PropertyName)
+			{
+				nativeCircle.StrokeColor = formsCircle.StrokeColor.ToAndroid();
+			}
+			else if(e.PropertyName == MapElement.StrokeWidthProperty.PropertyName)
+			{
+				nativeCircle.StrokeWidth = formsCircle.StrokeWidth;
+			}
+		}
+
+		void AddCircle(Circle circle)
+		{
+			var map = NativeMap;
+			if (map == null)
+			{
+				return;
+			}
+
+			if (_circles == null)
+			{
+				_circles = new List<ACircle>();
+			}
+
+			var options = CreateCircleOptions(circle);
+			var nativeCircle = map.AddCircle(options);
+
+			circle.MapElementId = nativeCircle.Id;
+
+			_circles.Add(nativeCircle);
+		}
+
+		void RemoveCircle(Circle circle)
+		{
+			var native = GetNativeCircle(circle);
+
+			if (native != null)
+			{
+				native.Remove();
+				_circles.Remove(native);
+			}
+		}
+
+		#endregion
+
 
 		void SetUserVisible()
 		{

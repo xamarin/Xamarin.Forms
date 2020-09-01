@@ -6,6 +6,9 @@ using NUnit.Framework.Internal;
 using Xamarin.Forms.Internals;
 using System;
 using System.Threading.Tasks;
+using System.IO;
+using System.Reflection;
+using System.ComponentModel;
 
 namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 {
@@ -23,6 +26,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 		readonly Color _inconclusiveColor = Color.Goldenrod;
 
 		int _finishedAssemblyCount = 0;
+		int _testsRunCount = 0;
+
+		readonly PlatformTestRunner _runner = new PlatformTestRunner();
+		DisplaySettings _displaySettings;
 
 		public PlatformTestsConsole()
 		{
@@ -33,17 +40,50 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			MessagingCenter.Subscribe<ITestResult>(this, "TestFinished", TestFinished);
 
 			MessagingCenter.Subscribe<Exception>(this, "TestRunnerError", OutputTestRunnerError);
+
+			Rerun.Clicked += RerunClicked;
+			togglePassed.Clicked += ToggledPassedClicked;
+
+			_displaySettings = new DisplaySettings();
+			BindingContext = _displaySettings;
+		}
+
+		private void ToggledPassedClicked(object sender, EventArgs e)
+		{
+			_displaySettings.ShowPassed = !_displaySettings.ShowPassed;
+		}
+
+		async void RerunClicked(object sender, EventArgs e)
+		{
+			await Device.InvokeOnMainThreadAsync(() => {
+				Status.Text = "Running...";
+				RunCount.Text = "";
+				Results.Children.Clear();
+				Rerun.IsEnabled = false;
+				_displaySettings.ShowPassed = true;
+			});
+
+			await Task.Delay(50);
+
+			await Run().ConfigureAwait(false);
 		}
 
 		protected override async void OnAppearing()
 		{
 			base.OnAppearing();
+			await Run().ConfigureAwait(false);
+		}
 
-			// Only want to run a subset of tests? Create a filter and pass it into tests.Run()
-			//var filter = new TestNameContainsFilter("Bugzilla");
-			
-			var tests = new PlatformTestRunner();
-			await Task.Run(() => tests.Run()).ConfigureAwait(false);
+		async Task Run() 
+		{
+			_finishedAssemblyCount = 0;
+			_testsRunCount = 0;
+
+			// Only want to run a subset of tests? Create a filter and pass it into _runner.Run()
+			// e.g. var filter = new TestNameContainsFilter("Bugzilla");
+			// or var filter = new CategoryFilter("Picker");
+
+			await Task.Run(() => _runner.Run()).ConfigureAwait(false);
 		}
 
 		void DisplayOverallResult()
@@ -63,7 +103,12 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 				{
 					Status.Text = SuccessText;
 					Status.TextColor = _successColor;
+					_displaySettings.ShowPassed = true;
 				}
+
+				RunCount.Text = $"{_testsRunCount} tests run";
+
+				Rerun.IsEnabled = true;
 			});
 		}
 
@@ -73,10 +118,13 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 
 			Status.Text = failText;
 			Status.TextColor = _failColor;
+			_displaySettings.ShowPassed = false;
 		}
 
 		void AssemblyFinished(ITestResult assembly)
 		{
+			_testsRunCount += (assembly.PassCount + assembly.FailCount + assembly.InconclusiveCount);
+
 			_finishedAssemblyCount += 1;
 			if (_finishedAssemblyCount == 2)
 			{
@@ -100,7 +148,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 		{
 			var name = testFixture.Name;
 
-			var label = new Label { Text = $"{name} Started", LineBreakMode = LineBreakMode.HeadTruncation };
+			var label = new Label { Text = $"{name} Started", LineBreakMode = LineBreakMode.HeadTruncation,
+				FontAttributes = FontAttributes.Bold };
+
+			SetupPassedLabelBindings(label);
 
 			Device.BeginInvokeOnMainThread(() =>
 			{
@@ -125,7 +176,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 
 		void OutputTestCaseResult(TestCaseResult result)
 		{
-			var name = result.Test.Name; // ShortenTestName(result.FullName);
+			var name = result.Test.Name; 
 
 			var outcome = "Fail";
 
@@ -153,6 +204,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			else
 			{
 				label.TextColor = _successColor;
+				SetupPassedLabelBindings(label);
 			}
 
 			var margin = new Thickness(15, 0, 0, 0);
@@ -164,13 +216,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			{
 				if (assertionResult.Status != AssertionStatus.Passed)
 				{
-					toAdd.Add(new Label { Text = assertionResult.Message });
+					ExtractErrorMessage(toAdd, assertionResult.Message);
 					toAdd.Add(new Editor { Text = assertionResult.StackTrace, IsReadOnly = true });
 				}
 			}
 
 			if (!string.IsNullOrEmpty(result.Output))
 			{
+				var output = result.Output;
 				toAdd.Add(new Label { Text = result.Output, Margin = margin });
 			}
 
@@ -225,6 +278,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			else
 			{
 				label.TextColor = _successColor;
+				SetupPassedLabelBindings(label);
+				SetupPassedLabelBindings(counts);
 			}
 
 			counts.TextColor = label.TextColor;
@@ -242,6 +297,73 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			{
 				DisplayFailResult(ex.Message);
 			});
+		}
+
+		static void ExtractErrorMessage(List<View> views, string message) 
+		{
+			const string openTag = "<img>";
+			const string closeTag = "</img>";
+			var openTagIndex = message.IndexOf("<img>");
+			var closeTagIndex = message.IndexOf("</img>");
+
+			if (openTagIndex >= 0 && closeTagIndex > openTagIndex)
+			{
+				var imgString = message.Substring(openTagIndex + openTag.Length, closeTagIndex - openTagIndex - openTag.Length);
+				var messageBefore = message.Substring(0, openTagIndex);
+				var messageAfter = message.Substring(closeTagIndex + closeTag.Length);
+				var imgBytes = Convert.FromBase64String(imgString);
+				var stream = new MemoryStream(imgBytes);
+
+				if (!string.IsNullOrEmpty(messageBefore))
+				{
+					views.Add(new Label { Text = messageBefore });
+				} 
+
+				views.Add(new Image { Source = ImageSource.FromStream(() => stream) });
+
+				if (!string.IsNullOrEmpty(messageAfter))
+				{
+					views.Add(new Label { Text = messageAfter });
+				}
+			}
+			else
+			{
+				views.Add(new Label { Text = message });
+			}
+		}
+
+		async void ResultsAdded(object sender, ElementEventArgs e)
+		{
+			await ResultsScrollView.ScrollToAsync(e.Element, ScrollToPosition.MakeVisible, false);
+		}
+
+		[Preserve(AllMembers = true)]
+		public class DisplaySettings : INotifyPropertyChanged
+		{
+			bool _showPassed;
+
+			public DisplaySettings()
+			{
+				_showPassed = true;
+			}
+
+			public event PropertyChangedEventHandler PropertyChanged;
+
+			public bool ShowPassed
+			{
+				get => _showPassed;
+				set
+				{
+					_showPassed = value;
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowPassed)));
+				}
+			}
+		}
+
+		public Label SetupPassedLabelBindings(Label label)
+		{
+			label.SetBinding(Label.IsVisibleProperty, "ShowPassed");
+			return label;
 		}
 	}
 }

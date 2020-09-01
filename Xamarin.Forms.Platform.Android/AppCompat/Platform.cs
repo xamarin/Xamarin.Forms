@@ -8,6 +8,7 @@ using Android.Views;
 using Android.Views.Animations;
 using AView = Android.Views.View;
 using Xamarin.Forms.Internals;
+using System.ComponentModel;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -253,8 +254,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		internal void SettingNewPage()
 		{
-			_previousNavModel = _navModel;
-			_navModel = new NavigationModel();
+			if (Page != null)
+			{
+				_previousNavModel = _navModel;
+				_navModel = new NavigationModel();
+			}
 		}
 
 		internal void SetPage(Page newRoot)
@@ -446,7 +450,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				_modal = modal;
 
 				_backgroundView = new AView(context);
-				_backgroundView.SetWindowBackground();
+				UpdateBackgroundColor();
 				AddView(_backgroundView);
 
 				_renderer = Android.Platform.CreateRenderer(modal, context);
@@ -455,6 +459,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				AddView(_renderer.View);
 
 				Id = Platform.GenerateViewId();
+
+				_modal.PropertyChanged += OnModalPagePropertyChanged;
 			}
 
 			protected override void Dispose(bool disposing)
@@ -470,6 +476,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 						_renderer.Dispose();
 						_renderer = null;
 						_modal.ClearValue(Android.Platform.RendererProperty);
+						_modal.PropertyChanged -= OnModalPagePropertyChanged;
 						_modal = null;
 					}
 
@@ -493,6 +500,21 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 
 				_renderer.UpdateLayout();
+			}
+
+			void OnModalPagePropertyChanged(object sender, PropertyChangedEventArgs e)
+			{
+				if (e.PropertyName == Page.BackgroundColorProperty.PropertyName)
+					UpdateBackgroundColor();
+			}
+
+			void UpdateBackgroundColor()
+			{
+				Color modalBkgndColor = _modal.BackgroundColor;
+				if (modalBkgndColor.IsDefault)
+					_backgroundView.SetWindowBackground();
+				else
+					_backgroundView.SetBackgroundColor(modalBkgndColor.ToAndroid());
 			}
 		}
 

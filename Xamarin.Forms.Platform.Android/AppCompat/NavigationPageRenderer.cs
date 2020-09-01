@@ -10,8 +10,6 @@ using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Runtime;
-#if __ANDROID_29__
-using AndroidX.Core.Widget;
 using Fragment = AndroidX.Fragment.App.Fragment;
 using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
@@ -20,16 +18,6 @@ using ActionBarDrawerToggle = AndroidX.AppCompat.App.ActionBarDrawerToggle;
 using AndroidX.AppCompat.Graphics.Drawable;
 using AndroidX.DrawerLayout.Widget;
 using AndroidX.AppCompat.App;
-#else
-using Android.Support.V4.Widget;
-using Fragment = Android.Support.V4.App.Fragment;
-using FragmentManager = Android.Support.V4.App.FragmentManager;
-using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
-using AToolbar = Android.Support.V7.Widget.Toolbar;
-using ActionBarDrawerToggle = Android.Support.V7.App.ActionBarDrawerToggle;
-using Android.Support.V7.Graphics.Drawable;
-using Android.Support.V7.App;
-#endif
 using Android.Util;
 using Android.Views;
 using Xamarin.Forms.Internals;
@@ -395,6 +383,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
 				UpdateToolbar();
+			else if (e.PropertyName == NavigationPage.BarBackgroundProperty.PropertyName)
+				UpdateToolbar();
 			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName)
 				UpdateToolbar();
 			else if (e.PropertyName == BarHeightProperty.PropertyName)
@@ -410,9 +400,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			AToolbar bar = _toolbar;
 			// make sure bar stays on top of everything
 			bar.BringToFront();
-
-			base.OnLayout(changed, l, t, r, b);
-
+			
 			int barHeight = ActionBarHeight();
 
 			if (Element.IsSet(BarHeightProperty))
@@ -435,6 +423,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			// Potential for optimization here, the exact conditions by which you don't need to do this are complex
 			// and the cost of doing when it's not needed is moderate to low since the layout will short circuit pretty fast
 			Element.ForceLayout();
+
+			base.OnLayout(changed, l, t, r, b);
 
 			bool toolbarLayoutCompleted = false;
 			for (var i = 0; i < ChildCount; i++)
@@ -572,6 +562,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateToolbar();
 			else if (e.PropertyName == NavigationPage.TitleIconImageSourceProperty.PropertyName ||
 					 e.PropertyName == NavigationPage.TitleViewProperty.PropertyName)
+				UpdateToolbar();
+			else if (e.PropertyName == NavigationPage.IconColorProperty.PropertyName)
 				UpdateToolbar();
 		}
 
@@ -1015,9 +1007,16 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 			}
 
+			Brush barBackground = Element.BarBackground;
+			bar.UpdateBackground(barBackground);
+
 			Color textColor = Element.BarTextColor;
 			if (!textColor.IsDefault)
 				bar.SetTitleTextColor(textColor.ToAndroid().ToArgb());
+
+			Color navIconColor = NavigationPage.GetIconColor(Current);
+			if (!navIconColor.IsDefault && bar.NavigationIcon != null)
+				DrawableExtensions.SetColorFilter(bar.NavigationIcon, navIconColor, FilterMode.SrcAtop);
 
 			bar.Title = currentPage?.Title ?? string.Empty;
 

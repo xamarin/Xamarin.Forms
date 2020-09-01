@@ -29,6 +29,8 @@
             Grid.Row="4" />
         <ScrollView Grid.Row="5">
             <StackLayout>
+                <Button Clicked="GetMapRegionClicked"
+                        Text="Map Region" />
                 <Button Clicked="MapTypeClicked"
                         Text="Map Type" />
                 <Button Clicked="ZoomInClicked"
@@ -51,6 +53,11 @@
                     <Button x:Name="_btnToggleMoveToLastRegionOnLayoutChange"
                             Clicked="ToggleMoveToLastRegionOnLayoutChange"
                             VerticalOptions="Center" />
+                </StackLayout>
+                <StackLayout Orientation="Horizontal">
+                    <Label Text="Show traffic"
+                           VerticalOptions="Center" />
+                    <Switch Toggled="ShowTrafficToggled" VerticalOptions="Center" HorizontalOptions="End" />
                 </StackLayout>
             </StackLayout>
         </ScrollView>

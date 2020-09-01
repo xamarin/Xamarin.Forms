@@ -7,7 +7,7 @@
     <owners>microsoft xamarin</owners>
     <tags>xamarin forms xamarinforms xamarin.forms</tags>
     <license type="expression">MIT</license>
-    <iconUrl>https://raw.githubusercontent.com/xamarin/Xamarin.Forms/master/Assets/xamarin_128x128.png</iconUrl>
+    <icon>Assets\xamarin_128x128.png</icon>
     <projectUrl>http://xamarin.com/forms</projectUrl>
     <repository type="git" url="https://github.com/xamarin/xamarin.forms"/>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
@@ -15,29 +15,20 @@
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <dependencies>
       <group targetFramework="MonoAndroid10.0">
-        <dependency id="Xamarin.AndroidX.Lifecycle.LiveData" version="2.1.0" />
-        <dependency id="Xamarin.Google.Android.Material" version="1.0.0" />
-        <dependency id="Xamarin.AndroidX.Legacy.Support.V4" version="1.0.0" />
-        <dependency id="Xamarin.AndroidX.Browser" version="1.0.0" />
-      </group>
-      <group targetFramework="MonoAndroid90">
-        <dependency id="Xamarin.Android.Support.v4" version="28.0.0.3"/>
-        <dependency id="Xamarin.Android.Support.Design" version="28.0.0.3"/>
-        <dependency id="Xamarin.Android.Support.v7.AppCompat" version="28.0.0.3"/>
-        <dependency id="Xamarin.Android.Support.v7.CardView" version="28.0.0.3"/>
-        <dependency id="Xamarin.Android.Support.CustomTabs" version="28.0.0.3"/>
+        <dependency id="Xamarin.AndroidX.Lifecycle.LiveData" version="2.1.0.1" />
+        <dependency id="Xamarin.Google.Android.Material" version="1.0.0.1" />
+        <dependency id="Xamarin.AndroidX.Legacy.Support.V4" version="1.0.0.1" />
+        <dependency id="Xamarin.AndroidX.Browser" version="1.0.0.1" />
       </group>
       <group targetFramework="uap10.0.14393">
         <dependency id="NETStandard.Library" version="2.0.1"/>
-        <dependency id="Microsoft.NETCore.UniversalWindowsPlatform" version="6.0.15" />
         <dependency id="Win2D.uwp" version="1.20.0" />
         <dependency id="Microsoft.UI.Xaml" version="2.1.190606001" />
         <dependency id="System.ValueTuple" version="4.5.0" />
       </group>
       <group targetFramework="uap10.0.16299">
-        <dependency id="Microsoft.NETCore.UniversalWindowsPlatform" version="6.0.15" />
         <dependency id="Win2D.uwp" version="1.20.0" />
-        <dependency id="Microsoft.UI.Xaml" version="2.3.191211002" />
+        <dependency id="Microsoft.UI.Xaml" version="2.4.2" />
       </group>
       <group targetFramework="tizen40">
         <dependency id="Tizen.NET" version="4.0.0"/>
@@ -58,16 +49,8 @@
         <reference file="Xamarin.Forms.Core.dll" />
         <reference file="Xamarin.Forms.Platform.dll" />
         <reference file="Xamarin.Forms.Xaml.dll" />
-        <reference file="Xamarin.Forms.Platform.iOS.dll" />
       </group>
       <group targetFramework="MonoAndroid10.0">
-        <reference file="Xamarin.Forms.Core.dll" />
-        <reference file="Xamarin.Forms.Platform.dll" />
-        <reference file="Xamarin.Forms.Xaml.dll" />
-        <reference file="FormsViewGroup.dll" />
-        <reference file="Xamarin.Forms.Platform.Android.dll" />
-      </group>
-      <group targetFramework="MonoAndroid90">
         <reference file="Xamarin.Forms.Core.dll" />
         <reference file="Xamarin.Forms.Platform.dll" />
         <reference file="Xamarin.Forms.Xaml.dll" />
@@ -88,7 +71,6 @@
       </group>
       <group targetFramework="Xamarin.Mac">
         <reference file="Xamarin.Forms.Core.dll" />
-        <reference file="Xamarin.Forms.Platform.macOS.dll" />
         <reference file="Xamarin.Forms.Platform.dll" />
         <reference file="Xamarin.Forms.Xaml.dll" />
       </group>
@@ -102,7 +84,8 @@
   </metadata>
 
   <files>
-
+    <!--Icon-->
+    <file src="..\Assets\xamarin_128x128.png" target="Assets\" />
     <!--netstandard 1.0-->
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard1.0\Xamarin.Forms.Core.dll" target="lib\netstandard1.0" />
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard1.0\Xamarin.Forms.Core.*pdb" target="lib\netstandard1.0" />
@@ -153,6 +136,28 @@
     <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\net46\Mono.Cecil.Rocks.dll" target="build\net46" />
     <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\net46\System.ValueTuple.dll" target="build\net46" />
 
+    <!--Xamlc stuff buildTransitive-->
+    <file src="Xamarin.Forms.targets" target="buildTransitive" />
+    <file src="Xamarin.Forms.props" target="buildTransitive" />
+    <file src="Xamarin.Forms.DefaultItems.targets" target="buildTransitive" />
+    <file src="Xamarin.Forms.DefaultItems.props" target="buildTransitive" />
+    <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Build.Tasks.dll" target="buildTransitive\netstandard2.0" />
+    <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Core.dll" target="buildTransitive\netstandard2.0" />
+    <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Xaml.dll" target="buildTransitive\netstandard2.0" />
+    <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\netstandard2.0\Mono.Cecil.dll" target="buildTransitive\netstandard2.0" />
+    <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\netstandard2.0\Mono.Cecil.Mdb.dll" target="buildTransitive\netstandard2.0" />
+    <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\netstandard2.0\Mono.Cecil.Pdb.dll" target="buildTransitive\netstandard2.0" />
+    <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\netstandard2.0\Mono.Cecil.Rocks.dll" target="buildTransitive\netstandard2.0" />
+    <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\netstandard2.0\System.CodeDom.dll" target="buildTransitive\netstandard2.0" />   
+    <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\net46\Xamarin.Forms.Build.Tasks.dll" target="buildTransitive\net46" />
+    <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\net46\Xamarin.Forms.Core.dll" target="buildTransitive\net46" />
+    <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\net46\Xamarin.Forms.Xaml.dll" target="buildTransitive\net46" />
+    <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\net46\Mono.Cecil.dll" target="buildTransitive\net46" />
+    <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\net46\Mono.Cecil.Mdb.dll" target="buildTransitive\net46" />
+    <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\net46\Mono.Cecil.Pdb.dll" target="buildTransitive\net46" />
+    <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\net46\Mono.Cecil.Rocks.dll" target="buildTransitive\net46" />
+    <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\net46\System.ValueTuple.dll" target="buildTransitive\net46" />
+
     <!-- Xaml Design-time Stuff -->
     <file src="..\Xamarin.Forms.Core.Design\bin\$Configuration$\Xamarin.Forms.Core.Design.dll" target="lib\netstandard2.0\Design" />
     <file src="..\Xamarin.Forms.Xaml.Design\bin\$Configuration$\Xamarin.Forms.Xaml.Design.dll" target="lib\netstandard2.0\Design" />
@@ -160,8 +165,6 @@
     <file src="..\Xamarin.Forms.Xaml.Design\bin\$Configuration$\Xamarin.Forms.Xaml.Design.dll" target="lib\netstandard1.0\Design" />
     <file src="..\Xamarin.Forms.Core.Design\bin\$Configuration$\Xamarin.Forms.Core.Design.dll" target="lib\MonoAndroid10.0\Design" />
     <file src="..\Xamarin.Forms.Xaml.Design\bin\$Configuration$\Xamarin.Forms.Xaml.Design.dll" target="lib\MonoAndroid10.0\Design" />
-    <file src="..\Xamarin.Forms.Core.Design\bin\$Configuration$\Xamarin.Forms.Core.Design.dll" target="lib\MonoAndroid90\Design" /> 
-    <file src="..\Xamarin.Forms.Xaml.Design\bin\$Configuration$\Xamarin.Forms.Xaml.Design.dll" target="lib\MonoAndroid90\Design" />
     <file src="..\Xamarin.Forms.Core.Design\bin\$Configuration$\Xamarin.Forms.Core.Design.dll" target="lib\Xamarin.iOS10\Design" /> 
     <file src="..\Xamarin.Forms.Xaml.Design\bin\$Configuration$\Xamarin.Forms.Xaml.Design.dll" target="lib\Xamarin.iOS10\Design" /> 
     <file src="..\Xamarin.Forms.Core.Design\bin\$Configuration$\Xamarin.Forms.Core.Design.dll" target="lib\uap10.0.14393\Design" />
@@ -175,21 +178,8 @@
     
     <!--Android 10-->
     <file src="proguard.cfg" target="build\MonoAndroid10\proguard.cfg" />
-    
-    <!--Android 90-->
-    <file src="..\Xamarin.Forms.Platform.Android\bin\$Configuration$\MonoAndroid90\Xamarin.Forms.Platform.Android.dll" target="lib\MonoAndroid90" />
-    <file src="..\Xamarin.Forms.Platform.Android\bin\$Configuration$\MonoAndroid90\Xamarin.Forms.Platform.Android.*pdb" target="lib\MonoAndroid90" />
-    <file src="..\Xamarin.Forms.Platform.Android.FormsViewGroup\bin\$Configuration$\FormsViewGroup.dll" target="lib\MonoAndroid90" />
-    <file src="..\Xamarin.Forms.Platform.Android.FormsViewGroup\bin\$Configuration$\FormsViewGroup.*pdb" target="lib\MonoAndroid90" />
-    <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Core.dll" target="lib\MonoAndroid90" />
-    <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Core.*pdb" target="lib\MonoAndroid90" />
-    <file src="..\docs\Xamarin.Forms.Core.xml" target="lib\MonoAndroid90" />
-    <file src="..\docs\Xamarin.Forms.Xaml.xml" target="lib\MonoAndroid90" />
-    <file src="..\docs\**\Xamarin.Forms.Core.xml" target="lib\MonoAndroid90" />
-    <file src="..\docs\**\Xamarin.Forms.Xaml.xml" target="lib\MonoAndroid90" />
-    <file src="..\Xamarin.Forms.Xaml\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Xaml.dll" target="lib\MonoAndroid90" />
-    <file src="..\Xamarin.Forms.Xaml\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Xaml.*pdb" target="lib\MonoAndroid90" />
-    <file src="..\Stubs\Xamarin.Forms.Platform.Android\bin\$Configuration$\MonoAndroid90\Xamarin.Forms.Platform.dll" target="lib\MonoAndroid90" />
+
+    <file src="proguard.cfg" target="buildTransitive\MonoAndroid10\proguard.cfg" />
     
     <!--Android 100-->
     <file src="..\Xamarin.Forms.Platform.Android\bin\$Configuration$\MonoAndroid10.0\Xamarin.Forms.Platform.Android.dll" target="lib\MonoAndroid10.0" />
@@ -254,50 +244,16 @@
 
 
     <!-- VS 2017 needs these-->
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\FormsFlyout.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\FormsProgressBarStyle.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\FormsTextBoxStyle.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\MasterDetailControlStyle.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\PageControlStyle.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\PickerStyle.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\Resources.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\SliderStyle.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\StepperControl.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\TabbedPageStyle.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\CollectionView\ItemsViewStyles.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP\CollectionView" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\Shell\ShellStyles.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP\Shell" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\Microsoft.UI.Xaml\DensityStyles\Compact.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP\Microsoft.UI.Xaml\DensityStyles" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\Microsoft.UI.Xaml\Themes\generic.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP\Microsoft.UI.Xaml\Themes" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\FormsAutoSuggestBoxStyle.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\FormsCheckBoxStyle.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\FormsCommandBarStyle.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\FormsEmbeddedPageWrapper.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP" />
-
+    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\**\*.xaml" target="lib\uap10.0.14393\Xamarin.Forms.Platform.UAP" />
     <!-- VS 2017 needs these 16299-->
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\FormsFlyout.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\FormsProgressBarStyle.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\FormsTextBoxStyle.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\MasterDetailControlStyle.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\PageControlStyle.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\PickerStyle.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\Resources.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\SliderStyle.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\StepperControl.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\TabbedPageStyle.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\CollectionView\ItemsViewStyles.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP\CollectionView" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\Shell\ShellStyles.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP\Shell" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\Microsoft.UI.Xaml\DensityStyles\Compact.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP\Microsoft.UI.Xaml\DensityStyles" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\Microsoft.UI.Xaml\Themes\generic.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP\Microsoft.UI.Xaml\Themes" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\FormsAutoSuggestBoxStyle.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\FormsCheckBoxStyle.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\FormsCommandBarStyle.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
-    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\FormsEmbeddedPageWrapper.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
+    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.16299\**\*.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP" />
+    <file src="..\Xamarin.Forms.Platform.UAP\obj\$Configuration$\uap10.0.14393\Microsoft.UI.Xaml\**\*.xaml" target="lib\uap10.0.16299\Xamarin.Forms.Platform.UAP\Microsoft.UI.Xaml" />
 
     <!--Mac-->
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Core.dll" target="lib\Xamarin.Mac" />
     <file src="..\Xamarin.Forms.Xaml\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Xaml.dll" target="lib\Xamarin.Mac" />
-    <file src="..\Xamarin.Forms.Platform.MacOS\bin\$Configuration$\Xamarin.Forms.Platform.macOS.dll" target="lib\Xamarin.Mac" />
     <file src="..\Xamarin.Forms.Platform.MacOS\bin\$Configuration$\Xamarin.Forms.Platform.dll" target="lib\Xamarin.Mac" />
+    <file src="..\Xamarin.Forms.Platform.MacOS\bin\$Configuration$\Xamarin.Forms.Platform.macOS.dll" target="lib\Xamarin.Mac" />
 
     <!-- iOS Localized String Resource Assemblies -->
     <file src="..\Xamarin.Forms.Platform.iOS\bin\$Configuration$\ar\Xamarin.Forms.Platform.iOS.resources.dll" target="lib\Xamarin.iOS10\ar" />
@@ -346,6 +302,7 @@
     <file src="..\Xamarin.Forms.Xaml\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Xaml.dll" target="lib\tizen40" />
     <file src="..\Xamarin.Forms.Xaml\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Xaml.*pdb" target="lib\tizen40" />
     <file src="..\docs\Xamarin.Forms.Xaml.xml" target="lib\tizen40" />
+
   </files>
 
 </package>

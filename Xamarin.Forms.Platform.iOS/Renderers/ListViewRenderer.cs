@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
@@ -18,6 +17,8 @@ namespace Xamarin.Forms.Platform.iOS
 	public class ListViewRenderer : ViewRenderer<ListView, UITableView>
 	{
 		const int DefaultRowHeight = 44;
+
+		UIView _backgroundUIView;
 		ListViewDataSource _dataSource;
 		IVisualElementRenderer _headerRenderer;
 		IVisualElementRenderer _footerRenderer;
@@ -113,6 +114,43 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		protected override void SetBackground(Brush brush)
+		{
+			if (Control == null)
+				return;
+
+			_backgroundUIView.RemoveBackgroundLayer();
+
+			if (!Brush.IsNullOrEmpty(brush))
+			{
+				if (_backgroundUIView == null)
+				{
+					_backgroundUIView = new UIView();
+					Control.BackgroundView = _backgroundUIView;
+				}
+
+				if (brush is SolidColorBrush solidColorBrush)
+				{
+					var backgroundColor = solidColorBrush.Color;
+
+					if (backgroundColor == Color.Default)
+						_backgroundUIView.BackgroundColor = UIColor.White;
+					else
+						_backgroundUIView.BackgroundColor = backgroundColor.ToUIColor();
+				}
+				else
+				{
+					var backgroundLayer = _backgroundUIView.GetBackgroundLayer(Element.Background);
+
+					if (backgroundLayer != null)
+					{
+						_backgroundUIView.BackgroundColor = UIColor.Clear;
+						_backgroundUIView.InsertBackgroundLayer(backgroundLayer, 0);
+					}
+				}
+			}
+		}
+
 		void DisposeSubviews(UIView view)
 		{
 			var ver = view as IVisualElementRenderer;
@@ -177,6 +215,12 @@ namespace Xamarin.Forms.Platform.iOS
 					_footerRenderer = null;
 				}
 
+				if (_backgroundUIView != null)
+				{
+					_backgroundUIView.Dispose();
+					_backgroundUIView = null;
+				}
+
 				var headerView = ListView?.HeaderElement as VisualElement;
 				if (headerView != null)
 					headerView.MeasureInvalidated -= OnHeaderMeasureInvalidated;
@@ -226,6 +270,8 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 					_tableViewController = new FormsUITableViewController(e.NewElement, _usingLargeTitles);
 					SetNativeControl(_tableViewController.TableView);
+
+					_backgroundUIView = _tableViewController.TableView.BackgroundView;
 
 					_insetTracker = new KeyboardInsetTracker(_tableViewController.TableView, () => Control.Window, insets => Control.ContentInset = Control.ScrollIndicatorInsets = insets, point =>
 					{
@@ -300,6 +346,14 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateVerticalScrollBarVisibility();
 			else if (e.PropertyName == ScrollView.HorizontalScrollBarVisibilityProperty.PropertyName)
 				UpdateHorizontalScrollBarVisibility();
+		}
+
+		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
+		{
+			base.TraitCollectionDidChange(previousTraitCollection);
+			// Make sure the cells adhere to changes UI theme
+			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+				ReloadData();
 		}
 
 		NSIndexPath[] GetPaths(int section, int index, int count)
@@ -685,7 +739,7 @@ namespace Xamarin.Forms.Platform.iOS
 			// ...and Steve said to the unbelievers the separator shall be gray, and gray it was. The unbelievers looked on, and saw that it was good, and
 			// they went forth and documented the default color. The holy scripture still reflects this default.
 			// Defined here: https://developer.apple.com/library/ios/documentation/UIKit/Reference/UITableView_Class/#//apple_ref/occ/instp/UITableView/separatorColor
-			Control.SeparatorColor = color.ToUIColor(UIColor.Gray);
+			Control.SeparatorColor = color.ToUIColor(ColorExtensions.SeparatorColor);
 		}
 
 		void UpdateSeparatorVisibility()
@@ -1095,20 +1149,21 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override UIView GetViewForHeader(UITableView tableView, nint section)
 			{
-				UIView view = null;
-
 				if (!List.IsGroupingEnabled)
-					return view;
+					return null;
 
 				var cell = TemplatedItemsView.TemplatedItems[(int)section];
 				if (cell.HasContextActions)
 					throw new NotSupportedException("Header cells do not support context actions");
 
-				var renderer = (CellRenderer)Internals.Registrar.Registered.GetHandlerForObject<IRegisterable>(cell);
-				view = new HeaderWrapperView { Cell = cell };
-				view.AddSubview(renderer.GetCell(cell, null, tableView));
+				const string reuseIdentifier = "HeaderWrapper";
+				var header = (HeaderWrapperView)tableView.DequeueReusableHeaderFooterView(reuseIdentifier) ?? new HeaderWrapperView(reuseIdentifier);
+				header.Cell = cell;
 
-				return view;
+				var renderer = (CellRenderer)Internals.Registrar.Registered.GetHandlerForObject<IRegisterable>(cell);
+				header.SetTableViewCell(renderer.GetCell(cell, null, tableView));
+
+				return header;
 			}
 
 			public override void HeaderViewDisplayingEnded(UITableView tableView, UIView headerView, nint section)
@@ -1447,9 +1502,24 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 	}
 
-	internal class HeaderWrapperView : UIView
+	class HeaderWrapperView : UITableViewHeaderFooterView
 	{
+		public HeaderWrapperView(string reuseIdentifier) : base((NSString)reuseIdentifier)
+		{
+		}
+
+		UITableViewCell _tableViewCell;
+
 		public Cell Cell { get; set; }
+
+		public void SetTableViewCell(UITableViewCell value)
+		{
+			if (ReferenceEquals(_tableViewCell, value)) return;
+			_tableViewCell?.RemoveFromSuperview();
+			_tableViewCell = value;
+			AddSubview(value);
+		}
+
 		public override void LayoutSubviews()
 		{
 			base.LayoutSubviews();

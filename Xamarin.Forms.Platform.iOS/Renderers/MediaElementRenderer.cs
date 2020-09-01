@@ -24,9 +24,7 @@ namespace Xamarin.Forms.Platform.iOS
 		[Internals.Preserve(Conditional = true)]
 		public MediaElementRenderer()
 		{
-			Xamarin.Forms.MediaElement.VerifyMediaElementFlagEnabled(nameof(MediaElementRenderer));
-
-			_playedToEndObserver = NSNotificationCenter.DefaultCenter.AddObserver(AVPlayerItem.DidPlayToEndTimeNotification, PlayedToEnd);
+			MediaElement.VerifyMediaElementFlagEnabled(nameof(MediaElementRenderer));
 		}
 
 		void SetKeepScreenOn(bool value)
@@ -183,7 +181,13 @@ namespace Xamarin.Forms.Platform.iOS
 					break;
 
 				case AVPlayerStatus.ReadyToPlay:
-					Controller.Duration = TimeSpan.FromSeconds(_avPlayerViewController.Player.CurrentItem.Duration.Seconds);
+					var duration = _avPlayerViewController.Player.CurrentItem.Duration;
+
+					if (duration.IsIndefinite)
+						Controller.Duration = TimeSpan.Zero;
+					else
+						Controller.Duration = TimeSpan.FromSeconds(duration.Seconds);
+
 					Controller.VideoHeight = (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Height;
 					Controller.VideoWidth = (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Width;
 					Controller.OnMediaOpened();
@@ -205,6 +209,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void PlayedToEnd(NSNotification notification)
 		{
+			if (Element == null)
+			{
+				return;
+			}
+
 			if (Element.IsLooping)
 			{
 				_avPlayerViewController.Player.Seek(CMTime.Zero);
@@ -220,7 +229,10 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					Device.BeginInvokeOnMainThread(Controller.OnMediaEnded);
 				}
-				catch { }
+				catch (Exception e)
+				{
+					Log.Warning("MediaElement", $"Failed to play media to end: {e}");
+				}
 			}
 		}
 		

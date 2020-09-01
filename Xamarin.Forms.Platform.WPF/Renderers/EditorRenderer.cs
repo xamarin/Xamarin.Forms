@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
+using WBrush = System.Windows.Media.Brush;
 using WpfScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility;
 using WControl = System.Windows.Controls.Control;
 
@@ -9,8 +9,9 @@ namespace Xamarin.Forms.Platform.WPF
 {
 	public class EditorRenderer : ViewRenderer<Editor, FormsTextBox>
 	{
-		Brush _placeholderDefaultBrush;
+		WBrush _placeholderDefaultBrush;
 		bool _fontApplied;
+		string _transformedText;
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Editor> e)
 		{
@@ -42,7 +43,8 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Editor.TextProperty.PropertyName)
+			if (e.PropertyName == Editor.TextProperty.PropertyName ||
+				e.PropertyName == Editor.TextTransformProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == InputView.KeyboardProperty.PropertyName)
 				UpdateInputScope();
@@ -77,7 +79,7 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				if (_placeholderDefaultBrush == null)
 				{
-					_placeholderDefaultBrush = (Brush)WControl.ForegroundProperty.GetMetadata(typeof(FormsTextBox)).DefaultValue;
+					_placeholderDefaultBrush = (WBrush)WControl.ForegroundProperty.GetMetadata(typeof(FormsTextBox)).DefaultValue;
 				}
 
 				// Use the cached default brush
@@ -96,6 +98,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void NativeOnTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs textChangedEventArgs)
 		{
+			_transformedText = Element.UpdateFormsText(Control.Text, Element.TextTransform);
 			((IElementController)Element).SetValueFromRenderer(Editor.TextProperty, Control.Text);
 		}
 
@@ -117,11 +120,11 @@ namespace Xamarin.Forms.Platform.WPF
 
 			if (editorIsDefault)
 			{
-				Control.ClearValue(System.Windows.Controls.Control.FontStyleProperty);
-				Control.ClearValue(System.Windows.Controls.Control.FontSizeProperty);
-				Control.ClearValue(System.Windows.Controls.Control.FontFamilyProperty);
-				Control.ClearValue(System.Windows.Controls.Control.FontWeightProperty);
-				Control.ClearValue(System.Windows.Controls.Control.FontStretchProperty);
+				Control.ClearValue(WControl.FontStyleProperty);
+				Control.ClearValue(WControl.FontSizeProperty);
+				Control.ClearValue(WControl.FontFamilyProperty);
+				Control.ClearValue(WControl.FontWeightProperty);
+				Control.ClearValue(WControl.FontStretchProperty);
 			}
 			else
 				Control.ApplyFont(editor);
@@ -136,18 +139,19 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void UpdateText()
 		{
-			string newText = Element.Text ?? "";
+			string newText = _transformedText = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 
 			if (Control.Text == newText)
 				return;
 
+			var savedSelectionStart = Control.SelectionStart < newText.Length ? Control.SelectionStart : newText.Length;
 			Control.Text = newText;
-			Control.SelectionStart = Control.Text.Length;
+			Control.SelectionStart = savedSelectionStart;
 		}
 
 		void UpdateTextColor()
 		{
-			Control.UpdateDependencyColor(System.Windows.Controls.Control.ForegroundProperty, Element.TextColor);
+			Control.UpdateDependencyColor(WControl.ForegroundProperty, Element.TextColor);
 		}
 
 		void UpdateMaxLength()

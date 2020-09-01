@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool? _defaultBarTranslucent;
 		bool _loaded;
 		Size _queuedSize;
+		PageLifecycleManager _pageLifecycleManager;
 
 		Page Page => Element as Page;
 
@@ -72,6 +73,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 
+			_pageLifecycleManager = new PageLifecycleManager(Element as IPageController);
+
 			OnPagesChanged(null, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 
 			if (element != null)
@@ -81,6 +84,7 @@ namespace Xamarin.Forms.Platform.iOS
 			CustomizableViewControllers = null;
 
 			UpdateBarBackgroundColor();
+			UpdateBarBackground();
 			UpdateBarTextColor();
 			UpdateSelectedTabColors();
 			UpdateBarTranslucent();
@@ -110,14 +114,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidAppear(bool animated)
 		{
-			Page.SendAppearing();
+			_pageLifecycleManager?.HandlePageAppearing();
 			base.ViewDidAppear(animated);
 		}
 
 		public override void ViewDidDisappear(bool animated)
 		{
 			base.ViewDidDisappear(animated);
-			Page.SendDisappearing();
+			_pageLifecycleManager?.HandlePageDisappearing();
+
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -152,7 +157,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (disposing)
 			{
-				Page.SendDisappearing();
+				_pageLifecycleManager?.Dispose();
+				_pageLifecycleManager = null;
 				Tabbed.PropertyChanged -= OnPropertyChanged;
 				Tabbed.PagesChanged -= OnPagesChanged;
 				FinishedCustomizingViewControllers -= HandleFinishedCustomizingViewControllers;
@@ -243,6 +249,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.PropertyName == TabbedPage.BarBackgroundColorProperty.PropertyName)
 				UpdateBarBackgroundColor();
+			else if (e.PropertyName == TabbedPage.BarBackgroundProperty.PropertyName)
+				UpdateBarBackground();
 			else if (e.PropertyName == TabbedPage.BarTextColorProperty.PropertyName)
 				UpdateBarTextColor();
 			else if (e.PropertyName == PrefersStatusBarHiddenProperty.PropertyName)
@@ -369,6 +377,16 @@ namespace Xamarin.Forms.Platform.iOS
 			TabBar.BarTintColor = isDefaultColor ? _defaultBarColor : barBackgroundColor.ToUIColor();
 		}
 
+		void UpdateBarBackground()
+		{
+			if (Tabbed == null || TabBar == null)
+				return;
+
+			var barBackground = Tabbed.BarBackground;
+
+			TabBar.UpdateBackground(barBackground);
+		}
+
 		void UpdateBarTextColor()
 		{
 			if (Tabbed == null || TabBar == null || TabBar.Items == null)
@@ -473,9 +491,20 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			if (Tabbed.IsSet(TabbedPage.SelectedTabColorProperty) && Tabbed.SelectedTabColor != Color.Default)
-				TabBar.SelectedImageTintColor = Tabbed.SelectedTabColor.ToUIColor();
+			{
+				if (Forms.IsiOS10OrNewer)
+					TabBar.TintColor = Tabbed.SelectedTabColor.ToUIColor();
+				else
+					TabBar.SelectedImageTintColor = Tabbed.SelectedTabColor.ToUIColor();
+
+			}
 			else
-				TabBar.SelectedImageTintColor = UITabBar.Appearance.SelectedImageTintColor;
+			{
+				if (Forms.IsiOS10OrNewer)
+					TabBar.TintColor = UITabBar.Appearance.TintColor;
+				else
+					TabBar.SelectedImageTintColor = UITabBar.Appearance.SelectedImageTintColor;
+			}
 
 			if (!Forms.IsiOS10OrNewer)
 				return;
