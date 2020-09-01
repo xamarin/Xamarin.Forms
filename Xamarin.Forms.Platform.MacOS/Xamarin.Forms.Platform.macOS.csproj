@@ -66,9 +66,6 @@
     <XamMacArch>
     </XamMacArch>
   </PropertyGroup>
-  <PropertyGroup>
-    <DefineConstants>__XCODE11__;$(DefineConstants);</DefineConstants>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
