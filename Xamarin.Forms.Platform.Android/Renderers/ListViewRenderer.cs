@@ -280,12 +280,15 @@ namespace Xamarin.Forms.Platform.Android
 			if (Element.IsGroupingEnabled)
 			{
 				var results = templatedItems.GetGroupAndIndexOfItem(scrollArgs.Group, scrollArgs.Item);
-				if (results.Item1 == -1 || (results.Item1 == -1 && results.Item2 == -1))
+				int indexOfGroup = results.Item1;
+				int indexOfItem = results.Item2;
+				
+				if (indexOfGroup == -1 || (indexOfGroup == -1 && indexOfItem == -1))
 					return;
 
-				int item = results.Item2 == -1 ? 0 : results.Item2;
+				int item = indexOfItem == -1 ? 0 : indexOfItem;
 
-				var group = templatedItems.GetGroup(results.Item1);
+				var group = templatedItems.GetGroup(indexOfGroup);
 				if (group.Count == 0)
 					cell = group.HeaderContent;
 				else
