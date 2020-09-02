@@ -15,8 +15,6 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		bool _disposed = false;
 		bool _navBarIsVisible = true;
-		const int _defaultNavBarHeight = 70;
-		const int _minimumNavBarHeightInPixel = 110;
 
 		public ShellSectionStack(ShellSection section) : base(Forms.NativeParent)
 		{
@@ -256,7 +254,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (_navBarIsVisible)
 			{
 				var navBound = bound;
-				navBarHeight = Math.Max(Forms.ConvertToScaledPixel(_defaultNavBarHeight), _minimumNavBarHeightInPixel);
+				navBarHeight = Forms.ConvertToScaledPixel(_navBar.GetDefaultHeight());
 				navBound.Height = navBarHeight;
 
 				_navBar.Show();

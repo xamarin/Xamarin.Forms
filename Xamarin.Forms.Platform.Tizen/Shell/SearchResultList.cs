@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		void Append(object data)
 		{
 			var view = ItemTemplate.CreateContent() as View;
-			view.Parent = Xamarin.Forms.Shell.Current;
+			view.Parent = Shell.Current;
 			view.BindingContext = data;
 			var measured = view.Measure(Forms.ConvertToScaledDP(Geometry.Width), Forms.ConvertToScaledDP(Geometry.Width * 3));
 			Height += Forms.ConvertToScaledPixel(measured.Request.Height);

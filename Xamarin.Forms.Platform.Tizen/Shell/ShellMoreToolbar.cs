@@ -7,15 +7,6 @@ namespace Xamarin.Forms.Platform.Tizen
 {
 	public class ShellMoreToolbar : GenList
 	{
-		const int _iconPadding = 15;
-		const int _minIconPaddingInPixel = 30;
-
-		const int _iconSize = 30;
-		const int _minIconSizeInPixel = 60;
-
-		const int _cellHeight = _iconPadding * 2 + _iconSize;
-		const int _minCellHeightInPixel = _minIconPaddingInPixel * 2 + _minIconSizeInPixel;
-
 		GenItemClass _defaultClass = null;
 
 		public ShellMoreToolbar(EvasObject parent) : base(parent)
@@ -40,7 +31,8 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			get
 			{
-				return Math.Max(Forms.ConvertToScaledPixel(_cellHeight), _minCellHeightInPixel) * Count;
+				var cellHeight = this.GetIconSize() * 2 + this.GetIconSize();
+				return Forms.ConvertToScaledPixel(cellHeight) * Count;
 			}
 		}
 
@@ -69,12 +61,12 @@ namespace Xamarin.Forms.Platform.Tizen
 			};
 			title.Show();
 			box.PackEnd(title);
-
+			int iconPadding = Forms.ConvertToScaledPixel(this.GetIconPadding());
+			int iconSize = Forms.ConvertToScaledPixel(this.GetIconSize());
+			int cellHeight = iconPadding * 2 + iconSize;
 			box.SetLayoutCallback(() =>
 			{
 				var bound = box.Geometry;
-				int iconPadding = Math.Max(Forms.ConvertToScaledPixel(_iconPadding), _minIconPaddingInPixel);
-				int iconSize = Math.Max(Forms.ConvertToScaledPixel(_iconSize), _minIconSizeInPixel);
 				int leftMargin = iconPadding;
 
 				if (icon != null)
@@ -92,7 +84,8 @@ namespace Xamarin.Forms.Platform.Tizen
 				bound.Width -= leftMargin;
 				title.Geometry = bound;
 			});
-			box.MinimumHeight = Math.Max(Forms.ConvertToScaledPixel(_cellHeight), _minCellHeightInPixel);
+
+			box.MinimumHeight = cellHeight;
 			return box;
 		}
 	}

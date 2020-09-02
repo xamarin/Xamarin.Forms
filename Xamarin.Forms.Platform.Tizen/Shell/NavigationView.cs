@@ -262,11 +262,11 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				var grid = new Grid
 				{
-					HeightRequest = 60,
+					HeightRequest = this.GetFlyoutItemHeight(),
 				};
 
 				ColumnDefinitionCollection columnDefinitions = new ColumnDefinitionCollection();
-				columnDefinitions.Add(new ColumnDefinition { Width = 40 });
+				columnDefinitions.Add(new ColumnDefinition { Width = this.GetFlyoutIconColumnSize() });
 				columnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
 				grid.ColumnDefinitions = columnDefinitions;
 
@@ -274,19 +274,19 @@ namespace Xamarin.Forms.Platform.Tizen
 				{
 					VerticalOptions = LayoutOptions.Center,
 					HorizontalOptions = LayoutOptions.Center,
-					HeightRequest = 25,
-					WidthRequest = 25,
-					Margin = new Thickness(10, 0, 0, 0),
+					HeightRequest = this.GetFlyoutIconSize(),
+					WidthRequest = this.GetFlyoutIconSize(),
+					Margin = new Thickness(this.GetFlyoutMargin(), 0, 0, 0),
 				};
 				image.SetBinding(Image.SourceProperty, new Binding(iconBinding));
 				grid.Children.Add(image);
 
 				var label = new Label
 				{
-					FontSize = 25,
+					FontSize = this.GetFlyoutItemFontSize(),
 					VerticalTextAlignment = TextAlignment.Center,
 					TextColor = Xamarin.Forms.Color.Black.MultiplyAlpha(0.87),
-					Margin = new Thickness(10, 0, 0, 0),
+					Margin = new Thickness(this.GetFlyoutMargin(), 0, 0, 0),
 				};
 				label.SetBinding(Label.TextProperty, new Binding(textBinding));
 

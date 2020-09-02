@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			_title = new Native.Label(Forms.NativeParent)
 			{
-				FontSize = Device.Idiom == TargetIdiom.TV ? 60 : 23,
+				FontSize = this.GetDefaultTitleFontSize(),
 				VerticalTextAlignment = Native.TextAlignment.Center,
 				TextColor = _titleColor,
 				FontAttributes = FontAttributes.Bold,
@@ -302,10 +302,10 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (Geometry.Width == 0 || Geometry.Height == 0)
 				return;
 
-			int menuSize = Forms.ConvertToScaledPixel(40);
-			int menuMargin = Forms.ConvertToScaledPixel(10);
-			int titleHMargin = Forms.ConvertToScaledPixel(10);
-			int titleVMargin = Forms.ConvertToScaledPixel(10);
+			int menuSize = Forms.ConvertToScaledPixel(this.GetDefaultMenuSize());
+			int menuMargin = Forms.ConvertToScaledPixel(this.GetDefaultMargin());
+			int titleHMargin = Forms.ConvertToScaledPixel(this.GetDefaultMargin());
+			int titleVMargin = Forms.ConvertToScaledPixel(this.GetDefaultMargin());
 
 			var bound = Geometry;
 
