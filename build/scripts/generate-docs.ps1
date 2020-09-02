@@ -7,7 +7,7 @@ param(
 # parameter, but we can't remove it until all the active branches don't need it
 $branch = "master"
 
-$mdoc = '..\tools\mdoc\mdoc.exe'
+$mdoc = '..\..\build\tools\mdoc\mdoc.exe'
 $docsUri = "https://$token@github.com/xamarin/Xamarin.Forms-api-docs.git"
 
 function StripNodes {
@@ -79,7 +79,7 @@ pushd .\Xamarin.Forms-api-docs
 & $mdoc export-msxdoc .\docs
 
 # Put the results in the docs folder (where NuGet will find it)
-mv Xamarin.Forms.*.xml ..\docs -Force
+mv Xamarin.Forms.*.xml ..\..\build\docs -Force
 
 # Return from the default language folder
 popd
