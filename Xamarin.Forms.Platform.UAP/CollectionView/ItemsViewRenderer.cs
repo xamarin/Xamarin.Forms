@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -25,6 +25,7 @@ namespace Xamarin.Forms.Platform.UWP
 		View _formsEmptyView; 
 		bool _emptyViewDisplayed;
 		ScrollViewer _scrollViewer;
+		bool _listViewBaseHasSize;
 		double _previousHorizontalOffset;
 		double _previousVerticalOffset;
 
@@ -99,6 +100,14 @@ namespace Xamarin.Forms.Platform.UWP
 				incc.CollectionChanged += ItemsChanged;
 			}
 
+			SetItemSourceAndEmptyView();
+		}
+
+		void SetItemSourceAndEmptyView()
+		{
+			if (!_listViewBaseHasSize) 
+				return;
+			
 			ListViewBase.ItemsSource = GetCollectionView(CollectionViewSource);
 			
 			UpdateEmptyViewVisibility();
@@ -188,6 +197,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				ListViewBase = SelectListViewBase();
 				ListViewBase.IsSynchronizedWithCurrentItem = false;
+				ListViewBase.SizeChanged += ListViewBaseOnSizeChanged;
 
 				FindScrollViewer(ListViewBase);
 
@@ -204,6 +214,21 @@ namespace Xamarin.Forms.Platform.UWP
 
 			// Listen for ScrollTo requests
 			newElement.ScrollToRequested += ScrollToRequested;
+		}
+
+		void ListViewBaseOnSizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			if (e.NewSize.Width < 0)
+			{
+				return;
+			}
+
+			// The ListViewBase must have a size before attempting to set the ItemSource
+			// otherwise it will cause layout issues, controls not visible, etc
+			_listViewBaseHasSize = true;
+			SetItemSourceAndEmptyView();
+
+			ListViewBase.SizeChanged -= ListViewBaseOnSizeChanged;
 		}
 
 		protected virtual void TearDownOldElement(ItemsView oldElement)
@@ -407,12 +432,14 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (ListViewBase != null)
 			{
+				_listViewBaseHasSize = false;
 				ListViewBase.ItemsSource = null;
 				ListViewBase = null;
 			}
 
 			ListViewBase = SelectListViewBase();
 			ListViewBase.IsSynchronizedWithCurrentItem = false;
+			ListViewBase.SizeChanged += ListViewBaseOnSizeChanged;
 
 			FindScrollViewer(ListViewBase);
 

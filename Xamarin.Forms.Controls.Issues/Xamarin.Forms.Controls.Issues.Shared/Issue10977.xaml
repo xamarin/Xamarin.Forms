@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:issues="clr-namespace:Xamarin.Forms.Controls.Issues"
+             x:Class=" Xamarin.Forms.Controls.Issues.Issue10977"
+             x:DataType="issues:MainViewModel"
+             Title="All element should be visible on load">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="ItemsDataTemplate">
+                <Label Text="{Binding Text}" />
+            </DataTemplate>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <StackLayout>
+        <SearchBar Placeholder="Search text..." />
+        <Button Text="Click to test loading new items source after initial load" Clicked="Button_OnClicked_NewSource"/>
+        <Button Text="Click to test creating a new items layout" Clicked="Button_OnClicked_NewLayout"/>
+
+        <CollectionView x:Name="CV"
+            ItemsSource="{Binding Items}"
+            ItemTemplate="{StaticResource ItemsDataTemplate}">
+        </CollectionView>
+
+        <Button Text="OK" />
+    </StackLayout>
+</ContentPage>
