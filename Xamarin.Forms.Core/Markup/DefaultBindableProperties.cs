@@ -33,7 +33,6 @@ namespace Xamarin.Forms.Markup
 			{ "Xamarin.Forms.Label", Label.TextProperty },
 			{ "Xamarin.Forms.ListView", ListView.ItemsSourceProperty },
 			{ "Xamarin.Forms.MasterDetailPage", Page.TitleProperty },
-			{ "Xamarin.Forms.MediaElement", MediaElement.SourceProperty },
 			{ "Xamarin.Forms.MenuItem", MenuItem.CommandProperty },
 			{ "Xamarin.Forms.MultiPage", Page.TitleProperty },
 			{ "Xamarin.Forms.NavigationPage", Page.TitleProperty },
