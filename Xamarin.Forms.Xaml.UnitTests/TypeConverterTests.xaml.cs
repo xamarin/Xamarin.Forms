@@ -35,17 +35,6 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Assert.That (layout.imageSource.Uri, Is.TypeOf<Uri> ());
 				Assert.AreEqual ("https://xamarin.com/content/images/pages/branding/assets/xamagon.png", layout.imageSource.Uri.ToString ());
 			}
-
-			[TestCase(false)]
-			[TestCase(true)]
-			public void EasingsAreConverted(bool useCompiledXaml)
-			{
-				var layout = new TypeConverterTests(useCompiledXaml);
-				Assert.That(layout.expander.ExpandAnimationEasing, Is.TypeOf<Easing>());
-				Assert.That(layout.expander.CollapseAnimationEasing, Is.TypeOf<Easing>());
-				Assert.AreEqual(Easing.CubicInOut, layout.expander.ExpandAnimationEasing);
-				Assert.AreEqual(Easing.SinInOut, layout.expander.CollapseAnimationEasing);
-			}
 		}
 	}
 }
