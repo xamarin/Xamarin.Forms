@@ -21,6 +21,7 @@ steps:
       jenkinsJob: sign-from-vsts
       artifactHost: 'https://dl.internalx.com/vsts-devdiv'
       githubToken: "$(github--pat--xamarinreleasemanager)"
+      CodeSignOverride: true
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: nuget signed'
