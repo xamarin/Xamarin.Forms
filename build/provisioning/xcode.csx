@@ -18,6 +18,5 @@ else if (desiredXcode == "Stable")
 else
 	item = Xcode(desiredXcode);
 
-var item = Item (xreItem);
 Console.WriteLine ("InstallPath: {0}", item.Version);
 item.XcodeSelect ();
