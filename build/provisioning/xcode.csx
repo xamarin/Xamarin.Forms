@@ -7,12 +7,16 @@ if (string.IsNullOrEmpty (desiredXcode)) {
 	return;
 }
 
-XreItem xreItem;
+desiredXcode = desiredXcode.Replace("Xcode_", "").Replace("_", ".");
+
+Item item;
 
 if(desiredXcode == "Latest")
-	xreItem = (XreItem)Enum.GetValues(typeof(XreItem)).Cast<int>().Max();
+	item = XcodeBeta();
+else if (desiredXcode == "Stable")
+	item = XcodeStable();
 else
-	xreItem = (XreItem) Enum.Parse (typeof (XreItem), desiredXcode);
+	item = Xcode(desiredXcode);
 
 var item = Item (xreItem);
 Console.WriteLine ("InstallPath: {0}", item.Version);
