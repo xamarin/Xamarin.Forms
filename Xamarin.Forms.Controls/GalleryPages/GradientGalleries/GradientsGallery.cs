@@ -91,7 +91,7 @@
 			button.TextColor = Color.Black;
 			button.IsEnabled = false;
 
-			Device.SetFlags(new[] { ExperimentalFlags.BrushExperimental, ExperimentalFlags.ExpanderExperimental, ExperimentalFlags.ShapesExperimental, ExperimentalFlags.SwipeViewExperimental });
+			Device.SetFlags(new[] { ExperimentalFlags.BrushExperimental, ExperimentalFlags.ShapesExperimental, ExperimentalFlags.SwipeViewExperimental });
 		}
 	}
 }
