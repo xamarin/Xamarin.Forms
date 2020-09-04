@@ -9,7 +9,6 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	{
 		public TypeConverterTests ()
 		{
-			Device.SetFlags(new[] { ExperimentalFlags.ExpanderExperimental });
 			InitializeComponent ();
 		}
 
