@@ -49,7 +49,17 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 			set
 			{
+				if (!_drawer.IsOpen && value)
+				{
+					_drawer.SetScrollableArea(_navigationViewRatio);
+				}
+
 				_drawer.IsOpen = value;
+
+				if (!_drawer.IsOpen)
+				{
+					_drawer.SetScrollableArea(0);
+				}
 			}
 		}
 
@@ -86,13 +96,22 @@ namespace Xamarin.Forms.Platform.Tizen
 			_drawer = new Panel(parent);
 
 			_drawer.SetScrollable(true);
-			_drawer.SetScrollableArea(_navigationViewRatio);
+			_drawer.SetScrollableArea(0);
 			_drawer.Direction = PanelDirection.Left;
 
 			_drawer.Toggled += (s, e) =>
 			{
 				UpdateDimArea();
 				Toggled?.Invoke(this, e);
+				if (!_drawer.IsOpen)
+				{
+					Device.StartTimer(TimeSpan.FromSeconds(1), () =>
+					{
+						if (!_drawer.IsOpen)
+							_drawer.SetScrollableArea(0);
+						return false;
+					});
+				}
 			};
 			_drawer.IsOpen = false;
 			_drawer.Show();
