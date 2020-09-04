@@ -40,6 +40,8 @@ namespace Xamarin.Forms
 		public StaticRegistrarStrategy StaticRegistarStrategy { get; set; }
 		public PlatformType PlatformType { get; set; }
 		public bool UseMessagingCenter { get; set; } = true;
+		public bool UseDeviceScale { get; set; } = true;
+		public double? ViewportWidth { get; set; }
 
 		public struct EffectScope
 		{
@@ -163,11 +165,26 @@ namespace Xamarin.Forms
 				TSystemInfo.TryGetValue("http://tizen.org/feature/screen.height", out height);
 
 				scalingFactor = 1.0;  // scaling is disabled, we're using pixels as Xamarin's geometry units
-				if (s_useDeviceIndependentPixel)
+				if (ViewportWidth.HasValue)
+				{
+					scalingFactor = width / ViewportWidth.Value;
+				}
+				else if (s_useDeviceIndependentPixel)
 				{
 					scalingFactor = s_dpi.Value / 160.0;
+					if (UseDeviceScale)
+					{
+						var portraitSize = (Math.Min(width, height)) / scalingFactor;
+						if (portraitSize > 2000)
+						{
+							scalingFactor *= 4;
+						}
+						else if (portraitSize > 1000)
+						{
+							scalingFactor *= 2.5;
+						}
+					}
 				}
-
 				pixelScreenSize = new Size(width, height);
 				scaledScreenSize = new Size(width / scalingFactor, height / scalingFactor);
 				profile = s_profile.Value;
@@ -181,6 +198,8 @@ namespace Xamarin.Forms
 		static PlatformType s_platformType = PlatformType.Defalut;
 
 		static bool s_useMessagingCenter = true;
+
+		static bool s_useDeviceScale = true;
 
 		public static event EventHandler<ViewInitializedEventArgs> ViewInitialized;
 
@@ -221,6 +240,10 @@ namespace Xamarin.Forms
 		public static PlatformType PlatformType => s_platformType;
 
 		public static bool UseMessagingCenter => s_useMessagingCenter;
+
+		public static double? ViewportWidth { get; set; }
+
+		public static bool UseDeviceScale => s_useDeviceScale;
 
 		internal static TizenTitleBarVisibility TitleBarVisibility
 		{
@@ -374,6 +397,9 @@ namespace Xamarin.Forms
 				Elementary.ThemeOverlay();
 				Utility.AppendGlobalFontPath(@"/usr/share/fonts");
 			}
+
+			ViewportWidth = options?.ViewportWidth;
+			s_useDeviceScale = options?.UseDeviceScale ?? true;
 
 			Device.PlatformServices = new TizenPlatformServices();
 			if (Device.info != null)
