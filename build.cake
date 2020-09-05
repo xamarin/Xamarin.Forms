@@ -42,8 +42,8 @@ string workingDirectory = EnvironmentVariable("SYSTEM_DEFAULTWORKINGDIRECTORY", 
 var configuration = Argument("BUILD_CONFIGURATION", "Debug");
 
 var target = Argument("target", "Default");
-var IOS_SIM_NAME = Argument("IOS_SIM_NAME", "iPhone 7");
-var IOS_SIM_RUNTIME = Argument("IOS_SIM_RUNTIME", "com.apple.CoreSimulator.SimRuntime.iOS-12-4");
+var IOS_SIM_NAME = GetBuildVariable("IOS_SIM_NAME", "iPhone 7");
+var IOS_SIM_RUNTIME = GetBuildVariable("IOS_SIM_RUNTIME", "com.apple.CoreSimulator.SimRuntime.iOS-12-4");
 var IOS_TEST_PROJ = "./Xamarin.Forms.Core.iOS.UITests/Xamarin.Forms.Core.iOS.UITests.csproj";
 var IOS_TEST_LIBRARY = Argument("IOS_TEST_LIBRARY", $"./Xamarin.Forms.Core.iOS.UITests/bin/{configuration}/Xamarin.Forms.Core.iOS.UITests.dll");
 var IOS_IPA_PATH = Argument("IOS_IPA_PATH", $"./Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/{configuration}/XamarinFormsControlGalleryiOS.app");
@@ -969,6 +969,7 @@ Task("cg-ios-build-tests")
                 .WithProperty("MtouchArch", "x86_64")
                 .WithProperty("iOSPlatform", "iPhoneSimulator")
                 .WithProperty("BuildIpa", $"true")
+                .WithProperty("CI", $"true")
                 .WithRestore();
 
         if(isCIBuild)
