@@ -48,7 +48,12 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			BackButtonBehavior behavior = new BackButtonBehavior();
 			Entry _commandParameter;
-			Label _commandResult = new Label() { AutomationId = CommandResultId };
+			Label _commandResult = new Label()
+			{
+				AutomationId = CommandResultId,
+				BackgroundColor = Color.LightBlue,
+				Text = "Label"
+			};
 
 			public BackButtonPage()
 			{
@@ -227,6 +232,7 @@ namespace Xamarin.Forms.Controls.Issues
 			// API 19 workaround
 			var commandResult = RunningApp.QueryUntilPresent(() =>
 			{
+				ShowFlyout();
 				if (RunningApp.WaitForElement(CommandResultId)[0].ReadText() == "parameter")
 					return RunningApp.WaitForElement(CommandResultId);
 
@@ -239,6 +245,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			commandResult = RunningApp.QueryUntilPresent(() =>
 			{
+				ShowFlyout();
 				if (RunningApp.WaitForElement(CommandResultId)[0].ReadText() == "parameter")
 					return RunningApp.WaitForElement(CommandResultId);
 
