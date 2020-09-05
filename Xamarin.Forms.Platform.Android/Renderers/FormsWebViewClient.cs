@@ -99,6 +99,7 @@ namespace Xamarin.Forms.Platform.Android
 		public override void OnReceivedError(WView view, IWebResourceRequest request, WebResourceError error)
 		{
 			if(request.Url.ToString() == _renderer?.Control.Url)
+			{
 				_navigationResult = WebNavigationResult.Failure;
 				if (error.ErrorCode == ClientError.Timeout)
 					_navigationResult = WebNavigationResult.Timeout;
