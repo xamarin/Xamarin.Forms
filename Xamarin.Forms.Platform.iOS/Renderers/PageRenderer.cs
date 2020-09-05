@@ -267,6 +267,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Element = null;
 			}
 
+			(_pageLifecycleManager as IDisconnectable)?.Disconnect();
 			_events?.Disconnect();
 			_packager?.Disconnect();
 			_tracker?.Disconnect();
@@ -279,7 +280,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
-				var page = Page;
 				(this as IDisconnectable).Disconnect();
 
 				_pageLifecycleManager?.Dispose();
@@ -360,10 +360,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
 
-#if __XCODE11__
 			if (Forms.IsiOS13OrNewer && previousTraitCollection.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
 				Application.Current?.TriggerThemeChanged(new AppThemeChangedEventArgs(Application.Current.RequestedTheme));
-#endif
 		}
 
 		bool ShouldUseSafeArea()
@@ -386,9 +384,6 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			if (!IsPartOfShell && !Forms.IsiOS11OrNewer)
-				return;
-
-			if (IsPartOfShell && !_pageLifecycleManager.Appeared)
 				return;
 
 			var tabThickness = _tabThickness;
