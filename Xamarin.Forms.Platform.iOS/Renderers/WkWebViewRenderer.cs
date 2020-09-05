@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -113,7 +112,7 @@ namespace Xamarin.Forms.Platform.iOS
 				await SyncNativeCookies(url);
 				LoadRequest(request);
 			}
-			catch (UriFormatException formatException) 
+			catch (UriFormatException formatException)
 			{
 				// If we got a format exception trying to parse the URI, it might be because
 				// someone is passing in a local bundled file page. If we can find a better way
@@ -130,7 +129,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		bool LoadFile(string url) 
+		bool LoadFile(string url)
 		{
 			try
 			{
@@ -237,7 +236,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					var extracted = extractCookies.GetCookies(uri);
 					_initialCookiesLoaded = new NSHttpCookie[extracted.Count];
-					for (int i = 0; i < extracted.Count; i++)
+					for(int i = 0; i < extracted.Count; i++)
 					{
 						_initialCookiesLoaded[i] = new NSHttpCookie(extracted[i]);
 					}
@@ -321,9 +320,9 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				NSHttpCookie nSHttpCookie = null;
 
-				foreach (var findCookie in retrieveCurrentWebCookies)
+				foreach(var findCookie in retrieveCurrentWebCookies)
 				{
-					if (findCookie.Name == cookie.Name)
+					if(findCookie.Name == cookie.Name)
 					{
 						nSHttpCookie = findCookie;
 						break;
@@ -405,7 +404,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (Forms.IsiOS11OrNewer)
 			{
-				foreach (var cookie in cookies)
+				foreach(var cookie in cookies)
 					await Configuration.WebsiteDataStore.HttpCookieStore.SetCookieAsync(new NSHttpCookie(cookie));
 			}
 			else
@@ -441,7 +440,7 @@ namespace Xamarin.Forms.Platform.iOS
 					{
 						var record = records.GetItem<WKWebsiteDataRecord>(i);
 
-						foreach (var deleteme in cookies)
+						foreach(var deleteme in cookies)
 						{
 							if (record.DisplayName.Contains(deleteme.Domain) || deleteme.Domain.Contains(record.DisplayName))
 							{
@@ -511,7 +510,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			try
 			{
-
+			
 				await SyncNativeCookies(Url?.AbsoluteUrl?.ToString());
 			}
 			catch (Exception exc)
@@ -614,10 +613,10 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				try
 				{
-					if (_renderer?.WebView?.Cookies != null)
+					if(_renderer?.WebView?.Cookies != null)
 						await _renderer.SyncNativeCookiesToElement(url);
 				}
-				catch (Exception exc)
+				catch(Exception exc)
 				{
 					Log.Warning(nameof(WkWebViewRenderer), $"Failed to Sync Cookies {exc}");
 				}
