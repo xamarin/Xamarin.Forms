@@ -81,7 +81,9 @@ namespace Xamarin.Forms
 
 		internal static NavigationRequest GetNavigationRequest(Shell shell, Uri uri, bool enableRelativeShellRoutes = false)
 		{
+			Routing.RegisterImplicitPageRoutes(shell);
 			uri = FormatUri(uri, shell);
+
 			// figure out the intent of the Uri
 			NavigationRequest.WhatToDoWithTheStack whatDoIDo = NavigationRequest.WhatToDoWithTheStack.PushToIt;
 			if (uri.IsAbsoluteUri)

@@ -251,6 +251,8 @@ namespace Xamarin.Forms.Core.UnitTests
 			public int NavigatedCount;
 			public int NavigatingCount;
 			public int OnBackButtonPressedCount;
+			public ShellNavigatedEventArgs LastShellNavigatedEventArgs;
+			public ShellNavigatingEventArgs LastShellNavigatingEventArgs;
 
 			public TestShell()
 			{
@@ -261,6 +263,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			public Action<ShellNavigatedEventArgs> OnNavigatedHandler { get; set; }
 			protected override void OnNavigated(ShellNavigatedEventArgs args)
 			{
+				LastShellNavigatedEventArgs = args;
 				base.OnNavigated(args);
 				OnNavigatedHandler?.Invoke(args);
 				OnNavigatedCount++;
@@ -268,6 +271,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			protected override void OnNavigating(ShellNavigatingEventArgs args)
 			{
+				LastShellNavigatingEventArgs = args;
 				base.OnNavigating(args);
 				OnNavigatingCount++;
 			}

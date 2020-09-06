@@ -597,40 +597,6 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public void CancelNavigation()
-		{
-			var shell = new Shell();
-
-			var one = new ShellItem { Route = "one" };
-			var two = new ShellItem { Route = "two" };
-
-			var tabone = MakeSimpleShellSection("tabone", "content");
-			var tabtwo = MakeSimpleShellSection("tabtwo", "content");
-			var tabthree = MakeSimpleShellSection("tabthree", "content");
-			var tabfour = MakeSimpleShellSection("tabfour", "content");
-
-			one.Items.Add(tabone);
-			one.Items.Add(tabtwo);
-
-			two.Items.Add(tabthree);
-			two.Items.Add(tabfour);
-
-			shell.Items.Add(one);
-			shell.Items.Add(two);
-
-			Assume.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//one/tabone/content"));
-
-			shell.Navigating += (s, e) =>
-			{
-				e.Cancel();
-			};
-
-			shell.GoToAsync(new ShellNavigationState("//two/tabfour/"));
-
-			Assume.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//one/tabone/content"));
-		}
-
-		[Test]
 		public async Task OnBackbuttonPressedPageReturnsTrue()
 		{
 			TestShell shell = new TestShell();
@@ -1767,6 +1733,38 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
+		[Test]
+		public async Task DotDotNavigateBackFromPagesWithDefaultRoute()
+		{
+			var flyoutItem = CreateShellItem<FlyoutItem>();
+			var itemRoute = Routing.GetRoute(flyoutItem.CurrentItem.CurrentItem);
+			var page1 = new ContentPage();
+			var page2 = new ContentPage();
+			TestShell shell = new TestShell()
+			{
+				Items = { flyoutItem }
+			};
+
+			Assert.That(shell.CurrentState.Location.ToString(),
+				Is.EqualTo($"//{itemRoute}"));
+
+			await shell.Navigation.PushAsync(page1);
+
+			Assert.That(shell.CurrentState.Location.ToString(),
+				Is.EqualTo($"//{itemRoute}/{Routing.GetRoute(page1)}"));
+
+			await shell.Navigation.PushAsync(page2);
+
+			Assert.That(shell.CurrentState.Location.ToString(),
+				Is.EqualTo($"//{itemRoute}/{Routing.GetRoute(page1)}/{Routing.GetRoute(page2)}"));
+
+			await shell.GoToAsync("..");
+
+			Assert.That(shell.CurrentState.Location.ToString(),
+				Is.EqualTo($"//{itemRoute}/{Routing.GetRoute(page1)}"));
+		}
+
+		
 		//[Test]
 		//public void FlyoutItemLabelStyleCanBeChangedAfterRendered()
 		//{

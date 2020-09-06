@@ -401,7 +401,7 @@ namespace Xamarin.Forms
 		bool IShellController.ProposeNavigation(ShellNavigationSource source, ShellItem shellItem, ShellSection shellSection, ShellContent shellContent, IReadOnlyList<Page> stack, bool canCancel)
 		{
 			var proposedState = GetNavigationState(shellItem, shellSection, shellContent, stack, shellSection.Navigation.ModalStack);
-			return ProposeNavigation(source, proposedState, canCancel);
+			return ProposeNavigation(source, proposedState, canCancel, null);
 		}
 
 		bool IShellController.RemoveAppearanceObserver(IAppearanceObserver observer)
@@ -475,6 +475,11 @@ namespace Xamarin.Forms
 			return routes;
 		}
 
+		internal Task CompleteDeferredNavigating(ShellNavigatingEventArgs deferredArgs)
+		{
+			return GoToAsync(deferredArgs.Target, deferredArgs.Animate, false, deferredArgs);
+		}
+
 		public Task GoToAsync(ShellNavigationState state)
 		{
 			return GoToAsync(state, null, false);
@@ -485,10 +490,10 @@ namespace Xamarin.Forms
 			return GoToAsync(state, animate, false);
 		}
 
-		internal async Task GoToAsync(ShellNavigationState state, bool? animate, bool enableRelativeShellRoutes)
+		internal async Task GoToAsync(ShellNavigationState state, bool? animate, bool enableRelativeShellRoutes, ShellNavigatingEventArgs deferredArgs = null)
 		{
 			// FIXME: This should not be none, we need to compute the delta and set flags correctly
-			var accept = ProposeNavigation(ShellNavigationSource.Unknown, state, this.CurrentState != null);
+			var accept = ProposeNavigation(ShellNavigationSource.Unknown, state, this.CurrentState != null, deferredArgs);
 			if (!accept)
 				return;
 
@@ -1088,7 +1093,7 @@ namespace Xamarin.Forms
 			}
 
 			var args = new ShellNavigatingEventArgs(this.CurrentState, "", ShellNavigationSource.Pop, true);
-			OnNavigating(args);
+			HandleNavigating(args);
 			return args.Cancelled;
 
 			async void NavigationPop()
@@ -1143,11 +1148,35 @@ namespace Xamarin.Forms
 		{
 		}
 
-		ShellNavigationState _lastNavigating;
 		protected virtual void OnNavigating(ShellNavigatingEventArgs args)
 		{
-			Navigating?.Invoke(this, args);
-			_lastNavigating = args.Target;
+
+		}
+
+		void HandleNavigating(ShellNavigatingEventArgs args)
+		{
+			if (!args.DeferredEventArgs)
+			{
+				Navigating?.Invoke(this, args);
+				OnNavigating(args);
+			}
+			else
+			{
+				return;
+			}
+
+			if(args.DeferalCount > 0 && args.CanCancel)
+			{
+				args.RegisterDeferalCallback(async () =>
+				{
+					if (args.Cancelled)
+					{
+						return;
+					}
+
+					await CompleteDeferredNavigating(args);
+				});
+			}	
 		}
 
 		static void OnCurrentItemChanged(BindableObject bindable, object oldValue, object newValue)
@@ -1401,15 +1430,13 @@ namespace Xamarin.Forms
 			}
 		}
 
-		bool ProposeNavigation(ShellNavigationSource source, ShellNavigationState proposedState, bool canCancel)
+		bool ProposeNavigation(ShellNavigationSource source, ShellNavigationState proposedState, bool canCancel, ShellNavigatingEventArgs deferredArgs)
 		{
 			if (_accumulateNavigatedEvents)
 				return true;
 
-			var navArgs = new ShellNavigatingEventArgs(CurrentState, proposedState, source, canCancel);
-
-			OnNavigating(navArgs);
-			//System.Diagnostics.Debug.WriteLine("Proposed: " + proposedState.Location);
+			var navArgs = deferredArgs ?? new ShellNavigatingEventArgs(CurrentState, proposedState, source, canCancel);
+			HandleNavigating(navArgs);
 			return !navArgs.Cancelled;
 		}
 
