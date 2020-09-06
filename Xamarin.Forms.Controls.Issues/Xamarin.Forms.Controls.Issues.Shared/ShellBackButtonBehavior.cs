@@ -237,7 +237,7 @@ namespace Xamarin.Forms.Controls.Issues
 					return RunningApp.WaitForElement(CommandResultId);
 
 				return null;
-			}).FirstOrDefault()?.ReadText();
+			})?.FirstOrDefault()?.ReadText();
 
 			Assert.AreEqual("parameter", commandResult);
 			RunningApp.EnterText(EntryCommandParameter, "canexecutetest");
@@ -249,7 +249,7 @@ namespace Xamarin.Forms.Controls.Issues
 					return RunningApp.WaitForElement(CommandResultId);
 
 				return null;
-			}).FirstOrDefault()?.ReadText();
+			})?.FirstOrDefault()?.ReadText();
 
 			Assert.AreEqual("parameter", commandResult);
 		}
@@ -275,7 +275,7 @@ namespace Xamarin.Forms.Controls.Issues
 					return RunningApp.WaitForElement(CommandResultId);
 
 				return null;
-			}).FirstOrDefault()?.ReadText();
+			})?.FirstOrDefault()?.ReadText();
 
 			Assert.AreEqual(commandResult, "parameter");
 		}
