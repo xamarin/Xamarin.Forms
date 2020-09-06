@@ -16,7 +16,6 @@ namespace Xamarin.Forms
 			set
 			{
 				_fullLocation = value;
-				Location = TrimDownImplicitAndDefaultPaths(value);
 			}
 		}
 
@@ -27,7 +26,11 @@ namespace Xamarin.Forms
 		}
 
 		public ShellNavigationState() { }
-		public ShellNavigationState(string location)
+		public ShellNavigationState(string location) : this(location, false)
+		{
+		}
+
+		internal ShellNavigationState(string location, bool trimForUser)
 		{
 			var uri = ShellUriHandler.CreateUri(location);
 
@@ -35,6 +38,11 @@ namespace Xamarin.Forms
 				uri = new Uri($"/{uri.PathAndQuery}", UriKind.Relative);
 
 			FullLocation = uri;
+
+			if (trimForUser)
+				Location = TrimDownImplicitAndDefaultPaths(FullLocation);
+			else
+				Location = FullLocation;
 		}
 
 		public ShellNavigationState(Uri location) => FullLocation = location;
@@ -44,6 +52,10 @@ namespace Xamarin.Forms
 		static Uri TrimDownImplicitAndDefaultPaths(Uri uri)
 		{
 			uri = ShellUriHandler.FormatUri(uri, null);
+
+			// don't trim relative pushes
+			if (!uri.OriginalString.StartsWith($"{Routing.PathSeparator}{Routing.PathSeparator}"))
+				return uri;
 
 			string[] parts = uri.OriginalString.TrimEnd(Routing.PathSeparator[0]).Split(Routing.PathSeparator[0]);
 

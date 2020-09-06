@@ -368,6 +368,18 @@ namespace Xamarin.Forms.Core.UnitTests
 			*/
 		}
 
+
+		[Test]
+		public async Task DotDotAdheresToAnimationParameter()
+		{
+			Routing.RegisterRoute(nameof(DotDotAdheresToAnimationParameter), typeof(ContentPage));
+			var shellContent = new ShellContent();
+			var shell = new TestShell(new TestFlyoutItem(new TestShellSection(shellContent)));
+			await shell.GoToAsync(nameof(DotDotAdheresToAnimationParameter));
+			await shell.GoToAsync("..", true);
+			Assert.IsTrue(shell.LastPopWasAnimated);
+		}
+
 		[Test]
 		public async Task DefaultRoutesMaintainedIfThatsAllThereIs()
 		{
@@ -1733,36 +1745,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
-		[Test]
-		public async Task DotDotNavigateBackFromPagesWithDefaultRoute()
-		{
-			var flyoutItem = CreateShellItem<FlyoutItem>();
-			var itemRoute = Routing.GetRoute(flyoutItem.CurrentItem.CurrentItem);
-			var page1 = new ContentPage();
-			var page2 = new ContentPage();
-			TestShell shell = new TestShell()
-			{
-				Items = { flyoutItem }
-			};
-
-			Assert.That(shell.CurrentState.Location.ToString(),
-				Is.EqualTo($"//{itemRoute}"));
-
-			await shell.Navigation.PushAsync(page1);
-
-			Assert.That(shell.CurrentState.Location.ToString(),
-				Is.EqualTo($"//{itemRoute}/{Routing.GetRoute(page1)}"));
-
-			await shell.Navigation.PushAsync(page2);
-
-			Assert.That(shell.CurrentState.Location.ToString(),
-				Is.EqualTo($"//{itemRoute}/{Routing.GetRoute(page1)}/{Routing.GetRoute(page2)}"));
-
-			await shell.GoToAsync("..");
-
-			Assert.That(shell.CurrentState.Location.ToString(),
-				Is.EqualTo($"//{itemRoute}/{Routing.GetRoute(page1)}"));
-		}
+		
 
 		
 		//[Test]

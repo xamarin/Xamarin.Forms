@@ -340,7 +340,11 @@ namespace Xamarin.Forms
 
 			if (globalRoutes == null || globalRoutes.Count == 0)
 			{
-				await Navigation.PopToRootAsync(animate ?? false);
+				if(_navStack.Count == 2)
+					await OnPopAsync(animate ?? false);
+				else
+					await OnPopToRootAsync(animate ?? false);
+				
 				return;
 			}
 
@@ -426,7 +430,9 @@ namespace Xamarin.Forms
 				route = globalRoutes[i];
 				var content = Routing.GetOrCreateContent(route) as Page;
 				if (content == null)
+				{
 					break;
+				}
 
 				var isModal = (Shell.GetPresentationMode(content) & PresentationMode.Modal) == PresentationMode.Modal;
 
@@ -931,11 +937,59 @@ namespace Xamarin.Forms
 
 			protected override void OnInsertPageBefore(Page page, Page before) => _owner.OnInsertPageBefore(page, before);
 
-			protected override Task<Page> OnPopAsync(bool animated) => _owner.OnPopAsync(animated);
+			protected override async Task<Page> OnPopAsync(bool animated)
+			{
+				if (!_owner.IsVisibleSection)
+				{
+					return (await _owner.OnPopAsync(animated));
+				}
 
-			protected override Task OnPopToRootAsync(bool animated) => _owner.OnPopToRootAsync(animated);
+				var navigationParameters = new ShellNavigationParameters()
+				{
+					Animated = animated,
+					TargetState = ".."
+				};
 
-			protected override Task OnPushAsync(Page page, bool animated) => _owner.OnPushAsync(page, animated);
+				var returnedPage = (_owner as IShellSectionController).PresentedPage;
+				await _owner.Shell.GoToAsync(navigationParameters);
+
+				// This means the page wasn't popped and navigation was cancelled
+				if ((_owner as IShellSectionController).PresentedPage == returnedPage)
+					return null;
+
+				return returnedPage;
+			}
+
+			protected override Task OnPopToRootAsync(bool animated)
+			{
+				if (!_owner.IsVisibleSection)
+				{
+					return _owner.OnPopToRootAsync(animated);
+				}
+
+				var navigationParameters = new ShellNavigationParameters()
+				{
+					Animated = animated,
+					TargetState = $"{Routing.PathSeparator}{Routing.PathSeparator}{_owner.CurrentItem.Route}",
+					PopAllPagesNotSpecifiedOnTargetState = true
+				};
+
+				return _owner.Shell.GoToAsync(navigationParameters);
+			}
+
+			protected override Task OnPushAsync(Page page, bool animated)
+			{
+				if (!_owner.IsVisibleSection)
+					return _owner.OnPushAsync(page, animated);
+
+				var navigationParameters = new ShellNavigationParameters()
+				{
+					Animated = animated,
+					PagePushing = page
+				};
+
+				return (_owner.Shell).GoToAsync(navigationParameters);
+			}
 
 			protected override void OnRemovePage(Page page) => _owner.OnRemovePage(page);
 		}

@@ -78,10 +78,12 @@ namespace Xamarin.Forms
 
 			return new Uri(uri);
 		}
-
-		internal static NavigationRequest GetNavigationRequest(Shell shell, Uri uri, bool enableRelativeShellRoutes = false)
+		internal static NavigationRequest GetNavigationRequest(
+			Shell shell, 
+			Uri uri, 
+			bool enableRelativeShellRoutes = false, 
+			ShellNavigationParameters shellNavigationParameters = null)
 		{
-			Routing.RegisterImplicitPageRoutes(shell);
 			uri = FormatUri(uri, shell);
 
 			// figure out the intent of the Uri
@@ -95,6 +97,7 @@ namespace Xamarin.Forms
 
 			Uri request = ConvertToStandardFormat(shell, uri);
 
+			
 			var possibleRouteMatches = GenerateRoutePaths(shell, request, uri, enableRelativeShellRoutes);
 
 

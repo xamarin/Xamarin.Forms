@@ -15,35 +15,42 @@ namespace Xamarin.Forms
 		const string DefaultPrefix = "D_FAULT_";
 		internal const string PathSeparator = "/";
 
-		internal static void RegisterImplicitPageRoutes(Shell shell)
+		// We only need these while a navigation is happening 
+		internal static void ClearImplicitPageRoutes()
 		{
 			s_implicitPageRoutes.Clear();
+		}
+
+		internal static void RegisterImplicitPageRoute(Page page)
+		{
+			var route = GetRoute(page);
+			if (!IsUserDefined(route))
+				s_implicitPageRoutes[route] = page;
+		}
+
+		// Shell works much better if the entire nav stack can be represented by a string
+		// If the users pushes pages without using routes we want these page keys tracked
+		internal static void RegisterImplicitPageRoutes(Shell shell)
+		{
 			foreach(var item in shell.Items)
 			{
 				foreach(var section in item.Items)
 				{
 					for(int i = 1; i < section.Navigation.NavigationStack.Count; i++)
 					{
-						var page = section.Navigation.NavigationStack[i];
-						var route = GetRoute(page);
-						if (!IsUserDefined(route))
-							s_implicitPageRoutes[route] = page;
+						RegisterImplicitPageRoute(section.Navigation.NavigationStack[i]);
 					}
 
 					for (int i = 0; i < section.Navigation.ModalStack.Count; i++)
 					{
 						var page = section.Navigation.ModalStack[i];
-						var route = GetRoute(page);
-						if (!IsUserDefined(route))
-							s_implicitPageRoutes[route] = page;
+						RegisterImplicitPageRoute(page);
 
 						if(page is NavigationPage np)
 						{
 							foreach (var npPages in np.Pages)
 							{
-								var npRoute = GetRoute(npPages);
-								if (!IsUserDefined(npRoute))
-									s_implicitPageRoutes[npRoute] = npPages;
+								RegisterImplicitPageRoute(npPages);
 							}
 						}
 					}
@@ -137,6 +144,11 @@ namespace Xamarin.Forms
 		public static Element GetOrCreateContent(string route)
 		{
 			Element result = null;
+
+			if (s_implicitPageRoutes.TryGetValue(route, out var page))
+			{
+				return page;
+			}
 
 			if (s_routes.TryGetValue(route, out var content))
 				result = content.GetOrCreate();

@@ -244,6 +244,41 @@ namespace Xamarin.Forms.Core.UnitTests
 			return (item as IShellController).GetItems();
 		}
 
+
+		public class TestFlyoutItem : FlyoutItem
+		{
+			public TestFlyoutItem()
+			{
+
+			}
+
+			public TestFlyoutItem(ShellSection shellSection)
+			{
+				Items.Add(shellSection);
+			}
+		}
+
+		public class TestShellSection : ShellSection
+		{
+			public TestShellSection()
+			{
+
+			}
+
+			public TestShellSection(ShellContent shellContent)
+			{
+				Items.Add(shellContent);
+			}
+
+			public bool? LastPopWasAnimated { get; private set; }
+
+			protected override Task<Page> OnPopAsync(bool animated)
+			{
+				LastPopWasAnimated = animated;
+				return base.OnPopAsync(animated);
+			}
+		}
+
 		public class TestShell : Shell
 		{
 			public int OnNavigatedCount;
@@ -260,13 +295,18 @@ namespace Xamarin.Forms.Core.UnitTests
 				this.Navigating += (_, __) => NavigatingCount++;
 			}
 
+			public TestShell(ShellItem shellItem) : this()
+			{
+				Items.Add(shellItem);
+			}
+
 			public Action<ShellNavigatedEventArgs> OnNavigatedHandler { get; set; }
 			protected override void OnNavigated(ShellNavigatedEventArgs args)
 			{
 				LastShellNavigatedEventArgs = args;
 				base.OnNavigated(args);
 				OnNavigatedHandler?.Invoke(args);
-				OnNavigatedCount++;
+				OnNavigatedCount++;				
 			}
 
 			protected override void OnNavigating(ShellNavigatingEventArgs args)
@@ -304,6 +344,15 @@ namespace Xamarin.Forms.Core.UnitTests
 				Assert.AreEqual(count, NavigatingCount, $"NavigatingCount: {message}");
 				Assert.AreEqual(count, OnNavigatingCount, $"OnNavigatingCount: {message}");
 				Assert.AreEqual(count, NavigatedCount, $"NavigatedCount: {message}");
+			}
+
+
+			public bool? LastPopWasAnimated
+			{
+				get
+				{
+					return (CurrentItem.CurrentItem as TestShellSection)?.LastPopWasAnimated;
+				}
 			}
 		}
 	}

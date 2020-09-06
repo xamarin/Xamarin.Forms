@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Xamarin.Forms
@@ -14,8 +15,12 @@ namespace Xamarin.Forms
 
         public void Complete()
         {
-            _completed?.Invoke();
-            _completed = null;
+			var taskToComplete = Interlocked.Exchange(ref _completed, null);
+
+			if (taskToComplete != null)
+				taskToComplete?.Invoke();
         }
+
+		internal bool IsCompleted => _completed == null;
     }
 }
