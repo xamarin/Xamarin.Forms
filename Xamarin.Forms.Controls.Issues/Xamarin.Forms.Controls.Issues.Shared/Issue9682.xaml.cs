@@ -50,15 +50,17 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				var images = RunningApp.WaitForElement("MonkeyImages");
 
-				if (images[0].Rect.Height < 30 || images[0].Rect.Width < 30)
+				if (images[0].Rect.Height < 20 || images[0].Rect.Width < 20)
 					return null;
 
 				return images;
 			});
 
+			monkeyImages = monkeyImages ?? RunningApp.WaitForElement("MonkeyImages");
+
 			Assert.IsNotNull(monkeyImages);
-			Assert.GreaterOrEqual(monkeyImages[0].Rect.Height, 50);
-			Assert.GreaterOrEqual(monkeyImages[0].Rect.Width, 50);
+			Assert.GreaterOrEqual(monkeyImages[0].Rect.Height, 20);
+			Assert.GreaterOrEqual(monkeyImages[0].Rect.Width, 20);
 		}
 #endif
 	}
