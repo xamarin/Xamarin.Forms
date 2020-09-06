@@ -237,7 +237,7 @@ namespace Xamarin.Forms.Controls.Issues
 					return RunningApp.WaitForElement(CommandResultId);
 
 				return null;
-			})[0].ReadText();
+			}).FirstOrDefault()?.ReadText();
 
 			Assert.AreEqual("parameter", commandResult);
 			RunningApp.EnterText(EntryCommandParameter, "canexecutetest");
@@ -245,12 +245,11 @@ namespace Xamarin.Forms.Controls.Issues
 
 			commandResult = RunningApp.QueryUntilPresent(() =>
 			{
-				ShowFlyout();
 				if (RunningApp.WaitForElement(CommandResultId)[0].ReadText() == "parameter")
 					return RunningApp.WaitForElement(CommandResultId);
 
 				return null;
-			})[0].ReadText();
+			}).FirstOrDefault()?.ReadText();
 
 			Assert.AreEqual("parameter", commandResult);
 		}
@@ -262,20 +261,21 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap(ToggleCommandId);
 			RunningApp.EnterText(EntryCommandParameter, "parameter");
 
-#if __ANDROID__
-			base.TapBackArrow();
-#else
-			RunningApp.Tap("Page 0");
-#endif
-
 			// API 19 workaround
 			var commandResult = RunningApp.QueryUntilPresent(() =>
 			{
+
+#if __ANDROID__
+				TapBackArrow();
+#else
+				RunningApp.Tap("Page 0");
+#endif
+
 				if (RunningApp.WaitForElement(CommandResultId)[0].ReadText() == "parameter")
 					return RunningApp.WaitForElement(CommandResultId);
 
 				return null;
-			})[0].ReadText();
+			}).FirstOrDefault()?.ReadText();
 
 			Assert.AreEqual(commandResult, "parameter");
 		}

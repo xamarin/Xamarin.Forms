@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				var images = RunningApp.WaitForElement("MonkeyImages");
 
-				if (images[0].Rect.Height < 50 || images[0].Rect.Width < 50)
+				if (images[0].Rect.Height < 30 || images[0].Rect.Width < 30)
 					return null;
 
 				return images;
