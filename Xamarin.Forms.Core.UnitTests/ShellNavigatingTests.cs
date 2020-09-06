@@ -224,6 +224,19 @@ namespace Xamarin.Forms.Core.UnitTests
 				Is.EqualTo($"//{contentRoute}/{pageRoute}"));
 		}
 
+		[Test]
+		public async Task PopToRootWithMultipleFlyoutItems()
+		{
+			TestShell testShell = new TestShell(
+				CreateShellItem<FlyoutItem>(shellItemRoute:"store", shellContentRoute: "home"),
+				CreateShellItem<FlyoutItem>(shellItemRoute:"second", shellContentRoute: "home")
+			);
+
+			await testShell.Navigation.PushAsync(new ContentPage());
+			await testShell.Navigation.PushAsync(new ContentPage());
+			await testShell.Navigation.PopToRootAsync();
+		}
+
 		ShellNavigatingEventArgs CreateShellNavigatedEventArgs() =>
 			new ShellNavigatingEventArgs("..", "../newstate", ShellNavigationSource.Push, true);
 	}

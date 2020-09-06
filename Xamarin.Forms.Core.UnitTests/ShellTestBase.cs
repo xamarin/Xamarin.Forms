@@ -295,9 +295,9 @@ namespace Xamarin.Forms.Core.UnitTests
 				this.Navigating += (_, __) => NavigatingCount++;
 			}
 
-			public TestShell(ShellItem shellItem) : this()
+			public TestShell(params ShellItem[] shellItems) : this()
 			{
-				Items.Add(shellItem);
+				shellItems.ForEach(x => Items.Add(x));
 			}
 
 			public Action<ShellNavigatedEventArgs> OnNavigatedHandler { get; set; }

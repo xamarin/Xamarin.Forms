@@ -967,10 +967,19 @@ namespace Xamarin.Forms
 					return _owner.OnPopToRootAsync(animated);
 				}
 
+				var shell = _owner.Shell;
+				var targetState = 
+					Shell.GetNavigationState(
+						shell.CurrentItem,
+						_owner,
+						_owner.CurrentItem,
+						null,
+						null);
+
 				var navigationParameters = new ShellNavigationParameters()
 				{
 					Animated = animated,
-					TargetState = $"{Routing.PathSeparator}{Routing.PathSeparator}{_owner.CurrentItem.Route}",
+					TargetState = targetState,
 					PopAllPagesNotSpecifiedOnTargetState = true
 				};
 

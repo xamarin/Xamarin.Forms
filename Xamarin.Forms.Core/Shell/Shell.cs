@@ -673,7 +673,7 @@ namespace Xamarin.Forms
 				element.SetValue(ShellContent.QueryAttributesProperty, query);
 		}
 
-		ShellNavigationState GetNavigationState(ShellItem shellItem, ShellSection shellSection, ShellContent shellContent, IReadOnlyList<Page> sectionStack, IReadOnlyList<Page> modalStack)
+		internal static ShellNavigationState GetNavigationState(ShellItem shellItem, ShellSection shellSection, ShellContent shellContent, IReadOnlyList<Page> sectionStack, IReadOnlyList<Page> modalStack)
 		{
 			List<string> routeStack = new List<string>();
 
