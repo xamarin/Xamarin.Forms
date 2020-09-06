@@ -200,8 +200,6 @@ else if(releaseChannel == ReleaseChannel.Stable)
 {
     if(IsXcodeVersionOver("11.4"))
     {
-        // Xcode 11.4 just uses boots enums
-        Information ("XCODE 11.4");
     }
     else
     {
@@ -1130,6 +1128,17 @@ bool IsXcodeVersionOver(string version)
         {
             var xcodeVersion = Version.Parse(item.Replace("Xcode", ""));
             Information($"Xcode: {xcodeVersion}");
+            var xcodePath = xcodeVersion.ToString().Replace(".0", "");
+
+            if(isCIBuild)
+            {
+                StartProcess("xcode-select", 
+                    new ProcessSettings {
+                        Arguments = new ProcessArgumentBuilder().Append($"-s /Applications/Xcode_{xcodePath}.app")
+                    }
+                );
+            }
+
             return Version.Parse(item.Replace("Xcode", "")) >= Version.Parse(version); 
         }
     }
