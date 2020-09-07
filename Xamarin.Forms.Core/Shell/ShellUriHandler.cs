@@ -78,11 +78,8 @@ namespace Xamarin.Forms
 
 			return new Uri(uri);
 		}
-		internal static NavigationRequest GetNavigationRequest(
-			Shell shell, 
-			Uri uri, 
-			bool enableRelativeShellRoutes = false, 
-			ShellNavigationParameters shellNavigationParameters = null)
+    
+		internal static NavigationRequest GetNavigationRequest(Shell shell, Uri uri, bool enableRelativeShellRoutes = false, bool throwNavigationErrorAsException = true, ShellNavigationParameters shellNavigationParameters = null)
 		{
 			uri = FormatUri(uri, shell);
 
@@ -102,7 +99,12 @@ namespace Xamarin.Forms
 
 
 			if (possibleRouteMatches.Count == 0)
-				throw new ArgumentException($"unable to figure out route for: {uri}", nameof(uri));
+			{
+				if(throwNavigationErrorAsException)
+					throw new ArgumentException($"unable to figure out route for: {uri}", nameof(uri));
+
+				return null;
+			}
 			else if (possibleRouteMatches.Count > 1)
 			{
 				string[] matches = new string[possibleRouteMatches.Count];
@@ -114,8 +116,11 @@ namespace Xamarin.Forms
 				}
 
 				string matchesFound = String.Join(",", matches);
-				throw new ArgumentException($"Ambiguous routes matched for: {uri} matches found: {matchesFound}", nameof(uri));
 
+				if (throwNavigationErrorAsException)
+					throw new ArgumentException($"Ambiguous routes matched for: {uri} matches found: {matchesFound}", nameof(uri));
+
+				return null;
 			}
 
 			var theWinningRoute = possibleRouteMatches[0];
@@ -819,6 +824,4 @@ namespace Xamarin.Forms
 		public ShellContent Content { get; }
 		public List<string> GlobalRoutes { get; }
 	}
-
-
 }
