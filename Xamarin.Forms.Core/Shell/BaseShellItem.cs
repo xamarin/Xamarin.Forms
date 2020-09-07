@@ -468,7 +468,7 @@ namespace Xamarin.Forms
 
 				grid.Children.Add(badgeFrame, 2, 0);
 
-				badgeLabel.FontSize = 10;
+				badgeLabel.FontSize = Device.GetNamedSize(NamedSize.Micro, typeof(Label));
 				badgeLabel.SetBinding(Label.TextColorProperty, nameof(BaseShellItem.BadgeTextColor), converter: new UseFallbackColorIfDefaultColorConverter(Color.White));
 
 				INameScope nameScope = new NameScope();
