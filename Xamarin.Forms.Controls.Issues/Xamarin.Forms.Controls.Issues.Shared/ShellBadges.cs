@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Xamarin.Forms.Core;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 #if UITEST
@@ -17,7 +18,6 @@ namespace Xamarin.Forms.Controls.Issues
 		PlatformAffected.All)]
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.Shell)]
-	[Ignore("Needs rework")]
 #endif
 	public class ShellBadges : TestShell
 	{
@@ -29,9 +29,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 		const string SetContentBadgeUnselectedTextColor = "CBUTC";
 
-		const string SetContentBadgeColor = "CBC";
+		const string SetContentBadgeBackground = "CBB";
 
-		const string SetContentBadgeUnselectedColor = "CBUC";
+		const string SetContentBadgeUnselectedBackground = "CBUB";
 
 		const string SetSectionBadgeText = "SBT";
 
@@ -39,9 +39,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 		const string SetSectionBadgeUnselectedTextColor = "SBUTC";
 
-		const string SetSectionBadgeColor = "SBC";
+		const string SetSectionBadgeBackground = "SBB";
 
-		const string SetSectionBadgeUnselectedColor = "SBUC";
+		const string SetSectionBadgeUnselectedBackground = "SBUB";
 
 		const string SetItemBadgeText = "IBT";
 
@@ -49,9 +49,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 		const string SetItemBadgeUnselectedTextColor = "IBUTC";
 
-		const string SetItemBadgeColor = "IBC";
+		const string SetItemBadgeBackground = "IBB";
 
-		const string SetItemBadgeUnselectedColor = "IBUC";
+		const string SetItemBadgeUnselectedBackground = "IBUB";
 
 #if __ANDROID__
 		// Color.White.ToAndroid().ToArgb();
@@ -64,13 +64,13 @@ namespace Xamarin.Forms.Controls.Issues
 		protected int UnselectedTextColorSet = -16751616;
 
 		// Color.FromRgb(255, 59, 48).ToAndroid().ToArgb();
-		protected int BadgeColorDefault = -50384;
+		protected int BackgroundDefault = -50384;
 
 		// Color.DarkOrange.ToAndroid().ToArgb()
-		protected int BadgeColorSet = -29696;
+		protected int BackgroundSet = -29696;
 
 		// Color.DarkMagenta.ToAndroid().ToArgb();
-		protected int UnselectedColorSet = -7667573;
+		protected int UnselectedBackgroundSet = -7667573;
 #endif
 
 #if __IOS__
@@ -88,15 +88,15 @@ namespace Xamarin.Forms.Controls.Issues
 
 		// Color.FromRgb(255, 59, 48).ToUIColor().GetRGBA(out red, out green, out blue, out alpha);
 		// $"rgb({(int) (red*255)},{(int) (green*255)},{(int) (blue*255)})";
-		protected string BadgeColorDefault = "rgb(255,59,48)";
+		protected string BackgroundDefault = "rgb(255,59,48)";
 
 		// Color.DarkOrange.ToUIColor().GetRGBA(out red, out green, out blue, out alpha);
 		// $"rgb({(int) (red*255)},{(int) (green*255)},{(int) (blue*255)})";
-		protected string BadgeColorSet = "rgb(255,140,0)";
+		protected string BackgroundSet = "rgb(255,140,0)";
 
 		// Color.DarkMagenta.ToUIColor().GetRGBA(out red, out green, out blue, out alpha);
 		// $"rgb({(int) (red*255)},{(int) (green*255)},{(int) (blue*255)})";
-		protected string UnselectedColorSet = "rgb(139,0,139)";
+		protected string UnselectedBackgroundSet = "rgb(139,0,139)";
 #endif
 
 		// TODO: Missing test cases
@@ -151,7 +151,7 @@ namespace Xamarin.Forms.Controls.Issues
 								{
 									CreateBadgeButton(SetContentBadgeText, () => { Shell.Current.ShellContentBadgeViewModel("Content 111").Text = "2"; }),
 									CreateBadgeButton(SetContentBadgeTextColor, () => { Shell.Current.ShellContentBadgeViewModel("Content 111").TextColor = Color.DarkBlue; }),
-									CreateBadgeButton(SetContentBadgeColor, () => { Shell.Current.ShellContentBadgeViewModel("Content 111").Color = Color.DarkOrange; }),
+									CreateBadgeButton(SetContentBadgeBackground, () => { Shell.Current.ShellContentBadgeViewModel("Content 111").Background = Brush.DarkOrange; }),
 								}
 							},
 							new StackLayout
@@ -159,8 +159,8 @@ namespace Xamarin.Forms.Controls.Issues
 								Orientation = StackOrientation.Horizontal,
 								Children =
 								{
-									CreateBadgeButton(SetContentBadgeUnselectedTextColor, () => { Shell.Current.ShellContentBadgeViewModel("Content 112").UnselectedTextColor = Color.DarkGreen; }),
-									CreateBadgeButton(SetContentBadgeUnselectedColor, () => { Shell.Current.ShellContentBadgeViewModel("Content 112").UnselectedColor = Color.DarkMagenta; }),
+									CreateBadgeButton(SetContentBadgeUnselectedTextColor, () => { /* TODO: Implement after VisualStateManager support for badges */ }),
+									CreateBadgeButton(SetContentBadgeUnselectedBackground, () => { /* TODO: Implement after VisualStateManager support for badges */ }),
 								}
 							},
 							new StackLayout
@@ -170,7 +170,7 @@ namespace Xamarin.Forms.Controls.Issues
 								{
 									CreateBadgeButton(SetSectionBadgeText, () => { Shell.Current.ShellSectionBadgeViewModel("Section 11").Text = "2"; }),
 									CreateBadgeButton(SetSectionBadgeTextColor, () => { Shell.Current.ShellSectionBadgeViewModel("Section 11").TextColor = Color.DarkBlue; }),
-									CreateBadgeButton(SetSectionBadgeColor, () => { Shell.Current.ShellSectionBadgeViewModel("Section 11").Color = Color.DarkOrange; }),
+									CreateBadgeButton(SetSectionBadgeBackground, () => { Shell.Current.ShellSectionBadgeViewModel("Section 11").Background = Brush.DarkOrange; }),
 								},
 							},
 							new StackLayout
@@ -178,8 +178,8 @@ namespace Xamarin.Forms.Controls.Issues
 								Orientation = StackOrientation.Horizontal,
 								Children =
 								{
-									CreateBadgeButton(SetSectionBadgeUnselectedTextColor, () => { Shell.Current.ShellSectionBadgeViewModel("Section 12").UnselectedTextColor = Color.DarkGreen; }),
-									CreateBadgeButton(SetSectionBadgeUnselectedColor, () => { Shell.Current.ShellSectionBadgeViewModel("Section 12").UnselectedColor = Color.DarkMagenta; }),
+									CreateBadgeButton(SetSectionBadgeUnselectedTextColor, () => { /* TODO: Implement after VisualStateManager support for badges */ }),
+									CreateBadgeButton(SetSectionBadgeUnselectedBackground, () => { /* TODO: Implement after VisualStateManager support for badges */ }),
 								},
 							},
 							new StackLayout
@@ -189,7 +189,7 @@ namespace Xamarin.Forms.Controls.Issues
 								{
 									CreateBadgeButton(SetItemBadgeText, () => { Shell.Current.ShellItemBadgeViewModel("Item 1").Text = "2"; }),
 									CreateBadgeButton(SetItemBadgeTextColor, () => { Shell.Current.ShellItemBadgeViewModel("Item 1").TextColor = Color.DarkBlue; }),
-									CreateBadgeButton(SetItemBadgeColor, () => { Shell.Current.ShellItemBadgeViewModel("Item 1").Color = Color.DarkOrange; }),
+									CreateBadgeButton(SetItemBadgeBackground, () => { Shell.Current.ShellItemBadgeViewModel("Item 1").Background = Brush.DarkOrange; }),
 								},
 							},
 							new StackLayout
@@ -197,8 +197,8 @@ namespace Xamarin.Forms.Controls.Issues
 								Orientation = StackOrientation.Horizontal,
 								Children =
 								{
-									CreateBadgeButton(SetItemBadgeUnselectedTextColor, () => { Shell.Current.ShellItemBadgeViewModel("Item 2").UnselectedTextColor = Color.DarkGreen; }),
-									CreateBadgeButton(SetItemBadgeUnselectedColor, () => { Shell.Current.ShellItemBadgeViewModel("Item 2").UnselectedColor = Color.DarkMagenta; }),
+									CreateBadgeButton(SetItemBadgeUnselectedTextColor, () => { /* TODO: Implement after VisualStateManager support for badges */ }),
+									CreateBadgeButton(SetItemBadgeUnselectedBackground, () => { /* TODO: Implement after VisualStateManager support for badges */ }),
 								},
 							},
 						}
@@ -218,12 +218,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 		static void ApplyBadgeViewModel(BindableObject bindableObject)
 		{
-			////bindableObject.SetBinding(BaseShellItem.BadgeTextProperty, nameof(BadgeViewModel.Text));
-			////bindableObject.SetBinding(BaseShellItem.BadgeMoreTextProperty, nameof(BadgeViewModel.MoreText));
-			////bindableObject.SetBinding(BaseShellItem.BadgeTextColorProperty, nameof(BadgeViewModel.TextColor));
-			////bindableObject.SetBinding(BaseShellItem.BadgeUnselectedTextColorProperty, nameof(BadgeViewModel.UnselectedTextColor));
-			////bindableObject.SetBinding(BaseShellItem.BadgeColorProperty, nameof(BadgeViewModel.Color));
-			////bindableObject.SetBinding(BaseShellItem.BadgeUnselectedColorProperty, nameof(BadgeViewModel.UnselectedColor));
+			bindableObject.SetBinding(Badge.BadgeTextProperty, nameof(BadgeViewModel.Text));
+			bindableObject.SetBinding(Badge.BadgeTextColorProperty, nameof(BadgeViewModel.TextColor));
+			bindableObject.SetBinding(Badge.BadgeBackgroundProperty, nameof(BadgeViewModel.Background));
 		}
 
 		static ShellItem CreateShellItem(string title, params ShellSection[] shellSections)
@@ -371,6 +368,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
+		[Ignore("Reactivate after VisualStateManager support for badges")]
 		public void SetContentBadgeUnselectedTextColorTest()
 		{
 			Test(SetContentBadgeUnselectedTextColor, () =>
@@ -383,6 +381,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
+		[Ignore("Reactivate after VisualStateManager support for badges")]
 		public void SetSectionBadgeUnselectedTextColorTest()
 		{
 			Test(SetSectionBadgeUnselectedTextColor, () =>
@@ -395,6 +394,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
+		[Ignore("Reactivate after VisualStateManager support for badges")]
 		public void SetItemBadgeUnselectedTextColorTest()
 		{
 			Test(SetItemBadgeUnselectedTextColor, () =>
@@ -412,85 +412,88 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
-		public void SetContentBadgeColorTest()
+		public void SetContentBadgeBackgroundTest()
 		{
-			Test(SetContentBadgeColor, () =>
+			Test(SetContentBadgeBackground, () =>
 			{
-				Assert.AreEqual(BadgeColorDefault, RunningApp.Query(x => x.ContentBadge().ContentBadgeColor()).Single());
+				Assert.AreEqual(BackgroundDefault, RunningApp.Query(x => x.ContentBadge().ContentBadgeBackground()).Single());
 			}, () =>
 			{
-				Assert.AreEqual(BadgeColorSet, RunningApp.Query(x => x.ContentBadge().ContentBadgeColor()).Single());
+				Assert.AreEqual(BackgroundSet, RunningApp.Query(x => x.ContentBadge().ContentBadgeBackground()).Single());
 			});
 		}
 
 		[Test]
-		public void SetSectionBadgeColorTest()
+		public void SetSectionBadgeBackgroundTest()
 		{
-			Test(SetSectionBadgeColor, () =>
+			Test(SetSectionBadgeBackground, () =>
 			{
-				Assert.AreEqual(BadgeColorDefault, RunningApp.Query(x => x.SectionBadge().SectionBadgeColor()).Single());
+				Assert.AreEqual(BackgroundDefault, RunningApp.Query(x => x.SectionBadge().SectionBadgeBackground()).Single());
 
 			}, () =>
 			{
-				Assert.AreEqual(BadgeColorSet, RunningApp.Query(x => x.SectionBadge().SectionBadgeColor()).Single());
+				Assert.AreEqual(BackgroundSet, RunningApp.Query(x => x.SectionBadge().SectionBadgeBackground()).Single());
 			});
 		}
 
 		[Test]
-		public void SetItemBadgeColorTest()
+		public void SetItemBadgeBackgroundTest()
 		{
-			Test(SetItemBadgeColor, () =>
+			Test(SetItemBadgeBackground, () =>
 			{
 				RunningApp.Tap(ToggleFlyout);
 				RunningApp.WaitForElement("Item 1");
-				Assert.AreEqual(BadgeColorDefault, RunningApp.Query(x => x.ItemBadge().ItemBadgeColor()).Single());
+				Assert.AreEqual(BackgroundDefault, RunningApp.Query(x => x.ItemBadge().ItemBadgeBackground()).Single());
 				RunningApp.Tap("Item 1");
 			}, () =>
 			{
 				RunningApp.Tap(ToggleFlyout);
 				RunningApp.WaitForElement("Item 1");
-				Assert.AreEqual(BadgeColorSet, RunningApp.Query(x => x.ItemBadge().ItemBadgeColor()).Single());
+				Assert.AreEqual(BackgroundSet, RunningApp.Query(x => x.ItemBadge().ItemBadgeBackground()).Single());
 			});
 		}
 
 		[Test]
-		public void SetContentBadgeUnselectedColorTest()
+		[Ignore("Reactivate after VisualStateManager support for badges")]
+		public void SetContentBadgeUnselectedBackgroundTest()
 		{
-			Test(SetContentBadgeUnselectedColor, () =>
+			Test(SetContentBadgeUnselectedBackground, () =>
 			{
-				Assert.AreEqual(BadgeColorDefault, RunningApp.Query(x => x.ContentBadge("Content 112").ContentBadgeColor()).Single());
+				Assert.AreEqual(BackgroundDefault, RunningApp.Query(x => x.ContentBadge("Content 112").ContentBadgeBackground()).Single());
 			}, () =>
 			{
-				Assert.AreEqual(UnselectedColorSet, RunningApp.Query(x => x.ContentBadge("Content 112").ContentBadgeColor()).Single());
+				Assert.AreEqual(UnselectedBackgroundSet, RunningApp.Query(x => x.ContentBadge("Content 112").ContentBadgeBackground()).Single());
 			});
 		}
 
 		[Test]
-		public void SetSectionBadgeUnselectedColorTest()
+		[Ignore("Reactivate after VisualStateManager support for badges")]
+		public void SetSectionBadgeUnselectedBackgroundTest()
 		{
-			Test(SetSectionBadgeUnselectedColor, () =>
+			Test(SetSectionBadgeUnselectedBackground, () =>
 			{
-				Assert.AreEqual(BadgeColorDefault, RunningApp.Query(x => x.SectionBadge("Section 12").SectionBadgeColor()).Single());
+				Assert.AreEqual(BackgroundDefault, RunningApp.Query(x => x.SectionBadge("Section 12").SectionBadgeBackground()).Single());
 			}, () =>
 			{
-				Assert.AreEqual(UnselectedColorSet, RunningApp.Query(x => x.SectionBadge("Section 12").SectionBadgeColor()).Single());
+				Assert.AreEqual(UnselectedBackgroundSet, RunningApp.Query(x => x.SectionBadge("Section 12").SectionBadgeBackground()).Single());
 			});
 		}
 
 		[Test]
-		public void SetItemBadgeUnselectedColorTest()
+		[Ignore("Reactivate after VisualStateManager support for badges")]
+		public void SetItemBadgeUnselectedBackgroundTest()
 		{
-			Test(SetItemBadgeUnselectedColor, () =>
+			Test(SetItemBadgeUnselectedBackground, () =>
 			{
 				RunningApp.Tap(ToggleFlyout);
 				RunningApp.WaitForElement("Item 1");
-				Assert.AreEqual(BadgeColorDefault, RunningApp.Query(x => x.ItemBadge("Item 2").ItemBadgeColor()).Single());
+				Assert.AreEqual(BackgroundDefault, RunningApp.Query(x => x.ItemBadge("Item 2").ItemBadgeBackground()).Single());
 				RunningApp.Tap("Item 1");
 			}, () =>
 			{
 				RunningApp.Tap(ToggleFlyout);
 				RunningApp.WaitForElement("Item 1");
-				Assert.AreEqual(UnselectedColorSet, RunningApp.Query(x => x.ItemBadge("Item 2").ItemBadgeColor()).Single());
+				Assert.AreEqual(UnselectedBackgroundSet, RunningApp.Query(x => x.ItemBadge("Item 2").ItemBadgeBackground()).Single());
 			});
 		}
 #endif
@@ -569,17 +572,17 @@ namespace Xamarin.Forms.Controls.Issues
 			return query.Raw("descendant UILabel").Invoke("color").Invoke("styleString").Value<string>();
 		}
 
-		public static AppTypedSelector<string> ContentBadgeColor(this AppQuery query)
+		public static AppTypedSelector<string> ContentBadgeBackground(this AppQuery query)
 		{
 			return query.Invoke("backgroundColor").Invoke("styleString").Value<string>();
 		}
 
-		public static AppTypedSelector<string> SectionBadgeColor(this AppQuery query)
+		public static AppTypedSelector<string> SectionBadgeBackground(this AppQuery query)
 		{
 			return query.Raw("descendant view:'_UIBadgeView'").Invoke("backgroundColor").Invoke("styleString").Value<string>();
 		}
 
-		public static AppTypedSelector<string> ItemBadgeColor(this AppQuery query)
+		public static AppTypedSelector<string> ItemBadgeBackground(this AppQuery query)
 		{
 			return query.Invoke("backgroundColor").Invoke("styleString").Value<string>();
 		}
@@ -606,7 +609,7 @@ namespace Xamarin.Forms.Controls.Issues
 		// AKA Flyout Badge
 		public static AppQuery ItemBadge(this AppQuery query, string item = "Item 1")
 		{
-			return query.Raw($"* marked:'{item}' parent * index:1 descendant FrameRenderer");
+			return query.Raw($"* marked:'{item}' FrameRenderer");
 		}
 
 		public static AppQuery ContentBadgeText(this AppQuery query, string text)
@@ -618,7 +621,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public static AppQuery ItemBadgeText(this AppQuery query, string text)
 		{
-			return query.Class("FormsTextView").Text(text);
+			return query.Class("LabelRenderer").Text(text);
 		}
 
 		public static AppTypedSelector<int> ContentBadgeTextColor(this AppQuery query)
@@ -630,17 +633,17 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public static AppTypedSelector<int> ItemBadgeTextColor(this AppQuery query)
 		{
-			return query.Class("FormsTextView").Invoke("getCurrentTextColor").Value<int>();
+			return query.Class("LabelRenderer").Invoke("getCurrentTextColor").Value<int>();
 		}
 
-		public static AppTypedSelector<int> ContentBadgeColor(this AppQuery query)
+		public static AppTypedSelector<int> ContentBadgeBackground(this AppQuery query)
 		{
 			return query.Class("BadgeHelper_BadgeFrameLayout").Invoke("getBackground").Invoke("getPaint").Invoke("getColor").Value<int>();
 		}
 
-		public static AppTypedSelector<int> SectionBadgeColor(this AppQuery query) => query.ContentBadgeColor();
+		public static AppTypedSelector<int> SectionBadgeBackground(this AppQuery query) => query.ContentBadgeBackground();
 
-		public static AppTypedSelector<int> ItemBadgeColor(this AppQuery query)
+		public static AppTypedSelector<int> ItemBadgeBackground(this AppQuery query)
 		{
 			return query.Invoke("getBackground").Invoke("getColor").Invoke("getDefaultColor").Value<int>();
 		}
@@ -661,18 +664,6 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-		string _moreText;
-
-		public string MoreText
-		{
-			get => _moreText;
-			set
-			{
-				_moreText = value;
-				OnPropertyChanged();
-			}
-		}
-
 		Color _textColor;
 
 		public Color TextColor
@@ -685,38 +676,14 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-		Color _unselectedTextColor;
+		Brush _brush;
 
-		public Color UnselectedTextColor
+		public Brush Background
 		{
-			get => _unselectedTextColor;
+			get => _brush;
 			set
 			{
-				_unselectedTextColor = value;
-				OnPropertyChanged();
-			}
-		}
-
-		Color _color;
-
-		public Color Color
-		{
-			get => _color;
-			set
-			{
-				_color = value;
-				OnPropertyChanged();
-			}
-		}
-
-		Color _unselectedColor;
-
-		public Color UnselectedColor
-		{
-			get => _unselectedColor;
-			set
-			{
-				_unselectedColor = value;
+				_brush = value;
 				OnPropertyChanged();
 			}
 		}
