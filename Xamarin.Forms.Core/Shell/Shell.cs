@@ -548,14 +548,19 @@ namespace Xamarin.Forms
 			var currentShellSection = CurrentItem?.CurrentItem;
 			var nextActiveSection = shellSection ?? shellItem?.CurrentItem;
 
+
 			ShellContent shellContent = navigationRequest.Request.Content;
 			bool modalStackPreBuilt = false;
 
 			// If we're replacing the whole stack and there are global routes then build the navigation stack before setting the shell section visible
-			if (navigationRequest.Request.GlobalRoutes.Count > 0 && nextActiveSection != null && navigationRequest.StackRequest == NavigationRequest.WhatToDoWithTheStack.ReplaceIt)
+			if (navigationRequest.Request.GlobalRoutes.Count > 0 && 
+				nextActiveSection != null &&
+				navigationRequest.StackRequest == NavigationRequest.WhatToDoWithTheStack.ReplaceIt)
 			{
 				modalStackPreBuilt = true;
-				await nextActiveSection.GoToAsync(navigationRequest, queryData, false);
+
+				bool? isAnimated = (nextActiveSection != currentShellSection) ? false : animate;
+				await nextActiveSection.GoToAsync(navigationRequest, queryData, isAnimated);
 			}
 
 			if (shellItem != null)
