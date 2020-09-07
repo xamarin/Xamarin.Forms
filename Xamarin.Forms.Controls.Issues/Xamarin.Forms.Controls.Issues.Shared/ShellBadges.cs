@@ -412,6 +412,11 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
+#endif
+#if UITEST && (__IOS__)
+		[Ignore("Find a way to get the background color of the sublayer inserted by brush extensions")]
+#endif
+#if UITEST && (__IOS__ || __ANDROID__)
 		public void SetContentBadgeBackgroundTest()
 		{
 			Test(SetContentBadgeBackground, () =>
@@ -437,6 +442,11 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
+#endif
+#if UITEST && (__IOS__)
+		[Ignore("Find a way to get the background color of the sublayer inserted by brush extensions")]
+#endif
+#if UITEST && (__IOS__ || __ANDROID__)
 		public void SetItemBadgeBackgroundTest()
 		{
 			Test(SetItemBadgeBackground, () =>
@@ -527,7 +537,7 @@ namespace Xamarin.Forms.Controls.Issues
 		// AKA Top Badge
 		public static AppQuery ContentBadge(this AppQuery query, string content = "Content 111")
 		{
-			return query.Raw($"view marked:'{content}' sibling UILabel");
+			return query.Raw($"view marked:'{content}' parent view index:0");
 		}
 
 		// AKA Bottom Badge
@@ -539,12 +549,12 @@ namespace Xamarin.Forms.Controls.Issues
 		// AKA Flyout Badge
 		public static AppQuery ItemBadge(this AppQuery query, string item = "Item 1")
 		{
-			return query.Raw($"view marked:'{item}' parent view index:0 sibling view:'Xamarin_Forms_ControlGallery_iOS_PerformanceTrackingFrame'");
+			return query.Raw($"view marked:'{item}'");
 		}
 
 		public static AppQuery ContentBadgeText(this AppQuery query, string text)
 		{
-			return query.Text(text);
+			return query.Raw("descendant UILabel index:1").Text(text);
 		}
 
 		public static AppQuery SectionBadgeText(this AppQuery query, string text)
@@ -554,12 +564,12 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public static AppQuery ItemBadgeText(this AppQuery query, string text)
 		{
-			return query.Raw("descendant UILabel").Text(text);
+			return query.Raw("descendant UILabel index:1").Text(text);
 		}
 
 		public static AppTypedSelector<string> ContentBadgeTextColor(this AppQuery query)
 		{
-			return query.Invoke("color").Invoke("styleString").Value<string>();
+			return query.Raw("descendant UILabel index:1").Invoke("color").Invoke("styleString").Value<string>();
 		}
 
 		public static AppTypedSelector<string> SectionBadgeTextColor(this AppQuery query)
@@ -569,12 +579,13 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public static AppTypedSelector<string> ItemBadgeTextColor(this AppQuery query)
 		{
-			return query.Raw("descendant UILabel").Invoke("color").Invoke("styleString").Value<string>();
+			return query.Raw("descendant UILabel index:1").Invoke("color").Invoke("styleString").Value<string>();
 		}
 
 		public static AppTypedSelector<string> ContentBadgeBackground(this AppQuery query)
 		{
-			return query.Invoke("backgroundColor").Invoke("styleString").Value<string>();
+			// TODO: Find a way to get the background color of the sublayer inserted by brush extensions
+			throw new NotImplementedException();
 		}
 
 		public static AppTypedSelector<string> SectionBadgeBackground(this AppQuery query)
@@ -584,7 +595,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public static AppTypedSelector<string> ItemBadgeBackground(this AppQuery query)
 		{
-			return query.Invoke("backgroundColor").Invoke("styleString").Value<string>();
+			// TODO: Find a way to get the background color of the sublayer inserted by brush extensions
+			throw new NotImplementedException();
 		}
 	}
 
