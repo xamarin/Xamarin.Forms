@@ -168,7 +168,8 @@ namespace Xamarin.Forms.Platform.Android
 
                             List<Point> points = new List<Point>();
 
-                            GeometryHelper.FlattenArc(points,
+                            GeometryHelper.FlattenArc(
+                                points,
                                 lastPoint,
                                 arcSegment.Point,
                                 arcSegment.Size.Width,
