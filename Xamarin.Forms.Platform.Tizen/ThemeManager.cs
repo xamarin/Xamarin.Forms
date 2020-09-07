@@ -291,6 +291,16 @@ namespace Xamarin.Forms.Platform.Tizen
 			popup.SetPartColor(Device.Idiom == TargetIdiom.TV ? ThemeConstants.Popup.ColorClass.TV.Title : ThemeConstants.Popup.ColorClass.Title, color);
 		}
 
+		public static void SetTitleBackgroundColor(this Popup popup, EColor color)
+		{
+			popup.SetPartColor(ThemeConstants.Popup.ColorClass.TitleBackground, color);
+		}
+
+		public static void SetContentBackgroundColor(this Popup popup, EColor color)
+		{
+			popup.SetPartColor(ThemeConstants.Popup.ColorClass.ContentBackground, color);
+		}
+
 		public static bool SetTitleTextPart(this Popup popup, string title)
 		{
 			return popup.SetPartText(ThemeConstants.Popup.Parts.Title, title);
@@ -805,6 +815,33 @@ namespace Xamarin.Forms.Platform.Tizen
 		public static bool SetTitleTextPart(this CircleSpinner spinner, string title)
 		{
 			return spinner.SetPartText(ThemeConstants.Common.Parts.Text, title);
+		}
+		#endregion
+
+		#region BaseScale
+		public static double GetBaseScale(string deviceType)
+		{
+			if (deviceType.StartsWith("Mobile"))
+			{
+				return ThemeConstants.Common.Resource.Mobile.BaseScale;
+			}
+			else if (deviceType.StartsWith("TV"))
+			{
+				return ThemeConstants.Common.Resource.TV.BaseScale;
+			}
+			else if (deviceType.StartsWith("Wearable"))
+			{
+				return ThemeConstants.Common.Resource.Watch.BaseScale;
+			}
+			else if (deviceType.StartsWith("Refrigerator"))
+			{
+				return ThemeConstants.Common.Resource.Refrigerator.BaseScale;
+			}
+			else if (deviceType.StartsWith("TizenIOT"))
+			{
+				return ThemeConstants.Common.Resource.Iot.BaseScale;
+			}
+			return 1.0;
 		}
 		#endregion
 
