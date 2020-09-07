@@ -11,12 +11,12 @@ namespace Xamarin.Forms.Shapes
             BindableProperty.Create(nameof(Children), typeof(GeometryCollection), typeof(GeometryGroup), null,
                 propertyChanged: OnChildrenChanged);
 
-		static void OnChildrenChanged(BindableObject bindable, object oldValue, object newValue)
-		{
+        static void OnChildrenChanged(BindableObject bindable, object oldValue, object newValue)
+        {
             (bindable as GeometryGroup)?.UpdateChildren(oldValue as GeometryCollection, newValue as GeometryCollection);
         }
 
-		public static readonly BindableProperty FillRuleProperty =
+        public static readonly BindableProperty FillRuleProperty =
             BindableProperty.Create(nameof(FillRule), typeof(FillRule), typeof(GeometryGroup), FillRule.EvenOdd);
 
         public GeometryGroup()
@@ -61,8 +61,8 @@ namespace Xamarin.Forms.Shapes
             }
         }
 
-		void OnChildrenCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
+        void OnChildrenCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
             if (e.OldItems != null)
             {
                 foreach (var oldItem in e.OldItems)
@@ -94,7 +94,7 @@ namespace Xamarin.Forms.Shapes
         }
 
         void Invalidate()
-		{
+        {
             InvalidateGeometryRequested?.Invoke(this, EventArgs.Empty);
         }
     }

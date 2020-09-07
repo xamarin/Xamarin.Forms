@@ -3,15 +3,15 @@
     public class LineGeometry : Geometry
     {
         public LineGeometry()
-		{
+        {
 
-		}
+        }
 
         public LineGeometry(Point startPoint, Point endPoint)
-		{
+        {
             StartPoint = startPoint;
             EndPoint = endPoint;
-		}
+        }
 
         public static readonly BindableProperty StartPointProperty =
             BindableProperty.Create(nameof(StartPoint), typeof(Point), typeof(LineGeometry), new Point());
