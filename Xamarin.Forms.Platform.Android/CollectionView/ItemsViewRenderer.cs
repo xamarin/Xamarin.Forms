@@ -336,6 +336,8 @@ namespace Xamarin.Forms.Platform.Android
 			ItemsView.ScrollToRequested += ScrollToRequested;
 
 			AddOrUpdateScrollListener();
+
+			// Update the snap behavior after add the scroll listener
 			UpdateSnapBehavior();
 		}
 
