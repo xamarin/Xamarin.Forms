@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using NUnit.Framework;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Markup;
 
