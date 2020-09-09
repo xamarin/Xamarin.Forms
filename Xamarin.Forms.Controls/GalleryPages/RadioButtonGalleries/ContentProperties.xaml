@@ -5,6 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              x:Class="Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries.ContentProperties">
+
     <ContentPage.Content>
         <StackLayout>
             <Label Text="Propagate standard Text properties to Content where applicable:"/>
@@ -39,6 +40,48 @@
                     <Button Text="It's a button inside a button."></Button>
                 </RadioButton.Content>
                 
+            </RadioButton>
+
+            <Label FontSize="Small" Text="A Content View which already has these properties set/bound should ignore the RadioButton properties."/>
+
+            <RadioButton GroupName="test" 
+                         TextColor="Green"
+                         TextTransform="Uppercase"
+                         FontAttributes="Bold"
+                         FontSize="12"
+                         FontFamily="Arial">
+
+                <RadioButton.Content>
+
+                    <Label x:Name="MainLabel" Text="Properties already set."
+                           TextColor="Purple"
+                           TextTransform="Lowercase"
+                           FontSize="Micro"
+                           FontFamily="Baskerville"
+                           FontAttributes="Italic" />
+
+                    
+                </RadioButton.Content>
+
+            </RadioButton>
+
+            <RadioButton GroupName="test" 
+                         TextColor="Green"
+                         TextTransform="Uppercase"
+                         FontAttributes="Bold"
+                         FontSize="12"
+                         FontFamily="Arial">
+
+                <RadioButton.Content>
+                    <Label Text="Properties already bound"
+                        BindingContext="{x:Reference MainLabel}"
+                        TextColor="{Binding TextColor}"
+                        TextTransform="{Binding TextTransform}"
+                        FontSize="{Binding FontSize}"
+                        FontFamily="{Binding FontFamily}"
+                        FontAttributes="{Binding FontAttributes}" />
+                </RadioButton.Content>
+
             </RadioButton>
         </StackLayout>
     </ContentPage.Content>

@@ -340,7 +340,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			IVisualElementRenderer renderer = null;
 
-			if (element is TemplatedView tv && tv.ControlTemplate != null)
+			if (element is TemplatedView tv && tv.ResolveControlTemplate() != null)
 			{
 				renderer = new DefaultRenderer(context);
 			}

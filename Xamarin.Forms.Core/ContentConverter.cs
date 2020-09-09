@@ -70,6 +70,12 @@ namespace Xamarin.Forms
 
 		static void BindProperty(BindableObject content, BindableProperty property, Type type) 
 		{
+			if (content.IsSet(property) || content.GetIsBound(property))
+			{
+				// Don't override the property if user has already set it
+				return;
+			}
+
 			content.SetBinding(property,
 					new Binding(property.PropertyName, 
 					source: new RelativeBindingSource(RelativeBindingSourceMode.FindAncestor, type)));

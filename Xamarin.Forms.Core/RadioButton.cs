@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Shapes;
 
@@ -6,7 +7,10 @@ namespace Xamarin.Forms
 {
 	public class RadioButton : TemplatedView, IElementConfiguration<RadioButton>, ITextElement, IFontElement, IBorderElement
 	{
-		public const string IsCheckedVisualState = "IsChecked";
+		public const string CheckedVisualState = "Checked";
+		public const string UncheckedVisualState = "Unchecked";
+
+		public const string TemplateRootName = "Root";
 		public const string CheckedIndicator = "CheckedIndicator";
 		public const string UncheckedButton = "Button";
 
@@ -15,8 +19,8 @@ namespace Xamarin.Forms
 
 		// Template Parts
 		TapGestureRecognizer _tapGestureRecognizer;
-		Shape _normalEllipse;
-		Shape _checkMark;
+		View _templateRoot;
+
 		static readonly Brush RadioButtonCheckMarkThemeColor = ResolveThemeColor("RadioButtonCheckMarkThemeColor");
 		static readonly Brush RadioButtonThemeColor = ResolveThemeColor("RadioButtonThemeColor");
 		static ControlTemplate s_defaultTemplate;
@@ -219,10 +223,9 @@ namespace Xamarin.Forms
 
 		protected internal override void ChangeVisualState()
 		{
-			if (IsEnabled && IsChecked)
-				VisualStateManager.GoToState(this, IsCheckedVisualState);
-			else
-				base.ChangeVisualState();
+			ApplyIsCheckedState();
+
+			base.ChangeVisualState();
 		}
 
 		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
@@ -235,27 +238,34 @@ namespace Xamarin.Forms
 			return base.OnMeasure(widthConstraint, heightConstraint);
 		}
 
-		protected override void OnParentSet()
+		public override ControlTemplate ResolveControlTemplate()
 		{
-			base.OnParentSet();
+			var template = base.ResolveControlTemplate();
 
-			if (ControlTemplate == null)
+			if (template == null)
 			{
 				if (!RendererAvailable)
-				{ 
+				{
 					ControlTemplate = DefaultTemplate;
 				}
 			}
 
-			UpdateIsEnabled();
+			return ControlTemplate;
 		}
 
 		protected override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
 
-			_normalEllipse = GetTemplateChild(UncheckedButton) as Shape;
-			_checkMark = GetTemplateChild(CheckedIndicator) as Shape;
+			_templateRoot = (this as IControlTemplated)?.TemplateRoot as View;
+
+			ApplyIsCheckedState();
+			UpdateIsEnabled();
+		}
+
+		internal override void OnControlTemplateChanged(ControlTemplate oldValue, ControlTemplate newValue)
+		{
+			base.OnControlTemplateChanged(oldValue, newValue);
 		}
 
 		bool UsingRenderer => ControlTemplate == null;
@@ -312,6 +322,26 @@ namespace Xamarin.Forms
 			return Brush.Black;
 		}
 
+		void ApplyIsCheckedState()
+		{
+			if (IsChecked)
+			{
+				VisualStateManager.GoToState(this, CheckedVisualState);
+				if (_templateRoot != null)
+				{
+					VisualStateManager.GoToState(_templateRoot, CheckedVisualState);
+				}
+			}
+			else
+			{
+				VisualStateManager.GoToState(this, UncheckedVisualState);
+				if (_templateRoot != null)
+				{
+					VisualStateManager.GoToState(_templateRoot, UncheckedVisualState);
+				}
+			}
+		}
+
 		void SelectRadioButton(object sender, EventArgs e)
 		{
 			if (IsEnabled)
@@ -320,37 +350,11 @@ namespace Xamarin.Forms
 			}
 		}
 
-		void UpdateDisplay()
-		{
-			if (UsingRenderer)
-			{
-				return;
-			}
-
-			if (IsChecked)
-			{
-				if (_normalEllipse != null)
-					_normalEllipse.Stroke = RadioButtonCheckMarkThemeColor;
-
-				if (_checkMark != null)
-					_checkMark.Opacity = 1;
-			}
-			else
-			{
-				if (_normalEllipse != null)
-					_normalEllipse.Stroke = RadioButtonThemeColor;
-
-				if (_checkMark != null)
-					_checkMark.Opacity = 0;
-			}
-		}
-
 		void OnIsCheckedPropertyChanged(bool isChecked)
 		{
 			if (isChecked)
 				RadioButtonGroup.UpdateRadioButtonGroup(this);
 
-			UpdateDisplay();
 			ChangeVisualState();
 			CheckedChanged?.Invoke(this, new CheckedChangedEventArgs(isChecked));
 		}
@@ -432,8 +436,11 @@ namespace Xamarin.Forms
 			{
 				RowSpacing = 0,
 				ColumnDefinitions = new ColumnDefinitionCollection {
-					new ColumnDefinition { Width = GridLength.Star },
-					new ColumnDefinition { Width = GridLength.Auto }
+					new ColumnDefinition { Width = GridLength.Auto },
+					new ColumnDefinition { Width = GridLength.Star }
+				},
+				RowDefinitions = new RowDefinitionCollection {
+					new RowDefinition { Height = GridLength.Auto }
 				}
 			};
 
@@ -468,9 +475,6 @@ namespace Xamarin.Forms
 				VerticalOptions = LayoutOptions.Center
 			};
 
-			contentPresenter.SetBinding(ContentPresenter.ContentProperty,
-				new Binding(ContentPresenter.ContentProperty.PropertyName, source: RelativeBindingSource.TemplatedParent, 
-				converter: new ContentConverter()));
 			contentPresenter.SetBinding(MarginProperty, new Binding("Padding", source: RelativeBindingSource.TemplatedParent));
 			contentPresenter.SetBinding(BackgroundColorProperty, new Binding(BackgroundColorProperty.PropertyName, 
 				source: RelativeBindingSource.TemplatedParent));
@@ -483,9 +487,34 @@ namespace Xamarin.Forms
 
 			INameScope nameScope = new NameScope();
 			NameScope.SetNameScope(frame, nameScope);
+			nameScope.RegisterName(TemplateRootName, frame);
 			nameScope.RegisterName(UncheckedButton, normalEllipse);
 			nameScope.RegisterName(CheckedIndicator, checkMark);
 			nameScope.RegisterName("ContentPresenter", contentPresenter);
+
+			VisualStateGroupList visualStateGroups = new VisualStateGroupList();
+
+			var common = new VisualStateGroup() { Name = "Common" };
+			common.States.Add(new VisualState() { Name = VisualStateManager.CommonStates.Normal });
+			common.States.Add(new VisualState() { Name = VisualStateManager.CommonStates.Disabled });
+
+			visualStateGroups.Add(common);
+
+			var checkedStates = new VisualStateGroup() { Name = "CheckedStates" };
+
+			VisualState checkedVisualState = new VisualState() { Name = CheckedVisualState };
+			checkedVisualState.Setters.Add(new Setter() { Property = OpacityProperty, TargetName = CheckedIndicator, Value = 1 });
+			checkedVisualState.Setters.Add(new Setter() { Property = Shape.StrokeProperty, TargetName = UncheckedButton, Value = RadioButtonCheckMarkThemeColor });
+			checkedStates.States.Add(checkedVisualState);
+
+			VisualState uncheckedVisualState = new VisualState() { Name = UncheckedVisualState };
+			uncheckedVisualState.Setters.Add(new Setter() { Property = OpacityProperty, TargetName = CheckedIndicator, Value = 0 });
+			uncheckedVisualState.Setters.Add(new Setter() { Property = Shape.StrokeProperty, TargetName = UncheckedButton, Value = RadioButtonThemeColor });
+			checkedStates.States.Add(uncheckedVisualState);
+
+			visualStateGroups.Add(checkedStates);
+
+			VisualStateManager.SetVisualStateGroups(frame, visualStateGroups);
 
 			return frame;
 		}
