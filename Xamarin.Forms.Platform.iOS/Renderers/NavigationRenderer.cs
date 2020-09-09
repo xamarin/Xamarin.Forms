@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CoreGraphics;
+using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -19,7 +20,6 @@ namespace Xamarin.Forms.Platform.iOS
 	public class NavigationRenderer : UINavigationController, IVisualElementRenderer, IEffectControlProvider
 	{
 		internal const string UpdateToolbarButtons = "Xamarin.UpdateToolbarButtons";
-		bool _appeared;
 		bool _ignorePopCall;
 		bool _loaded;
 		MasterDetailPage _parentMasterDetailPage;
@@ -32,8 +32,9 @@ namespace Xamarin.Forms.Platform.iOS
 		UIImage _defaultNavBarShadowImage;
 		UIImage _defaultNavBarBackImage;
 		bool _disposed;
+		PageLifecycleManager _pageLifecycleManager;
 
-		[Preserve(Conditional = true)]
+		[Internals.Preserve(Conditional = true)]
 		public NavigationRenderer() : base(typeof(FormsNavigationBar), null)
 		{
 			MessagingCenter.Subscribe<IVisualElementRenderer>(this, UpdateToolbarButtons, sender =>
@@ -71,8 +72,9 @@ namespace Xamarin.Forms.Platform.iOS
 			Element = element;
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 
-			if (element != null)
-				element.SendViewInitialized(NativeView);
+			_pageLifecycleManager = new PageLifecycleManager(Element as IPageController);
+
+			element?.SendViewInitialized(NativeView);
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 		}
@@ -132,11 +134,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidAppear(bool animated)
 		{
-			if (!_appeared)
-			{
-				_appeared = true;
-				PageController?.SendAppearing();
-			}
+			_pageLifecycleManager?.HandlePageAppearing();
 
 			base.ViewDidAppear(animated);
 
@@ -148,20 +146,13 @@ namespace Xamarin.Forms.Platform.iOS
 			base.ViewWillAppear(animated);
 
 			SetStatusBarStyle();
-
-			if (Forms.IsiOS13OrNewer)
-				UpdateBarBackgroundColor();
 		}
 
 		public override void ViewDidDisappear(bool animated)
 		{
 			base.ViewDidDisappear(animated);
 
-			if (!_appeared || Element == null)
-				return;
-
-			_appeared = false;
-			PageController.SendDisappearing();
+			_pageLifecycleManager?.HandlePageDisappearing();
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -230,7 +221,7 @@ namespace Xamarin.Forms.Platform.iOS
 			navPage.InsertPageBeforeRequested += OnInsertPageBeforeRequested;
 
 			UpdateTint();
-			UpdateBarBackgroundColor();
+			UpdateBarBackground();
 			UpdateBarTextColor();
 			UpdateHideNavigationBarSeparator();
 			UpdateUseLargeTitles();
@@ -284,16 +275,12 @@ namespace Xamarin.Forms.Platform.iOS
 				navPage.PopToRootRequested -= OnPopToRootRequested;
 				navPage.RemovePageRequested -= OnRemovedPageRequested;
 				navPage.InsertPageBeforeRequested -= OnInsertPageBeforeRequested;
+
+				_pageLifecycleManager?.Dispose();
+				_pageLifecycleManager = null;
 			}
 
 			base.Dispose(disposing);
-
-			if (disposing && _appeared)
-			{
-				PageController.SendDisappearing();
-
-				_appeared = false;
-			}
 		}
 
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)
@@ -365,13 +352,10 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
-#if __XCODE11__
 			// Make sure the control adheres to changes in UI theme
 			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
 				UpdateBackgroundColor();
-#endif
 		}
-
 
 		ParentingViewController CreateViewControllerForPage(Page page)
 		{
@@ -449,9 +433,10 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateTint();
 			}
-			else if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
+			else if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName ||
+				e.PropertyName == NavigationPage.BarBackgroundProperty.PropertyName)
 			{
-				UpdateBarBackgroundColor();
+				UpdateBarBackground();
 			}
 			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName
 				  || e.PropertyName == StatusBarTextColorModeProperty.PropertyName)
@@ -507,7 +492,6 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_defaultNavBarShadowImage == null)
 				_defaultNavBarShadowImage = NavigationBar.ShadowImage;
 
-#if __XCODE11__
 			if (Forms.IsiOS13OrNewer)
 			{
 				if (shouldHide)
@@ -524,7 +508,6 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 			else
-#endif
 			{
 				if (shouldHide)
 					NavigationBar.ShadowImage = new UIImage();
@@ -667,11 +650,10 @@ namespace Xamarin.Forms.Platform.iOS
 			View.BackgroundColor = color.ToUIColor();
 		}
 
-		void UpdateBarBackgroundColor()
+		void UpdateBarBackground()
 		{
 			var barBackgroundColor = NavPage.BarBackgroundColor;
 
-#if __XCODE11__
 			if (Forms.IsiOS13OrNewer)
 			{
 				var navigationBarAppearance = NavigationBar.StandardAppearance;
@@ -690,17 +672,24 @@ namespace Xamarin.Forms.Platform.iOS
 					navigationBarAppearance.BackgroundColor = barBackgroundColor.ToUIColor();
 				}
 
+				var barBackgroundBrush = NavPage.BarBackground;
+				var backgroundImage = NavigationBar.GetBackgroundImage(barBackgroundBrush);
+				navigationBarAppearance.BackgroundImage = backgroundImage;
+
 				NavigationBar.CompactAppearance = navigationBarAppearance;
 				NavigationBar.StandardAppearance = navigationBarAppearance;
 				NavigationBar.ScrollEdgeAppearance = navigationBarAppearance;
 			}
 			else
-#endif
 			{
 				// Set navigation bar background color
 				NavigationBar.BarTintColor = barBackgroundColor == Color.Default
-				? UINavigationBar.Appearance.BarTintColor
-				: barBackgroundColor.ToUIColor();
+					? UINavigationBar.Appearance.BarTintColor
+					: barBackgroundColor.ToUIColor();
+
+				var barBackgroundBrush = NavPage.BarBackground;
+				var backgroundImage = NavigationBar.GetBackgroundImage(barBackgroundBrush);
+				NavigationBar.SetBackgroundImage(backgroundImage, UIBarMetrics.Default);
 			}
 		}
 
@@ -729,7 +718,6 @@ namespace Xamarin.Forms.Platform.iOS
 				};
 			}
 
-#if __XCODE11__
 			if (Forms.IsiOS13OrNewer)
 			{
 				NavigationBar.CompactAppearance.TitleTextAttributes = titleTextAttributes;
@@ -742,7 +730,6 @@ namespace Xamarin.Forms.Platform.iOS
 				NavigationBar.ScrollEdgeAppearance.LargeTitleTextAttributes = largeTitleTextAttributes;
 			}
 			else
-#endif
 			{
 				NavigationBar.TitleTextAttributes = titleTextAttributes;
 
@@ -751,7 +738,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			// set Tint color (i. e. Back Button arrow and Text)
-			var iconColor = NavigationPage.GetIconColor(Current);
+			var iconColor = Current != null ? NavigationPage.GetIconColor(Current) : Color.Default;
 			if (iconColor.IsDefault)
 				iconColor = barTextColor;
 
@@ -767,14 +754,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (statusBarColorMode == StatusBarTextColorMode.DoNotAdjust || barTextColor.Luminosity <= 0.5)
 			{
-#if __XCODE11__
 				// Use dark text color for status bar
 				if (Forms.IsiOS13OrNewer)
 				{
 					UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.DarkContent;
 				}
 				else
-#endif
 				{
 					UIApplication.SharedApplication.StatusBarStyle = UIStatusBarStyle.Default;
 				}
@@ -1179,8 +1164,6 @@ namespace Xamarin.Forms.Platform.iOS
 				if (!_navigation.TryGetTarget(out NavigationRenderer navigationRenderer))
 					return;
 
-#if __XCODE11__
-
 				// We will use UINavigationBar.Appareance to infer settings that
 				// were already set to navigation bar in older versions of
 				// iOS.
@@ -1220,7 +1203,6 @@ namespace Xamarin.Forms.Platform.iOS
 				navBar.CompactAppearance.SetBackIndicatorImage(backIndicatorImage, backIndicatorTransitionMaskImage);
 				navBar.StandardAppearance.SetBackIndicatorImage(backIndicatorImage, backIndicatorTransitionMaskImage);
 				navBar.ScrollEdgeAppearance.SetBackIndicatorImage(backIndicatorImage, backIndicatorTransitionMaskImage);
-#endif
 			}
 
 			UIImage GetEmptyBackIndicatorImage()
@@ -1230,11 +1212,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 				UIGraphics.BeginImageContext(size);
 				var context = UIGraphics.GetCurrentContext();
-				context.SetFillColor(1, 1, 1, 0);
-				context.FillRect(rect);
+				context?.SetFillColor(1, 1, 1, 0);
+				context?.FillRect(rect);
 
 				var empty = UIGraphics.GetImageFromCurrentImageContext();
-				context.Dispose();
+				context?.Dispose();
 
 				return empty;
 			}

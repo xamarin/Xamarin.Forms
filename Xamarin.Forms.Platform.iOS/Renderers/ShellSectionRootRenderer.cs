@@ -7,7 +7,7 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class ShellSectionRootRenderer : UIViewController, IShellSectionRootRenderer
+	public class ShellSectionRootRenderer : UIViewController, IShellSectionRootRenderer, IDisconnectable
 	{
 		#region IShellSectionRootRenderer
 
@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Platform.iOS
 		ShellContent _currentContent;
 		int _currentIndex = 0;
 		IShellSectionRootHeader _header;
-		bool _isAnimating;
+		IVisualElementRenderer _isAnimatingOut;
 		Dictionary<ShellContent, IVisualElementRenderer> _renderers = new Dictionary<ShellContent, IVisualElementRenderer>();
 		IShellPageRendererTracker _tracker;
 		bool _didLayoutSubviews;
@@ -117,17 +117,39 @@ namespace Xamarin.Forms.Platform.iOS
 			LayoutHeader();
 		}
 
+
+
+		void IDisconnectable.Disconnect()
+		{
+			if (ShellSection != null)
+				ShellSection.PropertyChanged -= OnShellSectionPropertyChanged;
+
+			if (ShellSectionController != null)
+				ShellSectionController.ItemsCollectionChanged -= OnShellSectionItemsChanged;
+
+			if (_shellContext?.Shell != null)
+				_shellContext.Shell.PropertyChanged -= HandleShellPropertyChanged;
+
+			if (_renderers != null)
+			{
+				foreach (var renderer in _renderers)
+				{
+					var oldRenderer = renderer.Value;
+					var element = oldRenderer.Element;
+					element?.ClearValue(Platform.RendererProperty);
+					(renderer.Value as IDisconnectable)?.Disconnect();
+				}
+			}
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (_isDisposed)
 				return;
 
-
 			if (disposing && ShellSection != null)
 			{
-				ShellSection.PropertyChanged -= OnShellSectionPropertyChanged;
-				ShellSectionController.ItemsCollectionChanged -= OnShellSectionItemsChanged;
-
+				(this as IDisconnectable).Disconnect();
 
 				this.RemoveFromParentViewController();
 
@@ -145,8 +167,8 @@ namespace Xamarin.Forms.Platform.iOS
 						oldRenderer.ViewController.RemoveFromParentViewController();
 
 					var element = oldRenderer.Element;
-					oldRenderer.Dispose();
 					element?.ClearValue(Platform.RendererProperty);
+					oldRenderer?.Dispose();
 				}
 
 				_renderers.Clear();
@@ -167,7 +189,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void LayoutRenderers()
 		{
-			if (_isAnimating)
+			if (_isAnimatingOut != null)
 				return;
 
 			var items = ShellSectionController.GetItems();
@@ -213,8 +235,8 @@ namespace Xamarin.Forms.Platform.iOS
 					contentItems = ShellSectionController.GetItems();
 				}
 
-				var renderer = Platform.CreateRenderer(page);
-				Platform.SetRenderer(page, renderer);
+				var renderer = SetPageRenderer(page, item);
+
 				AddChildViewController(renderer.ViewController);
 
 				if (item == currentItem)
@@ -223,8 +245,6 @@ namespace Xamarin.Forms.Platform.iOS
 					_currentContent = currentItem;
 					_currentIndex = i;
 				}
-
-				_renderers[item] = renderer;
 			}
 		}
 
@@ -236,6 +256,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void OnShellSectionPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (_isDisposed)
+				return;
+
 			if (e.PropertyName == ShellSection.CurrentItemProperty.PropertyName)
 			{
 				var newContent = ShellSection.CurrentItem;
@@ -279,7 +302,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				_containerArea.AddSubview(currentRenderer.NativeView);
 
-				_isAnimating = true;
+				_isAnimatingOut = oldRenderer;
 
 				currentRenderer.NativeView.Frame = new CGRect(-motionDirection * View.Bounds.Width, 0, View.Bounds.Width, View.Bounds.Height);
 
@@ -295,10 +318,13 @@ namespace Xamarin.Forms.Platform.iOS
 				},
 				() =>
 				{
+					if (_isDisposed)
+						return;
+
 					if(oldRenderer.NativeView != null && _renderers.ContainsKey(oldContent))
 						oldRenderer.NativeView.RemoveFromSuperview();
 
-					_isAnimating = false;
+					_isAnimatingOut = null;
 					_tracker.Page = ((IShellContentController)newContent).Page;
 
 					if (!ShellSectionController.GetItems().Contains(oldContent) && _renderers.ContainsKey(oldContent))
@@ -373,10 +399,14 @@ namespace Xamarin.Forms.Platform.iOS
 					if (_currentContent == oldItem)
 						continue;
 
+					var oldRenderer = _renderers[oldItem];
+
+					if (oldRenderer == _isAnimatingOut)
+						continue;
+
 					if (e.OldStartingIndex < _currentIndex)
 						_currentIndex--;
-
-					var oldRenderer = _renderers[oldItem];
+					
 					_renderers.Remove(oldItem);
 					oldRenderer.NativeView.RemoveFromSuperview();
 					oldRenderer.ViewController.RemoveFromParentViewController();
@@ -392,13 +422,24 @@ namespace Xamarin.Forms.Platform.iOS
 						continue;
 
 					var page = ((IShellContentController)newItem).GetOrCreateContent();
-					var renderer = Platform.CreateRenderer(page);
-					Platform.SetRenderer(page, renderer);
+					var renderer = SetPageRenderer(page, newItem);
 
 					AddChildViewController(renderer.ViewController);
-					_renderers[newItem] = renderer;
 				}
 			}
+		}
+
+		IVisualElementRenderer SetPageRenderer(Page page, ShellContent shellContent)
+		{
+			var oldRenderer = Platform.GetRenderer(page);
+			if(oldRenderer != null)
+				oldRenderer?.Dispose();
+
+			var renderer = Platform.CreateRenderer(page);
+			Platform.SetRenderer(page, renderer);
+			_renderers[shellContent] = renderer;
+
+			return renderer;
 		}
 
 		void LayoutHeader()

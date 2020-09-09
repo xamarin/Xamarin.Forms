@@ -1,27 +1,19 @@
 ﻿using Android.Content;
 using Android.Graphics.Drawables;
 using Android.OS;
-#if __ANDROID_29__
 using Google.Android.Material.BottomNavigation;
 using Google.Android.Material.BottomSheet;
-#else
-using Android.Support.Design.Widget;
-#endif
 using Android.Views;
 using Android.Widget;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
-using ColorStateList = Android.Content.Res.ColorStateList;
 using IMenu = Android.Views.IMenu;
 using LP = Android.Views.ViewGroup.LayoutParams;
 using Orientation = Android.Widget.Orientation;
-using Typeface = Android.Graphics.Typeface;
-using TypefaceStyle = Android.Graphics.TypefaceStyle;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -56,6 +48,7 @@ namespace Xamarin.Forms.Platform.Android
 		BottomNavigationViewTracker _bottomNavigationTracker;
 		BottomSheetDialog _bottomSheetDialog;
 		bool _disposed;
+		public IShellItemController ShellItemController => ShellItem;
 
 		public ShellItemRenderer(IShellContext shellContext) : base(shellContext)
 		{
@@ -157,7 +150,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			return CreateMoreBottomSheet((int index, BottomSheetDialog dialog) =>
 			{
-				selectCallback(ShellItem.Items[index], dialog);
+				selectCallback(ShellItemController.GetItems()[index], dialog);
 			});
 		}
 
@@ -174,7 +167,7 @@ namespace Xamarin.Forms.Platform.Android
 			for (int i = _bottomView.MaxItemCount - 1; i < items.Count; i++)
 			{
 				var closure_i = i;
-				var shellContent = ShellItem.Items[i];
+				var shellContent = items[i];
 
 				using (var innerLayout = new LinearLayout(Context))
 				{
@@ -304,7 +297,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnMoreItemSelected(int shellSectionIndex, BottomSheetDialog dialog)
 		{
-			OnMoreItemSelected(ShellItem.Items[shellSectionIndex], dialog);
+			OnMoreItemSelected(ShellItemController.GetItems()[shellSectionIndex], dialog);
 		}
 
 		protected virtual void OnMoreItemSelected(ShellSection shellSection, BottomSheetDialog dialog)
@@ -319,10 +312,11 @@ namespace Xamarin.Forms.Platform.Android
 		List<(string title, ImageSource icon, bool tabEnabled)> CreateTabList(ShellItem shellItem)
 		{
 			var items = new List<(string title, ImageSource icon, bool tabEnabled)>();
+			var shellItems = ((IShellItemController)shellItem).GetItems();
 
-			for (int i = 0; i < shellItem.Items.Count; i++)
+			for (int i = 0; i < shellItems.Count; i++)
 			{
-				var item = shellItem.Items[i];
+				var item = shellItems[i];
 				items.Add((item.Title, item.Icon, item.IsEnabled));
 			}
 			return items;
@@ -418,14 +412,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (DisplayedPage == null)
 				return;
 
-			bool visible = Shell.GetTabBarIsVisible(DisplayedPage);
-			using (var menu = _bottomView.Menu)
-			{
-				if (menu.Size() == 1)
-					visible = false;
-			}
-
-			_bottomView.Visibility = visible ? ViewStates.Visible : ViewStates.Gone;
+			_bottomView.Visibility = ShellItemController.ShowTabs ? ViewStates.Visible : ViewStates.Gone;
 		}
 	}
 }

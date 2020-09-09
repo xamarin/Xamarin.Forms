@@ -4,13 +4,13 @@ steps:
 
   - task: xamops.azdevex.provisionator-task.provisionator@1
     displayName: 'Provision Xcode'
-    condition: and(ne(variables['REQUIRED_XCODE'], ''), eq(variables['buildForVS2017'], 'false'))
+    condition: ne(variables['REQUIRED_XCODE'], '')
     inputs:
       provisioning_script: 'build/provisioning/xcode.csx'
 
   - task: xamops.azdevex.provisionator-task.provisionator@1
     displayName: 'Provisionator'
-    condition: and(eq(variables['provisioning'], 'true'), eq(variables['buildForVS2017'], 'false'))
+    condition: eq(variables['provisioning'], 'true')
     inputs:
       provisioning_script: $(provisionator.osxPath)
       provisioning_extra_args: $(provisionator.extraArguments) --v
@@ -19,15 +19,15 @@ steps:
       echo "##vso[task.prependpath]/Library/Frameworks/Mono.framework/Versions/Current/Commands/"
       echo "##vso[task.prependpath]~/Library/Developer/Xamarin/android-sdk-macosx"
     displayName: 'Setup SDK Paths'
-    condition: and(ne(variables['osx2019VmPool'], 'Azure Pipelines'), eq(variables['buildForVS2017'], 'false'))
+    condition: ne(variables['osx2019VmPool'], 'Azure Pipelines')
 
   - task: Bash@3
     displayName: 'Cake Provision'
-    condition: or(eq(variables['provisioningCake'], 'true'), eq(variables['buildForVS2017'], 'true'))
+    condition: eq(variables['provisioningCake'], 'true')
     inputs:
       targetType: 'filePath'
       filePath: 'build.sh'
-      arguments: --target provision --TeamProject="$(System.TeamProject)" --buildForVS2017=$(buildForVS2017)
+      arguments: --target provision --TeamProject="$(System.TeamProject)"
 
   - task: UseDotNet@2
     displayName: 'Install .net core $(DOTNET_VERSION)'
@@ -64,13 +64,6 @@ steps:
       feedsToUse: config
       nugetConfigPath: 'DevopsNuget.config'
 
-  - task: MSBuild@1
-    displayName: 'Build solution Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj'
-    inputs:
-      solution: Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj
-      configuration: $(buildConfiguration)
-      msbuildArguments: /bl:$(Build.ArtifactStagingDirectory)/tasks.binlog
-
   - task: InstallAppleCertificate@2
     displayName: 'Install an Apple certificate'
     inputs:
@@ -82,30 +75,59 @@ steps:
     inputs:
       provProfileSecureFile: 'Xamarin Forms iOS Provisioning.mobileprovision'
 
-  - task: MSBuild@1
+  - task: Bash@3
     displayName: 'Build Control Gallery IPA'
     inputs:
-      solution: 'Xamarin.Forms.ControlGallery.iOS/Xamarin.Forms.ControlGallery.iOS.csproj'
-      configuration: $(buildConfiguration)
-      msbuildArguments: /bl:$(Build.ArtifactStagingDirectory)/ios-cg-2017_$(buildForVS2017).binlog /p:BuildIpa=true
+      targetType: 'filePath'
+      filePath: 'build.sh'
+      arguments: --target cg-ios --BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments='${{ variables.MSBuildArguments_cg_ios }}'
 
-  - task: MSBuild@1
+  - task: Bash@3
     displayName: 'Build iOS Tests'
     inputs:
-      solution: 'Xamarin.Forms.Core.iOS.UITests/Xamarin.Forms.Core.iOS.UITests.csproj'
-      configuration: $(buildConfiguration)
-      msbuildArguments: /bl:$(Build.ArtifactStagingDirectory)/ios-uitests-2017_$(buildForVS2017).binlog
+      targetType: 'filePath'
+      filePath: 'build.sh'
+      arguments: --target cg-ios-build-tests -BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments='${{ variables.MSBuildArguments_cg_ios }}'
+
+  - task: CopyFiles@2
+    displayName: 'Copy iOS Files for UITest'
+    inputs:
+      Contents: |
+        **/XamarinFormsControlGalleryiOS.ipa
+        Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Newtonsoft.Json.*
+        Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/nunit.*
+        Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/NUnit3.*
+        Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Plugin.*
+        Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Xamarin.*
+      TargetFolder: '$(build.artifactstagingdirectory)/ios'
+      CleanTargetFolder: true
+      flattenFolders: true
+
+  - task: CopyFiles@2
+    displayName: 'Copy iOS dSYM'
+    inputs:
+      SourceFolder: Xamarin.Forms.ControlGallery.iOS/bin/iPhone/$(BuildConfiguration)/XamarinFormsControlGalleryiOS.app.dSYM/
+      TargetFolder: '$(build.artifactstagingdirectory)/ios/iPhone/XamarinFormsControlGalleryiOS.app.dSYM/'
+      CleanTargetFolder: false
+      flattenFolders: false
+
+  - task: CopyFiles@2
+    displayName: 'Copy iOS App'
+    inputs:
+      SourceFolder: Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/$(BuildConfiguration)/XamarinFormsControlGalleryiOS.app/
+      TargetFolder: '$(build.artifactstagingdirectory)/ios/iPhoneSimulator/XamarinFormsControlGalleryiOS.app/'
+      CleanTargetFolder: false
+      flattenFolders: false
 
   - task: MSBuild@1
     displayName: 'Build Android Tests'
     inputs:
       solution: 'Xamarin.Forms.Core.Android.UITests/Xamarin.Forms.Core.Android.UITests.csproj'
       configuration: $(buildConfiguration)
-      msbuildArguments: /bl:$(Build.ArtifactStagingDirectory)/android-uitests-2017_$(buildForVS2017).binlog
+      msbuildArguments: /bl:$(Build.ArtifactStagingDirectory)/android-uitests.binlog
 
   - task: CopyFiles@2
     displayName: 'Copy test-cloud.exe'
-    condition: eq(variables['buildForVS2017'], 'false')
     inputs:
       Contents: '**/Xamarin.UITest.*/tools/test-cloud.exe'
       TargetFolder: '$(build.artifactstagingdirectory)/testcloud'
@@ -115,39 +137,29 @@ steps:
 
   - task: CopyFiles@2
     displayName: 'Copy iOS Files for UITest'
-    condition: eq(variables['buildForVS2017'], 'false')
     inputs:
       Contents: |
-       **/$(IpaName)
-       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Newtonsoft.Json.*
-       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/nunit.*
-       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/NUnit3.*
-       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Plugin.*
-       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Xamarin.*
-
+        **/XamarinFormsControlGalleryiOS.ipa
+        Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Newtonsoft.Json.*
+        Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/nunit.*
+        Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/NUnit3.*
+        Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Plugin.*
+        Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Xamarin.*
       TargetFolder: '$(build.artifactstagingdirectory)/ios'
       CleanTargetFolder: true
       flattenFolders: true
 
   - task: CopyFiles@2
-    displayName: 'Copy iOS Files for UITest 2017'
-    condition: eq(variables['buildForVS2017'], 'true')
+    displayName: 'Copy iOS dSYM'
     inputs:
       Contents: |
-       **/$(IpaName)
-       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Newtonsoft.Json.*
-       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/nunit.*
-       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/NUnit3.*
-       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Plugin.*
-       Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Xamarin.*
-
-      TargetFolder: '$(build.artifactstagingdirectory)/ios_2017'
-      CleanTargetFolder: true
-      flattenFolders: true
+        **/*.dSYM/**/*.*
+      TargetFolder: '$(build.artifactstagingdirectory)/ios'
+      CleanTargetFolder: false
+      flattenFolders: false
 
   - task: CopyFiles@2
     displayName: 'Copy Android Files for UITest'
-    condition: eq(variables['buildForVS2017'], 'false')
     inputs:
       Contents: |
        Xamarin.Forms.Core.Android.UITests/bin/$(BuildConfiguration)/Newtonsoft.Json.*
@@ -160,6 +172,16 @@ steps:
       CleanTargetFolder: true
       flattenFolders: true
 
+  - task: CopyFiles@2
+    displayName: 'Copy Cake File'
+    inputs:
+      Contents: |
+        build.cake
+        build/provisioning/provisioning.csx
+        build/provisioning/xcode.csx
+      TargetFolder: '$(build.artifactstagingdirectory)'
+      CleanTargetFolder: false
+      flattenFolders: true
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: iOS'

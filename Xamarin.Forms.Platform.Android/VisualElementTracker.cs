@@ -119,6 +119,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateClipToBounds();
 			}
 
+			UpdateClip();
+
 			Performance.Stop(reference);
 
 			//On Width or Height changes, the anchors needs to be updated
@@ -182,6 +184,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateTranslationY();
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateIsEnabled();
+			else if (e.PropertyName == VisualElement.ClipProperty.PropertyName)
+				UpdateClip();
 		}
 
 		void HandleRedrawNeeded(object sender, EventArg<VisualElement> e)
@@ -204,6 +208,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			UpdateClipToBounds();
+			UpdateClip();
 		}
 
 		void RendererOnElementChanged(object sender, VisualElementChangedEventArgs args)
@@ -286,7 +291,40 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			_renderer.View.SetClipToOutline(layout.IsClippedToBounds, _renderer.Element);
+			bool shouldClip = layout.IsClippedToBounds;
+
+			// setClipBounds is only available in API 18 +	
+			if ((int)Forms.SdkInt >= 18)
+			{
+				if (!(_renderer.View is ViewGroup viewGroup))
+				{
+					return;
+				}
+
+				// Forms layouts should not impose clipping on their children	
+				viewGroup.SetClipChildren(false);
+
+				// But if IsClippedToBounds is true, they _should_ enforce clipping at their own edges	
+				viewGroup.ClipBounds = shouldClip ? new global::Android.Graphics.Rect(0, 0, viewGroup.Width, viewGroup.Height) : null;
+			}
+			else
+			{
+				// For everything in 17 and below, use the setClipChildren method	
+				if (!(_renderer.View.Parent is ViewGroup parent))
+					return;
+
+				if ((int)Forms.SdkInt >= 18 && parent.ClipChildren == shouldClip)
+					return;
+
+				parent.SetClipChildren(shouldClip);
+				parent.Invalidate();
+			}
+		}
+
+		void UpdateClip()
+		{
+			var aView = _renderer.View;
+			aView?.Invalidate();
 		}
 
 		void UpdateIsVisible()

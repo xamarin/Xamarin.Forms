@@ -340,9 +340,27 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNotNull(shellNavigatingEventArgs, "Shell.Navigating never fired");
 			Assert.IsNotNull(shellNavigatedEventArgs, "Shell.Navigated never fired");
 
-			Assert.AreEqual("//NewRoute/Section/Content/", shellNavigatingEventArgs.Current.FullLocation.ToString());
+			Assert.AreEqual("//NewRoute/Section/Content", shellNavigatingEventArgs.Current.FullLocation.ToString());
 			Assert.AreEqual("//NewRoute/Section/Content/ModalTestPage", shellNavigatedEventArgs.Current.FullLocation.ToString());
 
+		}
+
+		[Test]
+		public async Task GetCurrentPageInModalNavigation()
+		{
+			Shell shell = new Shell();
+			shell.Items.Add(CreateShellItem(shellItemRoute: "NewRoute", shellSectionRoute: "Section", shellContentRoute: "Content"));
+
+			Page page = null;
+
+			shell.Navigated += (_, __) =>
+			{
+				page = shell.CurrentPage;
+			};
+
+			await shell.GoToAsync("ModalTestPage");
+			Assert.IsNotNull(page);
+			Assert.AreEqual(page.GetType(), typeof(ModalTestPage));
 		}
 
 

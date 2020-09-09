@@ -4,38 +4,45 @@ using ElmSharp.Wearable;
 
 namespace Xamarin.Forms.Platform.Tizen.Native.Watch
 {
-	public class WatchDateTimePicker : DateTimePicker
+	public class WatchDateTimePicker : CircleDateTimeSelector, IRotaryInteraction
 	{
-		readonly CircleSurface _surface;
-		public WatchDateTimePicker(EvasObject parent, CircleSurface surface) : base()
+		DateTimePickerMode _mode;
+
+		public IRotaryActionWidget RotaryWidget => this;
+
+		public WatchDateTimePicker(EvasObject parent, CircleSurface surface) : base(parent, surface)
 		{
-			_surface = surface;
-			Realize(parent);
 			UpdateMode();
 		}
 
-		public CircleDateTimeSelector CircleSelector { get; private set; }
-
-		protected override void UpdateMode()
+		public DateTimePickerMode Mode
 		{
-			if (Mode == DateTimePickerMode.Date)
-			{
-				Style = "datepicker/circle";
+			get 
+			{ 
+				return _mode;
 			}
-			else
+			set
 			{
-				Style = "timepicker/circle";
+				if (_mode != value)
+				{
+					_mode = value;
+					UpdateMode();
+				}
 			}
 		}
 
-		protected override IntPtr CreateHandle(EvasObject parent)
+		protected virtual void UpdateMode()
 		{
-			CircleSelector = new CircleDateTimeSelector(parent, _surface);
-			if (CircleSelector.RealHandle != CircleSelector.Handle)
+			if (_mode == DateTimePickerMode.Date)
 			{
-				RealHandle = CircleSelector.RealHandle;
+				Style = ThemeConstants.CircleDateTimeSelector.Styles.CircleDatePicker;
+				Format = "%d/%b/%Y";
 			}
-			return CircleSelector.Handle;
+			else
+			{
+				Style = ThemeConstants.CircleDateTimeSelector.Styles.CircleTimePicker;
+				Format = "%d/%b/%Y %I:%M %p";
+			}
 		}
 	}
 }

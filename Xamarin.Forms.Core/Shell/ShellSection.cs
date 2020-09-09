@@ -181,7 +181,7 @@ namespace Xamarin.Forms
 
 		// we want the list returned from here to remain point in time accurate
 		ReadOnlyCollection<ShellContent> IShellSectionController.GetItems() 
-			=> new ReadOnlyCollection<ShellContent>(((ShellContentCollection)Items).VisibleItems.ToList());
+			=> new ReadOnlyCollection<ShellContent>(((ShellContentCollection)Items).VisibleItemsReadOnly.ToList());
 
 		[Obsolete]
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -238,9 +238,7 @@ namespace Xamarin.Forms
 
 		public ShellSection()
 		{
-			(Items as INotifyCollectionChanged).CollectionChanged += ItemsCollectionChanged;
-
-			((ShellContentCollection)Items).VisibleItemsChangedInternal += (_, args) =>
+			((ShellElementCollection)Items).VisibleItemsChangedInternal += (_, args) =>
 			{
 				if (args.OldItems != null)
 				{
@@ -257,7 +255,11 @@ namespace Xamarin.Forms
 						OnVisibleChildAdded(item);
 					}
 				}
+
+				SendStructureChanged();
 			};
+
+			(Items as INotifyCollectionChanged).CollectionChanged += ItemsCollectionChanged;
 
 			Navigation = new NavigationImpl(this);
 		}
@@ -269,12 +271,13 @@ namespace Xamarin.Forms
 		}
 
 		public IList<ShellContent> Items => (IList<ShellContent>)GetValue(ItemsProperty);
+		internal override ShellElementCollection ShellElementCollection => (ShellElementCollection)Items;
 
 		public IReadOnlyList<Page> Stack => _navStack;
 
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => _logicalChildrenReadOnly ?? (_logicalChildrenReadOnly = new ReadOnlyCollection<Element>(_logicalChildren));
 
-		Page DisplayedPage
+		internal Page DisplayedPage
 		{
 			get { return _displayedPage; }
 			set
@@ -527,9 +530,25 @@ namespace Xamarin.Forms
 			OnVisibleChildAdded(child);
 		}
 
-		protected override void OnChildRemoved(Element child)
+		[Obsolete("OnChildRemoved(Element) is obsolete as of version 4.8.0. Please use OnChildRemoved(Element, int) instead.")]
+		protected override void OnChildRemoved(Element child) => OnChildRemoved(child, -1);
+
+		protected override void OnChildRemoved(Element child, int oldLogicalIndex)
 		{
-			base.OnChildRemoved(child);
+			if(child is IShellContentController sc && sc.Page.IsPlatformEnabled)
+			{
+				sc.Page.PlatformEnabledChanged += WaitForRendererToGetRemoved;
+				void WaitForRendererToGetRemoved(object s, EventArgs p)
+				{
+					sc.Page.PlatformEnabledChanged -= WaitForRendererToGetRemoved;
+					base.OnChildRemoved(child, oldLogicalIndex);
+				};
+			}
+			else
+			{
+				base.OnChildRemoved(child, oldLogicalIndex);
+			}
+
 			OnVisibleChildRemoved(child);
 		}
 
@@ -862,17 +881,21 @@ namespace Xamarin.Forms
 
 			if (e.OldItems != null)
 			{
-				foreach (Element element in e.OldItems)
-					OnChildRemoved(element);
+				for (var i = 0; i < e.OldItems.Count; i++)
+				{
+					var element = (Element)e.OldItems[i];
+					OnChildRemoved(element, e.OldStartingIndex + i);
+				}
 			}
-
-			SendStructureChanged();
 		}
 
 		void RemovePage(Page page)
 		{
-			if (_logicalChildren.Remove(page))
-				OnChildRemoved(page);
+			if (!_logicalChildren.Contains(page))
+				return;
+			var index = _logicalChildren.IndexOf(page);
+			_logicalChildren.Remove(page);
+			OnChildRemoved(page, index);
 		}
 
 		void SendAppearanceChanged() => ((IShellController)Parent?.Parent)?.AppearanceChanged(this, false);

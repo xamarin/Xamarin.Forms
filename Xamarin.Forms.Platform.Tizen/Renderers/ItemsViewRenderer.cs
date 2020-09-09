@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.Linq;
 
 using Xamarin.Forms.Platform.Tizen.Native;
@@ -18,6 +17,8 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			RegisterPropertyHandler(ItemsView.ItemsSourceProperty, UpdateItemsSource);
 			RegisterPropertyHandler(ItemsView.ItemTemplateProperty, UpdateAdaptor);
+			RegisterPropertyHandler(ItemsView.HorizontalScrollBarVisibilityProperty, UpdateHorizontalScrollBarVisibility);
+			RegisterPropertyHandler(ItemsView.VerticalScrollBarVisibilityProperty, UpdateVerticalScrollBarVisibility);
 		}
 
 		protected abstract TNative CreateNativeControl(ElmSharp.EvasObject parent);
@@ -65,14 +66,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			ItemsLayout = GetItemsLayout();
 			if (ItemsLayout != null)
 			{
-				if (Element is CollectionView)
-				{
-					Control.LayoutManager = ItemsLayout.ToLayoutManager((Element as CollectionView).ItemSizingStrategy);
-				}
-				else
-				{
-					Control.LayoutManager = ItemsLayout.ToLayoutManager(ItemSizingStrategy.MeasureFirstItem);
-				}
+				Control.LayoutManager = ItemsLayout.ToLayoutManager((Element as CollectionView)?.ItemSizingStrategy ?? ItemSizingStrategy.MeasureFirstItem);
 				Control.SnapPointsType = ((ItemsLayout)ItemsLayout)?.SnapPointsType ?? SnapPointsType.None;
 				ItemsLayout.PropertyChanged += OnLayoutPropertyChanged;
 			}
@@ -88,6 +82,12 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				((GridLayoutManager)(Control.LayoutManager)).UpdateSpan(((GridItemsLayout)sender).Span);
 			}
+			else if (e.PropertyName == nameof(LinearItemsLayout.ItemSpacing) 
+				|| e.PropertyName == nameof(GridItemsLayout.VerticalItemSpacing)
+				|| e.PropertyName == nameof(GridItemsLayout.HorizontalItemSpacing))
+			{
+				UpdateItemsLayout();
+			}
 		}
 
 		protected abstract IItemsLayout GetItemsLayout();
@@ -99,6 +99,11 @@ namespace Xamarin.Forms.Platform.Tizen
 		void OnScrolled(object sender, ItemsViewScrolledEventArgs e)
 		{
 			Element.SendScrolled(e);
+			if (Element.RemainingItemsThreshold >= 0)
+			{
+				if (Control.Adaptor.Count - 1 - e.LastVisibleItemIndex <= Element.RemainingItemsThreshold)
+					Element.SendRemainingItemsThresholdReached();
+			}
 		}
 
 		void OnScrollToRequest(object sender, ScrollToRequestEventArgs e)
@@ -142,7 +147,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 		}
 
-		void UpdateAdaptor(bool initialize)
+		protected void UpdateAdaptor(bool initialize)
 		{
 			if (!initialize)
 			{
@@ -161,6 +166,16 @@ namespace Xamarin.Forms.Platform.Tizen
 				}
 			}
 		}
+
+		protected virtual void UpdateHorizontalScrollBarVisibility()
+		{
+			Control.HorizontalScrollBarVisiblePolicy = Element.HorizontalScrollBarVisibility.ToNative();
+		}
+
+		protected virtual void UpdateVerticalScrollBarVisibility()
+		{
+			Control.VerticalScrollBarVisiblePolicy = Element.VerticalScrollBarVisibility.ToNative();
+		}
 	}
 
 	static class ItemsLayoutExtension
@@ -170,9 +185,13 @@ namespace Xamarin.Forms.Platform.Tizen
 			switch (layout)
 			{
 				case LinearItemsLayout listItemsLayout:
-					return new LinearLayoutManager(listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal, sizing);
+					return new LinearLayoutManager(listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal, sizing, Forms.ConvertToScaledPixel(listItemsLayout.ItemSpacing));
 				case GridItemsLayout gridItemsLayout:
-					return new GridLayoutManager(gridItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal, gridItemsLayout.Span, sizing);
+					return new GridLayoutManager(gridItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal,
+						gridItemsLayout.Span,
+						sizing,
+						Forms.ConvertToScaledPixel(gridItemsLayout.VerticalItemSpacing),
+						Forms.ConvertToScaledPixel(gridItemsLayout.HorizontalItemSpacing));
 				default:
 					break;
 			}

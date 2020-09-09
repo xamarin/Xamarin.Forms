@@ -5,14 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using Microsoft.Build.Framework;
-
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-
 using Xamarin.Forms.Xaml;
-
 using static Microsoft.Build.Framework.MessageImportance;
 using static Mono.Cecil.Cil.OpCodes;
+using IOPath = System.IO.Path;
 
 namespace Xamarin.Forms.Build.Tasks
 {
@@ -55,17 +53,9 @@ namespace Xamarin.Forms.Build.Tasks
 			using (var fallbackResolver = DefaultAssemblyResolver == null ? new XamlCAssemblyResolver() : null) {
 				var resolver = DefaultAssemblyResolver ?? fallbackResolver;
 				if (resolver is XamlCAssemblyResolver xamlCResolver) {
-					if (!string.IsNullOrEmpty(DependencyPaths)) {
-						foreach (var dep in DependencyPaths.Split(';').Distinct()) {
-							LoggingHelper.LogMessage(Low, $"{new string(' ', 2)}Adding searchpath {dep}");
-							xamlCResolver.AddSearchDirectory(dep);
-						}
-					}
-
-					if (!string.IsNullOrEmpty(ReferencePath)) {
-						var paths = ReferencePath.Replace("//", "/").Split(';').Distinct();
-						foreach (var p in paths) {
-							var searchpath = Path.GetDirectoryName(p);
+					if (ReferencePath != null) {
+						var paths = ReferencePath.Select (p => IOPath.GetDirectoryName(p.Replace("//", "/"))).Distinct();
+						foreach (var searchpath in paths) {
 							LoggingHelper.LogMessage(Low, $"{new string(' ', 2)}Adding searchpath {searchpath}");
 							xamlCResolver.AddSearchDirectory(searchpath);
 						}
@@ -82,7 +72,7 @@ namespace Xamarin.Forms.Build.Tasks
 					ReadSymbols = debug && !ValidateOnly, // We don't need symbols for ValidateOnly, since we won't be writing
 				};
 
-				using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(Path.GetFullPath(Assembly),readerParameters)) {
+				using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(IOPath.GetFullPath(Assembly),readerParameters)) {
 					CustomAttribute xamlcAttr;
 					if (assemblyDefinition.HasCustomAttributes &&
 						(xamlcAttr =
@@ -194,12 +184,14 @@ namespace Xamarin.Forms.Build.Tasks
 								success = false;
 								LoggingHelper.LogMessage(Low, $"{new string(' ', 8)}failed.");
 								(thrownExceptions = thrownExceptions ?? new List<Exception>()).Add(e);
-								if (e is XamlParseException xpe)
-									LoggingHelper.LogError(null, null, null, xamlFilePath, xpe.XmlInfo.LineNumber, xpe.XmlInfo.LinePosition, 0, 0, xpe.Message, xpe.HelpLink, xpe.Source);
+								if (e is BuildException be) 
+									LoggingHelper.LogError("XamlC", be.Code.Code, be.HelpLink, xamlFilePath, be.XmlInfo?.LineNumber ?? 0, be.XmlInfo?.LinePosition ?? 0, 0, 0, ErrorMessages.ResourceManager.GetString(be.Code.ErrorMessageKey), be.MessageArgs);
+								else if (e is XamlParseException xpe) //shouldn't happen anymore
+									LoggingHelper.LogError("XamlC", null, xpe.HelpLink, xamlFilePath, xpe.XmlInfo.LineNumber, xpe.XmlInfo.LinePosition, 0, 0, xpe.Message);
 								else if (e is XmlException xe)
-									LoggingHelper.LogError(null, null, null, xamlFilePath, xe.LineNumber, xe.LinePosition, 0, 0, xe.Message, xe.HelpLink, xe.Source);
+									LoggingHelper.LogError("XamlC", null, xe.HelpLink, xamlFilePath, xe.LineNumber, xe.LinePosition, 0, 0, xe.Message);
 								else
-									LoggingHelper.LogError(null, null, null, xamlFilePath, 0, 0, 0, 0, e.Message, e.HelpLink, e.Source);
+									LoggingHelper.LogError("XamlC", null, e.HelpLink, xamlFilePath, 0, 0, 0, 0, e.Message);
 								LoggingHelper.LogMessage(Low, e.StackTrace);
 								continue;
 							}
@@ -282,6 +274,10 @@ namespace Xamarin.Forms.Build.Tasks
 					//First using the ResourceLoader
 					var nop = Instruction.Create(Nop);
 
+					// if (ResourceLoader.IsEnabled && ...
+					il.Emit(Call, module.ImportPropertyGetterReference(("Xamarin.Forms.Core", "Xamarin.Forms.Internals", "ResourceLoader"), "IsEnabled", isStatic: true));
+					il.Emit(Brfalse, nop);
+
 					il.Emit(Newobj, module.ImportCtorReference(("Xamarin.Forms.Core", "Xamarin.Forms.Internals", "ResourceLoader/ResourceLoadingQuery"), 0));
 
 					//AssemblyName
@@ -344,8 +340,6 @@ namespace Xamarin.Forms.Build.Tasks
 				rootnode.Accept(new SetFieldVisitor(visitorContext), null);
 				rootnode.Accept(new SetResourcesVisitor(visitorContext), null);
 				rootnode.Accept(new SetPropertiesVisitor(visitorContext, true), null);
-
-				il.Append(SetPropertiesVisitor.RegisterSourceInfo(visitorContext, rootnode));
 
 				il.Emit(Ret);
 				initComp.Body = body;

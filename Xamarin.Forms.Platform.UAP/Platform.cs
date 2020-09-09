@@ -72,7 +72,7 @@ namespace Xamarin.Forms.Platform.UWP
 				Windows.UI.Xaml.Application.Current.Resources.MergedDictionaries.Add(Forms.GetTabletResources());
 			}
 
-#if !UWP_14393
+#if UWP_16299
 			if (!current.Resources.ContainsKey(ShellRenderer.ShellStyle))
 			{
 				var myResourceDictionary = new Windows.UI.Xaml.ResourceDictionary();
@@ -334,6 +334,14 @@ namespace Xamarin.Forms.Platform.UWP
 					else
 					{
 						RemovePage(previousPage);
+
+						if(!modal && _modalBackgroundPage != null)
+						{
+							RemovePage(_modalBackgroundPage);
+							_modalBackgroundPage.Cleanup();
+							_modalBackgroundPage.Parent = null;
+						}
+						
 						_modalBackgroundPage = null;
 					}
 

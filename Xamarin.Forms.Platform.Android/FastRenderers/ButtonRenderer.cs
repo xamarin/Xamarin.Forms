@@ -2,13 +2,8 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
-#if __ANDROID_29__
 using AndroidX.Core.View;
 using AndroidX.AppCompat.Widget;
-#else
-using Android.Support.V4.View;
-using Android.Support.V7.Widget;
-#endif
 using Android.Util;
 using Android.Views;
 using Xamarin.Forms.Internals;
@@ -155,6 +150,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		public override void Draw(Canvas canvas)
 		{
+			canvas.ClipShape(Context, Element);
+
 			if (_backgroundTracker?.BackgroundDrawable != null)
 				_backgroundTracker.BackgroundDrawable.DrawCircle(canvas, canvas.Width, canvas.Height, base.Draw);
 			else

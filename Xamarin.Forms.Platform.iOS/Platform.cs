@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CoreGraphics;
@@ -8,6 +7,7 @@ using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
+using IOPath = System.IO.Path;
 using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -178,10 +178,9 @@ namespace Xamarin.Forms.Platform.iOS
 				// While the above IsiOS13OrNewer will always be false if __XCODE11__ is true
 				// the UIModalPresentationStyle.Automatic is the only Xcode 11 API
 				// for readability I decided to only take this part out
-#if __XCODE11__
 				if (presentationStyle == UIKit.UIModalPresentationStyle.Automatic)
 					shouldFire = false;
-#endif
+
 				if (presentationStyle == UIKit.UIModalPresentationStyle.FullScreen)
 					shouldFire = false; // This is mainly for backwards compatibility
 			}
@@ -583,11 +582,11 @@ namespace Xamarin.Forms.Platform.iOS
 				if (uri.LocalPath.StartsWith("/local"))
 				{
 					var libraryPath = NSFileManager.DefaultManager.GetUrls(NSSearchPathDirectory.LibraryDirectory, NSSearchPathDomain.User)[0].Path;
-					filePath = Path.Combine(libraryPath, uri.LocalPath.Substring(7));
+					filePath = IOPath.Combine(libraryPath, uri.LocalPath.Substring(7));
 				}
 				else if (uri.LocalPath.StartsWith("/temp"))
 				{
-					filePath = Path.Combine(Path.GetTempPath(), uri.LocalPath.Substring(6));
+					filePath = IOPath.Combine(IOPath.GetTempPath(), uri.LocalPath.Substring(6));
 				}
 				else
 				{

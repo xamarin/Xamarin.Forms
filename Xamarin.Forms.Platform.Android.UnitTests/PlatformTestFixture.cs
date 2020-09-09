@@ -11,13 +11,8 @@ using ASearchView = Android.Widget.SearchView;
 using System.Collections.Generic;
 using NUnit.Framework;
 using System.Threading.Tasks;
-
-#if __ANDROID_29__
 using AndroidX.AppCompat.Widget;
 using AndroidX.CardView.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
 
 namespace Xamarin.Forms.Platform.Android.UnitTests
 {
@@ -74,6 +69,18 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 			}
 		}
 
+		[SetUp]
+		public virtual void Setup()
+		{
+
+		}
+
+		[TearDown]
+		public virtual void TearDown()
+		{
+
+		}
+
 		protected static void ToggleRTLSupport(Context context, bool enabled)
 		{
 			context.ApplicationInfo.Flags = enabled
@@ -83,10 +90,15 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 
 		protected IVisualElementRenderer GetRenderer(VisualElement element)
 		{
+			return GetRenderer(element, Context);
+		}
+
+		protected IVisualElementRenderer GetRenderer(VisualElement element, Context context)
+		{
 			var renderer = element.GetRenderer();
 			if (renderer == null)
 			{
-				renderer = Platform.CreateRendererWithContext(element, Context);
+				renderer = Platform.CreateRendererWithContext(element, context);
 				Platform.SetRenderer(element, renderer);
 			}
 
@@ -444,6 +456,14 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 					return getProperty(control);
 				}
 			});
+		}
+
+		protected bool AreColorsSimilar(AColor c1, AColor c2, int tolerance)
+		{
+			return
+				Math.Abs(c1.R - c2.R) < tolerance &&
+				Math.Abs(c1.G - c2.G) < tolerance &&
+				Math.Abs(c1.B - c2.B) < tolerance;
 		}
 	}
 }

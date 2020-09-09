@@ -250,13 +250,6 @@ namespace Xamarin.Forms
 			return OnBackButtonPressed();
 		}
 
-		protected override void OnRequestedThemeChanged(OSAppTheme newValue)
-		{
-			base.OnRequestedThemeChanged(newValue);
-
-			Resources?.Reload();
-		}
-
 		protected virtual void LayoutChildren(double x, double y, double width, double height)
 		{
 			var area = new Rectangle(x, y, width, height);
@@ -292,6 +285,9 @@ namespace Xamarin.Forms
 
 		protected virtual bool OnBackButtonPressed()
 		{
+			if (RealParent is BaseShellItem || RealParent is Shell)
+				return false;
+
 			var application = RealParent as Application;
 			if (application == null || this == application.MainPage)
 				return false;
@@ -476,12 +472,12 @@ namespace Xamarin.Forms
 		{
 			if (e.OldItems != null)
 			{
-				foreach (Element item in e.OldItems)
+				for (var i = 0; i < e.OldItems.Count; i++)
 				{
+					var item = (Element)e.OldItems[i];
 					if (item is VisualElement visual)
-						OnInternalRemoved(visual);
-					else
-						OnChildRemoved(item);
+						visual.MeasureInvalidated -= OnChildMeasureInvalidated;
+					OnChildRemoved(item, e.OldStartingIndex + i);
 				}
 			}
 
@@ -503,13 +499,6 @@ namespace Xamarin.Forms
 
 			OnChildAdded(view);
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
-		}
-
-		void OnInternalRemoved(VisualElement view)
-		{
-			view.MeasureInvalidated -= OnChildMeasureInvalidated;
-
-			OnChildRemoved(view);
 		}
 
 		void OnPageBusyChanged()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Xamarin.Forms.CustomAttributes;
+using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Controls
 {
@@ -192,9 +193,25 @@ namespace Xamarin.Forms.Controls
 				FilterIssues(_filter);
 			}
 
-			public void FilterIssues(string filter = null)
+			public bool TryToNavigateTo(string name)
 			{
+				var issue = _issues.SingleOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+				if (issue == null)
+					return false;
+
+				issue.Action();
+				return true;
+			}
+
+			public async void FilterIssues(string filter = null)
+			{
+				filter = filter?.Trim();
 				_filter = filter;
+				
+				// Deeeee bounce
+				await Task.Delay(10);
+				if (_filter != filter)
+					return;
 
 				PageToAction.Clear();
 				if(String.IsNullOrWhiteSpace(filter) && !Controls.App.PreloadTestCasesIssuesList)
@@ -264,6 +281,7 @@ namespace Xamarin.Forms.Controls
 
 		public static NavigationPage GetTestCases ()
 		{
+			TestCaseScreen testCaseScreen = null;
 			var rootLayout = new StackLayout ();
 			
 			var testCasesRoot = new ContentPage {
@@ -281,9 +299,17 @@ namespace Xamarin.Forms.Controls
 				AutomationId = "SearchButton",
 				Command = new Command (() => {
 					try {
-						TestCaseScreen.PageToAction[searchBar.Text] ();
+						if (TestCaseScreen.PageToAction.ContainsKey(searchBar.Text?.Trim()))
+						{
+							TestCaseScreen.PageToAction[searchBar.Text?.Trim()]();
+						}
+						else if(!testCaseScreen.TryToNavigateTo(searchBar.Text?.Trim()))
+						{
+							throw new Exception($"Unable to Navigate to {searchBar.Text}");
+						}
 					} catch (Exception e) {
-						System.Diagnostics.Debug.WriteLine (e.Message);
+						System.Diagnostics.Debug.WriteLine(e.Message);
+						Console.WriteLine(e.Message);
 					}
 					 
 				})
@@ -299,7 +325,7 @@ namespace Xamarin.Forms.Controls
 			rootLayout.Children.Add (searchBar);
 			rootLayout.Children.Add (searchButton);
 
-			var testCaseScreen = new TestCaseScreen();
+			testCaseScreen = new TestCaseScreen();
 
 			rootLayout.Children.Add(CreateTrackerFilter(testCaseScreen));
 

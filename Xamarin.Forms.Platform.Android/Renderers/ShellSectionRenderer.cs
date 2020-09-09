@@ -1,21 +1,10 @@
 using Android.OS;
 using Android.Runtime;
-
-#if __ANDROID_29__
-using AndroidX.Core.Widget;
 using AndroidX.Fragment.App;
 using AndroidX.CoordinatorLayout.Widget;
 using AndroidX.ViewPager.Widget;
 using Google.Android.Material.Tabs;
 using AndroidX.AppCompat.Widget;
-using AndroidX.Core.View;
-#else
-using Android.Support.V4.Widget;
-using Fragment = Android.Support.V4.App.Fragment;
-using Toolbar = Android.Support.V7.Widget.Toolbar;
-using Android.Support.V4.View;
-using Android.Support.Design.Widget;
-#endif
 using Android.Views;
 using System;
 using System.Collections.Specialized;
@@ -23,7 +12,6 @@ using System.ComponentModel;
 using System.Linq;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using AView = Android.Views.View;
-using LP = Android.Views.ViewGroup.LayoutParams;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -191,12 +179,32 @@ namespace Xamarin.Forms.Platform.Android
 				_tablayout.Visibility = ViewStates.Gone;
 			}
 
+			_tablayout.LayoutChange += OnTabLayoutChange;
+
 			_tabLayoutAppearanceTracker = _shellContext.CreateTabLayoutAppearanceTracker(ShellSection);
 			_toolbarAppearanceTracker = _shellContext.CreateToolbarAppearanceTracker();
 
 			HookEvents();
 
 			return _rootView = root;
+		}
+
+		void OnTabLayoutChange(object sender, AView.LayoutChangeEventArgs e)
+		{
+			if (_disposed)
+				return;
+
+			var items = SectionController.GetItems();
+			for (int i = 0; i < _tablayout.TabCount; i++)
+			{
+				if (items.Count <= i)
+					break;
+
+				var tab = _tablayout.GetTabAt(i);
+
+				if(tab.View != null)
+					FastRenderers.AutomationPropertiesProvider.AccessibilitySettingsChanged(tab.View, items[i]);
+			}
 		}
 
 		void Destroy()
@@ -210,7 +218,7 @@ namespace Xamarin.Forms.Platform.Android
 				_viewPager.Adapter = null;
 				adapter.Dispose();
 
-
+				_tablayout.LayoutChange -= OnTabLayoutChange;
 				_toolbarAppearanceTracker.Dispose();
 				_tabLayoutAppearanceTracker.Dispose();
 				_toolbarTracker.Dispose();
@@ -266,7 +274,6 @@ namespace Xamarin.Forms.Platform.Android
 			if (e.PropertyName == ShellSection.CurrentItemProperty.PropertyName)
 			{
 				var newIndex = SectionController.GetItems().IndexOf(ShellSection.CurrentItem);
-
 
 				if (SectionController.GetItems().Count != _viewPager.ChildCount)
 					_viewPager.Adapter.NotifyDataSetChanged();

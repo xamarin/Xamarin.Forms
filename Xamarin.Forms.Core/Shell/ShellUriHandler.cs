@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
+using IOPath = System.IO.Path;
 
 namespace Xamarin.Forms
 {
@@ -17,7 +17,7 @@ namespace Xamarin.Forms
 		{
 			if (path.OriginalString.StartsWith("..") && shell?.CurrentState != null)
 			{
-				var result = Path.Combine(shell.CurrentState.FullLocation.OriginalString, path.OriginalString);
+				var result = IOPath.Combine(shell.CurrentState.FullLocation.OriginalString, path.OriginalString);
 				var returnValue = ConvertToStandardFormat("scheme", "host", null, new Uri(result, UriKind.Relative));
 				return new Uri(FormatUri(returnValue.PathAndQuery), UriKind.Relative);
 			}
@@ -79,7 +79,7 @@ namespace Xamarin.Forms
 			return new Uri(uri);
 		}
 
-		internal static NavigationRequest GetNavigationRequest(Shell shell, Uri uri, bool enableRelativeShellRoutes = false)
+		internal static NavigationRequest GetNavigationRequest(Shell shell, Uri uri, bool enableRelativeShellRoutes = false, bool throwNavigationErrorAsException = true)
 		{
 			uri = FormatUri(uri, shell);
 			// figure out the intent of the Uri
@@ -97,7 +97,12 @@ namespace Xamarin.Forms
 
 
 			if (possibleRouteMatches.Count == 0)
-				throw new ArgumentException($"unable to figure out route for: {uri}", nameof(uri));
+			{
+				if(throwNavigationErrorAsException)
+					throw new ArgumentException($"unable to figure out route for: {uri}", nameof(uri));
+
+				return null;
+			}
 			else if (possibleRouteMatches.Count > 1)
 			{
 				string[] matches = new string[possibleRouteMatches.Count];
@@ -109,8 +114,11 @@ namespace Xamarin.Forms
 				}
 
 				string matchesFound = String.Join(",", matches);
-				throw new ArgumentException($"Ambiguous routes matched for: {uri} matches found: {matchesFound}", nameof(uri));
 
+				if (throwNavigationErrorAsException)
+					throw new ArgumentException($"Ambiguous routes matched for: {uri} matches found: {matchesFound}", nameof(uri));
+
+				return null;
 			}
 
 			var theWinningRoute = possibleRouteMatches[0];
@@ -219,8 +227,13 @@ namespace Xamarin.Forms
 					{
 						// currently relative routes to shell routes isn't supported as we aren't creating navigation stacks
 						// So right now we will just throw an exception so that once this is implemented
-						// GotoAsync doesn't start acting inconsistently and all of a suddent starts creating routes
-						if (!enableRelativeShellRoutes && pureGlobalRoutesMatch[0].SegmentsMatched.Count > 0)
+						// GotoAsync doesn't start acting inconsistently and all of a sudden starts creating routes
+
+						int shellElementsMatched = 
+							pureGlobalRoutesMatch[0].SegmentsMatched.Count -
+							pureGlobalRoutesMatch[0].GlobalRouteMatches.Count;
+
+						if (!enableRelativeShellRoutes && shellElementsMatched > 0)
 						{
 							throw new Exception($"Relative routing to shell elements is currently not supported. Try prefixing your uri with ///: ///{originalRequest}");
 						}
@@ -525,8 +538,8 @@ namespace Xamarin.Forms
 				case ShellContent content:
 					results = new object[0];
 					break;
-				case GlobalRouteItem routeITem:
-					results = routeITem.Items;
+				case GlobalRouteItem routeItem:
+					results = routeItem.Items;
 					break;
 			}
 

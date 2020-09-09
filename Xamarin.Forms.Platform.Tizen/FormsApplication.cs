@@ -10,6 +10,7 @@ using ELayout = ElmSharp.Layout;
 using DeviceOrientation = Xamarin.Forms.Internals.DeviceOrientation;
 using ElmSharp.Wearable;
 using Specific = Xamarin.Forms.PlatformConfiguration.TizenSpecific.Application;
+using Xamarin.Forms.Platform.Tizen.Native;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -18,13 +19,11 @@ namespace Xamarin.Forms.Platform.Tizen
 	{
 		ITizenPlatform _platform;
 		Application _application;
-		bool _isInitialStart;
 		Window _window;
 		bool _useBezelInteration;
 
 		protected FormsApplication()
 		{
-			_isInitialStart = true;
 		}
 
 		/// <summary>
@@ -90,17 +89,6 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				_platform.Dispose();
 			}
-		}
-
-		protected override void OnAppControlReceived(AppControlReceivedEventArgs e)
-		{
-			base.OnAppControlReceived(e);
-
-			if (!_isInitialStart && _application != null)
-			{
-				_application.SendResume();
-			}
-			_isInitialStart = false;
 		}
 
 		protected override void OnPause()
@@ -181,7 +169,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				(renderer as LayoutRenderer)?.RegisterOnLayoutUpdated();
 				nativeView = renderer?.NativeView;
 			}
-			Forms.BaseLayout.SetPartContent("elm.swallow.overlay", nativeView);
+			Forms.BaseLayout.SetOverlayPart(nativeView);
 		}
 
 		void SetPage(Page page)
@@ -217,8 +205,8 @@ namespace Xamarin.Forms.Platform.Tizen
 				var conformant = new Conformant(MainWindow);
 				conformant.Show();
 
-				var layout = new ELayout(conformant);
-				layout.SetTheme("layout", "application", "default");
+				var layout = new ApplicationLayout(conformant);
+
 				layout.Show();
 
 				BaseLayout = layout;

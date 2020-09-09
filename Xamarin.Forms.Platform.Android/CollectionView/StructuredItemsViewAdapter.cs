@@ -1,12 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using Android.Content;
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
 using AndroidX.RecyclerView.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
 using ViewGroup = Android.Views.ViewGroup;
 
 namespace Xamarin.Forms.Platform.Android
@@ -17,7 +12,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		Size? _size;
 
-		internal StructuredItemsViewAdapter(TItemsView itemsView, 
+		protected internal StructuredItemsViewAdapter(TItemsView itemsView, 
 			Func<View, Context, ItemContentView> createItemContentView = null) : base(itemsView, createItemContentView)
 		{
 			UpdateHasHeader();

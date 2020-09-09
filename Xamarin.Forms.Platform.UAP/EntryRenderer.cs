@@ -5,9 +5,9 @@ using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+using WBrush = Windows.UI.Xaml.Media.Brush;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.InputView;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -15,11 +15,11 @@ namespace Xamarin.Forms.Platform.UWP
 	public class EntryRenderer : ViewRenderer<Entry, FormsTextBox>
 	{
 		bool _fontApplied;
-		Brush _backgroundColorFocusedDefaultBrush;
-		Brush _placeholderDefaultBrush;
-		Brush _textDefaultBrush;
-		Brush _defaultTextColorFocusBrush;
-		Brush _defaultPlaceholderColorFocusBrush;
+		WBrush _backgroundColorFocusedDefaultBrush;
+		WBrush _placeholderDefaultBrush;
+		WBrush _textDefaultBrush;
+		WBrush _defaultTextColorFocusBrush;
+		WBrush _defaultPlaceholderColorFocusBrush;
 		bool _cursorPositionChangePending;
 		bool _selectionLengthChangePending;
 		bool _nativeSelectionIsUpdating;
@@ -67,6 +67,9 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateReturnType();
 				UpdateIsReadOnly();
 				UpdateInputScope();
+				UpdateClearButtonVisibility();
+
+
 
 				if (_cursorPositionChangePending)
 					UpdateCursorPosition();
@@ -149,6 +152,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateSelectionLength();
 			else if (e.PropertyName == InputView.IsReadOnlyProperty.PropertyName)
 				UpdateIsReadOnly();
+			else if (e.PropertyName == Entry.ClearButtonVisibilityProperty.PropertyName)
+				UpdateClearButtonVisibility();
 		}
 
 		protected override void UpdateBackgroundColor()
@@ -238,6 +243,11 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateCharacterSpacing()
 		{
 			Control.CharacterSpacing = Element.CharacterSpacing.ToEm();
+		}
+
+		void UpdateClearButtonVisibility()
+		{
+			Control.ClearButtonVisible = Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing;
 		}
 
 		void UpdateInputScope()

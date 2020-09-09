@@ -1,15 +1,10 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
+using Android.Graphics;
 using Android.Graphics.Drawables;
-#if __ANDROID_29__
 using AndroidX.Core.View;
 using AndroidX.CardView.Widget;
-using AndroidX.AppCompat.Widget;
-#else
-using Android.Support.V4.View;
-using Android.Support.V7.Widget;
-#endif
 using Android.Views;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
@@ -193,6 +188,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				e.NewElement.PropertyChanged += OnElementPropertyChanged;
 				UpdateShadow();
 				UpdateBackgroundColor();
+				UpdateBackground();
 				UpdateCornerRadius();
 				UpdateBorderColor();
 				UpdateClippedToBounds();
@@ -219,6 +215,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_hasLayoutOccurred = true;
 		}
 
+		public override void Draw(Canvas canvas)
+		{
+			canvas.ClipShape(Context, Element);
+
+			base.Draw(canvas);
+		}
+
 		public override bool OnTouchEvent(MotionEvent e)
 		{
 			if (_visualElementRenderer.OnTouchEvent(e) || base.OnTouchEvent(e))
@@ -243,11 +246,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				return;
 			}
 
-
 			if (e.PropertyName == Frame.HasShadowProperty.PropertyName)
 				UpdateShadow();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				UpdateBackground();
 			else if (e.PropertyName == Frame.CornerRadiusProperty.PropertyName)
 				UpdateCornerRadius();
 			else if (e.PropertyName == Frame.BorderColorProperty.PropertyName)
@@ -258,7 +262,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void UpdateClippedToBounds()
 		{
-			this.SetClipToOutline(Element.IsClippedToBounds, Element);
+			var shouldClip = Element.IsSet(Xamarin.Forms.Layout.IsClippedToBoundsProperty)
+					? Element.IsClippedToBounds : Element.CornerRadius > 0f;
+
+			this.SetClipToOutline(shouldClip);
 		}
 
 		void UpdateBackgroundColor()
@@ -268,6 +275,32 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			Color bgColor = Element.BackgroundColor;
 			_backgroundDrawable.SetColor(bgColor.IsDefault ? AColor.White : bgColor.ToAndroid());
+		}
+
+		void UpdateBackground()
+		{
+			if (_disposed)
+				return;
+
+			Brush background = Element.Background;
+
+			if (Brush.IsNullOrEmpty(background))
+			{
+				if (_backgroundDrawable.UseGradients())
+				{
+					_backgroundDrawable.Dispose();
+					_backgroundDrawable = null;
+					this.SetBackground(null);
+
+					_backgroundDrawable = new GradientDrawable();
+					_backgroundDrawable.SetShape(ShapeType.Rectangle);
+					this.SetBackground(_backgroundDrawable);
+				}
+
+				UpdateBackgroundColor();
+			}
+			else
+				_backgroundDrawable.UpdateBackground(background, Control.Height, Control.Width);
 		}
 
 		void UpdateBorderColor()

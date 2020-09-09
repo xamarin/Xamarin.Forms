@@ -16,6 +16,7 @@ using UwpThickness = Windows.UI.Xaml.Thickness;
 using UwpStyle = Windows.UI.Xaml.Style;
 using Windows.UI.Xaml.Media;
 using UwpApplication = Windows.UI.Xaml.Application;
+using UwpSolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -34,6 +35,7 @@ namespace Xamarin.Forms.Platform.UWP
 		internal ShellRenderer ShellContext { get; set; }
 
 		IShellItemController ShellItemController => ShellItem;
+		IShellController ShellController => ShellContext?.Shell;
 
 		public ShellItemRenderer(ShellRenderer shellContext)
 		{
@@ -96,6 +98,10 @@ namespace Xamarin.Forms.Platform.UWP
 		internal void NavigateToShellItem(ShellItem newItem, bool animate)
 		{
 			UnhookEvents(ShellItem);
+
+			if (newItem?.CurrentItem?.CurrentItem == null)
+				return;
+
 			ShellItem = newItem;
 
 			if (newItem.CurrentItem == null)
@@ -114,11 +120,14 @@ namespace Xamarin.Forms.Platform.UWP
 			double inset = 10;
 			if (ShellContext.IsPaneToggleButtonVisible)
 				inset += 45;
-			if (Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Controls.NavigationView", "IsBackButtonVisible"))
+
+			if (Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Microsoft.UI.Xaml.Controls.NavigationView", "IsBackButtonVisible"))
 			{
-				if (ShellContext.IsBackButtonVisible != Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed)
+				if (ShellContext.IsBackButtonVisible != Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed &&
+					ShellContext.IsBackEnabled)
 					inset += 45;
 			}
+
 			_HeaderArea.Padding = new UwpThickness(inset, 0, 0, 0);
 		}
 
@@ -201,9 +210,9 @@ namespace Xamarin.Forms.Platform.UWP
 					titleColor = appearance.TitleColor.ToWindowsColor();
 			}
 			_BottomBarArea.Background = _HeaderArea.Background =
-				new SolidColorBrush(tabBarBackgroundColor);
-			_Title.Foreground = new SolidColorBrush(titleColor);
-			var tabbarForeground = new SolidColorBrush(tabBarForegroundColor);
+				new UwpSolidColorBrush(tabBarBackgroundColor);
+			_Title.Foreground = new UwpSolidColorBrush(titleColor);
+			var tabbarForeground = new UwpSolidColorBrush(tabBarForegroundColor);
 			foreach (var button in _BottomBar.Children.OfType<AppBarButton>())
 				button.Foreground = tabbarForeground;
 			if (SectionRenderer is IAppearanceObserver iao)
@@ -241,6 +250,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			shellItem.PropertyChanged += OnShellItemPropertyChanged;
 			ShellItemController.ItemsCollectionChanged += OnShellItemsChanged;
+			ShellController.StructureChanged += OnShellStructureChanged;
 			foreach (var shellSection in ShellItemController.GetItems())
 			{
 				HookChildEvents(shellSection);
@@ -255,6 +265,8 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					UnhookChildEvents(shellSection);
 				}
+
+				ShellController.StructureChanged -= OnShellStructureChanged;
 				ShellItemController.ItemsCollectionChanged -= OnShellItemsChanged;
 				ShellItem.PropertyChanged -= OnShellItemPropertyChanged;
 				ShellSection = null;
@@ -299,6 +311,11 @@ namespace Xamarin.Forms.Platform.UWP
 			SwitchSection(ShellNavigationSource.ShellSectionChanged, newSection, null, oldSection != null);
 		}
 
+		void OnShellStructureChanged(object sender, EventArgs e)
+		{
+			UpdateBottomBarVisibility();
+		}
+
 		void SwitchSection(ShellNavigationSource source, ShellSection section, Page page, bool animate = true)
 		{
 			if (section == null)
@@ -307,7 +324,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (section.CurrentItem == null)
 				throw new InvalidOperationException($"Content not found for active {section} - {section.Title}.");
 
-			SectionRenderer.NavigateToShellSection(source, section, animate);
+			SectionRenderer.NavigateToShellSection(source, section, page, animate);
 		}
 
 		Page DisplayedPage { get; set; }
@@ -365,7 +382,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateBottomBarVisibility()
 		{
-			_BottomBar.Visibility = DisplayedPage == null || Shell.GetTabBarIsVisible(DisplayedPage) ? Visibility.Visible : Visibility.Collapsed;
+			bool isVisible = ShellItemController?.ShowTabs ?? false;
+			_BottomBar.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
 		}
 
 		void UpdateToolbar()

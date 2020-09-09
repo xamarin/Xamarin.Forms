@@ -9,12 +9,8 @@ using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Xamarin.Forms.Internals;
-using Path = System.IO.Path;
-#if __ANDROID_29__
+using IOPath = System.IO.Path;
 using AndroidAppCompat = AndroidX.AppCompat.Content.Res.AppCompatResources;
-#else
-using AndroidAppCompat = Android.Support.V7.Content.Res.AppCompatResources;
-#endif
 using System.ComponentModel;
 
 namespace Xamarin.Forms.Platform.Android
@@ -393,7 +389,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (title == null)
 				return 0;
 
-			string name = Path.GetFileNameWithoutExtension(title);
+			string name = IOPath.GetFileNameWithoutExtension(title);
 			int id = GetId(type, name);
 			return id;
 		}
@@ -414,7 +410,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (title == null)
 				return id;
 
-			string name = Path.GetFileNameWithoutExtension(title);
+			string name = IOPath.GetFileNameWithoutExtension(title);
 
 			id = GetId(resourceType, name);
 
