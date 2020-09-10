@@ -248,6 +248,7 @@ namespace Xamarin.Forms
 		public static bool UseMessagingCenter => s_useMessagingCenter;
 
 		public static DisplayResolutionUnit DisplayResolutionUnit { get; private set; }
+
 		public static int ScreenDPI => s_dpi.Value;
 
 		public static Size PhysicalScreenSize => (Device.info as TizenDeviceInfo).PhysicalScreenSize;
