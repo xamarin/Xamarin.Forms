@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Controls.Issues
 				StrokeLineCap = PenLineCap.Round,
 				StrokeThickness = 2,
 				StrokeLineJoin = PenLineJoin.Round,
-				Stroke = Color.Red,
+				Stroke = Brush.Red,
 				Rotation = 25,
 				HeightRequest = 100,
 				WidthRequest = 100
