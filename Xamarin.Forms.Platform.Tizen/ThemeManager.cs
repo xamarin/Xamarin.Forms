@@ -951,11 +951,15 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		static double CalculateDoubleScaledSizeInLargeScreen(double size)
 		{
-			if (GetPhysicalPortraitSizeInDP() > 1000)
+			if (Forms.DisplayResolutionUnit.UseVP)
+				return size;
+
+			if (!Forms.DisplayResolutionUnit.UseDeviceScale && GetPhysicalPortraitSizeInDP() > 1000)
 			{
 				size *= 2.5;
 			}
-			if (!Forms.DisplayResolutionUnit.UseDP && !Forms.DisplayResolutionUnit.UseVP)
+
+			if (!Forms.DisplayResolutionUnit.UseDP)
 			{
 				size = Forms.ConvertToPixel(size);
 			}
