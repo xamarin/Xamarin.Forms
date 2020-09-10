@@ -58,6 +58,8 @@
 						new RadialGradientExplorerGallery(), Navigation),
 					GalleryBuilder.NavButton("Bindable Brush Gallery", () =>
 						new BindableBrushGallery(), Navigation),
+					GalleryBuilder.NavButton("Update Brush Colors Gallery", () =>
+						new UpdateGradientColorGallery(), Navigation),
 					GalleryBuilder.NavButton("Animate Brush Gallery", () =>
 						new AnimateBrushGallery(), Navigation),
 					navigationBarButton,
@@ -91,7 +93,7 @@
 			button.TextColor = Color.Black;
 			button.IsEnabled = false;
 
-			Device.SetFlags(new[] { ExperimentalFlags.BrushExperimental, ExperimentalFlags.ExpanderExperimental, ExperimentalFlags.ShapesExperimental, ExperimentalFlags.SwipeViewExperimental });
+			Device.SetFlags(new[] { ExperimentalFlags.BrushExperimental, ExperimentalFlags.ShapesExperimental, ExperimentalFlags.SwipeViewExperimental });
 		}
 	}
 }
