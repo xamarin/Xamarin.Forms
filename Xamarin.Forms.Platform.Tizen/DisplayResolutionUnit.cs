@@ -1,6 +1,6 @@
 using System;
 
-namespace Xamarin.Forms.Platform.Tizen
+namespace Xamarin.Forms
 {
 	public class DisplayResolutionUnit
 	{
@@ -37,10 +37,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		internal static DisplayResolutionUnit FromInit(bool useDP)
 		{
-			return new DisplayResolutionUnit()
-			{
-				UseDP = useDP
-			};
+			return useDP ? DP() : Pixel();
 		}
 
 		DisplayResolutionUnit() { }

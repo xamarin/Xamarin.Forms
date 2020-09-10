@@ -376,9 +376,20 @@ namespace Xamarin.Forms
 			SetupInit(application);
 		}
 
+		public static void Init(CoreApplication application, DisplayResolutionUnit unit)
+		{
+			DisplayResolutionUnit = unit ?? DisplayResolutionUnit.Pixel();
+			SetupInit(application);
+		}
+
 		public static void Init(InitializationOptions options)
 		{
-			DisplayResolutionUnit = DisplayResolutionUnit.FromInit(options?.UseDeviceIndependentPixel ?? false);
+			if (options == null)
+			{
+				throw new ArgumentException("Must be set options", nameof(options));
+			}
+
+			DisplayResolutionUnit = options.DisplayResolutionUnit ?? DisplayResolutionUnit.FromInit(options.UseDeviceIndependentPixel);
 			SetupInit(options.Context, options);
 		}
 
@@ -397,11 +408,6 @@ namespace Xamarin.Forms
 				Elementary.Initialize();
 				Elementary.ThemeOverlay();
 				Utility.AppendGlobalFontPath(@"/usr/share/fonts");
-			}
-
-			if (options != null && options.DisplayResolutionUnit != null)
-			{
-				DisplayResolutionUnit = options.DisplayResolutionUnit;
 			}
 
 			Device.PlatformServices = new TizenPlatformServices();
