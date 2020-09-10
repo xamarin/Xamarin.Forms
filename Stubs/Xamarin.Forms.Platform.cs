@@ -157,6 +157,19 @@ namespace Xamarin.Forms.Platform
 	[RenderWith (typeof (PageRenderer))]
 	internal class _PageRenderer { }
 
+
+	
+
+
+#if !__IOS__ && !TIZEN4_0
+	[RenderWith(typeof(FlyoutPageRenderer))]
+#elif TIZEN4_0
+	[RenderWith (typeof(MasterDetailPageRenderer))]
+#else
+	[RenderWith (typeof (PhoneFlyoutPageRenderer))]
+#endif
+	internal class _FlyoutPageRenderer { }
+
 #if !__IOS__ && !TIZEN4_0
 	[RenderWith(typeof(MasterDetailPageRenderer))]
 #elif TIZEN4_0

@@ -256,6 +256,7 @@ namespace Xamarin.Forms
 
 	//[Obsolete("FLYOUTPAGE")]
 #pragma warning disable CS0618 // Type or member is obsolete
+	[RenderWith(typeof(_MasterDetailPageRenderer))]
 	public class MasterDetailPage : FlyoutPage, IMasterDetailPageController
 #pragma warning restore CS0618 // Type or member is obsolete
 	{
