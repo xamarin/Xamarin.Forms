@@ -40,8 +40,8 @@ namespace Xamarin.Forms
 		public StaticRegistrarStrategy StaticRegistarStrategy { get; set; }
 		public PlatformType PlatformType { get; set; }
 		public bool UseMessagingCenter { get; set; } = true;
-		public bool UseDeviceScale { get; set; } = true;
-		public double? ViewportWidth { get; set; }
+
+		public DisplayResolutionUnit DisplayResolutionUnit { get; set; }
 
 		public struct EffectScope
 		{
@@ -165,16 +165,22 @@ namespace Xamarin.Forms
 				TSystemInfo.TryGetValue("http://tizen.org/feature/screen.height", out height);
 
 				scalingFactor = 1.0;  // scaling is disabled, we're using pixels as Xamarin's geometry units
-				if (ViewportWidth.HasValue)
+				if (DisplayResolutionUnit.UseVP && DisplayResolutionUnit.ViewportWidth > 0)
 				{
-					scalingFactor = width / ViewportWidth.Value;
+					scalingFactor = width / DisplayResolutionUnit.ViewportWidth;
 				}
-				else if (s_useDeviceIndependentPixel)
+				else
 				{
-					scalingFactor = s_dpi.Value / 160.0;
-					if (UseDeviceScale)
+					if (DisplayResolutionUnit.UseDP)
 					{
-						var portraitSize = (Math.Min(width, height)) / scalingFactor;
+						scalingFactor = s_dpi.Value / 160.0;
+					}
+
+					if (DisplayResolutionUnit.UseDeviceScale)
+					{
+						var physicalScale = s_dpi.Value / 160.0;
+
+						var portraitSize = (Math.Min(width, height)) / physicalScale;
 						if (portraitSize > 2000)
 						{
 							scalingFactor *= 4;
@@ -185,21 +191,18 @@ namespace Xamarin.Forms
 						}
 					}
 				}
+
 				pixelScreenSize = new Size(width, height);
 				scaledScreenSize = new Size(width / scalingFactor, height / scalingFactor);
 				profile = s_profile.Value;
 			}
 		}
 
-		static bool s_useDeviceIndependentPixel = false;
-
 		static StaticRegistrarStrategy s_staticRegistrarStrategy = StaticRegistrarStrategy.None;
 
 		static PlatformType s_platformType = PlatformType.Defalut;
 
 		static bool s_useMessagingCenter = true;
-
-		static bool s_useDeviceScale = true;
 
 		public static event EventHandler<ViewInitializedEventArgs> ViewInitialized;
 
@@ -241,9 +244,7 @@ namespace Xamarin.Forms
 
 		public static bool UseMessagingCenter => s_useMessagingCenter;
 
-		public static double? ViewportWidth { get; set; }
-
-		public static bool UseDeviceScale => s_useDeviceScale;
+		public static DisplayResolutionUnit DisplayResolutionUnit { get; private set; }
 
 		internal static TizenTitleBarVisibility TitleBarVisibility
 		{
@@ -371,13 +372,13 @@ namespace Xamarin.Forms
 
 		public static void Init(CoreApplication application, bool useDeviceIndependentPixel)
 		{
-			s_useDeviceIndependentPixel = useDeviceIndependentPixel;
+			DisplayResolutionUnit = DisplayResolutionUnit.FromInit(useDeviceIndependentPixel);
 			SetupInit(application);
 		}
 
 		public static void Init(InitializationOptions options)
 		{
-			s_useDeviceIndependentPixel = options?.UseDeviceIndependentPixel ?? false;
+			DisplayResolutionUnit = DisplayResolutionUnit.FromInit(options?.UseDeviceIndependentPixel ?? false);
 			SetupInit(options.Context, options);
 		}
 
@@ -398,8 +399,10 @@ namespace Xamarin.Forms
 				Utility.AppendGlobalFontPath(@"/usr/share/fonts");
 			}
 
-			ViewportWidth = options?.ViewportWidth;
-			s_useDeviceScale = options?.UseDeviceScale ?? true;
+			if (options != null && options.DisplayResolutionUnit != null)
+			{
+				DisplayResolutionUnit = options.DisplayResolutionUnit;
+			}
 
 			Device.PlatformServices = new TizenPlatformServices();
 			if (Device.info != null)
