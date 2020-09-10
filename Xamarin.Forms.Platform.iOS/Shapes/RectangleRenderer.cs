@@ -11,6 +11,7 @@ namespace Xamarin.Forms.Platform.MacOS
 {
     public class RectangleRenderer : ShapeRenderer<FormsRectangle, RectangleView>
     {
+        // Each corner of the rounded rectangle is one-quarter of an ellipse with axes equal to the RadiusX and Radius parameters.
         const double MaximumRadius = 0.5d;
 
         protected override void OnElementChanged(ElementChangedEventArgs<Rect> args)
