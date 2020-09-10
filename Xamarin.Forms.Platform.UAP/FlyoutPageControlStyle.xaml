@@ -6,7 +6,7 @@
         <Setter Property="ToolbarForeground" Value="{ThemeResource DefaultTextForegroundThemeBrush}" />
 		<Setter Property="Template">
 			<Setter.Value>
-                <ControlTemplate TargetType="uwp:MasterDetailControl">
+                <ControlTemplate TargetType="uwp:FlyoutPageControl">
                     <SplitView x:Name="SplitView" IsPaneOpen="{Binding IsPaneOpen,RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay}" DisplayMode="Overlay">
 						<SplitView.Pane>
 							<Grid>
@@ -22,7 +22,7 @@
 											AutomationProperties.AccessibilityView="{Binding Path=(AutomationProperties.AccessibilityView), RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"  />
 									<TextBlock Margin="10,0,0,0" Style="{ThemeResource TitleTextBlockStyle}" VerticalAlignment="Center" Text="{TemplateBinding FlyoutTitle}" Visibility="{TemplateBinding FlyoutTitleVisibility}" Foreground="{TemplateBinding ToolbarForeground}"/>
 								</StackPanel>
-								<ContentPresenter x:Name="MasterPresenter" Grid.Row="1" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Flyout}" />
+                            <ContentPresenter x:Name="FlyoutPresenter" Grid.Row="1" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Flyout}" />
 							</Grid>
 						</SplitView.Pane>
 						<SplitView.Content>

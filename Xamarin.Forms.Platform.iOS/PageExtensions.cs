@@ -47,6 +47,8 @@ namespace Xamarin.Forms.Platform.iOS
 				return modal;
 			else if (currentPage is MasterDetailPage mdp)
 				return GetCurrentPage(mdp.Detail);
+			else if (currentPage is FlyoutPage fp)
+				return GetCurrentPage(fp.Detail);
 			else if (currentPage is Shell shell && shell.CurrentItem?.CurrentItem is IShellSectionController ssc)
 				return ssc.PresentedPage;
 			else if (currentPage is IPageContainer<Page> pc)

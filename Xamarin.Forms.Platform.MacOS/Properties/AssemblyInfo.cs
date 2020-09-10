@@ -11,7 +11,9 @@ using Rectangle = Xamarin.Forms.Shapes.Rectangle;
 [assembly: ExportImageSourceHandler(typeof(UriImageSource), typeof(ImageLoaderSourceHandler))]
 [assembly: ExportImageSourceHandler(typeof(FontImageSource), typeof(FontImageSourceHandler))]
 [assembly: ExportRenderer(typeof(Page), typeof(PageRenderer))]
-[assembly: ExportRenderer(typeof(CarouselPage), typeof(CarouselPageRenderer))]
+[assembly: ExportRenderer(typeof(CarouselPage), typeof(CarouselPageRenderer))][assembly: ExportRenderer(typeof(MasterDetailPage), typeof(MasterDetailPageRenderer))]
+
+[assembly: ExportRenderer(typeof(FlyoutPage), typeof(FlyoutPageRenderer))]
 [assembly: ExportRenderer(typeof(MasterDetailPage), typeof(MasterDetailPageRenderer))]
 [assembly: ExportRenderer(typeof(TabbedPage), typeof(TabbedPageRenderer))]
 [assembly: ExportRenderer(typeof(NavigationPage), typeof(NavigationPageRenderer))]

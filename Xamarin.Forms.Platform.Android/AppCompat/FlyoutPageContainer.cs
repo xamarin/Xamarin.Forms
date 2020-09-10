@@ -6,21 +6,21 @@ using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
-	internal class MasterDetailContainer : Android.MasterDetailContainer, IManageFragments
+	internal class FlyoutPageContainer : Android.FlyoutPageContainer, IManageFragments
 	{
 		PageContainer _pageContainer;
 		FragmentManager _fragmentManager;
-		readonly bool _isMaster;
-		MasterDetailPage _parent;
+		readonly bool _isFlyout;
+		FlyoutPage _parent;
 		Fragment _currentFragment;
 		bool _disposed;
 		FragmentTransaction _transaction;
 
-		public MasterDetailContainer(MasterDetailPage parent, bool isMaster, Context context) : base(parent, isMaster, context)
+		public FlyoutPageContainer(FlyoutPage parent, bool isFlyout, Context context) : base(parent, isFlyout, context)
 		{
 			Id = Platform.GenerateViewId();
 			_parent = parent;
-			_isMaster = isMaster;
+			_isFlyout = isFlyout;
 		}
 
 		public bool MarkedForDispose { get; internal set; } = false;
@@ -35,16 +35,16 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			// Make sure that it gets laid out
 			if (_pageContainer != null)
 			{
-				if (_isMaster)
+				if (_isFlyout)
 				{
-					var controller = (IMasterDetailPageController)_parent;
-					var width = (int)Context.ToPixels(controller.MasterBounds.Width);
-					// When the base class computes the size of the Master container, it starts at the top of the 
-					// screen and adds padding (_parent.MasterBounds.Top) to leave room for the status bar
+					var controller = (IFlyoutPageController)_parent;
+					var width = (int)Context.ToPixels(controller.FlyoutBounds.Width);
+					// When the base class computes the size of the Flyout container, it starts at the top of the 
+					// screen and adds padding (_parent.FlyoutBounds.Top) to leave room for the status bar
 					// When this container is laid out, it's already starting from the adjusted y value of the parent,
-					// so we subtract _parent.MasterBounds.Top from our starting point (to get 0) and add it to the 
-					// bottom (so the master page stretches to the bottom of the screen)
-					var height = (int)Context.ToPixels(controller.MasterBounds.Height + controller.MasterBounds.Top);
+					// so we subtract _parent.FlyoutBounds.Top from our starting point (to get 0) and add it to the 
+					// bottom (so the flyout page stretches to the bottom of the screen)
+					var height = (int)Context.ToPixels(controller.FlyoutBounds.Height + controller.FlyoutBounds.Top);
 					_pageContainer.Layout(0, 0, width, height);
 				}
 				else
