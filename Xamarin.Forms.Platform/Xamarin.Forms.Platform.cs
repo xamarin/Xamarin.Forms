@@ -142,11 +142,7 @@
 	internal class _MasterDetailPageRenderer
 	{
 	}
-
-	internal class _MediaElementRenderer
-	{
-	}
-
+   
 	internal class _SwipeViewRenderer
 	{
 	}
