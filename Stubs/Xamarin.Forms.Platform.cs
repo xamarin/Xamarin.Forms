@@ -158,13 +158,15 @@ namespace Xamarin.Forms.Platform
 	internal class _PageRenderer { }
 
 
-	
+
 
 
 #if !__IOS__ && !TIZEN4_0
 	[RenderWith(typeof(FlyoutPageRenderer))]
 #elif TIZEN4_0
+#pragma warning disable CS0618 // Type or member is obsolete
 	[RenderWith (typeof(MasterDetailPageRenderer))]
+#pragma warning restore CS0618 // Type or member is obsolete
 #else
 	[RenderWith (typeof (PhoneFlyoutPageRenderer))]
 #endif
@@ -173,7 +175,9 @@ namespace Xamarin.Forms.Platform
 #if !__IOS__ && !TIZEN4_0
 	[RenderWith(typeof(MasterDetailPageRenderer))]
 #elif TIZEN4_0
+#pragma warning disable CS0618 // Type or member is obsolete
 	[RenderWith (typeof(MasterDetailPageRenderer))]
+#pragma warning restore CS0618 // Type or member is obsolete
 #else
 	[RenderWith (typeof (PhoneMasterDetailRenderer))]
 #endif
