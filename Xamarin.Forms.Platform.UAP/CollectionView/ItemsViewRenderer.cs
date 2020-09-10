@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Platform.UWP
 					observableItemTemplateCollection.CleanUp();
 				}
 
-				if (CollectionViewSource?.Source is INotifyCollectionChanged incc)
+				if (CollectionViewSource.Source is INotifyCollectionChanged incc)
 				{
 					incc.CollectionChanged -= ItemsChanged;
 				}
