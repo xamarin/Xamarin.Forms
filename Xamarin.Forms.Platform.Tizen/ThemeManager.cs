@@ -953,7 +953,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (GetPhysicalPortraitSizeInDP() > 1000)
 			{
-				size *= 2;
+				size *= 2.5;
 			}
 			if (!Forms.DisplayResolutionUnit.UseDP && !Forms.DisplayResolutionUnit.UseVP)
 			{
