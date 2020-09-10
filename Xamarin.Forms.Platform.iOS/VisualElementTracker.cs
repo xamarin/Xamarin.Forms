@@ -65,6 +65,21 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public event EventHandler NativeControlUpdated;
 
+		internal void Disconnect()
+		{
+			Disconnect(_element);
+		}
+
+		void Disconnect(VisualElement oldElement)
+		{
+			if (oldElement == null)
+				return;
+
+			oldElement.PropertyChanged -= _propertyChangedHandler;
+			oldElement.SizeChanged -= _sizeChangedEventHandler;
+			oldElement.BatchCommitted -= _batchCommittedHandler;
+		}
+
 		protected virtual void Dispose(bool disposing)
 		{
 			if (_disposed)
@@ -344,9 +359,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (oldElement != null)
 			{
-				oldElement.PropertyChanged -= _propertyChangedHandler;
-				oldElement.SizeChanged -= _sizeChangedEventHandler;
-				oldElement.BatchCommitted -= _batchCommittedHandler;
+				Disconnect(oldElement);
 			}
 
 			_element = newElement;
@@ -452,19 +465,19 @@ namespace Xamarin.Forms.Platform.MacOS
 				hasClipShapeLayer =
 					uiview.Layer != null &&
 					uiview.Layer.Mask != null &&
-					uiview.Layer.Mask.Name == ClipShapeLayer;
+					uiview.Layer.Mask?.Name == ClipShapeLayer;
 			else
 			{
 				hasClipShapeLayer =
 					uiview.MaskView != null &&
 					uiview.MaskView.Layer.Mask != null &&
-					uiview.MaskView.Layer.Mask.Name == ClipShapeLayer;
+					uiview.MaskView.Layer.Mask?.Name == ClipShapeLayer;
 			}
 #else
 			hasClipShapeLayer =
 				uiview.Layer != null &&
 				uiview.Layer.Mask != null &&
-				uiview.Layer.Mask.Name == ClipShapeLayer;
+				uiview.Layer.Mask?.Name == ClipShapeLayer;
 #endif
 
 			var formsGeometry = element.Clip;

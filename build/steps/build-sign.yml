@@ -7,18 +7,21 @@ parameters:
   preBuildSteps: []   # any steps to run before the build
   postBuildSteps: []  # any additional steps to run after the build
   signBuild: false
+  sourceRepo: 'xamarin/xamarin.forms'
 
 steps:
   - checkout: none
     clean: true
-    
+
   - template: sign-artifacts/steps/v1.yml@xamarin-templates
     parameters:
       targetFolder: $(Build.ArtifactStagingDirectory)/nuget/signed
-      sourceRepo: 'xamarin/xamarin.forms'
+      sourceRepo: ${{ parameters.sourceRepo }}
       jenkinsEndpoint: Xamarin Code Signing Jenkins
       jenkinsJob: sign-from-vsts
       artifactHost: 'https://dl.internalx.com/vsts-devdiv'
+      githubToken: "$(github--pat--xamarinreleasemanager)"
+      CodeSignOverride: true
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: nuget signed'

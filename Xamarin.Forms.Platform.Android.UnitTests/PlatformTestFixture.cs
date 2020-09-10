@@ -11,13 +11,8 @@ using ASearchView = Android.Widget.SearchView;
 using System.Collections.Generic;
 using NUnit.Framework;
 using System.Threading.Tasks;
-
-#if __ANDROID_29__
 using AndroidX.AppCompat.Widget;
 using AndroidX.CardView.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
 
 namespace Xamarin.Forms.Platform.Android.UnitTests
 {
@@ -72,6 +67,18 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 
 				return _context;
 			}
+		}
+
+		[SetUp]
+		public virtual void Setup()
+		{
+
+		}
+
+		[TearDown]
+		public virtual void TearDown()
+		{
+
 		}
 
 		protected static void ToggleRTLSupport(Context context, bool enabled)
@@ -449,6 +456,14 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 					return getProperty(control);
 				}
 			});
+		}
+
+		protected bool AreColorsSimilar(AColor c1, AColor c2, int tolerance)
+		{
+			return
+				Math.Abs(c1.R - c2.R) < tolerance &&
+				Math.Abs(c1.G - c2.G) < tolerance &&
+				Math.Abs(c1.B - c2.B) < tolerance;
 		}
 	}
 }

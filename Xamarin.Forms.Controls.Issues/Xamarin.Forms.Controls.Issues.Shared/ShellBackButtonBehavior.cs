@@ -36,20 +36,28 @@ namespace Xamarin.Forms.Controls.Issues
 		const string ToggleTextId = "ToggleTextId";
 		const string CommandResultId = "CommandResult";
 		const string PushPageId = "PushPageId";
+		const string FlyoutOpen = "Flyout Open";
 
 		protected override void Init()
 		{
 			AddContentPage(new BackButtonPage());
+			Items.Add(new MenuItem() { Text = "Flyout Open", AutomationId = "Flyout Open" });
 		}
 
 		public class BackButtonPage : ContentPage
 		{
 			BackButtonBehavior behavior = new BackButtonBehavior();
 			Entry _commandParameter;
-			Label _commandResult = new Label() { AutomationId = CommandResultId };
+			Label _commandResult = new Label()
+			{
+				AutomationId = CommandResultId,
+				BackgroundColor = Color.LightBlue,
+				Text = "Label"
+			};
 
 			public BackButtonPage()
 			{
+				Title = $"Page {Shell.Current?.Navigation?.NavigationStack?.Count ?? 0}";
 				_commandParameter = new Entry()
 				{
 					Placeholder = "Command Parameter",
@@ -65,6 +73,17 @@ namespace Xamarin.Forms.Controls.Issues
 				};
 
 				StackLayout layout = new StackLayout();
+
+				Button toggleFlyoutBehaviorButton = null;
+
+				toggleFlyoutBehaviorButton = new Button()
+				{
+					Text = "Flyout Behavior: Flyout",
+					Command = new Command((o) => ToggleFlyoutBehavior(o, toggleFlyoutBehaviorButton)),
+					AutomationId = "ToggleFlyoutBehavior"
+				};
+
+				layout.Children.Add(toggleFlyoutBehaviorButton);
 
 				layout.Children.Add(new Label()
 				{
@@ -120,18 +139,12 @@ namespace Xamarin.Forms.Controls.Issues
 					AutomationId = PushPageId
 				});
 
-				layout.Children.Add(new Button()
-				{
-					Text = "Toggle Flyout Behavior",
-					Command = new Command(ToggleFlyoutBehavior)
-				});
-
 
 				Content = new ScrollView() { Content = layout };
 				ToggleBehavior();
 			}
 
-			void ToggleFlyoutBehavior(object obj)
+			void ToggleFlyoutBehavior(object obj, Button btn)
 			{
 				var behavior = (int)(Shell.Current.FlyoutBehavior);
 				behavior++;
@@ -140,6 +153,7 @@ namespace Xamarin.Forms.Controls.Issues
 					behavior = 0;
 
 				Shell.Current.FlyoutBehavior = (FlyoutBehavior)behavior;
+				btn.Text = $"Flyout Behavior: {(FlyoutBehavior)behavior}";
 
 			}
 
@@ -180,15 +194,23 @@ namespace Xamarin.Forms.Controls.Issues
 				if (!String.IsNullOrWhiteSpace(behavior.TextOverride))
 					behavior.ClearValue(BackButtonBehavior.TextOverrideProperty);
 				else
-					behavior.TextOverride = "Text";
+					behavior.TextOverride = "T3xt";
 			}
 
 			public void ToggleIcon()
 			{
 				if (behavior.IsSet(BackButtonBehavior.IconOverrideProperty))
+				{
 					behavior.ClearValue(BackButtonBehavior.IconOverrideProperty);
+				}
 				else
-					behavior.IconOverride = "coffee.png";
+				{
+					behavior.IconOverride = new FileImageSource()
+					{
+						File = "coffee.png",
+						AutomationId = "CoffeeAutomation"
+					};
+				}
 
 			}
 
@@ -207,14 +229,29 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.EnterText(EntryCommandParameter, "parameter");
 			ShowFlyout();
 
-			var commandResult = RunningApp.WaitForElement(CommandResultId)[0].ReadText();
+			// API 19 workaround
+			var commandResult = RunningApp.QueryUntilPresent(() =>
+			{
+				ShowFlyout();
+				if (RunningApp.WaitForElement(CommandResultId)[0].ReadText() == "parameter")
+					return RunningApp.WaitForElement(CommandResultId);
 
-			Assert.AreEqual(commandResult, "parameter");
+				return null;
+			})?.FirstOrDefault()?.ReadText();
+
+			Assert.AreEqual("parameter", commandResult);
 			RunningApp.EnterText(EntryCommandParameter, "canexecutetest");
 			RunningApp.Tap(ToggleCommandCanExecuteId);
 
-			commandResult = RunningApp.WaitForElement(CommandResultId)[0].ReadText();
-			Assert.AreEqual(commandResult, "parameter");
+			commandResult = RunningApp.QueryUntilPresent(() =>
+			{
+				if (RunningApp.WaitForElement(CommandResultId)[0].ReadText() == "parameter")
+					return RunningApp.WaitForElement(CommandResultId);
+
+				return null;
+			})?.FirstOrDefault()?.ReadText();
+
+			Assert.AreEqual("parameter", commandResult);
 		}
 
 		[Test]
@@ -223,11 +260,88 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap(PushPageId);
 			RunningApp.Tap(ToggleCommandId);
 			RunningApp.EnterText(EntryCommandParameter, "parameter");
-			TapBackArrow();
 
-			var commandResult = RunningApp.WaitForElement(CommandResultId)[0].ReadText();
+			// API 19 workaround
+			var commandResult = RunningApp.QueryUntilPresent(() =>
+			{
+
+#if __ANDROID__
+				TapBackArrow();
+#else
+				RunningApp.Tap("Page 0");
+#endif
+
+				if (RunningApp.WaitForElement(CommandResultId)[0].ReadText() == "parameter")
+					return RunningApp.WaitForElement(CommandResultId);
+
+				return null;
+			})?.FirstOrDefault()?.ReadText();
+
 			Assert.AreEqual(commandResult, "parameter");
 		}
+
+		[Test]
+		public void BackButtonSetToTextStillNavigatesBack()
+		{
+			RunningApp.Tap(PushPageId);
+			RunningApp.Tap(ToggleTextId);
+			RunningApp.Tap("T3xt");
+			RunningApp.WaitForNoElement(FlyoutOpen);
+			RunningApp.WaitForElement("Page 0");
+		}
+
+		[Test]
+		public void BackButtonSetToTextStillOpensFlyout()
+		{
+			RunningApp.Tap(ToggleTextId);
+
+			RunningApp.Tap("T3xt");
+			RunningApp.WaitForElement(FlyoutOpen);
+		}
+
+#if __ANDROID__
+		[Test]
+		public void FlyoutDisabledDoesntOpenFlyoutWhenSetToText()
+		{
+			RunningApp.WaitForElement("ToggleFlyoutBehavior");
+			RunningApp.Tap("ToggleFlyoutBehavior");
+			RunningApp.Tap("ToggleFlyoutBehavior");
+			RunningApp.WaitForElement("Flyout Behavior: Disabled");
+			RunningApp.Tap(ToggleTextId);
+			RunningApp.Tap("T3xt");
+			RunningApp.WaitForNoElement(FlyoutOpen);
+		}
+#else
+		[Test]
+		public void FlyoutDisabledDoesntOpenFlyoutWhenSetToText()
+		{
+			RunningApp.WaitForElement("ToggleFlyoutBehavior");
+			RunningApp.Tap(ToggleTextId);
+			RunningApp.WaitForElement("T3xt");
+			RunningApp.Tap("ToggleFlyoutBehavior");
+			RunningApp.WaitForElement("T3xt");
+			RunningApp.Tap("ToggleFlyoutBehavior");
+			RunningApp.WaitForElement("Flyout Behavior: Disabled");
+			RunningApp.Tap("T3xt");
+			RunningApp.WaitForNoElement(FlyoutOpen);
+		}
+
+		[Test]
+		public void AutomationIdOnIconOverride()
+		{
+			RunningApp.WaitForElement("ToggleFlyoutBehavior");
+			RunningApp.Tap(ToggleIconId);
+			RunningApp.WaitForElement("CoffeeAutomation");
+			RunningApp.Tap("ToggleFlyoutBehavior");
+			RunningApp.WaitForElement("CoffeeAutomation");
+			RunningApp.Tap("ToggleFlyoutBehavior");
+			RunningApp.WaitForElement("Flyout Behavior: Disabled");
+			RunningApp.Tap("CoffeeAutomation");
+			RunningApp.WaitForNoElement(FlyoutOpen);
+		}
+
+#endif
+
 #endif
 	}
 }

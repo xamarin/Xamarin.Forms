@@ -7,7 +7,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
+using WBrush = Windows.UI.Xaml.Media.Brush;
 using WVisualStateManager = Windows.UI.Xaml.VisualStateManager;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -21,20 +21,20 @@ namespace Xamarin.Forms.Platform.UWP
 		const char ObfuscationCharacter = '●';
 
 		public static readonly DependencyProperty PlaceholderForegroundBrushProperty =
-			DependencyProperty.Register(nameof(PlaceholderForegroundBrush), typeof(Brush), typeof(FormsTextBox),
-				new PropertyMetadata(default(Brush), FocusPropertyChanged));
+			DependencyProperty.Register(nameof(PlaceholderForegroundBrush), typeof(WBrush), typeof(FormsTextBox),
+				new PropertyMetadata(default(WBrush), FocusPropertyChanged));
 
 		public static readonly DependencyProperty PlaceholderForegroundFocusBrushProperty =
-			DependencyProperty.Register(nameof(PlaceholderForegroundFocusBrush), typeof(Brush), typeof(FormsTextBox),
-				new PropertyMetadata(default(Brush), FocusPropertyChanged));
+			DependencyProperty.Register(nameof(PlaceholderForegroundFocusBrush), typeof(WBrush), typeof(FormsTextBox),
+				new PropertyMetadata(default(WBrush), FocusPropertyChanged));
 
 		public static readonly DependencyProperty ForegroundFocusBrushProperty =
-			DependencyProperty.Register(nameof(ForegroundFocusBrush), typeof(Brush), typeof(FormsTextBox),
-				new PropertyMetadata(default(Brush), FocusPropertyChanged));
+			DependencyProperty.Register(nameof(ForegroundFocusBrush), typeof(WBrush), typeof(FormsTextBox),
+				new PropertyMetadata(default(WBrush), FocusPropertyChanged));
 
 		public static readonly DependencyProperty BackgroundFocusBrushProperty =
-			DependencyProperty.Register(nameof(BackgroundFocusBrush), typeof(Brush), typeof(FormsTextBox),
-				new PropertyMetadata(default(Brush), FocusPropertyChanged));
+			DependencyProperty.Register(nameof(BackgroundFocusBrush), typeof(WBrush), typeof(FormsTextBox),
+				new PropertyMetadata(default(WBrush), FocusPropertyChanged));
 
 		public static readonly DependencyProperty IsPasswordProperty = DependencyProperty.Register(nameof(IsPassword),
 			typeof(bool), typeof(FormsTextBox), new PropertyMetadata(default(bool), OnIsPasswordChanged));
@@ -47,8 +47,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		InputScope _passwordInputScope;
 		InputScope _numericPasswordInputScope;
-		Border _borderElement;
-		Windows.UI.Xaml.Controls.ScrollViewer _scrollViewer;
+		ScrollViewer _scrollViewer;
 		Windows.UI.Xaml.Controls.Grid _rootGrid;
 		Windows.UI.Xaml.VisualState _DeleteButtonVisibleState;
 		Windows.UI.Xaml.VisualStateGroup _DeleteButtonVisibleStateGroups;
@@ -64,7 +63,7 @@ namespace Xamarin.Forms.Platform.UWP
 			TextChanged += OnTextChanged;
 			SelectionChanged += OnSelectionChanged;
 			IsEnabledChanged += OnIsEnabledChanged;
-			Loaded += OnLoaded;
+			SizeChanged += OnSizeChanged;
 			RegisterPropertyChangedCallback(VerticalContentAlignmentProperty, OnVerticalContentAlignmentChanged);
 		}
 
@@ -73,7 +72,7 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateEnabled();
 		}
 
-		public bool UpdateVerticalAlignmentOnLoad { get; set; } = true;
+		internal bool UpdateVerticalAlignmentOnLoad { get; set; } = true;
 
 		public bool ClearButtonVisible
 		{
@@ -81,15 +80,15 @@ namespace Xamarin.Forms.Platform.UWP
 			set { SetValue(ClearButtonVisibleProperty, value);}
 		}
 
-		public Brush BackgroundFocusBrush
+		public WBrush BackgroundFocusBrush
 		{
-			get { return (Brush)GetValue(BackgroundFocusBrushProperty); }
+			get { return (WBrush)GetValue(BackgroundFocusBrushProperty); }
 			set { SetValue(BackgroundFocusBrushProperty, value); }
 		}
 
-		public Brush ForegroundFocusBrush
+		public WBrush ForegroundFocusBrush
 		{
-			get { return (Brush)GetValue(ForegroundFocusBrushProperty); }
+			get { return (WBrush)GetValue(ForegroundFocusBrushProperty); }
 			set { SetValue(ForegroundFocusBrushProperty, value); }
 		}
 
@@ -101,15 +100,15 @@ namespace Xamarin.Forms.Platform.UWP
 
 		internal bool UseFormsVsm { get; set; }
 
-		public Brush PlaceholderForegroundBrush
+		public WBrush PlaceholderForegroundBrush
 		{
-			get { return (Brush)GetValue(PlaceholderForegroundBrushProperty); }
+			get { return (WBrush)GetValue(PlaceholderForegroundBrushProperty); }
 			set { SetValue(PlaceholderForegroundBrushProperty, value); }
 		}
 
-		public Brush PlaceholderForegroundFocusBrush
+		public WBrush PlaceholderForegroundFocusBrush
 		{
-			get { return (Brush)GetValue(PlaceholderForegroundFocusBrushProperty); }
+			get { return (WBrush)GetValue(PlaceholderForegroundFocusBrushProperty); }
 			set { SetValue(PlaceholderForegroundFocusBrushProperty, value); }
 		}
 
@@ -157,30 +156,21 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnApplyTemplate();
 
-			if (Device.Idiom == TargetIdiom.Phone)
-			{
-				// If we're on the phone, we need to grab this from the template
-				// so we can manually handle its background when focused
-				_borderElement = (Border)GetTemplateChild("BorderElement");
-			}
-			
-			_rootGrid = (Windows.UI.Xaml.Controls.Grid)GetTemplateChild("RootGrid");
+			_rootGrid = GetTemplateChild("RootGrid") as Windows.UI.Xaml.Controls.Grid;
 			if (_rootGrid != null)
 			{
 				var stateGroups = WVisualStateManager.GetVisualStateGroups(_rootGrid).ToList();
 				_DeleteButtonVisibleStateGroups = stateGroups.SingleOrDefault(sg => sg.Name == "ButtonStates");
 				if (_DeleteButtonVisibleStateGroups != null)
 					_DeleteButtonVisibleState = _DeleteButtonVisibleStateGroups.States.SingleOrDefault(s => s.Name == "ButtonVisible");
+				UpdateClearButtonVisible();
 			}
 
-			_scrollViewer= (Windows.UI.Xaml.Controls.ScrollViewer)GetTemplateChild("ContentElement");
+			_scrollViewer= GetTemplateChild("ContentElement") as ScrollViewer;
 		}
 
-		void OnLoaded(object sender, RoutedEventArgs e)
+		void OnSizeChanged(object sender, SizeChangedEventArgs e)
 		{
-			// Set the vertical alignment on load, because setting it in the FormsTextBoxStyle causes text display issues
-			// But the editor has display issues if you do set the vertical alignment here, so the flag allows renderer using
-			// the text box to control this
 			UpdateTemplateScrollViewerVerticalAlignment();
 		}
 
@@ -191,6 +181,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateTemplateScrollViewerVerticalAlignment()
 		{
+			// This is used to set the vertical alignment after the text box has a size, setting it before causes rendering issues.
+			// But the editor has display issues if you do set the vertical alignment here, so the flag allows renderer using
+			// the text box to control this
 			if (_scrollViewer != null && UpdateVerticalAlignmentOnLoad)
 			{
 				_scrollViewer.VerticalAlignment = VerticalContentAlignment;
@@ -395,19 +388,24 @@ namespace Xamarin.Forms.Platform.UWP
 			SelectionStart = base.Text.Length;
 		}
 
-		static void ClearButtonVisibleChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+		void UpdateClearButtonVisible()
 		{
-			var textBox = (FormsTextBox)dependencyObject;
-			var visibleState = textBox._DeleteButtonVisibleState;
-			var states = textBox._DeleteButtonVisibleStateGroups?.States;
+			var visibleState = _DeleteButtonVisibleState;
+			var states = _DeleteButtonVisibleStateGroups?.States;
 
 			if (states != null && visibleState != null)
 			{
-				if (textBox.ClearButtonVisible && !states.Contains(visibleState))
+				if (ClearButtonVisible && !states.Contains(visibleState))
 					states.Add(visibleState);
 				else
 					states.Remove(visibleState);
 			}
+		}
+
+		static void ClearButtonVisibleChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+		{
+			var textBox = (FormsTextBox)dependencyObject;
+			textBox.UpdateClearButtonVisible();
 		}
 
 		static void TextPropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)

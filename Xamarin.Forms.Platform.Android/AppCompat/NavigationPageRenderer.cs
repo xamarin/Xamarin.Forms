@@ -10,8 +10,6 @@ using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Runtime;
-#if __ANDROID_29__
-using AndroidX.Core.Widget;
 using Fragment = AndroidX.Fragment.App.Fragment;
 using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
@@ -20,16 +18,6 @@ using ActionBarDrawerToggle = AndroidX.AppCompat.App.ActionBarDrawerToggle;
 using AndroidX.AppCompat.Graphics.Drawable;
 using AndroidX.DrawerLayout.Widget;
 using AndroidX.AppCompat.App;
-#else
-using Android.Support.V4.Widget;
-using Fragment = Android.Support.V4.App.Fragment;
-using FragmentManager = Android.Support.V4.App.FragmentManager;
-using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
-using AToolbar = Android.Support.V7.Widget.Toolbar;
-using ActionBarDrawerToggle = Android.Support.V7.App.ActionBarDrawerToggle;
-using Android.Support.V7.Graphics.Drawable;
-using Android.Support.V7.App;
-#endif
 using Android.Util;
 using Android.Views;
 using Xamarin.Forms.Internals;
@@ -394,6 +382,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
+				UpdateToolbar();
+			else if (e.PropertyName == NavigationPage.BarBackgroundProperty.PropertyName)
 				UpdateToolbar();
 			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName)
 				UpdateToolbar();
@@ -1016,6 +1006,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					bar.SetBackgroundColor(tintColor.ToAndroid());
 				}
 			}
+
+			Brush barBackground = Element.BarBackground;
+			bar.UpdateBackground(barBackground);
 
 			Color textColor = Element.BarTextColor;
 			if (!textColor.IsDefault)

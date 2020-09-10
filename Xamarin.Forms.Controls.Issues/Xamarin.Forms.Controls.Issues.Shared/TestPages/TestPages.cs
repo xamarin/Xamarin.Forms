@@ -3,6 +3,7 @@ using System.Reflection;
 using Xamarin.Forms.CustomAttributes;
 using IOPath = System.IO.Path;
 using NUnit.Framework.Interfaces;
+using Xamarin.Forms.Controls.Issues;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -63,7 +64,16 @@ namespace Xamarin.Forms.Controls
 		static IApp InitializeAndroidApp()
 		{
 			var fullApkPath = IOPath.Combine(TestContext.CurrentContext.TestDirectory, AppPaths.ApkPath);
-			var app = ConfigureApp.Android.ApkFile(fullApkPath).Debug().StartApp(UITest.Configuration.AppDataMode.DoNotClear);
+
+			var appConfiguration = ConfigureApp.Android.ApkFile(fullApkPath).Debug();
+
+			if (TestContext.Parameters.Exists("IncludeScreenShots") &&
+				Convert.ToBoolean(TestContext.Parameters["IncludeScreenShots"]))
+			{
+				appConfiguration = appConfiguration.EnableLocalScreenshots();
+			}
+
+			var app = appConfiguration.StartApp(UITest.Configuration.AppDataMode.DoNotClear);
 
 			if (bool.Parse((string)app.Invoke("IsPreAppCompat")))
 			{
@@ -92,6 +102,12 @@ namespace Xamarin.Forms.Controls
 			if(!String.IsNullOrWhiteSpace(UDID))
 			{
 				appConfiguration = appConfiguration.DeviceIdentifier(UDID);
+			}
+
+			if (TestContext.Parameters.Exists("IncludeScreenShots") &&
+				Convert.ToBoolean(TestContext.Parameters["IncludeScreenShots"]))
+			{
+				appConfiguration = appConfiguration.EnableLocalScreenshots();
 			}
 
 			var app = appConfiguration.StartApp(Xamarin.UITest.Configuration.AppDataMode.DoNotClear);
@@ -155,6 +171,10 @@ namespace Xamarin.Forms.Controls
 			int maxAttempts = 2;
 			int attempts = 0;
 
+#if __WINDOWS__
+			bool attemptOneRestart = false;
+			bool waitNoElementAttempt = false;
+#endif
 			while (attempts < maxAttempts)
 			{
 				attempts += 1;
@@ -182,6 +202,7 @@ namespace Xamarin.Forms.Controls
 					// So we're just going to use the 'Reset' method to bounce the app to the opening screen
 					// and then fall back to the old manual navigation
 					WindowsTestBase.Reset();
+					app.RestartIfAppIsClosed();
 #endif
 				}
 				catch (Exception ex)
@@ -203,8 +224,35 @@ namespace Xamarin.Forms.Controls
 					app.WaitForElement(q => q.Raw("* marked:'SearchButton'"));
 					app.Tap(q => q.Raw("* marked:'SearchButton'"));
 
-					return;
+#if __WINDOWS__
+					try
+					{
+						if (!waitNoElementAttempt)
+						{
+							waitNoElementAttempt = true;
+							app.WaitForNoElement(q => q.Raw("* marked:'TestCasesIssueList'"), timeout: TimeSpan.FromMinutes(1));
+						}
+					}
+					catch
+					{
+						app.Restart();
+						attempts--;
+						throw;
+					}
+#endif
+
+					if (!app.RestartIfAppIsClosed())
+						return;
 				}
+#if __WINDOWS__
+				catch (Exception we)
+				when (we.IsWindowClosedException() && !attemptOneRestart)
+				{
+					attemptOneRestart = true;
+					attempts--;
+					app.RestartIfAppIsClosed();
+				}
+#endif
 				catch (Exception ex)
 				{
 					var debugMessage = $"Both navigation methods failed. {ex}";
@@ -633,6 +681,13 @@ namespace Xamarin.Forms.Controls
 			return page;
 		}
 
+		public ContentPage AddFlyoutItem(string title)
+		{
+			ContentPage page = new ContentPage() { Title = title };
+			AddFlyoutItem(page, title);
+			return page;
+		}
+
 		public FlyoutItem AddFlyoutItem(ContentPage page, string title)
 		{
 			var item = new FlyoutItem
@@ -653,32 +708,6 @@ namespace Xamarin.Forms.Controls
 
 			Items.Add(item);
 
-			return item;
-		}
-
-		public TabBar CreateTabBar(string shellItemTitle)
-		{
-			shellItemTitle = shellItemTitle ?? $"Item: {Items.Count}";
-			ContentPage page = new ContentPage();
-			TabBar item = new TabBar()
-			{
-				Title = shellItemTitle,
-				Items =
-				{
-					new ShellSection()
-					{
-						Items =
-						{
-							new ShellContent()
-							{
-								ContentTemplate = new DataTemplate(() => page),
-							}
-						}
-					}
-				}
-			};
-
-			Items.Add(item);
 			return item;
 		}
 

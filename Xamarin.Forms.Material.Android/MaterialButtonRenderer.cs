@@ -1,25 +1,16 @@
 
 using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
-#if __ANDROID_29__
 using AndroidX.Core.View;
 using AndroidX.AppCompat.Widget;
 using MButton = Google.Android.Material.Button.MaterialButton;
-#else
-using Android.Support.V4.View;
-using Android.Support.V7.Widget;
-using MButton = Android.Support.Design.Button.MaterialButton;
-#endif
 using Android.Util;
 using Android.Views;
-using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.FastRenderers;
-using Xamarin.Forms.Material.Android;
 using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AColor = Android.Graphics.Color;
@@ -211,11 +202,11 @@ namespace Xamarin.Forms.Material.Android
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == Button.BorderWidthProperty.PropertyName || e.PropertyName == Button.BorderColorProperty.PropertyName || e.PropertyName == Button.CornerRadiusProperty.PropertyName)
+			if (e.IsOneOf(Button.BorderWidthProperty, Button.BorderColorProperty, Button.CornerRadiusProperty))
 				UpdateBorder();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 				UpdateFont();
-			else if (e.PropertyName == Button.TextColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			else if (e.IsOneOf(Button.TextColorProperty, VisualElement.BackgroundColorProperty, VisualElement.BackgroundProperty))
 				UpdatePrimaryColors();
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();

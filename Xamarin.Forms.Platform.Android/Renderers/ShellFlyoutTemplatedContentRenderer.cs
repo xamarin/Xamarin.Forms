@@ -1,13 +1,7 @@
 ﻿using Android.Content;
 using Android.Graphics.Drawables;
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
 using AndroidX.RecyclerView.Widget;
 using Google.Android.Material.AppBar;
-#else
-using Android.Support.V7.Widget;
-using Android.Support.Design.Widget;
-#endif
 using Android.Util;
 using Android.Views;
 using Android.Widget;
@@ -136,6 +130,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFlyoutHeaderBehavior();
 			else if (e.IsOneOf(
 				Shell.FlyoutBackgroundColorProperty,
+				Shell.FlyoutBackgroundProperty,
 				Shell.FlyoutBackgroundImageProperty,
 				Shell.FlyoutBackgroundImageAspectProperty))
 				UpdateFlyoutBackground();
@@ -187,12 +182,19 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void UpdateFlyoutBackground()
 		{
-			var color = _shellContext.Shell.FlyoutBackgroundColor;
-			if (_defaultBackgroundColor == null)
-				_defaultBackgroundColor = _rootView.Background;
+			var brush = _shellContext.Shell.FlyoutBackground;
 
-			_rootView.Background = color.IsDefault ? _defaultBackgroundColor : new ColorDrawable(color.ToAndroid());
+			if (Brush.IsNullOrEmpty(brush))
+			{
+				var color = _shellContext.Shell.FlyoutBackgroundColor;
+				if (_defaultBackgroundColor == null)
+					_defaultBackgroundColor = _rootView.Background;
 
+				_rootView.Background = color.IsDefault ? _defaultBackgroundColor : new ColorDrawable(color.ToAndroid());
+			}
+			else
+				_rootView.UpdateBackground(brush);
+			
 			UpdateFlyoutBgImageAsync();
 		}
 

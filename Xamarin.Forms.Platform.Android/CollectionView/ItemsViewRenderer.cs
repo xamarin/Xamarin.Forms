@@ -1,15 +1,8 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
-using Android.Graphics;
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
 using AndroidX.RecyclerView.Widget;
 using AViewCompat = AndroidX.Core.View.ViewCompat;
-#else
-using Android.Support.V7.Widget;
-using AViewCompat = Android.Support.V4.View.ViewCompat;
-#endif
 using Android.Views;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.CollectionView;
@@ -61,7 +54,7 @@ namespace Xamarin.Forms.Platform.Android
 			HorizontalScrollBarEnabled = false;
 		}
 
-		ScrollHelper ScrollHelper => _scrollHelper = _scrollHelper ?? new ScrollHelper(this);
+		internal ScrollHelper ScrollHelper => _scrollHelper = _scrollHelper ?? new ScrollHelper(this);
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
@@ -227,6 +220,10 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateBackgroundColor();
 			}
+			else if (changedProperty.Is(VisualElement.BackgroundProperty))
+			{
+				UpdateBackground();
+			}
 			else if (changedProperty.Is(VisualElement.FlowDirectionProperty))
 			{
 				UpdateFlowDirection();
@@ -322,6 +319,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateSnapBehavior();
 			UpdateBackgroundColor();
+			UpdateBackground();
 			UpdateFlowDirection();
 			UpdateItemSpacing();
 
@@ -467,6 +465,19 @@ namespace Xamarin.Forms.Platform.Android
 			SetBackgroundColor((color ?? Element.BackgroundColor).ToAndroid());
 		}
 
+		protected virtual void UpdateBackground(Brush brush = null)
+		{
+			if (Element == null)
+				return;
+
+			if (!(this is RecyclerView recyclerView))
+				return;
+
+			Brush background = Element.Background;
+
+			recyclerView.UpdateBackground(background);
+		}
+
 		protected virtual void UpdateFlowDirection()
 		{
 			if (Element == null)
@@ -591,6 +602,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void ScrollTo(ScrollToRequestEventArgs args)
 		{
+			if (ItemsView == null)
+				return;
+
 			var position = DetermineTargetPosition(args);
 
 			if (args.IsAnimated)
@@ -649,7 +663,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (ItemsView.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepLastItemInView)
 			{
-				ScrollTo(new ScrollToRequestEventArgs(ItemsViewAdapter.ItemCount, 0,
+				ScrollTo(new ScrollToRequestEventArgs(GetLayoutManager().ItemCount, 0,
 					Xamarin.Forms.ScrollToPosition.MakeVisible, true));
 			}
 			else if (ItemsView.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepScrollOffset)

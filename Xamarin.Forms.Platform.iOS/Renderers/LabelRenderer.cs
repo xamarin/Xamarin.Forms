@@ -322,7 +322,21 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 				Layer.BackgroundColor = color.ToCGColor();
 #endif
+		}
 
+		protected override void SetBackground(Brush brush)
+		{
+			var backgroundLayer = this.GetBackgroundLayer(brush);
+
+			if (backgroundLayer != null)
+			{
+#if __MOBILE__
+				Layer.BackgroundColor = UIColor.Clear.CGColor;
+#endif
+				Layer.InsertBackgroundLayer(backgroundLayer, 0);
+			}
+			else
+				Layer.RemoveBackgroundLayer();
 		}
 
 		void UpdateHorizontalTextAlignment()
@@ -559,7 +573,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				Control.TextColor = textColor.ToUIColor(ColorExtensions.LabelColor);
 #else
 			var alignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
-			var textWithColor = new NSAttributedString(Element.Text ?? "", font: Element.ToNSFont(), foregroundColor: textColor.ToNSColor(ColorExtensions.Black), paragraphStyle: new NSMutableParagraphStyle() { Alignment = alignment });
+			var textWithColor = new NSAttributedString(Element.Text ?? "", font: Element.ToNSFont(), foregroundColor: textColor.ToNSColor(ColorExtensions.TextColor), paragraphStyle: new NSMutableParagraphStyle() { Alignment = alignment });
 			textWithColor = textWithColor.AddCharacterSpacing(Element.Text ?? string.Empty, Element.CharacterSpacing);
 			Control.AttributedStringValue = textWithColor;
 #endif

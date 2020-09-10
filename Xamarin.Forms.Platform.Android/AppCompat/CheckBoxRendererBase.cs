@@ -1,11 +1,7 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
-#if __ANDROID_29__
 using AndroidX.AppCompat.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
 using AView = Android.Views.View;
 using Android.Views;
 using Xamarin.Forms.Internals;
@@ -14,11 +10,7 @@ using Android.Graphics;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using Android.Widget;
 using Android.Content.Res;
-#if __ANDROID_29__
 using AndroidX.Core.Widget;
-#else
-using Android.Support.V4.Widget;
-#endif
 using AAttribute = Android.Resource.Attribute;
 
 namespace Xamarin.Forms.Platform.Android
@@ -155,6 +147,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateOnColor();
 				UpdateIsChecked();
 				UpdateBackgroundColor();
+				UpdateBackground();
 			}
 
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
@@ -175,9 +168,13 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateIsChecked();
 			}
-			else if (e.PropertyName == CheckBox.BackgroundColorProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 			{
 				UpdateBackgroundColor();
+			}
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			{
+				UpdateBackground();
 			}
 
 			ElementPropertyChanged?.Invoke(this, e);
@@ -221,6 +218,13 @@ namespace Xamarin.Forms.Platform.Android
 				SetBackgroundColor(Element.BackgroundColor.ToAndroid());
 		}
 
+		void UpdateBackground()
+		{
+			Brush background = Element.Background;
+
+			this.UpdateBackground(background);
+		}
+
 		void UpdateOnColor()
 		{
 			if (Element == null || Control == null)
@@ -228,7 +232,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var mode = PorterDuff.Mode.SrcIn;
 
-			
+
 			CompoundButtonCompat.SetButtonTintList(Control, GetColorStateList());
 			CompoundButtonCompat.SetButtonTintMode(Control, mode);
 		}
