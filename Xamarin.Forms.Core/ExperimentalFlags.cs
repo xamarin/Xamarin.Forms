@@ -10,7 +10,6 @@ namespace Xamarin.Forms
 	static class ExperimentalFlags
 	{
 		internal const string ShellUWPExperimental = "Shell_UWP_Experimental";
-		internal const string MediaElementExperimental = "MediaElement_Experimental";
 		internal const string MarkupExperimental = "Markup_Experimental";
 		internal const string RadioButtonExperimental = "RadioButton_Experimental";
 		
