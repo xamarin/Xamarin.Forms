@@ -3,6 +3,7 @@ using Xamarin.Forms.Platform.Tizen.Renderers;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
+	[Obsolete("FLYOUTPAGE")]
 	public class MasterDetailPageRenderer : VisualElementRenderer<MasterDetailPage>
 	{
 		Native.MasterDetailPage _mdpage;

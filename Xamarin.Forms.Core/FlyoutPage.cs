@@ -259,6 +259,10 @@ namespace Xamarin.Forms
 	public class MasterDetailPage : FlyoutPage, IMasterDetailPageController
 #pragma warning restore CS0618 // Type or member is obsolete
 	{
+
+		public static readonly BindableProperty MasterBehaviorProperty = FlyoutPage.FlyoutLayoutBehaviorProperty;
+
+
 		public Page Master
 		{
 			get => base.Flyout;
