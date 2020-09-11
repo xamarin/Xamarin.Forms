@@ -30,9 +30,11 @@ namespace Xamarin.Forms.Platform.Android
 		Drawable _defaultBackgroundColor;
 		ImageView _bgImage;
 		AppBarLayout _appBar;
+		FrameLayout _appBarFooter;
 		RecyclerView _recycler;
 		ShellFlyoutRecyclerAdapter _adapter;
 		View _flyoutHeader;
+		AView _footerView;
 		int _actionBarHeight;
 		ScrollLayoutManager _layoutManager;
 
@@ -63,6 +65,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			Profile.FramePartition("Find AppBar");
 			_appBar = coordinator.FindViewById<AppBarLayout>(Resource.Id.flyoutcontent_appbar);
+			_appBarFooter = coordinator.FindViewById<FrameLayout>(Resource.Id.flyoutcontent_footer);
 
 			_rootView = coordinator as ViewGroup;
 
@@ -72,6 +75,7 @@ namespace Xamarin.Forms.Platform.Android
 			Profile.FramePartition("Add HeaderView");
 			_actionBarHeight = (int)context.ToPixels(56);
 			UpdateFlyoutHeader();
+			UpdateFlyoutFooter();
 
 			Profile.FramePartition("Recycler.SetAdapter");
 			_adapter = new ShellFlyoutRecyclerAdapter(shellContext, OnElementSelected);
@@ -172,6 +176,22 @@ namespace Xamarin.Forms.Platform.Android
 			};
 			_appBar.AddView(_headerView);
 			UpdateFlyoutHeaderBehavior();
+		}
+
+		void UpdateFlyoutFooter()
+		{
+			_footerView = new ContainerView(_shellContext.AndroidContext, ((IShellController)_shellContext.Shell).FlyoutFooter)
+			{
+				MatchWidth = true
+			};
+
+			_footerView.LayoutParameters = new AppBarLayout.LayoutParams(LP.MatchParent, LP.WrapContent)
+			{
+				ScrollFlags = AppBarLayout.LayoutParams.ScrollFlagScroll,
+				Gravity = GravityFlags.Bottom
+			};
+
+			_appBarFooter.AddView(_footerView);
 		}
 
 		void UpdateVerticalScrollMode()
@@ -344,6 +364,7 @@ namespace Xamarin.Forms.Platform.Android
 				_defaultBackgroundColor = null;
 				_layoutManager = null;
 				_bgImage = null;
+				_footerView = null;
 			}
 
 			base.Dispose(disposing);
