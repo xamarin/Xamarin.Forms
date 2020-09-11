@@ -1,14 +1,14 @@
 ﻿using System;
 using System.ComponentModel;
 using Android.Content;
+using Android.Graphics.Drawables;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Platform.Android.FastRenderers;
-using Android.Graphics.Drawables;
-using AView = Android.Views.View;
 using AColor = Android.Graphics.Color;
 using AShapes = Android.Graphics.Drawables.Shapes;
 using AShapeType = Android.Graphics.Drawables.ShapeType;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -114,9 +114,9 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					TearDownOldElement(Element as IndicatorView);
 
-					if (Platform.GetRenderer(Element) == this)
+					if (AppCompat.Platform.GetRenderer(Element) == this)
 					{
-						Element.ClearValue(Platform.RendererProperty);
+						Element.ClearValue(AppCompat.Platform.RendererProperty);
 					}
 				}
 			}
@@ -291,8 +291,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (IndicatorView.IndicatorLayout == null)
 				return;
 
-			var renderer = IndicatorView.IndicatorLayout.GetRenderer() ?? Platform.CreateRendererWithContext(IndicatorView.IndicatorLayout, Context);
-			Platform.SetRenderer(IndicatorView.IndicatorLayout, renderer);
+			var renderer = IndicatorView.IndicatorLayout.GetRenderer() ?? AppCompat.Platform.CreateRendererWithContext(IndicatorView.IndicatorLayout, Context);
+			AppCompat.Platform.SetRenderer(IndicatorView.IndicatorLayout, renderer);
 
 			RemoveAllViews();
 			AddView(renderer.View);

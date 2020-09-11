@@ -3,9 +3,9 @@ using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
-using AndroidX.Core.View;
-using AndroidX.CardView.Widget;
 using Android.Views;
+using AndroidX.CardView.Widget;
+using AndroidX.Core.View;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
 
@@ -154,8 +154,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 				if (Element != null)
 				{
-					if (Platform.GetRenderer(Element) == this)
-						Element.ClearValue(Platform.RendererProperty);
+					if (AppCompat.Platform.GetRenderer(Element) == this)
+						Element.ClearValue(AppCompat.Platform.RendererProperty);
 				}
 			}
 
@@ -208,7 +208,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				var visualElement = children[i] as VisualElement;
 				if (visualElement == null)
 					continue;
-				IVisualElementRenderer renderer = Android.Platform.GetRenderer(visualElement);
+				IVisualElementRenderer renderer = AppCompat.Platform.GetRenderer(visualElement);
 				renderer?.UpdateLayout();
 			}
 

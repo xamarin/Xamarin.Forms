@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			bool? isInAccessibleTree = (bool?)element.GetValue(AutomationProperties.IsInAccessibleTreeProperty);
 			control.Focusable = (bool)(isInAccessibleTree ?? defaultFocusable);
 			control.ImportantForAccessibility = !isInAccessibleTree.HasValue ? (ImportantForAccessibility)defaultImportantForAccessibility : (bool)isInAccessibleTree ? ImportantForAccessibility.Yes : ImportantForAccessibility.No;
-	}
+		}
 
 		internal static void SetLabeledBy(AView control, Element element)
 		{
@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				var id = control.Id;
 				if (id == AView.NoId)
-					id = control.Id = Platform.GenerateViewId();
+					id = control.Id = AppCompat.Platform.GenerateViewId();
 
 				var renderer = elemValue?.GetRenderer();
 				renderer?.SetLabelFor(id);

@@ -1,10 +1,10 @@
-﻿using Android.Runtime;
-using AndroidX.RecyclerView.Widget;
-using Android.Views;
-using Android.Widget;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Android.Runtime;
+using Android.Views;
+using Android.Widget;
+using AndroidX.RecyclerView.Widget;
 using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
@@ -133,7 +133,7 @@ namespace Xamarin.Forms.Platform.Android
 				do
 				{
 					element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex);
-					var renderer = (element as BindableObject).GetValue(Platform.RendererProperty);
+					var renderer = (element as BindableObject).GetValue(AppCompat.Platform.RendererProperty);
 					control = (renderer as ITabStop)?.TabStop;
 				} while (!(control?.Focusable == true || ++attempt >= maxAttempts));
 
@@ -259,7 +259,7 @@ namespace Xamarin.Forms.Platform.Android
 
 					if (_element != null && _element is BaseShellItem)
 					{
-						_element.ClearValue(Platform.RendererProperty);
+						_element.ClearValue(AppCompat.Platform.RendererProperty);
 						_element.PropertyChanged -= OnElementPropertyChanged;
 					}
 
@@ -269,7 +269,7 @@ namespace Xamarin.Forms.Platform.Android
 					if (_element != null)
 					{
 						FastRenderers.AutomationPropertiesProvider.AccessibilitySettingsChanged(_itemView, value);
-						_element.SetValue(Platform.RendererProperty, _itemView);
+						_element.SetValue(AppCompat.Platform.RendererProperty, _itemView);
 						_element.PropertyChanged += OnElementPropertyChanged;
 						UpdateVisualState();
 					}

@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
-using AndroidX.Core.Content;
 using Android.Views;
 using Android.Views.Accessibility;
+using AndroidX.Core.Content;
 using AColor = Android.Graphics.Color;
 using AColorRes = Android.Resource.Color;
 using AView = Android.Views.View;
@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (Id == NoId)
 			{
-				Id = Platform.GenerateViewId();
+				Id = AppCompat.Platform.GenerateViewId();
 			}
 
 			UpdateBackground(false);
