@@ -12,7 +12,6 @@ namespace Xamarin.Forms.Platform.Tizen
 		public SimpleViewStack(EvasObject parent) : base(parent)
 		{
 			InternalStack = new List<EvasObject>();
-			BackgroundColor = ElmSharp.Color.White;
 			SetLayoutCallback(OnLayout);
 		}
 

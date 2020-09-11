@@ -89,6 +89,10 @@ namespace Xamarin.Forms.Platform.Tizen
 			SetLayoutCallback(OnLayout);
 
 			_viewStack = new SimpleViewStack(Forms.NativeParent);
+			if (Device.Idiom == TargetIdiom.Phone)
+			{
+				_viewStack.BackgroundColor = ElmSharp.Color.White;
+			}
 			_viewStack.Show();
 			PackEnd(_viewStack);
 
