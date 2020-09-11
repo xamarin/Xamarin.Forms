@@ -1,7 +1,7 @@
+using System;
 using Android.Content;
 using Android.Runtime;
 using Android.Views;
-using System;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public PageContainer(Context context, IVisualElementRenderer child, bool inFragment = false) : base(context)
 		{
-			Id = Platform.GenerateViewId();
+			Id = AppCompat.Platform.GenerateViewId();
 			Child = child;
 			IsInFragment = inFragment;
 			AddView(child.View);

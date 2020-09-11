@@ -1,18 +1,18 @@
-﻿using Android.Content;
+﻿using System;
+using System.ComponentModel;
+using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
-using AndroidX.Fragment.App;
-using AndroidX.DrawerLayout.Widget;
-using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
 using Android.Views;
 using Android.Widget;
-using System;
-using System.ComponentModel;
+using AndroidX.DrawerLayout.Widget;
+using AndroidX.Fragment.App;
 using Xamarin.Forms.Internals;
 using AColor = Android.Graphics.Color;
 using ARect = Android.Graphics.Rect;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
+using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -228,7 +228,7 @@ namespace Xamarin.Forms.Platform.Android
 			_frameLayout = new CustomFrameLayout(AndroidContext)
 			{
 				LayoutParameters = new LP(LP.MatchParent, LP.MatchParent),
-				Id = Platform.GenerateViewId(),
+				Id = AppCompat.Platform.GenerateViewId(),
 			};
 
 			Profile.FramePartition("SetFitsSystemWindows");

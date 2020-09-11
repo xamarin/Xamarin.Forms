@@ -1,15 +1,15 @@
+using System;
 using System.ComponentModel;
 using Android.Content;
+using Android.Runtime;
+using Android.Views;
+using Android.Widget;
 using AndroidX.Core.Widget;
 using AndroidX.SwipeRefreshLayout.Widget;
-using Android.Views;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AListView = Android.Widget.ListView;
 using AView = Android.Views.View;
-using Xamarin.Forms.Internals;
-using System;
-using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using Android.Widget;
-using Android.Runtime;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -61,10 +61,10 @@ namespace Xamarin.Forms.Platform.Android
 			if (disposing)
 			{
 				Controller.ScrollToRequested -= OnScrollToRequested;
-		
+
 				if (_headerRenderer != null)
 				{
-					Platform.ClearRenderer(_headerRenderer.View);
+					AppCompat.Platform.ClearRenderer(_headerRenderer.View);
 					_headerRenderer.Dispose();
 					_headerRenderer = null;
 				}
@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_footerRenderer != null)
 				{
-					Platform.ClearRenderer(_footerRenderer.View);
+					AppCompat.Platform.ClearRenderer(_footerRenderer.View);
 					_footerRenderer.Dispose();
 					_footerRenderer = null;
 				}
@@ -145,7 +145,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					// Unhook the adapter from the ListView before disposing of it
 					Control.Adapter = null;
-					
+
 					Control.SetOnScrollListener(null);
 				}
 
@@ -176,7 +176,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				((IListViewController)e.NewElement).ScrollToRequested += OnScrollToRequested;
 				Control?.SetOnScrollListener(new ListViewScrollDetector(this));
-				
+
 				nativeListView.DividerHeight = 0;
 				nativeListView.Focusable = false;
 				nativeListView.DescendantFocusability = DescendantFocusability.AfterDescendants;
@@ -282,7 +282,7 @@ namespace Xamarin.Forms.Platform.Android
 				var results = templatedItems.GetGroupAndIndexOfItem(scrollArgs.Group, scrollArgs.Item);
 				int indexOfGroup = results.Item1;
 				int indexOfItem = results.Item2;
-				
+
 				if (indexOfGroup == -1)
 					return;
 
@@ -357,7 +357,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					if (_footerView != null)
 						_footerView.Child = null;
-					Platform.ClearRenderer(_footerRenderer.View);
+					AppCompat.Platform.ClearRenderer(_footerRenderer.View);
 					_footerRenderer.Dispose();
 					_footerRenderer = null;
 				}
@@ -370,12 +370,12 @@ namespace Xamarin.Forms.Platform.Android
 				_footerRenderer.SetElement(footer);
 			else
 			{
-				_footerRenderer = Platform.CreateRenderer(footer, Context);
+				_footerRenderer = AppCompat.Platform.CreateRenderer(footer, Context);
 				if (_footerView != null)
 					_footerView.Child = _footerRenderer;
 			}
 
-			Platform.SetRenderer(footer, _footerRenderer);
+			AppCompat.Platform.SetRenderer(footer, _footerRenderer);
 		}
 
 		void UpdateHeader()
@@ -389,7 +389,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					if (_headerView != null)
 						_headerView.Child = null;
-					Platform.ClearRenderer(_headerRenderer.View);
+					AppCompat.Platform.ClearRenderer(_headerRenderer.View);
 					_headerRenderer.Dispose();
 					_headerRenderer = null;
 				}
@@ -402,12 +402,12 @@ namespace Xamarin.Forms.Platform.Android
 				_headerRenderer.SetElement(header);
 			else
 			{
-				_headerRenderer = Platform.CreateRenderer(header, Context);
+				_headerRenderer = AppCompat.Platform.CreateRenderer(header, Context);
 				if (_headerView != null)
 					_headerView.Child = _headerRenderer;
 			}
 
-			Platform.SetRenderer(header, _headerRenderer);
+			AppCompat.Platform.SetRenderer(header, _headerRenderer);
 		}
 
 		void UpdateIsRefreshing(bool isInitialValue = false)
@@ -420,9 +420,9 @@ namespace Xamarin.Forms.Platform.Android
 					_refresh.Refreshing = false;
 					_refresh.Post(() =>
 					{
-						if(_refresh.IsDisposed())
+						if (_refresh.IsDisposed())
 							return;
-						
+
 						_refresh.Refreshing = true;
 					});
 				}
@@ -496,7 +496,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			Control.VerticalScrollBarEnabled = newVerticalScrollVisibility == ScrollBarVisibility.Always;
 		}
-		
+
 		internal class Container : ViewGroup
 		{
 			IVisualElementRenderer _child;

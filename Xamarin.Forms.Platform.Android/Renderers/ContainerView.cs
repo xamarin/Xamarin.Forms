@@ -1,8 +1,8 @@
-﻿using Android.Content;
+﻿using System;
+using Android.Content;
 using Android.Runtime;
 using Android.Util;
 using Android.Views;
-using System;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -108,8 +108,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (view != null)
 			{
-				_renderer = Platform.CreateRenderer(view, Context);
-				Platform.SetRenderer(view, _renderer);
+				_renderer = AppCompat.Platform.CreateRenderer(view, Context);
+				AppCompat.Platform.SetRenderer(view, _renderer);
 
 				AddView(_renderer.View);
 			}
