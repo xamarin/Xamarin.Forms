@@ -2,15 +2,15 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
-using AndroidX.Core.View;
-using AndroidX.AppCompat.Widget;
 using Android.Util;
 using Android.Views;
+using Android.Widget;
+using AndroidX.AppCompat.Widget;
+using AndroidX.Core.View;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
-using Android.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -149,8 +149,8 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (Element != null)
 				{
-					if (Platform.GetRenderer(Element) == this)
-						Element.ClearValue(Platform.RendererProperty);
+					if (AppCompat.Platform.GetRenderer(Element) == this)
+						Element.ClearValue(AppCompat.Platform.RendererProperty);
 				}
 			}
 

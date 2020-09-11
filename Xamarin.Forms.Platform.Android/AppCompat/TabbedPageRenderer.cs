@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Android.Content;
@@ -6,19 +7,18 @@ using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Runtime;
+using Android.Views;
 using AndroidX.Fragment.App;
 using AndroidX.ViewPager.Widget;
 using Google.Android.Material.BottomNavigation;
 using Google.Android.Material.BottomSheet;
 using Google.Android.Material.Tabs;
-using ADrawableCompat = AndroidX.Core.Graphics.Drawable.DrawableCompat;
-using AWidget = Android.Widget;
-using Android.Views;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using AView = Android.Views.View;
 using AColor = Android.Graphics.Color;
-using System.Collections.Generic;
+using ADrawableCompat = AndroidX.Core.Graphics.Drawable.DrawableCompat;
+using AView = Android.Views.View;
+using AWidget = Android.Widget;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -208,11 +208,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					foreach (Page pageToRemove in Element.Children)
 					{
-						IVisualElementRenderer pageRenderer = Android.Platform.GetRenderer(pageToRemove);
+						IVisualElementRenderer pageRenderer = Platform.GetRenderer(pageToRemove);
 
 						pageRenderer?.Dispose();
 
-						pageToRemove.ClearValue(Android.Platform.RendererProperty);
+						pageToRemove.ClearValue(Platform.RendererProperty);
 					}
 				}
 
@@ -367,7 +367,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				var child = PageController.InternalChildren[i] as VisualElement;
 				if (child == null)
 					continue;
-				IVisualElementRenderer renderer = Android.Platform.GetRenderer(child);
+				IVisualElementRenderer renderer = Platform.GetRenderer(child);
 				var navigationRenderer = renderer as NavigationPageRenderer;
 				if (navigationRenderer != null)
 				{
@@ -601,7 +601,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				return;
 
 			var leftPage = (Page)PageController.InternalChildren[position];
-			IVisualElementRenderer leftRenderer = Android.Platform.GetRenderer(leftPage);
+			IVisualElementRenderer leftRenderer = Platform.GetRenderer(leftPage);
 
 			if (leftRenderer == null)
 				return;
@@ -617,7 +617,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			else
 			{
 				var rightPage = (Page)PageController.InternalChildren[position + 1];
-				IVisualElementRenderer rightRenderer = Android.Platform.GetRenderer(rightPage);
+				IVisualElementRenderer rightRenderer = Platform.GetRenderer(rightPage);
 
 				var leftHeight = 0;
 				var leftNavRenderer = leftRenderer as NavigationPageRenderer;
@@ -894,7 +894,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					menuItem.SetChecked(true);
 			}
 
-			if(sender is BottomSheetDialog bsd)
+			if (sender is BottomSheetDialog bsd)
 				bsd.DismissEvent -= OnMoreSheetDismissed;
 		}
 

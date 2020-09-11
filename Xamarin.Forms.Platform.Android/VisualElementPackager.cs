@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Xamarin.Forms.Internals;
 using Android.Views;
+using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
@@ -137,18 +137,18 @@ namespace Xamarin.Forms.Platform.Android
 				if (renderer == null || (renderer.View?.Handle ?? IntPtr.Zero) == IntPtr.Zero)
 				{
 					Performance.Start(reference, "New renderer");
-					renderer = Platform.CreateRenderer(view, _renderer.View.Context);
+					renderer = AppCompat.Platform.CreateRenderer(view, _renderer.View.Context);
 					Performance.Stop(reference, "New renderer");
 				}
 
 				if (renderer == oldRenderer)
 				{
-					renderer.Element?.ClearValue(Platform.RendererProperty);
+					renderer.Element?.ClearValue(AppCompat.Platform.RendererProperty);
 					renderer.SetElement(view);
 				}
 
 				Performance.Start(reference, "Set renderer");
-				Platform.SetRenderer(view, renderer);
+				AppCompat.Platform.SetRenderer(view, renderer);
 				Performance.Stop(reference, "Set renderer");
 
 				Performance.Start(reference, "Add view");
@@ -174,7 +174,7 @@ namespace Xamarin.Forms.Platform.Android
 				var element = (VisualElement)child;
 				if (element != null)
 				{
-					IVisualElementRenderer r = Platform.GetRenderer(element);
+					IVisualElementRenderer r = AppCompat.Platform.GetRenderer(element);
 					if (r != null)
 					{
 						if (Forms.IsLollipopOrNewer)
@@ -187,7 +187,7 @@ namespace Xamarin.Forms.Platform.Android
 								if (elevation > elevationToSet)
 									elevationToSet = elevation;
 
-								if(r.View.Elevation != elevationToSet)
+								if (r.View.Elevation != elevationToSet)
 									r.View.Elevation = elevationToSet;
 							}
 						}
@@ -226,10 +226,10 @@ namespace Xamarin.Forms.Platform.Android
 			IVisualElementRenderer previousRenderer = null;
 
 			if (lastChild is VisualElement last)
-				lastRenderer = Platform.GetRenderer(last);
+				lastRenderer = AppCompat.Platform.GetRenderer(last);
 
 			if (previousChild is VisualElement previous)
-				previousRenderer = Platform.GetRenderer(previous);
+				previousRenderer = AppCompat.Platform.GetRenderer(previous);
 
 			if (ElevationHelper.GetElevation(lastRenderer?.View) < ElevationHelper.GetElevation(previousRenderer?.View))
 				EnsureChildOrder();
@@ -252,7 +252,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void RemoveChild(VisualElement view)
 		{
-			IVisualElementRenderer renderer = Platform.GetRenderer(view);
+			IVisualElementRenderer renderer = AppCompat.Platform.GetRenderer(view);
 			if (renderer == null) // child is itself a compressed layout
 			{
 				if (_childPackagers != null && _childPackagers.TryGetValue(view, out VisualElementPackager packager))
@@ -286,7 +286,7 @@ namespace Xamarin.Forms.Platform.Android
 			ReadOnlyCollection<Element> newChildren = null, oldChildren = null;
 
 			RendererPool pool = null;
-			
+
 			if (oldElement != null)
 			{
 				oldElement.ChildAdded -= _childAddedHandler;
@@ -300,7 +300,7 @@ namespace Xamarin.Forms.Platform.Android
 					sameChildrenTypes = true;
 
 					newChildren = ((IElementController)newElement).LogicalChildren;
-					
+
 					if (oldChildren.Count == newChildren.Count)
 					{
 						for (var i = 0; i < oldChildren.Count; i++)

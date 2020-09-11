@@ -1,14 +1,13 @@
+using System.Collections.Generic;
+using System.Linq;
 using Android.Content;
 using Android.Graphics.Drawables;
 using Android.OS;
-using AndroidX.Core.Content;
 using Android.Util;
 using Android.Views;
-using ARect = Android.Graphics.Rect;
-using AView = Android.Views.View;
+using AndroidX.Core.Content;
 using AColor = Android.Graphics.Color;
-using System.Collections.Generic;
-using System.Linq;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -77,7 +76,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (view.Id == AView.NoId)
 			{
-				view.Id = Platform.GenerateViewId();
+				view.Id = AppCompat.Platform.GenerateViewId();
 			}
 		}
 
