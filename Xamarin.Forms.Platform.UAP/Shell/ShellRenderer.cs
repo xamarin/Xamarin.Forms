@@ -42,6 +42,10 @@ namespace Xamarin.Forms.Platform.UWP
 				PaneClosing += (s, e) => OnPaneClosed();
 			if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneOpening"))
 				PaneOpening += (s, e) => OnPaneOpening();
+			if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneOpened"))
+				PaneOpened += (s, e) => OnPaneOpened();
+
+
 			ItemInvoked += OnMenuItemInvoked;
 			BackRequested += OnBackRequested;
 			Style = Windows.UI.Xaml.Application.Current.Resources["ShellNavigationView"] as Windows.UI.Xaml.Style;
@@ -80,9 +84,13 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdatePaneButtonColor(NavigationViewBackButton, false);
 			UpdateFlyoutBackgroundColor();
 			UpdateFlyoutBackdrop();
+		}
 
-			if(_flyoutBehavior == FlyoutBehavior.Flyout)
-				ShellSplitView.UpdateFlyoutBackdrop();
+		void OnPaneOpened()
+		{
+			// UWP likes to sometimes set the back drop back to the
+			// default color
+			UpdateFlyoutBackdrop();
 		}
 
 		void OnPaneClosed()
