@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
-			Device.SetFlags(new List<string> { ExperimentalFlags.RadioButtonExperimental, ExperimentalFlags.BrushExperimental });
+			Device.SetFlags(new List<string> { ExperimentalFlags.RadioButtonExperimental });
 		}
 
 		protected override void OnDisappearing()

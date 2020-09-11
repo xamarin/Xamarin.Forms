@@ -10,8 +10,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			Device.SetFlags(new[] 
 			{ 
-				ExperimentalFlags.RadioButtonExperimental, 
-				ExperimentalFlags.ShapesExperimental  
+				ExperimentalFlags.RadioButtonExperimental
 			});
 		}
 

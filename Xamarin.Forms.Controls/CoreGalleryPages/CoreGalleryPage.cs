@@ -21,8 +21,6 @@ namespace Xamarin.Forms.Controls
 
 		internal CoreGalleryPage()
 		{
-			Device.SetFlags(new[] { ExperimentalFlags.BrushExperimental });
-
 			Initialize();
 
 			Layout = new StackLayout

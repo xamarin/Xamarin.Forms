@@ -51,7 +51,7 @@
 			button.TextColor = Color.Black;
 			button.IsEnabled = false;
 
-			Device.SetFlags(new[] { ExperimentalFlags.RadioButtonExperimental, ExperimentalFlags.ShapesExperimental, ExperimentalFlags.BrushExperimental });
+			Device.SetFlags(new[] { ExperimentalFlags.RadioButtonExperimental });
 		}
 	}
 }

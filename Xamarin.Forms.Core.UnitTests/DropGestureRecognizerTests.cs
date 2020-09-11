@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			base.Setup();
 			Device.PlatformServices = new MockPlatformServices();
-			Device.SetFlags(new[] { ExperimentalFlags.DragAndDropExperimental, ExperimentalFlags.ShapesExperimental, ExperimentalFlags.RadioButtonExperimental });
+			Device.SetFlags(new[] { ExperimentalFlags.RadioButtonExperimental });
 		}
 
 		[TearDown]
