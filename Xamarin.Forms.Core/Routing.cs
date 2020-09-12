@@ -36,7 +36,8 @@ namespace Xamarin.Forms
 			{
 				foreach(var section in item.Items)
 				{
-					for(int i = 1; i < section.Navigation.NavigationStack.Count; i++)
+				var navigationStackCount = section.Navigation.NavigationStack.Count;
+					for(int i = 1; i < navigationStackCount ; i++)
 					{
 						RegisterImplicitPageRoute(section.Navigation.NavigationStack[i]);
 					}
