@@ -1590,6 +1590,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			previousCount = count;
 			shell.CurrentItem.CurrentItem.Items.Add(CreateShellContent());
 			Assert.Greater(count, previousCount, "StructureChanged not fired when adding Shell Content");
+		}
 
 	}
 }
