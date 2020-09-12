@@ -9,6 +9,8 @@ namespace Xamarin.Forms
 		//note to implementor: implement this property publicly
 		Aspect Aspect { get; }
 		ImageSource Source { get; }
+		ImageSource LoadingSource { get; }
+		ImageSource ErrorSource { get; }
 		bool IsOpaque { get; }
 
 

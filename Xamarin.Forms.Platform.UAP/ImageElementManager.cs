@@ -146,11 +146,19 @@ namespace Xamarin.Forms.Platform.UWP
 
 			var imageController = Element as IImageController;
 
+			if (imageElement.LoadingSource != null)
+			{
+				var imageSource = await imageElement.LoadingSource.ToWindowsImageSourceAsync();
+				if (ShouldStillSetImage(Control, imageSource))
+					renderer.SetImage(imageSource);
+			}
+
 			imageController?.SetIsLoading(true);
 
 			try
 			{
-				var imagesource = await imageElement.Source.ToWindowsImageSourceAsync();
+				// this one will be null, if the Source doesn't exist
+				var imagesource = await imageElement.Source.ToWindowsImageSourceAsync() ?? await imageElement.ErrorSource.ToWindowsImageSourceAsync();
 
 				if (renderer.IsDisposed)
 					return;
@@ -158,7 +166,7 @@ namespace Xamarin.Forms.Platform.UWP
 				if (imagesource is BitmapImage bitmapImage && _nativeAnimationSupport)
 					bitmapImage.AutoPlay = false;
 
-				if (Control != null)
+				if (ShouldStillSetImage(Control, imagesource))
 					renderer.SetImage(imagesource);
 
 				RefreshImage(renderer);
@@ -171,11 +179,14 @@ namespace Xamarin.Forms.Platform.UWP
 
 		static internal void RefreshImage(IImageVisualElementRenderer renderer)
 		{
-			if(renderer.Element is IViewController element)
+			if (renderer.Element is IViewController element)
 				element?.InvalidateMeasure(InvalidationTrigger.RendererReady);
 
-			if(renderer.Element is IImageElement controller)
+			if (renderer.Element is IImageElement controller)
 				StartStopAnimation(renderer, controller);
 		}
+
+		private static bool ShouldStillSetImage(UIElement control, Windows.UI.Xaml.Media.ImageSource imagesource) =>
+			control != null && imagesource != null;
 	}
 }

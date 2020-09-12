@@ -11,6 +11,12 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty SourceProperty = BindableProperty.Create(nameof(IImageElement.Source), typeof(ImageSource), typeof(IImageElement), default(ImageSource),
 			propertyChanging: OnImageSourceChanging, propertyChanged: OnImageSourceChanged);
 
+		public static readonly BindableProperty LoadingSourceProperty = BindableProperty.Create(nameof(IImageElement.LoadingSource), typeof(ImageSource), typeof(IImageElement), default(ImageSource),
+			propertyChanging: OnImageSourceChanging, propertyChanged: OnImageSourceChanged);
+
+		public static readonly BindableProperty ErrorSourceProperty = BindableProperty.Create(nameof(IImageElement.ErrorSource), typeof(ImageSource), typeof(IImageElement), default(ImageSource),
+			propertyChanging: OnImageSourceChanging, propertyChanged: OnImageSourceChanged);
+
 		public static readonly BindableProperty AspectProperty = BindableProperty.Create(nameof(IImageElement.Aspect), typeof(Aspect), typeof(IImageElement), Aspect.AspectFit);
 
 		public static readonly BindableProperty IsOpaqueProperty = BindableProperty.Create(nameof(IImageElement.IsOpaque), typeof(bool), typeof(IImageElement), false);

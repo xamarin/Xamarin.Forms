@@ -142,6 +142,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			catch (Exception ex)
 			{
 				Log.Warning(nameof(ImageElementManager), "Error loading image: {0}", ex);
+				await Control.SetImagePlaceholder(newImage.ErrorSource).ConfigureAwait(false);
 			}
 			finally
 			{
