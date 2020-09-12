@@ -58,23 +58,6 @@ namespace Xamarin.Forms
 			}
 		}
 
-		//List<Page> BuildFlattenedNavigationStack(List<Page> startingList, IReadOnlyList<Page> modalStack)
-		//{
-		//	if (modalStack == null)
-		//		return startingList;
-
-		//	for (int i = 0; i < modalStack.Count; i++)
-		//	{
-		//		startingList.Add(modalStack[i]);
-		//		for (int j = 1; j < modalStack[i].Navigation.NavigationStack.Count; j++)
-		//		{
-		//			startingList.Add(modalStack[i].Navigation.NavigationStack[j]);
-		//		}
-		//	}
-
-		//	return startingList;
-		//}
-
 		internal static string GenerateImplicitRoute(string source)
 		{
 			if (IsImplicit(source))

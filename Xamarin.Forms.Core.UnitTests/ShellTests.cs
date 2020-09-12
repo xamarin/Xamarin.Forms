@@ -1745,9 +1745,6 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
-		
-
-		
 		//[Test]
 		//public void FlyoutItemLabelStyleCanBeChangedAfterRendered()
 		//{
