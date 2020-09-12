@@ -11,6 +11,7 @@ namespace Xamarin.Forms.Platform.iOS
 		UIImageView _bgImage;
 		readonly IShellContext _shellContext;
 		UIContainerView _headerView;
+		UIContainerView _footerView;
 		ShellTableViewController _tableViewController;
 
 		public event EventHandler WillAppear;
@@ -24,12 +25,24 @@ namespace Xamarin.Forms.Platform.iOS
 			if (header != null)
 				_headerView = new UIContainerView(((IShellController)context.Shell).FlyoutHeader);
 
+			var footer = ((IShellController)context.Shell).FlyoutFooter;
+			if (footer != null)
+				_footerView = new UIContainerView(((IShellController)context.Shell).FlyoutFooter);
+
+			_footerView.HeaderSizeChanged += _footerView_HeaderSizeChanged;
 			_tableViewController = CreateShellTableViewController();
+			_tableViewController.HeaderView = _headerView;
+			_tableViewController.FooterView = _footerView;
 
 			AddChildViewController(_tableViewController);
 
 			context.Shell.PropertyChanged += HandleShellPropertyChanged;
 
+		}
+
+		private void _footerView_HeaderSizeChanged(object sender, EventArgs e)
+		{
+			UpdateFooterPosition();
 		}
 
 		protected virtual ShellTableViewController CreateShellTableViewController()
@@ -53,6 +66,25 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_tableViewController.View.UpdateFlowDirection(_shellContext.Shell);
 			_headerView.UpdateFlowDirection(_shellContext.Shell);
+			_footerView.UpdateFlowDirection(_shellContext.Shell);
+		}
+
+		void UpdateFooterPosition()
+		{
+			if (_footerView == null)
+				return;
+
+			_footerView.MeasureIfNeeded();
+			var footerHeight = _footerView.MeasuredHeight;
+			var footerWidth = View.Frame.Width;
+			
+			_footerView.Frame = new CoreGraphics.CGRect(0, View.Frame.Height - footerHeight, footerWidth, footerHeight);
+		}
+
+		public override void ViewWillLayoutSubviews()
+		{
+			base.ViewWillLayoutSubviews();
+			UpdateFooterPosition();
 		}
 
 		protected virtual void UpdateBackground()
@@ -138,6 +170,9 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_headerView != null)
 				View.AddSubview(_headerView);
 
+			if (_footerView != null)
+				View.AddSubview(_footerView);
+
 			_tableViewController.TableView.BackgroundView = null;
 			_tableViewController.TableView.BackgroundColor = UIColor.Clear;
 
@@ -154,6 +189,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateBackground();
 			UpdateFlowDirection();
 		}
+
 		public override void ViewWillAppear(bool animated)
 		{
 			UpdateFlowDirection();
