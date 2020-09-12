@@ -354,6 +354,10 @@ namespace Xamarin.Forms
 
 		bool IImageElement.IsAnimationPlaying => false;
 
+		ImageSource IImageElement.LoadingSource => null;
+
+		ImageSource IImageElement.ErrorSource => null;
+
 		void IImageElement.OnImageSourceSourceChanged(object sender, EventArgs e) =>
 			ImageElement.ImageSourceSourceChanged(this, e);
 
