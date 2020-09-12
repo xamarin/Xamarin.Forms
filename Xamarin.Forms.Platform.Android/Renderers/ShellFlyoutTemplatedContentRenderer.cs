@@ -144,6 +144,10 @@ namespace Xamarin.Forms.Platform.Android
 				Shell.FlyoutHeaderProperty,
 				Shell.FlyoutHeaderTemplateProperty))
 				UpdateFlyoutHeader();
+			else if (e.IsOneOf(
+				Shell.FlyoutFooterProperty,
+				Shell.FlyoutFooterTemplateProperty))
+				UpdateFlyoutFooter();
 		}
 
 		void UpdateFlyoutHeader()

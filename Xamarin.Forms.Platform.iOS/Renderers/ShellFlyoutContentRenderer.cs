@@ -21,14 +21,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public ShellFlyoutContentRenderer(IShellContext context)
 		{
 			_shellContext = context;
-
-			var header = ((IShellController)context.Shell).FlyoutHeader;
-			if (header != null)
-				_headerView = new UIContainerView(((IShellController)context.Shell).FlyoutHeader);
-			
 			_tableViewController = CreateShellTableViewController();
-			_tableViewController.HeaderView = _headerView;
-
 			AddChildViewController(_tableViewController);
 
 			context.Shell.PropertyChanged += HandleShellPropertyChanged;
@@ -37,7 +30,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual ShellTableViewController CreateShellTableViewController()
 		{
-			return new ShellTableViewController(_shellContext, _headerView, OnElementSelected);
+			return new ShellTableViewController(_shellContext, OnElementSelected);
 		}
 
 		protected virtual void HandleShellPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -50,6 +43,18 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateBackground();
 			else if (e.Is(VisualElement.FlowDirectionProperty))
 				UpdateFlowDirection();
+			else if (e.IsOneOf(
+				Shell.FlyoutHeaderProperty,
+				Shell.FlyoutHeaderTemplateProperty))
+			{
+				UpdateFlyoutHeader();
+			}
+			else if (e.IsOneOf(
+				Shell.FlyoutFooterProperty,
+				Shell.FlyoutFooterTemplateProperty))
+			{
+				UpdateFlyoutFooter();
+			}
 		}
 
 		void UpdateFlowDirection()
@@ -59,9 +64,39 @@ namespace Xamarin.Forms.Platform.iOS
 			_footerView.UpdateFlowDirection(_shellContext.Shell);
 		}
 
-		void UpdateFooter(View view)
+		void UpdateFlyoutHeader()
 		{
-			if(_footer != null)
+			var header = ((IShellController)_shellContext.Shell).FlyoutHeader;
+
+			if (header == _headerView?.View)
+				return;
+
+			if(_headerView != null)
+			{
+				_headerView.RemoveFromSuperview();
+				_headerView.Dispose();
+			}
+
+			if (header != null)
+				_headerView = new UIContainerView(((IShellController)_shellContext.Shell).FlyoutHeader);
+			else
+				_headerView = null;
+
+			_tableViewController.HeaderView = _headerView;
+			View.AddSubview(_headerView);
+		}
+
+		void UpdateFlyoutFooter()
+		{
+			UpdateFlyoutFooter(((IShellController)_shellContext.Shell).FlyoutFooter);
+		}
+
+		void UpdateFlyoutFooter(View view)
+		{
+			if (_footer == view)
+				return;
+
+			if (_footer != null)
 			{
 				var oldRenderer = Platform.GetRenderer(_footer);
 				_footerView?.RemoveFromSuperview();
@@ -116,7 +151,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			var footerWidth = View.Frame.Width;
-			
+
 			_footerView.Frame = new CoreGraphics.CGRect(0, View.Frame.Height - footerHeight, footerWidth, footerHeight);
 
 			_tableViewController.LayoutParallax();
@@ -208,10 +243,9 @@ namespace Xamarin.Forms.Platform.iOS
 			base.ViewDidLoad();
 
 			View.AddSubview(_tableViewController.View);
-			if (_headerView != null)
-				View.AddSubview(_headerView);
 
-			UpdateFooter(((IShellController)_shellContext.Shell).FlyoutFooter);
+			UpdateFlyoutHeader();
+			UpdateFlyoutFooter();
 
 			_tableViewController.TableView.BackgroundView = null;
 			_tableViewController.TableView.BackgroundColor = UIColor.Clear;
