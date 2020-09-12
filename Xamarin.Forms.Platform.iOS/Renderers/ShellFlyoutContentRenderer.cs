@@ -11,7 +11,8 @@ namespace Xamarin.Forms.Platform.iOS
 		UIImageView _bgImage;
 		readonly IShellContext _shellContext;
 		UIContainerView _headerView;
-		UIContainerView _footerView;
+		UIView _footerView;
+		View _footer;
 		ShellTableViewController _tableViewController;
 
 		public event EventHandler WillAppear;
@@ -24,25 +25,14 @@ namespace Xamarin.Forms.Platform.iOS
 			var header = ((IShellController)context.Shell).FlyoutHeader;
 			if (header != null)
 				_headerView = new UIContainerView(((IShellController)context.Shell).FlyoutHeader);
-
-			var footer = ((IShellController)context.Shell).FlyoutFooter;
-			if (footer != null)
-				_footerView = new UIContainerView(((IShellController)context.Shell).FlyoutFooter);
-
-			_footerView.HeaderSizeChanged += _footerView_HeaderSizeChanged;
+			
 			_tableViewController = CreateShellTableViewController();
 			_tableViewController.HeaderView = _headerView;
-			_tableViewController.FooterView = _footerView;
 
 			AddChildViewController(_tableViewController);
 
 			context.Shell.PropertyChanged += HandleShellPropertyChanged;
 
-		}
-
-		private void _footerView_HeaderSizeChanged(object sender, EventArgs e)
-		{
-			UpdateFooterPosition();
 		}
 
 		protected virtual ShellTableViewController CreateShellTableViewController()
@@ -69,16 +59,67 @@ namespace Xamarin.Forms.Platform.iOS
 			_footerView.UpdateFlowDirection(_shellContext.Shell);
 		}
 
+		void UpdateFooter(View view)
+		{
+			if(_footer != null)
+			{
+				var oldRenderer = Platform.GetRenderer(_footer);
+				_footerView?.RemoveFromSuperview();
+				if (_footer != null)
+					_footer.MeasureInvalidated -= OnFooterMeasureInvalidated;
+
+				_footer.ClearValue(Platform.RendererProperty);
+				oldRenderer?.Dispose();
+			}
+
+			if (view == null)
+				return;
+
+			_footer = view;
+
+			var renderer = Platform.CreateRenderer(_footer);
+			_footerView = renderer.NativeView;
+			Platform.SetRenderer(_footer, renderer);
+
+			View.AddSubview(_footerView);
+			_footerView.ClipsToBounds = true;
+			_tableViewController.FooterView = _footerView;
+			_footer.MeasureInvalidated += OnFooterMeasureInvalidated;
+		}
+
+		void OnFooterMeasureInvalidated(object sender, System.EventArgs e)
+		{
+			ReMeasureFooter();
+		}
+
+		void ReMeasureFooter()
+		{
+			var request = _footer.Measure(View.Frame.Width, double.PositiveInfinity, MeasureFlags.None);
+			Layout.LayoutChildIntoBoundingRegion(_footer, new Rectangle(0, 0, View.Frame.Width, request.Request.Height));
+			UpdateFooterPosition(_footerView.Frame.Height);
+		}
+
 		void UpdateFooterPosition()
 		{
 			if (_footerView == null)
 				return;
 
-			_footerView.MeasureIfNeeded();
-			var footerHeight = _footerView.MeasuredHeight;
+			if (_footerView.Frame.Height == 0)
+				ReMeasureFooter();
+			else
+				UpdateFooterPosition(_footerView.Frame.Height);
+		}
+
+		void UpdateFooterPosition(nfloat footerHeight)
+		{
+			if (_footerView == null)
+				return;
+
 			var footerWidth = View.Frame.Width;
 			
 			_footerView.Frame = new CoreGraphics.CGRect(0, View.Frame.Height - footerHeight, footerWidth, footerHeight);
+
+			_tableViewController.LayoutParallax();
 		}
 
 		public override void ViewWillLayoutSubviews()
@@ -170,8 +211,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_headerView != null)
 				View.AddSubview(_headerView);
 
-			if (_footerView != null)
-				View.AddSubview(_footerView);
+			UpdateFooter(((IShellController)_shellContext.Shell).FlyoutFooter);
 
 			_tableViewController.TableView.BackgroundView = null;
 			_tableViewController.TableView.BackgroundColor = UIColor.Clear;

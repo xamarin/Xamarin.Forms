@@ -16,8 +16,8 @@ namespace Xamarin.Forms.Platform.iOS
 		double _headerSize;
 		bool _isDisposed;
 		Action<Element> _onElementSelected;
-		private UIContainerView _headerView;
-		private UIContainerView _footerView;
+		UIContainerView _headerView;
+		UIView _footerView;
 
 		IShellController ShellController => ((IShellController)_context.Shell);
 
@@ -55,7 +55,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		public virtual UIContainerView FooterView
+		public virtual UIView FooterView
 		{
 			get => _footerView;
 			set
@@ -63,13 +63,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_footerView == value)
 					return;
 
-				if (_footerView != null)
-					_footerView.HeaderSizeChanged -= OnHeaderFooterSizeChanged;
-
 				_footerView = value;
-
-				if (_footerView != null)
-					_footerView.HeaderSizeChanged += OnHeaderFooterSizeChanged;
 			}
 		}
 
