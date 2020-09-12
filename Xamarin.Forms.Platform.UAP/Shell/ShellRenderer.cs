@@ -258,6 +258,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 			var shr = CreateShellHeaderRenderer(shell);
 			PaneCustomContent = shr;
+			PaneFooter = CreateShellFooterRenderer(shell);
+
 			UpdateMenuItemSource();
 			SwitchShellItem(shell.CurrentItem, false);
 			IsPaneOpen = Shell.FlyoutIsPresented;
@@ -406,6 +408,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public virtual ShellFlyoutTemplateSelector CreateShellFlyoutTemplateSelector() => new ShellFlyoutTemplateSelector();
 		public virtual ShellHeaderRenderer CreateShellHeaderRenderer(Shell shell) => new ShellHeaderRenderer(shell);
+		public virtual ShellFooterRenderer CreateShellFooterRenderer(Shell shell) => new ShellFooterRenderer(shell);
 		public virtual ShellItemRenderer CreateShellItemRenderer() => new ShellItemRenderer(this);
 		public virtual ShellSectionRenderer CreateShellSectionRenderer() => new ShellSectionRenderer();
 	}
