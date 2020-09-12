@@ -32,22 +32,22 @@ namespace Xamarin.Forms
 		// If the users pushes pages without using routes we want these page keys tracked
 		internal static void RegisterImplicitPageRoutes(Shell shell)
 		{
-			foreach(var item in shell.Items)
+			foreach (var item in shell.Items)
 			{
-				foreach(var section in item.Items)
+				foreach (var section in item.Items)
 				{
-				var navigationStackCount = section.Navigation.NavigationStack.Count;
-					for(int i = 1; i < navigationStackCount ; i++)
+					var navigationStackCount = section.Navigation.NavigationStack.Count;
+					for (int i = 1; i < navigationStackCount; i++)
 					{
 						RegisterImplicitPageRoute(section.Navigation.NavigationStack[i]);
 					}
-          var navigationModalStackCount = section.Navigation.ModalStack.Count;
-					for (int i = 0;   i < navigationModalStackCount  ; i++)
+					var navigationModalStackCount = section.Navigation.ModalStack.Count;
+					for (int i = 0; i < navigationModalStackCount; i++)
 					{
 						var page = section.Navigation.ModalStack[i];
 						RegisterImplicitPageRoute(page);
 
-						if(page is NavigationPage np)
+						if (page is NavigationPage np)
 						{
 							foreach (var npPages in np.Pages)
 							{
@@ -218,7 +218,7 @@ namespace Xamarin.Forms
 			}
 
 			RouteFactory existingRegistration = null;
-			if(s_routes.TryGetValue(route, out existingRegistration) && !existingRegistration.Equals(routeFactory))
+			if (s_routes.TryGetValue(route, out existingRegistration) && !existingRegistration.Equals(routeFactory))
 				throw new ArgumentException($"Duplicated Route: \"{route}\"");
 		}
 
