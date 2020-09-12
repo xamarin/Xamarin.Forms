@@ -41,8 +41,8 @@ namespace Xamarin.Forms
 					{
 						RegisterImplicitPageRoute(section.Navigation.NavigationStack[i]);
 					}
-
-					for (int i = 0; i < section.Navigation.ModalStack.Count; i++)
+          var navigationModalStackCount = section.Navigation.ModalStack.Count;
+					for (int i = 0;   i < navigationModalStackCount  ; i++)
 					{
 						var page = section.Navigation.ModalStack[i];
 						RegisterImplicitPageRoute(page);
