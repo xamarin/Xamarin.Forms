@@ -1087,8 +1087,8 @@ namespace Xamarin.Forms.Platform.Tizen
 			map.PopulatePoints(geometry, 0);
 
 			bool changed = false;
-			ApplyRotation(map, geometry, ref changed);
 			ApplyScale(map, geometry, ref changed);
+			ApplyRotation(map, geometry, ref changed);
 			ApplyTranslation(map, geometry, ref changed);
 
 			NativeView.IsMapEnabled = changed;
