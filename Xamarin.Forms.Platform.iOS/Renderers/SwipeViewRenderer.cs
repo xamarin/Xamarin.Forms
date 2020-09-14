@@ -1033,18 +1033,27 @@ namespace Xamarin.Forms.Platform.iOS
 			_swipeThreshold = 0;
 			_swipeDirection = null;
 
-			var resetAnimationDuration = animated ? SwipeAnimationDuration : 0;
-
-			Animate(resetAnimationDuration, 0.0, UIViewAnimationOptions.CurveEaseOut, () =>
+			if (animated)
+			{
+				Animate(SwipeAnimationDuration, 0.0, UIViewAnimationOptions.CurveEaseOut, () =>
+				{
+					if (_originalBounds != CGRect.Empty)
+						_contentView.Frame = new CGRect(_originalBounds.X, _originalBounds.Y, _originalBounds.Width, _originalBounds.Height);
+				},
+				() =>
+				{
+					DisposeSwipeItems();
+					_isResettingSwipe = false;
+				});
+			}
+			else
 			{
 				if (_originalBounds != CGRect.Empty)
 					_contentView.Frame = new CGRect(_originalBounds.X, _originalBounds.Y, _originalBounds.Width, _originalBounds.Height);
-			},
-			() =>
-			{
+
 				DisposeSwipeItems();
 				_isResettingSwipe = false;
-			});
+			}
 		}
 
 		void ValidateSwipeThreshold()
@@ -1466,7 +1475,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void ProgrammaticallyOpenSwipeItem(OpenSwipeItem openSwipeItem, bool animated)
 		{
 			if (_isOpen)
-				return;
+				ResetSwipe(false);
 
 			switch (openSwipeItem)
 			{

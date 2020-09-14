@@ -941,43 +941,52 @@ namespace Xamarin.Forms.Platform.Android
 			if (_contentView == null)
 				return;
 
-			var resetAnimationDuration = animated ? SwipeAnimationDuration : 0;
-
 			_isResettingSwipe = true;
 			_isSwiping = false;
 			_swipeThreshold = 0;
 
-			switch (_swipeDirection)
+			if (animated)
 			{
-				case SwipeDirection.Left:
-				case SwipeDirection.Right:
+				switch (_swipeDirection)
+				{
+					case SwipeDirection.Left:
+					case SwipeDirection.Right:
 
-					_swipeDirection = null;
+						_swipeDirection = null;
 
-					_contentView.Animate().TranslationX(0).SetDuration(resetAnimationDuration).WithEndAction(new Java.Lang.Runnable(() =>
-					{
-						if (_swipeDirection == null)
-							DisposeSwipeItems();
+						_contentView.Animate().TranslationX(0).SetDuration(SwipeAnimationDuration).WithEndAction(new Java.Lang.Runnable(() =>
+						{
+							if (_swipeDirection == null)
+								DisposeSwipeItems();
 
+							_isResettingSwipe = false;
+						}));
+						break;
+					case SwipeDirection.Up:
+					case SwipeDirection.Down:
+
+						_swipeDirection = null;
+
+						_contentView.Animate().TranslationY(0).SetDuration(SwipeAnimationDuration).WithEndAction(new Java.Lang.Runnable(() =>
+						{
+							if (_swipeDirection == null)
+								DisposeSwipeItems();
+
+							_isResettingSwipe = false;
+						}));
+						break;
+					default:
 						_isResettingSwipe = false;
-					}));
-					break;
-				case SwipeDirection.Up:
-				case SwipeDirection.Down:
+						break;
+				}
+			}
+			else
+			{
+				_contentView.TranslationX = 0;
+				_contentView.TranslationY = 0;
 
-					_swipeDirection = null;
-
-					_contentView.Animate().TranslationY(0).SetDuration(resetAnimationDuration).WithEndAction(new Java.Lang.Runnable(() =>
-					{
-						if (_swipeDirection == null)
-							DisposeSwipeItems();
-
-						_isResettingSwipe = false;
-					}));
-					break;
-				default:
-					_isResettingSwipe = false;
-					break;
+				DisposeSwipeItems();
+				_isResettingSwipe = false;
 			}
 		}
 
@@ -1346,7 +1355,7 @@ namespace Xamarin.Forms.Platform.Android
 		void ProgrammaticallyOpenSwipeItem(OpenSwipeItem openSwipeItem, bool animated)
 		{
 			if (_isOpen)
-				return;
+				ResetSwipe(false);
 
 			switch (openSwipeItem)
 			{
