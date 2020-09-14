@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using WRect = Windows.Foundation.Rect;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -15,6 +16,8 @@ namespace Xamarin.Forms.Platform.UWP
 			new PropertyMetadata(default(bool), IsSelectedChanged));
 
 		View _content;
+		FrameworkElement FrameworkElement { get; set; }
+
 		public ShellFlyoutItemRenderer()
 		{
 			this.DataContextChanged += OnDataContextChanged;
@@ -28,15 +31,13 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnDataContextChanged(Windows.UI.Xaml.FrameworkElement sender, Windows.UI.Xaml.DataContextChangedEventArgs args)
 		{
-			if(Content is ViewToRendererConverter.WrapperControl oldControl)
-			{				
-				oldControl.CleanUp();
-				if (_content != null)
-				{
-					_content.BindingContext = null;
-					_content.Parent = null;
-					_content = null;
-				}
+			if (_content != null)
+			{
+				_content.Cleanup();
+				_content.MeasureInvalidated -= OnMeasureInvalidated;
+				_content.BindingContext = null;
+				_content.Parent = null;
+				_content = null;
 			}
 
 			var bo = (BindableObject)DataContext;
@@ -48,20 +49,67 @@ namespace Xamarin.Forms.Platform.UWP
 				_content = (View)dataTemplate.CreateContent();
 				_content.BindingContext = bo;
 				_content.Parent = shell;
-				Content = new ViewToRendererConverter.WrapperControl(_content);
+				_content.MeasureInvalidated += OnMeasureInvalidated;
+				//_content.BackgroundColor = Color.Red;
+				IVisualElementRenderer renderer = Platform.CreateRenderer(_content);
+				Platform.SetRenderer(_content, renderer);
+
+				Content = renderer.ContainerElement;
+				FrameworkElement = renderer.ContainerElement;
+
+				// make sure we re-measure once the template is applied
+				if (FrameworkElement != null)
+				{
+					FrameworkElement.Loaded += OnFrameworkElementLoaded;
+
+					void OnFrameworkElementLoaded(object _, RoutedEventArgs __)
+					{
+						OnMeasureInvalidated();
+						FrameworkElement.Loaded -= OnFrameworkElementLoaded;
+					}
+				}
+
+				UpdateVisualState();
+				OnMeasureInvalidated();
+			}
+		}
+
+		void OnMeasureInvalidated(object sender, EventArgs e)
+		{
+			OnMeasureInvalidated();
+		}
+
+		void OnMeasureInvalidated()
+		{
+			Size request = _content.Measure(double.PositiveInfinity, double.PositiveInfinity, MeasureFlags.IncludeMargins).Request;
+
+			var minSize = (double)Windows.UI.Xaml.Application.Current.Resources["NavigationViewItemOnLeftMinHeight"];
+
+			if (request.Height < minSize)
+			{
+				request.Height = minSize;
+			}
+
+			if (this.ActualWidth > request.Width)
+				request.Width = this.ActualWidth;
+
+			Layout.LayoutChildIntoBoundingRegion(_content, new Rectangle(0, 0, request.Width, request.Height));
+		}
+
+		void UpdateVisualState()
+		{
+			if (_content?.BindingContext is BaseShellItem baseShellItem && baseShellItem != null)
+			{
+				if (baseShellItem.IsChecked)
+					VisualStateManager.GoToState(_content, "Selected");
+				else
+					VisualStateManager.GoToState(_content, "Normal");
 			}
 		}
 
 		static void IsSelectedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
-			var content = ((ShellFlyoutItemRenderer)d)._content;
-			if(content != null)
-			{
-				if((bool)e.NewValue)
-					VisualStateManager.GoToState(content, "Selected");
-				else
-					VisualStateManager.GoToState(content, "Normal");
-			}
+			((ShellFlyoutItemRenderer)d).UpdateVisualState();
 		}
 	}
 }

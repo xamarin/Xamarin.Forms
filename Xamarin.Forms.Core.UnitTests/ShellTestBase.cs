@@ -216,7 +216,9 @@ namespace Xamarin.Forms.Core.UnitTests
 				content.Route = shellContentRoute;
 			}
 			else if (asImplicit)
-				content = (ShellContent)page;
+			{
+				content = (ShellContent)(page ?? new ContentPage());
+			}
 			else
 			{
 				if (templated)

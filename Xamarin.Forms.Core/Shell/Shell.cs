@@ -1006,57 +1006,59 @@ namespace Xamarin.Forms
 
 			foreach (var shellItem in ShellController.GetItems())
 			{
-				if (!FlyoutItem.GetIsVisible(shellItem))
+				if (!ShowInFlyoutMenu(shellItem))
 					continue;
 
-				if (shellItem.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
+				if (Routing.IsImplicit(shellItem) || shellItem.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
 				{
 					IncrementGroup();
 
 					foreach (var shellSection in (shellItem as IShellItemController).GetItems())
 					{
-						if (!FlyoutItem.GetIsVisible(shellSection))
+						if (!ShowInFlyoutMenu(shellSection))
 							continue;
 
-						if (shellSection.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
+						var shellContents = ((IShellSectionController)shellSection).GetItems();
+						if (Routing.IsImplicit(shellSection) || shellSection.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
 						{
 							IncrementGroup();
-
-							foreach (var shellContent in shellSection.Items)
+							foreach (var shellContent in shellContents)
 							{
-								if (!FlyoutItem.GetIsVisible(shellContent))
+								if (!ShowInFlyoutMenu(shellContent))
 									continue;
 
 								currentGroup.Add(shellContent);
 								if (shellContent == shellSection.CurrentItem)
 								{
-									currentGroup.AddRange(shellContent.MenuItems);
+									AddMenuItems(shellContent.MenuItems);
 								}
 							}
+
 							IncrementGroup();
 						}
 						else
 						{
 							if (!(shellSection.Parent is TabBar))
 							{
-								if (Routing.IsImplicit(shellSection) && shellSection.Items.Count == 1)
+								if (Routing.IsImplicit(shellSection) && shellContents.Count == 1)
 								{
-									if (!FlyoutItem.GetIsVisible(shellSection.Items[0]))
+									if (!ShowInFlyoutMenu(shellContents[0]))
 										continue;
 
-									currentGroup.Add(shellSection.Items[0]);
+									currentGroup.Add(shellContents[0]);
 								}
 								else
 									currentGroup.Add(shellSection);
 							}
 
 							// If we have only a single child we will also show the items menu items
-							if ((shellSection as IShellSectionController).GetItems().Count == 1 && shellSection == shellItem.CurrentItem)
+							if (shellContents.Count == 1 && shellSection == shellItem.CurrentItem)
 							{
-								currentGroup.AddRange(shellSection.CurrentItem.MenuItems);
+								AddMenuItems(shellSection.CurrentItem.MenuItems);
 							}
 						}
 					}
+
 					IncrementGroup();
 				}
 				else
@@ -1070,6 +1072,19 @@ namespace Xamarin.Forms
 
 			return result;
 
+			bool ShowInFlyoutMenu(BindableObject bo)
+			{
+				return FlyoutItem.GetIsVisible(bo) && Shell.GetFlyoutBehavior(bo) != FlyoutBehavior.Disabled;
+			}
+
+			void AddMenuItems(MenuItemCollection menuItems)
+			{
+				foreach(var item in menuItems)
+				{
+					if (ShowInFlyoutMenu(item))
+						currentGroup.Add(item);
+				}
+			}
 
 			void IncrementGroup()
 			{

@@ -206,7 +206,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected virtual void UpdateFlyoutBackgroundColor()
 		{
-
 			if (_shell.FlyoutBackgroundColor == Color.Default)
 			{
 				object color = null;
@@ -300,7 +299,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnStructureChanged(object sender, EventArgs e)
 		{
-			MenuItemsSource = IterateItems();
+			//MenuItemsSource = IterateItems();
 		}
 
 		void OnItemsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
