@@ -924,7 +924,7 @@ namespace Xamarin.Forms
 			public void Invalidate(VisualElement visualElement)
 			{
 				var renderer = visualElement.GetRenderer();
-				if (renderer == null)
+				if (renderer == null || renderer.View.IsDisposed())
 				{
 					return;
 				}
