@@ -1332,7 +1332,7 @@ namespace Xamarin.Forms.Platform.Android
 				_viewPagerParent.EnableGesture = isGestureEnabled;
 		}
 
-		void OnOpenRequested(object sender, OpenSwipeEventArgs e)
+		void OnOpenRequested(object sender, OpenRequestedEventArgs e)
 		{
 			if (_contentView == null)
 				return;
@@ -1401,7 +1401,7 @@ namespace Xamarin.Forms.Platform.Android
 			((ISwipeViewController)Element).IsOpen = isOpen;
 		}
 
-		void OnCloseRequested(object sender, SwipeClosedRequestEventArgs e)
+		void OnCloseRequested(object sender, CloseRequestedEventArgs e)
 		{
 			var animated = e.Animated;
 
