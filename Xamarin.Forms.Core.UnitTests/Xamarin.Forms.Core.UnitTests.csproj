@@ -119,8 +119,6 @@
     <Compile Include="ImageButtonUnitTest.cs" />
     <Compile Include="ItemsViewTests.cs" />
     <Compile Include="LayoutChildIntoBoundingRegionTests.cs" />
-    <Compile Include="MediaElementTests.cs" />
-    <Compile Include="MediaSourceTests.cs" />
     <Compile Include="MenuUnitTests.cs" />
     <Compile Include="PreviewerReflectionTests.cs" />
     <Compile Include="RegionTests.cs" />
@@ -253,6 +251,7 @@
     <Compile Include="PolylineTests.cs" />
     <Compile Include="RectangleTests.cs" />
     <Compile Include="LineTests.cs" />
+    <Compile Include="GeometryTests.cs" />
     <Compile Include="RectUnitTests.cs" />
     <Compile Include="BrushUnitTests.cs" />
     <Compile Include="LinearGradientBrushTests.cs" />

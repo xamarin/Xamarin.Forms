@@ -35,8 +35,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			Device.SetFlags(new List<string> { ExperimentalFlags.SwipeViewExperimental });
-
 			_rightSwipeCountLabel = new Label
 			{
 				AutomationId = RightCountLabelId,
@@ -151,7 +149,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 #endif
 
-		#region CreateMySwipeView
+#region CreateMySwipeView
 
 		public SwipeView CreateMySwipeView()
 		{

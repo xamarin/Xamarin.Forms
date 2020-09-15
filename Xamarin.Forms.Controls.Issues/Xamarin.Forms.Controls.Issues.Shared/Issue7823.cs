@@ -21,14 +21,15 @@ namespace Xamarin.Forms.Controls.Issues
 		const string GetClipChildren = "getClipChildren";
 		const string GetClipBounds = "getClipBounds";
 		const string SetClipBounds = "SetClipBounds";
-		const string SecondaryFrame = "Secondary Frame";
+		const string SecondaryFrame = "SecondaryFrame";
 		const string RootFrame = "Root Frame";
 		const string BoxView = "Box View";
 
 		protected override void Init()
 		{
-			var frameClippedToBouds = new Frame
+			var frameClippedToBounds = new Frame
 			{
+				IsClippedToBounds = true,
 				AutomationId = SecondaryFrame,
 				CornerRadius = 10,
 				BackgroundColor = Color.Blue,
@@ -53,7 +54,7 @@ namespace Xamarin.Forms.Controls.Issues
 						CornerRadius = 5,
 						BackgroundColor = Color.Red,
 						Padding = 10,
-						Content = frameClippedToBouds
+						Content = frameClippedToBounds
 					},
 					new Button
 					{
@@ -61,8 +62,8 @@ namespace Xamarin.Forms.Controls.Issues
 						Text = "Manually set Frame.IsClippedToBounds = false",
 						Command = new Command(()=>
 						{
-							frameClippedToBouds.IsClippedToBounds = false;
-							frameClippedToBouds.CornerRadius = 11;
+							frameClippedToBounds.IsClippedToBounds = false;
+							frameClippedToBounds.CornerRadius = 11;
 						})
 					}
 				}
