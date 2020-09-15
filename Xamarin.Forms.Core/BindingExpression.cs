@@ -456,7 +456,7 @@ namespace Xamarin.Forms
 
 				convertTo = Nullable.GetUnderlyingType(convertTo) ?? convertTo;
 
-				value = Convert.ChangeType(value, convertTo, CultureInfo.InvariantCulture);
+				value = Convert.ChangeType(value, convertTo, CultureInfo.CurrentUICulture);
 				return true;
 			}
 			catch (Exception ex) when (ex is InvalidCastException || ex is FormatException || ex is InvalidOperationException || ex is OverflowException) {
