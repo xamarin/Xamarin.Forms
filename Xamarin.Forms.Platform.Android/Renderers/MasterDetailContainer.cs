@@ -9,23 +9,24 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class FlyoutPageContainer : ViewGroup
+	[Obsolete("MasterDetailPage is obsolete as of version 5.0.0. Please use FlyoutPage instead.")]
+	internal class MasterDetailContainer : ViewGroup
 	{
-		const int DefaultFlyoutSize = 320;
-		const int DefaultSmallFlyoutSize = 240;
-		readonly bool _isFlyout;
-		readonly FlyoutPage _parent;
+		const int DefaultMasterSize = 320;
+		const int DefaultSmallMasterSize = 240;
+		readonly bool _isMaster;
+		readonly MasterDetailPage _parent;
 		VisualElement _childView;
 
-		public FlyoutPageContainer(FlyoutPage parent, bool isFlyout, Context context) : base(context)
+		public MasterDetailContainer(MasterDetailPage parent, bool isMaster, Context context) : base(context)
 		{
 			_parent = parent;
-			_isFlyout = isFlyout;
+			_isMaster = isMaster;
 		}
 
-		public FlyoutPageContainer(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) { }
+		public MasterDetailContainer(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) { }
 
-		IFlyoutPageController FlyoutPageController => _parent as IFlyoutPageController;
+		IMasterDetailPageController MasterDetailPageController => _parent as IMasterDetailPageController;
 
 		public VisualElement ChildView
 		{
@@ -43,7 +44,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_childView == null)
 					return;
-				
+
 				AddChildView(_childView);
 			}
 		}
@@ -66,19 +67,19 @@ namespace Xamarin.Forms.Platform.Android
 
 		public int TopPadding { get; set; }
 
-		double DefaultWidthFlyout
+		double DefaultWidthMaster
 		{
 			get
 			{
 				double w = Context.FromPixels(Resources.DisplayMetrics.WidthPixels);
-				return w < DefaultSmallFlyoutSize ? w : (w < DefaultFlyoutSize ? DefaultSmallFlyoutSize : DefaultFlyoutSize);
+				return w < DefaultSmallMasterSize ? w : (w < DefaultMasterSize ? DefaultSmallMasterSize : DefaultMasterSize);
 			}
 		}
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
 		{
-			bool isShowingPopover = _parent.IsPresented && !FlyoutPageController.ShouldShowSplitMode;
-			if (!_isFlyout && isShowingPopover)
+			bool isShowingPopover = _parent.IsPresented && !MasterDetailPageController.ShouldShowSplitMode;
+			if (!_isMaster && isShowingPopover)
 				return true;
 			return base.OnInterceptTouchEvent(ev);
 		}
@@ -98,11 +99,11 @@ namespace Xamarin.Forms.Platform.Android
 			if (_childView == null)
 				return;
 
-			Rectangle bounds = GetBounds(_isFlyout, l, t, r, b);
-			if (_isFlyout)
-				FlyoutPageController.FlyoutBounds = bounds;
+			Rectangle bounds = GetBounds(_isMaster, l, t, r, b);
+			if (_isMaster)
+				MasterDetailPageController.MasterBounds = bounds;
 			else
-				FlyoutPageController.DetailBounds = bounds;
+				MasterDetailPageController.DetailBounds = bounds;
 
 			IVisualElementRenderer renderer = Platform.GetRenderer(_childView);
 			renderer?.UpdateLayout();
@@ -115,7 +116,7 @@ namespace Xamarin.Forms.Platform.Android
 			_childView?.ClearValue(Platform.RendererProperty);
 		}
 
-		Rectangle GetBounds(bool isFlyout, int left, int top, int right, int bottom)
+		Rectangle GetBounds(bool isMasterPage, int left, int top, int right, int bottom)
 		{
 			double width = Context.FromPixels(right - left);
 			double height = Context.FromPixels(bottom - top);
@@ -123,19 +124,19 @@ namespace Xamarin.Forms.Platform.Android
 			bool supressPadding = false;
 
 			//splitview
-			if (FlyoutPageController.ShouldShowSplitMode)
+			if (MasterDetailPageController.ShouldShowSplitMode)
 			{
 				//to keep some behavior we have on iPad where you can toggle and it won't do anything 
-				bool isDefaultNoToggle = _parent.FlyoutLayoutBehavior == FlyoutLayoutBehavior.Default;
-				xPos = isFlyout ? 0 : (_parent.IsPresented || isDefaultNoToggle ? DefaultWidthFlyout : 0);
-				width = isFlyout ? DefaultWidthFlyout : _parent.IsPresented || isDefaultNoToggle ? width - DefaultWidthFlyout : width;
+				bool isDefaultNoToggle = _parent.MasterBehavior == MasterBehavior.Default;
+				xPos = isMasterPage ? 0 : (_parent.IsPresented || isDefaultNoToggle ? DefaultWidthMaster : 0);
+				width = isMasterPage ? DefaultWidthMaster : _parent.IsPresented || isDefaultNoToggle ? width - DefaultWidthMaster : width;
 			}
 			else
 			{
-				//if we are showing the normal popover flyout doesn't have padding
-				supressPadding = isFlyout;
-				//popover make the flyout smaller
-				width = isFlyout && (Device.Info.CurrentOrientation.IsLandscape() || Device.Idiom == TargetIdiom.Tablet) ? DefaultWidthFlyout : width;
+				//if we are showing the normal popover master doesn't have padding
+				supressPadding = isMasterPage;
+				//popover make the master smaller
+				width = isMasterPage && (Device.Info.CurrentOrientation.IsLandscape() || Device.Idiom == TargetIdiom.Tablet) ? DefaultWidthMaster : width;
 			}
 
 			double padding = supressPadding ? 0 : Context.FromPixels(TopPadding);
