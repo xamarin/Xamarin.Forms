@@ -29,6 +29,8 @@ namespace Xamarin.Forms
 				Shell.SetMenuItemTemplate(this, Shell.GetMenuItemTemplate(MenuItem));
 			else if (e.PropertyName == TitleProperty.PropertyName)
 				OnPropertyChanged(MenuItem.TextProperty.PropertyName);
+			else if (e.PropertyName == FlyoutItem.IsVisibleProperty.PropertyName)
+				FlyoutItem.SetIsVisible(this, FlyoutItem.GetIsVisible(MenuItem));
 		}
 
 		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
