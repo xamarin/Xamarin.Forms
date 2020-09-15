@@ -1021,7 +1021,6 @@ namespace Xamarin.Forms
 						var shellContents = ((IShellSectionController)shellSection).GetItems();
 						if (Routing.IsImplicit(shellSection) || shellSection.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
 						{
-							IncrementGroup();
 							foreach (var shellContent in shellContents)
 							{
 								if (!ShowInFlyoutMenu(shellContent))
@@ -1052,7 +1051,7 @@ namespace Xamarin.Forms
 							}
 
 							// If we have only a single child we will also show the items menu items
-							if (shellContents.Count == 1 && shellSection == shellItem.CurrentItem)
+							if (shellContents.Count == 1 && shellSection == shellItem.CurrentItem && shellSection.CurrentItem.MenuItems.Count > 0)
 							{
 								AddMenuItems(shellSection.CurrentItem.MenuItems);
 							}
@@ -1079,7 +1078,7 @@ namespace Xamarin.Forms
 
 			void AddMenuItems(MenuItemCollection menuItems)
 			{
-				foreach(var item in menuItems)
+				foreach (var item in menuItems)
 				{
 					if (ShowInFlyoutMenu(item))
 						currentGroup.Add(item);
