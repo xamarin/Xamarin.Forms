@@ -314,7 +314,7 @@ namespace Xamarin.Forms
 
 		LayoutConstraint _selfConstraint;
 
-		internal VisualElement()
+		protected internal VisualElement()
 		{
 		}
 
