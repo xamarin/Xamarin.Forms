@@ -143,11 +143,18 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void FlyoutItemVisibleWorksForMenuItemsAddedAsShellItem()
 		{
 			var shell = new TestShell();
-			shell.Items.Add(CreateNonVisibleMenuItem());
+			var item = new MenuShellItem(CreateNonVisibleMenuItem());
+			shell.Items.Add(item);
+
+			var itemsAreEquals = item.Equals(shell.Items[0]);
+			Assert.IsTrue(itemsAreEquals);
 
 			IShellController shellController = (IShellController)shell;
 			var groups = shellController.GenerateFlyoutGrouping();
-			Assert.AreEqual(groups.SelectMany(x => x.OfType<IMenuItemController>()).Count(), 0);
+
+			var r = groups.SelectMany(x => x.OfType<IMenuItemController>());
+
+			Assert.AreEqual(r.Count(), 0);
 		}
 
 		[Test]
