@@ -3,10 +3,10 @@
 After July 15, 2020, feature related pull requests cannot be guaranteed to merge by Xamarin.Forms 5.0. They will be labeled "maui" for transition to dotnet/maui. See the [transition to .NET MAUI](https://github.com/xamarin/Xamarin.Forms/wiki/Feature-Roadmap#transition-to-net-maui) for more information.
 
 Before you submit this PR, make sure you're building on and targeting the right branch!
-     - If this is an enhancement or contains API changes or breaking changes, target main.
+     - If this is an enhancement or contains API changes or breaking changes, target main-xf.
      - If the issue you're working on has a milestone, target the corresponding branch.
-     - If this is a bug fix, target the branch of the latest stable version (unless the bug is only in a prerelease or main, of course!).
-     See [Contributing](https://github.com/xamarin/Xamarin.Forms/blob/main/.github/CONTRIBUTING.md) for more tips!
+     - If this is a bug fix, target the branch of the latest stable version (unless the bug is only in a prerelease or main-xf, of course!).
+     See [Contributing](https://github.com/xamarin/Xamarin.Forms/blob/main-xf/.github/CONTRIBUTING.md) for more tips!
 
      PLEASE DELETE THE ALL THESE COMMENTS BEFORE SUBMITTING! THANKS!!!
  -->
