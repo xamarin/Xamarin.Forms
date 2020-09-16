@@ -32,7 +32,7 @@ namespace Xamarin.Forms.PlatformConfiguration.iOSSpecific
 		#endregion
 	}
 
-	[Obsolete("FLYOUTPAGE")]
+	[Obsolete("MasterDetailPage is obsolete as of version 5.0.0. Please use FlyoutPage instead.")]
 	public static class MasterDetailPage
 	{
 		#region ApplyShadow

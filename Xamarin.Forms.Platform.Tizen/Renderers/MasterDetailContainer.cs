@@ -2,7 +2,6 @@
 
 namespace Xamarin.Forms.Platform.Tizen.Renderers
 {
-	[Obsolete("FLYOUTPAGE")]
 	public class MasterDetailContainer : ElmSharp.Box, IDisposable
 	{
 		readonly MasterDetailPage _parent;

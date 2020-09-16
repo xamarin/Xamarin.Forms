@@ -9,8 +9,10 @@ using Android.Views;
 using AView = Android.Views.View;
 using Android.OS;
 
-namespace Xamarin.Forms.Platform.Android.AppCompat
+namespace Xamarin.Forms.Platform.Android
 {
+	using Xamarin.Forms.Platform.Android.AppCompat;
+
 	public class FlyoutPageRenderer : DrawerLayout, IVisualElementRenderer, DrawerLayout.IDrawerListener, IManageFragments, ILifeCycleState
 	{
 		#region Statics
@@ -121,7 +123,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				oldElement.Disappearing -= FlyoutPageDisappearing;
 
 				RemoveDrawerListener(this);
-			
+
 				if (_detailLayout != null)
 				{
 					RemoveView(_detailLayout);
@@ -476,9 +478,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 	}
+}
 
-
-	//[Obsolete("FLYOUTPAGE")]
+namespace Xamarin.Forms.Platform.Android.AppCompat
+{
 	public class MasterDetailPageRenderer : FlyoutPageRenderer
 	{
 		public MasterDetailPageRenderer(Context context) : base(context)

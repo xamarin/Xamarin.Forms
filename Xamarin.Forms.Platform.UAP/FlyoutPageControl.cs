@@ -387,7 +387,6 @@ namespace Xamarin.Forms.Platform.UWP
 
     }
 
-	[Obsolete("FLYOUTPAGE")]
 	public class MasterDetailControl : FlyoutPageControl
 	{
 		public FrameworkElement Master

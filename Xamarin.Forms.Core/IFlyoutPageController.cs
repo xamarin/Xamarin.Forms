@@ -17,7 +17,6 @@ namespace Xamarin.Forms
 		event EventHandler<BackButtonPressedEventArgs> BackButtonPressed;
 	}
 
-	[Obsolete("FLYOUTPAGE")]
 	public interface IMasterDetailPageController : IFlyoutPageController
 	{
 		Rectangle MasterBounds { get; set; }

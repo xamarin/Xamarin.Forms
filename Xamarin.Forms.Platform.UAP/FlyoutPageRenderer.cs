@@ -445,7 +445,6 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 	}
 
-	[Obsolete("FLYOUTPAGE")]
 	public class MasterDetailPageRenderer : FlyoutPageRenderer
 	{
 

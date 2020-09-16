@@ -12,7 +12,6 @@ namespace Xamarin.Forms
 		SplitOnPortrait = 4
 	}
 
-	//[Obsolete("FLYOUTPAGE")]
 	public enum MasterBehavior
 
 	{

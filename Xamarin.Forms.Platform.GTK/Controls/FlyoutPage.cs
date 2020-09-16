@@ -423,7 +423,6 @@ namespace Xamarin.Forms.Platform.GTK.Controls
 		}
 	}
 
-	[Obsolete("FLYOUTPAGE")]
 	public class MasterDetailPage : FlyoutPage 
 	{
 
