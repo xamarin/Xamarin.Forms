@@ -45,18 +45,19 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			shellItem.Items.Add(CreateShellSection());
 			shellItem.Items.Add(CreateShellSection());
-			shellItem2.Items.Add(CreateShellSection(asImplicit: true));
+
+			shellItem2.Items.Add(CreateShellContent());
 			shellItem2.Items.Add(CreateShellSection());
 
 			shell.Items.Add(shellItem);
 			shell.Items.Add(shellItem2);
-			IShellController shellController = (IShellController)shell;
+
+			IShellController shellController = shell;
 			var groups = shellController.GenerateFlyoutGrouping();
 
-			Assert.AreEqual(3, groups.Count);
+			Assert.AreEqual(2, groups.Count);
 			Assert.AreEqual(groups[0].Count, 2);
-			Assert.AreEqual(groups[1].Count, 1);
-			Assert.AreEqual(groups[2].Count, 1);
+			Assert.AreEqual(groups[1].Count, 2);
 		}
 
 		[Test]
