@@ -254,7 +254,7 @@ namespace Xamarin.Forms
 		}
 	}
 
-	//[Obsolete("MasterDetailPage is obsolete as of version 5.0.0. Please use FlyoutPage instead.")]
+	[Obsolete("MasterDetailPage is obsolete as of version 5.0.0. Please use FlyoutPage instead.")]
 	[RenderWith(typeof(_MasterDetailPageRenderer))]
 	public class MasterDetailPage : FlyoutPage, IMasterDetailPageController
 	{

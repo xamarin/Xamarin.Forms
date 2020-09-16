@@ -42,7 +42,9 @@ using UIKit;
 [assembly: ExportRenderer(typeof(Path), typeof(PathRenderer))]
 #endif
 
+#pragma warning disable CS0618 // Type or member is obsolete
 [assembly: ExportRenderer(typeof(MasterDetailPage), typeof(TabletMasterDetailRenderer), UIUserInterfaceIdiom.Pad)]
+#pragma warning restore CS0618 // Type or member is obsolete
 [assembly: ExportRenderer(typeof(FlyoutPage), typeof(TabletFlyoutPageRenderer), UIUserInterfaceIdiom.Pad)]
 [assembly: ExportRenderer(typeof(NativeViewWrapper), typeof(NativeViewWrapperRenderer))]
 [assembly: ExportRenderer(typeof(Shell), typeof(ShellRenderer))]

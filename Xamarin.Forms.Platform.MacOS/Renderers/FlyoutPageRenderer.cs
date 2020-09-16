@@ -6,6 +6,7 @@ using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
+	[Obsolete("MasterDetailPage is obsolete as of version 5.0.0. Please use FlyoutPage instead.")]
 	public class MasterDetailPageRenderer : FlyoutPageRenderer
 	{
 		public MasterDetailPage MasterDetailPage => (MasterDetailPage)base.FlyoutPage;

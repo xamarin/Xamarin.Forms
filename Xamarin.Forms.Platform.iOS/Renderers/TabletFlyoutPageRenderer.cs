@@ -607,6 +607,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 		}
 
+		[Obsolete("MasterDetailPage is obsolete as of version 5.0.0. Please use FlyoutPage instead.")]
 		protected MasterDetailPage MasterDetailPage => (MasterDetailPage)base.FlyoutPage;
 
 	}
