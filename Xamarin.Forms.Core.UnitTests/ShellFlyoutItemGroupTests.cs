@@ -11,24 +11,20 @@ namespace Xamarin.Forms.Core.UnitTests
 	public class ShellFlyoutItemGroupTests : ShellTestBase
 	{
 		[Test]
-		public void FlyoutGroupsNumbersForDifferentFlyoutDisplayOptions()
+		public void FlyoutCreatesCorrectNumberOfGroupsForAsMultipleItems()
 		{
 			var shell = new Shell();
 			var shellItem = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsMultipleItems, };
 			var shellItem2 = new ShellItem();
-			var shellSection1 = CreateShellSection(new ContentPage());
-			var shellSection2 = CreateShellSection(new ContentPage());
-			var shellSection3 = CreateShellSection(new ContentPage(), asImplicit: true);
-			var shellSection4 = CreateShellSection(new ContentPage());
 
-			shellItem.Items.Add(shellSection1);
-			shellItem.Items.Add(shellSection2);
-			shellItem2.Items.Add(shellSection3);
-			shellItem2.Items.Add(shellSection4);
+			shellItem.Items.Add(CreateShellSection());
+			shellItem.Items.Add(CreateShellSection());
+			shellItem2.Items.Add(CreateShellContent());
+			shellItem2.Items.Add(CreateShellSection());
 
 			shell.Items.Add(shellItem);
 			shell.Items.Add(shellItem2);
-			IShellController shellController = (IShellController)shell;
+			IShellController shellController = shell;
 			var groups = shellController.GenerateFlyoutGrouping();
 
 			Assert.AreEqual(groups.Count, 2);
@@ -37,7 +33,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public void FlyoutGroupsNumbersForFlyoutDisplayOptionsAsMultipleItems()
+		public void FlyoutCreatesCorrectNumberOfGroupsForNestedAsMultipleItems()
 		{
 			var shell = new Shell();
 			var shellItem = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsMultipleItems, };
@@ -61,25 +57,21 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public void FlyoutGroupsNumbersForFlyoutDisplayOptionsAsSingleItems()
+		public void FlyoutCreatesCorrectNumberOfGroupsForAsSingleItem()
 		{
 			var shell = new Shell();
 			var shellItem = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsSingleItem, };
 			var shellItem2 = new ShellItem() { FlyoutDisplayOptions = FlyoutDisplayOptions.AsSingleItem, };
-			var shellSection1 = CreateShellSection(new ContentPage());
-			var shellSection2 = CreateShellSection(new ContentPage());
-			var shellSection3 = CreateShellSection(new ContentPage(), asImplicit: true);
-			var shellSection4 = CreateShellSection(new ContentPage());
 
-			shellItem.Items.Add(shellSection1);
-			shellItem.Items.Add(shellSection2);
-			shellItem2.Items.Add(shellSection3);
-			shellItem2.Items.Add(shellSection4);
+			shellItem.Items.Add(CreateShellSection());
+			shellItem.Items.Add(CreateShellSection());
+			shellItem2.Items.Add(CreateShellContent());
+			shellItem2.Items.Add(CreateShellSection());
 
 
 			shell.Items.Add(shellItem);
 			shell.Items.Add(shellItem2);
-			IShellController shellController = (IShellController)shell;
+			IShellController shellController = shell;
 			var groups = shellController.GenerateFlyoutGrouping();
 
 			Assert.AreEqual(groups.Count, 1);
