@@ -324,23 +324,6 @@ namespace Xamarin.Forms
 			}
 		}
 
-		//internal bool ShowInFlyout()
-		//{
-		//	if (!FlyoutItem.GetIsVisible(this) || Shell.GetFlyoutBehavior(this) == FlyoutBehavior.Disabled)
-		//		return false;
-
-		//	if ((this is ShellGroupItem sgi) && sgi.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
-		//		return false;
-
-		//	if (this.NonImplicitParent is ShellGroupItem spgi && spgi.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
-		//		return true;
-
-		//	if (Parent is TabBar)
-		//		return false;
-
-
-		//}
-
 		internal static DataTemplate CreateDefaultFlyoutItemCell(string textBinding, string iconBinding)
 		{
 			return new DataTemplate(() =>

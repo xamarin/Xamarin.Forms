@@ -78,30 +78,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(groups[0].Count, 2);
 		}
 
-
-		[Test]
-		public void FlyoutDisabledItemsDontGenerateIntoFlyoutList()
-		{
-			var shell = new TestShell();
-			var shellItemFlyoutDisabled = CreateShellItem<ShellItem>();
-			Shell.SetFlyoutBehavior(shellItemFlyoutDisabled, FlyoutBehavior.Disabled);
-
-			var flyoutItem = CreateShellItem<FlyoutItem>();
-			flyoutItem.FlyoutDisplayOptions = FlyoutDisplayOptions.AsMultipleItems;
-			Shell.SetFlyoutBehavior(flyoutItem.Items[0], FlyoutBehavior.Disabled);
-
-			var shellContent = CreateShellContent();
-			Shell.SetFlyoutBehavior(shellContent, FlyoutBehavior.Disabled);
-
-			shell.Items.Add(shellItemFlyoutDisabled);
-			shell.Items.Add(flyoutItem);
-			shell.Items.Add(shellContent);
-
-			IShellController shellController = (IShellController)shell;
-			var groups = shellController.GenerateFlyoutGrouping();
-			Assert.AreEqual(groups.Count, 0);
-		}
-
 		[Test]
 		public void MenuItemGeneratesForShellContent()
 		{

@@ -1076,7 +1076,10 @@ namespace Xamarin.Forms
 
 			bool ShowInFlyoutMenu(BindableObject bo)
 			{
-				return FlyoutItem.GetIsVisible(bo) && Shell.GetFlyoutBehavior(bo) != FlyoutBehavior.Disabled;
+				if(bo is MenuShellItem msi)
+					return FlyoutItem.GetIsVisible(msi.MenuItem);
+
+				return FlyoutItem.GetIsVisible(bo);
 			}
 
 			void AddMenuItems(MenuItemCollection menuItems)
