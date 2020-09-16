@@ -1011,7 +1011,8 @@ namespace Xamarin.Forms
 
 				if (Routing.IsImplicit(shellItem) || shellItem.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
 				{
-					IncrementGroup();
+					if(shellItem.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
+						IncrementGroup();
 
 					foreach (var shellSection in (shellItem as IShellItemController).GetItems())
 					{
@@ -1033,7 +1034,8 @@ namespace Xamarin.Forms
 								}
 							}
 
-							IncrementGroup();
+							if(shellSection.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
+								IncrementGroup();
 						}
 						else
 						{
@@ -1058,7 +1060,8 @@ namespace Xamarin.Forms
 						}
 					}
 
-					IncrementGroup();
+					if (shellItem.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
+						IncrementGroup();
 				}
 				else
 				{
