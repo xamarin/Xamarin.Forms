@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,6 +34,9 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (_content != null)
 			{
+				if(_content.BindingContext is INotifyPropertyChanged inpc)
+					inpc.PropertyChanged -= ShellElementPropertyChanged;
+
 				_content.Cleanup();
 				_content.MeasureInvalidated -= OnMeasureInvalidated;
 				_content.BindingContext = null;
@@ -40,9 +44,12 @@ namespace Xamarin.Forms.Platform.UWP
 				_content = null;
 			}
 
-			var bo = (BindableObject)DataContext;
+			var bo = (BindableObject)args.NewValue;
 			var shell = (bo as Element)?.FindParent<Shell>();
 			DataTemplate dataTemplate = (shell as IShellController)?.GetFlyoutItemDataTemplate(bo);
+
+			if(bo != null)
+				bo.PropertyChanged += ShellElementPropertyChanged;
 
 			if(dataTemplate != null)
 			{
@@ -50,7 +57,6 @@ namespace Xamarin.Forms.Platform.UWP
 				_content.BindingContext = bo;
 				_content.Parent = shell;
 				_content.MeasureInvalidated += OnMeasureInvalidated;
-				//_content.BackgroundColor = Color.Red;
 				IVisualElementRenderer renderer = Platform.CreateRenderer(_content);
 				Platform.SetRenderer(_content, renderer);
 
@@ -72,6 +78,13 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateVisualState();
 				OnMeasureInvalidated();
 			}
+		}
+
+		void ShellElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (e.Is(BaseShellItem.IsCheckedProperty))
+				UpdateVisualState();
+			
 		}
 
 		void OnMeasureInvalidated(object sender, EventArgs e)

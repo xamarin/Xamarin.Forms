@@ -771,6 +771,7 @@ namespace Xamarin.Forms
 		ShellNavigatedEventArgs _accumulatedEvent;
 		bool _accumulateNavigatedEvents;
 		View _flyoutHeaderView;
+		List<List<Element>> _currentFlyoutViews;
 
 		public Shell()
 		{
@@ -1072,6 +1073,39 @@ namespace Xamarin.Forms
 
 			IncrementGroup();
 
+			// If the flyout groupings haven't changed just return
+			// the same instance so the caller knows it hasn't changed
+			// at a later point this will all get converted to an observable collection
+			if(_currentFlyoutViews?.Count == result.Count)
+			{
+				bool hasChanged = false;
+				for (var i = 0; i < result.Count && !hasChanged; i++)
+				{
+					var topLevelNew = result[i];
+					var topLevelPrevious = _currentFlyoutViews[i];
+
+					if (topLevelNew.Count != topLevelPrevious.Count)
+					{
+						hasChanged = true;
+						break;
+					}
+
+					for(var j = 0; j > topLevelNew.Count; j++)
+					{
+						if(topLevelNew[j] != topLevelPrevious[j])
+						{
+							hasChanged = true;
+							break;
+						}
+					}
+
+				}
+
+				if (!hasChanged)
+					return _currentFlyoutViews;
+			}
+
+			_currentFlyoutViews = result;
 			return result;
 
 			bool ShowInFlyoutMenu(BindableObject bo)

@@ -203,6 +203,23 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(1, groups[0].Count);
 		}
 
+		[Test]
+		public void ReturnTheSameGroupingInstanceIfStructureHasntChanged()
+		{
+			var shell = new TestShell();
+
+			shell.Items.Add(CreateShellItem<FlyoutItem>());
+
+			var flyoutItems = shell.Controller.GenerateFlyoutGrouping();
+			var flyoutItems2 = shell.Controller.GenerateFlyoutGrouping();
+
+			Assert.AreSame(flyoutItems, flyoutItems2);
+
+			shell.Items.Add(CreateShellItem<FlyoutItem>());
+			flyoutItems2 = shell.Controller.GenerateFlyoutGrouping();
+
+			Assert.AreNotSame(flyoutItems, flyoutItems2);
+		}
 
 		MenuItem CreateNonVisibleMenuItem()
 		{

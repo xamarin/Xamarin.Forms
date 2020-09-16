@@ -254,6 +254,8 @@ namespace Xamarin.Forms.Core.UnitTests
 			public int NavigatingCount;
 			public int OnBackButtonPressedCount;
 
+			public IShellController Controller => this;
+
 			public TestShell()
 			{
 				this.Navigated += (_, __) => NavigatedCount++;
