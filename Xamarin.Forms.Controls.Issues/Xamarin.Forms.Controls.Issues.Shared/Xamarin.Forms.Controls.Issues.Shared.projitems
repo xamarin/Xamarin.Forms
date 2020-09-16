@@ -247,6 +247,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue7963.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8741.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8743.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue9123.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue9092.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue9087.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue9196.xaml.cs">

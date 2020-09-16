@@ -112,6 +112,15 @@
     <Compile Include="..\Xamarin.Forms.Core\StreamWrapper.cs" Link="StreamWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="FormsButtonStyle.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="FormsButtonStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Xaml\Xamarin.Forms.Xaml.csproj">
@@ -125,5 +134,8 @@
     </PackageReference>
     <PackageReference Include="Win2D.uwp" Condition="'$(OS)' == 'Windows_NT'" Version="1.20.0">
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Remove="FormsButtonStyle.xaml" />
   </ItemGroup>
 </Project>
