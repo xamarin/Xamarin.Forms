@@ -25,7 +25,7 @@ resources:
 trigger:
   branches:
     include:
-    - main
+    - main-xf
     - 3.*
     - 4.*
     - 5.*
@@ -40,7 +40,7 @@ pr:
   autoCancel: false
   branches:
     include:
-    - main
+    - main-xf
     - 3.*
     - 4.*
     - 5.*
@@ -50,7 +50,7 @@ schedules:
   displayName: Daily midnight build
   branches:
     include:
-    - main
+    - main-xf
 
 stages:
   - stage: windows
@@ -263,6 +263,6 @@ stages:
               msbuild
           steps:
             - template: build/steps/build-sign.yml
-          condition: and(succeeded(), ne(variables['signVmImage'], ''), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
+          condition: and(succeeded(), ne(variables['signVmImage'], ''), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/main-xf'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
 
 
