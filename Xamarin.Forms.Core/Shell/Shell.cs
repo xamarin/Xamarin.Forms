@@ -1592,17 +1592,6 @@ namespace Xamarin.Forms
 			}
 		}
 
-		void OnFlyoutFooterChanged(object oldVal, object newVal)
-		{
-			if (FlyoutFooterTemplate == null)
-			{
-				if (newVal is View newFlyoutFooter)
-					FlyoutFooterView = newFlyoutFooter;
-				else
-					FlyoutFooterView = null;
-			}
-		}
-
 		void OnFlyoutHeaderTemplateChanged(DataTemplate oldValue, DataTemplate newValue)
 		{
 			if (newValue == null)
@@ -1616,6 +1605,17 @@ namespace Xamarin.Forms
 			{
 				var newHeaderView = (View)newValue.CreateContent(FlyoutHeader, this);
 				FlyoutHeaderView = newHeaderView;
+			}
+		}
+
+		void OnFlyoutFooterChanged(object oldVal, object newVal)
+		{
+			if (FlyoutFooterTemplate == null)
+			{
+				if (newVal is View newFlyoutFooter)
+					FlyoutFooterView = newFlyoutFooter;
+				else
+					FlyoutFooterView = null;
 			}
 		}
 

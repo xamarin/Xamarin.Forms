@@ -184,7 +184,20 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateFlyoutFooter()
 		{
-			_footerView = new ContainerView(_shellContext.AndroidContext, ((IShellController)_shellContext.Shell).FlyoutFooter)
+			if (_footerView != null)
+			{
+				var oldFooterView = _footerView;
+				_footerView = null;
+				_appBarFooter.RemoveView(oldFooterView);
+				oldFooterView.Dispose();
+			}
+
+			var footer = ((IShellController)_shellContext.Shell).FlyoutFooter;
+
+			if (footer == null)
+				return;
+
+			_footerView = new ContainerView(_shellContext.AndroidContext, footer)
 			{
 				MatchWidth = true
 			};
@@ -344,6 +357,9 @@ namespace Xamarin.Forms.Platform.Android
 					_appBar.RemoveView(_headerView);
 				}
 
+				if(_appBarFooter != null)
+					_appBarFooter.RemoveView(_footerView);
+
 				if (_recycler != null)
 				{
 					_recycler.SetLayoutManager(null);
@@ -353,6 +369,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				_adapter?.Dispose();
 				_headerView.Dispose();
+				_footerView?.Dispose();
 				_rootView.Dispose();
 				_layoutManager?.Dispose();
 				_defaultBackgroundColor?.Dispose();

@@ -44,31 +44,40 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Items.Add(new MenuItem()
 			{
-				Text = "Toggle Header/Footer",
+				Text = "Toggle Header/Footer Template",
 				Command = new Command(() =>
 				{
-					if(FlyoutHeader != null)
+					if(FlyoutHeaderTemplate == null)
 					{
 						FlyoutHeaderTemplate = new DataTemplate(() => new Label() { Text = "Header Template" });
 						FlyoutFooterTemplate = new DataTemplate(() => new Label() { Text = "Footer Template" });
-
-						FlyoutHeader = null;
-						FlyoutFooter = null;
 					}
 					else if (FlyoutHeaderTemplate != null)
+					{
+						FlyoutHeaderTemplate = null;
+						FlyoutFooterTemplate = null;
+					}
+				}),
+				AutomationId = "ToggleHeaderFooterTemplate"
+			});
+
+			Items.Add(new MenuItem()
+			{
+				Text = "Toggle Header/Footer View",
+				Command = new Command(() =>
+				{
+					if (FlyoutHeader != null)
 					{
 						FlyoutHeader = null;
 						FlyoutFooter = null;
 					}
 					else
 					{
-						FlyoutHeaderTemplate = null;
-						FlyoutFooterTemplate = null;
 						FlyoutHeader = new Label() { Text = "Header View" };
 						FlyoutFooter = new Label() { Text = "Footer View" };
 					}
 				}),
-				AutomationId = "Toggle"
+				AutomationId = "ToggleHeaderFooter"
 			});
 		}
 
@@ -80,15 +89,28 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement("PageLoaded");
 			ShowFlyout();
-			RunningApp.Tap("Toggle");
+
+			RunningApp.Tap("ToggleHeaderFooter");
 			RunningApp.WaitForElement("Header View");
 			RunningApp.WaitForElement("Footer View");
-			RunningApp.Tap("Toggle");
+
+			RunningApp.Tap("ToggleHeaderFooterTemplate");
 			RunningApp.WaitForElement("Header Template");
 			RunningApp.WaitForElement("Footer Template");
-			RunningApp.Tap("Toggle");
+			RunningApp.WaitForNoElement("Header View");
+			RunningApp.WaitForNoElement("Footer View");
+
+			RunningApp.Tap("ToggleHeaderFooterTemplate");
+			RunningApp.WaitForElement("Header View");
+			RunningApp.WaitForElement("Footer View");
 			RunningApp.WaitForNoElement("Header Template");
 			RunningApp.WaitForNoElement("Footer Template");
+
+			RunningApp.Tap("ToggleHeaderFooter");
+			RunningApp.WaitForNoElement("Header Template");
+			RunningApp.WaitForNoElement("Footer Template");
+			RunningApp.WaitForNoElement("Header View");
+			RunningApp.WaitForNoElement("Footer View");
 		}
 
 #endif
