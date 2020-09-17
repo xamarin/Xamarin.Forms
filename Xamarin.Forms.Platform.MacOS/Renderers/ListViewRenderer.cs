@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using AppKit;
+using CoreGraphics;
 using Foundation;
 using Xamarin.Forms.Internals;
 
@@ -21,6 +22,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		bool? _defaultHorizontalScrollVisibility;
 		bool? _defaultVerticalScrollVisibility;
+		CGSize _previousSize;
 
 		public const int DefaultRowHeight = 44;
 
@@ -37,6 +39,16 @@ namespace Xamarin.Forms.Platform.MacOS
 			NSTableView table = new FormsNSTableView().AsListViewLook();
 			table.Source = _dataSource = new ListViewDataSource(list, table);
 			return table;
+		}
+
+		public override void Layout()
+		{
+			base.Layout();
+
+			if (_previousSize != Bounds.Size)
+				SetBackground(Element.Background);
+
+			_previousSize = Bounds.Size;
 		}
 
 		protected override void Dispose(bool disposing)
@@ -121,13 +133,20 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void SetBackground(Brush brush)
 		{
-			base.SetBackground(brush);
-
 			if (_table == null)
 				return;
 
-			var backgroundImage = this.GetBackgroundImage(brush);
-			_table.BackgroundColor = backgroundImage != null ? NSColor.FromPatternImage(backgroundImage) : NSColor.Clear;
+			if (brush is SolidColorBrush solidColorBrush)
+			{
+				Color color = solidColorBrush.Color;
+				_table.BackgroundColor = color.ToNSColor(NSColor.White);
+			}
+			else
+			{
+				BrushData brushData = new BrushData(brush, Element.FlowDirection);
+				var backgroundImage = this.GetBackgroundImage(brushData);
+				_table.BackgroundColor = backgroundImage != null ? NSColor.FromPatternImage(backgroundImage) : NSColor.Clear;
+			}
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<ListView> e)

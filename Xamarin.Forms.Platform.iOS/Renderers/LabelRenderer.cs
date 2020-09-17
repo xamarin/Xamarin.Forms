@@ -326,7 +326,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void SetBackground(Brush brush)
 		{
-			var backgroundLayer = this.GetBackgroundLayer(brush);
+			BrushData brushData = new BrushData(brush, Element.FlowDirection);
+			var backgroundLayer = this.GetBackgroundLayer(brushData);
 
 			if (backgroundLayer != null)
 			{

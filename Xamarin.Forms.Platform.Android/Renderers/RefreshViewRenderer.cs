@@ -209,7 +209,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateIsEnabled();
 			else if (e.PropertyName == RefreshView.IsRefreshingProperty.PropertyName)
 				UpdateIsRefreshing();
-			else if (e.IsOneOf(RefreshView.RefreshColorProperty, VisualElement.BackgroundColorProperty, VisualElement.BackgroundProperty))
+			else if (e.IsOneOf(RefreshView.RefreshColorProperty, VisualElement.BackgroundColorProperty, VisualElement.BackgroundProperty, VisualElement.FlowDirectionProperty))
 				UpdateColors();
 
 			ElementPropertyChanged?.Invoke(sender, e);

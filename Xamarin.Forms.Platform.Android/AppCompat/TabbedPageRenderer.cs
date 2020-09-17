@@ -345,7 +345,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 			else if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
 				UpdateBarBackgroundColor();
-			else if (e.PropertyName == NavigationPage.BarBackgroundProperty.PropertyName)
+			else if (e.IsOneOf(NavigationPage.BarBackgroundProperty, VisualElement.FlowDirectionProperty))
 				UpdateBarBackground();
 			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName ||
 				e.PropertyName == TabbedPage.UnselectedTabColorProperty.PropertyName ||
@@ -773,12 +773,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (IsDisposed)
 				return;
 
-			var barBackground = Element.BarBackground;
+			BrushData brushData = new BrushData(Element.BarBackground, Element.FlowDirection);
 
 			if (IsBottomTabPlacement)
-				_bottomNavigationView.UpdateBackground(barBackground);
+				_bottomNavigationView.UpdateBackground(brushData);
 			else
-				_tabLayout.UpdateBackground(barBackground);
+				_tabLayout.UpdateBackground(brushData);
 		}
 
 		protected virtual ColorStateList GetItemTextColorStates()

@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.IsOneOf(VisualElement.BackgroundColorProperty, VisualElement.BackgroundProperty, BoxView.ColorProperty))
+			if (e.IsOneOf(VisualElement.BackgroundColorProperty, VisualElement.BackgroundProperty, VisualElement.FlowDirectionProperty, BoxView.ColorProperty))
 				UpdateBoxView();
 			else if (e.PropertyName == BoxView.CornerRadiusProperty.PropertyName)
 				UpdateCornerRadius();
@@ -79,12 +79,14 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (!Brush.IsNullOrEmpty(brushToSet))
 			{
+				BrushData brushData = new BrushData(brushToSet, Element.FlowDirection, Height, Width);
+
 				if (_backgroundDrawable != null)
-					_backgroundDrawable.UpdateBackground(brushToSet, Height, Width);
+					_backgroundDrawable.UpdateBackground(brushData);
 				else
 				{
 					_backgroundDrawable = new GradientDrawable();
-					_backgroundDrawable.UpdateBackground(brushToSet, Height, Width);
+					_backgroundDrawable.UpdateBackground(brushData);
 					this.SetBackground(_backgroundDrawable);
 				}
 			}

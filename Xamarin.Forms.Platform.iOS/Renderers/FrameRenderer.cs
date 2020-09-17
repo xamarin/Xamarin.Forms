@@ -48,7 +48,8 @@ namespace Xamarin.Forms.Platform.iOS
 				e.PropertyName == Xamarin.Forms.Frame.HasShadowProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.CornerRadiusProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.IsClippedToBoundsProperty.PropertyName ||
-				e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
+				e.PropertyName == VisualElement.IsVisibleProperty.PropertyName ||
+				e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				SetupLayer();
 		}
 
@@ -87,7 +88,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (!Brush.IsNullOrEmpty(Element.Background))
 			{
-				var backgroundLayer = this.GetBackgroundLayer(Element.Background);
+				BrushData brushData = new BrushData(Element.Background, Element.FlowDirection);
+				var backgroundLayer = this.GetBackgroundLayer(brushData);
 
 				if (backgroundLayer != null)
 				{

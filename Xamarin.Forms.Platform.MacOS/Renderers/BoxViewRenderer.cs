@@ -71,7 +71,8 @@ namespace Xamarin.Forms.Platform.MacOS
 					(Control as FormsBoxView)?.SetColor(solidColorBrush.Color.ToNSColor());
 				else
 				{
-					var backgroundImage = this.GetBackgroundImage(brush);
+					BrushData brushData = new BrushData(brush, Element.FlowDirection);
+					var backgroundImage = this.GetBackgroundImage(brushData);
 					(Control as FormsBoxView)?.SetBrush(backgroundImage != null ? NSColor.FromPatternImage(backgroundImage) : NSColor.Clear);
 				}
 			}

@@ -83,18 +83,25 @@
                         x:Name="Button"
                         CornerRadius="12"
                         Text="Button"
+                        TextColor="White"
                         Margin="{StaticResource ViewMargin}"/>
                     <CheckBox
                         x:Name="CheckBox"
+                        Color="White"
                         Margin="{StaticResource ViewMargin}"/>
                     <DatePicker
                         x:Name="DatePicker"
+                        TextColor="White"
                         Margin="{StaticResource ViewMargin}"/>
                     <Editor
                         x:Name="Editor"
+                        Placeholder="Editor"
+                        PlaceholderColor="White"
                         Margin="{StaticResource ViewMargin}"/>
                     <Entry
                         x:Name="Entry"
+                        Placeholder="Entry"
+                        PlaceholderColor="White"
                         Margin="{StaticResource ViewMargin}"/>
                     <Frame
                         x:Name="Frame"
@@ -105,6 +112,7 @@
                         <Label
                             HorizontalOptions="Center"
                             VerticalOptions="Center"
+                            TextColor="White"
                             Text="Frame"/>
                     </Frame>
                     <Picker
@@ -121,6 +129,7 @@
                         Margin="{StaticResource ViewMargin}"/>
                     <TimePicker
                         x:Name="TimePicker"
+                        TextColor="White"
                         Margin="{StaticResource ViewMargin}"/>
                 </StackLayout>
             </ScrollView>

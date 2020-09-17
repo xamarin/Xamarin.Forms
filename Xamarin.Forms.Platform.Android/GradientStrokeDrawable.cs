@@ -34,17 +34,31 @@ namespace Xamarin.Forms.Platform.Android
 			InvalidateSelf();
 		}
 
-		public void SetGradient(Brush brush)
+		public void SetGradient(Brush brush, FlowDirection flowDirection)
 		{
 			if (brush is LinearGradientBrush linearGradientBrush)
 			{
 				var p1 = linearGradientBrush.StartPoint;
-				var x1 = (float)p1.X;
-				var y1 = (float)p1.Y;
-
 				var p2 = linearGradientBrush.EndPoint;
-				var x2 = (float)p2.X;
-				var y2 = (float)p2.Y;
+
+				float x1, y1, x2, y2;
+
+				if (flowDirection == FlowDirection.RightToLeft)
+				{
+					x1 = (float)p2.X;
+					y1 = (float)p2.Y;
+
+					x2 = (float)p1.X;
+					y2 = (float)p1.Y;
+				}
+				else
+				{
+					x1 = (float)p1.X;
+					y1 = (float)p1.Y;
+
+					x2 = (float)p2.X;
+					y2 = (float)p2.Y;
+				}
 
 				var gradientBrushData = linearGradientBrush.GetGradientBrushData();
 				var colors = gradientBrushData.Item1;

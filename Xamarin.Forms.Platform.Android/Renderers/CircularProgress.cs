@@ -53,14 +53,17 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		public void SetBackground(Color color, Brush brush)
+		public void SetBackground(Color color, Brush brush, FlowDirection flowDirection)
 		{
 			if (Background is GradientDrawable gradientDrawable)
 			{
 				GradientDrawable backgroundDrawable = gradientDrawable.GetConstantState().NewDrawable() as GradientDrawable;
 
 				if (!Brush.IsNullOrEmpty(brush))
-					backgroundDrawable.UpdateBackground(brush, Height, Width);
+				{
+					BrushData brushData = new BrushData(brush, flowDirection, Height, Width);
+					backgroundDrawable.UpdateBackground(brushData);
+				}
 				else
 				{
 					_backgroudColor = color.IsDefault ? AColor.Transparent : color.ToAndroid();

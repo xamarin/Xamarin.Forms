@@ -366,7 +366,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
-			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			else if (e.IsOneOf(VisualElement.BackgroundProperty, VisualElement.FlowDirectionProperty))
 				UpdateBackground();
 			else if (e.PropertyName == AutomationProperties.HelpTextProperty.PropertyName)
 				SetContentDescription();
@@ -478,9 +478,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void UpdateBackground()
 		{
-			Brush background = Element.Background;
-
-			this.UpdateBackground(background);
+			BrushData brushData = new BrushData(Element.Background, Element.FlowDirection);
+			this.UpdateBackground(brushData);
 		}
 
 		internal virtual void SendVisualElementInitialized(VisualElement element, AView nativeView)

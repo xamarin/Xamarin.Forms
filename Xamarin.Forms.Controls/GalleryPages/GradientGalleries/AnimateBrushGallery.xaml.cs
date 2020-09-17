@@ -29,8 +29,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.GradientGalleries
 				EndPoint = new Point(GetRandomInt(), GetRandomInt()),
 				GradientStops = new GradientStopCollection
 					{
-						new GradientStop { Color = GetRandomColor() },
-						new GradientStop { Color = GetRandomColor() }
+						new GradientStop { Color = GetRandomColor(), Offset = (float)GetRandomInt() },
+						new GradientStop { Color = GetRandomColor(), Offset = (float)GetRandomInt() }
 					}
 			};
 

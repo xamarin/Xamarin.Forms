@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.ComponentModel;
+using System.Linq;
 using AppKit;
 using CoreAnimation;
 using CoreGraphics;
@@ -6,12 +7,30 @@ using Foundation;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public class BrushData
+	{
+		public BrushData()
+		{
+
+		}
+
+		public BrushData(Brush brush, FlowDirection flowDirection)
+		{
+			Brush = brush;
+			FlowDirection = flowDirection;
+		}
+
+		public Brush Brush { get; internal set; }
+		public FlowDirection FlowDirection { get; internal set; }
+	}
+
 	public static class BrushExtensions
 	{
 		const string BackgroundLayer = "BackgroundLayer";
 		const string SolidColorBrushLayer = "SolidColorBrushLayer";
 
-		public static void UpdateBackground(this NSView control, Brush brush)
+		public static void UpdateBackground(this NSView control, BrushData brushData)
 		{
 			if (control == null)
 				return;
@@ -25,13 +44,13 @@ namespace Xamarin.Forms.Platform.MacOS
 			// Remove previous background gradient layer if any
 			RemoveBackgroundLayer(view);
 
-			if (Brush.IsNullOrEmpty(brush))
+			if (brushData == null || Brush.IsNullOrEmpty(brushData.Brush))
 				return;
 
 			control.WantsLayer = true;
 			control.LayerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.BeforeViewResize;
 
-			if (brush is SolidColorBrush solidColorBrush)
+			if (brushData.Brush is SolidColorBrush solidColorBrush)
 			{
 				control.Layer.Name = SolidColorBrushLayer;
 
@@ -44,22 +63,44 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 			else
 			{
-				var backgroundLayer = GetBackgroundLayer(control, brush);
+				var backgroundLayer = GetBackgroundLayer(control, brushData);
 
 				if (backgroundLayer != null)
 					view.InsertBackgroundLayer(backgroundLayer, 0);
 			}
 		}
 
-		public static CAGradientLayer GetBackgroundLayer(this NSView control, Brush brush)
+		public static CAGradientLayer GetBackgroundLayer(this NSView control, BrushData brushData)
 		{
 			if (control == null)
 				return null;
 
-			if (brush is LinearGradientBrush linearGradientBrush)
+			if (brushData == null || Brush.IsNullOrEmpty(brushData.Brush))
+				return null;
+
+			if (brushData.Brush is LinearGradientBrush linearGradientBrush)
 			{
 				var p1 = linearGradientBrush.StartPoint;
 				var p2 = linearGradientBrush.EndPoint;
+
+				double x1, y1, x2, y2;
+
+				if (brushData.FlowDirection == FlowDirection.RightToLeft)
+				{
+					x1 = p2.X;
+					y1 = p2.Y;
+
+					x2 = p1.X;
+					y2 = p1.Y;
+				}
+				else
+				{
+					x1 = p1.X;
+					y1 = p1.Y;
+
+					x2 = p2.X;
+					y2 = p2.Y;
+				}
 
 				var linearGradientLayer = new CAGradientLayer
 				{
@@ -68,8 +109,8 @@ namespace Xamarin.Forms.Platform.MacOS
 					ContentsGravity = CALayer.GravityResizeAspectFill,
 					Frame = control.Bounds,
 					LayerType = CAGradientLayerType.Axial,
-					StartPoint = new CGPoint(p1.X, p1.Y),
-					EndPoint = new CGPoint(p2.X, p2.Y),
+					StartPoint = new CGPoint(x1, y1),
+					EndPoint = new CGPoint(x2, y2)
 				};
 
 				if (linearGradientBrush.GradientStops != null && linearGradientBrush.GradientStops.Count > 0)
@@ -82,7 +123,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				return linearGradientLayer;
 			}
 
-			if (brush is RadialGradientBrush radialGradientBrush)
+			if (brushData.Brush is RadialGradientBrush radialGradientBrush)
 			{
 				var center = radialGradientBrush.Center;
 				var radius = radialGradientBrush.Radius;
@@ -112,14 +153,17 @@ namespace Xamarin.Forms.Platform.MacOS
 			return null;
 		}
 
-		public static NSImage GetBackgroundImage(this NSView control, Brush brush)
+		public static NSImage GetBackgroundImage(this NSView control, BrushData brushData)
 		{
-			if (control == null || brush == null || brush.IsEmpty)
+			if (control == null || brushData == null || brushData.Brush == null || brushData.Brush.IsEmpty)
 				return null;
 
-			var backgroundLayer = control.GetBackgroundLayer(brush);
+			var backgroundLayer = control.GetBackgroundLayer(brushData);
 
 			if (backgroundLayer == null)
+				return null;
+
+			if (backgroundLayer.Bounds.IsEmpty)
 				return null;
 
 			NSImage backgroundImage = new NSImage(new CGSize(backgroundLayer.Bounds.Width, backgroundLayer.Bounds.Height));
@@ -133,6 +177,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public static void InsertBackgroundLayer(this NSView view, CAGradientLayer backgroundLayer, int index)
 		{
+			if (view == null)
+				return;
+
 			InsertBackgroundLayer(view.Layer, backgroundLayer, index);
 		}
 
@@ -170,7 +217,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		static bool ShouldUseParentView(NSView view)
 		{
-			if (view is NSButton || view is NSTextField || view is NSDatePicker || view is NSSlider || view is NSStepper)
+			if ((view is NSButton || view is NSTextField || view is NSDatePicker || view is NSSlider || view is NSStepper) && view.Superview != null)
 				return true;
 
 			return false;

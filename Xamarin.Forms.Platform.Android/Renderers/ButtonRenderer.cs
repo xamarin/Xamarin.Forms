@@ -175,6 +175,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateCharacterSpacing();
 			UpdateEnabled();
 			UpdateBackgroundColor();
+			UpdateBackground();
 			UpdatePadding();
 		}
 

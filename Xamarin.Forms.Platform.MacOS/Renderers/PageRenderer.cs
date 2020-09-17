@@ -33,7 +33,10 @@ namespace Xamarin.Forms.Platform.MacOS
 					Brush background = _renderer.Element.Background;
 
 					if (!Brush.IsNullOrEmpty(background))
-						_renderer.NativeView.UpdateBackground(_renderer.Element.Background);
+					{
+						FlowDirection flowDirection = _renderer.Element.FlowDirection;
+						_renderer.NativeView.UpdateBackground(new BrushData(background, flowDirection));
+					}
 					else
 					{
 						Color bgColor = _renderer.Element.BackgroundColor;
@@ -203,7 +206,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName || e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateBackground();
 			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground();

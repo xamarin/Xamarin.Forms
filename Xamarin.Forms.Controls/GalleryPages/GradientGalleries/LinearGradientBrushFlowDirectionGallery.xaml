@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Xamarin.Forms.Controls.GalleryPages.GradientGalleries.LinearGradientBrushFlowDirectionGallery"
+    Title="Brush FlowDirection Gallery">
+       <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <LinearGradientBrush 
+                x:Key="LinearGradient"
+                StartPoint="0, 0"
+                EndPoint="1, 0">
+                <LinearGradientBrush.GradientStops>
+                    <GradientStop Color="Yellow" Offset="0.1" />
+                    <GradientStop Color="YellowGreen" Offset="0.6" />
+                    <GradientStop Color="Green" Offset="1.0" />
+                </LinearGradientBrush.GradientStops>
+            </LinearGradientBrush>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid
+                Grid.Row="0">
+                <Picker
+                    x:Name="BackgroundPicker"
+                    Title="Choose an option for the FlowDirection:"
+                    SelectedIndexChanged="OnFlowDirectionSelectedIndexChanged">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>MatchParent</x:String>
+                            <x:String>LeftToRight</x:String>
+                            <x:String>RightToLeft</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+            </Grid>
+            <ScrollView
+                Grid.Row="1">
+                <StackLayout
+                    Padding="12">
+                    <Button
+                        x:Name="Button"
+                        Background="{StaticResource LinearGradient}"
+                        CornerRadius="12"
+                        Text="Button"/>
+                    <BoxView
+                        x:Name="BoxView"
+                        Background="{StaticResource LinearGradient}"
+                        HeightRequest="100"/>
+                    <BoxView
+                        x:Name="CornerRadiusBoxView"
+                        Background="{StaticResource LinearGradient}"
+                        CornerRadius="12"
+                        HeightRequest="100"/>
+                    <CheckBox 
+                         x:Name="CheckBox"
+                        Background="{StaticResource LinearGradient}"/>
+                    <CarouselView 
+                        x:Name="CarouselView"
+                        Background="{StaticResource LinearGradient}"
+                        HeightRequest="120">
+                        <CarouselView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Label
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                        Text="{Binding .}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CarouselView.ItemTemplate>
+                        <CarouselView.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>This</x:String>
+                                <x:String>is</x:String>
+                                <x:String>a</x:String>
+                                <x:String>CarouselView</x:String>
+                            </x:Array>
+                        </CarouselView.ItemsSource>
+                    </CarouselView>
+                    <CollectionView 
+                        x:Name="CollectionView"
+                        Background="{StaticResource LinearGradient}"
+                        HeightRequest="120">
+                        <CollectionView.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>This</x:String>
+                                <x:String>is</x:String>
+                                <x:String>a</x:String>
+                                <x:String>CollectionView</x:String>
+                            </x:Array>
+                        </CollectionView.ItemsSource>
+                    </CollectionView>
+                    <DatePicker
+                        x:Name="DatePicker"
+                        Background="{StaticResource LinearGradient}"/>
+                    <Editor
+                        x:Name="Editor"
+                        Background="{StaticResource LinearGradient}"
+                        Text="Editor"/>
+                    <Entry
+                        x:Name="Entry"
+                        Background="{StaticResource LinearGradient}"
+                        Text="Entry"/>
+                    <Frame
+                        x:Name="Frame"
+                        Background="{StaticResource LinearGradient}"
+                        CornerRadius="12"
+                        HeightRequest="100">
+                        <Label
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            Text="Frame"/>
+                    </Frame>
+                    <Grid
+                        x:Name="Grid"
+                        Background="{StaticResource LinearGradient}"
+                        HeightRequest="100">
+                        <Label
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            Text="Grid"/>
+                    </Grid>
+                    <Label
+                        x:Name="Label"
+                        Background="{StaticResource LinearGradient}"
+                        Text="Label"/>
+                    <ListView 
+                        x:Name="ListView"
+                        Background="{StaticResource LinearGradient}"
+                        HeightRequest="100">
+                        <ListView.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>This</x:String>
+                                <x:String>is</x:String>
+                                <x:String>a</x:String>
+                                <x:String>ListView</x:String>
+                            </x:Array>
+                        </ListView.ItemsSource>
+                    </ListView>
+                    <Picker 
+                        x:Name="Picker"
+                        Background="{StaticResource LinearGradient}"
+                        Title="Gradients"
+                        SelectedIndex="0">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>Picker</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                    <ScrollView
+                         x:Name="ScrollView"
+                        Background="{StaticResource LinearGradient}"
+                         HeightRequest="150">
+                        <StackLayout>
+                            <Label 
+                                 Text="This"/>
+                            <Label 
+                                 Text="is"/>
+                            <Label 
+                                 Text="a"/>
+                            <Label 
+                                 Text="ScrollView"/>
+                        </StackLayout>
+                    </ScrollView>
+                    <SearchBar
+                        x:Name="SearchBar"
+                        Background="{StaticResource LinearGradient}"
+                        Text="SearchBar"/>
+                    <Slider
+                        x:Name="Slider"
+                        Background="{StaticResource LinearGradient}"/>
+                    <Stepper
+                        x:Name="Stepper"
+                        Background="{StaticResource LinearGradient}"/>
+                    <TableView
+                        x:Name="TableView"
+                        Background="{StaticResource LinearGradient}"
+                        HeightRequest="100" />
+                    <TimePicker
+                        x:Name="TimePicker"
+                        Background="{StaticResource LinearGradient}"/>
+                </StackLayout>
+            </ScrollView>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

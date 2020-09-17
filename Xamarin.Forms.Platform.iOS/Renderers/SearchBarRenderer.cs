@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -20,7 +21,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _textWasTyped;
 		string _typedText;
 		bool _useLegacyColorManagement;
-
+		CGSize _previousSize;
 		UIToolbar _numericAccessoryView;
 
 		IElementController ElementController => Element as IElementController;
@@ -140,6 +141,24 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateSearchBarStyle();
 		}
 
+		public override void Draw(CGRect rect)
+		{
+			base.Draw(rect);
+
+			_previousSize = Bounds.Size;
+		}
+
+		public override void LayoutSubviews()
+		{
+			if (_previousSize != Bounds.Size)
+			{
+				SetBackground(Element.Background);
+				SetNeedsDisplay();
+			}
+
+			base.LayoutSubviews();
+		}
+
 		protected override void SetBackgroundColor(Color color)
 		{
 			base.SetBackgroundColor(color);
@@ -162,13 +181,17 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void SetBackground(Brush brush)
 		{
-			base.SetBackground(brush);
-
 			if (Control == null)
 				return;
 
 			if (brush is SolidColorBrush solidColorBrush)
 				Control.BarTintColor = solidColorBrush.Color.ToUIColor(_defaultTintColor);
+			else
+			{
+				BrushData brushData = new BrushData(brush, Element.FlowDirection);
+				var childrens = Control.Descendants();
+				childrens?.ElementAtOrDefault(1)?.UpdateBackground(brushData);
+			}
 		}
 
 		public override CoreGraphics.CGSize SizeThatFits(CoreGraphics.CGSize size)

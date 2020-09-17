@@ -249,7 +249,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.PropertyName == TabbedPage.BarBackgroundColorProperty.PropertyName)
 				UpdateBarBackgroundColor();
-			else if (e.PropertyName == TabbedPage.BarBackgroundProperty.PropertyName)
+			else if (e.PropertyName == TabbedPage.BarBackgroundProperty.PropertyName || e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateBarBackground();
 			else if (e.PropertyName == TabbedPage.BarTextColorProperty.PropertyName)
 				UpdateBarTextColor();
@@ -382,9 +382,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Tabbed == null || TabBar == null)
 				return;
 
-			var barBackground = Tabbed.BarBackground;
-
-			TabBar.UpdateBackground(barBackground);
+			BrushData brushData = new BrushData(Tabbed.BarBackground, Tabbed.FlowDirection);
+			TabBar.UpdateBackground(brushData);
 		}
 
 		void UpdateBarTextColor()

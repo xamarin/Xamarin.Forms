@@ -1,11 +1,14 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
 using AppKit;
+using CoreAnimation;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
 	public class FrameRenderer : VisualElementRenderer<Frame>
 	{
+		const float DefaultCornerRadius = 5f;
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Frame> e)
 		{
 			base.OnElementChanged(e);
@@ -22,7 +25,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				e.PropertyName == VisualElement.BackgroundProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.BorderColorProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.HasShadowProperty.PropertyName ||
-				e.PropertyName == Xamarin.Forms.Frame.CornerRadiusProperty.PropertyName)
+				e.PropertyName == Xamarin.Forms.Frame.CornerRadiusProperty.PropertyName ||
+				e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				SetupLayer();
 		}
 
@@ -52,15 +56,14 @@ namespace Xamarin.Forms.Platform.MacOS
 				}
 				else
 				{
-					var backgroundLayer = this.GetBackgroundLayer(brush);
+					BrushData brushData = new BrushData(brush, Element.FlowDirection);
+					var backgroundLayer = this.GetBackgroundLayer(brushData);
 
 					if (backgroundLayer != null)
 					{
 						Layer.BackgroundColor = NSColor.Clear.CGColor;
 						Layer.InsertBackgroundLayer(backgroundLayer, 0);
-
-						backgroundLayer.CornerRadius = Layer.CornerRadius;
-						backgroundLayer.BorderColor = Layer.BorderColor;
+						SetupLayerBorder(backgroundLayer);
 					}
 				}
 			}
@@ -68,12 +71,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void SetupLayer()
 		{
-			float cornerRadius = Element.CornerRadius;
-
-			if (cornerRadius == -1f)
-				cornerRadius = 5f; // default corner radius
-
-			Layer.CornerRadius = cornerRadius;
+			SetupLayerBorder(Layer);
 
 			if (Element.HasShadow)
 			{
@@ -85,16 +83,26 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 				Layer.ShadowOpacity = 0;
 
-			if (Element.BorderColor == Color.Default)
-				Layer.BorderColor = NSColor.Clear.CGColor;
-			else
-			{
-				Layer.BorderColor = Element.BorderColor.ToCGColor();
-				Layer.BorderWidth = 1;
-			}
-
 			Layer.RasterizationScale = NSScreen.MainScreen.BackingScaleFactor;
 			Layer.ShouldRasterize = true;
+		}
+
+		void SetupLayerBorder(CALayer layer)
+		{
+			float cornerRadius = Element.CornerRadius;
+
+			if (cornerRadius == -1f)
+				cornerRadius = DefaultCornerRadius; // default corner radius
+
+			layer.CornerRadius = cornerRadius;
+
+			if (Element.BorderColor == Color.Default)
+				layer.BorderColor = NSColor.Clear.CGColor;
+			else
+			{
+				layer.BorderColor = Element.BorderColor.ToCGColor();
+				layer.BorderWidth = 1;
+			}
 		}
 	}
 }

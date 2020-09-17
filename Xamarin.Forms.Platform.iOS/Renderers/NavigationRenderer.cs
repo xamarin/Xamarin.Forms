@@ -434,7 +434,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTint();
 			}
 			else if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName ||
-				e.PropertyName == NavigationPage.BarBackgroundProperty.PropertyName)
+				e.PropertyName == NavigationPage.BarBackgroundProperty.PropertyName ||
+				e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 			{
 				UpdateBarBackground();
 			}
@@ -672,8 +673,8 @@ namespace Xamarin.Forms.Platform.iOS
 					navigationBarAppearance.BackgroundColor = barBackgroundColor.ToUIColor();
 				}
 
-				var barBackgroundBrush = NavPage.BarBackground;
-				var backgroundImage = NavigationBar.GetBackgroundImage(barBackgroundBrush);
+				BrushData brushData = new BrushData(NavPage.BarBackground, NavPage.FlowDirection);
+				var backgroundImage = NavigationBar.GetBackgroundImage(brushData);
 				navigationBarAppearance.BackgroundImage = backgroundImage;
 
 				NavigationBar.CompactAppearance = navigationBarAppearance;
@@ -687,8 +688,8 @@ namespace Xamarin.Forms.Platform.iOS
 					? UINavigationBar.Appearance.BarTintColor
 					: barBackgroundColor.ToUIColor();
 
-				var barBackgroundBrush = NavPage.BarBackground;
-				var backgroundImage = NavigationBar.GetBackgroundImage(barBackgroundBrush);
+				BrushData brushData = new BrushData(NavPage.BarBackground, NavPage.FlowDirection);
+				var backgroundImage = NavigationBar.GetBackgroundImage(brushData);
 				NavigationBar.SetBackgroundImage(backgroundImage, UIBarMetrics.Default);
 			}
 		}

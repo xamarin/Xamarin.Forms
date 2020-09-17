@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml;
+﻿using System.ComponentModel;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -20,6 +21,14 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateBackground();
 				UpdateFlowDirection();
 			}
+		}
+
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			base.OnElementPropertyChanged(sender, e);
+
+			if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+				UpdateFlowDirection();
 		}
 
 		protected override void SetAutomationId(string id)

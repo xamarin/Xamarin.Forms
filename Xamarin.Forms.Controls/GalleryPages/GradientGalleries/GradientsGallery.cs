@@ -44,6 +44,8 @@
 						new SolidColorBrushConverterGallery(), Navigation),
 					GalleryBuilder.NavButton("LinearGradientBrush Points Gallery", () =>
 						new LinearGradientPointsGallery(), Navigation),
+					GalleryBuilder.NavButton("LinearGradientBrush FlowDirection Gallery", () =>
+						new LinearGradientBrushFlowDirectionGallery(), Navigation),
 					GalleryBuilder.NavButton("LinearGradientBrush Explorer", () =>
 						new LinearGradientExplorerGallery(), Navigation),
 					GalleryBuilder.NavButton("RadialGradient Explorer", () =>

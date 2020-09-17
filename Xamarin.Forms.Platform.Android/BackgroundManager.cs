@@ -45,9 +45,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (Element == null || Control == null)
 				return;
 
-			Brush background = Element.Background;
-
-			Control.UpdateBackground(background);
+			BrushData brushData = new BrushData(Element.Background, Element.FlowDirection);
+			Control.UpdateBackground(brushData);
 		}
 
 		static void OnElementChanged(object sender, VisualElementChangedEventArgs e)
@@ -69,7 +68,6 @@ namespace Xamarin.Forms.Platform.Android
 			Performance.Stop(reference);
 		}
 
-
 		static void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
@@ -77,7 +75,7 @@ namespace Xamarin.Forms.Platform.Android
 				var renderer = (sender as IVisualElementRenderer);
 				UpdateBackgroundColor(renderer?.View, renderer?.Element);
 			}
-			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			else if (e.IsOneOf(VisualElement.BackgroundProperty, VisualElement.FlowDirectionProperty))
 			{
 				var renderer = (sender as IVisualElementRenderer);
 				UpdateBackground(renderer?.View, renderer?.Element);

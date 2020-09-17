@@ -20,10 +20,9 @@ namespace Xamarin.Forms.Platform.Android
 			if (appearance == null)
 				UpdateScrim(Brush.Transparent);
 			else
-			{
 				UpdateScrim(appearance.FlyoutBackdrop);
-			}
 		}
+
 		#endregion IAppearanceObserver
 
 		#region IShellFlyoutRenderer
@@ -120,7 +119,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (_previousHeight != Height || _previousWidth != Width)
 				{
-					_scrimPaint.UpdateBackground(_scrimBrush, Height, Width);
+					BrushData brushData = new BrushData(_scrimBrush, Shell.FlowDirection, Height, Width);
+					_scrimPaint.UpdateBackground(brushData);
 					_previousHeight = Height;
 					_previousWidth = Width;
 				}
@@ -263,7 +263,8 @@ namespace Xamarin.Forms.Platform.Android
 				else
 				{
 					_scrimPaint = _scrimPaint ?? new Paint();
-					_scrimPaint.UpdateBackground(_scrimBrush, Height, Width);
+					BrushData brushData = new BrushData(_scrimBrush, Shell.FlowDirection, Height, Width);
+					_scrimPaint.UpdateBackground(brushData);
 					SetScrimColor(Color.Transparent.ToAndroid());
 				}
 			}

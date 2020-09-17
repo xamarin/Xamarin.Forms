@@ -100,7 +100,9 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_refreshControl == null)
 				return;
 
-			_refreshControl.UpdateBackground(brush);
+			BrushData brushData = new BrushData(brush, Element.FlowDirection);
+
+			_refreshControl.UpdateBackground(brushData);
 		}
 
 		protected override void Dispose(bool disposing)

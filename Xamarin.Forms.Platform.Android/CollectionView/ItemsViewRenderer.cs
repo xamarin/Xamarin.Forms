@@ -220,7 +220,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateBackgroundColor();
 			}
-			else if (changedProperty.Is(VisualElement.BackgroundProperty))
+			else if (changedProperty.IsOneOf(VisualElement.BackgroundProperty, VisualElement.FlowDirectionProperty))
 			{
 				UpdateBackground();
 			}
@@ -473,9 +473,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (!(this is RecyclerView recyclerView))
 				return;
 
-			Brush background = Element.Background;
-
-			recyclerView.UpdateBackground(background);
+			BrushData brushData = new BrushData(Element.Background, Element.FlowDirection);
+			recyclerView.UpdateBackground(brushData);
 		}
 
 		protected virtual void UpdateFlowDirection()

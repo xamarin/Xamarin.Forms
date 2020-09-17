@@ -170,8 +170,17 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (Control == null)
 				return;
 
-			var backgroundImage = this.GetBackgroundImage(brush);
-			Control.BackgroundColor = backgroundImage != null ? NSColor.FromPatternImage(backgroundImage) : NSColor.Clear;
+			if (brush is SolidColorBrush solidColorBrush)
+			{
+				Color color = solidColorBrush.Color;
+				Control.BackgroundColor = color.ToNSColor(NSColor.White);
+			}
+			else
+			{
+				BrushData brushData = new BrushData(brush, Element.FlowDirection);
+				var backgroundImage = this.GetBackgroundImage(brushData);
+				Control.BackgroundColor = backgroundImage != null ? NSColor.FromPatternImage(backgroundImage) : NSColor.Clear;
+			}
 
 			base.SetBackground(brush);
 		}

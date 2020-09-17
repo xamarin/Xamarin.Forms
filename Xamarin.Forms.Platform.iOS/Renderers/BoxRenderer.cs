@@ -104,7 +104,8 @@ namespace Xamarin.Forms.Platform.iOS
 					_colorToRenderer = solidColorBrush.Color.ToUIColor();
 				else
 				{
-					var backgroundImage = this.GetBackgroundImage(brush);
+					BrushData brushData = new BrushData(brush, Element.FlowDirection);
+					var backgroundImage = this.GetBackgroundImage(brushData);
 					_colorToRenderer = backgroundImage != null ? UIColor.FromPatternImage(backgroundImage) : UIColor.Clear;
 				}
 			}

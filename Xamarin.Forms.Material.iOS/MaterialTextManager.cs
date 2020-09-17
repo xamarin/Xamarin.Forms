@@ -70,7 +70,13 @@ namespace Xamarin.Forms.Material.iOS
 				// Background
 				if (textField is UITextField || textField is MultilineTextField)
 				{
-					var backgroundImage = ((UIView)textField).GetBackgroundImage(brush);
+					FlowDirection flowDirection = FlowDirection.MatchParent;
+
+					if (element is View view)
+						flowDirection = view.FlowDirection;
+
+					BrushData brushData = new BrushData(brush, flowDirection);
+					var backgroundImage = ((UIView)textField).GetBackgroundImage(brushData);
 					textField.BackgroundSize = backgroundImage?.Size;
 					var color = backgroundImage != null ? UIColor.FromPatternImage(backgroundImage) : UIColor.Clear;
 					textField.ActiveTextInputController.BorderFillColor = color;
@@ -90,7 +96,15 @@ namespace Xamarin.Forms.Material.iOS
 			UIImage backgroundImage = null;
 
 			if (textField is UITextField || textField is MultilineTextField)
-				backgroundImage = ((UIView)textField).GetBackgroundImage(bgBrush);
+			{
+				FlowDirection flowDirection = FlowDirection.MatchParent;
+
+				if (element is View view)
+					flowDirection = view.FlowDirection;
+
+				BrushData brushData = new BrushData(bgBrush, flowDirection);
+				backgroundImage = ((UIView)textField).GetBackgroundImage(brushData);
+			}
 
 			if (textField.BackgroundSize != null && textField.BackgroundSize != backgroundImage?.Size)
 				ApplyTheme(textField, element);

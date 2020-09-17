@@ -59,7 +59,8 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
-			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName || e.PropertyName == Frame.CornerRadiusProperty.PropertyName)
+
+			if (e.IsOneOf(VisualElement.BackgroundColorProperty, VisualElement.BackgroundProperty, VisualElement.FlowDirectionProperty, Frame.CornerRadiusProperty))
 			{
 				UpdateFrameBackground();
 			}
@@ -187,8 +188,8 @@ namespace Xamarin.Forms.Platform.Android
 
 					if (!Brush.IsNullOrEmpty(_frame.Background))
 					{
-						Brush background = _frame.Background;
-						paint.UpdateBackground(background, height, width);
+						BrushData brushData = new BrushData(_frame.Background, _frame.FlowDirection, height, width);
+						paint.UpdateBackground(brushData);
 					}
 					else
 					{

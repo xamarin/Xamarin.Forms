@@ -91,7 +91,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateBackground(true);
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackground(false);
-			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			else if (e.IsOneOf(VisualElement.BackgroundProperty, VisualElement.FlowDirectionProperty))
 				UpdateBackground(false);
 			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName)
 				UpdateHeight();
@@ -138,7 +138,10 @@ namespace Xamarin.Forms.Platform.Android
 					Brush background = Element.Background;
 
 					if (!Brush.IsNullOrEmpty(background))
-						this.UpdateBackground(background);
+					{
+						BrushData brushData = new BrushData(background, Element.FlowDirection);
+						this.UpdateBackground(brushData);
+					}
 					else
 					{
 						Color backgroundColor = page.BackgroundColor;

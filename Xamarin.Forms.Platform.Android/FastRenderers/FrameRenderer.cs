@@ -250,7 +250,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateShadow();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
-			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			else if (e.IsOneOf(VisualElement.BackgroundProperty, VisualElement.FlowDirectionProperty))
 				UpdateBackground();
 			else if (e.PropertyName == Frame.CornerRadiusProperty.PropertyName)
 				UpdateCornerRadius();
@@ -300,7 +300,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateBackgroundColor();
 			}
 			else
-				_backgroundDrawable.UpdateBackground(background, Control.Height, Control.Width);
+			{
+				BrushData brushData = new BrushData(background, Element.FlowDirection, Control.Height, Control.Width);
+				_backgroundDrawable.UpdateBackground(brushData);
+			}
 		}
 
 		void UpdateBorderColor()

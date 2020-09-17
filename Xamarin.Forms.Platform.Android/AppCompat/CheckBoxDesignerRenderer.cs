@@ -166,7 +166,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateBackgroundColor();
 			}
-			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			else if (e.IsOneOf(VisualElement.BackgroundProperty, VisualElement.FlowDirectionProperty))
 			{
 				UpdateBackground();
 			}
@@ -215,9 +215,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateBackground()
 		{
-			Brush background = Element.Background;
-
-			this.UpdateBackground(background);
+			BrushData brushData = new BrushData(Element.Background, Element.FlowDirection);
+			this.UpdateBackground(brushData);
 		}
 
 		void UpdateOnColor()

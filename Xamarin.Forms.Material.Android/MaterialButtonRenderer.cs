@@ -206,7 +206,7 @@ namespace Xamarin.Forms.Material.Android
 				UpdateBorder();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 				UpdateFont();
-			else if (e.IsOneOf(Button.TextColorProperty, VisualElement.BackgroundColorProperty, VisualElement.BackgroundProperty))
+			else if (e.IsOneOf(Button.TextColorProperty, VisualElement.BackgroundColorProperty, VisualElement.BackgroundProperty, VisualElement.FlowDirectionProperty))
 				UpdatePrimaryColors();
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();

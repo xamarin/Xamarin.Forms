@@ -157,7 +157,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateContentSize();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
-			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName || e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateBackground();
 			else if (e.PropertyName == ScrollView.VerticalScrollBarVisibilityProperty.PropertyName)
 				UpdateVerticalScrollBarVisibility();
@@ -237,9 +237,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (NativeView == null)
 				return;
 
-			Brush background = Element.Background;
+			BrushData brushData = new BrushData(Element.Background, Element.FlowDirection);
 
-			NativeView.UpdateBackground(background);
+			NativeView.UpdateBackground(brushData);
 		}
 
 		void UpdateContentSize()

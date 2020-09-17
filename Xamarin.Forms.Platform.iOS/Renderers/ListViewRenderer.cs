@@ -140,7 +140,8 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 				else
 				{
-					var backgroundLayer = _backgroundUIView.GetBackgroundLayer(Element.Background);
+					BrushData brushData = new BrushData(Element.Background, Element.FlowDirection);
+					var backgroundLayer = _backgroundUIView.GetBackgroundLayer(brushData);
 
 					if (backgroundLayer != null)
 					{

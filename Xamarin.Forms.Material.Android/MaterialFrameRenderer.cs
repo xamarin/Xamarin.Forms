@@ -269,7 +269,9 @@ namespace Xamarin.Forms.Material.Android
 				_backgroundGradientDrawable.SetShape(ShapeType.Rectangle);
 
 				_backgroundGradientDrawable.SetCornerRadius(Radius);
-				_backgroundGradientDrawable.UpdateBackground(bgBrush, Height, Width);
+
+				BrushData brushData = new BrushData(bgBrush, Element.FlowDirection, Height, Width);
+				_backgroundGradientDrawable.UpdateBackground(brushData);
 
 				Background = _backgroundGradientDrawable;
 			}

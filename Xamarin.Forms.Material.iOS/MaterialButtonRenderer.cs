@@ -120,7 +120,8 @@ namespace Xamarin.Forms.Material.iOS
 			if (Brush.IsNullOrEmpty(bgBrush))
 				return;
 
-			var backgroundImage = this.GetBackgroundImage(bgBrush);
+			BrushData brushData = new BrushData(bgBrush, Element.FlowDirection);
+			var backgroundImage = this.GetBackgroundImage(brushData);
 
 			if (_backgroundSize != null && _backgroundSize != backgroundImage?.Size)
 				UpdateBackground();
@@ -214,7 +215,8 @@ namespace Xamarin.Forms.Material.iOS
 				}
 				else
 				{
-					var backgroundImage = Control.GetBackgroundImage(brush);
+					BrushData brushData = new BrushData(brush, Element.FlowDirection);
+					var backgroundImage = Control.GetBackgroundImage(brushData);
 					_backgroundSize = backgroundImage?.Size;
 					UIColor uiColor = backgroundImage != null ? UIColor.FromPatternImage(backgroundImage) : UIColor.Clear;
 

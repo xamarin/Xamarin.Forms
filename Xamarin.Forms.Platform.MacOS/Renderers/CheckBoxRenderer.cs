@@ -1,13 +1,25 @@
 ﻿using System;
 using AppKit;
+using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
 	public class CheckBoxRenderer : ViewRenderer<CheckBox, NSButton>
 	{
 		bool _disposed;
+		CGSize _previousSize;
 
 		IElementController ElementController => Element;
+
+		public override void Layout()
+		{
+			base.Layout();
+
+			if (_previousSize != Bounds.Size)
+				SetBackground(Element.Background);
+
+			_previousSize = Bounds.Size;
+		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<CheckBox> e)
 		{

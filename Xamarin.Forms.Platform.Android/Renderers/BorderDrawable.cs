@@ -202,8 +202,14 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (BorderElement.IsBackgroundSet())
 			{
-				Brush background = BorderElement.Background;
-				paint.UpdateBackground(background, height, width);
+				FlowDirection flowDirection = FlowDirection.MatchParent;
+
+				if (BorderElement is View view)
+					flowDirection = view.FlowDirection;
+
+				BrushData brushData = new BrushData(BorderElement.Background, flowDirection, height, width);
+
+				paint.UpdateBackground(brushData);
 			}
 
 			canvas.DrawPath(path, paint);

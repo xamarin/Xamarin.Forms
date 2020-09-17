@@ -238,7 +238,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Presented = ((MasterDetailPage)Element).IsPresented;
 			else if (e.PropertyName == Xamarin.Forms.MasterDetailPage.IsGestureEnabledProperty.PropertyName)
 				UpdatePanGesture();
-			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName || e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateBackground();
 			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground();
@@ -332,7 +332,10 @@ namespace Xamarin.Forms.Platform.iOS
 					Brush background = Element.Background;
 
 					if (!Brush.IsNullOrEmpty(background))
-						View.UpdateBackground(Element.Background);
+					{
+						BrushData brushData = new BrushData(background, Element.FlowDirection);
+						View.UpdateBackground(brushData);
+					}
 					else
 					{
 						if (Element.BackgroundColor == Color.Default)

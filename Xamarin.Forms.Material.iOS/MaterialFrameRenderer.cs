@@ -201,7 +201,7 @@ namespace Xamarin.Forms.Material.iOS
 			{
 				updatedTheme = true;
 			}
-			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName || e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 			{
 				updatedTheme = true;
 			}
@@ -262,6 +262,7 @@ namespace Xamarin.Forms.Material.iOS
 				if (Brush.IsNullOrEmpty(bgBrush))
 				{
 					var bgColor = Element.BackgroundColor;
+
 					if (bgColor.IsDefault)
 						colorScheme.SurfaceColor = _defaultCardScheme.ColorScheme.SurfaceColor;
 					else
@@ -269,7 +270,8 @@ namespace Xamarin.Forms.Material.iOS
 				}
 				else
 				{
-					var backgroundLayer = this.GetBackgroundLayer(bgBrush);
+					BrushData brushData = new BrushData(bgBrush, Element.FlowDirection);
+					var backgroundLayer = this.GetBackgroundLayer(brushData);
 
 					if (backgroundLayer != null)
 					{

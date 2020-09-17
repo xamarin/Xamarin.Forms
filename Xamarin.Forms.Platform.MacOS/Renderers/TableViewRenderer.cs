@@ -87,7 +87,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void SetBackground(Brush brush)
 		{
-			TableView.UpdateBackground(brush);
+			BrushData brushData = new BrushData(brush, Element.FlowDirection);
+			TableView.UpdateBackground(brushData);
 			base.SetBackground(brush);
 		}
 

@@ -1,10 +1,10 @@
 using System;
 using System.ComponentModel;
 using Android.Content.Res;
-using AView = Android.Views.View;
 using Android.Graphics.Drawables;
 using Specifics = Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AColor = Android.Graphics.Color;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -117,6 +117,7 @@ namespace Xamarin.Forms.Platform.Android
 				float shadowDy = 0;
 				float shadowDx = 0;
 				AColor shadowColor = Color.Transparent.ToAndroid();
+
 				// Add Android's default material shadow if we want it
 				if (useDefaultShadow)
 				{
@@ -135,6 +136,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				_backgroundDrawable.SetPadding(paddingTop, paddingLeft);
+
 				if (_renderer.IsShadowEnabled())
 				{
 					_backgroundDrawable
@@ -229,6 +231,7 @@ namespace Xamarin.Forms.Platform.Android
 				e.PropertyName.Equals(Button.CornerRadiusProperty.PropertyName) ||
 				e.PropertyName.Equals(VisualElement.BackgroundColorProperty.PropertyName) ||
 				e.PropertyName.Equals(VisualElement.BackgroundProperty.PropertyName) ||
+				e.PropertyName.Equals(VisualElement.FlowDirectionProperty.PropertyName) ||
 				e.PropertyName.Equals(Specifics.Button.UseDefaultPaddingProperty.PropertyName) ||
 				e.PropertyName.Equals(Specifics.Button.UseDefaultShadowProperty.PropertyName) ||
 				e.PropertyName.Equals(Specifics.ImageButton.IsShadowEnabledProperty.PropertyName) ||

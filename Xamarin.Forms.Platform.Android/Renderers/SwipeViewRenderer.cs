@@ -102,7 +102,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateContent();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
-			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			else if (e.IsOneOf(VisualElement.BackgroundProperty, VisualElement.FlowDirectionProperty))
 				UpdateBackground();
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateIsSwipeEnabled();
@@ -154,12 +154,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void UpdateBackground()
 		{
-			Brush background = Element.Background;
+			BrushData brushData = new BrushData(Element.Background, Element.FlowDirection);
 
-			this.UpdateBackground(background);
+			this.UpdateBackground(brushData);
 
 			if (Element.Content == null)
-				_contentView?.UpdateBackground(background);
+				_contentView?.UpdateBackground(brushData);
 		}
 
 		protected override void OnAttachedToWindow()

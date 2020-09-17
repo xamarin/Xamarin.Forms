@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.ComponentModel;
+using System.Linq;
 using CoreAnimation;
 using CoreGraphics;
 using Foundation;
@@ -6,11 +7,29 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public class BrushData
+	{
+		public BrushData()
+		{
+
+		}
+
+		public BrushData(Brush brush, FlowDirection flowDirection)
+		{
+			Brush = brush;
+			FlowDirection = flowDirection;
+		}
+
+		public Brush Brush { get; internal set; }
+		public FlowDirection FlowDirection { get; internal set; }
+	}
+
 	public static class BrushExtensions
 	{
 		const string BackgroundLayer = "BackgroundLayer";
 
-		public static void UpdateBackground(this UIView control, Brush brush)
+		public static void UpdateBackground(this UIView control, BrushData brushData)
 		{
 			if (control == null)
 				return;
@@ -20,10 +39,10 @@ namespace Xamarin.Forms.Platform.iOS
 			// Remove previous background gradient layer if any
 			RemoveBackgroundLayer(view);
 
-			if (Brush.IsNullOrEmpty(brush))
+			if (brushData == null || Brush.IsNullOrEmpty(brushData.Brush))
 				return;
 
-			var backgroundLayer = GetBackgroundLayer(control, brush);
+			var backgroundLayer = GetBackgroundLayer(control, brushData);
 
 			if (backgroundLayer != null)
 			{
@@ -32,12 +51,15 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		public static CALayer GetBackgroundLayer(this UIView control, Brush brush)
+		public static CALayer GetBackgroundLayer(this UIView control, BrushData brushData)
 		{
 			if (control == null)
 				return null;
 
-			if (brush is SolidColorBrush solidColorBrush)
+			if (brushData == null || Brush.IsNullOrEmpty(brushData.Brush))
+				return null;
+
+			if (brushData.Brush is SolidColorBrush solidColorBrush)
 			{
 				var linearGradientLayer = new CALayer
 				{
@@ -50,10 +72,29 @@ namespace Xamarin.Forms.Platform.iOS
 				return linearGradientLayer;
 			}
 
-			if (brush is LinearGradientBrush linearGradientBrush)
+			if (brushData.Brush is LinearGradientBrush linearGradientBrush)
 			{
 				var p1 = linearGradientBrush.StartPoint;
 				var p2 = linearGradientBrush.EndPoint;
+
+				double x1, y1, x2, y2;
+
+				if (brushData.FlowDirection == FlowDirection.RightToLeft)
+				{
+					x1 = p2.X;
+					y1 = p2.Y;
+
+					x2 = p1.X;
+					y2 = p1.Y;
+				}
+				else
+				{
+					x1 = p1.X;
+					y1 = p1.Y;
+
+					x2 = p2.X;
+					y2 = p2.Y;
+				}
 
 				var linearGradientLayer = new CAGradientLayer
 				{
@@ -61,8 +102,8 @@ namespace Xamarin.Forms.Platform.iOS
 					ContentsGravity = CALayer.GravityResizeAspectFill,
 					Frame = control.Bounds,
 					LayerType = CAGradientLayerType.Axial,
-					StartPoint = new CGPoint(p1.X, p1.Y),
-					EndPoint = new CGPoint(p2.X, p2.Y)
+					StartPoint = new CGPoint(x1, y1),
+					EndPoint = new CGPoint(x2, y2)
 				};
 
 				if (linearGradientBrush.GradientStops != null && linearGradientBrush.GradientStops.Count > 0)
@@ -75,7 +116,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return linearGradientLayer;
 			}
 
-			if (brush is RadialGradientBrush radialGradientBrush)
+			if (brushData.Brush is RadialGradientBrush radialGradientBrush)
 			{
 				var center = radialGradientBrush.Center;
 				var radius = radialGradientBrush.Radius;
@@ -104,12 +145,12 @@ namespace Xamarin.Forms.Platform.iOS
 			return null;
 		}
 
-		public static UIImage GetBackgroundImage(this UIView control, Brush brush)
+		public static UIImage GetBackgroundImage(this UIView control, BrushData brushData)
 		{
-			if (control == null || brush == null || brush.IsEmpty)
+			if (control == null || brushData == null || brushData.Brush == null || brushData.Brush.IsEmpty)
 				return null;
 
-			var backgroundLayer = control.GetBackgroundLayer(brush);
+			var backgroundLayer = control.GetBackgroundLayer(brushData);
 
 			if (backgroundLayer == null)
 				return null;
@@ -152,19 +193,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public static void RemoveBackgroundLayer(this CALayer layer)
 		{
-			if (layer != null)
+			if (layer == null)
+				return;
+
+			if (layer.Name == BackgroundLayer)
+				layer?.RemoveFromSuperLayer();
+
+			if (layer.Sublayers == null || layer.Sublayers.Count() == 0)
+				return;
+
+			foreach (var subLayer in layer.Sublayers)
 			{
-				if (layer.Name == BackgroundLayer)
-					layer?.RemoveFromSuperLayer();
-
-				if (layer.Sublayers == null || layer.Sublayers.Count() == 0)
-					return;
-
-				foreach (var subLayer in layer.Sublayers)
-				{
-					if (subLayer.Name == BackgroundLayer)
-						subLayer?.RemoveFromSuperLayer();
-				}
+				if (subLayer.Name == BackgroundLayer)
+					subLayer?.RemoveFromSuperLayer();
 			}
 		}
 

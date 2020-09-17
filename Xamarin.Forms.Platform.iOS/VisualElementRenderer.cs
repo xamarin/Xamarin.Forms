@@ -405,7 +405,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				SetBackgroundColor(Element.BackgroundColor);
-			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName || e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				SetBackground(Element.Background);
 			else if (e.PropertyName == Xamarin.Forms.Layout.IsClippedToBoundsProperty.PropertyName)
 				UpdateClipToBounds();
@@ -470,7 +470,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual void SetBackground(Brush brush)
 		{
-			NativeView.UpdateBackground(brush);
+			BrushData brushData = new BrushData(brush, Element.FlowDirection);
+			NativeView.UpdateBackground(brushData);
 		}
 
 #if __MOBILE__

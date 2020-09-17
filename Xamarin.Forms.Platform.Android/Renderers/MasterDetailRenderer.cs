@@ -303,7 +303,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateBackgroundImage(_page);
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor(_page);
-			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			else if (e.IsOneOf(VisualElement.BackgroundProperty, VisualElement.FlowDirectionProperty))
 				UpdateBackground(_page);
 		}
 
@@ -355,9 +355,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateBackground(Page view)
 		{
-			Brush background = view.Background;
-
-			this.UpdateBackground(background);
+			BrushData brushData = new BrushData(view.Background, view.FlowDirection);
+			this.UpdateBackground(brushData);
 		}
 
 		void UpdateBackgroundImage(Page view)

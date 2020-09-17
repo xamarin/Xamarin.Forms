@@ -237,8 +237,10 @@ namespace Xamarin.Forms.Platform.iOS
 			if (TapoffView == null)
 				return;
 
-			TapoffView.UpdateBackground(_backdropBrush);
-			if (Brush.IsNullOrEmpty(_backdropBrush))
+			BrushData brushData = new BrushData(_backdropBrush, Shell.FlowDirection);
+
+			TapoffView.UpdateBackground(brushData);
+			if (Brush.IsNullOrEmpty(brushData.Brush))
 				TapoffView.BackgroundColor = ColorExtensions.BackgroundColor.ColorWithAlpha(0.5f);
 		}
 

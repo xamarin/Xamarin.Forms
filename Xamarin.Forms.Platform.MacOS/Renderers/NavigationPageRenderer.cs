@@ -449,7 +449,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
 				UpdateBarBackgroundColor();
-			else if (e.PropertyName == NavigationPage.BarBackgroundProperty.PropertyName)
+			else if (e.PropertyName == NavigationPage.BarBackgroundProperty.PropertyName || e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateBarBackground();
 			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName)
 				UpdateBarTextColor();

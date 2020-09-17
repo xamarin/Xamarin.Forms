@@ -43,7 +43,8 @@ namespace Xamarin.Forms.Platform.iOS
 				Shell.FlyoutBackgroundColorProperty,
 				Shell.FlyoutBackgroundProperty,
 				Shell.FlyoutBackgroundImageProperty,
-				Shell.FlyoutBackgroundImageAspectProperty))
+				Shell.FlyoutBackgroundImageAspectProperty,
+				VisualElement.FlowDirectionProperty))
 				UpdateBackground();
 			else if (e.Is(VisualElement.FlowDirectionProperty))
 				UpdateFlowDirection();
@@ -70,8 +71,8 @@ namespace Xamarin.Forms.Platform.iOS
 					_blurView.RemoveFromSuperview();
 			}
 
-			var brush = _shellContext.Shell.FlyoutBackground;
-			View.UpdateBackground(brush);
+			BrushData brushData = new BrushData(_shellContext.Shell.FlyoutBackground, _shellContext.Shell.FlowDirection);
+			View.UpdateBackground(brushData);
 
 			UpdateFlyoutBgImageAsync();
 		}

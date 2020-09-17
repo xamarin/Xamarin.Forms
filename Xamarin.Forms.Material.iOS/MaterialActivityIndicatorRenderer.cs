@@ -134,7 +134,8 @@ namespace Xamarin.Forms.Material.iOS
 			if (_backgroundLayer == null)
 				return;
 
-			var backgroundImage = this.GetBackgroundImage(brush);
+			BrushData brushData = new BrushData(brush, Element.FlowDirection);
+			var backgroundImage = this.GetBackgroundImage(brushData);
 
 			_backgroundLayer.Hidden = brush == null || brush.IsEmpty;
 			_backgroundLayer.StrokeColor = backgroundImage != null ? UIColor.FromPatternImage(backgroundImage).CGColor : UIColor.Clear.CGColor;

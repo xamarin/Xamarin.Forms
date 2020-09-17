@@ -10,6 +10,8 @@ namespace Xamarin.Forms.Platform.MacOS
 	{
 		const float DefaultCornerRadius = 6;
 
+		CGSize _previousSize;
+
 		class FormsNSButton : NSButton
 		{
 			class FormsNSButtonCell : NSButtonCell
@@ -71,6 +73,16 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 		}
 
+		public override void Layout()
+		{
+			base.Layout();
+
+			if (_previousSize != Bounds.Size)
+				SetBackground(Element.Background);
+
+			_previousSize = Bounds.Size;
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (Control != null)
@@ -127,7 +139,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					e.PropertyName == Button.CornerRadiusProperty.PropertyName ||
 					e.PropertyName == Button.BorderColorProperty.PropertyName)
 				UpdateBorder();
-			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName || e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateBackgroundVisibility();
 			else if (e.PropertyName == Button.ImageSourceProperty.PropertyName)
 				UpdateImage();
@@ -154,15 +166,17 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (background != null)
 				{
-					var backgroundLayer = this.GetBackgroundLayer(background);
-
-					if (backgroundLayer != null)
+					if (background is SolidColorBrush solidColorBrush)
 					{
-						Layer.BackgroundColor = NSColor.Clear.CGColor;
-						Layer.InsertBackgroundLayer(backgroundLayer, 0);
+						Color color = solidColorBrush.Color;
+						Control.Cell.BackgroundColor = color.ToNSColor(NSColor.White);
 					}
 					else
-						Layer.RemoveBackgroundLayer();
+					{
+						BrushData brushData = new BrushData(background, Element.FlowDirection);
+						var backgroundImage = this.GetBackgroundImage(brushData);
+						Control.Cell.BackgroundColor = backgroundImage != null ? NSColor.FromPatternImage(backgroundImage) : NSColor.Clear;
+					}
 				}
 				else
 					Control.Cell.BackgroundColor = backgroundColor.ToNSColor();

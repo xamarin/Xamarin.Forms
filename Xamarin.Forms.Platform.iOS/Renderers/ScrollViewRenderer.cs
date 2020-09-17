@@ -204,7 +204,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateContentSize();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
-			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName || e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateBackground();
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateIsEnabled();
@@ -308,9 +308,9 @@ namespace Xamarin.Forms.Platform.iOS
 			if (NativeView == null)
 				return;
 
-			Brush background = Element.Background;
+			BrushData brushData = new BrushData(Element.Background, Element.FlowDirection);
 
-			NativeView.UpdateBackground(background);
+			NativeView.UpdateBackground(brushData);
 		}
 
 		void UpdateContentSize()
