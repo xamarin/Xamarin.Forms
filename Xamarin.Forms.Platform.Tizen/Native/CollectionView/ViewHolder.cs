@@ -1,7 +1,7 @@
 using System;
 using ElmSharp;
-using ERectangle = ElmSharp.Rectangle;
 using EColor = ElmSharp.Color;
+using ERectangle = ElmSharp.Rectangle;
 
 
 namespace Xamarin.Forms.Platform.Tizen.Native
@@ -150,7 +150,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			if (State == ViewHolderState.Normal)
 			{
 				_background.Color = _focusArea.IsFocused ? EffectiveFocusedColor : EColor.Transparent;
-			} else
+			}
+			else
 			{
 				_background.Color = _focusArea.IsFocused ? FocusSelectedColor : SelectedColor;
 				SendSelected();

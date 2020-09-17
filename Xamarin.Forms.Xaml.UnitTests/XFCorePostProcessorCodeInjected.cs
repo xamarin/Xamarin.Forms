@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Reflection;
 using System.Linq;
-
+using System.Reflection;
 using NUnit.Framework;
 
 namespace Xamarin.Forms.Xaml.UnitTests

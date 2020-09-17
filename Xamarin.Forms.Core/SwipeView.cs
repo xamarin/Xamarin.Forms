@@ -106,7 +106,7 @@ namespace Xamarin.Forms
 			if (BottomItems != null)
 				SetInheritedBindingContext(BottomItems, bc);
 		}
-  
+
 		SwipeItems SwipeItemsDefaultValueCreator() => new SwipeItems();
 
 		static object SwipeItemsDefaultValueCreator(BindableObject bindable)

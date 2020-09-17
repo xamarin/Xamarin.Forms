@@ -167,17 +167,17 @@ namespace Xamarin.Forms.Core.UnitTests
 			bool templated = false)
 		{
 			return CreateShellSection<ShellSection>(
-				page, 
-				asImplicit, 
+				page,
+				asImplicit,
 				shellContentRoute,
-				shellSectionRoute, 
+				shellSectionRoute,
 				templated);
 		}
 
 		protected T CreateShellSection<T>(
-			TemplatedPage page = null, 
-			bool asImplicit = false, 
-			string shellContentRoute = null, 
+			TemplatedPage page = null,
+			bool asImplicit = false,
+			string shellContentRoute = null,
 			string shellSectionRoute = null,
 			bool templated = false) where T : ShellSection
 		{
@@ -279,7 +279,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 				OnBackButtonPressedCount++;
 
-				if(!result)
+				if (!result)
 					result = base.OnBackButtonPressed();
 
 				return result;
@@ -287,9 +287,9 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			public void Reset()
 			{
-				OnNavigatedCount = 
-					OnNavigatingCount = 
-					NavigatedCount = 
+				OnNavigatedCount =
+					OnNavigatingCount =
+					NavigatedCount =
 					NavigatingCount =
 					OnBackButtonPressedCount = 0;
 			}

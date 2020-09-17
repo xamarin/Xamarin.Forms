@@ -1,6 +1,6 @@
-using ElmSharp;
 using System;
 using System.ComponentModel;
+using ElmSharp;
 
 namespace Xamarin.Forms.Platform.Tizen
 {

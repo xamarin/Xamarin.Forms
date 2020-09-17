@@ -13,18 +13,19 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
 #endif
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 1722, "MasterDetailPage crashes when assigning a NavigationPage to Detail with no children pushed", PlatformAffected.iOS)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 1722, "MasterDetailPage crashes when assigning a NavigationPage to Detail with no children pushed", PlatformAffected.iOS)]
 	public class Issue1722 : MasterDetailPage
 	{
-		public Issue1722 ()
+		public Issue1722()
 		{
-			Master = new ContentPage {
+			Master = new ContentPage
+			{
 				Title = "Master",
 				Content = new Label { Text = "Master" }
 			};
 
-			Detail = new NavigationPage ();
+			Detail = new NavigationPage();
 		}
 	}
 }

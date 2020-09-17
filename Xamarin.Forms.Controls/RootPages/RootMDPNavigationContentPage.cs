@@ -8,16 +8,18 @@ using System.Threading.Tasks;
 namespace Xamarin.Forms.Controls
 {
 	//MasterDetailPage -> NavigationPage -> ContentPage
-	public class RootMDPNavigationContentPage : MasterDetailPage 
+	public class RootMDPNavigationContentPage : MasterDetailPage
 	{
 
-		public RootMDPNavigationContentPage (string hierarchy) 
+		public RootMDPNavigationContentPage(string hierarchy)
 		{
 			AutomationId = hierarchy + "PageId";
 
-			Master = new ContentPage {
+			Master = new ContentPage
+			{
 				Title = "Testing 123",
-				Content = new StackLayout {
+				Content = new StackLayout
+				{
 					Children = {
 						new Label { Text = "Master" },
 						new AbsoluteLayout {
@@ -30,9 +32,10 @@ namespace Xamarin.Forms.Controls
 				}
 			};
 
-			Detail = new NavigationPage (new ContentPage {
+			Detail = new NavigationPage(new ContentPage
+			{
 				Title = "Md->Nav->Con",
-				Content = new SwapHierachyStackLayout (hierarchy)
+				Content = new SwapHierachyStackLayout(hierarchy)
 			});
 
 		}

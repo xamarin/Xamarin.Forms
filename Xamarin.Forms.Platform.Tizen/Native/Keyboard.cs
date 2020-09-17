@@ -86,4 +86,3 @@
 		Numeric = Emoticon + 2017,
 	}
 }
-

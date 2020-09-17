@@ -55,7 +55,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			Control.DetailPage = Element.Detail;
 		}
-		
+
 		private void OnIsPresentedChanged(object sender, EventArgs arg)
 		{
 			((IElementController)Element).SetValueFromRenderer(MasterDetailPage.IsPresentedProperty, Control.IsPresented);

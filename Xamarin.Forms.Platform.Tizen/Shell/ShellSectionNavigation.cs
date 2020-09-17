@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
 using ElmSharp;
 using Xamarin.Forms.Platform.Tizen.Native;
 
@@ -182,7 +182,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			var native = Platform.GetOrCreateRenderer(page).NativeView;
 			_pageToNative[page] = native;
 			_nativeToPage[native] = page;
-			if(native is Native.Page np)
+			if (native is Native.Page np)
 			{
 				np.BackgroundColor = (page.BackgroundColor != Xamarin.Forms.Color.Default ? page.BackgroundColor.ToNative() : ElmSharp.Color.White);
 			}

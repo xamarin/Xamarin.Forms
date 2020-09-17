@@ -77,7 +77,8 @@ namespace Xamarin.Forms.Controls
 
 			// Hand off to website for sign in process
 			var view = new WebView { Source = new Uri("http://google.com") };
-			view.Navigated += (s, e) => MainPage.DisplayAlert("Navigated", $"If this popup appears multiple times, this test has failed", "ok"); ;
+			view.Navigated += (s, e) => MainPage.DisplayAlert("Navigated", $"If this popup appears multiple times, this test has failed", "ok");
+			;
 
 			MainPage.Navigation.PushAsync(new ContentPage { Content = view, Title = "Issue 2393" });
 			//// Uncomment to verify that there is no gray screen displayed between the blue splash and red MasterDetailPage.
@@ -110,7 +111,7 @@ namespace Xamarin.Forms.Controls
 		{
 			var layout = new StackLayout { BackgroundColor = Color.Red };
 			layout.Children.Add(new Label { Text = "This is master Page" });
-			var master = new ContentPage { Title = "Master", Content = layout, BackgroundColor = Color.SkyBlue, IconImageSource ="menuIcon" };
+			var master = new ContentPage { Title = "Master", Content = layout, BackgroundColor = Color.SkyBlue, IconImageSource = "menuIcon" };
 			master.On<iOS>().SetUseSafeArea(true);
 			var mdp = new MasterDetailPage
 			{
@@ -246,7 +247,7 @@ namespace Xamarin.Forms.Controls
 			SetMainPage(CreateDefaultMainPage());
 		}
 
-		public void PlatformTest() 
+		public void PlatformTest()
 		{
 			SetMainPage(new GalleryPages.PlatformTestsGallery.PlatformTestsConsole());
 		}

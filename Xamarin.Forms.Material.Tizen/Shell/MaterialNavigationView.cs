@@ -45,9 +45,9 @@ namespace Xamarin.Forms.Material.Tizen
 			set
 			{
 				_bgImageSource = value;
-				if(_bgImageSource != null)
+				if (_bgImageSource != null)
 				{
-					if(_bg == null)
+					if (_bg == null)
 					{
 						_bg = new EImage(this);
 					}

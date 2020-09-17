@@ -68,4 +68,3 @@ namespace Xamarin.Forms.Platform.Tizen
 		void Fatal(string tag, string message, string file, string func, int line);
 	}
 }
-

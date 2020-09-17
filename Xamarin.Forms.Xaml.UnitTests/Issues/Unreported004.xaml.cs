@@ -50,4 +50,3 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		}
 	}
 }
-

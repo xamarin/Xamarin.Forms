@@ -1,13 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-
 using Mono.Cecil;
-using Mono.Cecil.Rocks;
 using Mono.Cecil.Cil;
+using Mono.Cecil.Rocks;
 
 namespace XFCorePostProcessor.Tasks
 {
@@ -21,20 +19,24 @@ namespace XFCorePostProcessor.Tasks
 		{
 			Log.LogMessage("Generating backcompat code for #2835");
 
-			var resolver =  new AssemblyResolver();
+			var resolver = new AssemblyResolver();
 
-			if (!string.IsNullOrEmpty(ReferencePath)) {
+			if (!string.IsNullOrEmpty(ReferencePath))
+			{
 				var paths = ReferencePath.Replace("//", "/").Split(';');
-				foreach (var p in paths) {
+				foreach (var p in paths)
+				{
 					var searchpath = Path.GetDirectoryName(p);
 					resolver.AddSearchDirectory(searchpath);
 				}
 			}
 
-			using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(Assembly, new ReaderParameters { AssemblyResolver = resolver, ReadWrite = true, ReadSymbols = true })) {
+			using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(Assembly, new ReaderParameters { AssemblyResolver = resolver, ReadWrite = true, ReadSymbols = true }))
+			{
 				var resourceLoader = assemblyDefinition.MainModule.GetType("Xamarin.Forms.Internals.ResourceLoader");
 				var module = assemblyDefinition.MainModule;
-				if(resourceLoader.GetMethods().Count(md=>md.Name == "get_ResourceProvider") > 1) {
+				if (resourceLoader.GetMethods().Count(md => md.Name == "get_ResourceProvider") > 1)
+				{
 					Log.LogMessage("  already executed");
 					return true;
 				}
@@ -50,7 +52,8 @@ namespace XFCorePostProcessor.Tasks
 				methodDef.Body = body;
 				resourceLoader.Methods.Add(methodDef);
 
-				assemblyDefinition.Write(new WriterParameters {
+				assemblyDefinition.Write(new WriterParameters
+				{
 					WriteSymbols = true,
 				});
 			}
@@ -62,7 +65,8 @@ namespace XFCorePostProcessor.Tasks
 	{
 		public void AddAssembly(string p)
 		{
-			RegisterAssembly(AssemblyDefinition.ReadAssembly(p, new ReaderParameters {
+			RegisterAssembly(AssemblyDefinition.ReadAssembly(p, new ReaderParameters
+			{
 				AssemblyResolver = this
 			}));
 		}

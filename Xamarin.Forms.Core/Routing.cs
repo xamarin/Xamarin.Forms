@@ -127,7 +127,7 @@ namespace Xamarin.Forms
 				}
 			}
 
-			if(!userDefinedRouteAdded && parts.Length > 0)
+			if (!userDefinedRouteAdded && parts.Length > 0)
 			{
 				toKeep.Add(parts[parts.Length - 1]);
 			}
@@ -188,7 +188,7 @@ namespace Xamarin.Forms
 			}
 
 			RouteFactory existingRegistration = null;
-			if(s_routes.TryGetValue(route, out existingRegistration) && !existingRegistration.Equals(routeFactory))
+			if (s_routes.TryGetValue(route, out existingRegistration) && !existingRegistration.Equals(routeFactory))
 				throw new ArgumentException($"Duplicated Route: \"{route}\"");
 		}
 

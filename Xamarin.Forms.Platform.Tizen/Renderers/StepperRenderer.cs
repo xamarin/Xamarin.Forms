@@ -99,4 +99,3 @@ namespace Xamarin.Forms.Platform.Tizen
 		}
 	}
 }
-

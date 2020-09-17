@@ -440,12 +440,12 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		/// <summary>
 		/// Force update the focus management
 		/// </summary>
-		void UpdateFocusPolicy(bool forceAllowFocusAll=false)
+		void UpdateFocusPolicy(bool forceAllowFocusAll = false)
 		{
 			var master = _master as Widget;
 			var detail = _detail as Widget;
 
-			if(forceAllowFocusAll)
+			if (forceAllowFocusAll)
 			{
 				if (master != null)
 					master.AllowTreeFocus = true;
@@ -483,7 +483,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 	public class IsPresentedChangedEventArgs : EventArgs
 	{
-		public IsPresentedChangedEventArgs (bool isPresent)
+		public IsPresentedChangedEventArgs(bool isPresent)
 		{
 			IsPresent = isPresent;
 		}

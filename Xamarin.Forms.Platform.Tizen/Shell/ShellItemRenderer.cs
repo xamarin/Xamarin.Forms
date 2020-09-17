@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using ElmSharp;
+using Xamarin.Forms.Platform.Tizen.Native;
 using EColor = ElmSharp.Color;
 using EToolbarItem = ElmSharp.ToolbarItem;
-using Xamarin.Forms.Platform.Tizen.Native;
-using System.Collections.Specialized;
-using System.Linq;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				_sectionToitem[section].IsSelected = true;
 			}
-			else if(section != null)
+			else if (section != null)
 			{
 				_drawer.IsOpen = false;
 				var more = _toolbarItemList.Last() as EToolbarItem;
@@ -163,7 +163,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		}
 
 		protected virtual IShellTabs CreateTabs()
-		{ 
+		{
 			return new ShellTabs(Forms.NativeParent);
 		}
 

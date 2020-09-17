@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				EColor effectiveColor = _backgroundColor.IsDefault ? _defaultBackgroundColor : _backgroundColor;
 				base.BackgroundColor = effectiveColor;
 
-				if(_bg == null)
+				if (_bg == null)
 				{
 					_menu.BackgroundColor = effectiveColor;
 				}

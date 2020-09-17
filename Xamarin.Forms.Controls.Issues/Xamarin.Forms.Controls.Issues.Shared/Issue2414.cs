@@ -83,5 +83,3 @@ namespace Xamarin.Forms.Controls.Issues
 
 	}
 }
-
-

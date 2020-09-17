@@ -342,7 +342,7 @@ namespace Xamarin.Forms
 				else
 				{
 					Device.BeginInvokeOnMainThread(ResolveLayoutChanges);
-				}			
+				}
 			}
 		}
 

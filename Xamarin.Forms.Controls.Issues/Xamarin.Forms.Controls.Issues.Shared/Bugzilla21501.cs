@@ -1,8 +1,8 @@
 ﻿using System;
-using Xamarin.Forms.CustomAttributes;
 using System.Collections.Generic;
-using Xamarin.Forms.Internals;
 using NUnit.Framework;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.Issues
 {
@@ -54,4 +54,3 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 	}
 }
-

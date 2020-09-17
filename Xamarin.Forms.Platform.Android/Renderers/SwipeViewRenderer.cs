@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Android.Content;
 using Android.Graphics.Drawables;
-using AndroidX.AppCompat.Widget;
-using AButton = AndroidX.AppCompat.Widget.AppCompatButton;
 using Android.Views;
+using AndroidX.AppCompat.Widget;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+using AButton = AndroidX.AppCompat.Widget.AppCompatButton;
 using APointF = Android.Graphics.PointF;
 using ATextAlignment = Android.Views.TextAlignment;
 using AView = Android.Views.View;
@@ -168,7 +168,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (Control != null && Control.Parent != null && _viewPagerParent == null)
 				_viewPagerParent = Control.Parent.GetParentOfType<FormsViewPager>();
-		
+
 			if (Element != null && _scrollParent == null)
 			{
 				_scrollParent = Element.FindParentOfType<ScrollView>();

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace Xamarin.Forms
 {
@@ -55,7 +55,7 @@ namespace Xamarin.Forms
 
 					return Navigation.ModalStack[0];
 				}
-				
+
 				if (_navStack.Count > 1)
 					return _navStack[_navStack.Count - 1];
 				return ((IShellContentController)CurrentItem)?.Page;
@@ -180,7 +180,7 @@ namespace Xamarin.Forms
 		}
 
 		// we want the list returned from here to remain point in time accurate
-		ReadOnlyCollection<ShellContent> IShellSectionController.GetItems() 
+		ReadOnlyCollection<ShellContent> IShellSectionController.GetItems()
 			=> new ReadOnlyCollection<ShellContent>(((ShellContentCollection)Items).VisibleItemsReadOnly.ToList());
 
 		[Obsolete]
@@ -248,7 +248,7 @@ namespace Xamarin.Forms
 					}
 				}
 
-				if(args.NewItems != null)
+				if (args.NewItems != null)
 				{
 					foreach (Element item in args.NewItems)
 					{
@@ -263,7 +263,7 @@ namespace Xamarin.Forms
 
 			Navigation = new NavigationImpl(this);
 		}
-				
+
 		public ShellContent CurrentItem
 		{
 			get { return (ShellContent)GetValue(CurrentItemProperty); }
@@ -297,7 +297,7 @@ namespace Xamarin.Forms
 
 		internal static ShellSection CreateFromShellContent(ShellContent shellContent)
 		{
-			if(shellContent.Parent != null)
+			if (shellContent.Parent != null)
 			{
 				return (ShellSection)shellContent.Parent;
 			}
@@ -345,7 +345,7 @@ namespace Xamarin.Forms
 			}
 
 			int whereToStartNavigation = 0;
-			
+
 			// Pop the stack down to where it no longer matches 
 			if (request.StackRequest == NavigationRequest.WhatToDoWithTheStack.ReplaceIt)
 			{
@@ -354,13 +354,13 @@ namespace Xamarin.Forms
 					whereToStartNavigation = i;
 					bool isLast = i == globalRoutes.Count - 1;
 					route = globalRoutes[i];
-					
+
 					navStack = BuildFlattenedNavigationStack(new List<Page>(_navStack), Navigation?.ModalStack);
-					
+
 					// if the navStack count is one that means there is nothing pushed
 					if (navStack.Count == 1)
 						break;
-					
+
 					Page navPage = navStack.Count > i + 1 ? navStack[i + 1] : null;
 
 					if (navPage != null)
@@ -378,7 +378,7 @@ namespace Xamarin.Forms
 
 							// If we're not on the last loop of the stack then continue
 							// otherwise pop the rest of the stack
-							if(!isLast)
+							if (!isLast)
 								continue;
 						}
 
@@ -397,7 +397,7 @@ namespace Xamarin.Forms
 							{
 								await OnPopAsync(false);
 							}
-							
+
 							navStack = BuildFlattenedNavigationStack(new List<Page>(_navStack), Navigation?.ModalStack);
 						}
 						IsPoppingModalStack = false;
@@ -412,7 +412,7 @@ namespace Xamarin.Forms
 					Shell.ApplyQueryAttributes(content, queryData, isLast);
 				}
 			}
-			
+
 			List<Page> modalPageStacks = new List<Page>();
 			List<Page> nonModalPageStacks = new List<Page>();
 
@@ -459,8 +459,8 @@ namespace Xamarin.Forms
 			for (int i = nonModalPageStacks.Count - 1; i >= 0; i--)
 			{
 				bool isLast = i == nonModalPageStacks.Count - 1;
-					
-				if(isLast)
+
+				if (isLast)
 				{
 					bool isAnimated = animate ?? (Shell.GetPresentationMode(nonModalPageStacks[i]) & PresentationMode.NotAnimated) != PresentationMode.NotAnimated;
 					await OnPushAsync(nonModalPageStacks[i], isAnimated);
@@ -535,7 +535,7 @@ namespace Xamarin.Forms
 
 		protected override void OnChildRemoved(Element child, int oldLogicalIndex)
 		{
-			if(child is IShellContentController sc && sc.Page.IsPlatformEnabled)
+			if (child is IShellContentController sc && sc.Page.IsPlatformEnabled)
 			{
 				sc.Page.PlatformEnabledChanged += WaitForRendererToGetRemoved;
 				void WaitForRendererToGetRemoved(object s, EventArgs p)
@@ -633,7 +633,7 @@ namespace Xamarin.Forms
 
 			if (!allow)
 				return null;
-						
+
 			var page = _navStack[_navStack.Count - 1];
 			var args = new NavigationRequestedEventArgs(page, animated)
 			{
@@ -709,7 +709,7 @@ namespace Xamarin.Forms
 
 			if (!allow)
 				return Task.FromResult(true);
-						
+
 			var args = new NavigationRequestedEventArgs(page, animated)
 			{
 				RequestType = NavigationRequestType.Push
@@ -742,11 +742,11 @@ namespace Xamarin.Forms
 
 					// indicate that we are done popping down the stack to the modal page requested
 					// This is mainly used by life cycle events so they don't fire onappearing
-					if(page == null && Navigation.ModalStack.Count == 1)
+					if (page == null && Navigation.ModalStack.Count == 1)
 					{
 						IsPoppingModalStack = false;
 					}
-					else if(Navigation.ModalStack.Count > 1 && Navigation.ModalStack[Navigation.ModalStack.Count - 2] == page)
+					else if (Navigation.ModalStack.Count > 1 && Navigation.ModalStack[Navigation.ModalStack.Count - 2] == page)
 					{
 						IsPoppingModalStack = false;
 					}
@@ -771,7 +771,7 @@ namespace Xamarin.Forms
 			bool currentPage = (((IShellSectionController)this).PresentedPage) == page;
 			var stack = _navStack.ToList();
 			stack.Remove(page);
-			var allow = (!currentPage) ? true : 
+			var allow = (!currentPage) ? true :
 				((IShellController)Shell).ProposeNavigation(
 					ShellNavigationSource.Remove,
 					ShellItem,
@@ -784,12 +784,12 @@ namespace Xamarin.Forms
 			if (!allow)
 				return;
 
-			if(currentPage)
+			if (currentPage)
 				PresentedPageDisappearing();
 
 			_navStack.Remove(page);
 
-			if(currentPage)
+			if (currentPage)
 				PresentedPageAppearing();
 
 			RemovePage(page);
@@ -806,7 +806,7 @@ namespace Xamarin.Forms
 		void PresentedPageDisappearing()
 		{
 			if (this is IShellSectionController sectionController)
-			{				
+			{
 				CurrentItem?.SendDisappearing();
 				sectionController.PresentedPage?.SendDisappearing();
 			}
@@ -816,13 +816,13 @@ namespace Xamarin.Forms
 		{
 			if (IsVisibleSection && this is IShellSectionController sectionController)
 			{
-				if(_navStack.Count == 1)
+				if (_navStack.Count == 1)
 					CurrentItem?.SendAppearing();
 
 				var presentedPage = sectionController.PresentedPage;
 				if (presentedPage != null)
 				{
-					if(presentedPage.Parent == null)
+					if (presentedPage.Parent == null)
 					{
 						presentedPage.ParentSet += OnPresentedPageParentSet;
 
@@ -859,7 +859,7 @@ namespace Xamarin.Forms
 
 			shellSection.SendStructureChanged();
 
-			if(shellSection.IsVisibleSection)
+			if (shellSection.IsVisibleSection)
 				((IShellController)shellSection?.Parent?.Parent)?.AppearanceChanged(shellSection, false);
 
 			shellSection.UpdateDisplayedPage();
@@ -917,7 +917,7 @@ namespace Xamarin.Forms
 				SetInheritedBindingContext(shellContent, BindingContext);
 			}
 		}
-    
+
 		internal override void SendDisappearing()
 		{
 			base.SendDisappearing();

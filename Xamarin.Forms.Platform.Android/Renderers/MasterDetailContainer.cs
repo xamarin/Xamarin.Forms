@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_childView == null)
 					return;
-				
+
 				AddChildView(_childView);
 			}
 		}

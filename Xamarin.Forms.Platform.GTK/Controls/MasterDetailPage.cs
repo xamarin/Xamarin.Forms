@@ -1,6 +1,6 @@
-﻿using Gdk;
+﻿using System;
+using Gdk;
 using Gtk;
-using System;
 using Xamarin.Forms.Platform.GTK.Animations;
 using Xamarin.Forms.Platform.GTK.Extensions;
 
@@ -271,7 +271,8 @@ namespace Xamarin.Forms.Platform.GTK.Controls
 		{
 			_isPresented = isPresented;
 
-			if (_masterBehaviorType == MasterBehaviorType.Split) return;
+			if (_masterBehaviorType == MasterBehaviorType.Split)
+				return;
 
 			if (_animationsEnabled)
 			{
@@ -396,7 +397,7 @@ namespace Xamarin.Forms.Platform.GTK.Controls
 
 			public void UpdateBackgroundColor(Gdk.Color? backgroundColor)
 			{
-				if(_root== null)
+				if (_root == null)
 				{
 					return;
 				}

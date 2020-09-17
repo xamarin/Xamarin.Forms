@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Controls.Issues
 				item.TextTransform = transform;
 				layout.Children.Add(item as View);
 			}
-				
+
 			layout.Children.Add(new Label
 			{
 				Text = "[Lowercase] " + text2,
@@ -91,5 +91,3 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	}
 }
-
-
