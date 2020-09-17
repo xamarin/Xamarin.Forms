@@ -82,6 +82,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 					_picker = new UIDatePicker { Mode = UIDatePickerMode.Time, TimeZone = new NSTimeZone("UTC") };
 
+					if (Forms.IsiOS14OrNewer)
+					{
+						_picker.PreferredDatePickerStyle = UIKit.UIDatePickerStyle.Wheels;
+					}
+
 					var width = UIScreen.MainScreen.Bounds.Width;
 					var toolbar = new UIToolbar(new RectangleF(0, 0, width, 44)) { BarStyle = UIBarStyle.Default, Translucent = true };
 					var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace);
