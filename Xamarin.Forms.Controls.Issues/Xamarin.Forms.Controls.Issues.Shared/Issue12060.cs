@@ -15,13 +15,13 @@ using Xamarin.Forms.Core.UITests;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 12137, "Bug] DragGestureRecognizer shows 'Copy' tag when dragging in UWP",
+	[Issue(IssueTracker.Github, 12060, "Bug] DragGestureRecognizer shows 'Copy' tag when dragging in UWP",
 		PlatformAffected.UWP)]
 #if UITEST
 	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github10000)]
 	[NUnit.Framework.Category(UITestCategories.DragAndDrop)]
 #endif
-	public class Issue12137 : TestContentPage
+	public class Issue12060 : TestContentPage
 	{
 		protected override void Init()
 		{
