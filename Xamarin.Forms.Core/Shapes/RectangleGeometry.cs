@@ -3,14 +3,14 @@
     public class RectangleGeometry : Geometry
     {
         public RectangleGeometry()
-		{
+        {
 
-		}
+        }
 
         public RectangleGeometry(Rect rect)
-		{
+        {
             Rect = rect;
-		}
+        }
 
         public static readonly BindableProperty RectProperty =
             BindableProperty.Create(nameof(Rect), typeof(Rect), typeof(RectangleGeometry), new Rect());
