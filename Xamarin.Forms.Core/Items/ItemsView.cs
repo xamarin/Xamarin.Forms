@@ -96,11 +96,9 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			OnChildAdded(element);
 			_logicalChildren.Add(element);
-
 			element.Parent = this;
-
+			OnChildAdded(element);
 			VisualDiagnostics.OnChildAdded(this, element);
 		}
 
@@ -112,11 +110,13 @@ namespace Xamarin.Forms
 			}
 
 			element.Parent = null;
+
 			if (!_logicalChildren.Contains(element))
 				return;
 
 			var oldLogicalIndex = _logicalChildren.IndexOf(element);
 			_logicalChildren.Remove(element);
+			OnChildRemoved(element, oldLogicalIndex);
 			VisualDiagnostics.OnChildRemoved(this, element, oldLogicalIndex);
 		}
 
