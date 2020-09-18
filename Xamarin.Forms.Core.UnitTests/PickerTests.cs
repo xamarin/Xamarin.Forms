@@ -2,6 +2,9 @@ using System;
 using NUnit.Framework;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Collections.Specialized;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -54,6 +57,38 @@ namespace Xamarin.Forms.Core.UnitTests
 			{
 				throw new NotImplementedException();
 			}
+		}
+
+		class ResettableCollection<T> : List<T>, INotifyCollectionChanged
+		{
+			public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+			public void RaiseResetEvent()
+			{
+				CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+			}
+		}
+		class ResettableCollectionDataContext<T> : INotifyPropertyChanged
+			where T : class
+		{
+			public ResettableCollection<T> Items { get; set; }
+
+			T selectedItem;
+			public T SelectedItem
+			{
+				get => selectedItem; set
+				{
+					if (selectedItem == value)
+					{
+						return;
+					}
+
+					selectedItem = value;
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedItem)));
+				}
+			}
+
+			public event PropertyChangedEventHandler PropertyChanged;
 		}
 
 		[Test]
@@ -474,6 +509,46 @@ namespace Xamarin.Forms.Core.UnitTests
 			picker.SelectedIndex = -1;
 			Assert.AreEqual(-1, picker.SelectedIndex);
 			Assert.AreEqual(null, picker.SelectedItem);
+		}
+
+		[Test]
+		public void TestItemsSourceRaisesResetEvent()
+		{
+			var bindingContext = new ResettableCollectionDataContext<PickerTestsContextFixture>()
+			{
+				Items = new ResettableCollection<PickerTestsContextFixture>()
+				{
+					new PickerTestsContextFixture("A", "AA"),
+					new PickerTestsContextFixture("B", "BB"),
+					new PickerTestsContextFixture("C", "CC"),
+				},
+			};
+			var picker = new Picker
+			{
+				BindingContext = bindingContext,
+				ItemDisplayBinding = new Binding("DisplayName"),
+			};
+			picker.SetBinding(Picker.ItemsSourceProperty, "Items");
+			picker.SetBinding(Picker.SelectedItemProperty, "SelectedItem");
+
+			bindingContext.SelectedItem = bindingContext.Items[1];
+			Assert.AreEqual(bindingContext.Items[1], picker.SelectedItem);
+			Assert.AreEqual(1, picker.SelectedIndex);
+
+			bindingContext.Items.RaiseResetEvent();
+
+			Assert.AreEqual(bindingContext.Items[1], picker.SelectedItem);
+			Assert.AreEqual(1, picker.SelectedIndex);
+
+			// check that if the selected item is removed as part of the "reset", then the selection
+			// is indeed set to null after the event is raised
+
+			bindingContext.Items.RemoveAt(1);
+			bindingContext.Items.RaiseResetEvent();
+
+			Assert.AreEqual(null, picker.SelectedItem);
+			Assert.AreEqual(-1, picker.SelectedIndex);
+
 		}
 	}
 }

@@ -263,10 +263,11 @@ namespace Xamarin.Forms
 		{
 			if (ItemsSource == null)
 				return;
+			var currentSelectedItem = SelectedItem;
 			((LockableObservableListWrapper)Items).InternalClear();
 			foreach (object item in ItemsSource)
 				((LockableObservableListWrapper)Items).InternalAdd(GetDisplayMember(item));
-			UpdateSelectedItem(SelectedIndex);
+			UpdateSelectedIndex(currentSelectedItem);
 		}
 
 		static void OnSelectedIndexChanged(object bindable, object oldValue, object newValue)
