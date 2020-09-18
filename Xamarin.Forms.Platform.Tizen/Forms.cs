@@ -104,7 +104,27 @@ namespace Xamarin.Forms
 
 		static Lazy<string> s_deviceType = new Lazy<string>(() =>
 		{
-			TSystemInfo.TryGetValue("http://tizen.org/system/device_type", out string deviceType);
+			if (!TSystemInfo.TryGetValue("http://tizen.org/system/device_type", out string deviceType))
+			{
+				// Since, above key("http://tizen.org/system/device_type") is not available on Tizen 4.0, we uses profile to decide the type of device on 4.0.
+				var profile = GetProfile();
+				if (profile == "mobile")
+				{
+					deviceType = "Mobile";
+				}
+				else if (profile == "tv")
+				{
+					deviceType = "TV";
+				}
+				else if (profile == "wearable")
+				{
+					deviceType = "Wearable";
+				}
+				else
+				{
+					deviceType = "Unknown";
+				}
+			}
 			return deviceType;
 		});
 
@@ -140,6 +160,8 @@ namespace Xamarin.Forms
 				}
 			}
 
+			public Size PhysicalScreenSize { get; }
+
 			public override double ScalingFactor
 			{
 				get
@@ -164,6 +186,9 @@ namespace Xamarin.Forms
 				TSystemInfo.TryGetValue("http://tizen.org/feature/screen.width", out width);
 				TSystemInfo.TryGetValue("http://tizen.org/feature/screen.height", out height);
 
+				var physicalScale = s_dpi.Value / 160.0;
+				PhysicalScreenSize = new Size(width / physicalScale, height / physicalScale);
+
 				scalingFactor = 1.0;  // scaling is disabled, we're using pixels as Xamarin's geometry units
 				if (DisplayResolutionUnit.UseVP && DisplayResolutionUnit.ViewportWidth > 0)
 				{
@@ -178,9 +203,7 @@ namespace Xamarin.Forms
 
 					if (DisplayResolutionUnit.UseDeviceScale)
 					{
-						var physicalScale = s_dpi.Value / 160.0;
-
-						var portraitSize = (Math.Min(width, height)) / physicalScale;
+						var portraitSize = Math.Min(PhysicalScreenSize.Width, PhysicalScreenSize.Height);
 						if (portraitSize > 2000)
 						{
 							scalingFactor *= 4;
@@ -245,6 +268,10 @@ namespace Xamarin.Forms
 		public static bool UseMessagingCenter => s_useMessagingCenter;
 
 		public static DisplayResolutionUnit DisplayResolutionUnit { get; private set; }
+
+		public static int ScreenDPI => s_dpi.Value;
+
+		public static Size PhysicalScreenSize => (Device.info as TizenDeviceInfo).PhysicalScreenSize;
 
 		internal static TizenTitleBarVisibility TitleBarVisibility
 		{
@@ -484,6 +511,8 @@ namespace Xamarin.Forms
 						}
 						else
 						{
+							// The assembly of the executing application and referenced assemblies of it are added into the list here.
+							TizenPlatformServices.AppDomain.CurrentDomain.RegisterAssemblyRecursively(application.GetType().GetTypeInfo().Assembly);
 							Registrar.RegisterAll(new Type[]
 							{
 								typeof(ExportRendererAttribute),
