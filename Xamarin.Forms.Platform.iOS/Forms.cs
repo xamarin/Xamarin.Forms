@@ -158,15 +158,25 @@ namespace Xamarin.Forms
 			Device.SetIdiom(UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad ? TargetIdiom.Tablet : TargetIdiom.Phone);
 			Device.SetFlowDirection(UIApplication.SharedApplication.UserInterfaceLayoutDirection.ToFlowDirection());
 #else
+			// Subscribe to notifications in OS Theme changes
+			NSDistributedNotificationCenter.GetDefaultCenter().AddObserver((NSString)"AppleInterfaceThemeChangedNotification", (n) =>
+			{
+				var interfaceStyle = NSUserDefaults.StandardUserDefaults.StringForKey("AppleInterfaceStyle");
+
+				var aquaAppearance = NSAppearance.GetAppearance(interfaceStyle == "Dark" ? NSAppearance.NameDarkAqua : NSAppearance.NameAqua);
+				NSApplication.SharedApplication.Appearance = aquaAppearance;
+
+				Application.Current?.TriggerThemeChanged(new AppThemeChangedEventArgs(interfaceStyle == "Dark" ? OSAppTheme.Dark : OSAppTheme.Light));
+			});
+
 			Device.SetIdiom(TargetIdiom.Desktop);
 			Device.SetFlowDirection(NSApplication.SharedApplication.UserInterfaceLayoutDirection.ToFlowDirection());
-			var mojave = new NSOperatingSystemVersion(10, 14, 0);
-			if (NSProcessInfo.ProcessInfo.IsOperatingSystemAtLeastVersion(mojave) &&
-				typeof(NSApplication).GetProperty("Appearance") is PropertyInfo appearance &&
-				appearance != null)
+
+			if (IsMojaveOrNewer)
 			{
-				var aquaAppearance = NSAppearance.GetAppearance(NSAppearance.NameAqua);
-				appearance.SetValue(NSApplication.SharedApplication, aquaAppearance);
+				var interfaceStyle = NSUserDefaults.StandardUserDefaults.StringForKey("AppleInterfaceStyle");
+				var aquaAppearance = NSAppearance.GetAppearance(interfaceStyle == "Dark" ? NSAppearance.NameDarkAqua : NSAppearance.NameAqua);
+				NSApplication.SharedApplication.Appearance = aquaAppearance;
 			}
 #endif
 			Device.SetFlags(s_flags);
@@ -302,7 +312,7 @@ namespace Xamarin.Forms
 
 			public Color GetNamedColor(string name)
 			{
-#if __XCODE11__ && __IOS__
+#if __IOS__
 				UIColor resultColor = null;
 
 				// If not iOS 13, but 11+ we can only get the named colors
@@ -703,7 +713,6 @@ namespace Xamarin.Forms
 #if __IOS__ || __TVOS__
 					if (!IsiOS13OrNewer)
 						return OSAppTheme.Unspecified;
-#if __XCODE11__
 					var uiStyle = GetCurrentUIViewController()?.TraitCollection?.UserInterfaceStyle ??
 						UITraitCollection.CurrentTraitCollection.UserInterfaceStyle;
 
@@ -717,13 +726,26 @@ namespace Xamarin.Forms
 							return OSAppTheme.Unspecified;
 					};
 #else
-					return OSAppTheme.Unspecified;
-#endif
-#else
-                    return OSAppTheme.Unspecified;
+                    return AppearanceIsDark(NSApplication.SharedApplication.EffectiveAppearance) ? OSAppTheme.Dark : OSAppTheme.Light;
 #endif
 				}
 			}
+
+#if __MACOS__
+			bool AppearanceIsDark(NSAppearance appearance)
+			{
+				if (IsMojaveOrNewer)
+				{
+					var matchedAppearance = appearance.FindBestMatch(new string[] { NSAppearance.NameAqua, NSAppearance.NameDarkAqua });
+
+					return matchedAppearance == NSAppearance.NameDarkAqua;
+				}
+				else
+				{
+					return false;
+				}
+			}
+#endif
 
 #if __IOS__ || __TVOS__
 

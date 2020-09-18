@@ -24,16 +24,14 @@ namespace Xamarin.Forms.Platform.Android
 			textView.SetMaxLines(maxLines);
 		}
 
-		static void SetMaxLines(this TextView textView, Label label, int lines)
+		public static void	SetLineBreakMode(this TextView textView, Label label)
 		{
-			// If the Label's MaxLines has been explicitly set, we should not set it here
-			if (label.MaxLines != (int)Label.MaxLinesProperty.DefaultValue)
-			{
-				return;
-			}
-
-			textView.SetMaxLines(lines);
+			var maxLines = SetLineBreak(textView, label.LineBreakMode);
+			textView.SetMaxLines(maxLines);
 		}
+
+		public static void SetLineBreakMode(this TextView textView, Button button) =>
+			SetLineBreak(textView, button.LineBreakMode);
 
 		public static void SetFont(this TextView textView, Font font)
 			=> textView?.SetFont(font.ToTypeface(), font.ToScaledPixel());
@@ -46,10 +44,9 @@ namespace Xamarin.Forms.Platform.Android
 			textView.Typeface = typeFace;
 			textView.SetTextSize(ComplexUnitType.Sp, sizeSp);
 		}
-		public static void SetLineBreakMode(this TextView textView, Label label)
-		{
-			var lineBreakMode = label.LineBreakMode;
 
+		public static int SetLineBreak( TextView textView, LineBreakMode lineBreakMode)
+		{
 			int maxLines = Int32.MaxValue;
 			bool singleLine = false;
 
@@ -57,6 +54,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				case LineBreakMode.NoWrap:
 					maxLines = 1;
+					singleLine = true;
 					textView.Ellipsize = null;
 					break;
 				case LineBreakMode.WordWrap:
@@ -72,6 +70,7 @@ namespace Xamarin.Forms.Platform.Android
 					break;
 				case LineBreakMode.TailTruncation:
 					maxLines = 1;
+					singleLine = true;
 					textView.Ellipsize = TextUtils.TruncateAt.End;
 					break;
 				case LineBreakMode.MiddleTruncation:
@@ -82,7 +81,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			textView.SetSingleLine(singleLine);
-			textView.SetMaxLines(label, maxLines);
+			return maxLines;
 		}
 
 		public static void RecalculateSpanPositions(this TextView textView, Label element, SpannableString spannableString, SizeRequest finalSize)

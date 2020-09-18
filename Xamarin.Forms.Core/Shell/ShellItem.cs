@@ -225,21 +225,6 @@ namespace Xamarin.Forms
 			return CreateFromShellSection(shellSection);
 		}
 
-		internal static ShellItem GetShellItemFromRouteName(string route)
-		{
-			var shellContent = new ShellContent { Route = route, Content = Routing.GetOrCreateContent(route) };
-			var result = new ShellItem();
-			var shellSection = new ShellSection();
-			shellSection.Items.Add(shellContent);
-			result.Route = Routing.GenerateImplicitRoute(shellSection.Route);
-			result.Items.Add(shellSection);
-			result.SetBinding(TitleProperty, new Binding(nameof(Title), BindingMode.OneWay, source: shellSection));
-			result.SetBinding(IconProperty, new Binding(nameof(Icon), BindingMode.OneWay, source: shellSection));
-			result.SetBinding(FlyoutDisplayOptionsProperty, new Binding(nameof(FlyoutDisplayOptions), BindingMode.OneTime, source: shellSection));
-			result.SetBinding(FlyoutIconProperty, new Binding(nameof(FlyoutIcon), BindingMode.OneWay, source: shellSection));
-			return result;
-		}
-
 		public static implicit operator ShellItem(ShellContent shellContent) => (ShellSection)shellContent;
 
 		public static implicit operator ShellItem(TemplatedPage page) => (ShellSection)(ShellContent)page;
@@ -257,9 +242,12 @@ namespace Xamarin.Forms
 			OnVisibleChildAdded(child);
 		}
 
-		protected override void OnChildRemoved(Element child)
+		[Obsolete("OnChildRemoved(Element) is obsolete as of version 4.8.0. Please use OnChildRemoved(Element, int) instead.")]
+		protected override void OnChildRemoved(Element child) => OnChildRemoved(child, -1);
+
+		protected override void OnChildRemoved(Element child, int oldLogicalIndex)
 		{
-			base.OnChildRemoved(child);
+			base.OnChildRemoved(child, oldLogicalIndex);
 			OnVisibleChildRemoved(child);
 		}
 
@@ -317,8 +305,11 @@ namespace Xamarin.Forms
 
 			if (e.OldItems != null)
 			{
-				foreach (Element element in e.OldItems)
-					OnChildRemoved(element);
+				for (var i = 0; i < e.OldItems.Count; i++)
+				{
+					var element = (Element)e.OldItems[i];
+					OnChildRemoved(element, e.OldStartingIndex + i);
+				}
 			}
 		}
 

@@ -233,7 +233,8 @@ namespace Xamarin.Forms.CustomAttributes
 			BorderRadius,
 			Image,
 			Padding,
-			Pressed
+			Pressed,
+			LineBreakMode
 		}
 
 		public enum VisualElement
@@ -656,7 +657,7 @@ namespace Xamarin.Forms.CustomAttributes
 			Detail,
 			IsGestureEnabled,
 			IsPresented,
-			MasterBehavior
+			FlyoutLayoutBehavior
 		}
 
 		public enum OpenGlView

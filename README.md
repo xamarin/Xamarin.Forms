@@ -1,5 +1,5 @@
 
-<img src="banner.png" alt="Xamarin.Forms banner" height="145" >
+<img src="Assets/banner.png" alt="Xamarin.Forms banner" height="145" >
 
 # Xamarin.Forms #
 
@@ -9,7 +9,7 @@ Read more about the platform at https://www.xamarin.com/forms.
 
 ## Build Status ##
 
-![Azure DevOps](https://devdiv.visualstudio.com/DevDiv/_apis/build/status/Xamarin/XamarinForms/Xamarin%20Forms?branchName=main "Azure Pipelines")
+[![Build Status](https://devdiv.visualstudio.com/DevDiv/_apis/build/status/Xamarin%20Forms%20Yaml?repoName=xamarin%2FXamarin.Forms&branchName=main)](https://devdiv.visualstudio.com/DevDiv/_build/latest?definitionId=10386&repoName=xamarin%2FXamarin.Forms&branchName=main)
 
 ## Packages ##
 

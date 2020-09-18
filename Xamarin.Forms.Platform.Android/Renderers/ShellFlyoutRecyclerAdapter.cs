@@ -1,10 +1,5 @@
 ﻿using Android.Runtime;
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
 using AndroidX.RecyclerView.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
 using Android.Views;
 using Android.Widget;
 using System;
@@ -151,7 +146,6 @@ namespace Xamarin.Forms.Platform.Android
 			var template = _templateMap[viewType];
 
 			var content = (View)template.CreateContent();
-			content.Parent = _shellContext.Shell;
 
 			var linearLayout = new LinearLayoutWithFocus(parent.Context)
 			{
@@ -170,7 +164,7 @@ namespace Xamarin.Forms.Platform.Android
 			container.LayoutParameters = new LP(LP.MatchParent, LP.WrapContent);
 			linearLayout.AddView(container);
 
-			_elementViewHolder = new ElementViewHolder(content, linearLayout, bar, _selectedCallback);
+			_elementViewHolder = new ElementViewHolder(content, linearLayout, bar, _selectedCallback, _shellContext.Shell);
 
 			return _elementViewHolder;
 		}
@@ -242,14 +236,26 @@ namespace Xamarin.Forms.Platform.Android
 			Element _element;
 			AView _itemView;
 			bool _disposed;
+			Shell _shell;
 
-			public ElementViewHolder(View view, AView itemView, AView bar, Action<Element> selectedCallback) : base(itemView)
+			[Obsolete]
+			public ElementViewHolder(View view, AView itemView, AView bar, Action<Element> selectedCallback) : this(view, itemView, bar, selectedCallback, null)
 			{
 				_itemView = itemView;
 				itemView.Click += OnClicked;
 				View = view;
 				Bar = bar;
 				_selectedCallback = selectedCallback;
+			}
+
+			public ElementViewHolder(View view, AView itemView, AView bar, Action<Element> selectedCallback, Shell shell) : base(itemView)
+			{
+				_itemView = itemView;
+				itemView.Click += OnClicked;
+				View = view;
+				Bar = bar;
+				_selectedCallback = selectedCallback;
+				_shell = shell;
 			}
 
 			public View View { get; }
@@ -269,7 +275,10 @@ namespace Xamarin.Forms.Platform.Android
 					}
 
 					_element = value;
+					
+					// Set Parent after binding context so parent binding context doesn't propagate to view
 					View.BindingContext = value;
+					View.Parent = _shell;
 
 					if (_element != null)
 					{
