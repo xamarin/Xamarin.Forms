@@ -38,6 +38,7 @@ using static Xamarin.Forms.Platform.Android.Platform;
 [assembly: ExportRenderer (typeof (NavigationPage), typeof (NavigationRenderer))]
 [assembly: ExportRenderer (typeof (CarouselPage), typeof (CarouselPageRenderer))]
 [assembly: ExportRenderer (typeof (Page), typeof (PageRenderer))]
+[assembly: ExportRenderer (typeof (FlyoutPage), typeof (FlyoutPageRenderer))]
 [assembly: ExportRenderer (typeof (MasterDetailPage), typeof (MasterDetailRenderer))]
 [assembly: ExportRenderer (typeof (RefreshView), typeof (RefreshViewRenderer))]
 [assembly: ExportRenderer(typeof(Path), typeof(PathRenderer))]
