@@ -31,6 +31,11 @@ namespace Xamarin.Forms.Controls.Issues
 					new Image() { Source = new FontImageSource() { FontFamily = "fa-regular-400.ttf", Glyph = "\xf0f3", Color = Color.Black, Size = 50}, HorizontalOptions = LayoutOptions.Start},
 
 					new Label() { Text = "This text should be shown using the Lobster font, which is included as an asset", FontFamily = "Lobster-Regular", Margin = new Thickness(10)},
+
+
+					new Label() { Text = "Below a PLAY icon should be visible (if the \"Segoe MDL2 Assets\" font is installed)", Margin = new Thickness(10)},
+
+					new Image() { Source = new FontImageSource{Glyph = "\xe102",FontFamily = "Segoe MDL2 Assets", Size = 50, Color = Color.Green}, HorizontalOptions = LayoutOptions.Start },
 				}
 			};
 		}
