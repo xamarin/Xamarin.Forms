@@ -40,6 +40,9 @@ namespace Xamarin.Forms.Platform.Android
 				if (!(currentView is EditText))
 					break;
 
+				if (currentView is FormsEditText formsEditText && !formsEditText.ShouldDismissKeyboardOnOutsideTap)
+					break;
+
 				global::Android.Views.View newCurrentView = Context.GetActivity().CurrentFocus;
 
 				if (currentView != newCurrentView)

@@ -11,6 +11,7 @@ using Android.Views;
 using Java.Lang;
 using Android.Widget;
 using Android.Views.InputMethods;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -50,6 +51,35 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			_textColorSwitcher = _textColorSwitcher ?? new TextColorSwitcher(EditText.TextColors, Element.UseLegacyColorManagement());
 			_textColorSwitcher.UpdateTextColor(EditText, Element.TextColor);
+		}
+
+		protected override void OnElementChanged(ElementChangedEventArgs<Editor> e)
+		{
+			base.OnElementChanged(e);
+
+			UpdateDismissKeyboardOnOutsideTap();
+		}
+
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (this.IsDisposed())
+			{
+				return;
+			}
+
+			if (e.PropertyName == PlatformConfiguration.AndroidSpecific.InputView.DismissKeyboardOnOutsideTapProperty.PropertyName)
+				UpdateDismissKeyboardOnOutsideTap();
+
+			base.OnElementPropertyChanged(sender, e);
+		}
+
+		protected virtual void UpdateDismissKeyboardOnOutsideTap()
+		{
+			if (Element == null || Control == null)
+				return;
+			var dismissKeyboardOnOutsideTap = Element.OnThisPlatform().DismissKeyboardOnOutsideTap();
+
+			Control.ShouldDismissKeyboardOnOutsideTap = dismissKeyboardOnOutsideTap;
 		}
 
 		protected override void OnAttachedToWindow()
