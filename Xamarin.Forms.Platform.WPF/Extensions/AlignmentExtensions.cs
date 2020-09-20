@@ -9,6 +9,8 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			switch (alignment)
 			{
+				case TextAlignment.Justify:
+					return System.Windows.TextAlignment.Justify;
 				case TextAlignment.Center:
 					return System.Windows.TextAlignment.Center;
 				case TextAlignment.End:
@@ -22,6 +24,8 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			switch (alignment)
 			{
+				case TextAlignment.Justify:
+					throw new NotSupportedException("Justify is not supported for vertical alignment");
 				case TextAlignment.Start:
 					return VerticalAlignment.Top;
 				case TextAlignment.Center:

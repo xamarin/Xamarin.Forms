@@ -11,6 +11,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 			switch (alignment)
 			{
+				case Windows.UI.Xaml.TextAlignment.Justify:
+					return HorizontalAlignment.Stretch;
 				case Windows.UI.Xaml.TextAlignment.Center:
 					return HorizontalAlignment.Center;
 				case Windows.UI.Xaml.TextAlignment.Left:
@@ -28,6 +30,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 			switch (alignment)
 			{
+				case HorizontalAlignment.Stretch:
+					return Windows.UI.Xaml.TextAlignment.Justify;
 				case HorizontalAlignment.Left:
 					return Windows.UI.Xaml.TextAlignment.Left;
 				case HorizontalAlignment.Center:

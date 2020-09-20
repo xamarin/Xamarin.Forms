@@ -1,3 +1,4 @@
+using System;
 using UIKit;
 using Xamarin.Forms.Internals;
 
@@ -10,6 +11,8 @@ namespace Xamarin.Forms.Platform.iOS
 			var isLtr = flowDirection.IsLeftToRight();
 			switch (alignment)
 			{
+				case TextAlignment.Justify:
+					return UITextAlignment.Justified;
 				case TextAlignment.Center:
 					return UITextAlignment.Center;
 				case TextAlignment.End:
@@ -29,6 +32,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			switch (alignment)
 			{
+				case TextAlignment.Justify:
+					throw new NotSupportedException("Justify is not supported for vertical alignment");
 				case TextAlignment.Center:
 					return UIControlContentVerticalAlignment.Center;
 				case TextAlignment.End:

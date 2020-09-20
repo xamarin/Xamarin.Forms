@@ -7,7 +7,8 @@ namespace Xamarin.Forms
 	{
 		Start,
 		Center,
-		End
+		End,
+		Justify
 	}
 
 	[Xaml.TypeConversion(typeof(TextAlignment))]
@@ -32,6 +33,8 @@ namespace Xamarin.Forms
 					return TextAlignment.End;
 				if (value.Equals("Center", StringComparison.OrdinalIgnoreCase) || value.Equals("center", StringComparison.OrdinalIgnoreCase))
 					return TextAlignment.Center;
+				if (value.Equals("Justify", StringComparison.OrdinalIgnoreCase) || value.Equals("justify", StringComparison.OrdinalIgnoreCase))
+					return TextAlignment.Justify;
 
 				if (Enum.TryParse(value, out TextAlignment direction))
 					return direction;

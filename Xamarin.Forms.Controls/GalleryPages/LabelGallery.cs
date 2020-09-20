@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +13,13 @@ namespace Xamarin.Forms.Controls
 			var normal = new Label { Text = "Normal Label" };
 			var center = new Label { Text = "Center Label" };
 			var right = new Label { Text = "Right Label" };
+			var justify = new Label
+			{
+				HorizontalOptions = LayoutOptions.FillAndExpand,
+				Text = "Justify Label, with huge text : " +
+				"The five boxing wizards jump quickly. " +
+				"The quick brown fox jumps over the lazy dog. How vexingly quick daft zebras jump!",
+			};
 			var moving = new Label { Text = "Move On Click" };
 			var click = new Label { Text = "Click Label" };
 			var rotate = new Label { Text = "Rotate Label" };
@@ -122,6 +129,7 @@ namespace Xamarin.Forms.Controls
 #pragma warning restore 618
 			center.HorizontalTextAlignment = TextAlignment.Center;
 			right.HorizontalTextAlignment = TextAlignment.End;
+			justify.HorizontalTextAlignment = TextAlignment.Justify;
 			int i = 1;
 			click.GestureRecognizers.Add (new TapGestureRecognizer{Command = new Command (o=>click.Text = "Clicked " + i++)});
 			rotate.GestureRecognizers.Add (new TapGestureRecognizer{Command = new Command (o=>rotate.RelRotateTo (180))});
@@ -146,6 +154,7 @@ namespace Xamarin.Forms.Controls
 						normal,
 						center,
 						right,
+						justify,
 						huge,
 						moving,
 						click,

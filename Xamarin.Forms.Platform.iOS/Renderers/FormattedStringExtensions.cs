@@ -71,22 +71,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				style.LineHeightMultiple = new nfloat(lineHeight);
 			}
 
-			switch (textAlignment)
-			{
-				case TextAlignment.Start:
-					style.Alignment = UITextAlignment.Left;
-					break;
-				case TextAlignment.Center:
-					style.Alignment = UITextAlignment.Center;
-					break;
-				case TextAlignment.End:
-					style.Alignment = UITextAlignment.Right;
-					break;
-				default:
-					style.Alignment = UITextAlignment.Left;
-					break;
-			}
-
+			style.Alignment = textAlignment.ToNativeTextAlignment(EffectiveFlowDirection.Explicit);
 
 #if __MOBILE__
 			UIFont targetFont;

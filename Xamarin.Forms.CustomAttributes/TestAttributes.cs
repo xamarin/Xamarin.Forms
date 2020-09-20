@@ -641,6 +641,7 @@ namespace Xamarin.Forms.CustomAttributes
 			HorizontalTextAlignmentStart,
 			HorizontalTextAlignmentCenter,
 			HorizontalTextAlignmentEnd,
+			HorizontalTextAlignmentJustify,
 			VerticalTextAlignmentStart,
 			VerticalTextAlignmentCenter,
 			VerticalTextAlignmentEnd,
