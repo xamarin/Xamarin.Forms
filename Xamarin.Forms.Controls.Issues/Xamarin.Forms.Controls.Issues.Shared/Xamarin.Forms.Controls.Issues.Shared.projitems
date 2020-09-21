@@ -1569,10 +1569,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue10608.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11571.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11715.xaml.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Issue11875.xaml.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Issue11737.xaml.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Issue11764.xaml.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Issue11573.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11875.xaml.cs" >
       <DependentUpon>Issue11875.xaml</DependentUpon>
     </Compile>
