@@ -84,7 +84,7 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateFlyoutBackdrop();
 		}
 
-		void OnPaneClosed(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewPaneClosingEventArgs args)
+		void OnPaneClosing(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewPaneClosingEventArgs args)
 		{
 			if (Shell != null)
 				Shell.FlyoutIsPresented = false;
@@ -148,7 +148,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 
 				if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneClosing"))
-					PaneClosing += OnPaneClosed;
+					PaneClosing += OnPaneClosing;
 				if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneOpening"))
 					PaneOpening += OnPaneOpening;
 				if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneOpened"))
@@ -171,7 +171,7 @@ namespace Xamarin.Forms.Platform.UWP
 				Element.PropertyChanged -= OnElementPropertyChanged;
 
 				if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneClosing"))
-					PaneClosing -= OnPaneClosed;
+					PaneClosing -= OnPaneClosing;
 				if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneOpening"))
 					PaneOpening -= OnPaneOpening;
 				if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneOpened"))
