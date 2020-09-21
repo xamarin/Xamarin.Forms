@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Xamarin.Forms.Internals;
+using Xamarin.Platform;
 
 namespace Xamarin.Forms
 {
-	public class StackLayout : Layout<View>, IElementConfiguration<StackLayout>
+	public class StackLayout : Layout<View>, IElementConfiguration<StackLayout>, Xamarin.Platform.ILayout
 	{
 		public static readonly BindableProperty OrientationProperty = BindableProperty.Create(nameof(Orientation), typeof(StackOrientation), typeof(StackLayout), StackOrientation.Vertical,
 			propertyChanged: (bindable, oldvalue, newvalue) => ((StackLayout)bindable).InvalidateLayout());
@@ -38,6 +41,8 @@ namespace Xamarin.Forms
 			set { SetValue(SpacingProperty, value); }
 		}
 
+		IList<Xamarin.Platform.IView> Xamarin.Platform.ILayout.Children => Children.ToList<Xamarin.Platform.IView>();
+
 		protected override void LayoutChildren(double x, double y, double width, double height)
 		{
 			if (!HasVisibleChildren())
@@ -64,6 +69,23 @@ namespace Xamarin.Forms
 				if (child.IsVisible && layoutInformationCopy.Plots != null)
 						LayoutChildIntoBoundingRegion(child, layoutInformationCopy.Plots[i], layoutInformationCopy.Requests[i]);
 			}
+		}
+
+		// TODO ezhart We're setting these but not really using them
+		SizeRequest _desiredSize;
+		bool _isMeasureValid;
+
+		// TODO ezhart Actually use this - we're not setting it or checking it yet
+		//bool _isArrangeValid;
+
+		SizeRequest IFrameworkElement.Measure(double widthConstraint, double heightConstraint)
+		{
+			if (!_isMeasureValid)
+#pragma warning disable CS0618 // Type or member is obsolete
+				_desiredSize = OnSizeRequest(widthConstraint, heightConstraint);
+#pragma warning restore CS0618 // Type or member is obsolete
+			_isMeasureValid = true;
+			return _desiredSize;
 		}
 
 		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
@@ -160,7 +182,7 @@ namespace Xamarin.Forms
 						}
 						expander = child;
 					}
-					SizeRequest request = child.Measure(widthConstraint, double.PositiveInfinity, MeasureFlags.IncludeMargins);
+					SizeRequest request = (child as IFrameworkElement).Measure(widthConstraint, double.PositiveInfinity);
 
 					var bounds = new Rectangle(x, yOffset, request.Request.Width, request.Request.Height);
 					layout.Plots[i] = bounds;

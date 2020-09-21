@@ -456,7 +456,10 @@ namespace Xamarin.Forms
 				if (visual == null || !visual.IsVisible)
 					continue;
 
-				if (!visual.IsPlatformEnabled || !visual.IsNativeStateConsistent)
+				// TODO ezhart With the new architecture, I'm mostly certain that IsPlatformEnabled will go away
+				// But we should keep an eye out for any reason to keep it
+				if (//!visual.IsPlatformEnabled || 
+					!visual.IsNativeStateConsistent)
 				{
 					return false;
 				}

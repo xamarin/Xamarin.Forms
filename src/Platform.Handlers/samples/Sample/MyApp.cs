@@ -13,7 +13,17 @@ namespace Sample
 
 		public IView CreateView()
 		{
-			return new Button() { Text = "Hello I'm a button", BackgroundColor = Color.Purple };
+			var layout = new Xamarin.Forms.StackLayout();
+
+			var button = new Button() { Text = "A Button" };
+			var button2 = new Button() { Text = "A Second Button" };
+
+			layout.Children.Add(button);
+			layout.Children.Add(button2);
+			
+			return layout;
 		}
+
+	
 	}
 }
