@@ -11,5 +11,10 @@ namespace Xamarin.Platform
 		{
 			// appCompatButton.SetTextColor(button.Color.ToNative());
 		}
+
+		public static void UpdateText(this UIButton nativeButton, IButton button)
+		{
+			nativeButton.SetText(button.Text);
+		}
 	}
 }

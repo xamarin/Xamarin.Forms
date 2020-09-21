@@ -8,7 +8,12 @@ namespace Xamarin.Platform
 	{
 		public static void UpdateColor(this object nothing, IButton button)
 		{
-			
+
+		}
+
+		public static void UpdateText(this object nothing, IButton button)
+		{
+
 		}
 	}
 }

@@ -22,11 +22,8 @@ namespace Xamarin.Platform.Handlers
 
 		public static void MapColor(LabelHandler handler, ILabel Label)
 		{
-			
 		}
 
-
-		// Maybe this can move to an extension method? Or some more common format
 #if MONOANDROID
 		protected override NativeView CreateView() => new NativeView(this.Context);
 #else
