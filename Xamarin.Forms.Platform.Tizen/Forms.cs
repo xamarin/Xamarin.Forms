@@ -41,6 +41,8 @@ namespace Xamarin.Forms
 		public PlatformType PlatformType { get; set; }
 		public bool UseMessagingCenter { get; set; } = true;
 
+		public DisplayResolutionUnit DisplayResolutionUnit { get; set; }
+
 		public struct EffectScope
 		{
 			public string Name;
@@ -102,7 +104,27 @@ namespace Xamarin.Forms
 
 		static Lazy<string> s_deviceType = new Lazy<string>(() =>
 		{
-			TSystemInfo.TryGetValue("http://tizen.org/system/device_type", out string deviceType);
+			if (!TSystemInfo.TryGetValue("http://tizen.org/system/device_type", out string deviceType))
+			{
+				// Since, above key("http://tizen.org/system/device_type") is not available on Tizen 4.0, we uses profile to decide the type of device on 4.0.
+				var profile = GetProfile();
+				if (profile == "mobile")
+				{
+					deviceType = "Mobile";
+				}
+				else if (profile == "tv")
+				{
+					deviceType = "TV";
+				}
+				else if (profile == "wearable")
+				{
+					deviceType = "Wearable";
+				}
+				else
+				{
+					deviceType = "Unknown";
+				}
+			}
 			return deviceType;
 		});
 
@@ -138,6 +160,8 @@ namespace Xamarin.Forms
 				}
 			}
 
+			public Size PhysicalScreenSize { get; }
+
 			public override double ScalingFactor
 			{
 				get
@@ -162,10 +186,33 @@ namespace Xamarin.Forms
 				TSystemInfo.TryGetValue("http://tizen.org/feature/screen.width", out width);
 				TSystemInfo.TryGetValue("http://tizen.org/feature/screen.height", out height);
 
+				var physicalScale = s_dpi.Value / 160.0;
+				PhysicalScreenSize = new Size(width / physicalScale, height / physicalScale);
+
 				scalingFactor = 1.0;  // scaling is disabled, we're using pixels as Xamarin's geometry units
-				if (s_useDeviceIndependentPixel)
+				if (DisplayResolutionUnit.UseVP && DisplayResolutionUnit.ViewportWidth > 0)
 				{
-					scalingFactor = s_dpi.Value / 160.0;
+					scalingFactor = width / DisplayResolutionUnit.ViewportWidth;
+				}
+				else
+				{
+					if (DisplayResolutionUnit.UseDP)
+					{
+						scalingFactor = s_dpi.Value / 160.0;
+					}
+
+					if (DisplayResolutionUnit.UseDeviceScale)
+					{
+						var portraitSize = Math.Min(PhysicalScreenSize.Width, PhysicalScreenSize.Height);
+						if (portraitSize > 2000)
+						{
+							scalingFactor *= 4;
+						}
+						else if (portraitSize > 1000)
+						{
+							scalingFactor *= 2.5;
+						}
+					}
 				}
 
 				pixelScreenSize = new Size(width, height);
@@ -173,8 +220,6 @@ namespace Xamarin.Forms
 				profile = s_profile.Value;
 			}
 		}
-
-		static bool s_useDeviceIndependentPixel = false;
 
 		static StaticRegistrarStrategy s_staticRegistrarStrategy = StaticRegistrarStrategy.None;
 
@@ -221,6 +266,12 @@ namespace Xamarin.Forms
 		public static PlatformType PlatformType => s_platformType;
 
 		public static bool UseMessagingCenter => s_useMessagingCenter;
+
+		public static DisplayResolutionUnit DisplayResolutionUnit { get; private set; }
+
+		public static int ScreenDPI => s_dpi.Value;
+
+		public static Size PhysicalScreenSize => (Device.info as TizenDeviceInfo).PhysicalScreenSize;
 
 		internal static TizenTitleBarVisibility TitleBarVisibility
 		{
@@ -348,13 +399,24 @@ namespace Xamarin.Forms
 
 		public static void Init(CoreApplication application, bool useDeviceIndependentPixel)
 		{
-			s_useDeviceIndependentPixel = useDeviceIndependentPixel;
+			DisplayResolutionUnit = DisplayResolutionUnit.FromInit(useDeviceIndependentPixel);
+			SetupInit(application);
+		}
+
+		public static void Init(CoreApplication application, DisplayResolutionUnit unit)
+		{
+			DisplayResolutionUnit = unit ?? DisplayResolutionUnit.Pixel();
 			SetupInit(application);
 		}
 
 		public static void Init(InitializationOptions options)
 		{
-			s_useDeviceIndependentPixel = options?.UseDeviceIndependentPixel ?? false;
+			if (options == null)
+			{
+				throw new ArgumentException("Must be set options", nameof(options));
+			}
+
+			DisplayResolutionUnit = options.DisplayResolutionUnit ?? DisplayResolutionUnit.FromInit(options.UseDeviceIndependentPixel);
 			SetupInit(options.Context, options);
 		}
 
@@ -449,6 +511,8 @@ namespace Xamarin.Forms
 						}
 						else
 						{
+							// The assembly of the executing application and referenced assemblies of it are added into the list here.
+							TizenPlatformServices.AppDomain.CurrentDomain.RegisterAssemblyRecursively(application.GetType().GetTypeInfo().Assembly);
 							Registrar.RegisterAll(new Type[]
 							{
 								typeof(ExportRendererAttribute),
