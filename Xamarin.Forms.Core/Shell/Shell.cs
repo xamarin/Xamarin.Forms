@@ -209,42 +209,45 @@ namespace Xamarin.Forms
 
 		List<(IAppearanceObserver Observer, Element Pivot)> _appearanceObservers = new List<(IAppearanceObserver Observer, Element Pivot)>();
 		List<IFlyoutBehaviorObserver> _flyoutBehaviorObservers = new List<IFlyoutBehaviorObserver>();
+		ShellNavigatingEventArgs _deferredEventArgs;
+
+
+		internal static BindableObject GetBindableObjectWithFlyoutItemTemplate(BindableObject bo)
+		{
+			if (bo is IMenuItemController)
+			{
+				if (bo is MenuItem mi && mi.Parent != null && mi.Parent.IsSet(MenuItemTemplateProperty))
+					return mi.Parent;
+				else if (bo is MenuShellItem msi && msi.MenuItem != null && msi.MenuItem.IsSet(MenuItemTemplateProperty))
+					return msi.MenuItem;
+			}
+
+			return bo;
+		}
 
 		DataTemplate IShellController.GetFlyoutItemDataTemplate(BindableObject bo)
 		{
 			BindableProperty bp = null;
 			string textBinding;
 			string iconBinding;
-			IStyleSelectable styleClassSource = null;
+			var bindableObjectWithTemplate = GetBindableObjectWithFlyoutItemTemplate(bo);
 
 			if (bo is IMenuItemController)
 			{
 				bp = MenuItemTemplateProperty;
-
-				if (bo is MenuItem mi && mi.Parent != null && mi.Parent.IsSet(bp))
-					bo = mi.Parent;
-				else if (bo is MenuShellItem msi && msi.MenuItem != null && msi.MenuItem.IsSet(bp))
-					bo = msi.MenuItem;
-
-				if (bo is MenuItem myStyle)
-					styleClassSource = myStyle;
-				else if (bo is MenuShellItem msiStyle)
-					styleClassSource = msiStyle.MenuItem;
-
 				textBinding = "Text";
 				iconBinding = "Icon";
 			}
 			else
 			{
-				styleClassSource = bo as IStyleSelectable;
 				bp = ItemTemplateProperty;
 				textBinding = "Title";
 				iconBinding = "FlyoutIcon";
 			}
 
-			if (bo.IsSet(bp))
+			if (bindableObjectWithTemplate.IsSet(bp))
 			{
-				return (DataTemplate)bo.GetValue(bp);
+				return (DataTemplate)bindableObjectWithTemplate.GetValue(bp);
 			}
 
 			if (IsSet(bp))
@@ -252,7 +255,7 @@ namespace Xamarin.Forms
 				return (DataTemplate)GetValue(bp);
 			}
 
-			return BaseShellItem.CreateDefaultFlyoutItemCell(styleClassSource, textBinding, iconBinding);
+			return BaseShellItem.CreateDefaultFlyoutItemCell(textBinding, iconBinding);
 		}
 
 		event EventHandler IShellController.StructureChanged
@@ -401,7 +404,7 @@ namespace Xamarin.Forms
 		bool IShellController.ProposeNavigation(ShellNavigationSource source, ShellItem shellItem, ShellSection shellSection, ShellContent shellContent, IReadOnlyList<Page> stack, bool canCancel)
 		{
 			var proposedState = GetNavigationState(shellItem, shellSection, shellContent, stack, shellSection.Navigation.ModalStack);
-			return ProposeNavigation(source, proposedState, canCancel);
+			return ProposeNavigation(source, proposedState, canCancel, null);
 		}
 
 		bool IShellController.RemoveAppearanceObserver(IAppearanceObserver observer)
@@ -432,7 +435,7 @@ namespace Xamarin.Forms
 
 			SetValueFromRenderer(CurrentStatePropertyKey, result);
 
-			ProcessNavigated(new ShellNavigatedEventArgs(oldState, CurrentState, source));
+			HandleNavigated(new ShellNavigatedEventArgs(oldState, CurrentState, source));
 		}
 		ReadOnlyCollection<ShellItem> IShellController.GetItems() =>
 			new ReadOnlyCollection<ShellItem>(((ShellItemCollection)Items).VisibleItemsReadOnly.ToList());
@@ -475,6 +478,11 @@ namespace Xamarin.Forms
 			return routes;
 		}
 
+		internal Task CompleteDeferredNavigating(ShellNavigatingEventArgs deferredArgs)
+		{
+			return GoToAsync(deferredArgs.Target, deferredArgs.Animate, false, deferredArgs);
+		}
+
 		public Task GoToAsync(ShellNavigationState state)
 		{
 			return GoToAsync(state, null, false);
@@ -485,16 +493,52 @@ namespace Xamarin.Forms
 			return GoToAsync(state, animate, false);
 		}
 
-		internal async Task GoToAsync(ShellNavigationState state, bool? animate, bool enableRelativeShellRoutes)
+		internal Task GoToAsync(ShellNavigationState state, bool? animate, bool enableRelativeShellRoutes, ShellNavigatingEventArgs deferredArgs = null)
 		{
+			return GoToAsync(new ShellNavigationParameters
+			{
+				TargetState = state,
+				Animated = animate,
+				EnableRelativeShellRoutes = enableRelativeShellRoutes, 
+				DeferredArgs = deferredArgs
+			});
+		}
+
+		internal async Task GoToAsync(ShellNavigationParameters shellNavigationParameters)
+		{
+			if (shellNavigationParameters.PagePushing != null)
+				Routing.RegisterImplicitPageRoute(shellNavigationParameters.PagePushing);
+
+			ShellNavigationState state = shellNavigationParameters.TargetState ?? Routing.GetRoute(shellNavigationParameters.PagePushing);			
+			bool? animate = shellNavigationParameters.Animated;
+			bool enableRelativeShellRoutes = shellNavigationParameters.EnableRelativeShellRoutes;
+			ShellNavigatingEventArgs deferredArgs = shellNavigationParameters.DeferredArgs;
+
+			if (_deferredEventArgs != null && _deferredEventArgs != deferredArgs)
+			{
+				throw new InvalidOperationException("Not all ShellNavigatingDeferrals have been completed from the previous operation");
+			}
+
 			// FIXME: This should not be none, we need to compute the delta and set flags correctly
-			var accept = ProposeNavigation(ShellNavigationSource.Unknown, state, this.CurrentState != null);
-			if (!accept)
+			var accept = ProposeNavigation(ShellNavigationSource.Unknown, state, this.CurrentState != null, deferredArgs);
+
+			if (deferredArgs == null && _deferredEventArgs != null)
+			{
+				await _deferredEventArgs.DeferredTask.ConfigureAwait(false);
 				return;
+			}
+
+			if (!accept)
+			{
+				return;
+			}
+
+			Routing.RegisterImplicitPageRoutes(this);
+
 
 			_accumulateNavigatedEvents = true;
 
-			var navigationRequest = ShellUriHandler.GetNavigationRequest(this, state.FullLocation, enableRelativeShellRoutes);
+			var navigationRequest = ShellUriHandler.GetNavigationRequest(this, state.FullLocation, enableRelativeShellRoutes, shellNavigationParameters: shellNavigationParameters);
 			var uri = navigationRequest.Request.FullUri;
 			var queryString = navigationRequest.Query;
 			var queryData = ParseQueryString(queryString);
@@ -506,14 +550,19 @@ namespace Xamarin.Forms
 			var currentShellSection = CurrentItem?.CurrentItem;
 			var nextActiveSection = shellSection ?? shellItem?.CurrentItem;
 
+
 			ShellContent shellContent = navigationRequest.Request.Content;
 			bool modalStackPreBuilt = false;
 
 			// If we're replacing the whole stack and there are global routes then build the navigation stack before setting the shell section visible
-			if (navigationRequest.Request.GlobalRoutes.Count > 0 && nextActiveSection != null && navigationRequest.StackRequest == NavigationRequest.WhatToDoWithTheStack.ReplaceIt)
+			if (navigationRequest.Request.GlobalRoutes.Count > 0 && 
+				nextActiveSection != null &&
+				navigationRequest.StackRequest == NavigationRequest.WhatToDoWithTheStack.ReplaceIt)
 			{
 				modalStackPreBuilt = true;
-				await nextActiveSection.GoToAsync(navigationRequest, queryData, false);
+
+				bool? isAnimated = (nextActiveSection != currentShellSection) ? false : animate;
+				await nextActiveSection.GoToAsync(navigationRequest, queryData, isAnimated);
 			}
 
 			if (shellItem != null)
@@ -585,7 +634,7 @@ namespace Xamarin.Forms
 
 			// this can be null in the event that no navigation actually took place!
 			if (_accumulatedEvent != null)
-				ProcessNavigated(_accumulatedEvent);
+				HandleNavigated(_accumulatedEvent);
 		}
 
 		internal static void ApplyQueryAttributes(Element element, IDictionary<string, string> query, bool isLastItem)
@@ -631,7 +680,7 @@ namespace Xamarin.Forms
 				element.SetValue(ShellContent.QueryAttributesProperty, query);
 		}
 
-		ShellNavigationState GetNavigationState(ShellItem shellItem, ShellSection shellSection, ShellContent shellContent, IReadOnlyList<Page> sectionStack, IReadOnlyList<Page> modalStack)
+		internal static ShellNavigationState GetNavigationState(ShellItem shellItem, ShellSection shellSection, ShellContent shellContent, IReadOnlyList<Page> sectionStack, IReadOnlyList<Page> modalStack)
 		{
 			List<string> routeStack = new List<string>();
 
@@ -686,30 +735,33 @@ namespace Xamarin.Forms
 			if (routeStack.Count > 0)
 				routeStack.Insert(0, "/");
 
-			return String.Join("/", routeStack);
+			return new ShellNavigationState(String.Join("/", routeStack), true);
 
 
 			List<string> CollapsePath(
 				string myRoute,
-				List<string> currentRouteStack,
+				IEnumerable<string> currentRouteStack,
 				bool userDefinedRoute)
 			{
-				for (var i = currentRouteStack.Count - 1; i >= 0; i--)
+				var localRouteStack = currentRouteStack.ToList();
+				for (var i = localRouteStack.Count - 1; i >= 0; i--)
 				{
-					var route = currentRouteStack[i];
+					var route = localRouteStack[i];
 					if (Routing.IsImplicit(route) ||
 						(Routing.IsDefault(route) && userDefinedRoute))
-						currentRouteStack.RemoveAt(i);
+					{
+						localRouteStack.RemoveAt(i);
+					}
 				}
 
 				var paths = myRoute.Split('/').ToList();
 
 				// collapse similar leaves
-				int walkBackCurrentStackIndex = currentRouteStack.Count - (paths.Count - 1);
+				int walkBackCurrentStackIndex = localRouteStack.Count - (paths.Count - 1);
 
 				while (paths.Count > 1 && walkBackCurrentStackIndex >= 0)
 				{
-					if (paths[0] == currentRouteStack[walkBackCurrentStackIndex])
+					if (paths[0] == localRouteStack[walkBackCurrentStackIndex])
 					{
 						paths.RemoveAt(0);
 					}
@@ -1036,7 +1088,17 @@ namespace Xamarin.Forms
 						else
 						{
 							if (!(shellSection.Parent is TabBar))
-								currentGroup.Add(shellSection);
+							{
+								if (Routing.IsImplicit(shellSection) && shellSection.Items.Count == 1)
+								{
+									if (!FlyoutItem.GetIsVisible(shellSection.Items[0]))
+										continue;
+
+									currentGroup.Add(shellSection.Items[0]);
+								}
+								else
+									currentGroup.Add(shellSection);
+							}
 
 							// If we have only a single child we will also show the items menu items
 							if ((shellSection as IShellSectionController).GetItems().Count == 1 && shellSection == shellItem.CurrentItem)
@@ -1088,7 +1150,7 @@ namespace Xamarin.Forms
 			}
 
 			var args = new ShellNavigatingEventArgs(this.CurrentState, "", ShellNavigationSource.Pop, true);
-			OnNavigating(args);
+			HandleNavigating(args);
 			return args.Cancelled;
 
 			async void NavigationPop()
@@ -1115,7 +1177,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal void ProcessNavigated(ShellNavigatedEventArgs args)
+		internal void HandleNavigated(ShellNavigatedEventArgs args)
 		{
 			if (_accumulateNavigatedEvents)
 				_accumulatedEvent = args;
@@ -1127,27 +1189,62 @@ namespace Xamarin.Forms
 				{
 					baseShellItem.OnAppearing(() =>
 					{
-						OnNavigated(args);
-						Navigated?.Invoke(this, args);
+						FireNavigatedEvents(args, this);
 					});
 				}
 				else
 				{
-					OnNavigated(args);
-					Navigated?.Invoke(this, args);
+					FireNavigatedEvents(args, this);
+				}
+
+				void FireNavigatedEvents(ShellNavigatedEventArgs a, Shell shell)
+				{
+					shell.OnNavigated(a);
+					shell.Navigated?.Invoke(this, args);
+					// reset active page route tree
+					Routing.ClearImplicitPageRoutes();
+					Routing.RegisterImplicitPageRoutes(this);
 				}
 			}
+
 		}
 
 		protected virtual void OnNavigated(ShellNavigatedEventArgs args)
 		{
 		}
 
-		ShellNavigationState _lastNavigating;
 		protected virtual void OnNavigating(ShellNavigatingEventArgs args)
 		{
-			Navigating?.Invoke(this, args);
-			_lastNavigating = args.Target;
+
+		}
+
+		void HandleNavigating(ShellNavigatingEventArgs args)
+		{
+			if (!args.DeferredEventArgs)
+			{
+				_deferredEventArgs = null;
+				Navigating?.Invoke(this, args);
+				OnNavigating(args);
+			}
+			else
+			{
+				return;
+			}
+
+			if(args.DeferralCount > 0 && args.CanCancel)
+			{
+				_deferredEventArgs = args;
+				args.RegisterDeferralCompletedCallBack(async () =>
+				{
+					_deferredEventArgs = null;
+					if (args.Cancelled)
+					{
+						return;
+					}
+
+					await CompleteDeferredNavigating(args);
+				});
+			}	
 		}
 
 		static void OnCurrentItemChanged(BindableObject bindable, object oldValue, object newValue)
@@ -1401,16 +1498,14 @@ namespace Xamarin.Forms
 			}
 		}
 
-		bool ProposeNavigation(ShellNavigationSource source, ShellNavigationState proposedState, bool canCancel)
+		bool ProposeNavigation(ShellNavigationSource source, ShellNavigationState proposedState, bool canCancel, ShellNavigatingEventArgs deferredArgs)
 		{
 			if (_accumulateNavigatedEvents)
 				return true;
 
-			var navArgs = new ShellNavigatingEventArgs(CurrentState, proposedState, source, canCancel);
-
-			OnNavigating(navArgs);
-			//System.Diagnostics.Debug.WriteLine("Proposed: " + proposedState.Location);
-			return !navArgs.Cancelled;
+			var navArgs = deferredArgs ?? new ShellNavigatingEventArgs(CurrentState, proposedState, source, canCancel);
+			HandleNavigating(navArgs);
+			return !navArgs.Cancelled && navArgs.DeferralCount == 0;
 		}
 
 		internal Element GetVisiblePage()
@@ -1510,7 +1605,6 @@ namespace Xamarin.Forms
 
 				modal.NavigationProxy.Inner = new NavigationImplWrapper(modal.NavigationProxy.Inner, this);
 			}
-
 
 			class NavigationImplWrapper : NavigationProxy
 			{
