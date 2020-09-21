@@ -43,7 +43,7 @@ namespace Xamarin.Forms
 				Location = TrimDownImplicitAndDefaultPaths(FullLocation);
 			else
 				Location = FullLocation;
-		}	
+		}
 
 		public ShellNavigationState(Uri location) => FullLocation = location;
 		public static implicit operator ShellNavigationState(Uri uri) => new ShellNavigationState(uri);
