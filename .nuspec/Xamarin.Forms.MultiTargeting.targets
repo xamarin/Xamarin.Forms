@@ -1,34 +1,34 @@
 <Project>
-	<ItemGroup Condition="$(TargetFramework.StartsWith('Xamarin.iOS')) != true ">
-		<Compile Remove="**\*.iOS.cs" />
-		<None Include="**\*.iOS.cs" />
+  <ItemGroup Condition="$(TargetFramework.StartsWith('Xamarin.iOS')) != true ">
+    <Compile Remove="**\*.iOS.cs" />
+    <None Include="**\*.iOS.cs" />
     <Compile Remove="**\iOS\*.cs" />
     <None Include="**\iOS\*.cs" />
-	</ItemGroup>
-	<ItemGroup Condition="$(TargetFramework.StartsWith('Xamarin.Mac')) != true ">
-		<Compile Remove="**\*.Mac.cs" />
-		<None Include="**\*.Mac.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('Xamarin.Mac')) != true ">
+    <Compile Remove="**\*.Mac.cs" />
+    <None Include="**\*.Mac.cs" />
     <Compile Remove="**\Mac\*.cs" />
     <None Include="**\Mac\*.cs" />
-	</ItemGroup>
-	<ItemGroup Condition="$(TargetFramework.StartsWith('Xamarin.Mac')) != true And $(TargetFramework.StartsWith('Xamarin.iOS')) != true ">
-		<Compile Remove="**\*.MaciOS.cs" />
-		<None Include="**\*.MaciOS.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('Xamarin.Mac')) != true And $(TargetFramework.StartsWith('Xamarin.iOS')) != true ">
+    <Compile Remove="**\*.MaciOS.cs" />
+    <None Include="**\*.MaciOS.cs" />
     <Compile Remove="**\MaciOS\*.cs" />
     <None Include="**\MaciOS\*.cs" />
-	</ItemGroup>
-	<ItemGroup Condition="$(TargetFramework.StartsWith('MonoAndroid')) != true ">
-		<Compile Remove="**\*.Android.cs" />
-		<None Include="**\*.Android.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('MonoAndroid')) != true ">
+    <Compile Remove="**\*.Android.cs" />
+    <None Include="**\*.Android.cs" />
     <Compile Remove="**\Android\*.cs" />
     <None Include="**\Android\*.cs" />
-	</ItemGroup>
-	<ItemGroup Condition="$(TargetFramework.StartsWith('netstandard')) != true ">
-		<Compile Remove="**\*.Standard.cs" />
-		<None Include="**\*.Standard.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard')) != true ">
+    <Compile Remove="**\*.Standard.cs" />
+    <None Include="**\*.Standard.cs" />
     <Compile Remove="**\Standard\*.cs" />
     <None Include="**\Standard\*.cs" />
-	</ItemGroup>
+  </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('netcoreapp')) != true ">
     <Compile Remove="**\*.Win32.cs" />
     <None Include="**\*.Win32.cs" />
@@ -39,7 +39,7 @@
     <Compile Remove="**\Win32\*.cs" />
     <None Include="**\Win32\*.cs" />
   </ItemGroup>
-  
+
   <PropertyGroup Condition="$(TargetFramework.StartsWith('netcoreapp')) == true ">
     <UseWpf>true</UseWpf>
   </PropertyGroup>
