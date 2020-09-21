@@ -7,9 +7,9 @@ namespace Xamarin.Platform.Handlers
 	{
 		protected override UIButton CreateView() => new UIButton();
 
-		public static void MapText(IViewHandler handler, IButton view)
+		public static void MapText(ButtonHandler handler, IButton view)
 		{
-			((UIButton)handler.NativeView).SetText(view.Text);
+			handler.TypedNativeView.SetText(view.Text);
 		}
 	}
 }
