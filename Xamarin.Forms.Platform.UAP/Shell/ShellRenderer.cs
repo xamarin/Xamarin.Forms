@@ -38,16 +38,6 @@ namespace Xamarin.Forms.Platform.UWP
 			IsPaneOpen = false;
 			Content = ItemRenderer = CreateShellItemRenderer();
 			MenuItemTemplateSelector = CreateShellFlyoutTemplateSelector();
-			if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneClosing"))
-				PaneClosing += (s, e) => OnPaneClosed();
-			if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneOpening"))
-				PaneOpening += (s, e) => OnPaneOpening();
-			if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneOpened"))
-				PaneOpened += (s, e) => OnPaneOpened();
-
-
-			ItemInvoked += OnMenuItemInvoked;
-			BackRequested += OnBackRequested;
 			Style = Windows.UI.Xaml.Application.Current.Resources["ShellNavigationView"] as Windows.UI.Xaml.Style;
 		}
 
@@ -76,24 +66,25 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdatePaneButtonColor(NavigationViewBackButton, !IsPaneOpen);
 		}
 
-		void OnPaneOpening()
+		void OnPaneOpening(Microsoft.UI.Xaml.Controls.NavigationView sender, object args)
 		{
 			if (Shell != null)
 				Shell.FlyoutIsPresented = true;
+
 			UpdatePaneButtonColor(TogglePaneButton, false);
 			UpdatePaneButtonColor(NavigationViewBackButton, false);
 			UpdateFlyoutBackgroundColor();
 			UpdateFlyoutBackdrop();
 		}
 
-		void OnPaneOpened()
+		void OnPaneOpened(Microsoft.UI.Xaml.Controls.NavigationView sender, object args)
 		{
 			// UWP likes to sometimes set the back drop back to the
 			// default color
 			UpdateFlyoutBackdrop();
 		}
 
-		void OnPaneClosed()
+		void OnPaneClosed(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewPaneClosingEventArgs args)
 		{
 			if (Shell != null)
 				Shell.FlyoutIsPresented = false;
@@ -155,6 +146,18 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (element != null)
 			{
+
+				if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneClosing"))
+					PaneClosing += OnPaneClosed;
+				if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneOpening"))
+					PaneOpening += OnPaneOpening;
+				if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneOpened"))
+					PaneOpened += OnPaneOpened;
+
+				ItemInvoked += OnMenuItemInvoked;
+				BackRequested += OnBackRequested;
+
+
 				Element = (Shell)element;
 				Element.SizeChanged += OnElementSizeChanged;
 				OnElementSet(Element);
@@ -166,12 +169,20 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				Element.SizeChanged -= OnElementSizeChanged;
 				Element.PropertyChanged -= OnElementPropertyChanged;
+
+				if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneClosing"))
+					PaneClosing -= OnPaneClosed;
+				if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneOpening"))
+					PaneOpening -= OnPaneOpening;
+				if (ApiInformation.IsEventPresent("Windows.UI.Xaml.Controls.NavigationView", "PaneOpened"))
+					PaneOpened -= OnPaneOpened;
+
+				ItemInvoked -= OnMenuItemInvoked;
+				BackRequested -= OnBackRequested;
 			}
 		}
 
 		#endregion IVisualElementRenderer
-
-
 		ShellSplitView ShellSplitView => (ShellSplitView)GetTemplateChild("RootSplitView");
 		protected internal Shell Element { get; set; }
 
