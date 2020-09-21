@@ -175,11 +175,13 @@ namespace Xamarin.Forms.Platform.UWP
 				? itemPair.Item
 				: ListViewBase.SelectedItem;
 
-			ItemsView.SelectionChanged -= FormsSelectionChanged;
-			ItemsView.SelectedItem = selectedItem;
-
 			if (ItemsView != null)
+			{
+				ItemsView.SelectionChanged -= FormsSelectionChanged;
+				ItemsView.SelectedItem = selectedItem;
+
 				ItemsView.SelectionChanged += FormsSelectionChanged;
+			}
 		}
 
 		void UpdateFormsMultipleSelection()
