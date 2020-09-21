@@ -270,6 +270,7 @@ namespace Xamarin.Forms
 
 			var type = content.GetType();
 			var typeInfo = type.GetTypeInfo();
+
 #if NETSTANDARD1_0
 			var queryPropertyAttributes = typeInfo.GetCustomAttributes(typeof(QueryPropertyAttribute), true).ToArray();
 #else
@@ -279,12 +280,27 @@ namespace Xamarin.Forms
 			if (queryPropertyAttributes.Length == 0)
 				return;
 
-			foreach (QueryPropertyAttribute attrib in queryPropertyAttributes) {
-				if (query.TryGetValue(attrib.QueryId, out var value)) {
+			foreach (QueryPropertyAttribute attrib in queryPropertyAttributes)
+			{
+				if (query.TryGetValue(attrib.QueryId, out var value))
+				{
 					PropertyInfo prop = type.GetRuntimeProperty(attrib.Name);
 
 					if (prop != null && prop.CanWrite && prop.SetMethod.IsPublic)
-						prop.SetValue(content, value);
+					{
+						if (prop.PropertyType == typeof(String))
+						{
+							if(value != null)
+								value = System.Net.WebUtility.UrlDecode(value);
+
+							prop.SetValue(content, value);
+						}
+						else
+						{
+							var castValue = Convert.ChangeType(value, prop.PropertyType);
+							prop.SetValue(content, castValue);
+						}
+					}
 				}
 				else if (oldQuery.TryGetValue(attrib.QueryId, out var oldValue))
 				{

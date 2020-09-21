@@ -263,6 +263,7 @@
     <Compile Include="SwipeViewTests.cs" />
     <Compile Include="PathSegmentTests.cs" />
     <Compile Include="GeometryTests.cs" />
+    <Compile Include="ShellParameterPassingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
@@ -299,7 +300,7 @@
   <ItemGroup />
   <Target Name="_CopyNUnitTestAdapterFiles" AfterTargets="Build">
     <ItemGroup>
-      <_NUnitTestAdapterFiles Include="$(NuGetPackageRoot)NUnit3TestAdapter\%(Version)\build\net35\**" Condition="@(PackageReference -> '%(Identity)') == 'NUnit3TestAdapter'" InProject="False" />
+      <_NUnitTestAdapterFiles Include="$(NuGetPackageRoot)NUnit3TestAdapter\%(Version)\build\net35\**" Condition="@(PackageReference -&gt; '%(Identity)') == 'NUnit3TestAdapter'" InProject="False" />
     </ItemGroup>
     <Copy SourceFiles="@(_NUnitTestAdapterFiles)" DestinationFolder="$(SolutionDir)packages\NUnitTestAdapter.AnyVersion\tools\%(RecursiveDir)" ContinueOnError="true" Retries="0" />
     <Copy SourceFiles="@(_NUnitTestAdapterFiles)" DestinationFolder="$(SolutionDir)packages\NUnitTestAdapter.AnyVersion\build\%(RecursiveDir)" ContinueOnError="true" Retries="0" />
