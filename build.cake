@@ -747,21 +747,21 @@ Task("BuildForNuget")
         //                 .WithProperty("DisableEmbeddedXbf", "false")
         //                 .WithProperty("EnableTypeInfoReflection", "false"));
 
-        /*msbuildSettings = GetMSBuildSettings();
+        msbuildSettings = GetMSBuildSettings();
         msbuildSettings.BinaryLogger = binaryLogger;
         binaryLogger.FileName = $"{artifactStagingDirectory}/ios-{configuration}-csproj.binlog";
         MSBuild("./Xamarin.Forms.Platform.iOS/Xamarin.Forms.Platform.iOS.csproj",
                     msbuildSettings
-                        .WithTarget("rebuild"));*/
+                        .WithTarget("rebuild"));
 
                         
-        msbuildSettings = GetMSBuildSettings();
+       /* msbuildSettings = GetMSBuildSettings();
         msbuildSettings.BinaryLogger = binaryLogger;
         binaryLogger.FileName = $"{artifactStagingDirectory}/xaml-unittests-{configuration}-csproj.binlog";
         MSBuild("./Xamarin.Forms.Xaml.UnitTests/Xamarin.Forms.Xaml.UnitTests.csproj",
                     msbuildSettings
                         .WithRestore()
-                        .WithTarget("build"));
+                        .WithTarget("rebuild"));*/
 
         // msbuildSettings = GetMSBuildSettings();
         // msbuildSettings.BinaryLogger = binaryLogger;
