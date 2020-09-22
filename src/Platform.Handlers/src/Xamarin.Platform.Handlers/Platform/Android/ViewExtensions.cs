@@ -13,10 +13,8 @@ namespace Xamarin.Platform
 		public static void UpdateBackgroundColor(this AView nativeView, IView view)
 		{
 			var backgroundColor = view.BackgroundColor;
-			if (backgroundColor.IsDefault)
-				nativeView.Background = null;
-			else
-				nativeView.Background = new ColorDrawable { Color = backgroundColor.ToNative() };
+			if (!backgroundColor.IsDefault)
+				nativeView.SetBackgroundColor(backgroundColor.ToNative());
 		}
 	}
 }

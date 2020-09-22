@@ -24,9 +24,9 @@ namespace Xamarin.Platform.Handlers
 			=> handler?.SetFrame(view.Frame);
 
 		public static void MapIsEnabled(IViewHandler handler, IView view)
-			=> (handler as NativeView).UpdateIsEnabled(view);
+			=> (handler.NativeView as NativeView).UpdateIsEnabled(view);
 
 		public static void MapBackgroundColor(IViewHandler handler, IView view)
-			=> (handler as NativeView).UpdateBackgroundColor(view);
+			=> (handler.NativeView as NativeView).UpdateBackgroundColor(view);
 	}
 }
