@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override UITableView CreateNativeControl()
 		{
-			return new UITableView(RectangleF.Empty, Element?.Intent ?? TableIntent.Form);
+			return new UITableView(RectangleF.Empty, GetTableViewStyle(Element?.Intent ?? TableIntent.Data));
 		}
 
 		protected UITableViewStyle GetTableViewStyle(TableIntent intent)
