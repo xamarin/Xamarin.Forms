@@ -16,9 +16,9 @@ namespace Xamarin.Platform.Handlers
 			var aview = handler.NativeView as AView;
 			var backgroundColor = view.BackgroundColor;
 			if (backgroundColor.IsDefault)
-				aview.Background = null;
+				return;
 			else
-				aview.Background = new ColorDrawable { Color = backgroundColor.ToNative() };
+				aview.SetBackgroundColor(backgroundColor.ToNative());
 		}
 	}
 }
