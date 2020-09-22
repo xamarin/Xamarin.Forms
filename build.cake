@@ -787,7 +787,6 @@ Task("BuildForNuget")
         //             msbuildSettings);
         // }
 
-        // dual screen
         msbuildSettings = GetMSBuildSettings();
         msbuildSettings.BinaryLogger = binaryLogger;
         binaryLogger.FileName = $"{artifactStagingDirectory}/dualscreen-{configuration}-csproj.binlog";
