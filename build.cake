@@ -812,6 +812,14 @@ Task("BuildForNuget")
                     msbuildSettings
                         .WithTarget("rebuild"));
 
+                        
+        msbuildSettings = GetMSBuildSettings();
+        msbuildSettings.BinaryLogger = binaryLogger;
+        binaryLogger.FileName = $"{artifactStagingDirectory}/xaml-unittests-{configuration}-csproj.binlog";
+        MSBuild("./Xamarin.Forms.Xaml.UnitTests/Xamarin.Forms.Xaml.UnitTests.csproj",
+                    msbuildSettings
+                        .WithTarget("rebuild"));
+
         // msbuildSettings = GetMSBuildSettings();
         // msbuildSettings.BinaryLogger = binaryLogger;
         // binaryLogger.FileName = $"{artifactStagingDirectory}/macos-{configuration}-csproj.binlog";
