@@ -9,8 +9,11 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms
 {
 	[ContentProperty(nameof(Children))]
-	public abstract class Layout<T> : Layout, IViewContainer<T> where T : View
+	public abstract class Layout<T> : Layout, Xamarin.Platform.ILayout, IViewContainer<T> where T : View
 	{
+		// TODO ezhart This gross and not great for performance; we need a better implementation 
+		IList<Xamarin.Platform.IView> Xamarin.Platform.ILayout.Children => Children.ToList<Xamarin.Platform.IView>();
+
 		readonly ElementCollection<T> _children;
 
 		protected Layout() => _children = new ElementCollection<T>(InternalChildren);

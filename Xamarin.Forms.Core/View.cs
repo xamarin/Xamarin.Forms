@@ -11,10 +11,6 @@ namespace Xamarin.Forms
 {
 	public class View : VisualElement, IView, IViewController, IGestureController, IGestureRecognizers, IPropertyMapperView
 	{
-		SizeRequest _desiredSize;
-		bool _isMeasureValid;
-		bool _isArrangeValid;
-
 		protected internal IGestureController GestureController => this;
 
 		public static readonly BindableProperty VerticalOptionsProperty =
@@ -204,18 +200,17 @@ namespace Xamarin.Forms
 
 		IFrameworkElement IFrameworkElement.Parent => Parent as IView;
 
-		SizeRequest IFrameworkElement.DesiredSize => _desiredSize;
+		public SizeRequest DesiredSize { get; protected set; }
 
-		bool IFrameworkElement.IsMeasureValid => _isMeasureValid;
+		public bool IsMeasureValid { get; protected set; }
 
-		bool IFrameworkElement.IsArrangeValid => _isArrangeValid;
+		public bool IsArrangeValid { get; protected set; }
 
-
-		void IFrameworkElement.Arrange(Rectangle bounds)
+		public void Arrange(Rectangle bounds)
 		{
-			if (_isArrangeValid)
+			if (IsArrangeValid)
 				return;
-			_isArrangeValid = true;
+			IsArrangeValid = true;
 			Layout(bounds);
 		}
 
@@ -225,9 +220,9 @@ namespace Xamarin.Forms
 			Handler?.SetFrame(Bounds);
 		}
 
-		SizeRequest IFrameworkElement.Measure(double widthConstraint, double heightConstraint)
+		public virtual SizeRequest Measure(double widthConstraint, double heightConstraint)
 		{
-			if (!_isMeasureValid)
+			if (!IsMeasureValid)
 			{
 				// TODO ezhart Adjust constraints to account for margins
 
@@ -239,23 +234,23 @@ namespace Xamarin.Forms
 				// I'd much rather just get rid of all the uses of it which don't include the margins, and have "with margins"
 				// be the default. It's more intuitive and less code to write. Also, I sort of suspect that the uses which
 				// _don't_ include the margins are actually bugs.
-				_desiredSize = Handler.GetDesiredSize(widthConstraint, heightConstraint);// this.OnMeasure(widthConstraint, heightConstraint);
+				DesiredSize = Handler.GetDesiredSize(widthConstraint, heightConstraint);// this.OnMeasure(widthConstraint, heightConstraint);
 			}
 				
-			_isMeasureValid = true;
-			return _desiredSize;
+			IsMeasureValid = true;
+			return DesiredSize;
 		}
 
 		void IFrameworkElement.InvalidateMeasure()
 		{
-			_isMeasureValid = false;
-			_isArrangeValid = false;
-			this.InvalidateMeasure();
+			IsMeasureValid = false;
+			IsArrangeValid = false;
+			InvalidateMeasure();
 		}
 
 		void IFrameworkElement.InvalidateArrange()
 		{
-			_isArrangeValid = false;
+			IsArrangeValid = false;
 		}
 
 		protected PropertyMapper propertyMapper;

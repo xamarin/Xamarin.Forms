@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
+using Xamarin.Platform;
 
 namespace Xamarin.Forms
 {
@@ -283,7 +284,7 @@ namespace Xamarin.Forms
 					var sizeConstrains = item.GetConstraints();
 					sizeConstrains.Width = (_measuring && sizeConstrains.Width == 0) ? double.PositiveInfinity : sizeConstrains.Width;
 					sizeConstrains.Height = (_measuring && sizeConstrains.Height == 0) ? double.PositiveInfinity : sizeConstrains.Height;
-					var request = view.Measure(sizeConstrains.Width, sizeConstrains.Height).Request;
+					var request = (view as IFrameworkElement).Measure(sizeConstrains.Width, sizeConstrains.Height).Request;
 					w = (float)request.Width;
 					h = (float)request.Height;
 				};
@@ -393,6 +394,16 @@ namespace Xamarin.Forms
 				frame = frame.Offset(x, y); //flex doesn't support offset on _root
 				child.Layout(frame);
 			}
+		}
+
+		public override SizeRequest Measure(double widthConstraint, double heightConstraint)
+		{
+			if (!IsMeasureValid)
+#pragma warning disable CS0618 // Type or member is obsolete
+				DesiredSize = OnMeasure(widthConstraint, heightConstraint);
+#pragma warning restore CS0618 // Type or member is obsolete
+			IsMeasureValid = true;
+			return DesiredSize;
 		}
 
 		bool _measuring;

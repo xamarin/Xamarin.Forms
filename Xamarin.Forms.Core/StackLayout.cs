@@ -7,7 +7,7 @@ using Xamarin.Platform;
 
 namespace Xamarin.Forms
 {
-	public class StackLayout : Layout<View>, IElementConfiguration<StackLayout>, Xamarin.Platform.ILayout
+	public class StackLayout : Layout<View>, IElementConfiguration<StackLayout>, IFrameworkElement
 	{
 		public static readonly BindableProperty OrientationProperty = BindableProperty.Create(nameof(Orientation), typeof(StackOrientation), typeof(StackLayout), StackOrientation.Vertical,
 			propertyChanged: (bindable, oldvalue, newvalue) => ((StackLayout)bindable).InvalidateLayout());
@@ -41,8 +41,6 @@ namespace Xamarin.Forms
 			set { SetValue(SpacingProperty, value); }
 		}
 
-		IList<Xamarin.Platform.IView> Xamarin.Platform.ILayout.Children => Children.ToList<Xamarin.Platform.IView>();
-
 		protected override void LayoutChildren(double x, double y, double width, double height)
 		{
 			if (!HasVisibleChildren())
@@ -71,21 +69,14 @@ namespace Xamarin.Forms
 			}
 		}
 
-		// TODO ezhart We're setting these but not really using them
-		SizeRequest _desiredSize;
-		bool _isMeasureValid;
-
-		// TODO ezhart Actually use this - we're not setting it or checking it yet
-		//bool _isArrangeValid;
-
-		SizeRequest IFrameworkElement.Measure(double widthConstraint, double heightConstraint)
+		public override SizeRequest Measure(double widthConstraint, double heightConstraint)
 		{
-			if (!_isMeasureValid)
+			if (!IsMeasureValid)
 #pragma warning disable CS0618 // Type or member is obsolete
-				_desiredSize = OnSizeRequest(widthConstraint, heightConstraint);
+				DesiredSize = OnSizeRequest(widthConstraint, heightConstraint);
 #pragma warning restore CS0618 // Type or member is obsolete
-			_isMeasureValid = true;
-			return _desiredSize;
+			IsMeasureValid = true;
+			return DesiredSize;
 		}
 
 		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
