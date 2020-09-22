@@ -12,19 +12,18 @@ using NativeView = AppKit.NSView;
 
 namespace Xamarin.Platform.Handlers
 {
-	public partial class ViewHandler
+	public static class ViewExtensions
 	{
-		public static void MapPropertyIsEnabled(IViewHandler handler, IView view)
+		public static void UpdateIsEnabled(this NativeView nativeView, IView view)
 		{
-			if (!(handler.NativeView is NativeControl uiControl))
+			if (!(nativeView is NativeControl uiControl))
 				return;
 
 			uiControl.Enabled = view.IsEnabled;
 		}
 
-		public static void MapBackgroundColor(IViewHandler handler, IView view)
+		public static void UpdateBackgroundColor(this NativeView nativeView, IView view)
 		{
-			var nativeView = (NativeView)handler.NativeView;
 			var color = view.BackgroundColor;
 
 			if (color != null && !color.IsDefault)
