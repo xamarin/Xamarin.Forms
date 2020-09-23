@@ -6,7 +6,6 @@ using Android.Content;
 using Android.Graphics.Drawables;
 using AndroidX.AppCompat.Widget;
 using Android.Views;
-using AndroidX.AppCompat.Widget;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;

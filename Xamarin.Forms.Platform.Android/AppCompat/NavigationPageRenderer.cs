@@ -26,6 +26,7 @@ using Fragment = AndroidX.Fragment.App.Fragment;
 using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
 using Object = Java.Lang.Object;
+using APlatform = Xamarin.Forms.Platform.Android.AppCompat.Platform;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -662,7 +663,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (((IFlyoutPageController)_flyoutPage).ShouldShowSplitMode)
 				return;
 
-			var renderer = Android.Platform.GetRenderer(_flyoutPage) as FlyoutPageRenderer;
+			var renderer = APlatform.GetRenderer(_flyoutPage) as FlyoutPageRenderer;
 			if (renderer == null)
 				return;
 
