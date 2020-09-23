@@ -80,7 +80,7 @@ namespace Xamarin.Platform
 	{
 		PropertyMapper? _chained;
 		ICollection<string>? _cachedKeys;
-		ActionMapper<TVirtualView>? _actions;
+		ActionMapper<TVirtualView, TViewHandler>? _actions;
 
 		public PropertyMapper? Chained
 		{
@@ -112,10 +112,9 @@ namespace Xamarin.Platform
 			Chained = chained;
 		}
 
-		ActionMapper<TVirtualView, TViewHandler> actions;
 		public ActionMapper<TVirtualView, TViewHandler> Actions
 		{
-			get => actions ??= new ActionMapper<TVirtualView, TViewHandler>(this);
+			get => _actions ??= new ActionMapper<TVirtualView, TViewHandler>(this);
 		}
 
 		protected override void ClearKeyCache()
