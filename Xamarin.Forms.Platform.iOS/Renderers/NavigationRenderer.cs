@@ -276,7 +276,7 @@ namespace Xamarin.Forms.Platform.iOS
 				navPage.RemovePageRequested -= OnRemovedPageRequested;
 				navPage.InsertPageBeforeRequested -= OnInsertPageBeforeRequested;
 
-				_pageLifecycleManager?.Dispose();
+				_pageLifecycleManager?.HandlePageDisappearing();
 				_pageLifecycleManager = null;
 			}
 

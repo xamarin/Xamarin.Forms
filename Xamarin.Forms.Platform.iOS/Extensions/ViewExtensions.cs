@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return result;
 		}
 
-		internal static T FindParentOfType<T>(this VisualElement element)
+		internal static T FindParentOfType<T>(this Element element)
 		{
 			var navPage = element.GetParentsPath()
 										.OfType<T>()
@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return navPage;
 		}
 
-		internal static IEnumerable<Element> GetParentsPath(this VisualElement self)
+		internal static IEnumerable<Element> GetParentsPath(this Element self)
 		{
 			Element current = self;
 

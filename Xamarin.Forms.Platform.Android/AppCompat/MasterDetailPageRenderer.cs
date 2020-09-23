@@ -128,8 +128,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				((IMasterDetailPageController)oldElement).BackButtonPressed -= OnBackButtonPressed;
 
 				oldElement.PropertyChanged -= HandlePropertyChanged;
-				oldElement.Appearing -= MasterDetailPageAppearing;
-				oldElement.Disappearing -= MasterDetailPageDisappearing;
 
 				RemoveDrawerListener(this);
 			
@@ -182,8 +180,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				((IMasterDetailPageController)newElement).BackButtonPressed += OnBackButtonPressed;
 				newElement.PropertyChanged += HandlePropertyChanged;
-				newElement.Appearing += MasterDetailPageAppearing;
-				newElement.Disappearing += MasterDetailPageDisappearing;
 
 				SetGestureState();
 
@@ -238,8 +234,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					MasterDetailPageController.BackButtonPressed -= OnBackButtonPressed;
 					Element.PropertyChanged -= HandlePropertyChanged;
-					Element.Appearing -= MasterDetailPageAppearing;
-					Element.Disappearing -= MasterDetailPageDisappearing;
 				}
 
 				if (_masterLayout?.ChildView != null)
@@ -366,18 +360,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateBackgroundColor(Element);
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection();
-		}
-
-		void MasterDetailPageAppearing(object sender, EventArgs e)
-		{
-			MasterPageController?.SendAppearing();
-			DetailPageController?.SendAppearing();
-		}
-
-		void MasterDetailPageDisappearing(object sender, EventArgs e)
-		{
-			MasterPageController?.SendDisappearing();
-			DetailPageController?.SendDisappearing();
 		}
 
 		void OnBackButtonPressed(object sender, BackButtonPressedEventArgs backButtonPressedEventArgs)

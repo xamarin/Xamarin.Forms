@@ -282,7 +282,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				(this as IDisconnectable).Disconnect();
 
-				_pageLifecycleManager?.Dispose();
+				_pageLifecycleManager?.HandlePageDisappearing();
 				_events?.Dispose();
 				_packager?.Dispose();
 				_tracker?.Dispose();

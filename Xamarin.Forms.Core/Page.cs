@@ -285,7 +285,7 @@ namespace Xamarin.Forms
 
 		protected virtual bool OnBackButtonPressed()
 		{
-			if (RealParent is BaseShellItem || RealParent is Shell)
+			if (IsShell)
 				return false;
 
 			var application = RealParent as Application;
@@ -421,6 +421,12 @@ namespace Xamarin.Forms
 			if (_hasAppeared)
 				return;
 
+			if (RealParent is ShellContent sc && !sc.IsVisibleContent)
+				return;
+
+			if (RealParent is IPageContainer<Page> multipage && multipage.CurrentPage != this)
+				return;
+
 			_hasAppeared = true;
 
 			if (IsBusy)
@@ -436,6 +442,12 @@ namespace Xamarin.Forms
 
 			var pageContainer = this as IPageContainer<Page>;
 			pageContainer?.CurrentPage?.SendAppearing();
+
+			if(this is MasterDetailPage mdp)
+			{
+				mdp.Master?.SendAppearing();
+				mdp.Detail?.SendAppearing();
+			}
 
 			FindApplication(this)?.OnPageAppearing(this);
 		}
@@ -453,6 +465,12 @@ namespace Xamarin.Forms
 
 			var pageContainer = this as IPageContainer<Page>;
 			pageContainer?.CurrentPage?.SendDisappearing();
+
+			if (this is MasterDetailPage mdp)
+			{
+				mdp.Master?.SendDisappearing();
+				mdp.Detail?.SendDisappearing();
+			}
 
 			OnDisappearing();
 			Disappearing?.Invoke(this, EventArgs.Empty);
@@ -542,6 +560,8 @@ namespace Xamarin.Forms
 			}
 			return !any;
 		}
+
+		bool IsShell => RealParent is BaseShellItem || RealParent is Shell;
 
 		public IPlatformElementConfiguration<T, Page> On<T>() where T : IConfigPlatform
 		{

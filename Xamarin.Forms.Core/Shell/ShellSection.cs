@@ -17,7 +17,7 @@ namespace Xamarin.Forms
 
 	[ContentProperty(nameof(Items))]
 	[EditorBrowsable(EditorBrowsableState.Never)]
-	public class ShellSection : ShellGroupItem, IShellSectionController, IPropertyPropagationController
+	public class ShellSection : ShellGroupItem, IShellSectionController, IPropertyPropagationController, IPageContainer<Page>
 	{
 		#region PropertyKeys
 
@@ -219,6 +219,10 @@ namespace Xamarin.Forms
 		{
 			PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, Items);
 		}
+		#endregion
+
+		#region IPageContainer<Page>
+		Page IPageContainer<Page>.CurrentPage => (this as IShellSectionController)?.PresentedPage;
 		#endregion
 
 		public static readonly BindableProperty CurrentItemProperty =

@@ -324,11 +324,26 @@ namespace Xamarin.Forms
 		{
 			Current = this;
 			OnResume();
+			if(MainPage != null)
+			{
+				if (MainPage.Navigation.ModalStack.Count > 0)
+					MainPage.Navigation.ModalStack[MainPage.Navigation.ModalStack.Count - 1].SendAppearing();
+				else
+					MainPage.SendAppearing();
+			}
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendSleep()
 		{
+			if (MainPage != null)
+			{
+				if (MainPage.Navigation.ModalStack.Count > 0)
+					MainPage.Navigation.ModalStack[MainPage.Navigation.ModalStack.Count - 1].SendDisappearing();
+				else
+					MainPage.SendDisappearing();
+			}
+
 			OnSleep();
 			SavePropertiesAsFireAndForget();
 		}

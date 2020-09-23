@@ -401,6 +401,63 @@ namespace Xamarin.Forms.Core.UnitTests
 			var mdp = new MasterDetailPage ();
 			Assert.Throws<InvalidOperationException> (() => mdp.Master = master);
 		}
+
+		[Test]
+		public void AppearingAndDisappearingFiresOnFlyoutAndDetailsPage()
+		{
+			var mdp = new MasterDetailPage()
+			{
+				Master = new ContentPage { Title = "Foo" },
+				Detail = new ContentPage { Title = "Foo" },
+			};
+
+			bool flyoutAppear = false;
+			bool detailAppear = false;
+			bool flyoutDisappear = false;
+			bool detailDisappear = false;
+
+			mdp.Master.Appearing += (_, __) =>
+			{
+				if (flyoutAppear)
+					throw new Exception("Flyout Appear shouldn't already be set to true");
+
+				flyoutAppear = true;
+			};
+
+			mdp.Detail.Appearing += (_, __) =>
+			{
+				if (detailAppear)
+					throw new Exception("Detail Appear shouldn't already be set to true");
+
+				detailAppear = true;
+			};
+
+			mdp.Master.Disappearing += (_, __) =>
+			{
+				if (flyoutDisappear)
+					throw new Exception("Flyout Disappear shouldn't already be set to true");
+
+				flyoutDisappear = true;
+			};
+
+			mdp.Detail.Disappearing += (_, __) =>
+			{
+				if (detailDisappear)
+					throw new Exception("Detail Disappear shouldn't already be set to true");
+
+				detailDisappear = true;
+			};
+
+			mdp.SendAppearing();
+
+			Assert.IsTrue(flyoutAppear);
+			Assert.IsTrue(detailAppear);
+
+			mdp.SendDisappearing();
+
+			Assert.IsTrue(flyoutDisappear);
+			Assert.IsTrue(detailDisappear);
+		}
 	}
 	
 }

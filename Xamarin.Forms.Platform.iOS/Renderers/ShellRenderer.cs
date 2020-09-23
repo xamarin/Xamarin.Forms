@@ -195,6 +195,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				_disposed = true;
 				FlyoutRenderer?.Dispose();
+				SetCurrentShellItemController(null);
 			}
 
 			FlyoutRenderer = null;
@@ -255,16 +256,21 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_currentShellItemRenderer = value;
 
-			AddChildViewController(newRenderer.ViewController);
-			View.AddSubview(newRenderer.ViewController.View);
-			View.SendSubviewToBack(newRenderer.ViewController.View);
-
-			newRenderer.ViewController.View.Frame = View.Bounds;
+			if (newRenderer != null)
+			{
+				AddChildViewController(newRenderer.ViewController);
+				View.AddSubview(newRenderer.ViewController.View);
+				View.SendSubviewToBack(newRenderer.ViewController.View);
+				newRenderer.ViewController.View.Frame = View.Bounds;
+			}
 			
 			if (oldRenderer != null)
 			{
-				var transition = CreateShellItemTransition();
-				await transition.Transition(oldRenderer, newRenderer);
+				if (newRenderer != null)
+				{
+					var transition = CreateShellItemTransition();
+					await transition.Transition(oldRenderer, newRenderer);
+				}
 
 				oldRenderer.ViewController.RemoveFromParentViewController();
 				oldRenderer.ViewController.View.RemoveFromSuperview();

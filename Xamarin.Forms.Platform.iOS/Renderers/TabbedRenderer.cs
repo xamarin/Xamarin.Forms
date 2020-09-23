@@ -157,7 +157,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (disposing)
 			{
-				_pageLifecycleManager?.Dispose();
+				_pageLifecycleManager?.HandlePageDisappearing();
 				_pageLifecycleManager = null;
 				Tabbed.PropertyChanged -= OnPropertyChanged;
 				Tabbed.PagesChanged -= OnPagesChanged;
