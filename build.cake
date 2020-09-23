@@ -198,7 +198,7 @@ if(buildForVS2017)
 }
 else if(releaseChannel == ReleaseChannel.Stable)
 {
-    if(IsXcodeVersionOver("12.0"))
+    if(IsXcodeVersionOver("11.8"))
     {
     }
     else
@@ -1113,7 +1113,7 @@ bool IsXcodeVersionOver(string version)
     if(IsRunningOnWindows())
         return true;
 
-    return XcodeVersion() >= Version.Parse(version); 
+    return XcodeVersion() > Version.Parse(version); 
 }
 
 Version XcodeVersion()
