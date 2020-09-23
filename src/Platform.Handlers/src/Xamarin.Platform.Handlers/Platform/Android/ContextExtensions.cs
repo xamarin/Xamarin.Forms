@@ -7,16 +7,9 @@ using Xamarin.Forms;
 using AApplicationInfoFlags = Android.Content.PM.ApplicationInfoFlags;
 using AActivity = Android.App.Activity;
 using Size = Xamarin.Forms.Size;
-
-#if __ANDROID_29__
 using AndroidX.Fragment.App;
 using AndroidX.AppCompat.App;
 using AFragmentManager = AndroidX.Fragment.App.FragmentManager;
-#else
-using AFragmentManager = Android.Support.V4.App.FragmentManager;
-using Android.Support.V4.App;
-using Android.Support.V7.App;
-#endif
 
 namespace Xamarin.Platform
 {
@@ -125,11 +118,6 @@ namespace Xamarin.Platform
 			if (context == null)
 				return null;
 
-			bool? isDesignerContext = context.IsDesignerContext();
-
-			if (isDesignerContext != null && isDesignerContext.Value)
-				return context;
-
 			if (context is AppCompatActivity activity)
 				return activity.SupportActionBar.ThemedContext;
 
@@ -137,46 +125,6 @@ namespace Xamarin.Platform
 				return contextWrapper.BaseContext?.GetThemedContext();
 
 			return null;
-		}
-
-		static bool? _isDesignerContext;
-		internal static bool? IsDesignerContext(this Context context)
-		{
-			if (_isDesignerContext.HasValue)
-				return _isDesignerContext.Value;
-
-			context.SetDesignerContext();
-
-			if (_isDesignerContext.HasValue)
-				return _isDesignerContext.Value;
-
-			return null;
-		}
-
-		internal static void SetDesignerContext(this Context context)
-		{
-			if (_isDesignerContext.HasValue)
-				return;
-
-			if (context == null)
-				_isDesignerContext = false;
-			else if ($"{context}".Contains("com.android.layoutlib.bridge.android.BridgeContext"))
-				_isDesignerContext = true;
-			else
-				_isDesignerContext = false;
-		}
-
-		internal static void SetDesignerContext(global::Android.Views.View view)
-		{
-			_isDesignerContext = view.IsInEditMode;
-		}
-
-		internal static bool IsDesignerContext(this global::Android.Views.View view)
-		{
-			if (!_isDesignerContext.HasValue)
-				SetDesignerContext(view);
-
-			return _isDesignerContext!.Value;
 		}
 
 		public static AFragmentManager? GetFragmentManager(this Context context)
