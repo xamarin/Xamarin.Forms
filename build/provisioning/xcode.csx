@@ -5,10 +5,7 @@ using static Xamarin.Provisioning.ProvisioningScript;
 using System;
 using System.Linq;
 
-var desiredXcode = Environment.GetEnvironmentVariable ("REQUIRED_XCODE");
-if (string.IsNullOrEmpty (desiredXcode)) {
-	desiredXcode = "11.7";
-}
+var desiredXcode = "11.7";
 
 desiredXcode = desiredXcode.Replace("Xcode_", "").Replace("_", ".");
 
