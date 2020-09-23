@@ -196,23 +196,6 @@ if(buildForVS2017)
     macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/xcode10.2/9c8d8e0a50e68d9abc8cd48fcd47a669e981fcc9/53/package/xamarin.mac-5.4.0.64.pkg";
 
 }
-else if(releaseChannel == ReleaseChannel.Stable)
-{
-    if(IsXcodeVersionOver("11.8"))
-    {
-    }
-    else
-    {
-        // Xcode 11.3
-        monoMajorVersion = "";
-        monoPatchVersion = "";
-        //androidSDK_macos = "https://download.visualstudio.microsoft.com/download/pr/8f94ca38-039a-4c9f-a51a-a6cb33c76a8c/aa46188c5f7a2e0c6f2d4bd4dc261604/xamarin.android-10.2.0.100.pkg";
-        iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-7-xcode11.7/3016ffe2b0ee27bf4a2d61e6161430d6bbd62f78/7/package/notarized/xamarin.ios-13.20.3.5.pkg";
-        macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-7-xcode11.7/3016ffe2b0ee27bf4a2d61e6161430d6bbd62f78/7/package/notarized/xamarin.mac-6.20.3.5.pkg";
-        //monoSDK_macos = "https://download.visualstudio.microsoft.com/download/pr/8f94ca38-039a-4c9f-a51a-a6cb33c76a8c/3a376d8c817ec4d720ecca2d95ceb4c1/monoframework-mdk-6.8.0.123.macos10.xamarin.universal.pkg";
-
-    }
-}
 
 if(String.IsNullOrWhiteSpace(monoSDK_macos))
 {
@@ -234,10 +217,11 @@ string macSDK_windows = "";
 
 if(!buildForVS2017)
 {
+    iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-7-xcode11.7/3016ffe2b0ee27bf4a2d61e6161430d6bbd62f78/7/package/notarized/xamarin.ios-13.20.3.5.pkg";
+    macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-7-xcode11.7/3016ffe2b0ee27bf4a2d61e6161430d6bbd62f78/7/package/notarized/xamarin.mac-6.20.3.5.pkg";
+       
     androidSDK_macos = EnvironmentVariable("ANDROID_SDK_MAC", androidSDK_macos);
-    iOSSDK_macos = EnvironmentVariable("IOS_SDK_MAC", iOSSDK_macos);
     monoSDK_macos = EnvironmentVariable("MONO_SDK_MAC", monoSDK_macos);
-    macSDK_macos = EnvironmentVariable("MAC_SDK_MAC", macSDK_macos);
 
     androidSDK_windows = EnvironmentVariable("ANDROID_SDK_WINDOWS", "");
     iOSSDK_windows = EnvironmentVariable("IOS_SDK_WINDOWS", "");
@@ -1136,18 +1120,8 @@ Version XcodeVersion()
         {
             var xcodeVersion = Version.Parse(item.Replace("Xcode", ""));
             Information($"Xcode: {xcodeVersion}");
-            var xcodePath = xcodeVersion.ToString().Replace(".0", "");
 
-            if(isCIBuild)
-            {
-                StartProcess("xcode-select", 
-                    new ProcessSettings {
-                        Arguments = new ProcessArgumentBuilder().Append($"-s /Applications/Xcode_{xcodePath}.app")
-                    }
-                );
-            }
-
-            return Version.Parse(item.Replace("Xcode", "")); 
+            return xcodeVersion; 
         }
     }
 
