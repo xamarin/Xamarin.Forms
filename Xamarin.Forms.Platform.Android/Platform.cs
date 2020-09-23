@@ -23,9 +23,31 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class Platform
 	{
+		public static void ClearRenderer(AView renderedView)
+		{
+			AppCompat.Platform.ClearRenderer(renderedView);
+		}
+
 		public static IVisualElementRenderer CreateRendererWithContext(VisualElement element, Context context)
 		{
+			// This is an interim method to allow public access to CreateRenderer(element, context), which we 
+			// can't make public yet because it will break the previewer
 			return AppCompat.Platform.CreateRendererWithContext(element, context);
+		}
+
+		public static IVisualElementRenderer GetRenderer(VisualElement bindable)
+		{
+			return AppCompat.Platform.GetRenderer(bindable);
+		}
+
+		public static void SetRenderer(VisualElement bindable, IVisualElementRenderer value)
+		{
+			AppCompat.Platform.SetRenderer(bindable, value);
+		}
+
+		public static SizeRequest GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		{
+			return AppCompat.Platform.GetNativeSize(view, widthConstraint, heightConstraint);
 		}
 	}
 }
