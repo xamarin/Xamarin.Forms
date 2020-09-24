@@ -7,7 +7,7 @@ using Xamarin.Platform;
 
 namespace Xamarin.Forms
 {
-	public class StackLayout : Layout<View>, IElementConfiguration<StackLayout>, IFrameworkElement
+	public class StackLayout : Layout<View>, IElementConfiguration<StackLayout>, IFrameworkElement, IStackLayout
 	{
 		public static readonly BindableProperty OrientationProperty = BindableProperty.Create(nameof(Orientation), typeof(StackOrientation), typeof(StackLayout), StackOrientation.Vertical,
 			propertyChanged: (bindable, oldvalue, newvalue) => ((StackLayout)bindable).InvalidateLayout());
