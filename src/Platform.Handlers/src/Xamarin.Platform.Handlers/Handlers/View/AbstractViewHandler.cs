@@ -1,9 +1,9 @@
-﻿#if __IOS__
+﻿using System;
+#if __IOS__
 using NativeView = UIKit.UIView;
 #elif __MACOS__
 using NativeView = AppKit.NSView;
 #elif MONOANDROID
-using System;
 using NativeView = Android.Views.View;
 #elif NETCOREAPP
 using NativeView = System.Windows.FrameworkElement;
@@ -17,6 +17,8 @@ namespace Xamarin.Platform.Handlers
 		where TVirtualView : class, IView
 #if !NETSTANDARD
 		where TNativeView : NativeView
+#else
+		where TNativeView : class
 #endif
 	{
 		protected readonly PropertyMapper _defaultMapper;
