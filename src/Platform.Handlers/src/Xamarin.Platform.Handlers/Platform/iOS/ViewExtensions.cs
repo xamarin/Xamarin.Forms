@@ -6,14 +6,10 @@ namespace Xamarin.Platform
 {
 	public static class ViewExtensions
 	{
-
-		public static void SetBackgroundColor(this UIView view, UIColor color)
-			=> view.BackgroundColor = color;
-
 		public static UIColor? GetBackgroundColor(this UIView view)
-			=> view.BackgroundColor;
+			=> view?.BackgroundColor;
 
-		public static void UpdateIsEnabled(this UIView? nativeView, IView view)
+		public static void UpdateIsEnabled(this UIView nativeView, IView view)
 		{
 			if (!(nativeView is UIControl uiControl))
 				return;
@@ -21,12 +17,15 @@ namespace Xamarin.Platform
 			uiControl.Enabled = view.IsEnabled;
 		}
 
-		public static void UpdateBackgroundColor(this UIView? nativeView, IView view)
+		public static void UpdateBackgroundColor(this UIView nativeView, IView view)
 		{
+			if (nativeView == null)
+				return;
+
 			var color = view.BackgroundColor;
 
 			if (color != null && !color.IsDefault)
-				nativeView?.SetBackgroundColor(color.ToNative());
+				nativeView.BackgroundColor = color.ToNative();
 		}
 	}
 }

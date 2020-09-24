@@ -8,14 +8,14 @@ namespace Xamarin.Platform
 {
 	public static class ViewExtensions
 	{
-		public static void UpdateIsEnabled(this AView? nativeView, IView view)
+		public static void UpdateIsEnabled(this AView nativeView, IView view)
 		{			
 			if (nativeView != null)
 				nativeView.Enabled = view.IsEnabled;
 		}
 			
 
-		public static void UpdateBackgroundColor(this AView? nativeView, IView view)
+		public static void UpdateBackgroundColor(this AView nativeView, IView view)
 		{
 			var backgroundColor = view.BackgroundColor;
 			if (!backgroundColor.IsDefault)

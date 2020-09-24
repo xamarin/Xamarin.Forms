@@ -31,13 +31,13 @@ namespace Xamarin.Platform.Handlers
 		public static void MapIsEnabled(IViewHandler handler, IView view)
 		{
 			CheckParameters(handler, view);
-			ViewExtensions.UpdateIsEnabled(handler.NativeView as NativeView, view);
+			(handler.NativeView as NativeView)?.UpdateIsEnabled(view);
 		}
 
 		public static void MapBackgroundColor(IViewHandler handler, IView view)
 		{
 			CheckParameters(handler, view);
-			ViewExtensions.UpdateBackgroundColor(handler?.NativeView as NativeView, view);
+			(handler.NativeView as NativeView)?.UpdateBackgroundColor(view);
 		}
 
 
