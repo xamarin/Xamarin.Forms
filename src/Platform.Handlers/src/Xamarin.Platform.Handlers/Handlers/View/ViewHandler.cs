@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Drawing;
+using System.Runtime.CompilerServices;
 #if __IOS__
 using NativeView = UIKit.UIView;
 #elif __MACOS__
@@ -21,12 +23,29 @@ namespace Xamarin.Platform.Handlers
 		};
 
 		public static void MapPropertyFrame(IViewHandler handler, IView view)
-			=> handler?.SetFrame(view.Frame);
+		{
+			CheckParameters(handler, view);
+			handler.SetFrame(view.Frame);
+		}
 
 		public static void MapIsEnabled(IViewHandler handler, IView view)
-			=> ViewExtensions.UpdateIsEnabled(handler?.NativeView as NativeView, view);
+		{
+			CheckParameters(handler, view);
+			ViewExtensions.UpdateIsEnabled(handler.NativeView as NativeView, view);
+		}
 
 		public static void MapBackgroundColor(IViewHandler handler, IView view)
-			=> ViewExtensions.UpdateBackgroundColor(handler?.NativeView as NativeView, view);
+		{
+			CheckParameters(handler, view);
+			ViewExtensions.UpdateBackgroundColor(handler?.NativeView as NativeView, view);
+		}
+
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal static void CheckParameters(IViewHandler handler, IView view)
+		{
+			_ = handler ?? throw new ArgumentNullException(nameof(handler));
+			_ = view ?? throw new ArgumentNullException(nameof(view));
+		}
 	}
 }

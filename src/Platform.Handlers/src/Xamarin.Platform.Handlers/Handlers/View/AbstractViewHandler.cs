@@ -3,6 +3,7 @@ using NativeView = UIKit.UIView;
 #elif __MACOS__
 using NativeView = AppKit.NSView;
 #elif MONOANDROID
+using System;
 using NativeView = Android.Views.View;
 #elif NETCOREAPP
 using NativeView = System.Windows.FrameworkElement;
@@ -19,20 +20,22 @@ namespace Xamarin.Platform.Handlers
 #endif
 	{
 		protected readonly PropertyMapper _defaultMapper;
-		protected PropertyMapper? _mapper;
+		protected PropertyMapper _mapper;
 		bool _hasContainer;
 		static bool HasSetDefaults;
 
 		protected AbstractViewHandler(PropertyMapper mapper)
 		{
+			_ = mapper ?? throw new ArgumentNullException(nameof(mapper));
 			_defaultMapper = mapper;
+			_mapper = _defaultMapper;
 		}
 
 		protected abstract TNativeView CreateView();
 
-		protected TNativeView TypedNativeView { get; private set; } = default!;
+		protected TNativeView? TypedNativeView { get; private set; }
 
-		protected TVirtualView? VirtualView { get; private set; } = default!;
+		protected TVirtualView? VirtualView { get; private set; }
 
 		public NativeView? View => TypedNativeView;
 
@@ -40,6 +43,8 @@ namespace Xamarin.Platform.Handlers
 
 		public virtual void SetView(IView view)
 		{
+			_ = view ?? throw new ArgumentNullException(nameof(view));
+
 			VirtualView = view as TVirtualView;
 			TypedNativeView ??= CreateView();
 
@@ -65,17 +70,12 @@ namespace Xamarin.Platform.Handlers
 				}
 			}
 
-			_mapper?.UpdateProperties(this, VirtualView);
+			_mapper.UpdateProperties(this, VirtualView);
 		}
 
-		public virtual void Remove(IView view)
+		public virtual void TearDown()
 		{
 			VirtualView = null;
-		}
-
-		protected virtual void DisposeView(TNativeView nativeView)
-		{
-
 		}
 
 		public virtual void UpdateValue(string property)

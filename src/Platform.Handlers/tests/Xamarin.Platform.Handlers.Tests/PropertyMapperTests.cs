@@ -43,6 +43,7 @@ namespace Xamarin.Platform.Handlers.Tests
 				[nameof(IButton.Color)] = (r, v) => wasMapper2Called = true
 			};
 
+			// Add fakes
 			mapper2.UpdateProperties(null, new Button());
 
 			Assert.True(wasMapper1Called);
