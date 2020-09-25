@@ -125,9 +125,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 				return null;
 			}
-			catch
+			catch(Exception ex)
 			{
 				// the CanvasFontSet constructor can throw an exception in case something's wrong with the font. It should not crash the app
+				Internals.Log.Warning("Font",$"Error loading font {fontFile}: {ex.Message}");
 				return null;
 			}
 		}
