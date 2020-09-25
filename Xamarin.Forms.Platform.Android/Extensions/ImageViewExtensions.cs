@@ -44,16 +44,16 @@ namespace Xamarin.Forms.Platform.Android
 				bool imageLoadedSuccessfully = false;
 				try
 				{
-					if (newView.LoadingSource != null)
+					if (newView.PlaceholderSource != null)
 					{
-						imageLoadedSuccessfully = await imageView.TryToUpdateBitmap(newView, newView.LoadingSource, imageController, newImageSource);
+						imageLoadedSuccessfully = await imageView.TryToUpdateBitmap(newView, newView.PlaceholderSource, imageController, newImageSource);
 					}
 
 					if (newImageSource != null)
 					{
 						imageLoadedSuccessfully = await imageView.TryToUpdateBitmap(newView, newImageSource, imageController, newImageSource);
 					}
-					else if (newView.LoadingSource == null)
+					else if (newView.PlaceholderSource == null)
 					{
 						imageLoadedSuccessfully = true;
 						imageView.SetImageBitmap(null);

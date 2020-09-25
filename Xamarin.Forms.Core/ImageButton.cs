@@ -27,7 +27,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty ErrorSourceProperty = ImageElement.ErrorSourceProperty;
 
-		public static readonly BindableProperty LoadingSourceProperty = ImageElement.LoadingSourceProperty;
+		public static readonly BindableProperty PlaceholderSourceProperty = ImageElement.PlaceholderSourceProperty;
 
 		public static readonly BindableProperty AspectProperty = ImageElement.AspectProperty;
 
@@ -108,10 +108,10 @@ namespace Xamarin.Forms
 		}
 
 		[TypeConverter(typeof(ImageSourceConverter))]
-		public ImageSource LoadingSource
+		public ImageSource PlaceholderSource
 		{
-			get { return (ImageSource)GetValue(LoadingSourceProperty); }
-			set { SetValue(LoadingSourceProperty, value); }
+			get { return (ImageSource)GetValue(PlaceholderSourceProperty); }
+			set { SetValue(PlaceholderSourceProperty, value); }
 		}
 
 		[TypeConverter(typeof(ImageSourceConverter))]

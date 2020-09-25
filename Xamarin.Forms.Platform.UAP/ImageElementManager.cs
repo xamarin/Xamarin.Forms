@@ -146,9 +146,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 			var imageController = Element as IImageController;
 
-			if (imageElement.LoadingSource != null)
+			if (imageElement.PlaceholderSource != null)
 			{
-				var imageSource = await imageElement.LoadingSource.ToWindowsImageSourceAsync();
+				var imageSource = await imageElement.PlaceholderSource.ToWindowsImageSourceAsync();
 				if (ShouldStillSetImage(Control, imageSource))
 					renderer.SetImage(imageSource);
 			}

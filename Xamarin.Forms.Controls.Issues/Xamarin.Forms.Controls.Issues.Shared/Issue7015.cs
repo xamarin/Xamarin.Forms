@@ -28,14 +28,14 @@ namespace Xamarin.Forms.Controls.Issues
 			image = new Image
 			{
 				Source = localImage,
-				LoadingSource = loadingImage,
+				PlaceholderSource = loadingImage,
 				ErrorSource = errorLocalImage
 			};
 
 			imageButton = new ImageButton
 			{
 				Source = localImage,
-				LoadingSource = loadingImage,
+				PlaceholderSource = loadingImage,
 				ErrorSource = errorLocalImage
 			};
 

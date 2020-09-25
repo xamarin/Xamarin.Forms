@@ -192,9 +192,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			}
 
-			if (imageElement.LoadingSource != null)
+			if (imageElement.PlaceholderSource != null)
 			{
-				var uiImage = await imageElement.LoadingSource.GetNativeImageAsync();
+				var uiImage = await imageElement.PlaceholderSource.GetNativeImageAsync();
 				if (imageElement.ShouldStillSetImage(Control, imageElement.Source))
 					renderer.SetImage(uiImage);
 			}

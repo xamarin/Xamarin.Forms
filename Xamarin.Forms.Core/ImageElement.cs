@@ -11,7 +11,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty SourceProperty = BindableProperty.Create(nameof(IImageElement.Source), typeof(ImageSource), typeof(IImageElement), default(ImageSource),
 			propertyChanging: OnImageSourceChanging, propertyChanged: OnImageSourceChanged);
 
-		public static readonly BindableProperty LoadingSourceProperty = BindableProperty.Create(nameof(IImageElement.LoadingSource), typeof(ImageSource), typeof(IImageElement), default(ImageSource),
+		public static readonly BindableProperty PlaceholderSourceProperty = BindableProperty.Create(nameof(IImageElement.PlaceholderSource), typeof(ImageSource), typeof(IImageElement), default(ImageSource),
 			propertyChanging: OnImageSourceChanging, propertyChanged: OnImageSourceChanged);
 
 		public static readonly BindableProperty ErrorSourceProperty = BindableProperty.Create(nameof(IImageElement.ErrorSource), typeof(ImageSource), typeof(IImageElement), default(ImageSource),

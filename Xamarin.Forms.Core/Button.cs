@@ -354,7 +354,7 @@ namespace Xamarin.Forms
 
 		bool IImageElement.IsAnimationPlaying => false;
 
-		ImageSource IImageElement.LoadingSource => null;
+		ImageSource IImageElement.PlaceholderSource => null;
 
 		ImageSource IImageElement.ErrorSource => null;
 

@@ -175,11 +175,11 @@ namespace Xamarin.Forms.Core.UnitTests
 			var image = new Image
 			{
 				Source = "File.png",
-				LoadingSource = null
+				PlaceholderSource = null
 			};
 
 			Assert.IsNotNull(image.Source);
-			Assert.IsNull(image.LoadingSource);
+			Assert.IsNull(image.PlaceholderSource);
 			bool signaled = false;
 
 			image.PropertyChanged += (_, e) =>
@@ -190,10 +190,10 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			var errorSource = ImageSource.FromFile("error.png");
 
-			image.LoadingSource = errorSource;
+			image.PlaceholderSource = errorSource;
 
-			Assert.IsNotNull(image.LoadingSource);
-			Assert.AreEqual(image.LoadingSource, errorSource);
+			Assert.IsNotNull(image.PlaceholderSource);
+			Assert.AreEqual(image.PlaceholderSource, errorSource);
 			Assert.IsTrue(signaled);
 		}
 
