@@ -4,6 +4,7 @@ using Xamarin.Forms.Internals;
 using Android.Content;
 using Android.Graphics;
 using AImageView = Android.Widget.ImageView;
+using Android.Views.Accessibility;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -32,65 +33,41 @@ namespace Xamarin.Forms.Platform.Android
 			if (newImageSource != null && Equals(previousImageSource, newImageSource))
 				return;
 
+			imageController?.SetIsLoading(true);
+
 			(imageView as IImageRendererController)?.SkipInvalidate();
 			imageView.Reset();
 			imageView.SetImageResource(global::Android.Resource.Color.Transparent);
 
-			if (newView.LoadingSource != null)
-				await imageView.SetImagePlaceholder(newView.LoadingSource);
-
-			imageController?.SetIsLoading(true);
-
 			try
 			{
-				if (newImageSource != null)
+				bool imageLoadedSuccessfully = false;
+				try
 				{
-					// all this animation code will go away if/once we pull in GlideX
-					IFormsAnimationDrawable animation = null;
-
-					if (imageController != null && imageController.GetLoadAsAnimation())
+					if (newView.LoadingSource != null)
 					{
-						var animationHandler = Registrar.Registered.GetHandlerForObject<IAnimationSourceHandler>(newImageSource);
-						if (animationHandler != null)
-							animation = await animationHandler.LoadImageAnimationAsync(newImageSource, imageView.Context);
+						imageLoadedSuccessfully = await imageView.TryToUpdateBitmap(newView, newView.LoadingSource, imageController, newImageSource);
 					}
 
-					if (animation == null)
+					if (newImageSource != null)
 					{
-						var imageViewHandler = Registrar.Registered.GetHandlerForObject<IImageViewHandler>(newImageSource);
-						if (imageViewHandler != null)
-						{
-							await imageViewHandler.LoadImageAsync(newImageSource, imageView);
-						}
-						else
-						{
-							using (var drawable = await imageView.Context.GetFormsDrawableAsync(newImageSource))
-							{
-								// only set the image if we are still on the same one
-								if (imageView.ShouldStillSetImage(newView, newImageSource))
-								{
-									if (drawable != null)
-										imageView.SetImageDrawable(drawable);
-									else
-										await imageView.SetImagePlaceholder(newView?.ErrorSource);
-								}
-							}
-						}
+						imageLoadedSuccessfully = await imageView.TryToUpdateBitmap(newView, newImageSource, imageController, newImageSource);
 					}
-					else
+					else if (newView.LoadingSource == null)
 					{
-						if (imageView.ShouldStillSetImage(newView, newImageSource))
-							imageView.SetImageDrawable(animation.ImageDrawable);
-						else
-						{
-							animation?.Reset();
-							animation?.Dispose();
-						}
+						imageLoadedSuccessfully = true;
+						imageView.SetImageBitmap(null);
 					}
 				}
-				else
+				finally
 				{
-					imageView.SetImageBitmap(null);
+					if (SourceIsNotChanged(newView, newImageSource) && 
+						newImageSource != null && 
+						!imageLoadedSuccessfully &&
+						newView.ErrorSource != null)
+					{
+						await imageView.TryToUpdateBitmap(newView, newView.ErrorSource, imageController, newImageSource);
+					}
 				}
 			}
 			finally
@@ -104,13 +81,67 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		static async Task<bool> TryToUpdateBitmap(
+			this AImageView imageView,
+			IImageElement newView,
+			ImageSource imageSourceToLoad,
+			IImageController imageController,
+			ImageSource imageSourceToCheckIfUserChangedImageSource)
+		{
+			
+			// all this animation code will go away if/once we pull in GlideX
+			IFormsAnimationDrawable animation = null;
+
+			if (imageController != null && imageController.GetLoadAsAnimation())
+			{
+				var animationHandler = Registrar.Registered.GetHandlerForObject<IAnimationSourceHandler>(imageSourceToLoad);
+				if (animationHandler != null)
+					animation = await animationHandler.LoadImageAnimationAsync(imageSourceToLoad, imageView.Context);
+			}
+
+			if (animation == null)
+			{
+				var imageViewHandler = Registrar.Registered.GetHandlerForObject<IImageViewHandler>(imageSourceToLoad);
+				if (imageViewHandler != null)
+				{
+					await imageViewHandler.LoadImageAsync(imageSourceToLoad, imageView);
+				}
+				else
+				{
+					using (var drawable = await imageView.Context.GetFormsDrawableAsync(imageSourceToLoad))
+					{
+						// only set the image if we are still on the same one
+						if (imageView.ShouldStillSetImage(newView, imageSourceToCheckIfUserChangedImageSource))
+						{
+							if (drawable != null)
+								imageView.SetImageDrawable(drawable);
+
+							return false;
+						}
+					}
+				}
+			}
+			else
+			{
+				if (imageView.ShouldStillSetImage(newView, imageSourceToCheckIfUserChangedImageSource))
+					imageView.SetImageDrawable(animation.ImageDrawable);
+				else
+				{
+					animation?.Reset();
+					animation?.Dispose();
+				}
+			}
+
+			return imageView.Drawable != null;
+		}
+
 		static bool ShouldStillSetImage(this AImageView imageView, IImageElement newView, ImageSource newImageSource) =>
 			!imageView.IsDisposed() && SourceIsNotChanged(newView, newImageSource);
 
 		static bool SourceIsNotChanged(IImageElement imageElement, ImageSource imageSource) =>
 			imageElement == null || imageElement.Source == imageSource;
 
-		public static async Task SetImagePlaceholder(this AImageView imageView, ImageSource placeholder)
+		static async Task SetImagePlaceholder(this AImageView imageView, ImageSource placeholder)
 		{
 			using (var drawable = await imageView.Context.GetFormsDrawableAsync(placeholder))
 			{
