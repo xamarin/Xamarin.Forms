@@ -132,8 +132,6 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public ReadOnlyCollection<Element> LogicalChildren => LogicalChildrenInternal;
 
-		internal bool Owned { get; set; }
-
 		internal Element ParentOverride
 		{
 			get { return _parentOverride; }

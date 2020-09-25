@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -213,7 +212,6 @@ namespace Xamarin.Forms
 					for (var i = 0; i < e.NewItems.Count; i++)
 					{
 						var page = (T)e.NewItems[i];
-						page.Owned = true;
 						int index = i + e.NewStartingIndex;
 						SetIndex(page, index);
 						InternalChildren.Insert(index, (T)e.NewItems[i]);
@@ -231,9 +229,7 @@ namespace Xamarin.Forms
 
 					for (var i = 0; i < e.OldItems.Count; i++)
 					{
-						Element element = InternalChildren[e.OldStartingIndex];
 						InternalChildren.RemoveAt(e.OldStartingIndex);
-						element.Owned = false;
 					}
 
 					break;
@@ -284,12 +280,9 @@ namespace Xamarin.Forms
 
 					for (int i = e.OldStartingIndex; i - e.OldStartingIndex < e.OldItems.Count; i++)
 					{
-						Element element = InternalChildren[i];
 						InternalChildren.RemoveAt(i);
-						element.Owned = false;
 
 						T page = _templatedItems.GetOrCreateContent(i, e.NewItems[i - e.OldStartingIndex]);
-						page.Owned = true;
 						SetIndex(page, i);
 						InternalChildren.Insert(i, page);
 					}
@@ -311,13 +304,9 @@ namespace Xamarin.Forms
 
 			InternalChildren.Clear();
 
-			foreach (Element element in snapshot)
-				element.Owned = false;
-
 			for (var i = 0; i < _templatedItems.Count; i++)
 			{
 				T page = _templatedItems.GetOrCreateContent(i, _templatedItems.ListProxy[i]);
-				page.Owned = true;
 				SetIndex(page, i);
 				InternalChildren.Add(page);
 			}

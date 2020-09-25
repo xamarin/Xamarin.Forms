@@ -31,7 +31,6 @@ namespace Xamarin.Forms
 			if (_list.Contains(item))
 				return;
 
-			item.Owned = true;
 			_list.Add(item);
 		}
 
@@ -43,13 +42,12 @@ namespace Xamarin.Forms
 			foreach (TRestrict item in _list.OfType<TRestrict>().ToArray())
 			{
 				_list.Remove(item);
-				item.Owned = false;
 			}
 		}
 
 		public bool Contains(TRestrict item)
 		{
-			return item.Owned && _list.Contains(item);
+			return _list.Contains(item);
 		}
 
 		public void CopyTo(TRestrict[] array, int destIndex)
@@ -72,7 +70,7 @@ namespace Xamarin.Forms
 				for (int i = 0; i < _list.Count; i++)
 				{
 					var item = _list[i];
-					if (item.Owned && item is TRestrict)
+					if (item is TRestrict)
 						result++;
 				}
 				return result;
@@ -88,12 +86,8 @@ namespace Xamarin.Forms
 			if (IsReadOnly)
 				throw new NotSupportedException("The collection is read-only.");
 
-			if (!item.Owned)
-				return false;
-
 			if (_list.Remove(item))
 			{
-				item.Owned = false;
 				return true;
 			}
 			return false;
@@ -106,7 +100,7 @@ namespace Xamarin.Forms
 
 		public IEnumerator<TRestrict> GetEnumerator()
 		{
-			return _list.Where(i => i.Owned).OfType<TRestrict>().GetEnumerator();
+			return _list.OfType<TRestrict>().GetEnumerator();
 		}
 
 		public int IndexOf(TRestrict value)
@@ -124,7 +118,6 @@ namespace Xamarin.Forms
 			if (IsReadOnly)
 				throw new NotSupportedException("The collection is read-only.");
 
-			item.Owned = true;
 			_list.Insert(ToInnerIndex(index), item);
 		}
 
@@ -134,13 +127,7 @@ namespace Xamarin.Forms
 			set
 			{
 				int innerIndex = ToInnerIndex(index);
-				if (value != null)
-					value.Owned = true;
-				TTrack old = _list[innerIndex];
 				_list[innerIndex] = value;
-
-				if (old != null)
-					old.Owned = false;
 			}
 		}
 
@@ -150,11 +137,8 @@ namespace Xamarin.Forms
 				throw new NotSupportedException("The collection is read-only");
 			int innerIndex = ToInnerIndex(index);
 			TTrack item = _list[innerIndex];
-			if (item.Owned)
-			{
-				_list.RemoveAt(innerIndex);
-				item.Owned = false;
-			}
+		
+			_list.RemoveAt(innerIndex);
 		}
 
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
@@ -172,7 +156,7 @@ namespace Xamarin.Forms
 						goto case NotifyCollectionChangedAction.Reset;
 
 					var newItem = e.NewItems[0] as TRestrict;
-					if (newItem == null || !newItem.Owned)
+					if (newItem == null)
 						break;
 
 					int outerIndex = ToOuterIndex(e.NewStartingIndex);
@@ -183,7 +167,7 @@ namespace Xamarin.Forms
 						goto case NotifyCollectionChangedAction.Reset;
 
 					var movedItem = e.NewItems[0] as TRestrict;
-					if (movedItem == null || !movedItem.Owned)
+					if (movedItem == null)
 						break;
 
 					int outerOldIndex = ToOuterIndex(e.OldStartingIndex);
@@ -195,7 +179,7 @@ namespace Xamarin.Forms
 						goto case NotifyCollectionChangedAction.Reset;
 
 					var removedItem = e.OldItems[0] as TRestrict;
-					if (removedItem == null || !removedItem.Owned)
+					if (removedItem == null)
 						break;
 
 					int outerRemovedIndex = ToOuterIndex(e.OldStartingIndex);
@@ -209,11 +193,11 @@ namespace Xamarin.Forms
 					var newReplaceItem = e.NewItems[0] as TRestrict;
 					var oldReplaceItem = e.OldItems[0] as TRestrict;
 
-					if ((newReplaceItem == null || !newReplaceItem.Owned) && (oldReplaceItem == null || !oldReplaceItem.Owned))
+					if ((newReplaceItem == null) && (oldReplaceItem == null))
 					{
 						break;
 					}
-					if (newReplaceItem == null || !newReplaceItem.Owned || oldReplaceItem == null || !oldReplaceItem.Owned)
+					if (newReplaceItem == null || oldReplaceItem == null)
 					{
 						goto case NotifyCollectionChangedAction.Reset;
 					}
@@ -238,7 +222,7 @@ namespace Xamarin.Forms
 			for (innerIndex = 0; innerIndex < _list.Count; innerIndex++)
 			{
 				TTrack item = _list[innerIndex];
-				if (item is TRestrict && item.Owned)
+				if (item is TRestrict)
 				{
 					if (outerIndex == outterIndex)
 						return innerIndex;
@@ -255,7 +239,7 @@ namespace Xamarin.Forms
 			for (var index = 0; index < innerIndex; index++)
 			{
 				TTrack item = _list[index];
-				if (item is TRestrict && item.Owned)
+				if (item is TRestrict)
 				{
 					outerIndex++;
 				}
