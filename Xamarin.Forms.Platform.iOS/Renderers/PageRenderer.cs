@@ -380,7 +380,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateUseSafeArea()
 		{
-			if (Element == null || _pageLifecycleManager == null)
+			if (Element == null)
 				return;
 
 			if (_userOverriddenSafeArea)
