@@ -92,9 +92,9 @@ namespace Xamarin.Platform
 			return null;
 		}
 
-		TTypeRender GetRenderer(Type t)
+		TTypeRender GetRenderer(Type type)
 		{
-			if (!_handler.TryGetValue(t, out var handler))
+			if (!_handler.TryGetValue(type, out var handler))
 				return default!;
 			try
 			{
@@ -107,7 +107,7 @@ namespace Xamarin.Platform
 					throw ex;
 			}
 
-			return default!;
+			throw new ArgumentException($"No Handler found for type: {type}", nameof(type));
 		}
 	}
 }

@@ -83,7 +83,7 @@ namespace Xamarin.Platform
 				if (!self.Theme.ResolveAttribute(resource, value, true))
 					return -1;
 
-				var pixels = (double)TypedValue.ComplexToDimension(value.Data, self!.Resources!.DisplayMetrics);
+				var pixels = (double)TypedValue.ComplexToDimension(value.Data, self.Resources?.DisplayMetrics);
 
 				return self.FromPixels(pixels);
 			}
