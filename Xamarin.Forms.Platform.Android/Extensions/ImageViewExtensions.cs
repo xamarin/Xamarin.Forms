@@ -115,8 +115,8 @@ namespace Xamarin.Forms.Platform.Android
 						{
 							if (drawable != null)
 								imageView.SetImageDrawable(drawable);
-
-							return false;
+							else
+								return false;
 						}
 					}
 				}
