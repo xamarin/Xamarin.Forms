@@ -23,8 +23,8 @@ namespace Xamarin.Forms.Platform.Android
 			ImageSource previousImageSource)
 		{
 			IImageController imageController = newView as IImageController;
-			newImageSource = newImageSource ?? newView?.Source;
-			previousImageSource = previousImageSource ?? previousView?.Source;
+			newImageSource ??= newView?.Source;
+			previousImageSource ??= previousView?.Source;
 
 			if (imageView.IsDisposed())
 				return;
@@ -72,7 +72,7 @@ namespace Xamarin.Forms.Platform.Android
 									if (drawable != null)
 										imageView.SetImageDrawable(drawable);
 									else
-										await imageView.SetImagePlaceholder(newView.ErrorSource);
+										await imageView.SetImagePlaceholder(newView?.ErrorSource);
 								}
 							}
 						}
@@ -104,7 +104,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		private static bool ShouldStillSetImage(this AImageView imageView, IImageElement newView, ImageSource newImageSource) =>
+		static bool ShouldStillSetImage(this AImageView imageView, IImageElement newView, ImageSource newImageSource) =>
 			!imageView.IsDisposed() && SourceIsNotChanged(newView, newImageSource);
 
 		static bool SourceIsNotChanged(IImageElement imageElement, ImageSource imageSource) =>

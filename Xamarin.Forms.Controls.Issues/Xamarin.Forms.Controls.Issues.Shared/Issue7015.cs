@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Controls.Issues
 		CheckBox checkBox;
 		ImageButton imageButton;
 
-		string url = "https://cdn.wallpaperhub.app/cloudcache/0/1/7/7/1/4/0177141d23e1d77489fa02a20f66302fe01033fd.jpg";
+		string url = "https://raw.githubusercontent.com/xamarin/Xamarin.Forms/main/Assets/xamarin_128x128.png";
 		string wrongUrl = "https://cdn.wallpaperhub.app/cloudcache/0/1/7/7/1/4/0177141d23e1d77489fa02a20f66302fe010fd.jpg";
 
 		string localImage = "bell.png";
