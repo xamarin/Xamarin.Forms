@@ -29,7 +29,9 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
-			var page = AddFlyoutItem("Flyout Item");
+			var page = new ContentPage();
+
+			AddFlyoutItem(page, "Flyout Item");
 			page.Content = new StackLayout()
 			{
 				Children =
