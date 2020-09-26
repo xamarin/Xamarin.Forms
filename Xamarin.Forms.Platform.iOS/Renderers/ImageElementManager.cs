@@ -241,7 +241,7 @@ namespace Xamarin.Forms.Platform.MacOS
 						uiimage = await imageElement.ErrorSource.GetNativeImageAsync();
 
 					// only set if we are still on the same image
-					if (imageElement.ShouldStillSetImage(Control, source))
+					if (imageElement.ShouldStillSetImage(Control, source) && uiimage != null)
 						renderer.SetImage(uiimage);
 					else
 						uiimage?.Dispose();
