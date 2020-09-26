@@ -257,7 +257,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			(imageElement as IViewController)?.NativeSizeChanged();
 		}
 
-		private static bool ShouldStillSetImage(this IImageElement imageElement, UIImageView control, ImageSource source) =>
+		static bool ShouldStillSetImage(this IImageElement imageElement, UIImageView control, ImageSource source) =>
 			control != null && imageElement.Source == source;
 
 #if __MOBILE__
