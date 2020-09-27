@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Platform.UWP
 			return contentPage.ToFrameworkElement();
 		}
 
-		internal static FrameworkElement ToFrameworkElement(this VisualElement visualElement)
+		public static FrameworkElement ToFrameworkElement(this VisualElement visualElement)
 		{
 			if (!Forms.IsInitialized)
 			{

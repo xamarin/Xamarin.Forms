@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Platform.UWP
 			return renderer;
 		}
 
-		internal static void Cleanup(this VisualElement self)
+		public static void Cleanup(this VisualElement self)
 		{
 			if (self == null)
 				throw new ArgumentNullException("self");
