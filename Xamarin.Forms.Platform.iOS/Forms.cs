@@ -209,7 +209,7 @@ namespace Xamarin.Forms
 
 		public static event EventHandler<ViewInitializedEventArgs> ViewInitialized;
 
-		internal static void SendViewInitialized(this VisualElement self, TNativeView nativeView)
+		public static void SendViewInitialized(this VisualElement self, TNativeView nativeView)
 		{
 			ViewInitialized?.Invoke(self, new ViewInitializedEventArgs { View = self, NativeView = nativeView });
 		}
