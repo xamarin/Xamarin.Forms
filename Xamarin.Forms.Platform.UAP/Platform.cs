@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Platform.UWP
 			return renderer;
 		}
 
-		internal static Platform Current
+		public static Platform Current
 		{
 			get
 			{
