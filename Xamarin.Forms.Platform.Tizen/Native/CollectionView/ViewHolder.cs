@@ -122,7 +122,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 			if (State == ViewHolderState.Selected)
 				_isSelected = true;
-			if (State == ViewHolderState.Normal)
+			else if (State == ViewHolderState.Normal)
 				_isSelected = false;
 
 			StateUpdated?.Invoke(this, EventArgs.Empty);
