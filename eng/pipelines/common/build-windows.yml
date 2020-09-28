@@ -10,13 +10,6 @@ steps:
   - checkout: self
     clean: true
 
-  - task: UseDotNet@2
-    displayName: 'Use .NET Core sdk'
-    inputs:
-      packageType: sdk
-      version: 3.1.402
-      installationPath: $(Agent.ToolsDirectory)/dotnet
-
   - task: xamops.azdevex.provisionator-task.provisionator@1
     displayName: 'Provisionator'
     condition: eq(variables['provisioning'], 'true')
@@ -47,7 +40,6 @@ steps:
       command: test
       projects:   |
         **/Xamarin.Forms.Core.UnitTests.csproj
-        **/Xamarin.Forms.Xaml.UnitTests.csproj
         **/Xamarin.Platform.Handlers.UnitTests.csproj
       arguments: '--configuration $(BuildConfiguration)'
 
