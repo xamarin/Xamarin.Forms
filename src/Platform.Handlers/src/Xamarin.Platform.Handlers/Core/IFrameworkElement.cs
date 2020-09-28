@@ -7,8 +7,8 @@ namespace Xamarin.Platform
 		bool IsEnabled { get; }
 		Color BackgroundColor { get; }
 		Rectangle Frame { get; }
-		IViewHandler Handler { get; set; }
-		IFrameworkElement Parent { get; }
+		IViewHandler? Handler { get; set; }
+		IFrameworkElement? Parent { get; }
 
 		void Arrange(Rectangle bounds);
 		SizeRequest Measure(double widthConstraint, double heightConstraint);

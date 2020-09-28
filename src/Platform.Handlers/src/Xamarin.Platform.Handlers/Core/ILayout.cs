@@ -9,7 +9,7 @@ namespace Xamarin.Platform
 
 	public interface IStackLayout : ILayout
 	{
-		Orientation Orientation { get; }
+		int Spacing { get; }
 	}
 
 	public enum Alignment
@@ -18,11 +18,5 @@ namespace Xamarin.Platform
 		Center,
 		End,
 		Fill
-	}
-
-	public enum Orientation
-	{
-		Vertical,
-		Horizontal
 	}
 }

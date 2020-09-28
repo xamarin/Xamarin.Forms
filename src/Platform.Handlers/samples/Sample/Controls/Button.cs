@@ -4,7 +4,7 @@ using Xamarin.Platform;
 
 namespace Sample
 {
-	public class Button : View, IButton
+	public class Button : Xamarin.Forms.View, IButton
 	{
 		public const int DefaultCornerRadius = -1;
 

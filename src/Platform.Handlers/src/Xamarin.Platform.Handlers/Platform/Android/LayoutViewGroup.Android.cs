@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Android.Content;
 using Android.Runtime;
 using Android.Util;
 using Android.Views;
-using Xamarin.Forms;
+using Rectangle = Xamarin.Forms.Rectangle;
+using SizeRequest = Xamarin.Forms.SizeRequest;
 
 namespace Xamarin.Platform.Handlers
 {
@@ -33,23 +32,19 @@ namespace Xamarin.Platform.Handlers
 
 		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
 		{
+			if (Context == null)
+			{
+				return;
+			}
+
 			if (CrossPlatformMeasure == null)
 			{
 				base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+				return;
 			}
 
-			var widthMode = widthMeasureSpec.GetMode();
-			var heightMode = heightMeasureSpec.GetMode();
-
-			var width = widthMeasureSpec.GetSize();
-			var height = heightMeasureSpec.GetSize();
-
-			var deviceIndependentWidth = Context.FromPixels(width);
-
-			// TODO ezhart Turn this into a method and apply it to width, too
-			var deviceIndependentHeight = heightMode == MeasureSpecMode.Unspecified
-				? double.PositiveInfinity
-				: Context.FromPixels(height);
+			var deviceIndependentWidth = widthMeasureSpec.ToDouble(Context);
+			var deviceIndependentHeight = heightMeasureSpec.ToDouble(Context);
 
 			var sizeRequest = CrossPlatformMeasure(deviceIndependentWidth, deviceIndependentHeight);
 
@@ -61,7 +56,7 @@ namespace Xamarin.Platform.Handlers
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
-			if (CrossPlatformArrange == null)
+			if (CrossPlatformArrange == null || Context == null)
 			{
 				return;
 			}
@@ -71,13 +66,13 @@ namespace Xamarin.Platform.Handlers
 			var deviceIndependentRight = Context.FromPixels(r);
 			var deviceIndependentBottom = Context.FromPixels(b);
 
-			var destination = Xamarin.Forms.Rectangle.FromLTRB(deviceIndependentLeft, deviceIndependentTop,
+			var destination = Rectangle.FromLTRB(deviceIndependentLeft, deviceIndependentTop,
 				deviceIndependentRight, deviceIndependentBottom);
 
 			CrossPlatformArrange(destination);
 		}
 
-		internal Func<double, double, SizeRequest> CrossPlatformMeasure { get; set; }
-		internal Action<Xamarin.Forms.Rectangle> CrossPlatformArrange { get; set; }
+		internal Func<double, double, SizeRequest>? CrossPlatformMeasure { get; set; }
+		internal Action<Rectangle>? CrossPlatformArrange { get; set; }
 	}
 }

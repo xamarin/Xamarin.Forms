@@ -8,7 +8,12 @@ namespace Xamarin.Platform.Handlers
 	{
 		protected override LayoutViewGroup CreateView()
 		{
-			var viewGroup = new LayoutViewGroup(Context)
+			if (VirtualView == null)
+			{
+				throw new InvalidOperationException($"{nameof(VirtualView)} must be set to create a LayoutViewGroup");
+			}
+
+			var viewGroup = new LayoutViewGroup(Context!)
 			{
 				CrossPlatformMeasure = VirtualView.Measure,
 				CrossPlatformArrange = VirtualView.Arrange
@@ -21,23 +26,28 @@ namespace Xamarin.Platform.Handlers
 		{
 			base.SetView(view);
 
+			_ = TypedNativeView ?? throw new InvalidOperationException($"{nameof(TypedNativeView)} should have been set by base class.");
+			_ = VirtualView ?? throw new InvalidOperationException($"{nameof(VirtualView)} should have been set by base class.");
+
 			TypedNativeView.CrossPlatformMeasure = VirtualView.Measure;
 			TypedNativeView.CrossPlatformArrange = VirtualView.Arrange;
 
 			foreach (var child in VirtualView.Children)
 			{
-				TypedNativeView.AddView(child.ToNative(Context));
+				TypedNativeView.AddView(child.ToNative(Context!));
 			}
 		}
 
-		protected override void DisposeView(LayoutViewGroup nativeView)
+		public override void TearDown()
 		{
-			nativeView.CrossPlatformArrange = null;
-			nativeView.CrossPlatformMeasure = null;
+			if (TypedNativeView != null)
+			{
+				TypedNativeView.CrossPlatformArrange = null;
+				TypedNativeView.CrossPlatformMeasure = null;
+				TypedNativeView.RemoveAllViews();
+			}
 
-			nativeView.RemoveAllViews();
-
-			base.DisposeView(nativeView);
+			base.TearDown();
 		}
 	}
 }

@@ -21,8 +21,10 @@ namespace Sample
 			//RegistrarHandlers.Handlers.Register<Layout, LayoutHandler>();
 
 			RegistrarHandlers.Handlers.Register<Button, ButtonHandler>();
-			RegistrarHandlers.Handlers.Register<Xamarin.Forms.StackLayout, LayoutHandler>();
+			RegistrarHandlers.Handlers.Register<Xamarin.Platform.VerticalStackLayout, LayoutHandler>();
+			RegistrarHandlers.Handlers.Register<Xamarin.Platform.HorizontalStackLayout, LayoutHandler>();
 			RegistrarHandlers.Handlers.Register<Xamarin.Forms.FlexLayout, LayoutHandler>();
+			RegistrarHandlers.Handlers.Register<Xamarin.Forms.StackLayout, LayoutHandler>();
 			//RegistrarHandlers.Handlers.Register<Entry, EntryHandler>();
 			RegistrarHandlers.Handlers.Register<Label, LabelHandler>();
 		}

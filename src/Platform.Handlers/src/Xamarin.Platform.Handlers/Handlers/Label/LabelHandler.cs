@@ -27,11 +27,11 @@ namespace Xamarin.Platform.Handlers
 
 		public static void MapText(LabelHandler handler, ILabel label)
 		{
-			handler.TypedNativeView.UpdateText(label);
+			handler.TypedNativeView?.UpdateText(label);
 		}
 
 #if MONOANDROID
-		protected override NativeView CreateView() => new NativeView(this.Context);
+		protected override NativeView CreateView() => new NativeView(Context);
 #else
 		protected override NativeView CreateView() => new NativeView();
 #endif
