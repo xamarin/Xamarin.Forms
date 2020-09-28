@@ -42,24 +42,13 @@ steps:
     displayName: 'Build Projects For Nuget'
 
   - task: DotNetCoreCLI@2
-    displayName: 'Handler Unit Tests'
+    displayName: 'Dotnet Unit Tests'
     inputs:
       command: test
-      projects:   **/Xamarin.Platform.Handlers.UnitTests.csproj
-      arguments: '--configuration $(BuildConfiguration)'
-
-  - task: DotNetCoreCLI@2
-    displayName: 'Core Unit Tests'
-    inputs:
-      command: test
-      projects:   **/Xamarin.Forms.Core.csproj
-      arguments: '--configuration $(BuildConfiguration)'
-
-  - task: DotNetCoreCLI@2
-    displayName: 'XAML Unit Tests'
-    inputs:
-      command: test
-      projects:   **/Xamarin.Forms.Xaml.UnitTests.csproj
+      projects:   |
+        **/Xamarin.Forms.Core.UnitTests.csproj
+        **/Xamarin.Forms.Xaml.UnitTests.csproj
+        **/Xamarin.Platform.Handlers.UnitTests.csproj
       arguments: '--configuration $(BuildConfiguration)'
 
   - task: VSTest@2
@@ -67,7 +56,6 @@ steps:
     inputs:
       testAssemblyVer2: |
         **/bin/$(BuildConfiguration)/**/Xamarin.Forms.Xaml.UnitTests.dll
-        **/bin/$(BuildConfiguration)/**/Xamarin.Forms.Core.UnitTests.dll
       searchFolder: ${{ parameters.nunitTestFolder }}
       codeCoverageEnabled: true
       testRunTitle: '$(BuildConfiguration)_UnitTests'
