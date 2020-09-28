@@ -5,9 +5,9 @@ using System;
 
 namespace Xamarin.Forms.Xaml.Diagnostics
 {
-	public class BindingErrorEventArgs : EventArgs
+	public class BindingBaseErrorEventArgs : EventArgs
 	{
-		internal BindingErrorEventArgs(XamlSourceInfo xamlSourceInfo, BindingBase binding, string errorCode, string message, object[] messageArgs)
+		internal BindingBaseErrorEventArgs(XamlSourceInfo xamlSourceInfo, BindingBase binding, string errorCode, string message, object[] messageArgs)
 		{
 			XamlSourceInfo = xamlSourceInfo;
 			Binding = binding;
@@ -21,5 +21,26 @@ namespace Xamarin.Forms.Xaml.Diagnostics
 		public string ErrorCode { get; }
 		public string Message { get; }
 		public object[] MessageArgs { get; }
+	}
+
+	public class BindingErrorEventArgs : BindingBaseErrorEventArgs
+	{
+		internal BindingErrorEventArgs(
+			XamlSourceInfo xamlSourceInfo,
+			BindingBase binding,
+			object bindingsource,
+			BindableObject target,
+			BindableProperty property,
+			string errorCode,
+			string message, object[] messageArgs) : base(xamlSourceInfo, binding, errorCode, message, messageArgs)
+		{
+			Source = bindingsource;
+			Target = target;
+			TargetProperty = property;
+		}
+
+		public object Source { get; }
+		public BindableObject Target { get; }
+		public BindableProperty TargetProperty { get; }
 	}
 }

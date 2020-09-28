@@ -361,7 +361,7 @@ namespace Xamarin.Forms.Xaml
 			var localName = propertyName.LocalName;
 			xpe = null;
 
-			var assemblyName = rootElement.GetType().GetTypeInfo().Assembly)?.GetName().Name;
+			var assemblyName = rootElement.GetType().GetTypeInfo().Assembly?.GetName().Name;
 			void registerSourceInfo(object target, string path) => VisualDiagnostics.RegisterSourceInfo(target, new Uri($"{path};assembly={assemblyName}", UriKind.Relative), lineInfo.LineNumber, lineInfo.LinePosition);
 
 			//If it's an attached BP, update elementType and propertyName
@@ -381,28 +381,28 @@ namespace Xamarin.Forms.Xaml
 			if (xpe == null && TrySetBinding(element, property, localName, value, lineInfo, out var binding, out xpe)) {
 				if (binding != null && XamlFilePathAttribute.GetFilePathForObject(rootElement) is string path)
 					registerSourceInfo(binding, path);
-				return;
+				return true;
 			}
 
 			//If it's a BindableProberty, SetValue
 			if (xpe == null && TrySetValue(element, property, attached, value, lineInfo, serviceProvider, out xpe)) {
-				if (!(node is ValueNode) && value != null && !value.GetType().GetTypeInfo().IsValueType && XamlFilePathAttribute.GetFilePathForObject(rootElement) is string path)
-					registerSourceInfo(value,path);
-				return;
+				if (value != null && !value.GetType().GetTypeInfo().IsValueType && XamlFilePathAttribute.GetFilePathForObject(rootElement) is string path)
+					registerSourceInfo(value, path);
+				return true;
 			}
 
 			//If we can assign that value to a normal property, let's do it
-			if (xpe == null && TrySetProperty(element, localName, value, lineInfo, serviceProvider, context, out xpe)) {
-				if (!(node is ValueNode) && value != null && !value.GetType().GetTypeInfo().IsValueType && XamlFilePathAttribute.GetFilePathForObject(rootElement) is string path)
+			if (xpe == null && TrySetProperty(element, localName, value, lineInfo, serviceProvider, rootElement, out xpe)) {
+				if (value != null && !value.GetType().GetTypeInfo().IsValueType && XamlFilePathAttribute.GetFilePathForObject(rootElement) is string path)
 					registerSourceInfo(value, path);
-				return;
+				return true;
 			}
 
 			//If it's an already initialized property, add to it
-			if (xpe == null && TryAddToProperty(element, propertyName, value, xKey, lineInfo, serviceProvider, context, out xpe)) {
-				if (!(node is ValueNode) && value != null && !value.GetType().GetTypeInfo().IsValueType && XamlFilePathAttribute.GetFilePathForObject(rootElement) is string path)
+			if (xpe == null && TryAddToProperty(element, propertyName, value, xKey, lineInfo, serviceProvider, rootElement, out xpe)) {
+				if (value != null && !value.GetType().GetTypeInfo().IsValueType && XamlFilePathAttribute.GetFilePathForObject(rootElement) is string path)
 					registerSourceInfo(value, path);
-				return;
+				return true;
 			}
 
 			xpe = xpe ?? new XamlParseException($"Cannot assign property \"{localName}\": Property does not exist, or is not assignable, or mismatching type between value and property", lineInfo);
