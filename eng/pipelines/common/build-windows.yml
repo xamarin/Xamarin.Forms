@@ -23,11 +23,6 @@ steps:
     inputs:
       versionSpec: $(NUGET_VERSION)
 
-  - task: CmdLine@2
-    displayName: 'install NUnit3TestAdapter'
-    inputs:
-      script: 'nuget install NUnit3TestAdapter'
-
   - task: NuGetCommand@2
     displayName: 'NuGet restore ${{ parameters.slnPath }}'
     inputs:
