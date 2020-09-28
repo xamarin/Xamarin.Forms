@@ -35,7 +35,7 @@ steps:
     displayName: 'Build Projects For Nuget'
 
   - task: DotNetCoreCLI@2
-    displayName: 'Dotnet Unit Tests'
+    displayName: 'Unit Tests'
     inputs:
       command: test
       projects:   |
@@ -44,7 +44,7 @@ steps:
       arguments: '--configuration $(BuildConfiguration)'
 
   - task: VSTest@2
-    displayName: 'Unit Tests'
+    displayName: 'XAML Unit Tests'
     inputs:
       testAssemblyVer2: |
         **/bin/$(BuildConfiguration)/**/Xamarin.Forms.Xaml.UnitTests.dll
