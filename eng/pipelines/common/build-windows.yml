@@ -44,6 +44,8 @@ steps:
     inputs:
       testAssemblyVer2: |
         **/bin/$(BuildConfiguration)/**/Xamarin.Forms.Xaml.UnitTests.dll
+        !**\*TestAdapter.dll
+        !**\obj\** 
       searchFolder: ${{ parameters.nunitTestFolder }}
       codeCoverageEnabled: true
       testRunTitle: '$(BuildConfiguration)_UnitTests'
