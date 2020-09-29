@@ -502,7 +502,7 @@ namespace Xamarin.Forms.Xaml
 			if (binding == null)
 				return false;
 
-			if (element is BindableObject bindable && property != null) {
+			if (element is BindableObject bindable && property != null)
 			{
 				bindable.SetBinding(property, binding);
 				return true;

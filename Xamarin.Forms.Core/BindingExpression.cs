@@ -153,7 +153,7 @@ namespace Xamarin.Forms
 				if (!TryConvert(ref value, property, property.ReturnType, true))
 				{
 					Log.Warning("Binding", "'{0}' can not be converted to type '{1}'.", value, property.ReturnType);
-					BindingDiagnostics.SendBindingFailure(Binding, null, "{0} can not be converted to type '{1}'", new[] { value, property.ReturnType });
+					BindingDiagnostics.SendBindingFailure(Binding, current, target, property, null, "{0} can not be converted to type '{1}'", new[] { value, property.ReturnType });
 					return;
 				}
 
@@ -166,7 +166,7 @@ namespace Xamarin.Forms
 				if (!TryConvert(ref value, property, part.SetterType, false))
 				{
 					Log.Warning("Binding", "'{0}' can not be converted to type '{1}'.", value, part.SetterType);
-					BindingDiagnostics.SendBindingFailure(Binding, null, "{0} can not be converted to type '{1}'", new[] { value, part.SetterType });
+					BindingDiagnostics.SendBindingFailure(Binding, current, target, property, null, "{0} can not be converted to type '{1}'", new[] { value, part.SetterType });
 					return;
 				}
 
