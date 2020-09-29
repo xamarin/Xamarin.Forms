@@ -124,7 +124,7 @@ namespace Xamarin.Forms.Platform.UWP
 				var operationPriorToSend = dragEventArgs.AcceptedOperation;
 				rec.SendDragLeave(dragEventArgs);
 
-				// If you set the AcceptedOperation to a value it was already it to
+				// If you set the AcceptedOperation to a value it was already set to
 				// it causes the related animation to remain visible when the dragging component leaves
 				// for example
 				// e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy;
