@@ -6,6 +6,7 @@ using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using AndroidX.CoordinatorLayout.Widget;
 using AndroidX.RecyclerView.Widget;
 using Google.Android.Material.AppBar;
 using Xamarin.Forms.Internals;
