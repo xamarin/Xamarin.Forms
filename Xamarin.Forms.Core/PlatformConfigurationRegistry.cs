@@ -8,7 +8,6 @@ namespace Xamarin.Forms
 	/// Helper that handles storing and lookup of platform specifics implementations
 	/// </summary>
 	/// <typeparam name="TElement">The Element type</typeparam>
-	[EditorBrowsable(EditorBrowsableState.Never)]
 	public class PlatformConfigurationRegistry<TElement> : IElementConfiguration<TElement>
 		where TElement : Element
 	{
