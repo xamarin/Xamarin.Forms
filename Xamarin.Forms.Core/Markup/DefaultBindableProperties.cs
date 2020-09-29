@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Markup
 			{ "Xamarin.Forms.ClickGestureRecognizer", ClickGestureRecognizer.CommandProperty },
 			{ "Xamarin.Forms.CollectionView", CollectionView.ItemsSourceProperty },
 			{ "Xamarin.Forms.ContentPage", Page.TitleProperty },
-			{ "Xamarin.Forms.DatePicker", DatePicker.DateProperty },
+			{ "Xamarin.Forms.DatePicker", DatePicker.SelectedDateProperty },
 			{ "Xamarin.Forms.Editor", Editor.TextProperty },
 			{ "Xamarin.Forms.Entry", Entry.TextProperty },
 			{ "Xamarin.Forms.EntryCell", EntryCell.TextProperty },

@@ -36,7 +36,10 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			{
 				var page = new Unreported008(useCompiledXaml);
 				var picker = page.picker0;
+#pragma warning disable 0618 // Retain until Date is removed
 				Assert.AreEqual(DateTime.Today, picker.Date.Date);
+#pragma warning restore
+				Assert.AreEqual(DateTime.Today, picker.SelectedDate);
 				Assert.AreEqual(new DateTime(2000, 1, 1), picker.MinimumDate);
 				Assert.AreEqual(new DateTime(2050, 12, 31), picker.MaximumDate);
 			}

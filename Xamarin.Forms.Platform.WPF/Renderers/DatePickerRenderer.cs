@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == DatePicker.DateProperty.PropertyName)
+			if (e.PropertyName == DatePicker.SelectedDateProperty.PropertyName)
 				UpdateDate();
 			else if (e.PropertyName == DatePicker.MaximumDateProperty.PropertyName)
 				UpdateMaximumDate();
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void UpdateDate()
 		{
-			Control.SelectedDate = Element.Date;
+			Control.SelectedDate = Element.SelectedDate;
 		}
 
 		void UpdateMaximumDate()
@@ -104,7 +104,7 @@ namespace Xamarin.Forms.Platform.WPF
 		void OnNativeSelectedDateChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
 		{
 			if (Control.SelectedDate.HasValue)
-				((IElementController)Element).SetValueFromRenderer(DatePicker.DateProperty, Control.SelectedDate.Value);
+				((IElementController)Element).SetValueFromRenderer(DatePicker.SelectedDateProperty, Control.SelectedDate.Value);
 		}
 
 		bool _isDisposed;

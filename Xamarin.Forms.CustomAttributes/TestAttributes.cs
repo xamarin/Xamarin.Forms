@@ -485,8 +485,10 @@ namespace Xamarin.Forms.CustomAttributes
 		public enum DatePicker
 		{
 			DateSelected,
+			SelectedDateChanged,
 			Format,
 			Date,
+			SelectedDate,
 			MinimumDate,
 			MaximumDate,
 			Focus,

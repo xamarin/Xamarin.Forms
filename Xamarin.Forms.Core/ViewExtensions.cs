@@ -195,7 +195,7 @@ namespace Xamarin.Forms
 			else if (element is TimePicker tp)
 				text = tp.Time.ToString();
 			else if (element is DatePicker dp)
-				text = dp.Date.ToString();
+				text = dp.SelectedDate.ToString();
 			else if (element is CheckBox cb)
 				text = cb.IsChecked.ToString();
 			else if (element is Switch sw)
@@ -245,7 +245,7 @@ namespace Xamarin.Forms
 			}
 			else if (element is DatePicker dp && DateTime.TryParse(text, out DateTime dpResult))
 			{
-				dp.Date = dpResult;
+				dp.SelectedDate = dpResult;
 				return true;
 			}
 

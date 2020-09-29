@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Material.Tizen
 
 		protected override void OnDateTimeChanged(object sender, Platform.Tizen.Native.DateChangedEventArgs dcea)
 		{
-			Element.Date = dcea.NewDate;
+			Element.SelectedDate = dcea.NewDate;
 			if (Control is MPicker mp)
 			{
 				mp.Placeholder = dcea.NewDate.ToString(Element.Format);
@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Material.Tizen
 		{
 			if (Control is MPicker mp)
 			{
-				mp.Placeholder = Element.Date.ToString(Element.Format);
+				mp.Placeholder = Element.SelectedDate?.ToString(Element.Format);
 			}
 		}
 
