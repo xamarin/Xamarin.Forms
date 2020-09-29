@@ -31,6 +31,8 @@ namespace Xamarin.Forms.Platform.iOS
 		static WKProcessPool _sharedPool;
 		bool _disposed;
 		static int _sharedPoolCount = 0;
+		static bool _firstLoadFinished = false;
+		string _pendingUrl;
 
 		[Preserve(Conditional = true)]
 		public WkWebViewRenderer() : this(CreateConfiguration())
@@ -45,6 +47,11 @@ namespace Xamarin.Forms.Platform.iOS
 		
 		}
 
+		// https://developer.apple.com/forums/thread/99674
+		// WKWebView and making sure cookies synchronize is really quirky
+		// The main workaround I've found for ensuring that cookies synchronize 
+		// is to share the Process Pool between all WkWebView instances.
+		// It also has to be shared at the point you call init
 		static WKWebViewConfiguration CreateConfiguration()
 		{
 			var config = new WKWebViewConfiguration();
@@ -132,9 +139,6 @@ namespace Xamarin.Forms.Platform.iOS
 				LoadHtmlString(html, baseUrl == null ? new NSUrl(NSBundle.MainBundle.BundlePath, true) : new NSUrl(baseUrl, true));
 		}
 
-		static bool _firstLoadFinished = false;
-		string _pendingUrl;
-
 		public override void MovedToWindow()
 		{
 			base.MovedToWindow();
@@ -144,6 +148,18 @@ namespace Xamarin.Forms.Platform.iOS
 				var closure = _pendingUrl;
 				_pendingUrl = null;
 
+				// I realize this looks like the worst hack ever but iOS 11 and cookies are super quirky
+				// and this is the only way I could figure out how to get iOS 11 to inject a cookie 
+				// the first time a WkWebView is used in your app. This only has to run the first time a WkWebView is used 
+				// anywhere in the application. All subsequents uses of WkWebView won't hit this hack
+				// Even if it's a WkWebView on a new page.
+				// read through this thread https://developer.apple.com/forums/thread/99674
+				// Or Bing "WkWebView and Cookies" to see the myriad of hacks that exist
+				// Most of them all came down to different variations of synching the cookies before or after the
+				// WebView is added to the controller. This is the only one I was able to make work
+				// I think if we could delay adding the WebView to the Controller until after ViewWillAppear fires that might also work
+				// But we're not really setup for that
+				// If you'd like to try your hand at cleaning this up then UI Test Issue12134 and Issue3262 are your final bosses
 				InvokeOnMainThread(async () =>
 				{
 					await Task.Delay(500);
