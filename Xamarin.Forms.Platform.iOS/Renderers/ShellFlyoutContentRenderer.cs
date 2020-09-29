@@ -73,6 +73,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if(_headerView != null)
 			{
+				_tableViewController.HeaderView = null;
 				_headerView.RemoveFromSuperview();
 				_headerView.Dispose();
 			}
@@ -83,7 +84,9 @@ namespace Xamarin.Forms.Platform.iOS
 				_headerView = null;
 
 			_tableViewController.HeaderView = _headerView;
-			View.AddSubview(_headerView);
+
+			if(_headerView != null)
+				View.AddSubview(_headerView);
 		}
 
 		void UpdateFlyoutFooter()
@@ -99,7 +102,10 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_footer != null)
 			{
 				var oldRenderer = Platform.GetRenderer(_footer);
-				_footerView?.RemoveFromSuperview();
+				var oldFooterView = _footerView;
+				_tableViewController.FooterView = null;
+				_footerView = null;
+				oldFooterView?.RemoveFromSuperview();
 				if (_footer != null)
 					_footer.MeasureInvalidated -= OnFooterMeasureInvalidated;
 
@@ -107,19 +113,22 @@ namespace Xamarin.Forms.Platform.iOS
 				oldRenderer?.Dispose();
 			}
 
-			if (view == null)
-				return;
-
 			_footer = view;
 
-			var renderer = Platform.CreateRenderer(_footer);
-			_footerView = renderer.NativeView;
-			Platform.SetRenderer(_footer, renderer);
+			if (_footer != null)
+			{
+				var renderer = Platform.CreateRenderer(_footer);
+				_footerView = renderer.NativeView;
+				Platform.SetRenderer(_footer, renderer);
 
-			View.AddSubview(_footerView);
-			_footerView.ClipsToBounds = true;
+				View.AddSubview(_footerView);
+				_footerView.ClipsToBounds = true;
+				_tableViewController.FooterView = _footerView;
+				_footer.MeasureInvalidated += OnFooterMeasureInvalidated;
+			}
+
 			_tableViewController.FooterView = _footerView;
-			_footer.MeasureInvalidated += OnFooterMeasureInvalidated;
+
 		}
 
 		void OnFooterMeasureInvalidated(object sender, System.EventArgs e)
