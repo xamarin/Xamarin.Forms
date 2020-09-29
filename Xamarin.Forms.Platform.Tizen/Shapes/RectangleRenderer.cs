@@ -1,0 +1,73 @@
+﻿using SkiaSharp;
+using Xamarin.Forms;
+using FormsRectangle = Xamarin.Forms.Shapes.Rectangle;
+
+[assembly: ExportRenderer(typeof(FormsRectangle), typeof(Xamarin.Forms.Platform.Tizen.RectangleRenderer))]
+namespace Xamarin.Forms.Platform.Tizen
+{
+    public class RectangleRenderer : ShapeRenderer<FormsRectangle, RectView>
+    {
+        public RectangleRenderer() : base()
+        {
+            RegisterPropertyHandler(FormsRectangle.RadiusXProperty, UpdateRadiusX);
+            RegisterPropertyHandler(FormsRectangle.RadiusYProperty, UpdateRadiusY);
+        }
+
+        protected override void OnElementChanged(ElementChangedEventArgs<FormsRectangle> e)
+        {
+            if (Control == null)
+            {
+                SetNativeControl(new RectView());
+            }
+
+            base.OnElementChanged(e);
+
+            if (e.NewElement != null)
+            {
+                UpdateRadiusX();
+                UpdateRadiusY();
+            }
+        }
+
+        void UpdateRadiusX()
+        {
+            Control.UpdateRadiusX(Element.RadiusX / Element.WidthRequest);
+        }
+
+        void UpdateRadiusY()
+        {
+            Control.UpdateRadiusY(Element.RadiusY / Element.HeightRequest);
+        }
+    }
+
+    public class RectView : ShapeView
+    {
+        public RectView() : base()
+        {
+            UpdateShape();
+        }
+
+        public float RadiusX { set; get; }
+
+        public float RadiusY { set; get; }
+
+        void UpdateShape()
+        {
+            var path = new SKPath();
+            path.AddRoundRect(new SKRect(0, 0, 1, 1), RadiusX, RadiusY, SKPathDirection.Clockwise);
+            UpdateShape(path);
+        }
+
+        public void UpdateRadiusX(double radiusX)
+        {
+            RadiusX = (float)radiusX;
+            UpdateShape();
+        }
+
+        public void UpdateRadiusY(double radiusY)
+        {
+            RadiusY = (float)radiusY;
+            UpdateShape();
+        }
+    }
+}
