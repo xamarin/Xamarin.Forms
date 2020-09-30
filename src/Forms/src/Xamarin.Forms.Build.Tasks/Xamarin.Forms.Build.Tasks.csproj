@@ -78,6 +78,6 @@
     <ItemGroup>
       <_CopyItems Include="$(TargetDir)*.dll" />
     </ItemGroup>
-    <Copy SourceFiles="@(_CopyItems)" DestinationFolder="..\.nuspec\$(TargetFramework)\" ContinueOnError="true" Retries="0" />
+    <Copy SourceFiles="@(_CopyItems)" DestinationFolder="..\..\..\..\.nuspec\$(TargetFramework)\" ContinueOnError="true" Retries="0" />
   </Target>
 </Project>
