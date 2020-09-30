@@ -38,7 +38,15 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var password = new Entry { Visual = VisualMarker.Material, IsPassword = true, Placeholder = "Password", 
 				TextColor = Color.Purple };
-			
+
+			var passwordConfirmation = new Entry
+			{
+				Visual = VisualMarker.Material,
+				IsPassword = true,
+				Placeholder = "Confirm Password",
+				TextColor = Color.Purple
+			};
+
 			password.Unfocused += (sender, args) => {
 				result.IsVisible = true;
 			};
@@ -46,6 +54,7 @@ namespace Xamarin.Forms.Controls.Issues
 			layout.Children.Add(instructions);
 			layout.Children.Add(entry);
 			layout.Children.Add(password);
+			layout.Children.Add(passwordConfirmation);
 			layout.Children.Add(result);
 
 			Content = layout;
