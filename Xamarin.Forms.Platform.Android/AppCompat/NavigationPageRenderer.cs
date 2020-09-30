@@ -10,23 +10,22 @@ using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Runtime;
+using Android.Util;
+using Android.Views;
+using Android.Widget;
+using AndroidX.AppCompat.App;
+using AndroidX.AppCompat.Graphics.Drawable;
+using AndroidX.DrawerLayout.Widget;
+using Xamarin.Forms.Internals;
+using static Android.Views.View;
+using static Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat.NavigationPage;
+using ActionBarDrawerToggle = AndroidX.AppCompat.App.ActionBarDrawerToggle;
+using AToolbar = AndroidX.AppCompat.Widget.Toolbar;
+using AView = Android.Views.View;
 using Fragment = AndroidX.Fragment.App.Fragment;
 using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
-using AToolbar = AndroidX.AppCompat.Widget.Toolbar;
-using ActionBarDrawerToggle = AndroidX.AppCompat.App.ActionBarDrawerToggle;
-using AndroidX.AppCompat.Graphics.Drawable;
-using AndroidX.DrawerLayout.Widget;
-using AndroidX.AppCompat.App;
-using Android.Util;
-using Android.Views;
-using Xamarin.Forms.Internals;
-using AView = Android.Views.View;
-
 using Object = Java.Lang.Object;
-using static Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat.NavigationPage;
-using static Android.Views.View;
-using Android.Widget;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -399,7 +398,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			AToolbar bar = _toolbar;
 			// make sure bar stays on top of everything
 			bar.BringToFront();
-			
+
 			int barHeight = ActionBarHeight();
 
 			if (Element.IsSet(BarHeightProperty))

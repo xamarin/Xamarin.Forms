@@ -23,7 +23,6 @@ namespace Xamarin.Forms.Platform.iOS
 		bool? _defaultBarTranslucent;
 		bool _loaded;
 		Size _queuedSize;
-		PageLifecycleManager _pageLifecycleManager;
 		UITextAttributes _textAttributes;
 
 		Page Page => Element as Page;
@@ -76,8 +75,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 
-			_pageLifecycleManager = new PageLifecycleManager(Element as IPageController);
-
 			OnPagesChanged(null, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 
 			if (element != null)
@@ -118,15 +115,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidAppear(bool animated)
 		{
-			_pageLifecycleManager?.HandlePageAppearing();
+			Page.SendAppearing();
 			base.ViewDidAppear(animated);
 		}
 
 		public override void ViewDidDisappear(bool animated)
 		{
 			base.ViewDidDisappear(animated);
-			_pageLifecycleManager?.HandlePageDisappearing();
-
+			Page.SendDisappearing();
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -161,8 +157,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (disposing)
 			{
-				_pageLifecycleManager?.Dispose();
-				_pageLifecycleManager = null;
+				Page.SendDisappearing();
 				Tabbed.PropertyChanged -= OnPropertyChanged;
 				Tabbed.PagesChanged -= OnPagesChanged;
 				FinishedCustomizingViewControllers -= HandleFinishedCustomizingViewControllers;
