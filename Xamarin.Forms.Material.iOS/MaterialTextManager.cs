@@ -134,7 +134,7 @@ namespace Xamarin.Forms.Material.iOS
 				// and any of them are password fields, setting them to the same TextColor value will cause the application
 				// to hang when a password field loses focus. 
 
-				// So to work around this, we make an impercetible adjustment to the alpha value of the color each time
+				// So to work around this, we make an imperceptible adjustment to the alpha value of the color each time
 				// we set it; that way, none of the text entry fields have _exactly_ the same color and we avoid the bug
 
 				// Obviously this will start to become noticeable after the first 20 million or so text entry fields are displayed.
