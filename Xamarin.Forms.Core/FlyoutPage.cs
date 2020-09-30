@@ -315,5 +315,10 @@ namespace Xamarin.Forms
 		{
 			return _platformConfigurationRegistry.Value.On<T>();
 		}
+
+		public void UpdateMasterBehavior()
+		{
+			base.UpdateFlyoutLayoutBehavior();
+		}
 	}
 }
