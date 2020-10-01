@@ -15,13 +15,13 @@ using Xamarin.Forms.Core.UITests;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 12126, "[iOS] TabBarIsVisible = True/False doesn't work on Back Navigation When using BackButtonBehavior",
+	[Issue(IssueTracker.Github, 12320, "[iOS] TabBarIsVisible = True/False doesn't work on Back Navigation When using BackButtonBehavior",
 		PlatformAffected.iOS)]
 #if UITEST
 	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github10000)]
 	[NUnit.Framework.Category(UITestCategories.Shell)]
 #endif
-	public class Issue12126 : TestShell
+	public class Issue12320 : TestShell
 	{
 		bool firstNavigated = true;
 		protected override void Init()
@@ -29,6 +29,11 @@ namespace Xamarin.Forms.Controls.Issues
 			var page1 = AddFlyoutItem("Tab 1");
 			AddBottomTab("Tab 2");
 			Shell.SetTabBarIsVisible(page1, true);
+
+			page1.Content = new Label()
+			{
+				Text = "If you don't see any bottom tabs the test has failed"
+			};
 		}
 
 		protected override async void OnNavigated(ShellNavigatedEventArgs args)
@@ -41,30 +46,21 @@ namespace Xamarin.Forms.Controls.Issues
 				ContentPage contentPage = new ContentPage();
 				contentPage.Content = new Label()
 				{
-					Text = "If you don't see any bottom tabs the test has failed"
-				};
-				Shell.SetTabBarIsVisible(contentPage, true);
-
-				ContentPage contentPage2 = new ContentPage();
-				contentPage2.Content = new Label()
-				{
-					Text = "Click The Back Arrow",
-					AutomationId = "TestReady"
+					Text = "Click the Coffee Cup in the Nav Bar"
 				};
 
-				Shell.SetTabBarIsVisible(contentPage2, false);
+				Shell.SetTabBarIsVisible(contentPage, false);
+				Shell.SetBackButtonBehavior(contentPage, new BackButtonBehavior() { IconOverride = "coffee.png" });
 				await Navigation.PushAsync(contentPage);
-				await Navigation.PopAsync();
 			}
 		}
 
 
 #if UITEST && __SHELL__
 		[Test]
-		public void NavigatingBackFromMultiplePushPagesChangesTabVisibilityCorrectly()
+		public void PopLogicExecutesWhenUsingBackButtonBehavior()
 		{
-			RunningApp.WaitForElement("TestReady");
-			TapBackArrow();
+			base.TapBackArrow();
 			RunningApp.WaitForElement("Tab 1");
 		}
 #endif
