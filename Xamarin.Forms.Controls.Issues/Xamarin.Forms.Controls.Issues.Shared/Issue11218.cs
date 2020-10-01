@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
-
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
@@ -20,16 +19,20 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 11218, "[Bug] The Shell RemovePage function causes crash on iOS",
 		PlatformAffected.iOS)]
 #if UITEST
-	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github10000)]
+	//[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
 	[NUnit.Framework.Category(UITestCategories.Shell)]
 #endif
 	public class Issue11218 : TestShell
 	{
+		const string toMiddlePageText = "to middle page";
+		const string initialPageText = "Initial page";
+		const string toLastPageText = "to last page";
+
 		protected override void Init()
 		{
 			var button = new Button
 			{
-				Text = "to middle page",
+				Text = toMiddlePageText,
 				BackgroundColor = Color.Blue,
 				TextColor = Color.White,
 				VerticalOptions = LayoutOptions.EndAndExpand
@@ -42,7 +45,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var label = new Label
 			{
-				Text = "Initial page",
+				Text = initialPageText,
+				TextColor = Color.Black,
 				VerticalOptions = LayoutOptions.CenterAndExpand,
 				HorizontalOptions = LayoutOptions.CenterAndExpand
 			};
@@ -79,11 +83,12 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				var button = new Button
 				{
-					Text = "to last page",
+					Text = toLastPageText,
 					BackgroundColor = Color.Blue,
 					TextColor = Color.White,
 					VerticalOptions = LayoutOptions.EndAndExpand
 				};
+
 				button.Clicked += (_, __) =>
 				{
 					Shell.Current.GoToAsync("lastPage");
@@ -92,6 +97,7 @@ namespace Xamarin.Forms.Controls.Issues
 				var label = new Label
 				{
 					Text = "Middle page",
+					TextColor = Color.Black,
 					VerticalOptions = LayoutOptions.CenterAndExpand,
 					HorizontalOptions = LayoutOptions.CenterAndExpand
 				};
@@ -103,5 +109,19 @@ namespace Xamarin.Forms.Controls.Issues
 				Content = layout;
 			}
 		}
+
+
+#if UITEST
+		[Test]
+		public void Issue11218RemovePageTest()
+		{
+			RunningApp.WaitForElement(initialPageText);
+			RunningApp.Tap(toMiddlePageText);
+			RunningApp.WaitForElement(toLastPageText);
+			RunningApp.Tap(toLastPageText);
+			base.TapBackArrow();
+			RunningApp.WaitForElement(initialPageText);
+		}
+#endif
 	}
 }
