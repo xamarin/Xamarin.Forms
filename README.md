@@ -6,7 +6,7 @@
 * Deploy to multiple devices across mobile & desktop
 * Using a single project, single codebase
 * Evolution of [Xamarin.Forms](https://github.com/xamarin/xamarin.forms)
-* Targeting .NET 6, previews end of year
+* Targeting .NET 6, previews Q1 of 2021
 
 ## Status: Planning and Early Development
 
