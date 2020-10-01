@@ -387,7 +387,7 @@ namespace Xamarin.Forms
 						}
 
 						IsPoppingModalStack = true;
-						while (navStack.Count > popCount)
+						while (navStack.Count > popCount && Navigation.ModalStack.Count > 0)
 						{
 							bool isAnimated = animate ?? IsNavigationAnimated(navStack[navStack.Count - 1]);
 							if (Navigation.ModalStack.Contains(navStack[navStack.Count - 1]))
@@ -398,13 +398,25 @@ namespace Xamarin.Forms
 							{
 								await Navigation.ModalStack[Navigation.ModalStack.Count - 1].Navigation.PopAsync(isAnimated);
 							}
-							else
-							{
-								await OnPopAsync(isAnimated);
-							}
 
 							navStack = BuildFlattenedNavigationStack(new List<Page>(_navStack), Navigation?.ModalStack);
 						}
+
+						while (_navStack.Count > popCount)
+						{
+							if ((_navStack.Count - popCount) == 1)
+							{
+								bool isAnimated = animate ?? IsNavigationAnimated(_navStack[_navStack.Count - 1]);
+								await OnPopAsync(isAnimated);
+							}
+							else
+							{
+								OnRemovePage(_navStack[_navStack.Count - 2]);
+							}
+						}
+
+						navStack = BuildFlattenedNavigationStack(new List<Page>(_navStack), Navigation?.ModalStack);
+
 						IsPoppingModalStack = false;
 
 						break;

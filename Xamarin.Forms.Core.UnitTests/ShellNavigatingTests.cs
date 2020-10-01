@@ -237,6 +237,44 @@ namespace Xamarin.Forms.Core.UnitTests
 			await testShell.Navigation.PopToRootAsync();
 		}
 
+		[Test]
+		public async Task MultiplePopsRemoveMiddlePagesBeforeFinalPop()
+		{
+			TestShell testShell = new TestShell(
+				CreateShellSection<NavigationMonitoringTab>(shellContentRoute: "rootpage")
+			);
+
+			var pageLeftOnStack = new ContentPage();
+			var tab = (NavigationMonitoringTab)testShell.CurrentItem.CurrentItem;
+			await testShell.Navigation.PushAsync(pageLeftOnStack);
+			await testShell.Navigation.PushAsync(new ContentPage());
+			await testShell.Navigation.PushAsync(new ContentPage());
+			tab.NavigationsFired.Clear();
+			await testShell.GoToAsync("../..");
+			Assert.That(testShell.CurrentState.Location.ToString(),
+				Is.EqualTo($"//rootpage/{Routing.GetRoute(pageLeftOnStack)}"));
+
+			Assert.AreEqual("OnRemovePage", tab.NavigationsFired[0]);
+			Assert.AreEqual("OnPopAsync", tab.NavigationsFired[1]);
+			Assert.AreEqual(2, tab.NavigationsFired.Count);
+		}
+
+		public class NavigationMonitoringTab : Tab
+		{
+			public List<string> NavigationsFired = new List<string>();
+			protected override void OnRemovePage(Page page)
+			{
+				base.OnRemovePage(page);
+				NavigationsFired.Add(nameof(OnRemovePage));
+			}
+
+			protected override Task<Page> OnPopAsync(bool animated)
+			{
+				NavigationsFired.Add(nameof(OnPopAsync));
+				return base.OnPopAsync(animated);
+			}
+		}
+
 		ShellNavigatingEventArgs CreateShellNavigatedEventArgs() =>
 			new ShellNavigatingEventArgs("..", "../newstate", ShellNavigationSource.Push, true);
 	}
