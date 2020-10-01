@@ -15,7 +15,7 @@ using Xamarin.Forms.Core.UITests;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 12126, "[iOS] TabBarIsVisible = True/False doesn't work on Back Navigation When using BackButtonBehavior",
+	[Issue(IssueTracker.Github, 12126, "[iOS] TabBarIsVisible = True/False breaking for multiple nested pages",
 		PlatformAffected.iOS)]
 #if UITEST
 	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github10000)]
@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 				Shell.SetTabBarIsVisible(contentPage2, false);
 				await Navigation.PushAsync(contentPage);
-				await Navigation.PopAsync();
+				await Navigation.PushAsync(contentPage2);
 			}
 		}
 
