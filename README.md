@@ -70,8 +70,8 @@ If you already have VS 2019+ installed, you can verify that these features are i
 ##### Provisioning script
 If you are getting errors about missing SDks you can run our provisioning script in PowerShell or CMD
 
-- build.cmd -Target provision
-- ./build.ps1 -Target provision
+- `build.cmd` -Target provision
+- `./build.ps1` -Target provision
 
 ### Mac ###
 #### Install Visual Studio for Mac 2019 ####
@@ -85,7 +85,7 @@ Here are a few different options we've put together to help make this process ea
 ```sh
 ./build.sh --target vsmac
 ```
-- When working on an earlier branch that does not have the cake scripts then you can use the following [build.sh] script(https://gist.github.com/PureWeen/92c1e1aff0c257c3decf0bcb8d6e9296)
+- When working on an earlier branch that does not have the cake scripts then you can use the following [build.sh] script (https://gist.github.com/PureWeen/92c1e1aff0c257c3decf0bcb8d6e9296)
 
 - If you don't want to run any scripts then
   - Open Xamarin.Forms.sln
