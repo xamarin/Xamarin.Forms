@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue12315"
+    Title="Issue 12315">
+    <controls:TestContentPage.Resources>
+        <ResourceDictionary>
+
+            <LinearGradientBrush
+                x:Key="LinearBrush"
+                StartPoint="0, 0" EndPoint="1, 1">
+                <LinearGradientBrush.GradientStops>
+                    <GradientStop Color="DarkBlue" Offset="0.1" />
+                    <GradientStop Color="Pink" Offset="0.6" />
+                    <GradientStop Color="LightPink" Offset="1.0" />
+                </LinearGradientBrush.GradientStops>
+            </LinearGradientBrush>
+
+        </ResourceDictionary>
+    </controls:TestContentPage.Resources>
+    <ContentPage.Content>
+        <StackLayout
+            Padding="12">
+            <Button
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                HeightRequest="60"
+                WidthRequest="120"
+                Background="{StaticResource LinearBrush}"
+                BorderWidth="0"
+                TextColor="White"
+                FontSize="12"
+                Padding="2"
+                CornerRadius="{OnPlatform Android=8, Default=8}"
+                Text="If the Button is visible, test test has passed."/>
+        </StackLayout>
+    </ContentPage.Content>
+</controls:TestContentPage>
