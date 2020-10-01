@@ -1593,6 +1593,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)HeaderFooterShellFlyout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue12134.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11963.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue12126.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11831.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11496.xaml.cs">
       <DependentUpon>Issue11496.xaml</DependentUpon>
