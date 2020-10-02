@@ -565,13 +565,6 @@ namespace Xamarin.Forms
 				{
 					modalPageStacks.Add(content);
 				}
-				/*else if (modalPageStacks.Count > 0)
-				{
-					if (modalPageStacks[modalPageStacks.Count - 1] is NavigationPage navigationPage)
-						await navigationPage.Navigation.PushAsync(content, animate ?? IsNavigationAnimated(content));
-					else
-						throw new InvalidOperationException($"Shell cannot push a page to the following type: {modalPageStacks[modalPageStacks.Count - 1]}. The visible modal page needs to be a NavigationPage");
-				}*/
 				else
 				{
 					nonModalPageStacks.Add(content);
