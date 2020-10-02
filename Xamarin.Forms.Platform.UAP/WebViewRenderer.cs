@@ -101,16 +101,38 @@ if(bases.length == 0){
 			}
 		}
 
+		/// <summary>
+		/// Override this to chose an execution mode other than the default of 'SameThread'
+		/// </summary>
+		/// <remarks>
+		/// In certain case (eg, frequent opening and closing of large websites) there may be 
+		/// a need to host the WebView in a different thread or process to avoid out of memory situations.
+		/// </remarks>
+		[DefaultValue(WebViewExecutionMode.SameThread)]
+		protected WebViewExecutionMode ExecutionMode
+		{
+			get;set;
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
 			{
 				if (Control != null)
 				{
+					Control.SeparateProcessLost -= OnSeparateProcessLost;
 					Control.NavigationStarting -= OnNavigationStarted;
 					Control.NavigationCompleted -= OnNavigationCompleted;
 					Control.NavigationFailed -= OnNavigationFailed;
 					Control.ScriptNotify -= OnScriptNotify;
+				}
+				if (Element != null)
+				{
+					Element.EvalRequested -= OnEvalRequested;
+					Element.EvaluateJavaScriptRequested -= OnEvaluateJavaScriptRequested;
+					Element.GoBackRequested -= OnGoBackRequested;
+					Element.GoForwardRequested -= OnGoForwardRequested;
+					Element.ReloadRequested -= OnReloadRequested;
 				}
 			}
 
@@ -135,7 +157,8 @@ if(bases.length == 0){
 			{
 				if (Control == null)
 				{
-					var webView = new Windows.UI.Xaml.Controls.WebView();
+					var webView = new Windows.UI.Xaml.Controls.WebView(ExecutionMode);
+					webView.SeparateProcessLost += OnSeparateProcessLost;
 					webView.NavigationStarting += OnNavigationStarted;
 					webView.NavigationCompleted += OnNavigationCompleted;
 					webView.NavigationFailed += OnNavigationFailed;
@@ -401,5 +424,17 @@ if(bases.length == 0){
 			((IWebViewController)Element).CanGoBack = Control.CanGoBack;
 			((IWebViewController)Element).CanGoForward = Control.CanGoForward;
 		}
+
+		void OnSeparateProcessLost(Windows.UI.Xaml.Controls.WebView sender, WebViewSeparateProcessLostEventArgs e)
+		{
+            var webView = new Windows.UI.Xaml.Controls.WebView(ExecutionMode);
+			webView.SeparateProcessLost += OnSeparateProcessLost;
+			webView.NavigationStarting += OnNavigationStarted;
+			webView.NavigationCompleted += OnNavigationCompleted;
+			webView.NavigationFailed += OnNavigationFailed;
+			webView.ScriptNotify += OnScriptNotify;
+
+			SetNativeControl(webView);
+        }
 	}
 }
