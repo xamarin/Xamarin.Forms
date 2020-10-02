@@ -34,10 +34,10 @@ namespace Xamarin.Forms.Controls.Issues
 			var result = new Label { Text = Success, IsVisible = false };
 
 			var entry = new Entry() { Visual = VisualMarker.Material, Keyboard = Keyboard.Email, Placeholder = "Email", 
-				TextColor = Color.Purple };
+				TextColor = Color.Purple, AutomationId = Entry };
 
 			var password = new Entry { Visual = VisualMarker.Material, IsPassword = true, Placeholder = "Password", 
-				TextColor = Color.Purple };
+				TextColor = Color.Purple, AutomationId = Password };
 
 			var passwordConfirmation = new Entry
 			{
