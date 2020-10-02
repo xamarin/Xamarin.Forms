@@ -427,7 +427,7 @@ if(bases.length == 0){
 
 		void OnSeparateProcessLost(Windows.UI.Xaml.Controls.WebView sender, WebViewSeparateProcessLostEventArgs e)
 		{
-            var webView = new Windows.UI.Xaml.Controls.WebView(ExecutionMode);
+			var webView = new Windows.UI.Xaml.Controls.WebView(ExecutionMode);
 			webView.SeparateProcessLost += OnSeparateProcessLost;
 			webView.NavigationStarting += OnNavigationStarted;
 			webView.NavigationCompleted += OnNavigationCompleted;
