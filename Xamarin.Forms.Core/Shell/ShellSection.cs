@@ -332,9 +332,8 @@ namespace Xamarin.Forms
 			return (ShellSection)(ShellContent)page;
 		}
 
-		async Task<int> PrepareCurrentStackForBeingReplaced(NavigationRequest request, IDictionary<string, string> queryData, bool? animate, List<string> globalRoutes)
+		async Task PrepareCurrentStackForBeingReplaced(NavigationRequest request, IDictionary<string, string> queryData, bool? animate, List<string> globalRoutes)
 		{
-			int whereToStartNavigation = 0;
 			string route = "";
 			List<Page> navStack = null;
 
@@ -394,7 +393,6 @@ namespace Xamarin.Forms
 
 				for (int i = 0; i < globalRoutes.Count; i++)
 				{
-					whereToStartNavigation = i;
 					bool isLast = i == globalRoutes.Count - 1;
 					route = globalRoutes[i];
 
@@ -416,7 +414,6 @@ namespace Xamarin.Forms
 							// if the routes do match and this is the last in the loop
 							// pop everything after this route
 							popCount = i + 2;
-							whereToStartNavigation++;
 							Shell.ApplyQueryAttributes(navPage, queryData, isLast);
 
 							// If we're not on the last loop of the stack then continue
@@ -465,8 +462,6 @@ namespace Xamarin.Forms
 					}
 				}
 			}
-
-			return whereToStartNavigation;
 
 			void RemoveExcessPathsWithinTheRoute()
 			{
@@ -544,9 +539,6 @@ namespace Xamarin.Forms
 			List<Page> modalPageStacks = new List<Page>();
 			List<Page> nonModalPageStacks = new List<Page>();
 			var currentNavStack = BuildFlattenedNavigationStack(_navStack, Navigation?.ModalStack);
-
-			//if (Navigation?.ModalStack?.Count > 0)
-			//	modalPageStacks.AddRange(Navigation.ModalStack);
 
 			// populate global routes and build modal stacks
 
