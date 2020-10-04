@@ -1,16 +1,11 @@
-﻿using Android.OS;
-#if __ANDROID_29__
-using AndroidX.Fragment.App;
-#else
-using Android.Support.V4.App;
-#endif
-using Android.Views;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Android.Views;
+using AndroidX.Fragment.App;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android

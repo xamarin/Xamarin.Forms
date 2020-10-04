@@ -23,7 +23,6 @@ namespace Xamarin.Forms.Controls.Issues
 		public Issue11333()
 		{
 #if APP
-			Device.SetFlags(new List<string> { ExperimentalFlags.SwipeViewExperimental });
 			InitializeComponent();
 #endif
 		}
@@ -44,7 +43,8 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 #endif
 
-#if UITEST
+#if UITEST && __ANDROID__
+
 		[Test]
 		[Category(UITestCategories.SwipeView)]
 		public void SwipeWithChildGestureRecognizer()

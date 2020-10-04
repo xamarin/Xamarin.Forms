@@ -1,7 +1,7 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -160,6 +160,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST && __IOS__
 		[Test]
+		[Ignore("Fails occasionally on iOS 12 https://github.com/xamarin/Xamarin.Forms/issues/6472")]
 		public void ListViewDoesNotThrowExceptionWithObservableCollection() 
 		{
 			RunningApp.WaitForElement (ListViewAutomationId);

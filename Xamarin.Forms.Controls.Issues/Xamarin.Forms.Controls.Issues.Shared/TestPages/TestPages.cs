@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Reflection;
-using Xamarin.Forms.CustomAttributes;
-using IOPath = System.IO.Path;
 using NUnit.Framework.Interfaces;
 using Xamarin.Forms.Controls.Issues;
+using Xamarin.Forms.CustomAttributes;
+using IOPath = System.IO.Path;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -462,9 +462,9 @@ namespace Xamarin.Forms.Controls
 	}
 
 #if UITEST
-	[Category(Core.UITests.UITestCategories.MasterDetailPage)]
+	[Category(Core.UITests.UITestCategories.FlyoutPage)]
 #endif
-	public abstract class TestMasterDetailPage : MasterDetailPage
+	public abstract class TestFlyoutPage : FlyoutPage
 	{
 #if UITEST
 		public IApp RunningApp => AppSetup.RunningApp;
@@ -472,7 +472,7 @@ namespace Xamarin.Forms.Controls
 		protected virtual bool Isolate => false;
 #endif
 
-		protected TestMasterDetailPage()
+		protected TestFlyoutPage()
 		{
 #if APP
 			Init();
@@ -681,34 +681,22 @@ namespace Xamarin.Forms.Controls
 			return page;
 		}
 
-		public ContentPage AddFlyoutItem(string title)
+		public ContentPage CreateContentPage<TShellItem>(string title)
+			where TShellItem : ShellItem
 		{
 			ContentPage page = new ContentPage() { Title = title };
-			AddFlyoutItem(page, title);
+			AddContentPage<TShellItem, Tab>(page, title);
 			return page;
+		}
+
+		public FlyoutItem AddFlyoutItem(string title)
+		{
+			return AddContentPage<FlyoutItem, Tab>(new ContentPage(), title);
 		}
 
 		public FlyoutItem AddFlyoutItem(ContentPage page, string title)
 		{
-			var item = new FlyoutItem
-			{
-				Title = title,
-				Items =
-				{
-					new Tab
-					{
-						Title = title,
-						Items =
-						{
-							page
-						}
-					}
-				}
-			};
-
-			Items.Add(item);
-
-			return item;
+			return AddContentPage<FlyoutItem, Tab>(page, title);
 		}
 
 		public ContentPage CreateContentPage(string shellItemTitle = null)
@@ -762,7 +750,7 @@ namespace Xamarin.Forms.Controls
 
 			shellSection.Items.Add(content);
 
-			if(!String.IsNullOrWhiteSpace(title))
+			if (!String.IsNullOrWhiteSpace(title))
 			{
 				content.Route = title;
 			}

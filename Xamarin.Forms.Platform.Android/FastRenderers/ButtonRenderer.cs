@@ -2,15 +2,10 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
-#if __ANDROID_29__
-using AndroidX.Core.View;
-using AndroidX.AppCompat.Widget;
-#else
-using Android.Support.V4.View;
-using Android.Support.V7.Widget;
-#endif
 using Android.Util;
 using Android.Views;
+using AndroidX.AppCompat.Widget;
+using AndroidX.Core.View;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AColor = Android.Graphics.Color;
@@ -104,9 +99,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				Control.Hint = string.Empty;
 			}
 
-			var result  = _buttonLayoutManager.GetDesiredSize(widthConstraint, heightConstraint);
+			var result = _buttonLayoutManager.GetDesiredSize(widthConstraint, heightConstraint);
 
-			if(setHint)
+			if (setHint)
 				Control.Hint = hint;
 
 			return result;
@@ -250,9 +245,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (this.IsDisposed())
 			{
 				return;
-			}	
+			}
 
-			if(Control?.LayoutParameters == null && _hasLayoutOccurred)
+			if (Control?.LayoutParameters == null && _hasLayoutOccurred)
 			{
 				ElementPropertyChanged?.Invoke(this, e);
 				return;

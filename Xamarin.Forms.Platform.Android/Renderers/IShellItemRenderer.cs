@@ -1,10 +1,5 @@
-﻿#if __ANDROID_29__
+﻿using System;
 using AndroidX.Fragment.App;
-#else
-using Android.Support.V4.App;
-#endif
-using System;
-using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {

@@ -42,8 +42,19 @@ namespace Xamarin.Forms.Platform.UWP
 			if (element == null)
 				throw new ArgumentNullException(nameof(element));
 
-			IVisualElementRenderer renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element) ??
-			                                  new DefaultRenderer();
+			IVisualElementRenderer renderer = null;
+
+			if (element is TemplatedView tv && tv.ResolveControlTemplate() != null)
+			{
+				renderer = new DefaultRenderer();
+			}
+
+			if (renderer == null)
+			{
+				renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element) ??
+												  new DefaultRenderer();
+			}
+
 			renderer.SetElement(element);
 			return renderer;
 		}
@@ -72,7 +83,7 @@ namespace Xamarin.Forms.Platform.UWP
 				Windows.UI.Xaml.Application.Current.Resources.MergedDictionaries.Add(Forms.GetTabletResources());
 			}
 
-#if !UWP_14393
+#if UWP_16299
 			if (!current.Resources.ContainsKey(ShellRenderer.ShellStyle))
 			{
 				var myResourceDictionary = new Windows.UI.Xaml.ResourceDictionary();

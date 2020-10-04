@@ -2,9 +2,12 @@
 
 namespace Xamarin.Forms.Platform.Tizen.Renderers
 {
+	[Obsolete("MasterDetailContainer is obsolete as of version 5.0.0. Please use FlyoutContainer instead.")]
 	public class MasterDetailContainer : ElmSharp.Box, IDisposable
 	{
+#pragma warning disable CS0618 // Type or member is obsolete
 		readonly MasterDetailPage _parent;
+#pragma warning restore CS0618 // Type or member is obsolete
 		readonly bool _isMaster;
 
 		VisualElement _childView;
@@ -12,9 +15,12 @@ namespace Xamarin.Forms.Platform.Tizen.Renderers
 		bool _hasAppearedToParent;
 
 		IPageController PageController => ChildView as IPageController;
+
 		IMasterDetailPageController MasterDetailPageController => _parent as IMasterDetailPageController;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 		public MasterDetailContainer(MasterDetailPage parentElement, bool isMaster) : base(Forms.NativeParent)
+#pragma warning restore CS0618 // Type or member is obsolete
 		{
 			_parent = parentElement;
 			_isMaster = isMaster;

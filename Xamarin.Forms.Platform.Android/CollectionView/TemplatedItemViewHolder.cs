@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public View View { get; private set; }
 
-		public TemplatedItemViewHolder(ItemContentView itemContentView, DataTemplate template, 
+		public TemplatedItemViewHolder(ItemContentView itemContentView, DataTemplate template,
 			bool isSelectionEnabled = true) : base(itemContentView, isSelectionEnabled)
 		{
 			_itemContentView = itemContentView;
@@ -27,25 +27,30 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			VisualStateManager.GoToState(View, IsSelected 
-				? VisualStateManager.CommonStates.Selected 
+			VisualStateManager.GoToState(View, IsSelected
+				? VisualStateManager.CommonStates.Selected
 				: VisualStateManager.CommonStates.Normal);
 		}
 
 		public void Recycle(ItemsView itemsView)
 		{
+			if (View == null)
+			{
+				return;
+			}
+
 			itemsView.RemoveLogicalChild(View);
 			View.BindingContext = null;
 		}
 
-		public void Bind(object itemBindingContext, ItemsView itemsView, 
+		public void Bind(object itemBindingContext, ItemsView itemsView,
 			Action<Size> reportMeasure = null, Size? size = null)
 		{
 			var template = _template.SelectDataTemplate(itemBindingContext, itemsView);
 
 			var templateChanging = template != _selectedTemplate;
 
-			if(templateChanging)
+			if (templateChanging)
 			{
 				// Clean up any content we're still holding on to
 				_itemContentView.Recycle();
@@ -73,7 +78,7 @@ namespace Xamarin.Forms.Platform.Android
 				// Same template, new data
 				View.BindingContext = itemBindingContext;
 			}
-			
+
 			itemsView.AddLogicalChild(View);
 		}
 	}

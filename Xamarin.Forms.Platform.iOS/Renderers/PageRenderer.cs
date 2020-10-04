@@ -9,13 +9,13 @@ using PageSpecific = Xamarin.Forms.PlatformConfiguration.iOSSpecific.Page;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class PageRenderer : UIViewController, IVisualElementRenderer, IEffectControlProvider, IAccessibilityElementsController, IShellContentInsetObserver
+	public class PageRenderer : UIViewController, IVisualElementRenderer, IEffectControlProvider, IAccessibilityElementsController, IShellContentInsetObserver, IDisconnectable
 	{
+		bool _appeared;
 		bool _disposed;
 		EventTracker _events;
 		VisualElementPackager _packager;
 		VisualElementTracker _tracker;
-		PageLifecycleManager _pageLifecycleManager;
 
 		// storing this into a local variable causes it to not get collected. Do not delete this please		
 		PageContainer _pageContainer;
@@ -102,7 +102,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get { return _disposed ? null : View; }
 		}
-
+		
 		public void SetElement(VisualElement element)
 		{
 			VisualElement oldElement = Element;
@@ -110,8 +110,6 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateTitle();
 
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
-
-			_pageLifecycleManager = new PageLifecycleManager(Element as IPageController);
 
 			if (element != null)
 			{
@@ -166,7 +164,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidLayoutSubviews();
 
-			if (_disposed)
+			if (_disposed || Element == null)
 				return;
 
 			if (Element.Parent is BaseShellItem)
@@ -189,31 +187,33 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidAppear(animated);
 
-			if (_disposed)
+			if (_appeared || _disposed || Element == null)
 				return;
 
+			_appeared = true;
 			UpdateStatusBarPrefersHidden();
-
 			if (Forms.RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden)
 				SetNeedsUpdateOfHomeIndicatorAutoHidden();
 
 			if (Element.Parent is CarouselPage)
 				return;
 
-			_pageLifecycleManager?.HandlePageAppearing();
+			Page.SendAppearing();
 		}
 
 		public override void ViewDidDisappear(bool animated)
 		{
 			base.ViewDidDisappear(animated);
 
-			if (_disposed)
+			if (!_appeared || _disposed || Element == null)
 				return;
+
+			_appeared = false;
 
 			if (Element.Parent is CarouselPage)
 				return;
 
-			_pageLifecycleManager?.HandlePageDisappearing();
+			Page.SendDisappearing();
 		}
 
 		public override void ViewDidLoad()
@@ -252,6 +252,29 @@ namespace Xamarin.Forms.Platform.iOS
 			NativeView?.Window?.EndEditing(true);
 		}
 
+		void IDisconnectable.Disconnect()
+		{
+			if (_shellSection != null)
+			{
+				((IShellSectionController)_shellSection).RemoveContentInsetObserver(this);
+				_shellSection = null;
+			}
+
+			if (Element != null)
+			{
+				Element.PropertyChanged -= OnHandlePropertyChanged;
+				Platform.SetRenderer(Element, null);
+
+				if (_appeared)
+					Page.SendDisappearing();
+				
+				Element = null;
+			}
+				
+			_events?.Disconnect();
+			_packager?.Disconnect();
+			_tracker?.Disconnect();
+		}
 
 		protected override void Dispose(bool disposing)
 		{
@@ -260,35 +283,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
-				if (_shellSection != null)
-				{
-					((IShellSectionController)_shellSection).RemoveContentInsetObserver(this);
-					_shellSection = null;
-				}
+				(this as IDisconnectable).Disconnect();
 
-				Element.PropertyChanged -= OnHandlePropertyChanged;
-				Platform.SetRenderer(Element, null);
-
-				_pageLifecycleManager?.Dispose();
-				_pageLifecycleManager = null;
-
-				if (_events != null)
-				{
-					_events.Dispose();
-					_events = null;
-				}
-
-				if (_packager != null)
-				{
-					_packager.Dispose();
-					_packager = null;
-				}
-
-				if (_tracker != null)
-				{
-					_tracker.Dispose();
-					_tracker = null;
-				}
+				_events?.Dispose();
+				_packager?.Dispose();
+				_tracker?.Dispose();
+				_events = null;
+				_packager = null;
+				_tracker = null;
 
 				Element = null;
 				Container?.Dispose();
@@ -359,10 +361,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
 
-#if __XCODE11__
 			if (Forms.IsiOS13OrNewer && previousTraitCollection.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
 				Application.Current?.TriggerThemeChanged(new AppThemeChangedEventArgs(Application.Current.RequestedTheme));
-#endif
 		}
 
 		bool ShouldUseSafeArea()
@@ -378,16 +378,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateUseSafeArea()
 		{
-			if (Element == null || _pageLifecycleManager == null)
+			if (Element == null)
 				return;
 
 			if (_userOverriddenSafeArea)
 				return;
 
 			if (!IsPartOfShell && !Forms.IsiOS11OrNewer)
-				return;
-
-			if (IsPartOfShell && !_pageLifecycleManager.Appeared)
 				return;
 
 			var tabThickness = _tabThickness;

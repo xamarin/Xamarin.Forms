@@ -1,14 +1,10 @@
 using System;
+using System.ComponentModel;
 using Android.Content;
 using Android.Views;
-using AView = Android.Views.View;
-using AListView = Android.Widget.ListView;
-using System.ComponentModel;
-#if __ANDROID_29__
 using AndroidX.Core.Widget;
-#else
-using Android.Support.V4.Widget;
-#endif
+using AListView = Android.Widget.ListView;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -93,7 +89,7 @@ namespace Xamarin.Forms.Platform.Android
 					_adapter.Dispose();
 					_adapter = null;
 				}
- 			} 
+			}
 
 
 			base.Dispose(disposing);

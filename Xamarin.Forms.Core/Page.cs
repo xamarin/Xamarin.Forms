@@ -129,8 +129,8 @@ namespace Xamarin.Forms
 
 		public IList<ToolbarItem> ToolbarItems { get; internal set; }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public Rectangle ContainerArea
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public Rectangle ContainerArea
 		{
 			get { return _containerArea; }
 			set
@@ -143,15 +143,15 @@ namespace Xamarin.Forms
 			}
 		}
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public bool IgnoresContainerArea
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public bool IgnoresContainerArea
 		{
 			get { return (bool)GetValue(IgnoresContainerAreaProperty); }
 			set { SetValue(IgnoresContainerAreaProperty, value); }
 		}
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
 
 		internal override IEnumerable<Element> ChildrenNotDrawnByThisElement
 		{
@@ -231,11 +231,11 @@ namespace Xamarin.Forms
 		internal override void OnIsPlatformEnabledChanged()
 		{
 			base.OnIsPlatformEnabledChanged();
-			if(IsPlatformEnabled && _pendingActions.Count > 0)
+			if (IsPlatformEnabled && _pendingActions.Count > 0)
 			{
 				var actionsToProcess = _pendingActions.ToList();
 				_pendingActions.Clear();
-				foreach(var pendingAction in actionsToProcess)
+				foreach (var pendingAction in actionsToProcess)
 					pendingAction();
 			}
 		}
@@ -309,7 +309,7 @@ namespace Xamarin.Forms
 				SetInheritedBindingContext(toolbarItem, BindingContext);
 			}
 
-			if(_titleView != null)
+			if (_titleView != null)
 				SetInheritedBindingContext(_titleView, BindingContext);
 		}
 
@@ -416,7 +416,7 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-        public void SendAppearing()
+		public void SendAppearing()
 		{
 			if (_hasAppeared)
 				return;
@@ -440,8 +440,8 @@ namespace Xamarin.Forms
 			FindApplication(this)?.OnPageAppearing(this);
 		}
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SendDisappearing()
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendDisappearing()
 		{
 			if (!_hasAppeared)
 				return;
@@ -472,12 +472,12 @@ namespace Xamarin.Forms
 		{
 			if (e.OldItems != null)
 			{
-				foreach (Element item in e.OldItems)
+				for (var i = 0; i < e.OldItems.Count; i++)
 				{
+					var item = (Element)e.OldItems[i];
 					if (item is VisualElement visual)
-						OnInternalRemoved(visual);
-					else
-						OnChildRemoved(item);
+						visual.MeasureInvalidated -= OnChildMeasureInvalidated;
+					OnChildRemoved(item, e.OldStartingIndex + i);
 				}
 			}
 
@@ -499,13 +499,6 @@ namespace Xamarin.Forms
 
 			OnChildAdded(view);
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
-		}
-
-		void OnInternalRemoved(VisualElement view)
-		{
-			view.MeasureInvalidated -= OnChildMeasureInvalidated;
-
-			OnChildRemoved(view);
 		}
 
 		void OnPageBusyChanged()

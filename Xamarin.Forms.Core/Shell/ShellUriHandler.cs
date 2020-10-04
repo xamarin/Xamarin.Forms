@@ -56,7 +56,7 @@ namespace Xamarin.Forms
 			request = FormatUri(request, shell);
 			return ConvertToStandardFormat(shell?.RouteScheme, shell?.RouteHost, shell?.Route, request);
 		}
-		
+
 		public static Uri ConvertToStandardFormat(string routeScheme, string routeHost, string route, Uri request)
 		{
 			string pathAndQuery = null;
@@ -79,9 +79,10 @@ namespace Xamarin.Forms
 			return new Uri(uri);
 		}
 
-		internal static NavigationRequest GetNavigationRequest(Shell shell, Uri uri, bool enableRelativeShellRoutes = false)
+		internal static NavigationRequest GetNavigationRequest(Shell shell, Uri uri, bool enableRelativeShellRoutes = false, bool throwNavigationErrorAsException = true, ShellNavigationParameters shellNavigationParameters = null)
 		{
 			uri = FormatUri(uri, shell);
+
 			// figure out the intent of the Uri
 			NavigationRequest.WhatToDoWithTheStack whatDoIDo = NavigationRequest.WhatToDoWithTheStack.PushToIt;
 			if (uri.IsAbsoluteUri)
@@ -93,11 +94,17 @@ namespace Xamarin.Forms
 
 			Uri request = ConvertToStandardFormat(shell, uri);
 
+
 			var possibleRouteMatches = GenerateRoutePaths(shell, request, uri, enableRelativeShellRoutes);
 
 
 			if (possibleRouteMatches.Count == 0)
-				throw new ArgumentException($"unable to figure out route for: {uri}", nameof(uri));
+			{
+				if (throwNavigationErrorAsException)
+					throw new ArgumentException($"unable to figure out route for: {uri}", nameof(uri));
+
+				return null;
+			}
 			else if (possibleRouteMatches.Count > 1)
 			{
 				string[] matches = new string[possibleRouteMatches.Count];
@@ -109,8 +116,11 @@ namespace Xamarin.Forms
 				}
 
 				string matchesFound = String.Join(",", matches);
-				throw new ArgumentException($"Ambiguous routes matched for: {uri} matches found: {matchesFound}", nameof(uri));
 
+				if (throwNavigationErrorAsException)
+					throw new ArgumentException($"Ambiguous routes matched for: {uri} matches found: {matchesFound}", nameof(uri));
+
+				return null;
 			}
 
 			var theWinningRoute = possibleRouteMatches[0];
@@ -221,7 +231,7 @@ namespace Xamarin.Forms
 						// So right now we will just throw an exception so that once this is implemented
 						// GotoAsync doesn't start acting inconsistently and all of a sudden starts creating routes
 
-						int shellElementsMatched = 
+						int shellElementsMatched =
 							pureGlobalRoutesMatch[0].SegmentsMatched.Count -
 							pureGlobalRoutesMatch[0].GlobalRouteMatches.Count;
 
@@ -814,6 +824,4 @@ namespace Xamarin.Forms
 		public ShellContent Content { get; }
 		public List<string> GlobalRoutes { get; }
 	}
-
-
 }

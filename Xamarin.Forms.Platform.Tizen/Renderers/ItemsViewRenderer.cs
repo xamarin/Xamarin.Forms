@@ -82,7 +82,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				((GridLayoutManager)(Control.LayoutManager)).UpdateSpan(((GridItemsLayout)sender).Span);
 			}
-			else if (e.PropertyName == nameof(LinearItemsLayout.ItemSpacing) 
+			else if (e.PropertyName == nameof(LinearItemsLayout.ItemSpacing)
 				|| e.PropertyName == nameof(GridItemsLayout.VerticalItemSpacing)
 				|| e.PropertyName == nameof(GridItemsLayout.HorizontalItemSpacing))
 			{
@@ -99,6 +99,11 @@ namespace Xamarin.Forms.Platform.Tizen
 		void OnScrolled(object sender, ItemsViewScrolledEventArgs e)
 		{
 			Element.SendScrolled(e);
+			if (Element.RemainingItemsThreshold >= 0)
+			{
+				if (Control.Adaptor.Count - 1 - e.LastVisibleItemIndex <= Element.RemainingItemsThreshold)
+					Element.SendRemainingItemsThresholdReached();
+			}
 		}
 
 		void OnScrollToRequest(object sender, ScrollToRequestEventArgs e)
@@ -142,7 +147,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 		}
 
-		void UpdateAdaptor(bool initialize)
+		protected void UpdateAdaptor(bool initialize)
 		{
 			if (!initialize)
 			{

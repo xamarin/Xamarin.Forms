@@ -1,14 +1,14 @@
 using System;
-using System.Linq;
-using System.Collections.Specialized;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
 using ElmSharp;
+using ElmSharp.Wearable;
 using EBox = ElmSharp.Box;
+using EPoint = ElmSharp.Point;
 using ERect = ElmSharp.Rect;
 using EScroller = ElmSharp.Scroller;
 using ESize = ElmSharp.Size;
-using EPoint = ElmSharp.Point;
-using ElmSharp.Wearable;
 
 namespace Xamarin.Forms.Platform.Tizen.Native
 {
@@ -29,6 +29,10 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		SnapPointsType _snapPoints;
 		ESize _itemSize = new ESize(-1, -1);
 
+		EvasObject _headerView;
+		EvasObject _footerView;
+		SmartEvent _scrollAnimationStop;
+
 		public event EventHandler<ItemsViewScrolledEventArgs> Scrolled;
 
 		public CollectionView(EvasObject parent) : base(parent)
@@ -39,6 +43,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			Scroller.Show();
 			PackEnd(Scroller);
 			Scroller.Scrolled += OnScrolled;
+			_scrollAnimationStop = new SmartEvent(Scroller, ThemeConstants.Scroller.Signals.StopScrollAnimation);
+			_scrollAnimationStop.On += OnScrollStopped;
 
 			_innerLayout = new EBox(parent);
 			_innerLayout.SetLayoutCallback(OnInnerLayout);
@@ -281,6 +287,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				var content = Adaptor.CreateNativeView(index, this);
 				holder = CreateViewHolder();
 				holder.RequestSelected += OnRequestItemSelection;
+				holder.StateUpdated += OnItemStateChanged;
 				holder.Content = content;
 				holder.ViewCategory = Adaptor.GetViewCategory(index);
 				_innerLayout.PackEnd(holder);
@@ -295,15 +302,22 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			return holder;
 		}
 
+		void OnItemStateChanged(object sender, EventArgs e)
+		{
+			if (sender is ViewHolder holder && holder.Content != null)
+			{
+				Adaptor?.UpdateViewState(holder.Content, holder.State);
+			}
+		}
+
 		void OnRequestItemSelection(object sender, EventArgs e)
 		{
 			if (SelectionMode == CollectionViewSelectionMode.None)
 				return;
 
-
 			if (_lastSelectedViewHolder != null)
 			{
-				_lastSelectedViewHolder.State = ViewHolderState.Normal;
+				_lastSelectedViewHolder.ResetState();
 			}
 
 			_lastSelectedViewHolder = sender as ViewHolder;
@@ -371,7 +385,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			{
 				if (_lastSelectedViewHolder != null)
 				{
-					_lastSelectedViewHolder.State = ViewHolderState.Normal;
+					_lastSelectedViewHolder.ResetState();
 					_lastSelectedViewHolder = null;
 				}
 				_selectedItemIndex = -1;
@@ -392,6 +406,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			_layoutManager.CollectionView = this;
 			_layoutManager.SizeAllocated(AllocatedSize);
 			UpdateSnapPointsType(SnapPointsType);
+			if (Adaptor != null)
+			{
+				LayoutManager?.SetHeader(_headerView, Adaptor.MeasureHeader(AllocatedSize.Width, AllocatedSize.Height));
+				LayoutManager?.SetFooter(_footerView, Adaptor.MeasureFooter(AllocatedSize.Width, AllocatedSize.Height));
+			}
 			RequestLayoutItems();
 		}
 
@@ -401,6 +420,21 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			{
 				RemoveEmptyView();
 			}
+			else
+			{
+				if (_headerView != null)
+				{
+					_innerLayout.UnPack(_headerView);
+					_headerView.Unrealize();
+				}
+				if (_footerView != null)
+				{
+					_innerLayout.UnPack(_footerView);
+					_footerView.Unrealize();
+				}
+			}
+			_headerView = null;
+			_footerView = null;
 
 			_layoutManager?.Reset();
 			if (Adaptor != null)
@@ -410,6 +444,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				Adaptor.CollectionView = null;
 			}
 		}
+
 		void OnAdaptorChanged()
 		{
 			if (_adaptor == null)
@@ -426,6 +461,21 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			if (Adaptor is IEmptyAdaptor)
 			{
 				CreateEmptyView();
+			}
+			else
+			{
+				_headerView = Adaptor.GetHeaderView(this);
+				if (_headerView != null)
+				{
+					_innerLayout.PackEnd(_headerView);
+				}
+				_footerView = Adaptor.GetFooterView(this);
+				if (_footerView != null)
+				{
+					_innerLayout.PackEnd(_footerView);
+				}
+				LayoutManager?.SetHeader(_headerView, Adaptor.MeasureHeader(AllocatedSize.Width, AllocatedSize.Height));
+				LayoutManager?.SetFooter(_footerView, Adaptor.MeasureFooter(AllocatedSize.Width, AllocatedSize.Height));
 			}
 		}
 
@@ -523,6 +573,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			{
 				_layoutManager?.SizeAllocated(Geometry.Size);
 				_layoutManager?.LayoutItems(ViewPort);
+				_layoutManager?.SetHeader(_headerView, Adaptor.MeasureHeader(AllocatedSize.Width, AllocatedSize.Height));
+				_layoutManager?.SetFooter(_footerView, Adaptor.MeasureFooter(AllocatedSize.Width, AllocatedSize.Height));
 
 				UpdateSnapPointsType(SnapPointsType);
 			}
@@ -559,9 +611,9 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		int _previousHorizontalOffset = 0;
 		int _previousVerticalOffset = 0;
-		void OnScrolled(object sender, EventArgs e)
+
+		void OnScrollStopped(object sender, EventArgs e)
 		{
-			_layoutManager.LayoutItems(ViewPort);
 			var args = new ItemsViewScrolledEventArgs();
 			args.FirstVisibleItemIndex = _layoutManager.GetVisibleItemIndex(ViewPort.X, ViewPort.Y);
 			args.CenterItemIndex = _layoutManager.GetVisibleItemIndex(ViewPort.X + (ViewPort.Width / 2), ViewPort.Y + (ViewPort.Height / 2));
@@ -575,6 +627,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 			_previousHorizontalOffset = ViewPort.X;
 			_previousVerticalOffset = ViewPort.Y;
+		}
+
+		void OnScrolled(object sender, EventArgs e)
+		{
+			_layoutManager.LayoutItems(ViewPort);
 		}
 
 		void UpdateSnapPointsType(SnapPointsType snapPoints)
@@ -604,7 +661,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 			if (LayoutManager.IsHorizontal)
 			{
-				Scroller.SetPageSize(itemSize , 0);
+				Scroller.SetPageSize(itemSize, 0);
 			}
 			else
 			{
@@ -620,6 +677,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			_emptyView.Geometry = Geometry;
 			_emptyView.MinimumHeight = Geometry.Height;
 			_emptyView.MinimumWidth = Geometry.Width;
+
 			Scroller.SetContent(_emptyView, true);
 			_innerLayout.Hide();
 		}

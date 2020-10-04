@@ -1,50 +1,38 @@
-﻿using Xamarin.Forms;
+﻿using System;
 using NUnit.Framework;
-using System;
+using Xamarin.Forms;
 using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {
 	public partial class TypeConverterTests : ContentPage
 	{
-		public TypeConverterTests ()
+		public TypeConverterTests()
 		{
-			Device.SetFlags(new[] { ExperimentalFlags.ExpanderExperimental });
-			InitializeComponent ();
+			InitializeComponent();
 		}
 
-		public TypeConverterTests (bool useCompiledXaml)
+		public TypeConverterTests(bool useCompiledXaml)
 		{
 			//this stub will be replaced at compile time
 		}
 
 		[TestFixture]
-		public class Tests 
+		public class Tests
 		{
 			[SetUp]
-			public void Setup ()
+			public void Setup()
 			{
-				Device.PlatformServices = new MockPlatformServices ();
-			}
-
-			[TestCase (false)]
-			[TestCase (true)]
-			public void UriAreConverted (bool useCompiledXaml)
-			{
-				var layout = new TypeConverterTests (useCompiledXaml);
-				Assert.That (layout.imageSource.Uri, Is.TypeOf<Uri> ());
-				Assert.AreEqual ("https://xamarin.com/content/images/pages/branding/assets/xamagon.png", layout.imageSource.Uri.ToString ());
+				Device.PlatformServices = new MockPlatformServices();
 			}
 
 			[TestCase(false)]
 			[TestCase(true)]
-			public void EasingsAreConverted(bool useCompiledXaml)
+			public void UriAreConverted(bool useCompiledXaml)
 			{
 				var layout = new TypeConverterTests(useCompiledXaml);
-				Assert.That(layout.expander.ExpandAnimationEasing, Is.TypeOf<Easing>());
-				Assert.That(layout.expander.CollapseAnimationEasing, Is.TypeOf<Easing>());
-				Assert.AreEqual(Easing.CubicInOut, layout.expander.ExpandAnimationEasing);
-				Assert.AreEqual(Easing.SinInOut, layout.expander.CollapseAnimationEasing);
+				Assert.That(layout.imageSource.Uri, Is.TypeOf<Uri>());
+				Assert.AreEqual("https://xamarin.com/content/images/pages/branding/assets/xamagon.png", layout.imageSource.Uri.ToString());
 			}
 		}
 	}

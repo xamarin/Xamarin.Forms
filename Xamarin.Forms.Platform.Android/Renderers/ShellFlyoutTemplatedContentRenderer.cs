@@ -1,22 +1,16 @@
-﻿using Android.Content;
+﻿using System;
+using System.ComponentModel;
+using Android.Content;
 using Android.Graphics.Drawables;
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
-using AndroidX.RecyclerView.Widget;
-using Google.Android.Material.AppBar;
-#else
-using Android.Support.V7.Widget;
-using Android.Support.Design.Widget;
-#endif
+using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using System;
-using System.ComponentModel;
+using AndroidX.RecyclerView.Widget;
+using Google.Android.Material.AppBar;
+using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
-using Xamarin.Forms.Internals;
-using Android.Runtime;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -150,7 +144,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateFlyoutHeader()
 		{
-			if(_headerView != null)
+			if (_headerView != null)
 			{
 				var oldHeaderView = _headerView;
 				_headerView = null;
@@ -200,7 +194,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else
 				_rootView.UpdateBackground(brush);
-			
+
 			UpdateFlyoutBgImageAsync();
 		}
 
