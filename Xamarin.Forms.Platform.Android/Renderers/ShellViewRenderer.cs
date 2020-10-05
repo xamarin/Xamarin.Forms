@@ -24,10 +24,6 @@ namespace Xamarin.Forms.Platform.Android
 			View = view;
 		}
 
-		public bool MatchHeight { get; set; }
-
-		public bool MatchWidth { get; set; }
-
 		public View View
 		{
 			get { return _view; }

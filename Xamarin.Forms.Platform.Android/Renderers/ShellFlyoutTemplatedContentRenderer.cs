@@ -200,10 +200,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (footer == null)
 				return;
 
-			_footerView = new ShellViewRenderer(_shellContext.AndroidContext, footer)
-			{
-				MatchWidth = true
-			};
+			_footerView = new ShellViewRenderer(_shellContext.AndroidContext, footer);
 
 
 			_footerView.NativeView.LayoutParameters = new CoordinatorLayout.LayoutParams(LP.MatchParent, LP.WrapContent)
@@ -211,7 +208,7 @@ namespace Xamarin.Forms.Platform.Android
 				Gravity = (int)(GravityFlags.Bottom | GravityFlags.End)
 			};
 
-			_footerView.LayoutView(_rootView.LayoutParameters.Width, -1);
+			_footerView.LayoutView(_shellContext.AndroidContext.FromPixels(_rootView.LayoutParameters.Width), -1);
 			_rootView.AddView(_footerView.NativeView);
 		}
 
