@@ -1,5 +1,7 @@
 ﻿using System;
+using CoreFoundation;
 using CoreGraphics;
+using Foundation;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -8,6 +10,9 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		static UIImage _checked;
 		static UIImage _unchecked;
+
+		static NSBundle _bundle = NSBundle.FromIdentifier("com.apple.UIKit");
+
 
 		// all these values were chosen to just match the android drawables that are used
 		const float _defaultSize = 18.0f;
@@ -39,7 +44,11 @@ namespace Xamarin.Forms.Platform.iOS
 			VerticalAlignment = UIControlContentVerticalAlignment.Center;
 			AdjustsImageWhenDisabled = false;
 			AdjustsImageWhenHighlighted = false;
+
+			AccessibilityValue = AccessibilityValueString; ;
 		}
+
+		string AccessibilityValueString => _isChecked ? _bundle.GetLocalizedString("On") : _bundle.GetLocalizedString("Off");
 
 		void OnTouchUpInside(object sender, EventArgs e)
 		{
@@ -150,6 +159,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal void UpdateDisplay()
 		{
+			AccessibilityValue = AccessibilityValueString;
 			SetImage(GetCheckBoximage(), UIControlState.Normal);
 			SetNeedsDisplay();
 		}
