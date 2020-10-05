@@ -4,7 +4,7 @@ namespace Xamarin.Platform
 {
 	public interface ILayout : IView
 	{
-		IList<IView> Children { get; }
+		IReadOnlyList<IView> Children { get; }
 	}
 
 	public interface IStackLayout : ILayout

@@ -32,7 +32,7 @@ namespace Xamarin.Platform
 			Handler?.SetFrame(bounds);
 		}
 
-		static SizeRequest Measure(double heightConstraint, int spacing, IList<IView> views)
+		static SizeRequest Measure(double heightConstraint, int spacing, IReadOnlyList<IView> views)
 		{
 			double totalRequestedWidth = 0;
 			double totalMinimumWidth = 0;

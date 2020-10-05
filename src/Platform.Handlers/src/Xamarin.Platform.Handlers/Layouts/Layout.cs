@@ -5,18 +5,22 @@ namespace Xamarin.Platform
 {
 	public abstract class Layout : View, ILayout, IEnumerable<IView>
 	{
-		public IList<IView> Children { get; } = new List<IView>();
+		readonly List<IView> _children = new List<IView>();
+
+		public IReadOnlyList<IView> Children { get => _children.AsReadOnly(); }
 
 		public void Add(IView view)
 		{
 			if (view == null)
 				return;
 
-			Children.Add(view);
+			_children.Add(view);
+
+			InvalidateMeasure();
 		}
 
-		public IEnumerator<IView> GetEnumerator() => Children.GetEnumerator();
+		public IEnumerator<IView> GetEnumerator() => _children.GetEnumerator();
 
-		IEnumerator IEnumerable.GetEnumerator() => Children.GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator() => _children.GetEnumerator();
 	}
 }

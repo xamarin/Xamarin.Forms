@@ -29,7 +29,6 @@ namespace Xamarin.Platform
 		{
 			IsMeasureValid = false;
 			IsArrangeValid = false;
-			InvalidateMeasure();
 		}
 
 		public void InvalidateArrange()

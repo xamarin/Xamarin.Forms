@@ -19,12 +19,12 @@ namespace Sample
 
 		private IView CreateModernVersion()
 		{
-			var verticalStack = new Xamarin.Platform.VerticalStackLayout();
-			var horizontalStack = new Xamarin.Platform.HorizontalStackLayout();
+			var verticalStack = new Xamarin.Platform.VerticalStackLayout() { Spacing = 5 };
+			var horizontalStack = new Xamarin.Platform.HorizontalStackLayout() { Spacing = 2 };
 
 			var label = new Label { Text = "This top part is a Xamarin.Platform.VerticalStackLayout" };
 
-			verticalStack.Children.Add(label);
+			verticalStack.Add(label);
 
 			var button = new Button() { Text = "A Button" };
 			var button2 = new Button()
@@ -34,13 +34,13 @@ namespace Sample
 				BackgroundColor = Color.Purple
 			};
 
-			horizontalStack.Children.Add(button);
-			horizontalStack.Children.Add(button2);
-			horizontalStack.Children.Add(new Label { Text = "And these buttons are in a HorizontalStackLayout" });
+			horizontalStack.Add(button);
+			horizontalStack.Add(button2);
+			horizontalStack.Add(new Label { Text = "And these buttons are in a HorizontalStackLayout" });
 
-			verticalStack.Children.Add(horizontalStack);
+			verticalStack.Add(horizontalStack);
 
-			verticalStack.Children.Add(CreateFormsVersion());
+			verticalStack.Add(CreateFormsVersion());
 
 			return verticalStack;
 		}
@@ -67,8 +67,6 @@ namespace Sample
 			fl.Children.Add(button2);
 
 			layout.Children.Add(fl);
-
-			
 
 			return layout;
 		}
