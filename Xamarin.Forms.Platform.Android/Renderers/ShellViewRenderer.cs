@@ -90,6 +90,9 @@ namespace Xamarin.Forms.Platform.Android
 			if (View != null)
 				View.SizeChanged -= OnViewSizeChanged;
 
+			if (View is VisualElement oldVe)
+				oldVe.MeasureInvalidated -= OnViewSizeChanged;
+
 			if (_renderer != null)
 			{
 				_renderer.View.RemoveFromParent();
@@ -107,14 +110,16 @@ namespace Xamarin.Forms.Platform.Android
 				_renderer = Platform.CreateRenderer(view, context);
 				Platform.SetRenderer(view, _renderer);
 				NativeView = _renderer.View;
-				View.SizeChanged += OnViewSizeChanged;
+
+				if(View is VisualElement ve)
+					ve.MeasureInvalidated += OnViewSizeChanged;
+				else
+					View.SizeChanged += OnViewSizeChanged;
 			}
 		}
 
-		void OnViewSizeChanged(object sender, EventArgs e)
-		{
+		void OnViewSizeChanged(object sender, EventArgs e) =>
 			LayoutView(_width, _height);
-		}
 
 		public AView NativeView
 		{

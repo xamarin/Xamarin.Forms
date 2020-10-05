@@ -9,6 +9,7 @@ using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using System.Threading;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 
 #if UITEST
@@ -81,6 +82,39 @@ namespace Xamarin.Forms.Controls.Issues
 				}),
 				AutomationId = "ToggleHeaderFooter"
 			});
+
+			Items.Add(new MenuItem()
+			{
+				Text = "Resize Header/Footer",
+				Command = new Command(async () =>
+				{
+					FlyoutHeaderTemplate = null;
+					FlyoutFooterTemplate = null;
+					if (FlyoutHeader == null)
+					{
+						FlyoutHeader = new Label() { Text = "Header View" };
+						FlyoutFooter = new Label() { Text = "Footer View" };
+						await Task.Delay(10);
+					}
+
+					var headerLabel = (Label)FlyoutHeader;
+					var footerLabel = (Label)FlyoutFooter;
+					headerLabel.BackgroundColor = Color.LightBlue;
+					footerLabel.BackgroundColor = Color.LightBlue;
+
+					if (headerLabel.HeightRequest == 60)
+					{
+						headerLabel.HeightRequest = 200;
+						footerLabel.HeightRequest = 200;
+					}
+					else
+					{
+						headerLabel.HeightRequest = 60;
+						footerLabel.HeightRequest = 60;
+					}
+				}),
+				AutomationId = "ResizeHeaderFooter"
+			});
 		}
 
 
@@ -92,27 +126,48 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement("PageLoaded");
 			ShowFlyout();
 
+			// Verify Header an Footer show up at all
 			RunningApp.Tap("ToggleHeaderFooter");
 			RunningApp.WaitForElement("Header View");
 			RunningApp.WaitForElement("Footer View");
 
+			// Verify Template takes priority over header footer
 			RunningApp.Tap("ToggleHeaderFooterTemplate");
 			RunningApp.WaitForElement("Header Template");
 			RunningApp.WaitForElement("Footer Template");
 			RunningApp.WaitForNoElement("Header View");
 			RunningApp.WaitForNoElement("Footer View");
 
+			// Verify turning off Template shows Views again
 			RunningApp.Tap("ToggleHeaderFooterTemplate");
 			RunningApp.WaitForElement("Header View");
 			RunningApp.WaitForElement("Footer View");
 			RunningApp.WaitForNoElement("Header Template");
 			RunningApp.WaitForNoElement("Footer Template");
 
+			// Verify turning off header/footer clear out views correctly
 			RunningApp.Tap("ToggleHeaderFooter");
 			RunningApp.WaitForNoElement("Header Template");
 			RunningApp.WaitForNoElement("Footer Template");
 			RunningApp.WaitForNoElement("Header View");
 			RunningApp.WaitForNoElement("Footer View");
+
+			// verify header and footer react to size changes
+			RunningApp.Tap("ResizeHeaderFooter");
+			var headerSizeSmall = RunningApp.WaitForElement("Header View")[0].Rect;
+			var footerSizeSmall = RunningApp.WaitForElement("Footer View")[0].Rect;
+			RunningApp.Tap("ResizeHeaderFooter");
+			var headerSizeLarge = RunningApp.WaitForElement("Header View")[0].Rect;
+			var footerSizeLarge = RunningApp.WaitForElement("Footer View")[0].Rect;
+
+			RunningApp.Tap("ResizeHeaderFooter");
+			var headerSizeSmall2 = RunningApp.WaitForElement("Header View")[0].Rect;
+			var footerSizeSmall2 = RunningApp.WaitForElement("Footer View")[0].Rect;
+
+			Assert.Greater(headerSizeLarge.Height, headerSizeSmall.Height);
+			Assert.Greater(footerSizeLarge.Height, footerSizeSmall.Height);
+			Assert.AreEqual(headerSizeSmall2.Height, headerSizeSmall.Height);
+			Assert.AreEqual(footerSizeSmall2.Height, footerSizeSmall.Height);
 		}
 
 #endif
