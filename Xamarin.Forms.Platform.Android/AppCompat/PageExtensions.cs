@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platform.Android
 				app.MainPage = view;
 			}
 
-			var platform = new AppCompat.Platform(context);
+			var platform = new AppCompat.Platform(context, true);
 			platform.SetPage(view);
 
 			var vg = platform.GetViewGroup();
@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Platform.Android
 				app.MainPage = view;
 			}
 
-			var platform = new AppCompat.Platform(context);
+			var platform = new AppCompat.Platform(context, true);
 			platform.SetPage(view);
 
 			var vg = platform.GetViewGroup();

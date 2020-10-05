@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		bool _navAnimationInProgress;
 		NavigationModel _navModel = new NavigationModel();
 		NavigationModel _previousNavModel = null;
+		readonly bool _embedded;
 
 		internal static string PackageName { get; private set; }
 		internal static string GetPackageName() => PackageName;
@@ -37,11 +38,30 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					view.IsPlatformEnabled = newvalue != null;
 			});
 
-		public Platform(Context context)
+		public Platform(Context context) : this(context, false)
 		{
+		}
+
+		public Platform(Context context, bool embedded)
+		{
+			_embedded = embedded;
 			_context = context;
 			PackageName = context?.PackageName;
 			_renderer = new PlatformRenderer(context, this);
+			var activity = _context.GetActivity();
+
+			if (embedded && activity != null)
+			{
+				// Set up handling of DisplayAlert/DisplayActionSheet/UpdateProgressBarVisibility
+				if (_context == null)
+				{
+					// Can't show dialogs if it's not an activity
+					return;
+				}
+
+				PopupManager.Subscribe(_context.GetActivity());
+				return;
+			}
 
 			FormsAppCompatActivity.BackPressed += HandleBackPressed;
 		}
@@ -72,6 +92,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			FormsAppCompatActivity.BackPressed -= HandleBackPressed;
 
 			SetPage(null);
+
+			var activity = _context?.GetActivity();
+			if (_embedded && activity != null)
+			{
+				PopupManager.Unsubscribe(activity);
+			}
 		}
 
 		void INavigation.InsertPageBefore(Page page, Page before)
@@ -194,8 +220,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			Performance.Start(out string reference);
 
-			// FIXME: potential crash
 			IVisualElementRenderer visualElementRenderer = GetRenderer(view);
+
+			if (visualElementRenderer == null || visualElementRenderer.View.IsDisposed())
+			{
+				return new SizeRequest(Size.Zero, Size.Zero);
+			}
 
 			var context = visualElementRenderer.View.Context;
 
@@ -259,8 +289,18 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		internal static IVisualElementRenderer CreateRenderer(VisualElement element, Context context)
 		{
-			IVisualElementRenderer renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element, context)
-				?? new DefaultRenderer(context);
+			IVisualElementRenderer renderer = null;
+
+			if (element is TemplatedView tv && tv.ResolveControlTemplate() != null)
+			{
+				renderer = new DefaultRenderer(context);
+			}
+
+			if (renderer == null)
+			{
+				renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element, context)
+					?? new DefaultRenderer(context);
+			}
 
 			renderer.SetElement(element);
 
@@ -767,6 +807,16 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 
 			bool ILayoutChanges.HasLayoutOccurred => _hasLayoutOccurred;
+
+			protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
+			{
+				if (Element is Layout layout)
+				{
+					layout.ResolveLayoutChanges();
+				}
+
+				base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+			}
 
 			protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
 			{
