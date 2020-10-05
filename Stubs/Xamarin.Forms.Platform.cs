@@ -31,14 +31,14 @@ namespace Xamarin.Forms.Platform
 #if __ANDROID__
 	[RenderWith(typeof(Xamarin.Forms.Platform.Android.LabelRenderer))]
 #else
-	[RenderWith (typeof (LabelRenderer))]
+	[RenderWith(typeof(LabelRenderer))]
 #endif
 	internal class _LabelRenderer { }
 
 #if __ANDROID__
 	[RenderWith(typeof(Xamarin.Forms.Platform.Android.ImageRenderer))]
 #else
-	[RenderWith (typeof (ImageRenderer))]
+	[RenderWith(typeof(ImageRenderer))]
 #endif
 	internal class _ImageRenderer { }
 
@@ -172,12 +172,8 @@ namespace Xamarin.Forms.Platform
 
 
 
-#if !__IOS__ && !TIZEN4_0
+#if !__IOS__
 	[RenderWith(typeof(FlyoutPageRenderer))]
-#elif TIZEN4_0
-#pragma warning disable CS0618 // Type or member is obsolete
-	[RenderWith (typeof(MasterDetailPageRenderer))]
-#pragma warning restore CS0618 // Type or member is obsolete
 #else
 	[RenderWith (typeof (PhoneFlyoutPageRenderer))]
 #endif

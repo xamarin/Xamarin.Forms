@@ -10,11 +10,6 @@ using Android.Views.Animations;
 using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 
-#if __ANDROID_29__
-#else
-using Android.Support.V4.App;
-#endif
-
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
 	internal class Platform : BindableObject, IPlatformLayout, INavigation, IDisposable

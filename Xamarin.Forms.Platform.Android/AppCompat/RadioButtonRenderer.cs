@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class RadioButtonRenderer : AppCompatRadioButton,
 		IBorderVisualElementRenderer, IVisualElementRenderer, IViewRenderer, ITabStop,
-		AView.IOnFocusChangeListener, 
+		AView.IOnFocusChangeListener,
 		CompoundButton.IOnCheckedChangeListener
 	{
 		float _defaultFontSize;

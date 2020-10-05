@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
+using Android.Graphics;
 using Android.Text;
 using Android.Text.Style;
 using Android.Views;

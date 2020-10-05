@@ -1,7 +1,11 @@
 using Android.App;
 using Android.Content;
+using Android.Content.Res;
+using Android.Views;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using Fragment = AndroidX.Fragment.App.Fragment;
+using FragmentContainer = Xamarin.Forms.Platform.Android.AppCompat.FragmentContainer;
 using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
 using FragmentContainer = Xamarin.Forms.Platform.Android.AppCompat.FragmentContainer;

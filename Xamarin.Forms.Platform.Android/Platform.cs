@@ -10,14 +10,14 @@ using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.OS;
-using FragmentManager = AndroidX.Fragment.App.FragmentManager;
-using AndroidX.Legacy.App;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using Xamarin.Forms.Platform.Android.AppCompat;
+using AndroidX.Legacy.App;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Platform.Android.AppCompat;
 using AView = Android.Views.View;
+using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 
 namespace Xamarin.Forms.Platform.Android
 {

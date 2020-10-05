@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Android.Content;
 using Android.OS;
 using Android.Views;
+using AndroidX.Core.Widget;
 using AndroidX.DrawerLayout.Widget;
 using AndroidX.Fragment.App;
 using AView = Android.Views.View;

@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using Android.Content;
 using Android.Views;
+using AndroidX.Core.View;
 using AndroidX.ViewPager.Widget;
 using Xamarin.Forms.Internals;
 using Object = Java.Lang.Object;
