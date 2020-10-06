@@ -65,6 +65,7 @@ namespace Xamarin.Forms.Platform.UWP
 			base.OnApplyTemplate();
 			UpdatePaneButtonColor(TogglePaneButton, !IsPaneOpen);
 			UpdatePaneButtonColor(NavigationViewBackButton, !IsPaneOpen);
+			(GetTemplateChild(TogglePaneButton) as FrameworkElement)?.SetAutomationPropertiesAutomationId("OK");
 		}
 
 		void OnPaneOpening(Microsoft.UI.Xaml.Controls.NavigationView sender, object args)
@@ -87,6 +88,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnPaneClosing(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewPaneClosingEventArgs args)
 		{
+			args.Cancel = true;
 			if (Shell != null)
 				Shell.FlyoutIsPresented = false;
 			UpdatePaneButtonColor(TogglePaneButton, true);
@@ -272,7 +274,7 @@ namespace Xamarin.Forms.Platform.UWP
 			_shell.Navigated += OnShellNavigated;
 			UpdateToolBar();
 		}
-
+		
 		void OnShellNavigated(object sender, ShellNavigatedEventArgs e)
 		{
 			UpdateToolBar();

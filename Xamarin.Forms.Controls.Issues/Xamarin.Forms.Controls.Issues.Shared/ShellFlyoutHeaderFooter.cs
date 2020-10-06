@@ -138,43 +138,42 @@ namespace Xamarin.Forms.Controls.Issues
 		public void FlyoutTests()
 		{
 			RunningApp.WaitForElement("PageLoaded");
-			ShowFlyout();
 
 			// Verify Header an Footer show up at all
-			RunningApp.Tap("ToggleHeaderFooter");
+			TapInFlyout("ToggleHeaderFooter");
 			RunningApp.WaitForElement("Header View");
 			RunningApp.WaitForElement("Footer View");
 
 			// Verify Template takes priority over header footer
-			RunningApp.Tap("ToggleHeaderFooterTemplate");
+			TapInFlyout("ToggleHeaderFooterTemplate");
 			RunningApp.WaitForElement("Header Template");
 			RunningApp.WaitForElement("Footer Template");
 			RunningApp.WaitForNoElement("Header View");
 			RunningApp.WaitForNoElement("Footer View");
 
 			// Verify turning off Template shows Views again
-			RunningApp.Tap("ToggleHeaderFooterTemplate");
+			TapInFlyout("ToggleHeaderFooterTemplate");
 			RunningApp.WaitForElement("Header View");
 			RunningApp.WaitForElement("Footer View");
 			RunningApp.WaitForNoElement("Header Template");
 			RunningApp.WaitForNoElement("Footer Template");
 
 			// Verify turning off header/footer clear out views correctly
-			RunningApp.Tap("ToggleHeaderFooter");
+			TapInFlyout("ToggleHeaderFooter");
 			RunningApp.WaitForNoElement("Header Template");
 			RunningApp.WaitForNoElement("Footer Template");
 			RunningApp.WaitForNoElement("Header View");
 			RunningApp.WaitForNoElement("Footer View");
 
 			// verify header and footer react to size changes
-			RunningApp.Tap("ResizeHeaderFooter");
+			TapInFlyout("ResizeHeaderFooter");
 			var headerSizeSmall = RunningApp.WaitForElement("Header View")[0].Rect;
 			var footerSizeSmall = RunningApp.WaitForElement("Footer View")[0].Rect;
-			RunningApp.Tap("ResizeHeaderFooter");
+			TapInFlyout("ResizeHeaderFooter");
 			var headerSizeLarge = RunningApp.WaitForElement("Header View")[0].Rect;
 			var footerSizeLarge = RunningApp.WaitForElement("Footer View")[0].Rect;
 
-			RunningApp.Tap("ResizeHeaderFooter");
+			TapInFlyout("ResizeHeaderFooter");
 			var headerSizeSmall2 = RunningApp.WaitForElement("Header View")[0].Rect;
 			var footerSizeSmall2 = RunningApp.WaitForElement("Footer View")[0].Rect;
 
