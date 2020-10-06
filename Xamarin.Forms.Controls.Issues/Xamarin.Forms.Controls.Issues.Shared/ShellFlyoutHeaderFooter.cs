@@ -92,13 +92,27 @@ namespace Xamarin.Forms.Controls.Issues
 					FlyoutFooterTemplate = null;
 					if (FlyoutHeader == null)
 					{
-						FlyoutHeader = new Label() { Text = "Header View" };
-						FlyoutFooter = new Label() { Text = "Footer View" };
+						FlyoutHeader = new StackLayout()
+						{
+							Children = {
+								new Label() { Text = "Header" }
+							},
+							AutomationId = "Header View"
+						};
+
+						FlyoutFooter = new StackLayout()
+						{
+							Children = {
+								new Label() { Text = "Footer" }
+							},
+							AutomationId = "Footer View"
+						};
+
 						await Task.Delay(10);
 					}
 
-					var headerLabel = (Label)FlyoutHeader;
-					var footerLabel = (Label)FlyoutFooter;
+					var headerLabel = (VisualElement)FlyoutHeader;
+					var footerLabel = (VisualElement)FlyoutFooter;
 					headerLabel.BackgroundColor = Color.LightBlue;
 					footerLabel.BackgroundColor = Color.LightBlue;
 
