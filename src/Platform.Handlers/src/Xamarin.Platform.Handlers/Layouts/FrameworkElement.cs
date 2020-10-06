@@ -7,7 +7,7 @@ namespace Xamarin.Platform
 	{
 		public bool IsEnabled => true;
 
-		public Color BackgroundColor => Color.Transparent;
+		public Color BackgroundColor { get; set; } = Color.Transparent;
 
 		public Rectangle Frame { get; set; }
 

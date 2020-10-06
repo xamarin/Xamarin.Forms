@@ -13,12 +13,7 @@ namespace Sample
 
 		public IView CreateView()
 		{
-			return CreateModernVersion();
-		}
-
-		private IView CreateModernVersion()
-		{
-			var verticalStack = new Xamarin.Platform.VerticalStackLayout() { Spacing = 5 };
+			var verticalStack = new Xamarin.Platform.VerticalStackLayout() { Spacing = 5, BackgroundColor = Color.AntiqueWhite };
 			var horizontalStack = new Xamarin.Platform.HorizontalStackLayout() { Spacing = 2 };
 
 			var label = new Label { Text = "This top part is a Xamarin.Platform.VerticalStackLayout" };
