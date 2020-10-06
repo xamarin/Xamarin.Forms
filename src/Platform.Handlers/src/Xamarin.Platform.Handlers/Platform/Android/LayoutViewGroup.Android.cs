@@ -4,7 +4,7 @@ using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Rectangle = Xamarin.Forms.Rectangle;
-using SizeRequest = Xamarin.Forms.SizeRequest;
+using Size = Xamarin.Forms.Size;
 
 namespace Xamarin.Platform.Handlers
 {
@@ -46,10 +46,10 @@ namespace Xamarin.Platform.Handlers
 			var deviceIndependentWidth = widthMeasureSpec.ToDouble(Context);
 			var deviceIndependentHeight = heightMeasureSpec.ToDouble(Context);
 
-			var sizeRequest = CrossPlatformMeasure(deviceIndependentWidth, deviceIndependentHeight);
+			var size = CrossPlatformMeasure(deviceIndependentWidth, deviceIndependentHeight);
 
-			var nativeWidth = Context.ToPixels(sizeRequest.Request.Width);
-			var nativeHeight = Context.ToPixels(sizeRequest.Request.Height);
+			var nativeWidth = Context.ToPixels(size.Width);
+			var nativeHeight = Context.ToPixels(size.Height);
 
 			SetMeasuredDimension((int)nativeWidth, (int)nativeHeight);
 		}
@@ -72,7 +72,7 @@ namespace Xamarin.Platform.Handlers
 			CrossPlatformArrange(destination);
 		}
 
-		internal Func<double, double, SizeRequest>? CrossPlatformMeasure { get; set; }
+		internal Func<double, double, Size>? CrossPlatformMeasure { get; set; }
 		internal Action<Rectangle>? CrossPlatformArrange { get; set; }
 	}
 }

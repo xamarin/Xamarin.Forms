@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Xamarin.Forms.Internals;
+using Xamarin.Platform;
 
 namespace Xamarin.Forms
 {
-	public class StackLayout : Layout<View>, IElementConfiguration<StackLayout>
+	public class StackLayout : Layout<View>, IElementConfiguration<StackLayout>, IFrameworkElement
 	{
 		public static readonly BindableProperty OrientationProperty = BindableProperty.Create(nameof(Orientation), typeof(StackOrientation), typeof(StackLayout), StackOrientation.Vertical,
 			propertyChanged: (bindable, oldvalue, newvalue) => ((StackLayout)bindable).InvalidateLayout());
@@ -68,11 +69,12 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public override SizeRequest Measure(double widthConstraint, double heightConstraint)
+		// IFrameworkElement Measure
+		Size IFrameworkElement.Measure(double widthConstraint, double heightConstraint)
 		{
 			if (!IsMeasureValid)
 #pragma warning disable CS0618 // Type or member is obsolete
-				DesiredSize = OnSizeRequest(widthConstraint, heightConstraint);
+				DesiredSize = OnSizeRequest(widthConstraint, heightConstraint).Request;
 #pragma warning restore CS0618 // Type or member is obsolete
 			IsMeasureValid = true;
 			return DesiredSize;

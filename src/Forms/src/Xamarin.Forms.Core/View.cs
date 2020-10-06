@@ -177,20 +177,7 @@ namespace Xamarin.Forms
 
 		Rectangle IFrameworkElement.Frame => Bounds;
 
-		protected IViewHandler Handler { get; set; }
-
-		IViewHandler IFrameworkElement.Handler
-		{
-			get
-			{
-				return Handler;
-			}
-
-			set
-			{
-				Handler = value;
-			}
-		}
+		public IViewHandler Handler { get; set; }
 
 		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
@@ -200,7 +187,7 @@ namespace Xamarin.Forms
 
 		IFrameworkElement IFrameworkElement.Parent => Parent as IView;
 
-		public SizeRequest DesiredSize { get; protected set; }
+		public Size DesiredSize { get; protected set; }
 
 		public bool IsMeasureValid { get; protected set; }
 
@@ -220,7 +207,7 @@ namespace Xamarin.Forms
 			Handler?.SetFrame(Bounds);
 		}
 
-		public virtual SizeRequest Measure(double widthConstraint, double heightConstraint)
+		Size IFrameworkElement.Measure(double widthConstraint, double heightConstraint)
 		{
 			if (!IsMeasureValid)
 			{
@@ -234,9 +221,15 @@ namespace Xamarin.Forms
 				// I'd much rather just get rid of all the uses of it which don't include the margins, and have "with margins"
 				// be the default. It's more intuitive and less code to write. Also, I sort of suspect that the uses which
 				// _don't_ include the margins are actually bugs.
-				DesiredSize = Handler.GetDesiredSize(widthConstraint, heightConstraint);// this.OnMeasure(widthConstraint, heightConstraint);
+
+				var frameworkElement = this as IFrameworkElement;
+
+				widthConstraint = Xamarin.Platform.View.ResolveConstraints(widthConstraint, frameworkElement.Width);
+				heightConstraint = Xamarin.Platform.View.ResolveConstraints(heightConstraint, frameworkElement.Height);
+
+				DesiredSize = Handler.GetDesiredSize(widthConstraint, heightConstraint);
 			}
-				
+
 			IsMeasureValid = true;
 			return DesiredSize;
 		}
@@ -258,6 +251,8 @@ namespace Xamarin.Forms
 		protected PropertyMapper<T> GetRendererOverides<T>() where T : IView => (PropertyMapper<T>)(propertyMapper as PropertyMapper<T> ?? (propertyMapper = new PropertyMapper<T>()));
 		PropertyMapper IPropertyMapperView.GetPropertyMapperOverrides() => propertyMapper;
 
+		double IFrameworkElement.Width { get => WidthRequest; }
+		double IFrameworkElement.Height { get => HeightRequest; }
 
 		#endregion
 	}

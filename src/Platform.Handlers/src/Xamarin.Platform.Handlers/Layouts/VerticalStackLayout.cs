@@ -1,22 +1,25 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Xamarin.Forms;
 
 namespace Xamarin.Platform
 {
 	public class VerticalStackLayout : StackLayout
 	{
-		public override SizeRequest Measure(double widthConstraint, double heightConstraint)
+		public override Size Measure(double widthConstraint, double heightConstraint)
 		{
 			if (IsMeasureValid)
 			{
 				return DesiredSize;
 			}
 
-			DesiredSize = Measure(widthConstraint, Spacing, Children);
+			var widthMeasureConstraint = ResolveConstraints(widthConstraint, Width);
+
+			var measure = Measure(widthMeasureConstraint, Spacing, Children);
+
+			var finalHeight = ResolveConstraints(heightConstraint, Height, measure.Height);
+
+			DesiredSize = new Size(measure.Width, finalHeight);
 
 			IsMeasureValid = true;
 
@@ -35,32 +38,25 @@ namespace Xamarin.Platform
 			Handler?.SetFrame(bounds);
 		}
 
-		static SizeRequest Measure(double widthConstraint, int spacing, IReadOnlyList<IView> views)
+		static Size Measure(double widthConstraint, int spacing, IReadOnlyList<IView> views)
 		{
 			double totalRequestedHeight = 0;
-			double totalMinimumHeight = 0;
 			double requestedWidth = 0;
-			double minimumWidth = 0;
 
 			foreach (var child in views)
 			{
 				// TODO check child.IsVisible
 
 				var measure = child.IsMeasureValid ? child.DesiredSize : child.Measure(widthConstraint, double.PositiveInfinity);
-				totalRequestedHeight += measure.Request.Height;
-				totalMinimumHeight += measure.Minimum.Height;
+				totalRequestedHeight += measure.Height;
 
-				requestedWidth = Math.Max(requestedWidth, measure.Request.Width);
-				minimumWidth = Math.Max(minimumWidth, measure.Minimum.Width);
+				requestedWidth = Math.Max(requestedWidth, measure.Width);
 			}
 
 			var accountForSpacing = MeasureSpacing(spacing, views.Count);
 			totalRequestedHeight += accountForSpacing;
-			totalMinimumHeight += accountForSpacing;
 
-			return new SizeRequest(
-				new Size(requestedWidth, totalRequestedHeight),
-				new Size(minimumWidth, totalMinimumHeight));
+			return new Size(requestedWidth, totalRequestedHeight);
 		}
 
 		static void Arrange(double widthConstraint, int spacing, IEnumerable<IView> views)
@@ -69,7 +65,7 @@ namespace Xamarin.Platform
 
 			foreach (var child in views)
 			{
-				var destination = new Rectangle(0, stackHeight, widthConstraint, child.DesiredSize.Request.Height);
+				var destination = new Rectangle(0, stackHeight, widthConstraint, child.DesiredSize.Height);
 				child.Arrange(destination);
 
 				stackHeight += destination.Height + spacing;

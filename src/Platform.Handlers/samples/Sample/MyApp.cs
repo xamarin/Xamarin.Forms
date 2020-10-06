@@ -1,5 +1,4 @@
-﻿using System;
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
 using Xamarin.Platform;
 using Xamarin.Platform.Core;
 
@@ -26,7 +25,7 @@ namespace Sample
 
 			verticalStack.Add(label);
 
-			var button = new Button() { Text = "A Button" };
+			var button = new Button() { Text = "A Button", Width = 200 };
 			var button2 = new Button()
 			{
 				Color = Color.Green,
@@ -40,35 +39,7 @@ namespace Sample
 
 			verticalStack.Add(horizontalStack);
 
-			verticalStack.Add(CreateFormsVersion());
-
 			return verticalStack;
-		}
-
-		IView CreateFormsVersion()
-		{
-			var layout = new Xamarin.Forms.StackLayout();
-
-			var label = new Label { Text = "This part of is a Forms StackLayout" };
-
-			layout.Children.Add(label);
-
-			var fl = new FlexLayout();
-
-			var button = new Button() { Text = "A Button" };
-			var button2 = new Button()
-			{
-				Color = Color.Green,
-				Text = "Hello I'm a button",
-				BackgroundColor = Color.Purple
-			};
-
-			fl.Children.Add(button);
-			fl.Children.Add(button2);
-
-			layout.Children.Add(fl);
-
-			return layout;
 		}
 	}
 }
