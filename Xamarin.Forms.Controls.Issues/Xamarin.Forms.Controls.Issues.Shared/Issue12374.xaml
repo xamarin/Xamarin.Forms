@@ -8,13 +8,35 @@
     mc:Ignorable="d"
     x:Class="Xamarin.Forms.Controls.Issues.Issue12374"
     Title="Issue 12374">
-    <Grid RowDefinitions="Auto,*">
-        <Button Grid.Row="0" Text="AddItems" HorizontalOptions="Center" Margin="20" Clicked="AddItemsButton_Clicked" />
-        <RefreshView Grid.Row="1" x:Name="MainRefreshView" IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
-            <CollectionView Grid.Row="1" ItemsSource="{Binding Items}" SelectionMode="Single" SelectionChanged="CollectionView_SelectionChanged">
+    <Grid RowDefinitions="Auto,Auto,*">
+        <Label
+            Grid.Row="0"
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Tap each item to remove them and view the EmptyView. Then, tap the AddItems button. Without crash, the test has passed."/>
+        <Button
+            Grid.Row="1"
+            Text="AddItems"
+            HorizontalOptions="Center"
+            Margin="20"
+            Clicked="AddItemsButton_Clicked" />
+        <RefreshView
+            Grid.Row="2"
+            x:Name="MainRefreshView"
+            IsRefreshing="{Binding IsRefreshing}"
+            Command="{Binding RefreshCommand}">
+            <CollectionView
+                Grid.Row="1"
+                ItemsSource="{Binding Items}"
+                SelectionMode="Single"
+                SelectionChanged="CollectionView_SelectionChanged">
                 <CollectionView.EmptyView>
                     <Grid>
-                        <Label Text="Empty View" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Label
+                            Text="Empty View"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center" />
                     </Grid>
                 </CollectionView.EmptyView>
                 <!--
@@ -40,8 +62,13 @@
                             </Grid>
                         </SwipeView>
                         -->
-                        <Grid HeightRequest="40" Padding="10" BackgroundColor="{Binding Color}">
-                            <Label Text="{Binding Name}" VerticalOptions="Center" />
+                        <Grid
+                            HeightRequest="40"
+                            Padding="10"
+                            BackgroundColor="{Binding Color}">
+                            <Label
+                                Text="{Binding Name}"
+                                VerticalOptions="Center" />
                         </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
