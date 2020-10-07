@@ -37,6 +37,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var button = new Issue12372Button
 			{
+                NymblDefaultColor = Color.Blue,
+                NymblPressedColor = Color.Red,
+                NymblTextColor = Color.White,
 				Text = "Issue12372"
             };
 
