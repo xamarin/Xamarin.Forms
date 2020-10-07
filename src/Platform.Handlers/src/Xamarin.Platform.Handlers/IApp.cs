@@ -1,7 +1,11 @@
-﻿namespace Xamarin.Platform.Core
+﻿using System;
+
+namespace Xamarin.Platform
 {
 	public interface IApp
 	{
-		IView CreateView();
+		IServiceProvider? Services { get; }
+
+		IHandlerServiceProvider? Handlers { get; }
 	}
 }

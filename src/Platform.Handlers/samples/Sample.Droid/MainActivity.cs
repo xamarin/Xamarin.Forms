@@ -3,12 +3,15 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using AndroidX.AppCompat.App;
-using Xamarin.Forms;
-using AndroidX.Core.Widget;
 using Xamarin.Platform;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Sample.Services;
+using Xamarin.Platform.Hosting;
+using Xamarin.Platform.Handlers;
 
 namespace Sample.Droid
 {
@@ -21,7 +24,7 @@ namespace Sample.Droid
 		{
 			base.OnCreate(savedInstanceState);
 
-			Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+			//Xamarin.Essentials.Platform.Init(this, savedInstanceState);
 
 			SetContentView(Resource.Layout.activity_main);
 
@@ -30,28 +33,68 @@ namespace Sample.Droid
 
 			_page = FindViewById<ViewGroup>(Resource.Id.Page);
 
-			var app = new MyApp();
 
-			var view = app.CreateView();
+#if __REGISTRAR__
+			UseRegistrar();
+			Add(GetContentView());
+#else
+			var (host,app) = App.CreateDefaultBuilder()
+							//.RegisterHandlers(new Dictionary<Type, Type>
+							//{
+							//	{ typeof(Xamarin.Platform.VerticalStackLayout),typeof(LayoutHandler) },
+							//	{ typeof(Xamarin.Platform.HorizontalStackLayout),typeof(LayoutHandler) },
+							//	{ typeof(Xamarin.Forms.FlexLayout),typeof(LayoutHandler) },
+							//	{ typeof(Xamarin.Forms.StackLayout),typeof(LayoutHandler) },
+							//})
+							//.ConfigureServices(ConfigureExtraServices)
+							.Init<MyApp>();
+			
+			var page = app.GetStartup() as Pages.MainPage;
+			Add(page.GetContentView());
+#endif
 
-			Add(view);
+		}
 
+		static void UseRegistrar()
+		{
+			Xamarin.Platform.Registrar.Handlers.Register<IButton, ButtonHandler>();
+			Xamarin.Platform.Registrar.Handlers.Register<Xamarin.Platform.VerticalStackLayout, LayoutHandler>();
+			Xamarin.Platform.Registrar.Handlers.Register<Xamarin.Platform.HorizontalStackLayout, LayoutHandler>();
+			Xamarin.Platform.Registrar.Handlers.Register<Xamarin.Forms.FlexLayout, LayoutHandler>();
+			Xamarin.Platform.Registrar.Handlers.Register<Xamarin.Forms.StackLayout, LayoutHandler>();
+			//RegistrarHandlers.Handlers.Register<Entry, EntryHandler>();
+			Xamarin.Platform.Registrar.Handlers.Register<Label, LabelHandler>();
+		}
 
-			// In 5 seconds, add and remove some controls so we can see that working
-			Task.Run(async () => {
+		static IView GetContentView()
+		{
+			var verticalStack = new VerticalStackLayout() { Spacing = 5, BackgroundColor = Xamarin.Forms.Color.AntiqueWhite };
+			var horizontalStack = new HorizontalStackLayout() { Spacing = 2 };
 
-				await Task.Delay(5000).ConfigureAwait(false);
+			var label = new Label { Text = "This top part is a Xamarin.Platform.VerticalStackLayout" };
 
-				void addLabel()
-				{
-					(view as VerticalStackLayout).Add(new Label { Text = "I show up after 5 seconds" });
-					var first = (view as VerticalStackLayout).Children.First();
-					(view as VerticalStackLayout).Remove(first);
-				};
+			verticalStack.Add(label);
 
-				new Handler(Looper.MainLooper).Post(addLabel);
+			var button = new Xamarin.Forms.Button();
+			var button2 = new Button()
+			{
+				Color = Xamarin.Forms.Color.Green,
+				Text = "Hello I'm a button",
+				BackgroundColor = Xamarin.Forms.Color.Purple
+			};
 
-			});
+			horizontalStack.Add(button);
+			horizontalStack.Add(button2);
+			horizontalStack.Add(new Label { Text = "And these buttons are in a HorizontalStackLayout" });
+
+			verticalStack.Add(horizontalStack);
+
+			return verticalStack;
+		}
+
+		void ConfigureExtraServices(HostBuilderContext ctx, IServiceCollection services)
+		{
+			services.AddSingleton<ITextService, Services.DroidTextService>();
 		}
 
 		void Add(params IView[] views)

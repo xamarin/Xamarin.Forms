@@ -128,9 +128,11 @@
     <None Include="Entitlements.plist" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomHandlers\CustomPinkTextButtonHandler.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="SceneDelegate.cs" />
+    <Compile Include="Services\iOSTextService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Platform.Renderers\src\Xamarin.Forms.Platform.iOS\Xamarin.Forms.Platform.iOS.csproj">
