@@ -1,12 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using Foundation;
 using UIKit;
-using Xamarin.Forms.Internals;
-using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
-using Specifics = Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using SizeF = CoreGraphics.CGSize;
 using PreserveAttribute = Foundation.PreserveAttribute;
 using CoreGraphics;
@@ -21,6 +16,7 @@ namespace Xamarin.Forms.Platform.iOS
 		UIColor _buttonTextColorDefaultHighlighted;
 		UIColor _buttonTextColorDefaultNormal;
 		bool _useLegacyColorManagement;
+		bool _useBackgroundBrush;
 
 		ButtonLayoutManager _buttonLayoutManager;
 
@@ -159,7 +155,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Control == null)
 				return;
 
-			UIColor backgroundColor = Element.BackgroundColor == Color.Default ? null : Element.BackgroundColor.ToUIColor();
+			UIColor backgroundColor = null;
 
 			if (!Brush.IsNullOrEmpty(brush))
 			{
@@ -170,9 +166,12 @@ namespace Xamarin.Forms.Platform.iOS
 					var backgroundImage = this.GetBackgroundImage(brush);
 					backgroundColor = backgroundImage != null ? UIColor.FromPatternImage(backgroundImage) : UIColor.Clear;
 				}
+
+				_useBackgroundBrush = true;
 			}
 
-			Control.BackgroundColor = backgroundColor;
+			if (_useBackgroundBrush)
+				Control.BackgroundColor = backgroundColor;
 		}
 
 		void SetControlPropertiesFromProxy()
