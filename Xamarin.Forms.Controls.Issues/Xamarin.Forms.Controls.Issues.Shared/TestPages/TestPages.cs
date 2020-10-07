@@ -797,28 +797,9 @@ namespace Xamarin.Forms.Controls
 		public void TapInFlyout(string text, string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, string timeoutMessage = null)
 		{
 			timeoutMessage = timeoutMessage ?? text;
-
-
-#if __WINDOWS__
-			// If we try to read the text while shell is transitioning
-			// UWP runner throws an exception
-			System.Threading.Thread.Sleep(1000);
-			if (RunningApp.Query(text).Length == 0)
-				ShowFlyout(flyoutIcon, usingSwipe);
-#else
 			ShowFlyout(flyoutIcon, usingSwipe);
-#endif
-
 			RunningApp.WaitForElement(text, timeoutMessage);
 			RunningApp.Tap(text);
-
-#if __WINDOWS__
-			// If we try to read the text while shell is transitioning
-			// UWP runner throws an exception
-			System.Threading.Thread.Sleep(1000);
-			if (RunningApp.Query(text).Length == 0)
-				ShowFlyout(flyoutIcon, usingSwipe);
-#endif
 		}
 
 		public void DoubleTapInFlyout(string text, string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, string timeoutMessage = null)
