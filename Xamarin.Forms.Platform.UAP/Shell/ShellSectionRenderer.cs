@@ -139,7 +139,7 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					case ShellNavigationSource.Insert:
 						{
-							var pageIndex = FormsNavigationStack.IndexOf(page);
+							var pageIndex = ShellSection.Stack.ToList().IndexOf(page);
 							if (pageIndex == Frame.BackStack.Count - 1)
 								Frame.Navigate(typeof(ShellPageWrapper), GetTransitionInfo(source));
 							else
