@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using UIKit;
+using Xamarin.Platform.Hosting;
 
 namespace Xamarin.Platform
 {
@@ -13,7 +14,12 @@ namespace Xamarin.Platform
 
 			if (handler == null)
 			{
-				handler = Registrar.Handlers.GetHandler(view.GetType());
+				//handler = Registrar.Handlers.GetHandler(view.GetType());
+				handler = App.Current?.Handlers?.GetHandler(view.GetType());
+				
+				if (handler == null)
+					throw new System.Exception($"Handler not found for view {view}");
+
 				view.Handler = handler;
 			}
 

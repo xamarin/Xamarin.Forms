@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;netstandard2.0;Xamarin.iOS10;MonoAndroid10.0</TargetFrameworks>
     <RootNamespace>Xamarin.Platform</RootNamespace>
-    <AssemblyName>Xamarin.Platform</AssemblyName> 
+    <AssemblyName>Xamarin.Platform</AssemblyName>
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup>
@@ -10,4 +10,12 @@
     <Product>Xamarin</Product>
   </PropertyGroup>
   <Import Project="..\..\..\..\.nuspec\Xamarin.Forms.MultiTargeting.targets" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0-rc.1.20451.14" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0-rc.1.20451.14" />
+  </ItemGroup>
+  <PropertyGroup>
+    <__REGISTRAR__ Condition="'$(__REGISTRAR__)' == ''">false</__REGISTRAR__>
+    <DefineConstants Condition="'$(__REGISTRAR__)' == 'true'">$(DefineConstants);__REGISTRAR__</DefineConstants>
+  </PropertyGroup>
 </Project>

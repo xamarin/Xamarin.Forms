@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace Xamarin.Platform.Handlers.UnitTests
+namespace Xamarin.Platform.Handlers.Tests
 {
 	[Category(TestCategory.Core, TestCategory.Lifecycle)]
 	public class AbstractViewHandlerTests
