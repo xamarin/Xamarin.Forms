@@ -33,6 +33,8 @@ namespace Xamarin.Platform
 				return;
 			}
 
+			base.Arrange(bounds);
+
 			Arrange(bounds.Width, Spacing, Children);
 			IsArrangeValid = true;
 			Handler?.SetFrame(bounds);

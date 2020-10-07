@@ -9,7 +9,11 @@ namespace Xamarin.Platform
 
 		public Color BackgroundColor { get; set; } = Color.Transparent;
 
-		public Rectangle Frame { get; set; }
+		public Rectangle Frame 
+		{ 
+			get; 
+			protected set; 
+		}
 
 		public IViewHandler? Handler { get; set; }
 
