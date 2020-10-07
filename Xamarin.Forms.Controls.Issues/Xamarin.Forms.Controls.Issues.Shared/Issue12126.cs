@@ -46,11 +46,18 @@ namespace Xamarin.Forms.Controls.Issues
 				Shell.SetTabBarIsVisible(contentPage, true);
 
 				ContentPage contentPage2 = new ContentPage();
-				contentPage2.Content = new Label()
-				{
-					Text = "Click The Back Arrow",
-					AutomationId = "TestReady"
-				};
+				contentPage2.Content =
+					new StackLayout()
+					{
+						Children =
+						{
+							new Label()
+							{
+								Text = "Click The Back Arrow",
+								AutomationId = "TestReady"
+							}
+						}
+					};
 
 				Shell.SetTabBarIsVisible(contentPage2, false);
 				await Navigation.PushAsync(contentPage);
