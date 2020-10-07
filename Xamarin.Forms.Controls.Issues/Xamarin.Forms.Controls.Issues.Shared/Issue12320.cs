@@ -47,7 +47,8 @@ namespace Xamarin.Forms.Controls.Issues
 				ContentPage contentPage = new ContentPage();
 				contentPage.Content = new Label()
 				{
-					Text = "Click the Coffee Cup in the Nav Bar"
+					Text = "Click the Coffee Cup in the Nav Bar",
+					AutomationId = "TestReady"
 				};
 
 				Shell.SetTabBarIsVisible(contentPage, false);
@@ -61,6 +62,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void PopLogicExecutesWhenUsingBackButtonBehavior()
 		{
+			RunningApp.WaitForElement("TestReady");
 			base.TapBackArrow();
 			RunningApp.WaitForElement("Tab 1");
 		}
