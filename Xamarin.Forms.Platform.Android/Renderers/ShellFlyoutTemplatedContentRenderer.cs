@@ -12,7 +12,6 @@ using Google.Android.Material.AppBar;
 using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
-using AndroidX.CoordinatorLayout.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
