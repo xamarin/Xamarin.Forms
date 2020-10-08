@@ -189,6 +189,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap(LockFlyoutBehavior);
 			RunningApp.WaitForElement(title, "Flyout Locked hiding content");
 			RunningApp.Tap(EnableFlyoutBehavior);
+			RunningApp.WaitForNoElement(FlyoutItem);
 
 		}
 
