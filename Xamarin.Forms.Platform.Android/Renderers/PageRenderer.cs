@@ -2,17 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
-using Android.Content.Res;
-using Android.OS;
-#if __ANDROID_29__
-using AndroidX.Core.Content;
-using AndroidX.AppCompat.Widget;
-#else
-using Android.Support.V4.Content;
-using Android.Support.V7.Widget;
-#endif
 using Android.Views;
 using Android.Views.Accessibility;
+using AndroidX.Core.Content;
 using AColor = Android.Graphics.Color;
 using AColorRes = Android.Resource.Color;
 using AView = Android.Views.View;

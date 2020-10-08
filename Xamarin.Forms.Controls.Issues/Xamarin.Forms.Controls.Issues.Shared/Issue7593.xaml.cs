@@ -1,12 +1,12 @@
-﻿using System.Collections.ObjectModel;
-using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
-using System;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
 #if UITEST
@@ -241,7 +241,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Name = "Peterbald",
 				Location = "Russia",
-				Details = "The Peterbald is a cat breed of Russian origin. It was created in St Petersburg in 1994 from an experimental breeding by Olga S. Mironova. They resemble Oriental Shorthairs with a hair-losing gene. The breed was accepted for Championship class competition in 2009.",
+				Details = "The Peterbald is a cat breed of Russian origin. It was created in St Petersburg in 1994 from an experimental breeding by Olga S. Mironova. They resemble something Shorthairs with a hair-losing gene. The breed was accepted for Championship class competition in 2009.",
 				ImageUrl = "https://upload.wikimedia.org/wikipedia/commons/c/c7/Peterbald_male_Shango_by_Irina_Polunina.jpg"
 			});
 			Animals.Add(new Model7593

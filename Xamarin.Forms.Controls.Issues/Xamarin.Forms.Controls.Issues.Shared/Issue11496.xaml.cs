@@ -1,8 +1,8 @@
-﻿using Xamarin.Forms.CustomAttributes;
+﻿using System.Collections.Generic;
+using System.Windows.Input;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
-using System.Collections.Generic;
-using System.Windows.Input;
 
 #if UITEST
 using Xamarin.UITest;
@@ -28,7 +28,6 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 #if APP
 			Title = "Issue 11496";
-			Device.SetFlags(new List<string> { ExperimentalFlags.SwipeViewExperimental });
 			InitializeComponent();
 #endif
 		}

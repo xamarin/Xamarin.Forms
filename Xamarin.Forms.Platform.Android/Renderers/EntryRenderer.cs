@@ -3,17 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics.Drawables;
-#if __ANDROID_29__
-using AndroidX.Core.Content;
-#else
-using Android.Support.V4.Content;
-#endif
 using Android.Text;
 using Android.Text.Method;
 using Android.Util;
 using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
+using AndroidX.Core.Content;
 using Java.Lang;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
@@ -535,10 +531,10 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateText()
 		{
 			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
-			
+
 			if (EditText.Text == text)
 				return;
-			
+
 			EditText.Text = text;
 			if (EditText.IsFocused)
 			{

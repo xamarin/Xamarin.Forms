@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Net;
-using Xamarin.Forms.Internals;
+using System.Text.RegularExpressions;
 using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
-using System.Text.RegularExpressions;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 3262, "Adding Cookies ability to a WebView...")]
-	public class Issue3262 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Issue3262 : TestContentPage // or TestFlyoutPage, etc ...
 	{
 		string _currentCookieValue;
 
@@ -312,9 +312,9 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement("Loaded");
 			// add a couple cookies
 			RunningApp.Tap("ChangeDuringNavigating");
-			RunningApp.WaitForElement("Success");
+			ValidateSuccess();
 			RunningApp.Tap("ChangeDuringNavigating");
-			RunningApp.WaitForElement("Success");
+			ValidateSuccess();
 		}
 
 		[Test]
@@ -323,9 +323,9 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement("Loaded");
 			// add a couple cookies
 			RunningApp.Tap("AdditionalCookie");
-			RunningApp.WaitForElement("Success");
+			ValidateSuccess();
 			RunningApp.Tap("AdditionalCookie");
-			RunningApp.WaitForElement("Success");
+			ValidateSuccess();
 		}
 
 		[Test]
@@ -333,7 +333,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement("Loaded");
 			RunningApp.Tap("OneCookie");
-			RunningApp.WaitForElement("Success");
+			ValidateSuccess();
 		}
 
 		[Test]
@@ -342,9 +342,9 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement("Loaded");
 			// add a cookie to verify said cookie remains
 			RunningApp.Tap("AdditionalCookie");
-			RunningApp.WaitForElement("Success");
+			ValidateSuccess();
 			RunningApp.Tap("NullAllCookies");
-			RunningApp.WaitForElement("Success");
+			ValidateSuccess();
 		}
 
 		[Test]
@@ -353,9 +353,22 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement("Loaded");
 			// add a cookie so you can remove a cookie
 			RunningApp.Tap("AdditionalCookie");
-			RunningApp.WaitForElement("Success");
+			ValidateSuccess();
 			RunningApp.Tap("EmptyAllCookies");
-			RunningApp.WaitForElement("Success");
+			ValidateSuccess();
+		}
+
+		void ValidateSuccess()
+		{
+			try
+			{
+				RunningApp.WaitForElement("Success");
+			}
+			catch
+			{
+				RunningApp.Tap("DisplayAllCookies");
+				throw;
+			}
 		}
 #endif
 	}
