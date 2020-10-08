@@ -2,7 +2,7 @@
 using Xamarin.Forms;
 using FormsRectangle = Xamarin.Forms.Shapes.Rectangle;
 
-[assembly: ExportRenderer(typeof(FormsRectangle), typeof(Xamarin.Forms.Platform.Tizen.RectangleRenderer))]
+
 namespace Xamarin.Forms.Platform.Tizen
 {
     public class RectangleRenderer : ShapeRenderer<FormsRectangle, RectView>

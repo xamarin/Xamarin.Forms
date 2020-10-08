@@ -2,7 +2,6 @@
 using Xamarin.Forms;
 using Path = Xamarin.Forms.Shapes.Path;
 
-[assembly: ExportRenderer(typeof(Path), typeof(Xamarin.Forms.Platform.Tizen.PathRenderer))]
 namespace Xamarin.Forms.Platform.Tizen
 {
     public class PathRenderer : ShapeRenderer<Path, PathView>

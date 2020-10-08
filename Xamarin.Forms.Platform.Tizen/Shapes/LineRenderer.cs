@@ -2,7 +2,6 @@
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
 
-[assembly: ExportRenderer(typeof(Line), typeof(Xamarin.Forms.Platform.Tizen.LineRenderer))]
 namespace Xamarin.Forms.Platform.Tizen
 {
     public class LineRenderer : ShapeRenderer<Line, LineView>

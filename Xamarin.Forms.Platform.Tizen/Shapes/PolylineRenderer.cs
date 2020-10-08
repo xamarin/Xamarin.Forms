@@ -3,7 +3,6 @@ using SkiaSharp;
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
 
-[assembly: ExportRenderer(typeof(Polyline), typeof(Xamarin.Forms.Platform.Tizen.PolylineRenderer))]
 namespace Xamarin.Forms.Platform.Tizen
 {
     public class PolylineRenderer : ShapeRenderer<Polyline, PolylineView>

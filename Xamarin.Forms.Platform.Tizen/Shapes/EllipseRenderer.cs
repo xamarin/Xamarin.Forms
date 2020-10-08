@@ -2,7 +2,6 @@
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
 
-[assembly: ExportRenderer(typeof(Ellipse), typeof(Xamarin.Forms.Platform.Tizen.EllipseRenderer))]
 namespace Xamarin.Forms.Platform.Tizen
 {
     public class EllipseRenderer : ShapeRenderer<Ellipse, EllipseView>

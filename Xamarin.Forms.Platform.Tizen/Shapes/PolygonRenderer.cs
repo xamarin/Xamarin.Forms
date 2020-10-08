@@ -3,7 +3,6 @@ using SkiaSharp;
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
 
-[assembly: ExportRenderer(typeof(Polygon), typeof(Xamarin.Forms.Platform.Tizen.PolygonRenderer))]
 namespace Xamarin.Forms.Platform.Tizen
 {
     public class PolygonRenderer : ShapeRenderer<Polygon, PolygonView>
