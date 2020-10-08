@@ -2,43 +2,31 @@
 using System.Collections.Generic;
 using Xamarin.Forms;
 
-namespace Xamarin.Platform
+namespace Xamarin.Platform.Layouts
 {
-	public class HorizontalStackLayout : StackLayout
+	public class HorizontalStackLayoutManager : StackLayoutManager
 	{
-		public override Size Measure(double widthConstraint, double heightConstraint)
+		public HorizontalStackLayoutManager(IStackLayout layout) : base(layout)
 		{
-			if (IsMeasureValid)
+		}
+		public override Size Measure( double widthConstraint, double heightConstraint)
+		{
+			if (Stack.IsMeasureValid)
 			{
-				return DesiredSize;
+				return Stack.DesiredSize;
 			}
 
-			var heightMeasureConstraint = ResolveConstraints(heightConstraint, Height);
+			var heightMeasureConstraint = ResolveConstraints(heightConstraint, Stack.Height);
 
-			var measure = Measure(heightMeasureConstraint, Spacing, Children);
+			var measure = Measure(heightMeasureConstraint, Stack.Spacing, Stack.Children);
 
-			var finalWidth = ResolveConstraints(widthConstraint, Width, measure.Width);
+			var finalWidth = ResolveConstraints(widthConstraint, Stack.Width, measure.Width);
 
-			DesiredSize = new Size(finalWidth, measure.Height);
-
-			IsMeasureValid = true;
-
-			return DesiredSize;
+			return new Size(finalWidth, measure.Height);
 		}
 
-		public override void Arrange(Rectangle bounds)
-		{
-			if (IsArrangeValid)
-			{
-				return;
-			}
+		public override void Arrange(Rectangle bounds) => Arrange(bounds.Height, Stack.Spacing, Stack.Children);
 
-			base.Arrange(bounds);
-
-			Arrange(bounds.Height, Spacing, Children);
-			IsArrangeValid = true;
-			Handler?.SetFrame(bounds);
-		}
 
 		static Size Measure(double heightConstraint, int spacing, IReadOnlyList<IView> views)
 		{
