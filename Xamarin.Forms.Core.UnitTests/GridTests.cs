@@ -142,11 +142,59 @@ namespace Xamarin.Forms.Core.UnitTests
 			var column0Width = grid.ColumnDefinitions[0].ActualWidth;
 			var column1Width = grid.ColumnDefinitions[1].ActualWidth;
 
-			Assert.That(column0Width, Is.LessThan(column1Width)); 
+			Assert.That(column0Width, Is.LessThan(column1Width));
 
 			// Having a first column which is a fraction of a Star width should not cause the grid
 			// to contract below the target width
-			Assert.That(column0Width + column1Width, Is.GreaterThanOrEqualTo(gridWidth));
+			var totalColumnSpacing = (grid.ColumnDefinitions.Count - 1) * grid.ColumnSpacing;
+
+			Assert.That(column0Width + column1Width + totalColumnSpacing, Is.GreaterThanOrEqualTo(gridWidth));
+		}
+
+		[Test]
+		public void ColumnsLessThanOneStarShouldBeTallerThanOneStarColumns() 
+		{
+			var grid1 = new Grid() { ColumnSpacing = 0 };
+
+			grid1.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
+			grid1.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
+
+			grid1.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+
+			var label1 = new ColumnTestLabel
+			{
+				Text = "label1"
+			};
+
+			grid1.Children.Add(label1, 0, 0);
+
+			var gridWidth = 400;
+			grid1.Measure(gridWidth, double.PositiveInfinity);
+			var column0Width = grid1.ColumnDefinitions[0].ActualWidth;
+			var column1Width = grid1.ColumnDefinitions[1].ActualWidth;
+
+			Assert.That(column0Width, Is.EqualTo(column1Width));
+			var grid1Height = grid1.RowDefinitions[0].ActualHeight;
+
+			var grid2 = new Grid() { ColumnSpacing = 0 };
+
+			grid2.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(0.5, GridUnitType.Star) });
+			grid2.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
+
+			grid2.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+
+			var label2 = new ColumnTestLabel
+			{
+				Text = "label2"
+			};
+
+			grid2.Children.Add(label2, 0, 0);
+
+			grid2.Measure(gridWidth, double.PositiveInfinity);
+			var grid2Height = grid2.RowDefinitions[0].ActualHeight;
+
+
+			Assert.That(grid2Height, Is.GreaterThan(grid1Height));
 		}
 
 		[Test]
@@ -1807,7 +1855,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (invalidated);
 		}
 
-
 		[Test]
 		//https://github.com/xamarin/Xamarin.Forms/issues/4933
 		public void GridHeightCorrectWhenAspectFitImageGetsShrinked()
@@ -1827,7 +1874,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(50, measurement.Request.Width);
 			Assert.AreEqual(10, measurement.Request.Height);
 		}
-
 
 		[Test]
 		public void MinimumWidthRequestInAutoCells()
@@ -1935,8 +1981,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(boxRow0Column0.MinimumHeightRequest, boxRow0Column0.Height);
 			Assert.AreEqual(boxRow0Column1.MinimumHeightRequest, boxRow0Column1.Height);
 		}
-
-
 
 		// because the constraint is internal, we need this
 		public enum HackLayoutConstraint
