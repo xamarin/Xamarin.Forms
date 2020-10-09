@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.Shell)]
 #endif
-	public class FlyoutBehavior : TestShell
+	public class FlyoutBehaviorShell : TestShell
 	{
 		BackButtonBehavior _behavior;
 		const string title = "Basic Test";

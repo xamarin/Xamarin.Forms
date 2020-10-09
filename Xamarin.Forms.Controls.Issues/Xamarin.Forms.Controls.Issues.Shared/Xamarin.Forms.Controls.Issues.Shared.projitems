@@ -290,7 +290,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ShellAppearanceChange.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue10234.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellModal.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FlyoutBehavior.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FlyoutBehaviorShell.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7128.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellItemIsVisible.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellGestures.cs" />
