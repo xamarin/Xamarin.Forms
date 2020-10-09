@@ -29,7 +29,6 @@ namespace Xamarin.Forms.Platform.Android
 			get { return _view; }
 			set
 			{
-				_view = value;
 				OnViewSet(value);
 			}
 		}
@@ -84,8 +83,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (View != null)
 				View.SizeChanged -= OnViewSizeChanged;
 
-			if (View is VisualElement oldVe)
-				oldVe.MeasureInvalidated -= OnViewSizeChanged;
+			if (View is VisualElement oldView)
+				oldView.MeasureInvalidated -= OnViewSizeChanged;
 
 			if (_renderer != null)
 			{
@@ -94,6 +93,7 @@ namespace Xamarin.Forms.Platform.Android
 				_renderer = null;
 			}
 
+			_view = view;
 			if (view != null)
 			{
 				Context context;
