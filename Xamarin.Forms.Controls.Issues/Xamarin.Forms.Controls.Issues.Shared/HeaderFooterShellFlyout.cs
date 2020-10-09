@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.Shell)]
 #endif
-	public class ShellFlyoutHeaderFooter : TestShell
+	public class HeaderFooterShellFlyout : TestShell
 	{
 		protected override void Init()
 		{
