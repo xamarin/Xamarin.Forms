@@ -36,9 +36,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void TearDown()
 		{
-			if(View != null)
-				View.SizeChanged -= OnViewSizeChanged;
-
+			View = null;
 			_renderer?.Dispose();
 			_renderer = null;
 			_view = null;
@@ -51,7 +49,7 @@ namespace Xamarin.Forms.Platform.Android
 			_height = height;
 			Context context;
 
-			if (_renderer == null || !(_context.TryGetTarget(out context)))
+			if (_renderer == null || !(_context.TryGetTarget(out context)) || !_renderer.View.IsAlive())
 				return;
 
 			if (View == null)
