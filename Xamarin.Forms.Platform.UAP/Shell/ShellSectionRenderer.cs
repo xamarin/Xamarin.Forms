@@ -159,42 +159,26 @@ namespace Xamarin.Forms.Platform.UWP
 				switch (source)
 				{
 					case ShellNavigationSource.Insert:
-						{
-							var pageIndex = ShellSection.Stack.ToList().IndexOf(page);
-							if (pageIndex == Frame.BackStack.Count - 1)
-								Frame.Navigate(typeof(ShellPageWrapper), GetTransitionInfo(source));
-							else
-								Frame.BackStack.Insert(pageIndex, new PageStackEntry(typeof(ShellPageWrapper), null, GetTransitionInfo(source)));
-							break;
-						}
+						OnInsertRequested(source, page);
+						break;
 					case ShellNavigationSource.Pop:
-						Frame.GoBack(GetTransitionInfo(source));
+						OnPopRequested(source);
 						break;
 					case ShellNavigationSource.Unknown:
 						break;
 					case ShellNavigationSource.Push:
-						Frame.Navigate(typeof(ShellPageWrapper), GetTransitionInfo(source));
+						OnPushRequested(source);
 						break;
 					case ShellNavigationSource.PopToRoot:
-						while (Frame.BackStackDepth > 2)
-						{
-							Frame.BackStack.RemoveAt(1);
-						}
-						Frame.GoBack(GetTransitionInfo(source));
+						OnPopToRootRequested(source);
 						break;
 					case ShellNavigationSource.Remove:
-						{
-							var pageIndex = FormsNavigationStack.IndexOf(page);
-							if (pageIndex == Frame.BackStack.Count - 1)
-								Frame.GoBack(GetTransitionInfo(source));
-							else
-								Frame.BackStack.RemoveAt(pageIndex);
-							break;
-						}
+						OnRemoveRequested(source, page);
+						break;
 					case ShellNavigationSource.ShellItemChanged:
 						break;
 					case ShellNavigationSource.ShellSectionChanged:
-						Frame.Navigate(typeof(ShellPageWrapper), GetTransitionInfo(source));
+						OnShellSectionChanged(source);
 						break;
 					case ShellNavigationSource.ShellContentChanged:
 						break;
@@ -210,6 +194,48 @@ namespace Xamarin.Forms.Platform.UWP
 				wrapper.LoadPage();
 				FormsNavigationStack = ShellSection.Stack.ToList();
 			}
+		}
+
+		protected void OnPopRequested(ShellNavigationSource source)
+		{
+			Frame.GoBack(GetTransitionInfo(source));
+		}
+
+		protected void OnPopToRootRequested(ShellNavigationSource source)
+		{
+			while (Frame.BackStackDepth > 2)
+			{
+				Frame.BackStack.RemoveAt(1);
+			}
+			Frame.GoBack(GetTransitionInfo(source));
+		}
+
+		protected void OnPushRequested(ShellNavigationSource source)
+		{
+			Frame.Navigate(typeof(ShellPageWrapper), GetTransitionInfo(source));
+		}
+
+		protected void OnInsertRequested(ShellNavigationSource source, Page page)
+		{
+			var pageIndex = ShellSection.Stack.ToList().IndexOf(page);
+			if (pageIndex == Frame.BackStack.Count - 1)
+				Frame.Navigate(typeof(ShellPageWrapper), GetTransitionInfo(source));
+			else
+				Frame.BackStack.Insert(pageIndex, new PageStackEntry(typeof(ShellPageWrapper), null, GetTransitionInfo(source)));
+		}
+
+		protected void OnRemoveRequested(ShellNavigationSource source, Page page)
+		{
+			var pageIndex = FormsNavigationStack.IndexOf(page);
+			if (pageIndex == Frame.BackStack.Count - 1)
+				Frame.GoBack(GetTransitionInfo(source));
+			else
+				Frame.BackStack.RemoveAt(pageIndex);
+		}
+
+		protected void OnShellSectionChanged(ShellNavigationSource source)
+		{
+			Frame.Navigate(typeof(ShellPageWrapper), GetTransitionInfo(source));
 		}
 
 		protected virtual NavigationTransitionInfo GetTransitionInfo(ShellNavigationSource navSource)
