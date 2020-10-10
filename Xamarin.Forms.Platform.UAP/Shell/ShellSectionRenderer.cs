@@ -196,12 +196,12 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		protected void OnPopRequested(ShellNavigationSource source)
+		protected virtual void OnPopRequested(ShellNavigationSource source)
 		{
 			Frame.GoBack(GetTransitionInfo(source));
 		}
 
-		protected void OnPopToRootRequested(ShellNavigationSource source)
+		protected virtual void OnPopToRootRequested(ShellNavigationSource source)
 		{
 			while (Frame.BackStackDepth > 2)
 			{
@@ -210,12 +210,12 @@ namespace Xamarin.Forms.Platform.UWP
 			Frame.GoBack(GetTransitionInfo(source));
 		}
 
-		protected void OnPushRequested(ShellNavigationSource source)
+		protected virtual void OnPushRequested(ShellNavigationSource source)
 		{
 			Frame.Navigate(typeof(ShellPageWrapper), GetTransitionInfo(source));
 		}
 
-		protected void OnInsertRequested(ShellNavigationSource source, Page page)
+		protected virtual void OnInsertRequested(ShellNavigationSource source, Page page)
 		{
 			var pageIndex = ShellSection.Stack.ToList().IndexOf(page);
 			if (pageIndex == Frame.BackStack.Count - 1)
@@ -224,7 +224,7 @@ namespace Xamarin.Forms.Platform.UWP
 				Frame.BackStack.Insert(pageIndex, new PageStackEntry(typeof(ShellPageWrapper), null, GetTransitionInfo(source)));
 		}
 
-		protected void OnRemoveRequested(ShellNavigationSource source, Page page)
+		protected virtual void OnRemoveRequested(ShellNavigationSource source, Page page)
 		{
 			var pageIndex = FormsNavigationStack.IndexOf(page);
 			if (pageIndex == Frame.BackStack.Count - 1)
@@ -233,7 +233,7 @@ namespace Xamarin.Forms.Platform.UWP
 				Frame.BackStack.RemoveAt(pageIndex);
 		}
 
-		protected void OnShellSectionChanged(ShellNavigationSource source)
+		protected virtual void OnShellSectionChanged(ShellNavigationSource source)
 		{
 			Frame.Navigate(typeof(ShellPageWrapper), GetTransitionInfo(source));
 		}
