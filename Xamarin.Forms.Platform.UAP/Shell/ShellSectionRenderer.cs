@@ -135,7 +135,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		internal void NavigateToContent(ShellNavigationSource source, ShellContent shellContent, Page page, bool animate = true)
+		protected virtual void NavigateToContent(ShellNavigationSource source, ShellContent shellContent, Page page, bool animate = true)
 		{
 			Page nextPage = null;
 
@@ -212,7 +212,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		NavigationTransitionInfo GetTransitionInfo(ShellNavigationSource navSource)
+		protected virtual NavigationTransitionInfo GetTransitionInfo(ShellNavigationSource navSource)
 		{
 			switch (navSource)
 			{
