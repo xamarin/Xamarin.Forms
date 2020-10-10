@@ -106,7 +106,8 @@ namespace Xamarin.Forms
 
 		public static void ImageSourceChanging(ImageSource oldImageSource)
 		{
-			if (oldImageSource == null) return;
+			if (oldImageSource == null)
+				return;
 			try
 			{
 				// This method generates are particularly unhappy async/await state-machine combined
@@ -136,7 +137,7 @@ namespace Xamarin.Forms
 		static void ImageSourceChanged(BindableObject bindable, ImageSource newSource)
 		{
 			var imageElement = (VisualElement)bindable;
-			if(newSource != null)
+			if (newSource != null)
 				newSource.Parent = imageElement;
 			imageElement?.InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 		}

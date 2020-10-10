@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Android.Graphics.Drawables;
-using Xamarin.Forms.Internals;
 using Android.Content;
 using Android.Graphics;
+using Android.Graphics.Drawables;
+using Xamarin.Forms.Internals;
 using AImageView = Android.Widget.ImageView;
 using Android.Views.Accessibility;
 
@@ -48,8 +48,7 @@ namespace Xamarin.Forms.Platform.Android
 					{
 						imageLoadedSuccessfully = await imageView.TryToUpdateBitmap(newView, newView.PlaceholderSource, imageController, newImageSource);
 					}
-
-					if (newImageSource != null)
+					if (newImageSource != null && animation==null)
 					{
 						imageLoadedSuccessfully = await imageView.TryToUpdateBitmap(newView, newImageSource, imageController, newImageSource);
 					}
