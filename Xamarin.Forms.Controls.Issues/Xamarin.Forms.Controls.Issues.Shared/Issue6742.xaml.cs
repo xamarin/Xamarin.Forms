@@ -1,22 +1,13 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using System.ComponentModel;
 using System.Collections.Generic;
-
-#if UITEST
-using Xamarin.UITest;
-using NUnit.Framework;
-using Xamarin.Forms.Core.UITests;
-#endif
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-#if UITEST
-	[Category(UITestCategories.ManualReview)]
-#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 6742, "Memory leak in ListView with uneven rows on IOS", PlatformAffected.Default)]
 	public partial class Issue6742 : TestContentPage
@@ -41,7 +32,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				item.Clear();
 			}
-			this.viewModel.ItemGroups.Clear();
+			viewModel.ItemGroups.Clear();
 
 			GC.Collect();
 			GC.WaitForPendingFinalizers();
@@ -62,7 +53,7 @@ namespace Xamarin.Forms.Controls.Issues
 			_weakList.Add(new WeakReference<ModelIssue6742>(g1[0]));
 			_weakList.Add(new WeakReference<ModelIssue6742>(g1[1]));
 
-			this.viewModel.ItemGroups.Add(g1);
+			viewModel.ItemGroups.Add(g1);
 
 			var g2 = new ModelIssue6742Group("Group 2")
 			{
@@ -73,7 +64,7 @@ namespace Xamarin.Forms.Controls.Issues
 			_weakList.Add(new WeakReference<ModelIssue6742>(g2[0]));
 			_weakList.Add(new WeakReference<ModelIssue6742>(g2[1]));
 
-			this.viewModel.ItemGroups.Add(g2);
+			viewModel.ItemGroups.Add(g2);
 
 			var g3 = new ModelIssue6742Group("Group 3")
 			{
@@ -86,7 +77,7 @@ namespace Xamarin.Forms.Controls.Issues
 			_weakList.Add(new WeakReference<ModelIssue6742>(g3[1]));
 			_weakList.Add(new WeakReference<ModelIssue6742>(g3[2]));
 
-			this.viewModel.ItemGroups.Add(g3);
+			viewModel.ItemGroups.Add(g3);
 		}
 
 		private void CleanWeakList(IList<WeakReference<ModelIssue6742>> weakList)
@@ -100,19 +91,6 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			}
 		}
-
-#if UITEST
-		[Test]
-		public void Issue6742Test()
-		{
-			RunningApp.WaitForElement("Issue6742Refresh");
-			RunningApp.Tap("Issue6742Refresh");
-			RunningApp.Wait(500);
-			RunningApp.Tap("Issue6742Refresh");
-			RunningApp.WaitForElement(p => p.Text = "Good, its disposed!");
-			
-		}
-#endif
 	}
 
 	[Preserve(AllMembers = true)]
@@ -123,7 +101,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		private void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			this.PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 
@@ -178,6 +156,5 @@ namespace Xamarin.Forms.Controls.Issues
 			Name = name;
 		}
 		public string Name { get; set; }
-
 	}
 }
