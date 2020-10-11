@@ -858,6 +858,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				var firstCell = templatedItems.ActivateContent(0, item);
 
+				nfloat returnValue;
 				// Let's skip this optimization for grouped lists. It will likely cause more trouble than it's worth.
 				if (firstCell?.Height > 0 && !isGroupingEnabled)
 				{
@@ -867,10 +868,16 @@ namespace Xamarin.Forms.Platform.iOS
 					// In this case, we will cache the specified cell heights asynchronously, which will be returned one time on
 					// table load by EstimatedHeight.
 
-					return 0;
+					returnValue= 0;
 				}
-
-				return CalculateHeightForCell(table, firstCell);
+				else
+				{
+					returnValue = CalculateHeightForCell(table, firstCell);
+				}
+				//_prototype.DisposeRendererAndChildren();
+				//_prototype = null;
+				TemplatedItemsView.UnhookContent(firstCell);
+				return returnValue;
 			}
 
 			internal override void InvalidatingPrototypicalCellCache()
