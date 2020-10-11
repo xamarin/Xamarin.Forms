@@ -27,8 +27,8 @@
     <ConsolePause>false</ConsolePause>
     <MtouchArch>i386, x86_64</MtouchArch>
     <MtouchLink>SdkOnly</MtouchLink>
-    <MtouchDebug>true</MtouchDebug>
-    <MtouchProfiling>false</MtouchProfiling>
+    <MtouchDebug>True</MtouchDebug>
+    <MtouchProfiling>False</MtouchProfiling>
     <MtouchFastDev>False</MtouchFastDev>
     <MtouchEnableGenericValueTypeSharing>True</MtouchEnableGenericValueTypeSharing>
     <MtouchUseLlvm>False</MtouchUseLlvm>
@@ -42,7 +42,6 @@
     <CodesignKey>iPhone Developer</CodesignKey>
     <CodesignProvision />
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DeviceSpecificBuild>true</DeviceSpecificBuild>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>none</DebugType>
@@ -441,9 +440,4 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties XamarinHotReloadWrongLinkerErrorInfoBarXamarinFormsControlGalleryiOSHideInfoBar="True" />
-    </VisualStudio>
-  </ProjectExtensions>
 </Project>
