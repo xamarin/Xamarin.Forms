@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Android.Content;
 using Android.Views;
+using ADragFlags = Android.Views.DragFlags;
 using AUri = Android.Net.Uri;
 using AView = Android.Views.View;
-using ADragFlags = Android.Views.DragFlags;
-using System.IO;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -113,7 +113,7 @@ namespace Xamarin.Forms.Platform.Android
 			package = localStateData?.DataPackage;
 			var dragSourceElement = _currentCustomLocalStateData?.SourceElement ?? dragSourceRenderer?.Element;
 
-			if(package == null)
+			if (package == null)
 			{
 				package = new DataPackage();
 				_currentCustomLocalStateData.DataPackage = package;
@@ -215,10 +215,10 @@ namespace Xamarin.Forms.Platform.Android
 					text = e.ClipDescription?.Label;
 				}
 
-				if(String.IsNullOrWhiteSpace(datapackage.Text))
+				if (String.IsNullOrWhiteSpace(datapackage.Text))
 					datapackage.Text = text;
 
-				if(datapackage.Image == null)
+				if (datapackage.Image == null)
 					datapackage.Image = text;
 			}
 
@@ -250,7 +250,7 @@ namespace Xamarin.Forms.Platform.Android
 					return;
 
 				var element = GetView();
-				var renderer = Platform.GetRenderer(element);
+				var renderer = AppCompat.Platform.GetRenderer(element);
 				var v = renderer.View;
 
 				if (v.Handle == IntPtr.Zero)

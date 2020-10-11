@@ -1,11 +1,11 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
-using AndroidX.Core.View;
 using Android.Views;
 using Android.Widget;
-using Xamarin.Forms.Platform.Android.FastRenderers;
+using AndroidX.Core.View;
 using Xamarin.Forms.Platform.Android;
+using Xamarin.Forms.Platform.Android.FastRenderers;
 using AProgressBar = Android.Widget.ProgressBar;
 using AView = Android.Views.View;
 
@@ -90,8 +90,8 @@ namespace Xamarin.Forms.Material.Android
 				{
 					Element.PropertyChanged -= OnElementPropertyChanged;
 
-					if (Platform.Android.Platform.GetRenderer(Element) == this)
-						Element.ClearValue(Platform.Android.Platform.RendererProperty);
+					if (Platform.Android.AppCompat.Platform.GetRenderer(Element) == this)
+						Element.ClearValue(Platform.Android.AppCompat.Platform.RendererProperty);
 				}
 			}
 

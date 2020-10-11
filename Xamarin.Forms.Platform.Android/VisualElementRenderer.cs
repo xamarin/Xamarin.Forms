@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
-using Android.Views;
-using Xamarin.Forms.Internals;
-using AView = Android.Views.View;
-using Xamarin.Forms.Platform.Android.FastRenderers;
-using Android.Runtime;
 using Android.Content.Res;
 using Android.Graphics;
+using Android.Runtime;
+using Android.Views;
 using AndroidX.Core.View;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.Platform.Android.FastRenderers;
+using AView = Android.Views.View;
 
 
 namespace Xamarin.Forms.Platform.Android
@@ -325,8 +325,8 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (Element != null)
 				{
-					if (Platform.GetRenderer(Element) == this)
-						Platform.SetRenderer(Element, null);
+					if (AppCompat.Platform.GetRenderer(Element) == this)
+						AppCompat.Platform.SetRenderer(Element, null);
 
 					Element = null;
 				}
@@ -411,7 +411,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (visualElement == null)
 					continue;
 
-				IVisualElementRenderer renderer = Platform.GetRenderer(visualElement);
+				IVisualElementRenderer renderer = AppCompat.Platform.GetRenderer(visualElement);
 				if (renderer == null && CompressedLayout.GetIsHeadless(visualElement))
 					UpdateLayout(visualElement.LogicalChildren);
 

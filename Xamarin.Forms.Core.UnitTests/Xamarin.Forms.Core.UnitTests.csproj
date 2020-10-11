@@ -101,13 +101,17 @@
     <Compile Include="Markup\VisualElementExtensionsTests.cs" />
     <Compile Include="MarshalingObservableCollectionTests.cs" />
     <Compile Include="NumericExtensionsTests.cs" />
+    <Compile Include="RadioButtonTests.cs" />
     <Compile Include="RefreshViewTests.cs" />
     <Compile Include="MockDispatcherProvider.cs" />
     <Compile Include="MockDispatcher.cs" />
     <Compile Include="DeviceUnitTests.cs" />
     <Compile Include="EffectiveFlowDirectionExtensions.cs" />
     <Compile Include="ShellElementCollectionTests.cs" />
+    <Compile Include="ShellFlyoutItemGroupTests.cs" />
+    <Compile Include="ShellFlyoutItemTemplateTests.cs" />
     <Compile Include="ShellModalTests.cs" />
+    <Compile Include="ShellNavigatingTests.cs" />
     <Compile Include="ShellTestBase.cs" />
     <Compile Include="ShellLifeCycleTests.cs" />
     <Compile Include="ShellUriHandlerTests.cs" />
@@ -259,6 +263,8 @@
     <Compile Include="RadialGradientBrushTests.cs" />
     <Compile Include="SwipeViewTests.cs" />
     <Compile Include="PathSegmentTests.cs" />
+    <Compile Include="GeometryTests.cs" />
+    <Compile Include="ShellParameterPassingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">

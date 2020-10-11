@@ -5,8 +5,9 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using Xamarin.Forms.Internals;
 using System.Runtime.CompilerServices;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.Xaml.Diagnostics;
 
 namespace Xamarin.Forms
 {
@@ -123,24 +124,27 @@ namespace Xamarin.Forms
 						part.TryGetValue(current, out current);
 				}
 
-				if (   !part.IsSelf
-				    && current != null
-				    && (   (needsGetter && part.LastGetter == null)
-				        || (needsSetter && part.NextPart == null && part.LastSetter == null))) {
+				if (!part.IsSelf
+					&& current != null
+					&& ((needsGetter && part.LastGetter == null)
+						|| (needsSetter && part.NextPart == null && part.LastSetter == null)))
+				{
 					Log.Warning("Binding", PropertyNotFoundErrorMessage, part.Content, current, target.GetType(), property.PropertyName);
+					BindingDiagnostics.SendBindingFailure(Binding, current, target, property, null, PropertyNotFoundErrorMessage, new[] { part.Content, current, target.GetType(), property.PropertyName });
 					break;
 				}
 
-				if (part.NextPart != null &&   (mode == BindingMode.OneWay || mode == BindingMode.TwoWay)
-				    && current is INotifyPropertyChanged inpc)
-						part.Subscribe(inpc);
+				if (part.NextPart != null && (mode == BindingMode.OneWay || mode == BindingMode.TwoWay)
+					&& current is INotifyPropertyChanged inpc)
+					part.Subscribe(inpc);
 			}
 
 			Debug.Assert(part != null, "There should always be at least the self part in the expression.");
 
 			if (needsGetter)
 			{
-				if (part.TryGetValue(current, out object value) || part.IsSelf) {
+				if (part.TryGetValue(current, out object value) || part.IsSelf)
+				{
 					value = Binding.GetSourceValue(value, property.ReturnType);
 				}
 				else
@@ -149,6 +153,7 @@ namespace Xamarin.Forms
 				if (!TryConvert(ref value, property, property.ReturnType, true))
 				{
 					Log.Warning("Binding", "'{0}' can not be converted to type '{1}'.", value, property.ReturnType);
+					BindingDiagnostics.SendBindingFailure(Binding, current, target, property, null, "{0} can not be converted to type '{1}'", new[] { value, property.ReturnType });
 					return;
 				}
 
@@ -161,6 +166,7 @@ namespace Xamarin.Forms
 				if (!TryConvert(ref value, property, part.SetterType, false))
 				{
 					Log.Warning("Binding", "'{0}' can not be converted to type '{1}'.", value, part.SetterType);
+					BindingDiagnostics.SendBindingFailure(Binding, current, target, property, null, "{0} can not be converted to type '{1}'", new[] { value, part.SetterType });
 					return;
 				}
 
@@ -243,8 +249,10 @@ namespace Xamarin.Forms
 
 		PropertyInfo GetIndexer(TypeInfo sourceType, string indexerName, string content)
 		{
-			if (int.TryParse(content, out _)) { //try to find an indexer taking an int
-				foreach (var pi in sourceType.DeclaredProperties) {
+			if (int.TryParse(content, out _))
+			{ //try to find an indexer taking an int
+				foreach (var pi in sourceType.DeclaredProperties)
+				{
 					if (pi.Name != indexerName)
 						continue;
 					if (pi.CanRead && pi.GetMethod.GetParameters()[0].ParameterType == typeof(int))
@@ -254,9 +262,10 @@ namespace Xamarin.Forms
 				}
 			}
 
-		
+
 			//property isn't an int, or there wasn't any int indexer
-			foreach (var pi in sourceType.DeclaredProperties) {
+			foreach (var pi in sourceType.DeclaredProperties)
+			{
 				if (pi.Name != indexerName)
 					continue;
 				if (pi.CanRead && pi.GetMethod.GetParameters()[0].ParameterType == typeof(string))
@@ -281,7 +290,8 @@ namespace Xamarin.Forms
 				return p;
 
 			//defined on an interface ?
-			foreach (var face in sourceType.ImplementedInterfaces) {
+			foreach (var face in sourceType.ImplementedInterfaces)
+			{
 				if (GetIndexer(face.GetTypeInfo(), indexerName, content) is PropertyInfo pi)
 					return pi;
 			}
@@ -302,7 +312,10 @@ namespace Xamarin.Forms
 				if (sourceType.IsArray)
 				{
 					if (!int.TryParse(part.Content, out var index))
+					{
 						Log.Warning("Binding", "{0} could not be parsed as an index for a {1}", part.Content, sourceType);
+						BindingDiagnostics.SendBindingFailure(Binding, null, "{0} could not be parsed as an index for a {1}", new object[] { part.Content, sourceType });
+					}
 					else
 						part.Arguments = new object[] { index };
 
@@ -349,9 +362,11 @@ namespace Xamarin.Forms
 					}
 				}
 			}
-			else {
+			else
+			{
 				TypeInfo type = sourceType;
-				while (type != null && property == null) {
+				while (type != null && property == null)
+				{
 					property = type.GetDeclaredProperty(part.Content);
 					type = type.BaseType?.GetTypeInfo();
 				}
@@ -398,10 +413,10 @@ namespace Xamarin.Forms
 					}
 				}
 #if !NETSTANDARD1_0
-				if (   property != null
+				if (property != null
 					&& part.NextPart != null
 					&& property.PropertyType.IsGenericType
-					&& (   property.PropertyType.GetGenericTypeDefinition() == typeof(ValueTuple<>)
+					&& (property.PropertyType.GetGenericTypeDefinition() == typeof(ValueTuple<>)
 						|| property.PropertyType.GetGenericTypeDefinition() == typeof(ValueTuple<,>)
 						|| property.PropertyType.GetGenericTypeDefinition() == typeof(ValueTuple<,,>)
 						|| property.PropertyType.GetGenericTypeDefinition() == typeof(ValueTuple<,,,>)
@@ -431,25 +446,31 @@ namespace Xamarin.Forms
 		{
 			if (value == null)
 				return !convertTo.GetTypeInfo().IsValueType || Nullable.GetUnderlyingType(convertTo) != null;
-			try {
+			try
+			{
 				if ((toTarget && targetProperty.TryConvert(ref value)) || (!toTarget && convertTo.IsInstanceOfType(value)))
 					return true;
-			} catch (InvalidOperationException) { //that's what TypeConverters ususally throw
+			}
+			catch (InvalidOperationException)
+			{ //that's what TypeConverters ususally throw
 				return false;
 			}
 
 			object original = value;
-			try {
+			try
+			{
 				var stringValue = value as string ?? string.Empty;
 				// see: https://bugzilla.xamarin.com/show_bug.cgi?id=32871
 				// do not canonicalize "*.[.]"; "1." should not update bound BindableProperty
-				if (stringValue.EndsWith(".", StringComparison.Ordinal) && DecimalTypes.Contains(convertTo)) {
+				if (stringValue.EndsWith(".", StringComparison.Ordinal) && DecimalTypes.Contains(convertTo))
+				{
 					value = original;
 					return false;
 				}
 
 				// do not canonicalize "-0"; user will likely enter a period after "-0"
-				if (stringValue == "-0" && DecimalTypes.Contains(convertTo)) {
+				if (stringValue == "-0" && DecimalTypes.Contains(convertTo))
+				{
 					value = original;
 					return false;
 				}
@@ -459,7 +480,8 @@ namespace Xamarin.Forms
 				value = Convert.ChangeType(value, convertTo, CultureInfo.InvariantCulture);
 				return true;
 			}
-			catch (Exception ex) when (ex is InvalidCastException || ex is FormatException || ex is InvalidOperationException || ex is OverflowException) {
+			catch (Exception ex) when (ex is InvalidCastException || ex is FormatException || ex is InvalidOperationException || ex is OverflowException)
+			{
 				value = original;
 				return false;
 			}
@@ -479,7 +501,7 @@ namespace Xamarin.Forms
 			for (int i = 0; i < chain.Count; i++)
 			{
 				var elem = chain[i];
-				if (i != chain.Count - 1 || !rootIsSource)	
+				if (i != chain.Count - 1 || !rootIsSource)
 					// don't care about a successfully resolved source's parents
 					elem.ParentSet += OnElementParentSet;
 				if (_isBindingContextRelativeSource)
@@ -744,7 +766,7 @@ namespace Xamarin.Forms
 				{
 					obj.Dispatcher.BeginInvokeOnMainThread(action);
 				}
-				else if(Device.IsInvokeRequired)
+				else if (Device.IsInvokeRequired)
 				{
 					Device.BeginInvokeOnMainThread(action);
 				}
@@ -763,11 +785,14 @@ namespace Xamarin.Forms
 				{
 					if (IsIndexer)
 					{
-						try {
+						try
+						{
 							value = LastGetter.Invoke(value, Arguments);
 						}
-						catch (TargetInvocationException ex) {
-							if (ex.InnerException is KeyNotFoundException || ex.InnerException is IndexOutOfRangeException || ex.InnerException is ArgumentOutOfRangeException) {
+						catch (TargetInvocationException ex)
+						{
+							if (ex.InnerException is KeyNotFoundException || ex.InnerException is IndexOutOfRangeException || ex.InnerException is ArgumentOutOfRangeException)
+							{
 								value = null;
 								return false;
 							}

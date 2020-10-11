@@ -97,7 +97,6 @@
     <Compile Include="BrokenNativeControl.cs" />
     <Compile Include="CacheService.cs" />
     <Compile Include="DrawableExtensions.cs" />
-    <Compile Include="FormsApplicationActivity.cs" />
     <Compile Include="DisposeLabelRenderer.cs" />
     <Compile Include="DisposePageRenderer.cs" />
     <Compile Include="FormsAppCompatActivity.cs" />
@@ -411,4 +410,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties XamarinHotReloadUnhandledDeviceExceptionXamarinFormsControlGalleryAndroidHideInfoBar="True" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

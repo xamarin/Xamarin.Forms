@@ -1,12 +1,12 @@
-﻿using Android.OS;
+﻿using System;
+using Android.OS;
 using Android.Runtime;
-using AndroidX.Fragment.App;
-using AndroidX.AppCompat.Widget;
-using AndroidX.CoordinatorLayout.Widget;
-using Google.Android.Material.AppBar;
 using Android.Views;
 using Android.Views.Animations;
-using System;
+using AndroidX.AppCompat.Widget;
+using AndroidX.CoordinatorLayout.Widget;
+using AndroidX.Fragment.App;
+using Google.Android.Material.AppBar;
 using AndroidAnimation = Android.Views.Animations.Animation;
 using AnimationSet = Android.Views.Animations.AnimationSet;
 using AView = Android.Views.View;
@@ -115,12 +115,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			_toolbar = _root.FindViewById<Toolbar>(Resource.Id.shellcontent_toolbar);
 
-			_renderer = Platform.CreateRenderer(_page, Context);
-			Platform.SetRenderer(_page, _renderer);
+			_renderer = AppCompat.Platform.CreateRenderer(_page, Context);
+			AppCompat.Platform.SetRenderer(_page, _renderer);
 
 			_shellPageContainer = new ShellPageContainer(Context, _renderer);
 
-			if(_root is ViewGroup vg)
+			if (_root is ViewGroup vg)
 				vg.AddView(_shellPageContainer);
 
 			_toolbarTracker = _shellContext.CreateTrackerForToolbar(_toolbar);
@@ -133,19 +133,19 @@ namespace Xamarin.Forms.Platform.Android
 			((IShellController)_shellContext.Shell).AddAppearanceObserver(this, _page);
 
 			if (_shellPageContainer.LayoutParameters is CoordinatorLayout.LayoutParams layoutParams)
-				layoutParams.Behavior = new AppBarLayout.ScrollingViewBehavior();			
+				layoutParams.Behavior = new AppBarLayout.ScrollingViewBehavior();
 
 			return _root;
 		}
 
 		void Destroy()
 		{
-			((IShellController)_shellContext.Shell).RemoveAppearanceObserver(this);			
+			((IShellController)_shellContext.Shell).RemoveAppearanceObserver(this);
 
 			if (_shellContent != null)
 			{
 				((IShellContentController)_shellContent).RecyclePage(_page);
-				_page.ClearValue(Platform.RendererProperty);
+				_page.ClearValue(AppCompat.Platform.RendererProperty);
 				_page = null;
 			}
 
