@@ -874,8 +874,7 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					returnValue = CalculateHeightForCell(table, firstCell);
 				}
-				//_prototype.DisposeRendererAndChildren();
-				//_prototype = null;
+
 				TemplatedItemsView.UnhookContent(firstCell);
 				return returnValue;
 			}
