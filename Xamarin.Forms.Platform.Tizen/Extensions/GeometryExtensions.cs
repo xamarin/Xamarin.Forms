@@ -9,30 +9,12 @@ namespace Xamarin.Forms.Platform.Tizen
     {
         public static SKPath ToSKPath(this Geometry geometry)
         {
-            SKPath path = new SKPath();
+            return MakePath((dynamic)geometry);
+        }
 
-            if (geometry is LineGeometry)
-            {
-                path = MakePath(geometry as LineGeometry);
-            }
-            else if (geometry is RectangleGeometry)
-            {
-                path = MakePath(geometry as RectangleGeometry);
-            }
-            else if (geometry is EllipseGeometry)
-            {
-                path = MakePath(geometry as EllipseGeometry);
-            }
-            else if (geometry is GeometryGroup)
-            {
-                path = MakePath(geometry as GeometryGroup);
-            }
-            else if (geometry is PathGeometry)
-            {
-                path = MakePath(geometry as PathGeometry);
-            }
-
-            return path;
+        static SKPath MakePath(Geometry geometry)
+        {
+            return new SKPath();
         }
 
         static SKPath MakePath(LineGeometry lineGeometry)
@@ -84,7 +66,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
             foreach (Geometry child in geometryGroup.Children)
             {
-                SKPath childPath = child.ToSKPath();
+                SKPath childPath = MakePath((dynamic)child);
                 path.AddPath(childPath);
             }
 
