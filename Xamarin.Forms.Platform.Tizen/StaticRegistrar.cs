@@ -4,6 +4,7 @@ using System.Reflection;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Tizen.Native;
 using Xamarin.Forms.PlatformConfiguration.TizenSpecific;
+using Xamarin.Forms.Shapes;
 using Xamarin.Forms.Xaml.Internals;
 
 namespace Xamarin.Forms.Platform.Tizen
@@ -130,6 +131,14 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			//Font Loaders
 			Registered.Register(typeof(EmbeddedFont), () => new EmbeddedFontLoader());
+
+			//Shapes
+			Registered.Register(typeof(Ellipse), () => new EllipseRenderer());
+			Registered.Register(typeof(Line), () => new LineRenderer());
+			Registered.Register(typeof(Path), () => new PathRenderer());
+			Registered.Register(typeof(Polygon), () => new PolygonRenderer());
+			Registered.Register(typeof(Polyline), () => new PolylineRenderer());
+			Registered.Register(typeof(Shapes.Rectangle), () => new RectangleRenderer());
 
 			//Dependencies
 			DependencyService.Register<ISystemResourcesProvider, ResourcesProvider>();
