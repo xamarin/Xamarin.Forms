@@ -498,12 +498,17 @@ namespace Xamarin.Forms
 					continue;
 
 				double assignedHeight = GetAssignedRowHeight(child);
-				double h = double.IsPositiveInfinity(height) ? double.PositiveInfinity : assignedHeight + GetUnassignedHeight(height);
+				var unassignedHeight = GetUnassignedHeight(height);
+				double h = double.IsPositiveInfinity(height) ? double.PositiveInfinity : assignedHeight + unassignedHeight;
 
 				var acw = GetAssignedColumnWidth(child);
 
 				SizeRequest sizeRequest = child.Measure(acw, h, MeasureFlags.IncludeMargins);
-				double requiredHeight = expandToRequest ? sizeRequest.Request.Height : sizeRequest.Minimum.Height;
+				
+				double requiredHeight = expandToRequest 
+					? sizeRequest.Request.Height 
+					: sizeRequest.Request.Height <= h ? sizeRequest.Request.Height : sizeRequest.Minimum.Height;
+
 				double deltaHeight = requiredHeight - assignedHeight - (GetRowSpan(child) - 1) * RowSpacing;
 				if (deltaHeight > 0)
 				{
@@ -515,7 +520,7 @@ namespace Xamarin.Forms
 		void MeasureAndContractStarredColumns(double width, double height, double totalStarsWidth)
 		{
 			double starColWidth;
-			starColWidth = MeasuredStarredColumns(width, height, totalStarsWidth);
+			starColWidth = MeasuredStarredColumns(GetUnassignedWidth(width), height, totalStarsWidth);
 
 			if (!double.IsPositiveInfinity(width) && double.IsPositiveInfinity(height))
 			{
@@ -543,7 +548,7 @@ namespace Xamarin.Forms
 		void MeasureAndContractStarredRows(double width, double height, double totalStarsHeight)
 		{
 			double starRowHeight;
-			starRowHeight = MeasureStarredRows(width, height, totalStarsHeight); 
+			starRowHeight = MeasureStarredRows(width, GetUnassignedHeight(height), totalStarsHeight); 
 
 			if (!double.IsPositiveInfinity(height) && double.IsPositiveInfinity(width))
 			{
@@ -637,7 +642,11 @@ namespace Xamarin.Forms
 								continue;
 							double assignedWidth = GetAssignedColumnWidth(child);
 
-							SizeRequest sizeRequest = child.Measure(widthConstraint, heightConstraint, MeasureFlags.IncludeMargins);
+							// If we already have row height info, use it when measuring
+							double assignedHeight = GetAssignedRowHeight(child);
+							var hConstraint = assignedHeight > 0 ? assignedHeight : heightConstraint;
+
+							SizeRequest sizeRequest = child.Measure(widthConstraint, hConstraint, MeasureFlags.IncludeMargins);
 							var columnSpacing = (GetColumnSpan(child) - 1) * ColumnSpacing;
 							actualWidth = Math.Max(actualWidth, sizeRequest.Request.Width - assignedWidth - columnSpacing);
 							minimumWidth = Math.Max(minimumWidth, sizeRequest.Minimum.Width - assignedWidth - columnSpacing);
@@ -655,7 +664,7 @@ namespace Xamarin.Forms
 			for (var index = 0; index < _columns.Count; index++)
 			{
 				ColumnDefinition col = _columns[index];
-				if (!col.Width.IsStar || col.Width.Value == 0)
+				if (!col.Width.IsStar || col.Width.Value == 0 || col.ActualWidth <= 0)
 					continue;
 				
 				starColWidth += col.ActualWidth;
@@ -688,7 +697,11 @@ namespace Xamarin.Forms
 								continue;
 							double assignedHeight = GetAssignedRowHeight(child);
 
-							SizeRequest sizeRequest = child.Measure(widthConstraint, heightConstraint, MeasureFlags.IncludeMargins);
+							// If we already have column width info, use it when measuring
+							double assignedWidth = GetAssignedColumnWidth(child);
+							var wConstraint = assignedWidth > 0 ? assignedWidth : widthConstraint;
+
+							SizeRequest sizeRequest = child.Measure(wConstraint, heightConstraint, MeasureFlags.IncludeMargins);
 							var rowSpacing = (GetRowSpan(child) - 1) * RowSpacing;
 							actualHeight = Math.Max(actualHeight, sizeRequest.Request.Height - assignedHeight - rowSpacing);
 							minimumHeight = Math.Max(minimumHeight, sizeRequest.Minimum.Height - assignedHeight - rowSpacing);
@@ -706,7 +719,7 @@ namespace Xamarin.Forms
 			for (var index = 0; index < _rows.Count; index++)
 			{
 				RowDefinition row = _rows[index];
-				if (!row.Height.IsStar || row.Height.Value == 0)
+				if (!row.Height.IsStar || row.Height.Value == 0 || row.ActualHeight <= 0)
 					continue;
 
 				starRowHeight += row.ActualHeight;
