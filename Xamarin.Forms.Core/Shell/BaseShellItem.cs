@@ -282,7 +282,7 @@ namespace Xamarin.Forms
 		bool IFlowDirectionController.ApplyEffectiveFlowDirectionToChildContainer => true;
 		double IFlowDirectionController.Width => (Parent as VisualElement)?.Width ?? 0;
 
-		internal virtual void ApplyQueryAttributes(IDictionary<string, string> query)
+		internal virtual void ApplyQueryAttributes(ShellParameter query)
 		{
 		}
 
@@ -483,5 +483,10 @@ namespace Xamarin.Forms
 	public interface IQueryAttributable
 	{
 		void ApplyQueryAttributes(IDictionary<string, string> query);
+	}
+
+	public interface IShellParameterReceiver
+	{
+		void ApplyQueryAttributes(ShellParameter query);
 	}
 }

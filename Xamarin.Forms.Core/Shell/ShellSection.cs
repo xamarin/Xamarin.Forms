@@ -76,6 +76,30 @@ namespace Xamarin.Forms
 			callback(DisplayedPage);
 		}
 
+		internal Task GoToPart(NavigationRequest request, ShellParameter queryData)
+		{
+			ShellContent shellContent = request.Request.Content;
+
+			if (shellContent == null)
+				shellContent = ShellSectionController.GetItems()[0];
+
+			if (request.Request.GlobalRoutes.Count > 0)
+			{
+				// TODO get rid of this hack and fix so if there's a stack the current page doesn't display
+				Device.BeginInvokeOnMainThread(async () =>
+				{
+					await GoToAsync(request, queryData, false);
+				});
+			}
+
+			Shell.ApplyQueryAttributes(shellContent, queryData, request.Request.GlobalRoutes.Count == 0);
+
+			if (CurrentItem != shellContent)
+				SetValueFromRenderer(CurrentItemProperty, shellContent);
+
+			return Task.FromResult(true);
+		}
+
 		bool IShellSectionController.RemoveContentInsetObserver(IShellContentInsetObserver observer)
 		{
 			return _observers.Remove(observer);
@@ -313,7 +337,7 @@ namespace Xamarin.Forms
 			return (ShellSection)(ShellContent)page;
 		}
 
-		async Task PrepareCurrentStackForBeingReplaced(NavigationRequest request, IDictionary<string, string> queryData, bool? animate, List<string> globalRoutes, bool isRelativePopping)
+		async Task PrepareCurrentStackForBeingReplaced(NavigationRequest request, ShellParameter queryData, bool? animate, List<string> globalRoutes, bool isRelativePopping)
 		{
 			string route = "";
 			List<Page> navStack = null;
@@ -493,7 +517,7 @@ namespace Xamarin.Forms
 			return startingList;
 		}
 
-		Page GetOrCreateFromRoute(string route, IDictionary<string, string> queryData, bool isLast, bool isPopping)
+		Page GetOrCreateFromRoute(string route, ShellParameter queryData, bool isLast, bool isPopping)
 		{
 			var content = Routing.GetOrCreateContent(route) as Page;
 			if (content == null)
@@ -505,7 +529,7 @@ namespace Xamarin.Forms
 			return content;
 		}
 
-		internal async Task GoToAsync(NavigationRequest request, IDictionary<string, string> queryData, bool? animate, bool isRelativePopping)
+		internal async Task GoToAsync(NavigationRequest request, ShellParameter queryData, bool? animate, bool isRelativePopping)
 		{
 			List<string> globalRoutes = request.Request.GlobalRoutes;
 			if (globalRoutes == null || globalRoutes.Count == 0)

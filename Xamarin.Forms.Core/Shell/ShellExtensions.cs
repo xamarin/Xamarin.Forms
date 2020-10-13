@@ -6,10 +6,10 @@ namespace Xamarin.Forms.Core
 {
 	internal static class ShellExtensions
 	{
-		public static T SearchForRoute<T>(this Shell shell, string route) where T : BaseShellItem =>
+		public static T SearchForRoute<T>(this Xamarin.Forms.Shell shell, string route) where T : BaseShellItem =>
 			(T)SearchForRoute(shell, route);
 
-		public static BaseShellItem SearchForRoute(this Shell shell, string route) =>
+		public static BaseShellItem SearchForRoute(this Xamarin.Forms.Shell shell, string route) =>
 			SearchForPart(shell, (p) => p.Route == route);
 
 
