@@ -192,13 +192,14 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			}
 
+#if __MOBILE__
 			if (imageElement.PlaceholderSource != null)
 			{
 				var uiImage = await imageElement.PlaceholderSource.GetNativeImageAsync();
 				if (imageElement.ShouldStillSetImage(Control, imageElement.Source))
 					renderer.SetImage(uiImage);
 			}
-
+#endif
 			imageController?.SetIsLoading(true);
 
 			try
@@ -241,8 +242,14 @@ namespace Xamarin.Forms.Platform.MacOS
 						uiimage = await imageElement.ErrorSource.GetNativeImageAsync();
 
 					// only set if we are still on the same image
+
+#if __MOBILE__
 					if (imageElement.ShouldStillSetImage(Control, source) && uiimage != null)
 						renderer.SetImage(uiimage);
+#elif __MACOS__
+					if (Control != null && imageElement.Source == source)
+						renderer.SetImage(uiimage);
+#endif
 					else
 						uiimage?.Dispose();
 				}
@@ -257,10 +264,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			(imageElement as IViewController)?.NativeSizeChanged();
 		}
 
+#if __MOBILE__
 		static bool ShouldStillSetImage(this IImageElement imageElement, UIImageView control, ImageSource source) =>
 			control != null && imageElement.Source == source;
 
-#if __MOBILE__
 		static void OnAnimationStopped(object sender, CAAnimationStateEventArgs e)
 		{
 			if (sender is FormsUIImageView imageView &&
