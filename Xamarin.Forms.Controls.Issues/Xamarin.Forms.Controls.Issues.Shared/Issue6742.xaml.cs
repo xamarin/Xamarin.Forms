@@ -148,7 +148,6 @@ namespace Xamarin.Forms.Controls.Issues
 	public class ModelIssue6742
 	{
 		ViewModelIssue6742 _model;
-		bool _disposedValue;
 
 		public ModelIssue6742(string name, ViewModelIssue6742 model)
 		{
