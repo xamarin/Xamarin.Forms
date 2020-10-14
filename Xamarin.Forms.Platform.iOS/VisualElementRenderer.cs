@@ -337,10 +337,14 @@ namespace Xamarin.Forms.Platform.MacOS
 #else
 		public override void MouseDown(NSEvent theEvent)
 		{
-			bool inViewCell = IsOnViewCell(Element);
-
-			if (Element.InputTransparent || inViewCell)
+			if (Element.InputTransparent || IsOnViewCell(Element))
 				base.MouseDown(theEvent);
+		}
+
+		public override void RightMouseDown(NSEvent theEvent)
+		{
+			if (Element.InputTransparent || IsOnViewCell(Element))
+				base.RightMouseDown(theEvent);
 		}
 
 		public override void RightMouseUp(NSEvent theEvent)
