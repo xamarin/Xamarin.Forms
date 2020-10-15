@@ -103,7 +103,7 @@ namespace Xamarin.Platform.Handlers
 		}
 
 
-		void IViewHandler.TearDownNativeView()
+		void IViewHandler.TearDown()
 		{
 			if (TypedNativeView != null)
 			{
