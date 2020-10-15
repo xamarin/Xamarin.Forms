@@ -480,6 +480,7 @@ namespace Xamarin.Forms
 		}
 	}
 
+	[Obsolete("ApplyQueryAttributes is Obsolete as of version 5.0. Use the IShellParameterReceiver instead.")]
 	public interface IQueryAttributable
 	{
 		void ApplyQueryAttributes(IDictionary<string, string> query);
