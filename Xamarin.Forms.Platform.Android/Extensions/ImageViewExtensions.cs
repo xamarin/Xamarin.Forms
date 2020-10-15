@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Platform.Android
 					{
 						imageLoadedSuccessfully = await imageView.TryToUpdateBitmap(newView, newView.PlaceholderSource, imageController, newImageSource);
 					}
-					if (newImageSource != null && animation==null)
+					if (newImageSource != null)
 					{
 						imageLoadedSuccessfully = await imageView.TryToUpdateBitmap(newView, newImageSource, imageController, newImageSource);
 					}
