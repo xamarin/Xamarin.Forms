@@ -274,7 +274,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateCharacterSpacing()
 		{
-			if(!Forms.IsLollipopOrNewer)
+			if (!Forms.IsLollipopOrNewer)
 				return;
 
 			_editText = _editText ?? Control.GetChildrenOfType<EditText>().FirstOrDefault();
@@ -337,7 +337,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (keyboard == Keyboard.Numeric)
 			{
 				_editText = _editText ?? Control.GetChildrenOfType<EditText>().FirstOrDefault();
-				if(_editText != null)
+				if (_editText != null)
 					_editText.KeyListener = GetDigitsKeyListener(_inputType);
 			}
 		}

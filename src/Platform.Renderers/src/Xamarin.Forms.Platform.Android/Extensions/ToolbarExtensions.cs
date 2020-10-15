@@ -1,13 +1,13 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
-using Android.Views;
-using AToolbar = AndroidX.AppCompat.Widget.Toolbar;
-using ATextView = global::Android.Widget.TextView;
 using Android.Content;
 using Android.Graphics;
-using System.Collections.Generic;
-using System;
 using Android.Text;
 using Android.Text.Style;
+using Android.Views;
+using ATextView = global::Android.Widget.TextView;
+using AToolbar = AndroidX.AppCompat.Widget.Toolbar;
 using Xamarin.Platform;
 
 namespace Xamarin.Forms.Platform.Android
@@ -25,8 +25,8 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		public static void UpdateMenuItems(this AToolbar toolbar,
-			IEnumerable<ToolbarItem> sortedToolbarItems, 
-			Context context, 
+			IEnumerable<ToolbarItem> sortedToolbarItems,
+			Context context,
 			Color? tintColor,
 			PropertyChangedEventHandler toolbarItemChanged,
 			List<IMenuItem> menuItemsCreated,
@@ -112,7 +112,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			menuitem.SetEnabled(item.IsEnabled);
 			menuitem.SetTitleOrContentDescription(item);
-			
+
 			if (updateMenuItemIcon != null)
 				updateMenuItemIcon(context, menuitem, item);
 			else
@@ -151,7 +151,7 @@ namespace Xamarin.Forms.Platform.Android
 					using (var newDrawable = constant.NewDrawable())
 					using (var iconDrawable = newDrawable.Mutate())
 					{
-						if(tintColor != null)
+						if (tintColor != null)
 							iconDrawable.SetColorFilter(tintColor.Value.ToAndroid(Color.White), FilterMode.SrcAtop);
 
 						if (!menuItem.IsEnabled)

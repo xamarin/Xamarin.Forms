@@ -192,7 +192,7 @@ namespace Xamarin.Forms.Platform.Android
 		[PortHandler]
 		void UpdateThumbColor()
 		{
-			Control.Thumb.SetColorFilter(Element.ThumbColor, defaultthumbcolorfilter, FilterMode.SrcIn);
+			Control.Thumb.SetColorFilter(Element.ThumbColor, FilterMode.SrcIn, defaultthumbcolorfilter);
 		}
 
 		void UpdateThumbImage()

@@ -1,28 +1,28 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+using Android.Views;
 using AndroidX.AppCompat.Graphics.Drawable;
+using AndroidX.AppCompat.Widget;
 using AndroidX.DrawerLayout.Widget;
 using Google.Android.Material.AppBar;
-using AndroidX.AppCompat.Widget;
-using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
-using ADrawableCompat = AndroidX.Core.Graphics.Drawable.DrawableCompat;
+using Xamarin.Forms.Internals;
+using AColor = Android.Graphics.Color;
 using ActionBarDrawerToggle = AndroidX.AppCompat.App.ActionBarDrawerToggle;
-using Android.Views;
-using System;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Xamarin.Platform;
+using ADrawableCompat = AndroidX.Core.Graphics.Drawable.DrawableCompat;
+using ATextView = global::Android.Widget.TextView;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
 using R = Android.Resource;
-using ATextView = global::Android.Widget.TextView;
-using AColor = Android.Graphics.Color;
-using Xamarin.Forms.Internals;
-using System.Collections.Generic;
-using System.Linq;
+using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
+using Xamarin.Platform;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -207,7 +207,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				await Page.Navigation.PopAsync();
 			}
-			catch(Exception exc)
+			catch (Exception exc)
 			{
 				Internals.Log.Warning(nameof(Shell), $"Failed to Navigate Back: {exc}");
 			}
@@ -273,7 +273,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnBackButtonBehaviorChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if(!e.Is(BackButtonBehavior.CommandParameterProperty))
+			if (!e.Is(BackButtonBehavior.CommandParameterProperty))
 				UpdateLeftBarButtonItem();
 		}
 
@@ -674,7 +674,7 @@ namespace Xamarin.Forms.Platform.Android
 				TintColor = defaultColor;
 				_defaultSize = Forms.GetFontSizeNormal(context);
 				IconBitmap = icon;
-				Text = text;		
+				Text = text;
 			}
 
 			public override void Draw(Canvas canvas)
