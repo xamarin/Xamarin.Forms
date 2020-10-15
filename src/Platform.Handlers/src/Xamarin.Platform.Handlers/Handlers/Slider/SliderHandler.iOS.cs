@@ -14,15 +14,15 @@ namespace Xamarin.Platform.Handlers
 			var slider = new UISlider();
 
 			slider.ValueChanged += OnControlValueChanged;
-
 			slider.AddTarget(OnTouchDownControlEvent, UIControlEvent.TouchDown);
 			slider.AddTarget(OnTouchUpControlEvent, UIControlEvent.TouchUpInside | UIControlEvent.TouchUpOutside);
 
 			return slider;
 		}
 
-		public override void TearDownNativeView(UISlider nativeView)
+		protected override void TearDown(UISlider nativeView)
 		{
+			nativeView.ValueChanged -= OnControlValueChanged;
 			nativeView.RemoveTarget(OnTouchDownControlEvent, UIControlEvent.TouchDown);
 			nativeView.RemoveTarget(OnTouchUpControlEvent, UIControlEvent.TouchUpInside | UIControlEvent.TouchUpOutside);
 		}

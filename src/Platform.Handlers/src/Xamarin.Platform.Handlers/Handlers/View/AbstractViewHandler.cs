@@ -44,15 +44,9 @@ namespace Xamarin.Platform.Handlers
 		public object? NativeView => TypedNativeView;
 
 
-		public void SetView(IView view)
+		public virtual void SetView(IView view)
 		{
 			_ = view ?? throw new ArgumentNullException(nameof(view));
-
-			if (VirtualView != null)
-			{
-				TearDownOldVirtualView(VirtualView);
-				_mapper.UpdateProperty(this, VirtualView, nameof(TearDownOldVirtualView));
-			}
 
 			VirtualView = view as TVirtualView;
 			TypedNativeView ??= CreateNativeView();
@@ -62,7 +56,6 @@ namespace Xamarin.Platform.Handlers
 				if (TypedNativeView != null)
 				{
 					SetupDefaults(TypedNativeView);
-					_mapper.UpdateProperty(this, VirtualView, nameof(SetupDefaults));
 				}
 
 				HasSetDefaults = true;
@@ -84,37 +77,18 @@ namespace Xamarin.Platform.Handlers
 				}
 			}
 
-			if (VirtualView != null)
-			{
-				SetUpNewVirtualView(VirtualView);
-				_mapper.UpdateProperty(this, VirtualView, nameof(SetUpNewVirtualView));
-			}
-
 			_mapper.UpdateProperties(this, VirtualView);
 		}
 
-
-		protected virtual void SetUpNewVirtualView(TVirtualView newView)
+		protected virtual void TearDown(TNativeView nativeView)
 		{
-		}
 
-		protected virtual void TearDownOldVirtualView(TVirtualView oldView)
-		{
 		}
-
 
 		void IViewHandler.TearDown()
 		{
 			if (TypedNativeView != null)
-			{
-				TearDownNativeView(TypedNativeView);
-				_mapper.UpdateProperty(this, VirtualView, nameof(TypedNativeView));
-			}
-		}
-
-		public virtual void TearDownNativeView(TNativeView nativeView)
-		{
-			
+				TearDown(TypedNativeView);
 		}
 
 		public virtual void UpdateValue(string property)

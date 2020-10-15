@@ -15,32 +15,20 @@ namespace Xamarin.Platform.Handlers
 		static PorterDuff.Mode? DefaultProgressBackgroundTintMode { get; set; }
 		static ColorFilter? DefaultThumbColorFilter { get; set; }
 
-		SeekBarChangeListener? _seekBarChangeListener;
+		SeekBarChangeListener ChangeListener { get; } = new SeekBarChangeListener();
 
 		protected override SeekBar CreateNativeView()
 		{
 			var slider = new SeekBar(Context);
-			_seekBarChangeListener = new SeekBarChangeListener();
-			slider.SetOnSeekBarChangeListener(_seekBarChangeListener);
+			ChangeListener.Handler = this;
+			slider.SetOnSeekBarChangeListener(ChangeListener);
 			return slider;
 		}
 
-
-		public override void TearDownNativeView(SeekBar nativeView)
+		protected override void TearDown(SeekBar nativeView)
 		{
+			ChangeListener.Handler = null;
 			nativeView.SetOnSeekBarChangeListener(null);
-		}
-
-		protected override void SetUpNewVirtualView(ISlider newView)
-		{
-			if(_seekBarChangeListener != null)
-				_seekBarChangeListener.VirtualView = newView;
-		}
-
-		protected override void TearDownOldVirtualView(ISlider oldView)
-		{
-			if (_seekBarChangeListener != null)
-				_seekBarChangeListener.VirtualView = null;
 		}
 
 		protected override void SetupDefaults(SeekBar nativeView)
@@ -96,7 +84,8 @@ namespace Xamarin.Platform.Handlers
 
 		internal class SeekBarChangeListener : Java.Lang.Object, SeekBar.IOnSeekBarChangeListener
 		{
-			public ISlider? VirtualView { get; set; }
+			public SliderHandler? Handler { get; set; }
+			public ISlider? VirtualView => Handler?.VirtualView;
 
 			public SeekBarChangeListener()
 			{
