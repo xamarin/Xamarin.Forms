@@ -48,10 +48,7 @@ namespace Xamarin.Forms
 		{
 		}
 
-		ILayoutManager Platform.ILayout.CreateLayoutManager()
-		{
-			throw new NotImplementedException();
-		}
+		//public abstract ILayoutManager CreateLayoutManager();
 	}
 
 	public abstract class Layout : View, ILayout, ILayoutController, IPaddingElement

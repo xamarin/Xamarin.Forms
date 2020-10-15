@@ -21,7 +21,5 @@ namespace Xamarin.Platform
 				_isMeasureValid = value;
 			}
 		}
-
-		
 	}
 }

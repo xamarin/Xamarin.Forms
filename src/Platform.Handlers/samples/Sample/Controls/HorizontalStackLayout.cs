@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Xamarin.Forms;
-using Xamarin.Platform.Layouts;
+﻿using Xamarin.Platform.Layouts;
 
 namespace Xamarin.Platform
 {

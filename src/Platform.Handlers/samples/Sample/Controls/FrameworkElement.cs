@@ -1,5 +1,4 @@
-﻿using System;
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
 using Xamarin.Platform.Layouts;
 
 namespace Xamarin.Platform
@@ -65,7 +64,5 @@ namespace Xamarin.Platform
 			IsMeasureValid = true;
 			return DesiredSize;
 		}
-
-		
 	}
 }

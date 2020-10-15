@@ -9,12 +9,14 @@ namespace Xamarin.Platform.Layouts
 		public VerticalStackLayoutManager(IStackLayout stackLayout) : base(stackLayout)
 		{
 		}
+
 		public override Size Measure(double widthConstraint, double heightConstraint)
 		{
 			if (Layout.IsMeasureValid)
 			{
 				return Layout.DesiredSize;
 			}
+
 			var widthMeasureConstraint = ResolveConstraints(widthConstraint, Stack.Width);
 
 			var measure = Measure(widthMeasureConstraint, Stack.Spacing, Stack.Children);
@@ -23,6 +25,7 @@ namespace Xamarin.Platform.Layouts
 
 			return new Size(measure.Width, finalHeight);
 		}
+
 		public override void Arrange(Rectangle bounds) => Arrange(bounds.Width, Stack.Spacing, Stack.Children);
 
 		static Size Measure(double widthConstraint, int spacing, IReadOnlyList<IView> views)

@@ -9,7 +9,8 @@ namespace Xamarin.Platform.Layouts
 		public HorizontalStackLayoutManager(IStackLayout layout) : base(layout)
 		{
 		}
-		public override Size Measure( double widthConstraint, double heightConstraint)
+
+		public override Size Measure(double widthConstraint, double heightConstraint)
 		{
 			if (Stack.IsMeasureValid)
 			{
@@ -26,7 +27,6 @@ namespace Xamarin.Platform.Layouts
 		}
 
 		public override void Arrange(Rectangle bounds) => Arrange(bounds.Height, Stack.Spacing, Stack.Children);
-
 
 		static Size Measure(double heightConstraint, int spacing, IReadOnlyList<IView> views)
 		{

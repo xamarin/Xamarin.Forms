@@ -7,7 +7,6 @@ namespace Xamarin.Platform
 {
 	public abstract class Layout : View, ILayout, IEnumerable<IView>
 	{
-
 		ILayoutManager _layoutManager;
 		ILayoutManager LayoutManager => _layoutManager ??= CreateLayoutManager();
 
@@ -36,6 +35,7 @@ namespace Xamarin.Platform
 			{
 				return DesiredSize;
 			}
+
 			DesiredSize = LayoutManager.Measure(widthConstraint, heightConstraint);
 			IsMeasureValid = true;
 			return DesiredSize;

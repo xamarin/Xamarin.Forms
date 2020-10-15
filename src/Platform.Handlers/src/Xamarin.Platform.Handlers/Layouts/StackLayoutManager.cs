@@ -10,7 +10,7 @@ namespace Xamarin.Platform.Layouts
 
 		public IStackLayout Stack { get; }
 
-		public static int MeasureSpacing(int spacing, int childCount)
+		protected static int MeasureSpacing(int spacing, int childCount)
 		{
 			return childCount > 1 ? (childCount - 1) * spacing : 0;
 		}
