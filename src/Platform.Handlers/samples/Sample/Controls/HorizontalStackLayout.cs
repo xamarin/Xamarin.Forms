@@ -4,6 +4,6 @@ namespace Xamarin.Platform
 {
 	public class HorizontalStackLayout : StackLayout
 	{
-		public override ILayoutManager CreateLayoutManager() => new HorizontalStackLayoutManager(this);
+		protected override ILayoutManager CreateLayoutManager() => new HorizontalStackLayoutManager(this);
 	}
 }

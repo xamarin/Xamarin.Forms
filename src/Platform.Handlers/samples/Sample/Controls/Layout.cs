@@ -24,7 +24,8 @@ namespace Xamarin.Platform
 			InvalidateMeasure();
 		}
 
-		public abstract ILayoutManager CreateLayoutManager();
+		protected abstract ILayoutManager CreateLayoutManager();
+
 		public IEnumerator<IView> GetEnumerator() => _children.GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => _children.GetEnumerator();
