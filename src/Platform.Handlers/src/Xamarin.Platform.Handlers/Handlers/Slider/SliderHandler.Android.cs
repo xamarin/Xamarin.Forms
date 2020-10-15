@@ -82,10 +82,23 @@ namespace Xamarin.Platform.Handlers
 			handler.TypedNativeView?.UpdateThumbColor(slider, DefaultThumbColorFilter);
 		}
 
+		void OnProgressChanged(SeekBar seekBar, int progress, bool fromUser)
+		{
+			if (VirtualView == null)
+				return;
+
+			VirtualView.Value = progress;
+		}
+
+		void OnStartTrackingTouch(SeekBar seekBar) =>
+			VirtualView?.DragStarted();
+
+		void OnStopTrackingTouch(SeekBar seekBar) =>
+			VirtualView?.DragCompleted();
+
 		internal class SeekBarChangeListener : Java.Lang.Object, SeekBar.IOnSeekBarChangeListener
 		{
 			public SliderHandler? Handler { get; set; }
-			public ISlider? VirtualView => Handler?.VirtualView;
 
 			public SeekBarChangeListener()
 			{
@@ -93,20 +106,26 @@ namespace Xamarin.Platform.Handlers
 
 			public void OnProgressChanged(SeekBar? seekBar, int progress, bool fromUser)
 			{
-				if (VirtualView == null)
+				if (Handler == null || seekBar == null)
 					return;
 
-				VirtualView.Value = progress;
+				Handler.OnProgressChanged(seekBar, progress, fromUser);
 			}
 
 			public void OnStartTrackingTouch(SeekBar? seekBar)
 			{
-				VirtualView?.DragStarted();
+				if (Handler == null || seekBar == null)
+					return;
+
+				Handler.OnStartTrackingTouch(seekBar);
 			}
 
 			public void OnStopTrackingTouch(SeekBar? seekBar)
 			{
-				VirtualView?.DragCompleted();
+				if (Handler == null || seekBar == null)
+					return;
+
+				Handler.OnStopTrackingTouch(seekBar);
 			}
 		}
 	}

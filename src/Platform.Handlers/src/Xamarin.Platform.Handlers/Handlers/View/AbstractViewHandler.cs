@@ -44,9 +44,12 @@ namespace Xamarin.Platform.Handlers
 		public object? NativeView => TypedNativeView;
 
 
-		public virtual void SetView(IView view)
+		public virtual void SetVirtualView(IView view)
 		{
 			_ = view ?? throw new ArgumentNullException(nameof(view));
+
+			if (VirtualView?.Handler != null)
+				VirtualView.Handler = null;
 
 			VirtualView = view as TVirtualView;
 			TypedNativeView ??= CreateNativeView();
@@ -89,6 +92,12 @@ namespace Xamarin.Platform.Handlers
 		{
 			if (TypedNativeView != null)
 				TearDown(TypedNativeView);
+
+			if (VirtualView != null)
+				VirtualView.Handler = null;
+
+			TypedNativeView = null;
+			VirtualView = null;
 		}
 
 		public virtual void UpdateValue(string property)

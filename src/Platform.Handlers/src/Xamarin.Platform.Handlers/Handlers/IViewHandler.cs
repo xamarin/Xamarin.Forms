@@ -4,7 +4,7 @@ namespace Xamarin.Platform
 {
 	public interface IViewHandler
 	{
-		void SetView(IView view);
+		void SetVirtualView(IView view);
 		void UpdateValue(string property);
 		void TearDown();
 		object? NativeView { get; }
