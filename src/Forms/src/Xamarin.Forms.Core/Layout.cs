@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using Xamarin.Forms.Internals;
+using Xamarin.Platform.Layouts;
 
 namespace Xamarin.Forms
 {
@@ -45,6 +46,11 @@ namespace Xamarin.Forms
 
 		protected virtual void OnRemoved(T view)
 		{
+		}
+
+		ILayoutManager Platform.ILayout.CreateLayoutManager()
+		{
+			throw new NotImplementedException();
 		}
 	}
 

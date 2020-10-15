@@ -2,43 +2,28 @@
 using System.Collections.Generic;
 using Xamarin.Forms;
 
-namespace Xamarin.Platform
+namespace Xamarin.Platform.Layouts
 {
-	public class VerticalStackLayout : StackLayout
+	public class VerticalStackLayoutManager : StackLayoutManager
 	{
+		public VerticalStackLayoutManager(IStackLayout stackLayout) : base(stackLayout)
+		{
+		}
 		public override Size Measure(double widthConstraint, double heightConstraint)
 		{
-			if (IsMeasureValid)
+			if (Layout.IsMeasureValid)
 			{
-				return DesiredSize;
+				return Layout.DesiredSize;
 			}
+			var widthMeasureConstraint = ResolveConstraints(widthConstraint, Stack.Width);
 
-			var widthMeasureConstraint = ResolveConstraints(widthConstraint, Width);
+			var measure = Measure(widthMeasureConstraint, Stack.Spacing, Stack.Children);
 
-			var measure = Measure(widthMeasureConstraint, Spacing, Children);
+			var finalHeight = ResolveConstraints(heightConstraint, Stack.Height, measure.Height);
 
-			var finalHeight = ResolveConstraints(heightConstraint, Height, measure.Height);
-
-			DesiredSize = new Size(measure.Width, finalHeight);
-
-			IsMeasureValid = true;
-
-			return DesiredSize;
+			return new Size(measure.Width, finalHeight);
 		}
-
-		public override void Arrange(Rectangle bounds)
-		{
-			if (IsArrangeValid)
-			{
-				return;
-			}
-
-			base.Arrange(bounds);
-
-			Arrange(bounds.Width, Spacing, Children);
-			IsArrangeValid = true;
-			Handler?.SetFrame(bounds);
-		}
+		public override void Arrange(Rectangle bounds) => Arrange(bounds.Width, Stack.Spacing, Stack.Children);
 
 		static Size Measure(double widthConstraint, int spacing, IReadOnlyList<IView> views)
 		{
@@ -73,5 +58,6 @@ namespace Xamarin.Platform
 				stackHeight += destination.Height + spacing;
 			}
 		}
+
 	}
 }

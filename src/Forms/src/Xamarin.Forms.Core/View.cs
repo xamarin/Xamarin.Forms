@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
 using Xamarin.Platform;
+using Xamarin.Platform.Layouts;
 
 namespace Xamarin.Forms
 {
@@ -224,8 +225,8 @@ namespace Xamarin.Forms
 
 				var frameworkElement = this as IFrameworkElement;
 
-				widthConstraint = Xamarin.Platform.View.ResolveConstraints(widthConstraint, frameworkElement.Width);
-				heightConstraint = Xamarin.Platform.View.ResolveConstraints(heightConstraint, frameworkElement.Height);
+				widthConstraint = LayoutManager.ResolveConstraints(widthConstraint, frameworkElement.Width);
+				heightConstraint = LayoutManager.ResolveConstraints(heightConstraint, frameworkElement.Height);
 
 				DesiredSize = Handler.GetDesiredSize(widthConstraint, heightConstraint);
 			}

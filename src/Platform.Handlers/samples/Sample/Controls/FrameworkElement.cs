@@ -1,5 +1,6 @@
 ﻿using System;
 using Xamarin.Forms;
+using Xamarin.Platform.Layouts;
 
 namespace Xamarin.Platform
 {
@@ -15,9 +16,9 @@ namespace Xamarin.Platform
 			protected set; 
 		}
 
-		public IViewHandler? Handler { get; set; }
+		public IViewHandler Handler { get; set; }
 
-		public IFrameworkElement? Parent { get; set; }
+		public IFrameworkElement Parent { get; set; }
 
 		public Size DesiredSize { get; protected set; }
 
@@ -54,8 +55,8 @@ namespace Xamarin.Platform
 				}
 				else
 				{
-					widthConstraint = ResolveConstraints(widthConstraint, Width);
-					heightConstraint = ResolveConstraints(heightConstraint, Height);
+					widthConstraint = LayoutManager.ResolveConstraints(widthConstraint, Width);
+					heightConstraint = LayoutManager.ResolveConstraints(heightConstraint, Height);
 
 					DesiredSize = Handler.GetDesiredSize(widthConstraint, heightConstraint);
 				}
@@ -65,27 +66,6 @@ namespace Xamarin.Platform
 			return DesiredSize;
 		}
 
-		// These methods will eventually factor in Min/Max values
-		public static double ResolveConstraints(double externalConstraint, double desiredLength) 
-		{
-			if (desiredLength == -1)
-			{
-				return externalConstraint;
-			}
-
-			return Math.Min(externalConstraint, desiredLength);
-		}
-
-		public static double ResolveConstraints(double externalConstraint, double desiredLength, double measuredLength) 
-		{
-			if (desiredLength == -1)
-			{
-				// No user-specified length, so the measured value will be limited by the external constraint
-				return Math.Min(measuredLength, externalConstraint);
-			}
-
-			// User-specified length wins, subject to external constraints
-			return Math.Min(desiredLength, externalConstraint);
-		}
+		
 	}
 }
