@@ -33,7 +33,7 @@ namespace Xamarin.Platform.Handlers
 			_mapper = _defaultMapper;
 		}
 
-		protected abstract TNativeView CreateView();
+		protected abstract TNativeView CreateNativeView();
 
 		protected TNativeView? TypedNativeView { get; private set; }
 
@@ -43,16 +43,28 @@ namespace Xamarin.Platform.Handlers
 
 		public object? NativeView => TypedNativeView;
 
-		public virtual void SetView(IView view)
+
+		public void SetView(IView view)
 		{
 			_ = view ?? throw new ArgumentNullException(nameof(view));
 
+			if (VirtualView != null)
+			{
+				TearDownOldVirtualView(VirtualView);
+				_mapper.UpdateProperty(this, VirtualView, nameof(TearDownOldVirtualView));
+			}
+
 			VirtualView = view as TVirtualView;
-			TypedNativeView ??= CreateView();
+			TypedNativeView ??= CreateNativeView();
 
 			if (!HasSetDefaults)
 			{
-				SetupDefaults();
+				if (TypedNativeView != null)
+				{
+					SetupDefaults(TypedNativeView);
+					_mapper.UpdateProperty(this, VirtualView, nameof(SetupDefaults));
+				}
+
 				HasSetDefaults = true;
 			}
 
@@ -72,18 +84,43 @@ namespace Xamarin.Platform.Handlers
 				}
 			}
 
+			if (VirtualView != null)
+			{
+				SetUpNewVirtualView(VirtualView);
+				_mapper.UpdateProperty(this, VirtualView, nameof(SetUpNewVirtualView));
+			}
+
 			_mapper.UpdateProperties(this, VirtualView);
 		}
 
-		public virtual void TearDown()
+
+		protected virtual void SetUpNewVirtualView(TVirtualView newView)
 		{
-			VirtualView = null;
+		}
+
+		protected virtual void TearDownOldVirtualView(TVirtualView oldView)
+		{
+		}
+
+
+		void IViewHandler.TearDownNativeView()
+		{
+			if (TypedNativeView != null)
+			{
+				TearDownNativeView(TypedNativeView);
+				_mapper.UpdateProperty(this, VirtualView, nameof(TypedNativeView));
+			}
+		}
+
+		public virtual void TearDownNativeView(TNativeView nativeView)
+		{
+			
 		}
 
 		public virtual void UpdateValue(string property)
 			=> _mapper?.UpdateProperty(this, VirtualView, property);
 
-		protected virtual void SetupDefaults() { }
+		protected virtual void SetupDefaults(TNativeView nativeView) { }
 
 		public bool HasContainer
 		{

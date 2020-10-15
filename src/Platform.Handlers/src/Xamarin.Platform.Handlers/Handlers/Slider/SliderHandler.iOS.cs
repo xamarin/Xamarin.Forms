@@ -9,7 +9,7 @@ namespace Xamarin.Platform.Handlers
 		static UIColor? DefaultMaxTrackColor;
 		static UIColor? DefaultThumbColor;
 
-		protected override UISlider CreateView()
+		protected override UISlider CreateNativeView()
 		{
 			var slider = new UISlider();
 
@@ -21,18 +21,17 @@ namespace Xamarin.Platform.Handlers
 			return slider;
 		}
 
-		protected override void SetupDefaults()
+		public override void TearDownNativeView(UISlider nativeView)
 		{
-			base.SetupDefaults();
+			nativeView.RemoveTarget(OnTouchDownControlEvent, UIControlEvent.TouchDown);
+			nativeView.RemoveTarget(OnTouchUpControlEvent, UIControlEvent.TouchUpInside | UIControlEvent.TouchUpOutside);
+		}
 
-			var slider = TypedNativeView;
-
-			if (slider == null)
-				return;
-
-			DefaultMinTrackColor = slider.MinimumTrackTintColor;
-			DefaultMaxTrackColor = slider.MaximumTrackTintColor;
-			DefaultThumbColor = slider.ThumbTintColor;
+		protected override void SetupDefaults(UISlider nativeView)
+		{
+			DefaultMinTrackColor = nativeView.MinimumTrackTintColor;
+			DefaultMaxTrackColor = nativeView.MaximumTrackTintColor;
+			DefaultThumbColor = nativeView.ThumbTintColor;
 		}
 
 		public static void MapMinimum(SliderHandler handler, ISlider slider)

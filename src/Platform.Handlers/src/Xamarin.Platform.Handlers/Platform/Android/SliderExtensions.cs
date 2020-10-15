@@ -15,10 +15,8 @@ namespace Xamarin.Platform
 			}
 		}
 
-		public static void UpdateMaximum(this SeekBar seekBar, ISlider slider)
-		{
+		public static void UpdateMaximum(this SeekBar seekBar, ISlider slider) =>
 			seekBar.Max = (int)slider.Maximum;
-		}
 
 		public static void UpdateValue(this SeekBar seekBar, ISlider slider)
 		{
@@ -29,10 +27,8 @@ namespace Xamarin.Platform
 			seekBar.Progress = (int)((value - min) / (max - min) * 1000.0);
 		}
 
-		public static void UpdateMinimumTrackColor(this SeekBar seekBar, ISlider slider)
-		{
+		public static void UpdateMinimumTrackColor(this SeekBar seekBar, ISlider slider) =>
 			UpdateMinimumTrackColor(seekBar, slider, null, null);
-		}
 
 		public static void UpdateMinimumTrackColor(this SeekBar seekBar, ISlider slider, ColorStateList? defaultProgressTintList, PorterDuff.Mode? defaultProgressTintMode)
 		{
@@ -51,10 +47,8 @@ namespace Xamarin.Platform
 			}
 		}
 
-		public static void UpdateMaximumTrackColor(this SeekBar seekBar, ISlider slider)
-		{
+		public static void UpdateMaximumTrackColor(this SeekBar seekBar, ISlider slider) =>
 			UpdateMaximumTrackColor(seekBar, slider, null, null);
-		}
 
 		public static void UpdateMaximumTrackColor(this SeekBar seekBar, ISlider slider, ColorStateList? defaultProgressBackgroundTintList, PorterDuff.Mode? defaultProgressBackgroundTintMode)
 		{
@@ -73,14 +67,10 @@ namespace Xamarin.Platform
 			}
 		}
 
-		public static void UpdateThumbColor(this SeekBar seekBar, ISlider slider)
-		{
+		public static void UpdateThumbColor(this SeekBar seekBar, ISlider slider) =>
 			UpdateThumbColor(seekBar, slider);
-		}
 
-		public static void UpdateThumbColor(this SeekBar seekBar, ISlider slider, ColorFilter? defaultThumbColorFilter)
-		{
-			seekBar.Thumb?.SetColorFilter(slider.ThumbColor, defaultThumbColorFilter, FilterMode.SrcIn);
-		}
+		public static void UpdateThumbColor(this SeekBar seekBar, ISlider slider, ColorFilter? defaultThumbColorFilter) =>
+			seekBar.Thumb?.SetColorFilter(slider.ThumbColor, FilterMode.SrcIn, defaultThumbColorFilter);
 	}
 }

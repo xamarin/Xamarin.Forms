@@ -1,7 +1,9 @@
 ﻿using Android.Content.Res;
 using Android.Graphics;
 using Android.OS;
+using Android.Views;
 using Android.Widget;
+using Java.Net;
 
 namespace Xamarin.Platform.Handlers
 {
@@ -13,32 +15,41 @@ namespace Xamarin.Platform.Handlers
 		static PorterDuff.Mode? DefaultProgressBackgroundTintMode { get; set; }
 		static ColorFilter? DefaultThumbColorFilter { get; set; }
 
-		protected override SeekBar CreateView()
+		SeekBarChangeListener? _seekBarChangeListener;
+
+		protected override SeekBar CreateNativeView()
 		{
 			var slider = new SeekBar(Context);
-
-			slider.SetOnSeekBarChangeListener(new SeekBarChangeListener(VirtualView));
-
+			_seekBarChangeListener = new SeekBarChangeListener();
+			slider.SetOnSeekBarChangeListener(_seekBarChangeListener);
 			return slider;
 		}
 
-		protected override void SetupDefaults()
+
+		public override void TearDownNativeView(SeekBar nativeView)
 		{
-			base.SetupDefaults();
+			nativeView.SetOnSeekBarChangeListener(null);
+		}
 
-			var seekBar = TypedNativeView;
+		protected override void SetUpNewVirtualView(ISlider newView)
+		{
+			if(_seekBarChangeListener != null)
+				_seekBarChangeListener.VirtualView = newView;
+		}
 
-			if (seekBar == null)
-				return;
+		protected override void TearDownOldVirtualView(ISlider oldView)
+		{
+			if (_seekBarChangeListener != null)
+				_seekBarChangeListener.VirtualView = null;
+		}
 
-			if (Build.VERSION.SdkInt > BuildVersionCodes.Kitkat)
-			{
-				DefaultThumbColorFilter = seekBar.Thumb?.GetColorFilter();
-				DefaultProgressTintMode = seekBar.ProgressTintMode;
-				DefaultProgressBackgroundTintMode = seekBar.ProgressBackgroundTintMode;
-				DefaultProgressTintList = seekBar.ProgressTintList;
-				DefaultProgressBackgroundTintList = seekBar.ProgressBackgroundTintList;
-			}
+		protected override void SetupDefaults(SeekBar nativeView)
+		{
+			DefaultThumbColorFilter = nativeView.Thumb?.GetColorFilter();
+			DefaultProgressTintMode = nativeView.ProgressTintMode;
+			DefaultProgressBackgroundTintMode = nativeView.ProgressBackgroundTintMode;
+			DefaultProgressTintList = nativeView.ProgressTintList;
+			DefaultProgressBackgroundTintList = nativeView.ProgressBackgroundTintList;
 		}
 
 		public static void MapMinimum(SliderHandler handler, ISlider slider)
@@ -85,29 +96,28 @@ namespace Xamarin.Platform.Handlers
 
 		internal class SeekBarChangeListener : Java.Lang.Object, SeekBar.IOnSeekBarChangeListener
 		{
-			readonly ISlider? _virtualView;
+			public ISlider? VirtualView { get; set; }
 
-			public SeekBarChangeListener(ISlider? virtualView)
+			public SeekBarChangeListener()
 			{
-				_virtualView = virtualView;
 			}
 
 			public void OnProgressChanged(SeekBar? seekBar, int progress, bool fromUser)
 			{
-				if (_virtualView == null)
+				if (VirtualView == null)
 					return;
 
-				_virtualView.Value = progress;
+				VirtualView.Value = progress;
 			}
 
 			public void OnStartTrackingTouch(SeekBar? seekBar)
 			{
-				_virtualView?.DragStarted();
+				VirtualView?.DragStarted();
 			}
 
 			public void OnStopTrackingTouch(SeekBar? seekBar)
 			{
-				_virtualView?.DragCompleted();
+				VirtualView?.DragCompleted();
 			}
 		}
 	}

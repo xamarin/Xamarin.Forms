@@ -49,39 +49,42 @@ namespace Xamarin.Platform
 			return ADrawableCompat.GetColorFilter(drawable);
 		}
 
-		public static void SetColorFilter(this ADrawable drawable, AColorFilter colorFilter)
+		public static void SetColorFilter(this ADrawable drawable, AColorFilter? colorFilter)
 		{
 			if (drawable == null)
 				return;
 
 			if (colorFilter == null)
 				ADrawableCompat.ClearColorFilter(drawable);
-
-			drawable.SetColorFilter(colorFilter);
+			else			
+				drawable.SetColorFilter(colorFilter);
 		}
 
 
-		public static void SetColorFilter(this ADrawable drawable, Forms.Color color, AColorFilter? defaultColorFilter, FilterMode mode)
+		public static void SetColorFilter(this ADrawable drawable, Forms.Color color, FilterMode mode, AColorFilter? defaultColorFilter)
 		{
 			if (drawable == null)
 				return;
 
-			if (color == Forms.Color.Default && defaultColorFilter != null)
-			{
+			if (color == Forms.Color.Default)
 				SetColorFilter(drawable, defaultColorFilter);
-				return;
-			}
-
-			drawable.SetColorFilter(color.ToNative(), mode);
+			else
+				drawable.SetColorFilter(color.ToNative(), mode);
 		}
 
 		public static void SetColorFilter(this ADrawable drawable, Forms.Color color, FilterMode mode)
 		{
+			if (drawable == null)
+				return;
+
 			drawable.SetColorFilter(color.ToNative(), mode);
 		}
 
 		public static void SetColorFilter(this ADrawable drawable, AColor color, FilterMode mode)
 		{
+			if (drawable == null)
+				return;
+
 			if (NativeVersion.Supports(NativeApis.BlendModeColorFilter))
 			{
 				BlendMode? filterMode29 = GetFilterMode(mode);

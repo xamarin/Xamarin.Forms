@@ -49,6 +49,7 @@ namespace Sample
 					return;
 
 				_value = value;
+				ValueChanged?.Invoke(value);
 			}
 		}
 
