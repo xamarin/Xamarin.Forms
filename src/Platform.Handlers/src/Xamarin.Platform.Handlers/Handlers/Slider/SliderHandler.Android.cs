@@ -17,15 +17,15 @@ namespace Xamarin.Platform.Handlers
 
 		SeekBarChangeListener ChangeListener { get; } = new SeekBarChangeListener();
 
-		protected override SeekBar CreateNativeView()
+		protected override SeekBar CreateNativeView() => new SeekBar(Context);
+
+		protected override void SetupNativeView(SeekBar nativeView)
 		{
-			var slider = new SeekBar(Context);
 			ChangeListener.Handler = this;
-			slider.SetOnSeekBarChangeListener(ChangeListener);
-			return slider;
+			nativeView.SetOnSeekBarChangeListener(ChangeListener);
 		}
 
-		protected override void TearDown(SeekBar nativeView)
+		protected override void TearDownNativeView(SeekBar nativeView)
 		{
 			ChangeListener.Handler = null;
 			nativeView.SetOnSeekBarChangeListener(null);

@@ -9,18 +9,16 @@ namespace Xamarin.Platform.Handlers
 		static UIColor? DefaultMaxTrackColor;
 		static UIColor? DefaultThumbColor;
 
-		protected override UISlider CreateNativeView()
+		protected override UISlider CreateNativeView() => new UISlider();
+
+		protected override void SetupNativeView(UISlider nativeView)
 		{
-			var slider = new UISlider();
-
-			slider.ValueChanged += OnControlValueChanged;
-			slider.AddTarget(OnTouchDownControlEvent, UIControlEvent.TouchDown);
-			slider.AddTarget(OnTouchUpControlEvent, UIControlEvent.TouchUpInside | UIControlEvent.TouchUpOutside);
-
-			return slider;
+			nativeView.ValueChanged += OnControlValueChanged;
+			nativeView.AddTarget(OnTouchDownControlEvent, UIControlEvent.TouchDown);
+			nativeView.AddTarget(OnTouchUpControlEvent, UIControlEvent.TouchUpInside | UIControlEvent.TouchUpOutside);
 		}
 
-		protected override void TearDown(UISlider nativeView)
+		protected override void TearDownNativeView(UISlider nativeView)
 		{
 			nativeView.ValueChanged -= OnControlValueChanged;
 			nativeView.RemoveTarget(OnTouchDownControlEvent, UIControlEvent.TouchDown);

@@ -51,8 +51,15 @@ namespace Xamarin.Platform.Handlers
 			if (VirtualView?.Handler != null)
 				VirtualView.Handler = null;
 
+			bool setupNativeView = VirtualView == null;
+
 			VirtualView = view as TVirtualView;
 			TypedNativeView ??= CreateNativeView();
+
+			if(setupNativeView && TypedNativeView != null)
+			{
+				SetupNativeView(TypedNativeView);
+			}
 
 			if (!HasSetDefaults)
 			{
@@ -83,7 +90,12 @@ namespace Xamarin.Platform.Handlers
 			_mapper.UpdateProperties(this, VirtualView);
 		}
 
-		protected virtual void TearDown(TNativeView nativeView)
+		protected virtual void SetupNativeView(TNativeView nativeView)
+		{
+
+		}
+
+		protected virtual void TearDownNativeView(TNativeView nativeView)
 		{
 
 		}
@@ -91,12 +103,11 @@ namespace Xamarin.Platform.Handlers
 		void IViewHandler.TearDown()
 		{
 			if (TypedNativeView != null)
-				TearDown(TypedNativeView);
+				TearDownNativeView(TypedNativeView);
 
 			if (VirtualView != null)
 				VirtualView.Handler = null;
 
-			TypedNativeView = null;
 			VirtualView = null;
 		}
 
