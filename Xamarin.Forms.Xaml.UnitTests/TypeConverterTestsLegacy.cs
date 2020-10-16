@@ -1,12 +1,8 @@
-﻿using System;
-using System.Globalization;
-using System.Xml;
-using NUnit.Framework;
-using Xamarin.Forms.Core.UnitTests;
+﻿using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {
-	public class FooConverter : TypeConverter
+    public class FooConverter : TypeConverter
 	{
 		public override object ConvertFromInvariantString(string value)
 		{
@@ -66,10 +62,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		[TypeConverter(typeof(FooConverter))]
 		public Foo Foo { get; set; }
 
-		public static readonly BindableProperty BarProperty =
-#pragma warning disable 618
-			BindableProperty.Create<Bindable, Bar>(w => w.Bar, default(Bar));
-#pragma warning restore 618
+		public static readonly BindableProperty BarProperty = BindableProperty.Create(nameof(Bar), typeof(Bar), typeof(Bindable), default(Bar));
 
 		[TypeConverter(typeof(BarConverter))]
 		public Bar Bar
@@ -80,10 +73,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 		public Baz Baz { get; set; }
 
-		public static readonly BindableProperty QuxProperty =
-#pragma warning disable 618
-			BindableProperty.CreateAttached<Bindable, Qux>(bindable => GetQux(bindable), default(Qux));
-#pragma warning restore 618
+		public static readonly BindableProperty QuxProperty = BindableProperty.CreateAttached(nameof(Qux), typeof(Qux), typeof(Bindable), default(Qux));
 
 		[TypeConverter(typeof(QuxConverter))]
 		public static Qux GetQux(BindableObject bindable)

@@ -20,13 +20,13 @@ using Xamarin.Forms.Internals;
 using static Android.Views.View;
 using static Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat.NavigationPage;
 using ActionBarDrawerToggle = AndroidX.AppCompat.App.ActionBarDrawerToggle;
+using APlatform = Xamarin.Forms.Platform.Android.AppCompat.Platform;
 using AToolbar = AndroidX.AppCompat.Widget.Toolbar;
 using AView = Android.Views.View;
 using Fragment = AndroidX.Fragment.App.Fragment;
 using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
 using Object = Java.Lang.Object;
-using APlatform = Xamarin.Forms.Platform.Android.AppCompat.Platform;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -64,15 +64,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		bool ILifeCycleState.MarkedForDispose { get; set; } = false;
 
 		public NavigationPageRenderer(Context context) : base(context)
-		{
-			AutoPackage = false;
-			Id = Platform.GenerateViewId();
-			Device.Info.PropertyChanged += DeviceInfoPropertyChanged;
-		}
-
-		[Obsolete("This constructor is obsolete as of version 2.5. Please use NavigationPageRenderer(Context) instead.")]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public NavigationPageRenderer()
 		{
 			AutoPackage = false;
 			Id = Platform.GenerateViewId();

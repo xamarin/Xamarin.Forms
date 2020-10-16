@@ -32,9 +32,8 @@ namespace Xamarin.Forms.Controls.Issues
 			Label header = new Label
 			{
 				Text = "Picker",
-#pragma warning disable 618
-				Font = Font.BoldSystemFontOfSize(50),
-#pragma warning restore 618
+				FontAttributes = FontAttributes.Bold,
+				FontSize = 50,
 				HorizontalOptions = LayoutOptions.Center
 			};
 

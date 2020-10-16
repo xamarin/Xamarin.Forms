@@ -1,21 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using NUnit.Framework;
-using Xamarin.Forms;
-
-namespace Xamarin.Forms.Xaml.UnitTests
+﻿namespace Xamarin.Forms.Xaml.UnitTests
 {
-	public class Bz29300DummyView : StackLayout
+    public class Bz29300DummyView : StackLayout
 	{
 		public static readonly BindableProperty NumOfRepeatProperty =
-#pragma warning disable 618
-			BindableProperty.Create<Bz29300DummyView, int>(p => p.NumOfRepeat, 1, BindingMode.OneWay, null, UpdateTexts);
-#pragma warning restore 618
+			BindableProperty.Create(nameof(NumOfRepeat), typeof(int), typeof(Bz29300DummyView), 1, BindingMode.OneWay, null, UpdateTexts);
 
 		public static readonly BindableProperty TextProperty =
-#pragma warning disable 618
-			BindableProperty.Create<Bz29300DummyView, string>(p => p.Text, string.Empty, BindingMode.OneWay, null, UpdateTexts);
-#pragma warning restore 618
+			BindableProperty.Create(nameof(Text), typeof(string), typeof(Bz29300DummyView), string.Empty, BindingMode.OneWay, null, UpdateTexts);
 
 		public int NumOfRepeat
 		{

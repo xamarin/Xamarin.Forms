@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Android.Content;
 using Android.OS;
 using Android.Views;
-using AndroidX.Core.Widget;
 using AndroidX.DrawerLayout.Widget;
 using AndroidX.Fragment.App;
 using AView = Android.Views.View;
@@ -485,13 +484,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 	public class MasterDetailPageRenderer : FlyoutPageRenderer
 	{
 		public MasterDetailPageRenderer(Context context) : base(context)
-		{
-		}
-
-
-		[Obsolete("This constructor is obsolete as of version 2.5. Please use FlyoutPageRenderer(Context) instead.")]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public MasterDetailPageRenderer() : base(Forms.Context)
 		{
 		}
 	}

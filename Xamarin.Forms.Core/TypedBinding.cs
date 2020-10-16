@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Reflection;
-using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml.Diagnostics;
 
 namespace Xamarin.Forms.Internals
@@ -70,15 +68,6 @@ namespace Xamarin.Forms.Internals
 		readonly Func<TSource, (TProperty value, bool success)> _getter;
 		readonly Action<TSource, TProperty> _setter;
 		readonly PropertyChangedProxy[] _handlers;
-
-		[Obsolete("deprecated one. kept for backcompat")]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public TypedBinding(Func<TSource, TProperty> getter, Action<TSource, TProperty> setter, Tuple<Func<TSource, object>, string>[] handlers)
-				: this(s => (getter(s), true), setter, handlers)
-		{
-			if (getter == null)
-				throw new ArgumentNullException(nameof(getter));
-		}
 
 		public TypedBinding(Func<TSource, (TProperty value, bool success)> getter, Action<TSource, TProperty> setter, Tuple<Func<TSource, object>, string>[] handlers)
 		{

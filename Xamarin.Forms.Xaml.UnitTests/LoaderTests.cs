@@ -1,14 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Mono.Cecil;
-using NUnit.Framework;
-using Xamarin.Forms.Build.Tasks;
 using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {
-	[ContentProperty("Content")]
+    [ContentProperty("Content")]
 	public class CustomView : View
 	{
 		public string NotBindable { get; set; }
@@ -52,30 +46,6 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			if (s == null)
 				return value;
 			return new string(s.Reverse().ToArray());
-		}
-	}
-
-	public class Catalog
-	{
-		public static readonly BindableProperty MessageProperty =
-#pragma warning disable 618
-			BindableProperty.CreateAttached<Catalog, string>(bindable => GetMessage(bindable), default(string),
-#pragma warning restore 618
-				propertyChanged: (bindable, oldvalue, newvalue) =>
-				{
-					var label = bindable as Label;
-					if (label != null)
-						label.SetValue(Label.TextProperty, new string(newvalue.Reverse().ToArray()));
-				});
-
-		public static string GetMessage(BindableObject bindable)
-		{
-			return (string)bindable.GetValue(MessageProperty);
-		}
-
-		public static void SetMessage(BindableObject bindable, string value)
-		{
-			bindable.SetValue(MessageProperty, value);
 		}
 	}
 

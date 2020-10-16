@@ -2,19 +2,14 @@ using System;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
-using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
 	[TestFixture]
 	public class PreviewerReflectionTests
 	{
-		class FakePlatform : IPlatform
+		class FakePlatform
 		{
-			public SizeRequest GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
-			{
-				throw new NotImplementedException();
-			}
 		}
 
 		[Test]

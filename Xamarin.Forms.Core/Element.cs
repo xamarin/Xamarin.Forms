@@ -81,24 +81,6 @@ namespace Xamarin.Forms
 			}
 		}
 
-		[Obsolete("ParentView is obsolete as of version 2.1.0. Please use Parent instead.")]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public VisualElement ParentView
-		{
-			get
-			{
-				Element parent = Parent;
-				while (parent != null)
-				{
-					var parentView = parent as VisualElement;
-					if (parentView != null)
-						return parentView;
-					parent = parent.RealParent;
-				}
-				return null;
-			}
-		}
-
 		public string StyleId
 		{
 			get { return _styleId; }
@@ -333,9 +315,6 @@ namespace Xamarin.Forms
 			foreach (Element element in child.Descendants())
 				OnDescendantAdded(element);
 		}
-
-		[Obsolete("OnChildRemoved(Element) is obsolete as of version 4.8.0. Please use OnChildRemoved(Element, int) instead.")]
-		protected virtual void OnChildRemoved(Element child) => OnChildRemoved(child, -1);
 
 		protected virtual void OnChildRemoved(Element child, int oldLogicalIndex)
 		{
@@ -598,41 +577,5 @@ namespace Xamarin.Forms
 		{
 			SetValueCore(property, value, SetValueFlags.ClearOneWayBindings | SetValueFlags.ClearTwoWayBindings);
 		}
-
-		#region Obsolete IPlatform Stuff
-
-#pragma warning disable CS0618 // Type or member is obsolete
-		private IPlatform _platform;
-#pragma warning restore CS0618 // Type or member is obsolete
-
-		// Platform isn't needed anymore, but the Previewer will still try to set it via reflection
-		// and throw an NRE if it's not available
-		// So even if this property eventually gets removed, we still need to keep something settable on
-		// Page called Platform
-
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		[Obsolete("IPlatform is obsolete as of 3.5.0. Do not use this property.")]
-		public IPlatform Platform
-		{
-			get => _platform;
-			set
-			{
-				if (_platform == value)
-					return;
-				_platform = value;
-				PlatformSet?.Invoke(this, EventArgs.Empty);
-				foreach (Element descendant in Descendants())
-				{
-					descendant._platform = _platform;
-					descendant.PlatformSet?.Invoke(this, EventArgs.Empty);
-				}
-			}
-		}
-
-		[Obsolete("PlatformSet is obsolete as of 3.5.0. Do not use this event.")]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public event EventHandler PlatformSet;
-
-		#endregion
 	}
 }

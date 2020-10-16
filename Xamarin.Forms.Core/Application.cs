@@ -23,9 +23,6 @@ namespace Xamarin.Forms
 
 		static readonly SemaphoreSlim SaveSemaphore = new SemaphoreSlim(1, 1);
 
-		[Obsolete("Assign the LogWarningsListener")]
-		public static bool LogWarningsToApplicationOutput { get; set; }
-
 		public Application()
 		{
 			var f = false;

@@ -686,7 +686,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla60774_2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ButtonBackgroundColorTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CarouselAsync.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla34561.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla34727.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ComplexListView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CustomImageRendererErrorHandling.cs" />
@@ -944,7 +943,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla60382.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla60524.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla59925.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla60691.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1326.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1436.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GitHub1567.cs" />
@@ -1167,7 +1165,6 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla27779.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla27698.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla29247.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla27318.xaml.cs">
       <DependentUpon>Bugzilla27318.xaml</DependentUpon>
     </Compile>

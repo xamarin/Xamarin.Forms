@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 
@@ -163,48 +162,9 @@ namespace Xamarin.Forms
 			SendUpdateCurrentState(ShellNavigationSource.PopToRoot);
 		}
 
-		[Obsolete]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-
-		void IShellSectionController.SendPopped()
-		{
-			if (_navStack.Count <= 1)
-				throw new Exception("Nav Stack consistency error");
-
-			var last = _navStack[_navStack.Count - 1];
-			_navStack.Remove(last);
-
-			RemovePage(last);
-
-			SendUpdateCurrentState(ShellNavigationSource.Pop);
-		}
-
 		// we want the list returned from here to remain point in time accurate
 		ReadOnlyCollection<ShellContent> IShellSectionController.GetItems()
 			=> new ReadOnlyCollection<ShellContent>(((ShellContentCollection)Items).VisibleItemsReadOnly.ToList());
-
-		[Obsolete]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		void IShellSectionController.SendPopping(Page page)
-		{
-			if (_navStack.Count <= 1)
-				throw new Exception("Nav Stack consistency error");
-
-			_navStack.Remove(page);
-			SendAppearanceChanged();
-		}
-
-		[Obsolete]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		void IShellSectionController.SendPopped(Page page)
-		{
-			if (_navStack.Contains(page))
-				_navStack.Remove(page);
-
-			RemovePage(page);
-			SendUpdateCurrentState(ShellNavigationSource.Pop);
-		}
-
 
 		event NotifyCollectionChangedEventHandler IShellSectionController.ItemsCollectionChanged
 		{
@@ -546,7 +506,7 @@ namespace Xamarin.Forms
 			bool weveGoneTotalModal = currentNavStack.Count > _navStack.Count;
 			int whereToStartNavigation = 0;
 
-			if(request.StackRequest == NavigationRequest.WhatToDoWithTheStack.ReplaceIt)
+			if (request.StackRequest == NavigationRequest.WhatToDoWithTheStack.ReplaceIt)
 				whereToStartNavigation = currentNavStack.Count - 1;
 
 			for (int i = whereToStartNavigation; i < globalRoutes.Count; i++)
@@ -596,7 +556,7 @@ namespace Xamarin.Forms
 				}
 				else
 				{
-					if(activeModalNavigationPage != null)
+					if (activeModalNavigationPage != null)
 						await activeModalNavigationPage.Navigation.PushAsync(modalPage, animate ?? IsNavigationAnimated(modalPage));
 					else
 						await Navigation.PushModalAsync(modalPage, isAnimated);
@@ -674,9 +634,6 @@ namespace Xamarin.Forms
 			base.OnChildAdded(child);
 			OnVisibleChildAdded(child);
 		}
-
-		[Obsolete("OnChildRemoved(Element) is obsolete as of version 4.8.0. Please use OnChildRemoved(Element, int) instead.")]
-		protected override void OnChildRemoved(Element child) => OnChildRemoved(child, -1);
 
 		protected override void OnChildRemoved(Element child, int oldLogicalIndex)
 		{

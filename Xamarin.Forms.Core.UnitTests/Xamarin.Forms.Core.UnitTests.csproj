@@ -65,7 +65,6 @@
     <Compile Include="BindablePropertyUnitTests.cs" />
     <Compile Include="BindingBaseUnitTests.cs" />
     <Compile Include="BindingExpressionTests.cs" />
-    <Compile Include="BindingTests.cs" />
     <Compile Include="BindingTypeConverterTests.cs" />
     <Compile Include="BindingUnitTests.cs" />
     <Compile Include="ButtonUnitTest.cs" />

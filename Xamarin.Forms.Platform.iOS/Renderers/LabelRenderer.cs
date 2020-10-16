@@ -4,7 +4,6 @@ using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 using Foundation;
 using System.Collections.Generic;
-using CoreGraphics;
 using System.Diagnostics;
 
 #if __MOBILE__
@@ -35,7 +34,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			Label.TextProperty.PropertyName,
 			Label.TextColorProperty.PropertyName,
-			Label.FontProperty.PropertyName,
+			Label.FontAttributesProperty.PropertyName,
+			Label.FontFamilyProperty.PropertyName,
+			Label.FontSizeProperty.PropertyName,
 			Label.FormattedTextProperty.PropertyName,
 			Label.LineBreakModeProperty.PropertyName,
 			Label.LineHeightProperty.PropertyName,
@@ -196,8 +197,12 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateLayout();
 			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
 				UpdateTextColor();
-			else if (e.PropertyName == Label.FontProperty.PropertyName)
-				UpdateFont();
+			else if (e.PropertyName == Label.FontAttributesProperty.PropertyName || e.PropertyName == Label.FontFamilyProperty.PropertyName || e.PropertyName == Label.FontSizeProperty.PropertyName)
+			{
+				UpdateText();
+				UpdateTextDecorations();
+				UpdateCharacterSpacing();
+			}
 			else if (e.PropertyName == Label.TextProperty.PropertyName)
 			{
 				UpdateText();
@@ -410,7 +415,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (textAttr != null)
 				Control.AttributedText = textAttr;
 #else
-   			var textAttr = Control.AttributedStringValue.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
+			var textAttr = Control.AttributedStringValue.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
 
 			if (textAttr != null)
 				Control.AttributedStringValue = textAttr;
@@ -421,10 +426,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateText()
 		{
-            if (IsElementOrControlEmpty)
-                return;
+			if (IsElementOrControlEmpty)
+				return;
 
-            switch (Element.TextType)
+			switch (Element.TextType)
 			{
 				case TextType.Html:
 					UpdateTextHtml();
@@ -503,7 +508,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			};
 		}
 
-		static bool FontIsDefault(Label label) 
+		static bool FontIsDefault(Label label)
 		{
 			if (label.IsSet(Label.FontAttributesProperty))
 			{
@@ -525,7 +530,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateFont()
 		{
-			if(Element == null)
+			if (Element == null)
 			{
 				return;
 			}
@@ -565,10 +570,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				// If no explicit text color has been specified and we're displaying HTML, 
 				// let the HTML determine the colors
-				return;		
+				return;
 			}
 
-				// default value of color documented to be black in iOS docs
+			// default value of color documented to be black in iOS docs
 #if __MOBILE__
 				Control.TextColor = textColor.ToUIColor(ColorExtensions.LabelColor);
 #else

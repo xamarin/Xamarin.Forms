@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Xamarin.Forms;
 
 namespace Xamarin.Forms.Controls
 {
@@ -149,9 +148,8 @@ namespace Xamarin.Forms.Controls
 			Label header = new Label
 			{
 				Text = "ListView",
-#pragma warning disable 618
-				Font = Font.BoldSystemFontOfSize(50),
-#pragma warning restore 618
+				FontAttributes = FontAttributes.Bold,
+				FontSize = 50,
 				HorizontalOptions = LayoutOptions.Center
 			};
 

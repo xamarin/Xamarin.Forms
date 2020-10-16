@@ -1,11 +1,11 @@
-﻿using Foundation;
-using ObjCRuntime;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Foundation;
+using ObjCRuntime;
 using UIKit;
 using Xamarin.Forms.Internals;
 
@@ -78,14 +78,14 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("navigationBar:shouldPopItem:")]
 		[Internals.Preserve(Conditional = true)]
 		public bool ShouldPopItem(UINavigationBar navigationBar, UINavigationItem item)
-		{	
+		{
 			// this means the pop is already done, nothing we can do
 			if (ViewControllers.Length < NavigationBar.Items.Length)
 				return true;
 
-			foreach(var tracker in _trackers)
+			foreach (var tracker in _trackers)
 			{
-				if(tracker.Value.ViewController == TopViewController)
+				if (tracker.Value.ViewController == TopViewController)
 				{
 					var behavior = Shell.GetBackButtonBehavior(tracker.Value.Page);
 					var command = behavior.GetPropertyIfSet<ICommand>(BackButtonBehavior.CommandProperty, null);
@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					if (command != null)
 					{
-						if(command.CanExecute(commandParameter))
+						if (command.CanExecute(commandParameter))
 						{
 							command.Execute(commandParameter);
 						}
@@ -252,7 +252,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_renderer = CreateShellSectionRootRenderer(ShellSection, _context);
 
 			PushViewController(_renderer.ViewController, false);
-			
+
 			var stack = ShellSection.Stack;
 			for (int i = 1; i < stack.Count; i++)
 			{
@@ -421,7 +421,7 @@ namespace Xamarin.Forms.Platform.iOS
 					OnPopRequested(e);
 				}
 
-				if(ViewControllers.Contains(viewController))
+				if (ViewControllers.Contains(viewController))
 					ViewControllers = ViewControllers.Remove(viewController);
 
 				DisposePage(page);
@@ -450,7 +450,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (_trackers.TryGetValue(page, out var tracker))
 			{
-				if(!calledFromDispose && tracker.ViewController != null && ViewControllers.Contains(tracker.ViewController))
+				if (!calledFromDispose && tracker.ViewController != null && ViewControllers.Contains(tracker.ViewController))
 					ViewControllers = ViewControllers.Remove(_trackers[page].ViewController);
 
 				tracker.Dispose();
@@ -516,9 +516,6 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			var poppedPage = _shellSection.Stack[_shellSection.Stack.Count - 1];
-
-			// this is used to setup appearance changes based on the incoming page
-			((IShellSectionController)_shellSection).SendPopping(popTask);
 
 			await popTask;
 

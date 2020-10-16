@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -19,34 +18,7 @@ namespace Xamarin.Forms
 		static ConditionalWeakTable<Type, ResourceDictionary> s_instances = new ConditionalWeakTable<Type, ResourceDictionary>();
 		readonly Dictionary<string, object> _innerDictionary = new Dictionary<string, object>();
 		ResourceDictionary _mergedInstance;
-		Type _mergedWith;
 		Uri _source;
-
-		[TypeConverter(typeof(TypeTypeConverter))]
-		[Obsolete("Use Source")]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public Type MergedWith
-		{
-			get { return _mergedWith; }
-			set
-			{
-				if (_mergedWith == value)
-					return;
-
-				if (_source != null)
-					throw new ArgumentException("MergedWith can not be used with Source");
-
-				if (!typeof(ResourceDictionary).GetTypeInfo().IsAssignableFrom(value.GetTypeInfo()))
-					throw new ArgumentException("MergedWith should inherit from ResourceDictionary");
-
-				_mergedWith = value;
-				if (_mergedWith == null)
-					return;
-
-				_mergedInstance = s_instances.GetValue(_mergedWith, (key) => (ResourceDictionary)Activator.CreateInstance(key));
-				OnValuesChanged(_mergedInstance.ToArray());
-			}
-		}
 
 		[TypeConverter(typeof(RDSourceTypeConverter))]
 		public Uri Source
@@ -65,8 +37,6 @@ namespace Xamarin.Forms
 		public void SetAndLoadSource(Uri value, string resourcePath, Assembly assembly, System.Xml.IXmlLineInfo lineInfo)
 		{
 			_source = value;
-			if (_mergedWith != null)
-				throw new ArgumentException("Source can not be used with MergedWith");
 
 			//this will return a type if the RD as an x:Class element, and codebehind
 			var type = XamlResourceIdAttribute.GetTypeForPath(assembly, resourcePath);
@@ -385,11 +355,6 @@ namespace Xamarin.Forms
 
 				//drop the leading '/'
 				return resourceUri.AbsolutePath.Substring(1);
-			}
-
-			object IExtendedTypeConverter.ConvertFrom(CultureInfo culture, object value, IServiceProvider serviceProvider)
-			{
-				throw new NotImplementedException();
 			}
 
 			public override object ConvertFromInvariantString(string value)

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using NUnit.Framework;
-using Xamarin.Forms;
-
-namespace Xamarin.Forms.Xaml.UnitTests
+﻿namespace Xamarin.Forms.Xaml.UnitTests
 {
-	public partial class Bz24910 : ContentPage
+    public partial class Bz24910 : ContentPage
 	{
 		public Bz24910()
 		{
@@ -103,9 +98,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		}
 
 		public static readonly BindableProperty AttachedNullableIntProperty =
-#pragma warning disable 618
-			BindableProperty.CreateAttached<Bz24910Control, int?>(bindable => GetAttachedNullableInt(bindable), default(int?));
-#pragma warning restore 618
+			BindableProperty.CreateAttached(nameof(NullableInt), typeof(int?), typeof(Bz24910Control), default(int?));
 
 		public static int? GetAttachedNullableInt(BindableObject bindable)
 		{

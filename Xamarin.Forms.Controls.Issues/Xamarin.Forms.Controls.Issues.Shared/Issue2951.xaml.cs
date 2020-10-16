@@ -168,31 +168,3 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	}
 }
-
-namespace Xamarin.Forms.Controls.Issues
-{
-	[Preserve(AllMembers = true)]
-	public class ButtonExtensions
-	{
-#pragma warning disable 618
-		public static readonly BindableProperty IsPrimaryProperty = BindableProperty.CreateAttached<ButtonExtensions, bool>(
-#pragma warning restore 618
-																		bindable => GetIsPrimary(bindable),
-																		false,
-																		BindingMode.TwoWay,
-																		null,
-																		null,
-																		null,
-																		null);
-
-		public static bool GetIsPrimary(BindableObject bo)
-		{
-			return (bool)bo.GetValue(IsPrimaryProperty);
-		}
-
-		public static void SetIsPrimary(BindableObject bo, bool value)
-		{
-			bo.SetValue(IsPrimaryProperty, value);
-		}
-	}
-}

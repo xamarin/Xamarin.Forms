@@ -26,24 +26,15 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
-			var navPage = new NavigationPage(new Issue4915ContentPage()) { Title = "nav page 1" };
-#pragma warning disable CS0618 // Type or member is obsolete
-			navPage.SetBinding(Page.IconProperty, "Image");
-#pragma warning restore CS0618 // Type or member is obsolete
-			navPage.BindingContext = new Issue4915ContentPage.ViewModel();
-
-
 			var urlNavPage = new NavigationPage(new Issue4915ContentPage()) { Title = "nav page 2" };
 			urlNavPage.SetBinding(Page.IconImageSourceProperty, "ImageUrl");
 			urlNavPage.BindingContext = new Issue4915ContentPage.ViewModel();
 
 			var titleIconPage = new Issue4915ContentPage();
 			var justSetOnNavPage = new NavigationPage(titleIconPage) { Title = "nav page 3" };
-#pragma warning disable CS0618 // Type or member is obsolete
-			NavigationPage.SetTitleIcon(titleIconPage, "coffee.png");
-#pragma warning restore CS0618 // Type or member is obsolete
 
-			Children.Add(navPage);
+			NavigationPage.SetTitleIconImageSource(titleIconPage, "coffee.png");
+
 			Children.Add(urlNavPage);
 			Children.Add(justSetOnNavPage);
 			Children.Add(new Issue4915ContentPage() { Title = "page 2" });

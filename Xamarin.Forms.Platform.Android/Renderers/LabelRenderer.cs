@@ -7,7 +7,6 @@ using Android.Text;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using Xamarin.Forms.PlatformConfiguration.TizenSpecific;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -32,13 +31,6 @@ namespace Xamarin.Forms.Platform.Android
 		SpannableString _spannableString;
 
 		public LabelRenderer(Context context) : base(context)
-		{
-			AutoPackage = false;
-		}
-
-		[Obsolete("This constructor is obsolete as of version 2.5. Please use LabelRenderer(Context) instead.")]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public LabelRenderer()
 		{
 			AutoPackage = false;
 		}
@@ -156,7 +148,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateGravity();
 			else if (e.IsOneOf(Label.TextColorProperty, Label.TextTransformProperty))
 				UpdateText();
-			else if (e.PropertyName == Label.FontProperty.PropertyName)
+			else if (e.IsOneOf(Label.FontAttributesProperty, Label.FontFamilyProperty, Label.FontSizeProperty))
 				UpdateText();
 			else if (e.PropertyName == Label.CharacterSpacingProperty.PropertyName)
 				UpdateCharacterSpacing();
@@ -196,9 +188,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateFont()
 		{
-#pragma warning disable 618 // We will need to update this when .Font goes away
-			Font f = Element.Font;
-#pragma warning restore 618
+			Font f = Font.OfSize(Element.FontFamily, Element.FontSize).WithAttributes(Element.FontAttributes);
 
 			Typeface newTypeface = f.ToTypeface();
 			if (newTypeface != _lastTypeface)
@@ -274,9 +264,10 @@ namespace Xamarin.Forms.Platform.Android
 			if (Element.FormattedText != null)
 			{
 				FormattedString formattedText = Element.FormattedText ?? Element.Text;
-#pragma warning disable 618 // We will need to update this when .Font goes away
-				_view.TextFormatted = _spannableString = formattedText.ToAttributed(Element.Font, Element.TextColor, _view);
-#pragma warning restore 618
+
+				Font f = Font.OfSize(Element.FontFamily, Element.FontSize).WithAttributes(Element.FontAttributes);
+				_view.TextFormatted = _spannableString = formattedText.ToAttributed(f, Element.TextColor, _view);
+
 				_wasFormatted = true;
 			}
 			else

@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Content.Res;
@@ -18,13 +17,6 @@ namespace Xamarin.Forms.Platform.Android
 		PorterDuff.Mode defaultprogresstintmode, defaultprogressbackgroundtintmode;
 
 		public SliderRenderer(Context context) : base(context)
-		{
-			AutoPackage = false;
-		}
-
-		[Obsolete("This constructor is obsolete as of version 2.5. Please use SliderRenderer(Context) instead.")]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public SliderRenderer()
 		{
 			AutoPackage = false;
 		}
