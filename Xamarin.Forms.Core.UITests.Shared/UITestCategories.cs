@@ -18,7 +18,6 @@
 		public const string DisplayAlert = "DisplayAlert";
 		public const string Editor = "Editor";
 		public const string Entry = "Entry";
-		public const string ExpanderView = "ExpanderView";
 		public const string Frame = "Frame";
 		public const string Image = "Image";
 		public const string ImageButton = "ImageButton";
@@ -28,6 +27,7 @@
 		public const string UwpIgnore = "UwpIgnore";
 		public const string LifeCycle = "Lifecycle";
 		public const string MasterDetailPage = "MasterDetailPage";
+		public const string FlyoutPage = "FlyoutPage";
 		public const string Picker = "Picker";
 		public const string ProgressBar = "ProgressBar";
 		public const string RootGallery = "RootGallery";

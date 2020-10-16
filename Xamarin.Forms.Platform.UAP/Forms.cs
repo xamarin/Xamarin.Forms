@@ -28,7 +28,7 @@ namespace Xamarin.Forms
 			var accent = (WSolidColorBrush)Windows.UI.Xaml.Application.Current.Resources["SystemColorControlAccentBrush"];
 			Color.SetAccent(accent.ToFormsColor());
 
-#if UWP_14393
+#if !UWP_16299
 			Log.Listeners.Add(new DelegateLogListener((c, m) => Debug.WriteLine(LogFormat, c, m)));
 #else
 			Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
@@ -49,7 +49,12 @@ namespace Xamarin.Forms
 
 			Device.SetIdiom(TargetIdiom.Tablet);
 			Device.SetFlowDirection(GetFlowDirection());
-			Device.PlatformServices = new WindowsPlatformServices(Window.Current.Dispatcher);
+
+			var platformServices = new WindowsPlatformServices(Window.Current.Dispatcher);
+
+			Device.PlatformServices = platformServices;
+			Device.PlatformInvalidator = platformServices;
+			
 			Device.SetFlags(s_flags);
 			Device.Info = new WindowsDeviceInfo();
 

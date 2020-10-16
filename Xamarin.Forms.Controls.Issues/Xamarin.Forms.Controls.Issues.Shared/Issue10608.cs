@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		void AddPage(string title)
 		{
-			var page = AddFlyoutItem(title);
+			var page = CreateContentPage<FlyoutItem>(title);
 
 			page.Content = new Grid()
 			{
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Controls.Issues
 			AddPage("Lock test has passed");
 
 			int i = 0;
-			foreach(var item in Items)
+			foreach (var item in Items)
 			{
 				item.Items[0].AutomationId = $"FlyoutItem{i}";
 				item.Items[0].Items.Add(new ContentPage()

@@ -1,13 +1,13 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
-using System;
-using System.Runtime.CompilerServices;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using System.Linq;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.UITest;
@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 60699, "ListView Bindings fire multiple times on Android SDK 24+", PlatformAffected.Android)]
-	public class Bugzilla60699 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Bugzilla60699 : TestContentPage // or TestFlyoutPage, etc ...
 	{
 		[Preserve(AllMembers = true)]
 		public class DebugConverter : IValueConverter

@@ -1,6 +1,6 @@
-﻿using Xamarin.Forms.Internals;
+﻿using System.Collections.Generic;
 using Xamarin.Forms.CustomAttributes;
-using System.Collections.Generic;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.UITest;
@@ -21,9 +21,6 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public Issue11286()
 		{
-#if APP
-			Device.SetFlags(new List<string> { ExperimentalFlags.SwipeViewExperimental });
-#endif
 		}
 
 		protected override void Init()

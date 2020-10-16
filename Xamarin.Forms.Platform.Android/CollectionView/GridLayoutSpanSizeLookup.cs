@@ -1,9 +1,4 @@
-﻿#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
-using AndroidX.RecyclerView.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
+﻿using AndroidX.RecyclerView.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -22,7 +17,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var itemViewType = _recyclerView.GetAdapter().GetItemViewType(position);
 
-			if (itemViewType == ItemViewType.Header || itemViewType == ItemViewType.Footer 
+			if (itemViewType == ItemViewType.Header || itemViewType == ItemViewType.Footer
 				|| itemViewType == ItemViewType.GroupHeader || itemViewType == ItemViewType.GroupFooter)
 			{
 				return _gridItemsLayout.Span;

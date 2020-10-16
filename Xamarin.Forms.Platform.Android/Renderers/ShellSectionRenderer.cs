@@ -1,29 +1,17 @@
-using Android.OS;
-using Android.Runtime;
-
-#if __ANDROID_29__
-using AndroidX.Core.Widget;
-using AndroidX.Fragment.App;
-using AndroidX.CoordinatorLayout.Widget;
-using AndroidX.ViewPager.Widget;
-using Google.Android.Material.Tabs;
-using AndroidX.AppCompat.Widget;
-using AndroidX.Core.View;
-#else
-using Android.Support.V4.Widget;
-using Fragment = Android.Support.V4.App.Fragment;
-using Toolbar = Android.Support.V7.Widget.Toolbar;
-using Android.Support.V4.View;
-using Android.Support.Design.Widget;
-#endif
-using Android.Views;
 using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using Android.OS;
+using Android.Runtime;
+using Android.Views;
+using AndroidX.AppCompat.Widget;
+using AndroidX.CoordinatorLayout.Widget;
+using AndroidX.Fragment.App;
+using AndroidX.ViewPager.Widget;
+using Google.Android.Material.Tabs;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using AView = Android.Views.View;
-using LP = Android.Views.ViewGroup.LayoutParams;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -33,7 +21,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ViewPager.IOnPageChangeListener.OnPageScrolled(int position, float positionOffset, int positionOffsetPixels)
 		{
-			if(!_selecting && ShellSection?.CurrentItem != null)
+			if (!_selecting && ShellSection?.CurrentItem != null)
 			{
 				UpdateCurrentItem(ShellSection.CurrentItem);
 			}
@@ -63,7 +51,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateCurrentItem(shellContent);
 			}
-			else if(shellSection?.CurrentItem != null)
+			else if (shellSection?.CurrentItem != null)
 			{
 				var currentPosition = SectionController.GetItems().IndexOf(shellSection.CurrentItem);
 				_selecting = true;
@@ -177,7 +165,7 @@ namespace Xamarin.Forms.Platform.Android
 				currentPage = ((IShellContentController)shellSection.CurrentItem).GetOrCreateContent();
 
 				// current item hasn't changed
-				if(currentItem == shellSection.CurrentItem)
+				if (currentItem == shellSection.CurrentItem)
 					currentIndex = SectionController.GetItems().IndexOf(currentItem);
 			}
 
@@ -214,7 +202,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				var tab = _tablayout.GetTabAt(i);
 
-				if(tab.View != null)
+				if (tab.View != null)
 					FastRenderers.AutomationPropertiesProvider.AccessibilitySettingsChanged(tab.View, items[i]);
 			}
 		}

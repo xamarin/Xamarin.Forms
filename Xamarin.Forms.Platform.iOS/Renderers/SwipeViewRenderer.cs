@@ -13,6 +13,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class SwipeViewRenderer : ViewRenderer<SwipeView, UIView>
 	{
+		const float MinimumOpenSwipeThresholdPercentage = 0.15f; // 15%
 		const float OpenSwipeThresholdPercentage = 0.6f; // 60%
 		const double SwipeThreshold = 250;
 		const double SwipeItemWidth = 100;
@@ -38,6 +39,7 @@ namespace Xamarin.Forms.Platform.iOS
 		double _previousScrollY;
 		int _previousFirstVisibleIndex;
 		bool _isSwipeEnabled;
+		bool _isScrollEnabled;
 		bool _isResettingSwipe;
 		bool _isOpen;
 		bool _isDisposed;
@@ -45,9 +47,8 @@ namespace Xamarin.Forms.Platform.iOS
 		[Internals.Preserve(Conditional = true)]
 		public SwipeViewRenderer()
 		{
-			SwipeView.VerifySwipeViewFlagEnabled(nameof(SwipeViewRenderer));
-
 			_swipeItems = new Dictionary<ISwipeItem, object>();
+			_isScrollEnabled = true;
 
 			_tapGestureRecognizer = new UITapGestureRecognizer(HandleTap)
 			{
@@ -86,7 +87,6 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateContent();
 				UpdateIsSwipeEnabled();
 				UpdateSwipeTransitionMode();
-				SetBackgroundColor(Element.BackgroundColor);
 			}
 
 			if (e.OldElement != null)
@@ -151,10 +151,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (e.PropertyName == ContentView.ContentProperty.PropertyName)
 				UpdateContent();
-			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
-				SetBackgroundColor(Element.BackgroundColor);
-			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
-				SetBackground(Element.Background);
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateIsSwipeEnabled();
 			else if (e.PropertyName == Specifics.SwipeTransitionModeProperty.PropertyName)
@@ -163,31 +159,21 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void SetBackgroundColor(Color color)
 		{
-			UIColor backgroundColor = ColorExtensions.BackgroundColor;
-
 			if (Element.BackgroundColor != Color.Default)
-			{
 				BackgroundColor = Element.BackgroundColor.ToUIColor();
-
-				if (_contentView != null && (Element.Content == null || (Element.Content != null && Element.Content.BackgroundColor == Color.Default)))
-					_contentView.BackgroundColor = Element.BackgroundColor.ToUIColor();
-			}
 			else
-				BackgroundColor = backgroundColor;
-
-			if (_contentView != null && _contentView.BackgroundColor == UIColor.Clear)
-				_contentView.BackgroundColor = backgroundColor;
+				BackgroundColor = ColorExtensions.BackgroundColor;
 		}
 
 		protected override void SetBackground(Brush brush)
 		{
 			Brush background = Element.Background;
 
+			if (Brush.IsNullOrEmpty(background))
+				return;
+
 			if (Control != null)
 				Control.UpdateBackground(background);
-
-			if (_contentView != null && Element.Content == null && HasSwipeItems())
-				_contentView.UpdateBackground(background);
 		}
 
 		public override void TouchesEnded(NSSet touches, UIEvent evt)
@@ -207,7 +193,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (navigationController != null)
 				navigationController.InteractivePopGestureRecognizer.Enabled = true;
-			
+
 			if (touches.AnyObject is UITouch anyObject)
 			{
 				CGPoint point = anyObject.LocationInView(this);
@@ -232,7 +218,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (_scrollParent != null)
 				{
-					if(_scrollParent is ScrollView scrollView)
+					if (_scrollParent is ScrollView scrollView)
 						scrollView.Scrolled -= OnParentScrolled;
 
 					if (_scrollParent is ListView listView)
@@ -334,13 +320,16 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Subviews.Length > 0)
 					_contentView = Subviews[0];
 			}
+
+			if (_contentView != null)
+				BringSubviewToFront(_contentView);
 		}
 
 		void HandleTap()
 		{
 			if (_tapGestureRecognizer == null)
 				return;
-			
+
 			if (_isSwiping)
 				return;
 
@@ -417,7 +406,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return Element != null && (IsValidSwipeItems(Element.LeftItems) || IsValidSwipeItems(Element.RightItems) || IsValidSwipeItems(Element.TopItems) || IsValidSwipeItems(Element.BottomItems));
 		}
 
-  		bool IsHorizontalSwipe()
+		bool IsHorizontalSwipe()
 		{
 			return _swipeDirection == SwipeDirection.Left || _swipeDirection == SwipeDirection.Right;
 		}
@@ -755,7 +744,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				UpdateSwipeItems();
 			}
-			
+
 			if (!_isSwiping)
 			{
 				RaiseSwipeStarted();
@@ -769,7 +758,10 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateIsOpen(_swipeOffset != 0);
 
 			if (Math.Abs(_swipeOffset) > double.Epsilon)
+			{
+				IsParentScrollEnabled(false);
 				Swipe();
+			}
 
 			RaiseSwipeChanging();
 		}
@@ -782,6 +774,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			_isSwiping = false;
+			IsParentScrollEnabled(true);
 
 			RaiseSwipeEnded();
 
@@ -789,6 +782,24 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			ValidateSwipeThreshold();
+		}
+
+		void IsParentScrollEnabled(bool scrollEnabled)
+		{
+			var swipeThresholdPercent = MinimumOpenSwipeThresholdPercentage * GetSwipeThreshold();
+
+			if (Math.Abs(_swipeOffset) < swipeThresholdPercent)
+				return;
+
+			if (scrollEnabled == _isScrollEnabled)
+				return;
+
+			_isScrollEnabled = scrollEnabled;
+
+			var parent = this.GetParentOfType<UIScrollView>();
+
+			if (parent != null)
+				parent.ScrollEnabled = _isScrollEnabled;
 		}
 
 		bool CanProcessTouchSwipeItems(CGPoint point)
@@ -1154,8 +1165,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		double GetSwipeThreshold(SwipeItems swipeItems)
 		{
-			double swipeThreshold = 0;
+			var threshold = Element?.Threshold;
 
+			if (threshold.HasValue && threshold.Value > 0)
+				return threshold.Value;
+
+			double swipeThreshold = 0;
 			bool isHorizontal = IsHorizontalSwipe();
 
 			if (swipeItems.Mode == SwipeMode.Reveal)
@@ -1221,28 +1236,36 @@ namespace Xamarin.Forms.Platform.iOS
 		Size GetSwipeItemSize(ISwipeItem swipeItem)
 		{
 			var items = GetSwipeItemsByDirection();
-			var swipeFrame = _contentView != null ? _contentView.Frame : Frame;
+
+			double threshold = Element.Threshold;
+			var contentHeight = _contentView.Frame.Height;
+			var contentWidth = _contentView.Frame.Width;
 
 			if (IsHorizontalSwipe())
 			{
 				if (swipeItem is SwipeItem)
-					return new Size(items.Mode == SwipeMode.Execute ? swipeFrame.Width / items.Count : SwipeItemWidth, swipeFrame.Height);
+				{
+					return new Size(items.Mode == SwipeMode.Execute ? (threshold > 0 ? threshold : contentWidth) / items.Count : (threshold < SwipeItemWidth ? SwipeItemWidth : threshold), contentHeight);
+				}
 
 				if (swipeItem is SwipeItemView horizontalSwipeItemView)
 				{
 					var swipeItemViewSizeRequest = horizontalSwipeItemView.Measure(double.PositiveInfinity, double.PositiveInfinity, MeasureFlags.IncludeMargins);
-					return new Size(swipeItemViewSizeRequest.Request.Width > 0 ? (float)swipeItemViewSizeRequest.Request.Width : SwipeItemWidth, swipeFrame.Height);
+					return new Size(swipeItemViewSizeRequest.Request.Width > 0 ? (float)swipeItemViewSizeRequest.Request.Width : ((threshold > 0 && threshold < SwipeItemWidth) ? SwipeItemWidth : threshold), contentHeight);
 				}
 			}
 			else
 			{
 				if (swipeItem is SwipeItem)
-					return new Size(swipeFrame.Width / items.Count, GetSwipeItemHeight()); 
+				{
+					var swipeItemHeight = GetSwipeItemHeight();
+					return new Size(contentWidth / items.Count, (threshold > 0 && threshold < swipeItemHeight) ? threshold : swipeItemHeight);
+				}
 
 				if (swipeItem is SwipeItemView horizontalSwipeItemView)
 				{
 					var swipeItemViewSizeRequest = horizontalSwipeItemView.Measure(double.PositiveInfinity, double.PositiveInfinity, MeasureFlags.IncludeMargins);
-					return new Size(swipeFrame.Width / items.Count, swipeItemViewSizeRequest.Request.Height > 0 ? (float)swipeItemViewSizeRequest.Request.Height : swipeFrame.Height);
+					return new Size(contentWidth / items.Count, swipeItemViewSizeRequest.Request.Height > 0 ? (float)swipeItemViewSizeRequest.Request.Height : contentHeight);
 				}
 			}
 

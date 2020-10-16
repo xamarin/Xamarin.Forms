@@ -1,8 +1,8 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
-using System.Collections.ObjectModel;
+﻿using System;
 using System.Collections.Generic;
-using System;
+using System.Collections.ObjectModel;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 8964, "Adding an item to the beginning of the bound ItemSource causes the carousel to skip sometimes", PlatformAffected.Android)]
-	public class Issue8964 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Issue8964 : TestContentPage // or TestFlyoutPage, etc ...
 	{
 		object _currentItem;
 		int _counter;
@@ -37,7 +37,8 @@ namespace Xamarin.Forms.Controls.Issues
 				ItemsSource = ItemSourceUnderTest,
 				ItemTemplate = GetCarouselTemplate(),
 				CurrentItem = _currentItem,
-				AutomationId = "carouseView"
+				AutomationId = "carouseView",
+				Loop = false
 			};
 			CarouselViewUnderTest.CurrentItemChanged += CarouselViewUnderTestCurrentItemChanged;
 			CarouselViewUnderTest.PositionChanged += CarouselViewUnderTest_PositionChanged;
@@ -129,7 +130,6 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
 			var rect = RunningApp.Query("carouseView")[0].Rect;
-			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
 			SwipePreviousItem(rect);
 			RunningApp.WaitForElement(q => q.Marked($"Item Position - 4"));
 			SwipePreviousItem(rect);

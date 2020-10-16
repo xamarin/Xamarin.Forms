@@ -7,6 +7,7 @@ namespace Xamarin.Forms.Platform.Android
 	public class ItemContentView : ViewGroup
 	{
 		protected IVisualElementRenderer Content;
+		internal Element Element => Content?.Element;
 		Size? _size;
 		Action<Size> _reportMeasure;
 
@@ -32,7 +33,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				RequestLayout();
 			}
-			else if(sender is VisualElement ve)
+			else if (sender is VisualElement ve)
 			{
 				ve.MeasureInvalidated -= ElementMeasureInvalidated;
 			}
