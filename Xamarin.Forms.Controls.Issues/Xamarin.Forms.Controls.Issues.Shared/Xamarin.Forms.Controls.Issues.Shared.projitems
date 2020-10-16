@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue11962.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue10744.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue10909.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue3106.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11709.xaml.cs">
       <DependentUpon>Issue11709.xaml</DependentUpon>
     </Compile>
@@ -39,6 +40,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue6742.xaml.cs">
       <DependentUpon>Issue6742.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Issue12246.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8613.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue9137.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8691.cs" />
@@ -294,7 +296,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ShellAppearanceChange.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue10234.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellModal.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShellFlyoutBehavior.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FlyoutBehaviorShell.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7128.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellItemIsVisible.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellGestures.cs" />
@@ -1593,6 +1595,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue11869.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11723.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HeaderFooterShellFlyout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue12134.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11963.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11831.xaml.cs" />

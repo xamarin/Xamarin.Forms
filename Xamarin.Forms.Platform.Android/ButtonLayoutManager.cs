@@ -183,6 +183,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (!UpdateTextAndImage())
 				UpdateImage();
 			UpdatePadding();
+			UpdateLineBreakMode();
 		}
 
 		void OnElementChanged(object sender, VisualElementChangedEventArgs e)
@@ -215,6 +216,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateTextAndImage();
 			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName && _borderAdjustsPadding)
 				_element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+			else if (e.PropertyName == Button.LineBreakModeProperty.PropertyName)
+				UpdateLineBreakMode();
 		}
 
 		void UpdatePadding()
@@ -299,9 +302,9 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			// No text, so no need for relative position; just center the image
-			// There's no option for just plain-old centering, so we'll use Top 
+			// There's no option for just plain-old centering, so we'll use Top
 			// (which handles the horizontal centering) and some tricksy padding (in OnLayout)
-			// to handle the vertical centering 
+			// to handle the vertical centering
 			var layout = string.IsNullOrEmpty(_element.Text) ? _imageOnlyLayout : _element.ContentLayout;
 
 			if (_maintainLegacyMeasurements)
@@ -346,6 +349,17 @@ namespace Xamarin.Forms.Platform.Android
 						_element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
 				});
 			}
+		}
+
+		void UpdateLineBreakMode()
+		{
+			AButton view = View;
+
+			if (view == null || _element == null || _renderer?.View == null)
+				return;
+
+			view.SetLineBreakMode(_element);
+			_renderer.View.SetAllCaps(_element.TextTransform == TextTransform.Default);
 		}
 	}
 }
