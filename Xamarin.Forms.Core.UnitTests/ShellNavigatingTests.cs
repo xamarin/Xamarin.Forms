@@ -367,6 +367,99 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(3, tab.NavigationsFired.Count);
 		}
 
+		[Test]
+		public async Task PoppingSamePageSetsCorrectNavigationSource()
+		{
+			Routing.RegisterRoute("detailspage", typeof(ContentPage));
+			var shell = new TestShell(CreateShellItem());
+			await shell.GoToAsync("detailspage/detailspage");
+			await shell.Navigation.PopAsync();
+			Assert.AreEqual(ShellNavigationSource.Pop, shell.LastShellNavigatingEventArgs.Source);
+		}
+
+		[Test]
+		public async Task PoppingSetsCorrectNavigationSource()
+		{
+			var shell = new TestShell(CreateShellItem());
+			await shell.Navigation.PushAsync(new ContentPage());
+			await shell.Navigation.PopAsync();
+			Assert.AreEqual(ShellNavigationSource.Pop, shell.LastShellNavigatingEventArgs.Source);
+		}
+
+		[Test]
+		public async Task PushingSetsCorrectNavigationSource()
+		{
+			var shell = new TestShell(CreateShellItem());
+			await shell.Navigation.PushAsync(new ContentPage());
+			Assert.AreEqual(ShellNavigationSource.Push, shell.LastShellNavigatingEventArgs.Source);
+		}
+
+		[Test]
+		public async Task ChangingShellItemSetsCorrectNavigationSource()
+		{
+			var shell = new TestShell(
+				CreateShellItem(),
+				CreateShellItem(shellItemRoute: "item2")
+			);
+
+			await shell.GoToAsync("//item2");
+			Assert.AreEqual(ShellNavigationSource.ShellItemChanged, shell.LastShellNavigatingEventArgs.Source);
+		}
+
+		[Test]
+		public async Task ChangingShellSectionSetsCorrectNavigationSource()
+		{
+			var shell = new TestShell(
+				CreateShellItem()
+			);
+
+			shell.Items[0].Items.Add(CreateShellSection(shellContentRoute: "item2"));
+
+			await shell.GoToAsync("//item2");
+			Assert.AreEqual(ShellNavigationSource.ShellSectionChanged, shell.LastShellNavigatingEventArgs.Source);
+		}
+
+		[Test]
+		public async Task ChangingShellContentSetsCorrectNavigationSource()
+		{
+			var shell = new TestShell(
+				CreateShellItem()
+			);
+
+			shell.Items[0].Items[0].Items.Add(CreateShellContent(shellContentRoute: "item2"));
+
+			await shell.GoToAsync("//item2");
+			Assert.AreEqual(ShellNavigationSource.ShellContentChanged, shell.LastShellNavigatingEventArgs.Source);
+		}
+
+		[Test]
+		public async Task InsertPageSetsCorrectNavigationSource()
+		{
+			Routing.RegisterRoute("pagemiddle", typeof(ContentPage));
+			Routing.RegisterRoute("page", typeof(ContentPage));
+			var shell = new TestShell(
+				CreateShellItem(shellItemRoute: "item")
+			);
+
+			await shell.GoToAsync("//item/page");
+			await shell.GoToAsync("//item/pagemiddle/page");
+			Assert.AreEqual(ShellNavigationSource.Insert, shell.LastShellNavigatingEventArgs.Source);
+		}
+
+		[Test]
+		public async Task RemovePageSetsCorrectNavigationSource()
+		{
+			Routing.RegisterRoute("pagemiddle", typeof(ContentPage));
+			Routing.RegisterRoute("page", typeof(ContentPage));
+			var shell = new TestShell(
+				CreateShellItem(shellItemRoute: "item")
+			);
+
+			await shell.GoToAsync("//item/pagemiddle/page");
+			await shell.GoToAsync("//item/page");
+			Assert.AreEqual(ShellNavigationSource.Remove, shell.LastShellNavigatingEventArgs.Source);
+		}
+
 		public class NavigationMonitoringTab : Tab
 		{
 			public List<string> NavigationsFired = new List<string>();
