@@ -1667,7 +1667,10 @@ namespace Xamarin.Forms
 			var targetPaths = ShellUriHandler.RetrievePaths(targetUri.PathAndQuery);
 			var currentPaths = ShellUriHandler.RetrievePaths(currentUri.PathAndQuery);
 
-			if (targetPaths.Length < 4 || currentPaths.Length < 4)
+			var targetPathsLength = targetPaths.Length;
+			var currentPathsLength = currentPaths.Length;
+
+			if (targetPathsLength < 4 || currentPathsLength < 4)
 				return ShellNavigationSource.Unknown;
 
 			if (targetPaths[1] != currentPaths[1])
