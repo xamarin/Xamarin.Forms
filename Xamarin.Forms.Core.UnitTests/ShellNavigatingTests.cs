@@ -382,8 +382,28 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var shell = new TestShell(CreateShellItem());
 			await shell.Navigation.PushAsync(new ContentPage());
+			await shell.Navigation.PushAsync(new ContentPage());
 			await shell.Navigation.PopAsync();
 			Assert.AreEqual(ShellNavigationSource.Pop, shell.LastShellNavigatingEventArgs.Source);
+		}
+
+		[Test]
+		public async Task PopToRootSetsCorrectNavigationSource()
+		{
+			var shell = new TestShell(CreateShellItem());
+			await shell.Navigation.PushAsync(new ContentPage());
+			await shell.Navigation.PushAsync(new ContentPage());
+			await shell.Navigation.PopToRootAsync();
+			Assert.AreEqual(ShellNavigationSource.PopToRoot, shell.LastShellNavigatingEventArgs.Source);
+
+			await shell.Navigation.PushAsync(new ContentPage());
+			await shell.Navigation.PushAsync(new ContentPage());
+
+			await shell.Navigation.PopAsync();
+			Assert.AreEqual(ShellNavigationSource.Pop, shell.LastShellNavigatingEventArgs.Source);
+
+			await shell.Navigation.PopAsync();
+			Assert.AreEqual(ShellNavigationSource.PopToRoot, shell.LastShellNavigatingEventArgs.Source);
 		}
 
 		[Test]

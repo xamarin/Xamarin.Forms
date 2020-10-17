@@ -493,8 +493,7 @@ namespace Xamarin.Forms
 			var navigationRequest = ShellUriHandler.GetNavigationRequest(this, state.FullLocation, enableRelativeShellRoutes, shellNavigationParameters: shellNavigationParameters);
 			bool isRelativePopping = ShellUriHandler.IsTargetRelativePop(shellNavigationParameters);
 
-			ShellNavigationSource source = isRelativePopping ? ShellNavigationSource.Pop :
-				CalculateNavigationSource(CurrentState, navigationRequest);
+			ShellNavigationSource source = CalculateNavigationSource(CurrentState, navigationRequest);
 
 			// FIXME: This should not be none, we need to compute the delta and set flags correctly
 			var accept = ProposeNavigation(source, state, this.CurrentState != null, deferredArgs);
@@ -1685,10 +1684,39 @@ namespace Xamarin.Forms
 
 			if(targetPaths.Length < currentPaths.Length)
 			{
+				for (var i = 0; i < targetPaths.Length; i++)
+				{
+					var targetPath = targetPaths[i];
+					if (targetPath != currentPaths[i])
+						break;
+
+					if (i == targetPaths.Length - 1)
+					{
+						if (targetPaths.Length == 4)
+							return ShellNavigationSource.PopToRoot;
+
+						return ShellNavigationSource.Pop;
+					}
+				}
+
 				if (targetPaths[targetPathsLength - 1] == currentPaths[currentPathsLength - 1])
 					return ShellNavigationSource.Remove;
 
+				if (targetPaths.Length == 4)
+					return ShellNavigationSource.PopToRoot;
+
 				return ShellNavigationSource.Pop;
+			}
+			else if(targetPaths.Length > currentPaths.Length)
+			{
+				for (var i = 0; i < currentPaths.Length; i++)
+				{
+					if (targetPaths[i] != currentPaths[i])
+						break;
+
+					if (i == targetPaths.Length - 1)
+						return ShellNavigationSource.Push;
+				}
 			}
 
 			if (targetPaths[targetPathsLength - 1] == currentPaths[currentPathsLength - 1])
