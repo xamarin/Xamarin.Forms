@@ -1682,13 +1682,13 @@ namespace Xamarin.Forms
 
 			if(targetPaths.Length < currentPaths.Length)
 			{
-				if (targetPaths.Last() == currentPaths.Last())
+				if (targetPaths[targetPathsLength - 1] == currentPaths[currentPathsLength - 1])
 					return ShellNavigationSource.Remove;
 
 				return ShellNavigationSource.Pop;
 			}
 
-			if (targetPaths.Last() == currentPaths.Last())
+			if (targetPaths[targetPathsLength - 1] == currentPaths[currentPathsLength - 1])
 				return ShellNavigationSource.Insert;
 
 			return ShellNavigationSource.Push;
