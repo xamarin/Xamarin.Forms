@@ -30,7 +30,7 @@ namespace Xamarin.Forms
 			BindableProperty.Create(nameof(ContentTemplate), typeof(DataTemplate), typeof(ShellContent), null, BindingMode.OneTime);
 
 		internal static readonly BindableProperty QueryAttributesProperty =
-			BindableProperty.CreateAttached("QueryAttributes", typeof(ShellParameter), typeof(ShellContent), defaultValue: null, propertyChanged: OnQueryAttributesPropertyChanged);
+			BindableProperty.CreateAttached("QueryAttributes", typeof(ShellRouteParameter), typeof(ShellContent), defaultValue: null, propertyChanged: OnQueryAttributesPropertyChanged);
 
 		public MenuItemCollection MenuItems => (MenuItemCollection)GetValue(MenuItemsProperty);
 
@@ -71,7 +71,7 @@ namespace Xamarin.Forms
 			if (result == null)
 				throw new InvalidOperationException($"No Content found for {nameof(ShellContent)}, Title:{Title}, Route {Route}");
 
-			if (GetValue(QueryAttributesProperty) is ShellParameter delayedQueryParams)
+			if (GetValue(QueryAttributesProperty) is ShellRouteParameter delayedQueryParams)
 				result.SetValue(QueryAttributesProperty, delayedQueryParams);
 
 			return result;
@@ -245,7 +245,7 @@ namespace Xamarin.Forms
 				}
 		}
 
-		internal override void ApplyQueryAttributes(ShellParameter query)
+		internal override void ApplyQueryAttributes(ShellRouteParameter query)
 		{
 			base.ApplyQueryAttributes(query);
 			SetValue(QueryAttributesProperty, query);
@@ -256,15 +256,17 @@ namespace Xamarin.Forms
 
 		static void OnQueryAttributesPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
-			ApplyQueryAttributes(bindable, newValue as ShellParameter, oldValue as ShellParameter);
+			ApplyQueryAttributes(bindable, newValue as ShellRouteParameter, oldValue as ShellRouteParameter);
 		}
 
-		static void ApplyQueryAttributes(object content, ShellParameter query, ShellParameter oldQuery)
+		static void ApplyQueryAttributes(object content, ShellRouteParameter query, ShellRouteParameter oldQuery)
 		{
-			query = query ?? new ShellParameter();
-			oldQuery = oldQuery ?? new ShellParameter();
+			query = query ?? new ShellRouteParameter();
+			oldQuery = oldQuery ?? new ShellRouteParameter();
 
+#pragma warning disable CS0618 // Type or member is obsolete
 			if (content is IQueryAttributable attributable)
+#pragma warning restore CS0618 // Type or member is obsolete
 				attributable.ApplyQueryAttributes(query.GetStringValues());
 			if (content is IShellParameterReceiver receiver)
 				receiver.ApplyQueryAttributes(query);

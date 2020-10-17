@@ -17,6 +17,6 @@ namespace Xamarin.Forms
 		// This is used to service Navigation.PushAsync style APIs where the user doesn't use routes at all
 		public Page PagePushing { get; set; }
 
-		public ShellParameter Parameters { get; set; }
+		public ShellRouteParameter Parameters { get; set; }
 	}
 }

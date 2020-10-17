@@ -454,17 +454,27 @@ namespace Xamarin.Forms
 			return GoToAsync(deferredArgs.Target, deferredArgs.Animate, false, deferredArgs);
 		}
 
-		public Task GoToAsync(ShellNavigationState state, ShellParameter parameters = null)
+		public Task GoToAsync(ShellNavigationState state)
+		{
+			return GoToAsync(state, null, false);
+		}
+
+		public Task GoToAsync(ShellNavigationState state, bool animate)
+		{
+			return GoToAsync(state, animate, false);
+		}
+
+		public Task GoToAsync(ShellNavigationState state, ShellRouteParameter parameters)
 		{
 			return GoToAsync(state, null, false, parameters: parameters);
 		}
 
-		public Task GoToAsync(ShellNavigationState state, bool animate, ShellParameter parameters = null)
+		public Task GoToAsync(ShellNavigationState state, bool animate, ShellRouteParameter parameters)
 		{
 			return GoToAsync(state, animate, false, parameters: parameters);
 		}
 
-		internal Task GoToAsync(ShellNavigationState state, bool? animate, bool enableRelativeShellRoutes, ShellNavigatingEventArgs deferredArgs = null, ShellParameter parameters = null)
+		internal Task GoToAsync(ShellNavigationState state, bool? animate, bool enableRelativeShellRoutes, ShellNavigatingEventArgs deferredArgs = null, ShellRouteParameter parameters = null)
 		{
 			return GoToAsync(new ShellNavigationParameters
 			{
@@ -485,7 +495,7 @@ namespace Xamarin.Forms
 			bool? animate = shellNavigationParameters.Animated;
 			bool enableRelativeShellRoutes = shellNavigationParameters.EnableRelativeShellRoutes;
 			ShellNavigatingEventArgs deferredArgs = shellNavigationParameters.DeferredArgs;
-			var parameters = shellNavigationParameters.Parameters ?? new ShellParameter();
+			var parameters = shellNavigationParameters.Parameters ?? new ShellRouteParameter();
 
 			if (_deferredEventArgs != null && _deferredEventArgs != deferredArgs)
 			{
@@ -650,7 +660,7 @@ namespace Xamarin.Forms
 				baseShellItem = element?.Parent as BaseShellItem;
 
 			//filter the query to only apply the keys with matching prefix
-			var filteredQuery = new ShellParameter(query.Count);
+			var filteredQuery = new ShellRouteParameter(query.Count);
 			foreach (var q in query)
 			{
 				if (!q.Key.StartsWith(prefix, StringComparison.Ordinal))

@@ -4,18 +4,18 @@ using System.Text;
 
 namespace Xamarin.Forms
 {
-	public class ShellParameter : Dictionary<string, object>
+	public class ShellRouteParameter : Dictionary<string, object>
 	{
-		public ShellParameter()
+		public ShellRouteParameter()
 		{
 		}
 
-		public ShellParameter(int count)
+		public ShellRouteParameter(int count)
 			: base(count)
 		{
 		}
 
-		public void Merge(Dictionary<string, string> input)
+		internal void Merge(Dictionary<string, string> input)
 		{
 			if (input == null || input.Count == 0)
 				return;
@@ -35,7 +35,7 @@ namespace Xamarin.Forms
 		}
 
 
-		public static Dictionary<string, string> GetStringValues(this ShellParameter parameter)
+		public static Dictionary<string, string> GetStringValues(this ShellRouteParameter parameter)
 		{
 			var dic = new Dictionary<string, string>();
 

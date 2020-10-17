@@ -282,7 +282,7 @@ namespace Xamarin.Forms
 		bool IFlowDirectionController.ApplyEffectiveFlowDirectionToChildContainer => true;
 		double IFlowDirectionController.Width => (Parent as VisualElement)?.Width ?? 0;
 
-		internal virtual void ApplyQueryAttributes(ShellParameter query)
+		internal virtual void ApplyQueryAttributes(ShellRouteParameter query)
 		{
 		}
 
@@ -488,6 +488,6 @@ namespace Xamarin.Forms
 
 	public interface IShellParameterReceiver
 	{
-		void ApplyQueryAttributes(ShellParameter query);
+		void ApplyQueryAttributes(ShellRouteParameter query);
 	}
 }
