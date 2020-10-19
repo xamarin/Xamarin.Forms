@@ -18,7 +18,7 @@ namespace Xamarin.Platform.Handlers
 			nativeView.AddTarget(OnTouchUpControlEvent, UIControlEvent.TouchUpInside | UIControlEvent.TouchUpOutside);
 		}
 
-		protected override void TearDownNativeView(UISlider nativeView)
+		protected override void DisconnectHandler(UISlider nativeView)
 		{
 			nativeView.ValueChanged -= OnControlValueChanged;
 			nativeView.RemoveTarget(OnTouchDownControlEvent, UIControlEvent.TouchDown);

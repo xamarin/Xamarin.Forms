@@ -25,7 +25,7 @@ namespace Xamarin.Platform.Handlers
 			nativeView.SetOnSeekBarChangeListener(ChangeListener);
 		}
 
-		protected override void TearDownNativeView(SeekBar nativeView)
+		protected override void DisconnectHandler(SeekBar nativeView)
 		{
 			ChangeListener.Handler = null;
 			nativeView.SetOnSeekBarChangeListener(null);

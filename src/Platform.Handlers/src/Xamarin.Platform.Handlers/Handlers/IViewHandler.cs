@@ -6,7 +6,7 @@ namespace Xamarin.Platform
 	{
 		void SetVirtualView(IView view);
 		void UpdateValue(string property);
-		void TearDown();
+		void DisconnectHandler();
 		object? NativeView { get; }
 		bool HasContainer { get; set; }
 		SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint);

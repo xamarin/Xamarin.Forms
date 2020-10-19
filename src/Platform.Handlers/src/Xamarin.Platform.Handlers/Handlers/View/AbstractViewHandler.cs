@@ -43,7 +43,6 @@ namespace Xamarin.Platform.Handlers
 
 		public object? NativeView => TypedNativeView;
 
-
 		public virtual void SetVirtualView(IView view)
 		{
 			_ = view ?? throw new ArgumentNullException(nameof(view));
@@ -95,15 +94,15 @@ namespace Xamarin.Platform.Handlers
 
 		}
 
-		protected virtual void TearDownNativeView(TNativeView nativeView)
+		protected virtual void DisconnectHandler(TNativeView nativeView)
 		{
 
 		}
 
-		void IViewHandler.TearDown()
+		void IViewHandler.DisconnectHandler()
 		{
-			if (TypedNativeView != null)
-				TearDownNativeView(TypedNativeView);
+			if (TypedNativeView != null && VirtualView != null)
+				DisconnectHandler(TypedNativeView);
 
 			if (VirtualView != null)
 				VirtualView.Handler = null;
