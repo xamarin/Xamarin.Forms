@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+             xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+             x:Class="Xamarin.Forms.Controls.Issues.Issue6761">
+    <StackLayout>
+        <StackLayout Orientation="Horizontal">
+            <Button AutomationId="Issue6761Refresh" Clicked="RefreshItems" Text="Refresh" BackgroundColor="Cyan"/>
+            <Button AutomationId="Issue6761GC" Clicked="GCClick" Text="GC" BackgroundColor="Cyan"/>
+        </StackLayout>
+        <Label Text="Scroll the list, tap Refresh button a few times." />
+        <Label AutomationId="Issue6761Label" Text="{Binding DisposeString}"/>
+        <Label AutomationId="Issue6761Mem" Text="{Binding TotalMemory}"/>
+        <StackLayout Orientation="Horizontal">
+            <ListView
+                ItemsSource="{Binding ItemGroups}"
+                IsGroupingEnabled="True"
+                GroupDisplayBinding="{Binding GroupName}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Margin="20">
+                                <Label Text="{Binding Name}" />
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <ListView
+                ItemsSource="{Binding ItemGroups}"
+                IsGroupingEnabled="True">
+                <ListView.GroupHeaderTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Padding="15, 7, 15, 7" Orientation="Horizontal" BackgroundColor="#ffdab0">
+
+                                <Frame
+                                CornerRadius="14"
+                                BackgroundColor="#cf7806"
+                                Padding="2"
+                                Margin="0"
+                                HasShadow="false" >
+
+                                    <Frame
+                                    CornerRadius="12"
+                                    BackgroundColor="#ffdab0"
+                                    Padding="0"
+                                    Margin="0"
+                                    HasShadow="false" >
+
+                                        <Label
+                                        Text="{Binding GroupName}"
+                                        Margin="10, 5, 10, 5"
+                                        TextColor="#cf7806"
+                                        HorizontalTextAlignment="Center"
+                                        HorizontalOptions="Center"
+                                        VerticalTextAlignment="Center"
+                                        VerticalOptions="Center" />
+                                    </Frame>
+                                </Frame>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.GroupHeaderTemplate>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Margin="20">
+                                <Label Text="{Binding Name}" />
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+    </StackLayout>
+</controls:TestContentPage>
