@@ -19,7 +19,7 @@ namespace Xamarin.Platform.Handlers
 
 		protected override SeekBar CreateNativeView() => new SeekBar(Context);
 
-		protected override void SetupNativeView(SeekBar nativeView)
+		protected override void ConnectHandler(SeekBar nativeView)
 		{
 			ChangeListener.Handler = this;
 			nativeView.SetOnSeekBarChangeListener(ChangeListener);

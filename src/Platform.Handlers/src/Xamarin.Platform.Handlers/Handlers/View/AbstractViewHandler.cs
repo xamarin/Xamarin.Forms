@@ -57,7 +57,7 @@ namespace Xamarin.Platform.Handlers
 
 			if(setupNativeView && TypedNativeView != null)
 			{
-				SetupNativeView(TypedNativeView);
+				ConnectHandler(TypedNativeView);
 			}
 
 			if (!HasSetDefaults)
@@ -89,7 +89,7 @@ namespace Xamarin.Platform.Handlers
 			_mapper.UpdateProperties(this, VirtualView);
 		}
 
-		protected virtual void SetupNativeView(TNativeView nativeView)
+		protected virtual void ConnectHandler(TNativeView nativeView)
 		{
 
 		}

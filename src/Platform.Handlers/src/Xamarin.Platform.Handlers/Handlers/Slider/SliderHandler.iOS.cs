@@ -11,7 +11,7 @@ namespace Xamarin.Platform.Handlers
 
 		protected override UISlider CreateNativeView() => new UISlider();
 
-		protected override void SetupNativeView(UISlider nativeView)
+		protected override void ConnectHandler(UISlider nativeView)
 		{
 			nativeView.ValueChanged += OnControlValueChanged;
 			nativeView.AddTarget(OnTouchDownControlEvent, UIControlEvent.TouchDown);
