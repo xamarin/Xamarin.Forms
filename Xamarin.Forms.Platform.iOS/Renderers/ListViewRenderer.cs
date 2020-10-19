@@ -1161,7 +1161,7 @@ namespace Xamarin.Forms.Platform.iOS
 				header.Cell = cell;
 
 				var renderer = (CellRenderer)Internals.Registrar.Registered.GetHandlerForObject<IRegisterable>(cell);
-				header.SetTableViewCell(renderer.GetCell(cell, header.GetTableViewCell(), tableView));
+				header.SetTableViewCell(renderer.GetCell(cell, null, tableView));
 
 				return header;
 			}
@@ -1518,11 +1518,6 @@ namespace Xamarin.Forms.Platform.iOS
 			_tableViewCell?.RemoveFromSuperview();
 			_tableViewCell = value;
 			AddSubview(value);
-		}
-
-		public UITableViewCell GetTableViewCell()
-		{
-			return _tableViewCell;
 		}
 
 		public override void LayoutSubviews()
