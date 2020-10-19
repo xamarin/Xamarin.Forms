@@ -1284,9 +1284,13 @@ namespace Xamarin.Forms
 		internal void HandleNavigated(ShellNavigatedEventArgs args)
 		{
 			if (_accumulateNavigatedEvents)
-				_accumulatedEvent = args;
+			{
+				if(_accumulatedEvent == null)
+					_accumulatedEvent = args;
+			}
 			else
 			{
+				_accumulatedEvent = null;
 				BaseShellItem baseShellItem = CurrentItem?.CurrentItem?.CurrentItem;
 
 				if (baseShellItem != null)
@@ -1657,7 +1661,7 @@ namespace Xamarin.Forms
 				return ShellNavigationSource.Push;
 
 			if (current == null)
-				return ShellNavigationSource.Unknown;
+				return ShellNavigationSource.ShellItemChanged;
 
 			var targetUri = ShellUriHandler.ConvertToStandardFormat(this, request.Request.FullUri);
 			var currentUri = ShellUriHandler.ConvertToStandardFormat(this, current.FullLocation);

@@ -344,6 +344,7 @@ namespace Xamarin.Forms
 					List<Page> pagesToInsert = new List<Page>();
 					for (int i = 0; i < globalRoutes.Count; i++)
 					{
+						bool isLast = i == globalRoutes.Count - 1;
 						int navIndex = i + 1;
 						// Routes match so don't do anything
 						if (navIndex < _navStack.Count && Routing.GetRoute(_navStack[navIndex]) == globalRoutes[i])
@@ -356,6 +357,10 @@ namespace Xamarin.Forms
 						{
 							await Navigation.PushModalAsync(page, IsNavigationAnimated(page));
 							break;
+						}
+						else if(!isLast && navIndex < _navStack.Count)
+						{
+							Navigation.InsertPageBefore(page, _navStack[navIndex]);
 						}
 						else
 						{
@@ -972,7 +977,7 @@ namespace Xamarin.Forms
 
 			if (shellSection.Parent?.Parent is IShellController shell && shellSection.IsVisibleSection)
 			{
-				shell.UpdateCurrentState(ShellNavigationSource.ShellSectionChanged);
+				shell.UpdateCurrentState(ShellNavigationSource.ShellContentChanged);
 			}
 
 			shellSection.SendStructureChanged();
