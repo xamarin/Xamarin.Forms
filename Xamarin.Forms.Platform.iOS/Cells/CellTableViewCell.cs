@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		Cell _cell;
 
-		public Action<object, PropertyChangedEventArgs> PropertyChanged;
+		public event PropertyChangedEventHandler PropertyChanged;
 
 		bool _disposed;
 
