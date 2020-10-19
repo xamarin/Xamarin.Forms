@@ -1679,7 +1679,7 @@ namespace Xamarin.Forms
 			if (targetPaths[3] != currentPaths[3])
 				return ShellNavigationSource.ShellContentChanged;
 
-			if (targetPathsLength == currentPaths.Length)
+			if (targetPathsLength == currentPathsLength)
 				return ShellNavigationSource.Unknown;
 
 			if(targetPathsLength < currentPathsLength)
@@ -1702,7 +1702,7 @@ namespace Xamarin.Forms
 				if (targetPaths[targetPathsLength - 1] == currentPaths[currentPathsLength - 1])
 					return ShellNavigationSource.Remove;
 
-				if (targetPaths.Length == 4)
+				if (targetPathsLength == 4)
 					return ShellNavigationSource.PopToRoot;
 
 				return ShellNavigationSource.Pop;
