@@ -495,7 +495,6 @@ namespace Xamarin.Forms
 
 			ShellNavigationSource source = CalculateNavigationSource(CurrentState, navigationRequest);
 
-			// FIXME: This should not be none, we need to compute the delta and set flags correctly
 			var accept = ProposeNavigation(source, state, this.CurrentState != null, deferredArgs);
 
 			if (deferredArgs == null && _deferredEventArgs != null)
