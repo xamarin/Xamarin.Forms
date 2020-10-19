@@ -1679,20 +1679,20 @@ namespace Xamarin.Forms
 			if (targetPaths[3] != currentPaths[3])
 				return ShellNavigationSource.ShellContentChanged;
 
-			if (targetPaths.Length == currentPaths.Length)
+			if (targetPathsLength == currentPaths.Length)
 				return ShellNavigationSource.Unknown;
 
-			if(targetPaths.Length < currentPaths.Length)
+			if(targetPathsLength < currentPathsLength)
 			{
-				for (var i = 0; i < targetPaths.Length; i++)
+				for (var i = 0; i < targetPathsLength; i++)
 				{
 					var targetPath = targetPaths[i];
 					if (targetPath != currentPaths[i])
 						break;
 
-					if (i == targetPaths.Length - 1)
+					if (i == targetPathsLength - 1)
 					{
-						if (targetPaths.Length == 4)
+						if (targetPathsLength == 4)
 							return ShellNavigationSource.PopToRoot;
 
 						return ShellNavigationSource.Pop;
@@ -1707,14 +1707,14 @@ namespace Xamarin.Forms
 
 				return ShellNavigationSource.Pop;
 			}
-			else if(targetPaths.Length > currentPaths.Length)
+			else if(targetPathsLength > currentPathsLength)
 			{
-				for (var i = 0; i < currentPaths.Length; i++)
+				for (var i = 0; i < currentPathsLength; i++)
 				{
 					if (targetPaths[i] != currentPaths[i])
 						break;
 
-					if (i == targetPaths.Length - 1)
+					if (i == targetPathsLength - 1)
 						return ShellNavigationSource.Push;
 				}
 			}
