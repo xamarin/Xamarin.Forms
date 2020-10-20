@@ -42,13 +42,6 @@ namespace Xamarin.Forms.Maps.Android
 			AutoPackage = false;
 		}
 
-		[Obsolete("This constructor is obsolete as of version 2.5. Please use MapRenderer(Context) instead.")]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public MapRenderer()
-		{
-			AutoPackage = false;
-		}
-
 		protected Map Map => Element;
 
 		protected GoogleMap NativeMap;
