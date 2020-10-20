@@ -1,4 +1,5 @@
 ﻿using Xamarin.Forms;
+using Xamarin.Platform;
 using Xamarin.Platform.Handlers;
 using RegistrarHandlers = Xamarin.Platform.Registrar;
 

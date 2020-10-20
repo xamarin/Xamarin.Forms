@@ -7,24 +7,18 @@ namespace Xamarin.Platform
 {
 	public static class SliderExtensions
 	{
-		public static void UpdateMinimum(this SeekBar seekBar, ISlider slider)
-		{
-			if (NativeVersion.Supports(NativeApis.SeekBarSetMin))
-			{
-				seekBar.Min = (int)slider.Minimum;
-			}
-		}
+		static double Min;
+		static double Max;
 
-		public static void UpdateMaximum(this SeekBar seekBar, ISlider slider) =>
-			seekBar.Max = (int)slider.Maximum;
+		public static void UpdateMinimum(this SeekBar seekBar, ISlider slider) => Min = slider.Minimum;
+
+		public static void UpdateMaximum(this SeekBar seekBar, ISlider slider) => Max = slider.Maximum;
 
 		public static void UpdateValue(this SeekBar seekBar, ISlider slider)
 		{
-			var min = slider.Minimum;
-			var max = slider.Maximum;
 			var value = slider.Value;
 
-			seekBar.Progress = (int)((value - min) / (max - min) * 1000.0);
+			seekBar.Progress = (int)((value - Min) / (Max - Min) * 1000.0);
 		}
 
 		public static void UpdateMinimumTrackColor(this SeekBar seekBar, ISlider slider) =>

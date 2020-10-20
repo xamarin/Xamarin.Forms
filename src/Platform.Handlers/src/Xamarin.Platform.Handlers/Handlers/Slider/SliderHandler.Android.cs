@@ -14,7 +14,14 @@ namespace Xamarin.Platform.Handlers
 
 		SeekBarChangeListener ChangeListener { get; } = new SeekBarChangeListener();
 
-		protected override SeekBar CreateNativeView() => new SeekBar(Context);
+		protected override SeekBar CreateNativeView()
+		{
+			return new SeekBar(Context)
+			{
+				DuplicateParentStateEnabled = false,
+				Max = 1000
+			};
+		}
 
 		protected override void ConnectHandler(SeekBar nativeView)
 		{
@@ -81,10 +88,15 @@ namespace Xamarin.Platform.Handlers
 
 		void OnProgressChanged(SeekBar seekBar, int progress, bool fromUser)
 		{
-			if (VirtualView == null)
+			if (VirtualView == null || !fromUser)
 				return;
 
-			VirtualView.Value = progress;
+			var min = VirtualView.Minimum;
+			var max = VirtualView.Maximum;
+
+			var value = min + (max - min) * (progress / 1000.0);
+
+			VirtualView.Value = value;
 		}
 
 		void OnStartTrackingTouch(SeekBar seekBar) =>
