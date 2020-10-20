@@ -179,6 +179,8 @@ namespace Xamarin.Forms.Platform.Android
 
 	public class TimePickerRenderer : TimePickerRendererBase<EditText>
 	{
+		TextColorSwitcher _textColorSwitcher;
+
 		public TimePickerRenderer(Context context) : base(context)
 		{
 		}
