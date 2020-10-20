@@ -4,7 +4,7 @@ namespace Xamarin.Platform.Handlers
 {
 	public partial class LayoutHandler : AbstractViewHandler<ILayout, LayoutView>
 	{
-		protected override LayoutView CreateView()
+		protected override LayoutView CreateNativeView()
 		{
 			if (VirtualView == null)
 			{
@@ -20,9 +20,9 @@ namespace Xamarin.Platform.Handlers
 			return view;
 		}
 
-		public override void SetView(IView view)
+		public override void SetVirtualView(IView view)
 		{
-			base.SetView(view);
+			base.SetVirtualView(view);
 
 			_ = TypedNativeView ?? throw new InvalidOperationException($"{nameof(TypedNativeView)} should have been set by base class.");
 			_ = VirtualView ?? throw new InvalidOperationException($"{nameof(VirtualView)} should have been set by base class.");
@@ -34,22 +34,6 @@ namespace Xamarin.Platform.Handlers
 			{
 				TypedNativeView.AddSubview(child.ToNative());
 			}
-		}
-
-		public override void TearDown()
-		{
-			if (TypedNativeView != null)
-			{
-				TypedNativeView.CrossPlatformArrange = null;
-				TypedNativeView.CrossPlatformMeasure = null;
-
-				foreach (var subview in TypedNativeView.Subviews)
-				{
-					subview.RemoveFromSuperview();
-				}
-			}
-
-			base.TearDown();
 		}
 	}
 }

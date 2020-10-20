@@ -23,7 +23,7 @@ namespace Xamarin.Platform
 				view.Handler = handler;
 			}
 
-			handler.SetView(view);
+			handler.SetVirtualView(view);
 
 			if (!(handler.NativeView is AView result))
 			{

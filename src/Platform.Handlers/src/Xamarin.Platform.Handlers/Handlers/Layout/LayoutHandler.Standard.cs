@@ -6,6 +6,6 @@ namespace Xamarin.Platform.Handlers
 {
 	public partial class LayoutHandler : AbstractViewHandler<ILayout, object>
 	{
-		protected override object CreateView() => throw new NotImplementedException();
+		protected override object CreateNativeView() => throw new NotImplementedException();
 	}
 }

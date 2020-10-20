@@ -18,13 +18,11 @@ namespace Xamarin.Platform.Handlers
 		public static PropertyMapper<IView> ViewMapper = new PropertyMapper<IView>
 		{
 			[nameof(IView.BackgroundColor)] = MapBackgroundColor,
-			[nameof(IView.IsEnabled)] = MapIsEnabled,
-			Actions = {
-				[nameof(IView.Frame)] = MapPropertyFrame,
-			}
+			[nameof(IView.Frame)] = MapFrame,
+			[nameof(IView.IsEnabled)] = MapIsEnabled
 		};
 
-		public static void MapPropertyFrame(IViewHandler handler, IView view)
+		public static void MapFrame(IViewHandler handler, IView view)
 		{
 			CheckParameters(handler, view);
 			handler.SetFrame(view.Frame);
