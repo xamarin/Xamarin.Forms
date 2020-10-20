@@ -77,8 +77,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		[Export("navigationBar:shouldPopItem:")]
 		[Internals.Preserve(Conditional = true)]
-		public bool ShouldPopItem(UINavigationBar navigationBar, UINavigationItem item)
-		{	
+		public bool ShouldPopItem(UINavigationBar navigationBar, UINavigationItem item) =>
+			SendPop();
+
+		internal bool SendPop()
+		{ 
 			// this means the pop is already done, nothing we can do
 			if (ViewControllers.Length < NavigationBar.Items.Length)
 				return true;
@@ -421,7 +424,9 @@ namespace Xamarin.Forms.Platform.iOS
 					OnPopRequested(e);
 				}
 
-				ViewControllers = ViewControllers.Remove(viewController);
+				if(ViewControllers.Contains(viewController))
+					ViewControllers = ViewControllers.Remove(viewController);
+
 				DisposePage(page);
 			}
 		}
