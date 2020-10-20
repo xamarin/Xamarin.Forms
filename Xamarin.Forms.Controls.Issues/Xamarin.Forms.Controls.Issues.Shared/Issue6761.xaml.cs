@@ -18,30 +18,31 @@ namespace Xamarin.Forms.Controls.Issues
 #if APP
 			InitializeComponent();
 #endif
-			BindingContext = viewModel = new ViewModelIssue6761();
+			BindingContext = _viewModel = new ViewModelIssue6761();
 
 		}
+		
 		protected override void Init()
-		{
+        {
+        }
 
-		}
 		int _count;
-		ViewModelIssue6761 viewModel;
+		ViewModelIssue6761 _viewModel;
 		IList<WeakReference<ModelIssue6761Group>> _weakList = new List<WeakReference<ModelIssue6761Group>>();
 		private void RefreshItems(object sender, EventArgs e)
 		{
-			foreach (var item in this.viewModel.ItemGroups)
+			foreach (var item in this._viewModel.ItemGroups)
 			{
 				item.Clear();
 			}
-			this.viewModel.ItemGroups.Clear();
+			this._viewModel.ItemGroups.Clear();
 
 			for (int i = 0; i < 30; i++)
 			{
 				_count++;
 				var g1 = new ModelIssue6761Group("Group " + _count);
 				_weakList.Add(new WeakReference<ModelIssue6761Group>(g1));
-				this.viewModel.ItemGroups.Add(g1);
+				this._viewModel.ItemGroups.Add(g1);
 			}
 
 			CleanAndReport();
@@ -58,10 +59,10 @@ namespace Xamarin.Forms.Controls.Issues
 			GC.Collect();
 
 			CleanWeakList(_weakList);
-			viewModel.DisposeString = $"{_weakList.Count} object(s) alive";
+			_viewModel.DisposeString = $"{_weakList.Count} object(s) alive";
 
 			string report = $"MEMORY:{GC.GetTotalMemory(true)}";
-			viewModel.TotalMemory = report;
+			_viewModel.TotalMemory = report;
 		}
 
 		private void CleanWeakList(IList<WeakReference<ModelIssue6761Group>> weakList)
