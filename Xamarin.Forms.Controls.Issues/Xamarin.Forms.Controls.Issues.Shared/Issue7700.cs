@@ -66,11 +66,19 @@ namespace Xamarin.Forms.Controls.Issues
 			var button2 = new Button() { Text = Add2Label, AutomationId = Add2 };
 			button2.Clicked += Button2Clicked;
 
-			var layout = new StackLayout { Children = { instructions, button1, button2 } };
+			var button3 = new Button { Text = "Go back" };
+			button3.Clicked += Button3OnClicked;
+
+			var layout = new StackLayout { Children = { instructions, button1, button2, button3 } };
 
 			page.Content = layout;
 
 			return page;
+		}
+
+		void Button3OnClicked(object sender, EventArgs e)
+		{
+			Navigation.PopModalAsync();
 		}
 
 		void Button1Clicked(object sender, EventArgs e)
