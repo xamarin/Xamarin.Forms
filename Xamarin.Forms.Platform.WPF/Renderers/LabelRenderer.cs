@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Media;
 using Xamarin.Forms.Platform.WPF.Extensions;
 using WThickness = System.Windows.Thickness;
@@ -62,7 +60,9 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateHorizontalTextAlign();
 			else if (e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
 				UpdateVerticalTextAlign();
-			else if (e.PropertyName == Label.FontProperty.PropertyName)
+			else if (e.PropertyName == Label.FontAttributesProperty.PropertyName ||
+				e.PropertyName == Label.FontFamilyProperty.PropertyName ||
+				e.PropertyName == Label.FontSizeProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode();
@@ -147,11 +147,11 @@ namespace Xamarin.Forms.Platform.WPF
 			if (label == null || (label.IsDefault() && !_fontApplied))
 				return;
 
-#pragma warning disable 618
-			Font fontToApply = label.IsDefault() ? Font.SystemFontOfSize(NamedSize.Medium) : label.Font;
-#pragma warning restore 618
+			Control.FontFamily = label.FontFamily.ToFontFamily("FontFamilyNormal");
+			Control.FontSize = label.FontSize;
+			Control.FontWeight = label.FontAttributes.HasFlag(FontAttributes.Bold) ? FontWeights.Bold : FontWeights.Normal;
+			Control.FontStyle = label.FontAttributes.HasFlag(FontAttributes.Italic) ? FontStyles.Italic : FontStyles.Normal;
 
-			Control.ApplyFont(fontToApply);
 			_fontApplied = true;
 		}
 

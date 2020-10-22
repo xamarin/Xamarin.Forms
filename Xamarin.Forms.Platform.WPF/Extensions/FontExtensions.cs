@@ -2,14 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing.Text;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Media;
-using Xamarin.Forms.Core;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.WPF
@@ -33,40 +28,6 @@ namespace Xamarin.Forms.Platform.WPF
 				self.FontStyle = FontStyles.Normal;
 
 			if (fontAttributes.HasFlag(FontAttributes.Bold))
-				self.FontWeight = FontWeights.Bold;
-			else
-				self.FontWeight = FontWeights.Normal;
-		}
-
-		public static void ApplyFont(this TextBlock self, Font font)
-		{
-			self.FontSize = font.UseNamedSize ? GetFontSize(font.NamedSize) : font.FontSize;
-
-			self.FontFamily = font.FontFamily.ToFontFamily("FontFamilyNormal");
-
-			if (font.FontAttributes.HasFlag(FontAttributes.Italic))
-				self.FontStyle = FontStyles.Italic;
-			else
-				self.FontStyle = FontStyles.Normal;
-
-			if (font.FontAttributes.HasFlag(FontAttributes.Bold))
-				self.FontWeight = FontWeights.Bold;
-			else
-				self.FontWeight = FontWeights.Normal;
-		}
-
-		public static void ApplyFont(this TextElement self, Font font)
-		{
-			self.FontSize = font.UseNamedSize ? GetFontSize(font.NamedSize) : font.FontSize;
-
-			self.FontFamily = font.FontFamily.ToFontFamily("FontFamilyNormal");
-
-			if (font.FontAttributes.HasFlag(FontAttributes.Italic))
-				self.FontStyle = FontStyles.Italic;
-			else
-				self.FontStyle = FontStyles.Normal;
-
-			if (font.FontAttributes.HasFlag(FontAttributes.Bold))
 				self.FontWeight = FontWeights.Bold;
 			else
 				self.FontWeight = FontWeights.Normal;
