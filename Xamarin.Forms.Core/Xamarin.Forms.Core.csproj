@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;netstandard1.0</TargetFrameworks>
+		<DocumentationFile>$(OutputPath)Xamarin.Forms.Core.xml</DocumentationFile>
+		<NoWarn>CS1573;CS1591</NoWarn>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
 	</PropertyGroup>
