@@ -1,16 +1,16 @@
+using System;
 using ElmSharp;
 using ElmSharp.Wearable;
-using ELayout = ElmSharp.Layout;
-using EColor = ElmSharp.Color;
+using static Xamarin.Forms.Platform.Tizen.Native.TableView;
 using EButton = ElmSharp.Button;
+using EColor = ElmSharp.Color;
 using EEntry = ElmSharp.Entry;
 using ELabel = ElmSharp.Label;
-using ESlider = ElmSharp.Slider;
-using ESize = ElmSharp.Size;
-using EToolbarItem = ElmSharp.ToolbarItem;
+using ELayout = ElmSharp.Layout;
 using EProgressBar = ElmSharp.ProgressBar;
-using static Xamarin.Forms.Platform.Tizen.Native.TableView;
-using System;
+using ESize = ElmSharp.Size;
+using ESlider = ElmSharp.Slider;
+using EToolbarItem = ElmSharp.ToolbarItem;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -235,6 +235,17 @@ namespace Xamarin.Forms.Platform.Tizen
 			return button;
 		}
 
+		public static EButton SetWatchTextStyle(this EButton button)
+		{
+			if (Device.Idiom != TargetIdiom.Watch)
+			{
+				Log.Error($"ToWatchPopupRightStyleButton is only supported on TargetIdiom.Watch : {0}", Device.Idiom);
+				return button;
+			}
+			button.Style = ThemeConstants.Button.Styles.Watch.Text;
+			return button;
+		}
+
 		public static bool SetIconPart(this EButton button, EvasObject content, bool preserveOldContent = false)
 		{
 			return button.SetPartContent(ThemeConstants.Button.Parts.Icon, content, preserveOldContent);
@@ -273,6 +284,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			button.SetPartColor(ThemeConstants.Button.ColorClass.Effect, color);
 			button.SetPartColor(ThemeConstants.Button.ColorClass.EffectPressed, color);
 		}
+
 		#endregion
 
 		#region Popup
@@ -371,7 +383,7 @@ namespace Xamarin.Forms.Platform.Tizen
 						ThemeConstants.Check.ColorClass.Watch.CheckOn,
 						ThemeConstants.Check.ColorClass.Watch.CheckOnPressed
 					};
-				}	
+				}
 			}
 			else if (Device.Idiom == TargetIdiom.TV)
 			{
@@ -403,7 +415,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		public static string[] GetColorEdjeParts(this Check check)
 		{
 			string[] ret = check.GetColorParts();
-			
+
 			for (int i = 0; i < ret.Length; i++)
 			{
 				ret[i] = check.ClassName.ToLower().Replace("elm_", "") + "/" + ret[i];
@@ -672,7 +684,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		public static string GetImageCellRendererStyle()
 		{
 			return Device.Idiom == TargetIdiom.Watch ? ThemeConstants.GenItemClass.Styles.Watch.Icon2Text : Device.Idiom == TargetIdiom.TV ? ThemeConstants.GenItemClass.Styles.Default : ThemeConstants.GenItemClass.Styles.DoubleLabel;
-		} 
+		}
 
 		public static string GetImagePart(this ImageCellRenderer imageCell)
 		{

@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Android.Content;
 using Android.Graphics.Drawables;
-using AndroidX.AppCompat.Widget;
 using Android.Views;
+using AndroidX.AppCompat.Widget;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
@@ -76,8 +76,6 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateContent();
 				UpdateIsSwipeEnabled();
 				UpdateSwipeTransitionMode();
-				UpdateBackgroundColor();
-				UpdateBackground();
 			}
 
 			if (e.OldElement != null)
@@ -100,10 +98,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.PropertyName == ContentView.ContentProperty.PropertyName)
 				UpdateContent();
-			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
-				UpdateBackgroundColor();
-			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
-				UpdateBackground();
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateIsSwipeEnabled();
 			else if (e.PropertyName == Specifics.SwipeTransitionModeProperty.PropertyName)
@@ -137,29 +131,19 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void UpdateBackgroundColor()
 		{
 			if (Element.BackgroundColor != Color.Default)
-			{
-				var backgroundColor = Element.BackgroundColor.ToAndroid();
-
-				SetBackgroundColor(backgroundColor);
-
-				if (Element.Content == null || (Element.Content != null && Element.Content.BackgroundColor == Color.Default))
-					_contentView?.SetBackgroundColor(backgroundColor);
-			}
+				SetBackgroundColor(Element.BackgroundColor.ToAndroid());
 			else
-				Control.SetWindowBackground();
-
-			if (_contentView != null && _contentView.Background == null)
-				_contentView?.SetWindowBackground();
+				Control?.SetWindowBackground();
 		}
 
 		protected override void UpdateBackground()
 		{
 			Brush background = Element.Background;
 
-			this.UpdateBackground(background);
+			if (Brush.IsNullOrEmpty(background))
+				return;
 
-			if (Element.Content == null)
-				_contentView?.UpdateBackground(background);
+			this.UpdateBackground(background);
 		}
 
 		protected override void OnAttachedToWindow()
@@ -784,23 +768,27 @@ namespace Xamarin.Forms.Platform.Android
 
 			_ = this.ApplyDrawableAsync(formsSwipeItem, MenuItem.IconImageSourceProperty, Context, drawable =>
 			{
-				int drawableWidth = drawable.IntrinsicWidth;
-				int drawableHeight = drawable.IntrinsicHeight;
-
-				if (drawableWidth > drawableHeight)
+				if (drawable != null)
 				{
-					var iconWidth = iconSize;
-					var iconHeight = drawableHeight * iconWidth / drawableWidth;
-					drawable.SetBounds(0, 0, iconWidth, iconHeight);
-				}
-				else
-				{
-					var iconHeight = iconSize;
-					var iconWidth = drawableWidth * iconHeight / drawableHeight;
-					drawable.SetBounds(0, 0, iconWidth, iconHeight);
+					int drawableWidth = drawable.IntrinsicWidth;
+					int drawableHeight = drawable.IntrinsicHeight;
+
+					if (drawableWidth > drawableHeight)
+					{
+						var iconWidth = iconSize;
+						var iconHeight = drawableHeight * iconWidth / drawableWidth;
+						drawable.SetBounds(0, 0, iconWidth, iconHeight);
+					}
+					else
+					{
+						var iconHeight = iconSize;
+						var iconWidth = drawableWidth * iconHeight / drawableHeight;
+						drawable.SetBounds(0, 0, iconWidth, iconHeight);
+					}
+
+					drawable.SetColorFilter(textColor.ToAndroid(), FilterMode.SrcAtop);
 				}
 
-				drawable.SetColorFilter(textColor.ToAndroid(), FilterMode.SrcAtop);
 				swipeButton.SetCompoundDrawables(null, drawable, null, null);
 			});
 

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
 using Android.Views;
+using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 using Object = Java.Lang.Object;
-using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			renderer.View.SetCameraDistance(3600);
 
-			if(!_context.IsDesignerContext())
+			if (!_context.IsDesignerContext())
 			{
 				_attachTracker = AttachTracker.Instance;
 				renderer.View.AddOnAttachStateChangeListener(_attachTracker);
@@ -336,6 +336,9 @@ namespace Xamarin.Forms.Platform.Android
 				aview.Visibility = ViewStates.Visible;
 			if (!view.IsVisible && aview.Visibility != ViewStates.Gone)
 				aview.Visibility = ViewStates.Gone;
+
+			aview.Invalidate();
+			aview.RequestLayout();
 		}
 
 		void UpdateNativeView(object sender, EventArgs e)
