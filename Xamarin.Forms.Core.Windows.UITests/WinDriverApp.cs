@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -132,12 +133,29 @@ namespace Xamarin.Forms.Core.UITests
 
 		public void DragAndDrop(Func<AppQuery, AppQuery> from, Func<AppQuery, AppQuery> to)
 		{
-			throw new NotImplementedException();
+			DragAndDrop(
+				FindFirstElement(WinQuery.FromQuery(from)),
+				FindFirstElement(WinQuery.FromQuery(to))
+			);
 		}
 
 		public void DragAndDrop(string from, string to)
 		{
-			throw new NotImplementedException();
+			DragAndDrop(
+				FindFirstElement(WinQuery.FromMarked(from)), 
+				FindFirstElement(WinQuery.FromMarked(to))
+			);
+		}
+
+		public void DragAndDrop(WindowsElement fromElement, WindowsElement toElement)
+		{
+			//Action Drag and Drop doesn't appear to work
+			// https://github.com/microsoft/WinAppDriver/issues/1223
+
+			var action = new Actions(_session);
+			action.MoveToElement(fromElement).Build().Perform();
+			action.ClickAndHold(fromElement).MoveByOffset(toElement.Location.X, toElement.Location.Y).Build().Perform();
+			action.Release().Perform();
 		}
 
 		public void DragCoordinates(float fromX, float fromY, float toX, float toY)
@@ -676,11 +694,11 @@ namespace Xamarin.Forms.Core.UITests
 					actions.DoubleClick();
 					break;
 				case ClickType.ContextClick:
-					actions.ContextClick();					
+					actions.ContextClick();
 					break;
 				case ClickType.SingleClick:
 				default:
-					actions.Click();					
+					actions.Click();
 					break;
 			}
 
@@ -698,7 +716,7 @@ namespace Xamarin.Forms.Core.UITests
 			{
 				ProcessException();
 			}
-			catch(WebDriverException)
+			catch (WebDriverException)
 			{
 				ProcessException();
 			}
@@ -765,12 +783,12 @@ namespace Xamarin.Forms.Core.UITests
 
 		WindowsElement FindFirstElement(WinQuery query)
 		{
-			Func<ReadOnlyCollection<WindowsElement>> fquery = 
+			Func<ReadOnlyCollection<WindowsElement>> fquery =
 				() => QueryWindows(query, true);
 
 			string timeoutMessage = $"Timed out waiting for element: {query.Raw}";
 
-			ReadOnlyCollection<WindowsElement> results = 
+			ReadOnlyCollection<WindowsElement> results =
 				WaitForAtLeastOne(fquery, timeoutMessage);
 
 			WindowsElement element = results.FirstOrDefault();
@@ -882,10 +900,10 @@ namespace Xamarin.Forms.Core.UITests
 
 		ReadOnlyCollection<WindowsElement> QueryWindows(WinQuery query, bool findFirst = false)
 		{
-			ReadOnlyCollection<WindowsElement> resultByAccessibilityId = _session.FindElementsByAccessibilityId(query.Marked);
+			var resultByAccessibilityId = _session.FindElementsByAccessibilityId(query.Marked);
 			ReadOnlyCollection<WindowsElement> resultByName = null;
 
-			if(!findFirst || resultByAccessibilityId.Count == 0)
+			if (!findFirst || resultByAccessibilityId.Count == 0)
 				resultByName = _session.FindElementsByName(query.Marked);
 
 			IEnumerable<WindowsElement> result = resultByAccessibilityId;
@@ -1062,7 +1080,7 @@ namespace Xamarin.Forms.Core.UITests
 				if (elapsed >= timeout.Value.Ticks)
 				{
 					Debug.WriteLine($">>>>> {elapsed} ticks elapsed, timeout value is {timeout.Value.Ticks}");
-					
+
 					throw new TimeoutException(timeoutMessage);
 				}
 
@@ -1075,7 +1093,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		static ReadOnlyCollection<WindowsElement> WaitForAtLeastOne(Func<ReadOnlyCollection<WindowsElement>> query,
 			string timeoutMessage = null,
-			TimeSpan? timeout = null, 
+			TimeSpan? timeout = null,
 			TimeSpan? retryFrequency = null)
 		{
 			return Wait(query, i => i > 0, timeoutMessage, timeout, retryFrequency);
