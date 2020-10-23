@@ -1,11 +1,11 @@
-﻿using AndroidX.Fragment.App;
-using Android.Views;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Android.Views;
+using AndroidX.Fragment.App;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
@@ -163,11 +163,14 @@ namespace Xamarin.Forms.Platform.Android
 				case ShellNavigationSource.Remove:
 					if (_fragmentMap.TryGetValue(page, out var removeFragment))
 					{
-						if (removeFragment.Fragment.IsAdded)
+						if (removeFragment.Fragment.IsAdded && !isForCurrentTab && removeFragment != _currentFragment)
 							RemoveFragment(removeFragment.Fragment);
 						_fragmentMap.Remove(page);
 					}
-					return Task.FromResult(true);
+
+					if (!isForCurrentTab && removeFragment != _currentFragment)
+						return Task.FromResult(true);
+					break;
 
 				case ShellNavigationSource.PopToRoot:
 					RemoveAllPushedPages(shellSection, isForCurrentTab);
@@ -231,6 +234,7 @@ namespace Xamarin.Forms.Platform.Android
 				case ShellNavigationSource.Pop:
 				case ShellNavigationSource.PopToRoot:
 				case ShellNavigationSource.ShellSectionChanged:
+				case ShellNavigationSource.Remove:
 					trackFragment = _currentFragment;
 
 					if (_currentFragment != null)

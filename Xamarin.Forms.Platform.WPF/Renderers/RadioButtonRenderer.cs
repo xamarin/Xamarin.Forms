@@ -22,8 +22,6 @@ namespace Xamarin.Forms.Platform.WPF
 				{
 					_button = new FormsRadioButton();
 
-					_button.Click += OnButtonClick;
-					_button.AddHandler(System.Windows.Controls.Button.ClickEvent, (RoutedEventHandler)OnPointerPressed, true);
 					_button.Checked += OnRadioButtonCheckedOrUnchecked;
 					_button.Unchecked += OnRadioButtonCheckedOrUnchecked;
 
@@ -72,9 +70,9 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				UpdateTextColor();
 			}
-			else if (e.PropertyName == RadioButton.FontFamilyProperty.PropertyName 
+			else if (e.PropertyName == RadioButton.FontFamilyProperty.PropertyName
 				|| e.PropertyName == RadioButton.FontSizeProperty.PropertyName
-				|| e.PropertyName == RadioButton.FontAttributesProperty.PropertyName )
+				|| e.PropertyName == RadioButton.FontAttributesProperty.PropertyName)
 			{
 				UpdateFont();
 			}
@@ -98,19 +96,6 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				UpdateCheck();
 			}
-		}
-
-
-
-		void OnButtonClick(object sender, RoutedEventArgs e)
-		{
-			((IButtonController)Element)?.SendReleased();
-			((IButtonController)Element)?.SendClicked();
-		}
-
-		void OnPointerPressed(object sender, RoutedEventArgs e)
-		{
-			((IButtonController)Element)?.SendPressed();
 		}
 
 		void OnRadioButtonCheckedOrUnchecked(object sender, RoutedEventArgs e)
@@ -193,10 +178,9 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			if (_isDisposed)
 				return;
+
 			if (_button != null)
 			{
-				_button.Click -= OnButtonClick;
-				_button.RemoveHandler(System.Windows.Controls.Button.ClickEvent, (RoutedEventHandler)OnPointerPressed);
 				_button.Checked -= OnRadioButtonCheckedOrUnchecked;
 				_button.Unchecked -= OnRadioButtonCheckedOrUnchecked;
 			}

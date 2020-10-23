@@ -18,7 +18,7 @@ namespace Xamarin.Forms
 		public AbsoluteLayout()
 		{
 			_children = new AbsoluteElementCollection(InternalChildren, this);
-			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<AbsoluteLayout>>(() => 
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<AbsoluteLayout>>(() =>
 				new PlatformConfigurationRegistry<AbsoluteLayout>(this));
 		}
 
@@ -27,10 +27,7 @@ namespace Xamarin.Forms
 			return _platformConfigurationRegistry.Value.On<T>();
 		}
 
-		public static double AutoSize
-		{
-			get { return -1; }
-		}
+		public static double AutoSize => -1;
 
 		public new IAbsoluteList<View> Children
 		{
