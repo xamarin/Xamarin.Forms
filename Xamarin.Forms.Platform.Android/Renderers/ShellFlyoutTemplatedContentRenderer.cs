@@ -1,16 +1,17 @@
-﻿using Android.Content;
+﻿using System;
+using System.ComponentModel;
+using Android.Content;
 using Android.Graphics.Drawables;
-using AndroidX.RecyclerView.Widget;
-using Google.Android.Material.AppBar;
+using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using System;
-using System.ComponentModel;
+using AndroidX.CoordinatorLayout.Widget;
+using AndroidX.RecyclerView.Widget;
+using Google.Android.Material.AppBar;
+using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
-using Xamarin.Forms.Internals;
-using Android.Runtime;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -33,6 +34,7 @@ namespace Xamarin.Forms.Platform.Android
 		RecyclerView _recycler;
 		ShellFlyoutRecyclerAdapter _adapter;
 		View _flyoutHeader;
+		ShellViewRenderer _footerView;
 		int _actionBarHeight;
 		ScrollLayoutManager _layoutManager;
 
@@ -110,6 +112,10 @@ namespace Xamarin.Forms.Platform.Android
 
 			Profile.FramePartition(nameof(UpdateVerticalScrollMode));
 			UpdateVerticalScrollMode();
+
+			Profile.FramePartition("FlyoutFooter");
+			UpdateFlyoutFooter();
+
 			Profile.FrameEnd();
 		}
 
@@ -140,11 +146,15 @@ namespace Xamarin.Forms.Platform.Android
 				Shell.FlyoutHeaderProperty,
 				Shell.FlyoutHeaderTemplateProperty))
 				UpdateFlyoutHeader();
+			else if (e.IsOneOf(
+				Shell.FlyoutFooterProperty,
+				Shell.FlyoutFooterTemplateProperty))
+				UpdateFlyoutFooter();
 		}
 
 		void UpdateFlyoutHeader()
 		{
-			if(_headerView != null)
+			if (_headerView != null)
 			{
 				var oldHeaderView = _headerView;
 				_headerView = null;
@@ -174,6 +184,33 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateFlyoutHeaderBehavior();
 		}
 
+		void UpdateFlyoutFooter()
+		{
+			if (_footerView != null)
+			{
+				var oldFooterView = _footerView;
+				_rootView.RemoveView(_footerView.NativeView);
+				_footerView = null;
+				oldFooterView.TearDown();
+			}
+
+			var footer = ((IShellController)_shellContext.Shell).FlyoutFooter;
+
+			if (footer == null)
+				return;
+
+			_footerView = new ShellViewRenderer(_shellContext.AndroidContext, footer);
+
+
+			_footerView.NativeView.LayoutParameters = new CoordinatorLayout.LayoutParams(LP.MatchParent, LP.WrapContent)
+			{
+				Gravity = (int)(GravityFlags.Bottom | GravityFlags.End)
+			};
+
+			_footerView.LayoutView(_shellContext.AndroidContext.FromPixels(_rootView.LayoutParameters.Width), -1);
+			_rootView.AddView(_footerView.NativeView);
+		}
+
 		void UpdateVerticalScrollMode()
 		{
 			if (_layoutManager != null)
@@ -194,7 +231,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else
 				_rootView.UpdateBackground(brush);
-			
+
 			UpdateFlyoutBgImageAsync();
 		}
 
@@ -320,6 +357,9 @@ namespace Xamarin.Forms.Platform.Android
 					_appBar.RemoveView(_headerView);
 				}
 
+				if (_rootView != null && _footerView?.NativeView != null)
+					_rootView.RemoveView(_footerView.NativeView);
+
 				if (_recycler != null)
 				{
 					_recycler.SetLayoutManager(null);
@@ -329,6 +369,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				_adapter?.Dispose();
 				_headerView.Dispose();
+				_footerView?.TearDown();
 				_rootView.Dispose();
 				_layoutManager?.Dispose();
 				_defaultBackgroundColor?.Dispose();
@@ -344,6 +385,7 @@ namespace Xamarin.Forms.Platform.Android
 				_defaultBackgroundColor = null;
 				_layoutManager = null;
 				_bgImage = null;
+				_footerView = null;
 			}
 
 			base.Dispose(disposing);
