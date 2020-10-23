@@ -12,8 +12,15 @@ namespace Xamarin.Forms
 		{
 			if (value == null)
 				return null;
-			
-			return value.Split(new [] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
+
+			return value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
+		}
+
+		public override string ConvertToInvariantString(object value)
+		{
+			if (!(value is List<string> list))
+				throw new NotSupportedException();
+			return string.Join(", ", list);
 		}
 	}
 }

@@ -17,7 +17,7 @@
         This is needed for non SDK style project so the IDE will pick the correct LangVersion.
         Once this is an SDK style project it will pick this up from the Directory.Build.Props file correctly
      -->
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -173,7 +173,6 @@
     <Compile Include="IOSDeviceInfo.cs" />
     <Compile Include="LinkerSafeAttribute.cs" />
     <Compile Include="ModalWrapper.cs" />
-    <Compile Include="PageLifecycleManager.cs" />
     <Compile Include="Renderers\FormsCAKeyFrameAnimation.cs" />
     <Compile Include="Renderers\FormsCheckBox.cs" />
     <Compile Include="Renderers\FormsUIImageView.cs" />
