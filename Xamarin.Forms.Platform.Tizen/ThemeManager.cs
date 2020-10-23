@@ -1,15 +1,16 @@
+using System;
 using ElmSharp;
 using ElmSharp.Wearable;
-using ELayout = ElmSharp.Layout;
-using EColor = ElmSharp.Color;
+using static Xamarin.Forms.Platform.Tizen.Native.TableView;
 using EButton = ElmSharp.Button;
+using EColor = ElmSharp.Color;
 using EEntry = ElmSharp.Entry;
 using ELabel = ElmSharp.Label;
-using ESlider = ElmSharp.Slider;
-using ESize = ElmSharp.Size;
-using EToolbarItem = ElmSharp.ToolbarItem;
+using ELayout = ElmSharp.Layout;
 using EProgressBar = ElmSharp.ProgressBar;
-using static Xamarin.Forms.Platform.Tizen.Native.TableView;
+using ESize = ElmSharp.Size;
+using ESlider = ElmSharp.Slider;
+using EToolbarItem = ElmSharp.ToolbarItem;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -234,6 +235,17 @@ namespace Xamarin.Forms.Platform.Tizen
 			return button;
 		}
 
+		public static EButton SetWatchTextStyle(this EButton button)
+		{
+			if (Device.Idiom != TargetIdiom.Watch)
+			{
+				Log.Error($"ToWatchPopupRightStyleButton is only supported on TargetIdiom.Watch : {0}", Device.Idiom);
+				return button;
+			}
+			button.Style = ThemeConstants.Button.Styles.Watch.Text;
+			return button;
+		}
+
 		public static bool SetIconPart(this EButton button, EvasObject content, bool preserveOldContent = false)
 		{
 			return button.SetPartContent(ThemeConstants.Button.Parts.Icon, content, preserveOldContent);
@@ -272,6 +284,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			button.SetPartColor(ThemeConstants.Button.ColorClass.Effect, color);
 			button.SetPartColor(ThemeConstants.Button.ColorClass.EffectPressed, color);
 		}
+
 		#endregion
 
 		#region Popup
@@ -370,7 +383,7 @@ namespace Xamarin.Forms.Platform.Tizen
 						ThemeConstants.Check.ColorClass.Watch.CheckOn,
 						ThemeConstants.Check.ColorClass.Watch.CheckOnPressed
 					};
-				}	
+				}
 			}
 			else if (Device.Idiom == TargetIdiom.TV)
 			{
@@ -402,7 +415,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		public static string[] GetColorEdjeParts(this Check check)
 		{
 			string[] ret = check.GetColorParts();
-			
+
 			for (int i = 0; i < ret.Length; i++)
 			{
 				ret[i] = check.ClassName.ToLower().Replace("elm_", "") + "/" + ret[i];
@@ -671,7 +684,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		public static string GetImageCellRendererStyle()
 		{
 			return Device.Idiom == TargetIdiom.Watch ? ThemeConstants.GenItemClass.Styles.Watch.Icon2Text : Device.Idiom == TargetIdiom.TV ? ThemeConstants.GenItemClass.Styles.Default : ThemeConstants.GenItemClass.Styles.DoubleLabel;
-		} 
+		}
 
 		public static string GetImagePart(this ImageCellRenderer imageCell)
 		{
@@ -844,6 +857,126 @@ namespace Xamarin.Forms.Platform.Tizen
 			return 1.0;
 		}
 		#endregion
+
+		#region ShellNavBar
+		static double s_shellNavBarDefaultHeight = -1;
+		public static double GetDefaultHeight(this ShellNavBar navBar)
+		{
+			if (s_shellNavBarDefaultHeight > 0)
+				return s_shellNavBarDefaultHeight;
+			return s_shellNavBarDefaultHeight = CalculateDoubleScaledSizeInLargeScreen(70);
+		}
+
+		static double s_shellNavBarDefaultMenuSize = -1;
+		public static double GetDefaultMenuSize(this ShellNavBar navBar)
+		{
+			if (s_shellNavBarDefaultMenuSize > 0)
+				return s_shellNavBarDefaultMenuSize;
+			return s_shellNavBarDefaultMenuSize = CalculateDoubleScaledSizeInLargeScreen(40);
+		}
+
+		static double s_shellNavBarDefaultMargin = -1;
+		public static double GetDefaultMargin(this ShellNavBar navBar)
+		{
+			if (s_shellNavBarDefaultMargin > 0)
+				return s_shellNavBarDefaultMargin;
+			return s_shellNavBarDefaultMargin = CalculateDoubleScaledSizeInLargeScreen(10);
+		}
+		static double s_shellNavBarTitleFontSize = -1;
+		public static double GetDefaultTitleFontSize(this ShellNavBar navBar)
+		{
+			if (s_shellNavBarTitleFontSize > 0)
+				return s_shellNavBarTitleFontSize;
+			return s_shellNavBarTitleFontSize = CalculateDoubleScaledSizeInLargeScreen(23);
+		}
+		#endregion
+
+		#region NavigationView
+
+		static double s_navigationViewFlyoutItemHeight = -1;
+		public static double GetFlyoutItemHeight(this NavigationView nav)
+		{
+			if (s_navigationViewFlyoutItemHeight > 0)
+				return s_navigationViewFlyoutItemHeight;
+			return s_navigationViewFlyoutItemHeight = CalculateDoubleScaledSizeInLargeScreen(60);
+		}
+
+		static double s_navigationViewFlyoutIconColumnSize = -1;
+		public static double GetFlyoutIconColumnSize(this NavigationView nav)
+		{
+			if (s_navigationViewFlyoutIconColumnSize > 0)
+				return s_navigationViewFlyoutIconColumnSize;
+			return s_navigationViewFlyoutIconColumnSize = CalculateDoubleScaledSizeInLargeScreen(40);
+		}
+
+		static double s_navigationViewFlyoutIconSize = -1;
+		public static double GetFlyoutIconSize(this NavigationView nav)
+		{
+			if (s_navigationViewFlyoutIconSize > 0)
+				return s_navigationViewFlyoutIconSize;
+			return s_navigationViewFlyoutIconSize = CalculateDoubleScaledSizeInLargeScreen(25);
+		}
+
+		static double s_navigationViewFlyoutMargin = -1;
+		public static double GetFlyoutMargin(this NavigationView nav)
+		{
+			if (s_navigationViewFlyoutMargin > 0)
+				return s_navigationViewFlyoutMargin;
+			return s_navigationViewFlyoutMargin = CalculateDoubleScaledSizeInLargeScreen(10);
+		}
+
+		static double s_navigationViewFlyoutItemFontSize = -1;
+		public static double GetFlyoutItemFontSize(this NavigationView nav)
+		{
+			if (s_navigationViewFlyoutItemFontSize > 0)
+				return s_navigationViewFlyoutItemFontSize;
+			return s_navigationViewFlyoutItemFontSize = CalculateDoubleScaledSizeInLargeScreen(25);
+		}
+
+		#endregion
+
+		#region ShellMoreToolbar
+
+		static double s_shellMoreToolBarIconPadding = -1;
+		public static double GetIconPadding(this ShellMoreToolbar self)
+		{
+			if (s_shellMoreToolBarIconPadding > 0)
+				return s_shellMoreToolBarIconPadding;
+			return s_shellMoreToolBarIconPadding = CalculateDoubleScaledSizeInLargeScreen(15);
+		}
+
+		static double s_shellMoreToolBarIconSize = -1;
+		public static double GetIconSize(this ShellMoreToolbar self)
+		{
+			if (s_shellMoreToolBarIconSize > 0)
+				return s_shellMoreToolBarIconSize;
+			return s_shellMoreToolBarIconSize = CalculateDoubleScaledSizeInLargeScreen(30);
+		}
+
+		#endregion
+
+		public static double GetPhysicalPortraitSizeInDP()
+		{
+			var screenSize = Forms.PhysicalScreenSize;
+			return Math.Min(screenSize.Width, screenSize.Height);
+		}
+
+		static double CalculateDoubleScaledSizeInLargeScreen(double size)
+		{
+			if (Forms.DisplayResolutionUnit.UseVP)
+				return size;
+
+			if (!Forms.DisplayResolutionUnit.UseDeviceScale && GetPhysicalPortraitSizeInDP() > 1000)
+			{
+				size *= 2.5;
+			}
+
+			if (!Forms.DisplayResolutionUnit.UseDP)
+			{
+				size = Forms.ConvertToPixel(size);
+			}
+			return size;
+		}
 
 	}
 }

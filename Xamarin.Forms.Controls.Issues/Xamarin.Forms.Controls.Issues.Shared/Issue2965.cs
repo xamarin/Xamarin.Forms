@@ -1,7 +1,6 @@
 ﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
 using System.Diagnostics;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -17,9 +16,9 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 2965, "CarouselPage Disappearing event does not fire on Android")]
-	public class Issue2965 : TestMasterDetailPage
+	public class Issue2965 : TestFlyoutPage
 	{
-		static MasterDetailPage s_mdp;
+		static FlyoutPage s_mdp;
 
 		int _countAppearing;
 
@@ -129,7 +128,7 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			};
 
-			Master = myMasterPage;
+			Flyout = myMasterPage;
 			Detail = myCarouselDetailPage;
 		}
 

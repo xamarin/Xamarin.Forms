@@ -46,6 +46,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(VisualElement.IsEnabledProperty, UpdateIsEnabled);
 			RegisterPropertyHandler(VisualElement.InputTransparentProperty, UpdateInputTransparent);
 			RegisterPropertyHandler(VisualElement.BackgroundColorProperty, UpdateBackgroundColor);
+			RegisterPropertyHandler(VisualElement.BackgroundProperty, UpdateBackground);
 
 			RegisterPropertyHandler(Specific.StyleProperty, UpdateThemeStyle);
 			RegisterPropertyHandler(Specific.IsFocusAllowedProperty, UpdateFocusAllowed);
@@ -655,6 +656,17 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 		}
 
+		protected virtual void UpdateBackground(bool initialize)
+		{
+			if (!Forms.UseSkiaSharp || (initialize && Element.Background.Equals(Brush.Default)))
+				return;
+
+			if (this is SkiaSharp.IBackgroundCanvas canvasRenderer)
+			{
+				canvasRenderer.BackgroundCanvas.Invalidate();
+			}
+		}
+
 		protected virtual void UpdateOpacity(bool initialize)
 		{
 			if (initialize && Element.Opacity == 1d)
@@ -677,12 +689,12 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		static double ComputeAbsoluteX(VisualElement e)
 		{
-			return e.X + ((e.RealParent is VisualElement) && !(e.RealParent is ListView || e.RealParent is ItemsView) ? Forms.ConvertToScaledDP(Platform.GetRenderer(e.RealParent).GetNativeContentGeometry().X) : 0.0);
+			return e.X + ((e.RealParent is VisualElement) ? Forms.ConvertToScaledDP(Platform.GetRenderer(e.RealParent).GetNativeContentGeometry().X) : 0.0);
 		}
 
 		static double ComputeAbsoluteY(VisualElement e)
 		{
-			return e.Y + ((e.RealParent is VisualElement) && !(e.RealParent is ListView || e.RealParent is ItemsView) ? Forms.ConvertToScaledDP(Platform.GetRenderer(e.RealParent).GetNativeContentGeometry().Y) : 0.0);
+			return e.Y + ((e.RealParent is VisualElement) ? Forms.ConvertToScaledDP(Platform.GetRenderer(e.RealParent).GetNativeContentGeometry().Y) : 0.0);
 		}
 
 		static Point ComputeAbsolutePoint(VisualElement e)
@@ -1139,12 +1151,18 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		EFocusDirection ConvertToNativeFocusDirection(string direction)
 		{
-			if (direction == XFocusDirection.Back) return EFocusDirection.Previous;
-			if (direction == XFocusDirection.Forward) return EFocusDirection.Next;
-			if (direction == XFocusDirection.Up) return EFocusDirection.Up;
-			if (direction == XFocusDirection.Down) return EFocusDirection.Down;
-			if (direction == XFocusDirection.Right) return EFocusDirection.Right;
-			if (direction == XFocusDirection.Left) return EFocusDirection.Left;
+			if (direction == XFocusDirection.Back)
+				return EFocusDirection.Previous;
+			if (direction == XFocusDirection.Forward)
+				return EFocusDirection.Next;
+			if (direction == XFocusDirection.Up)
+				return EFocusDirection.Up;
+			if (direction == XFocusDirection.Down)
+				return EFocusDirection.Down;
+			if (direction == XFocusDirection.Right)
+				return EFocusDirection.Right;
+			if (direction == XFocusDirection.Left)
+				return EFocusDirection.Left;
 
 			return EFocusDirection.Next;
 		}

@@ -14,31 +14,35 @@ namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 8366, "[Bug] UWP CollectionView Floating Row and Toolbar clipped")]
-	public class Issue8366 : TestMasterDetailPage
+	public class Issue8366 : TestFlyoutPage
 	{
 		NavigationPage _items;
 		NavigationPage _other;
 
 		protected override void Init()
 		{
-			MasterBehavior = MasterBehavior.Split;
+			FlyoutLayoutBehavior = FlyoutLayoutBehavior.Split;
 
 			_items = new NavigationPage(Items());
 			_other = new NavigationPage(Other());
 
 			Detail = _items;
-			Master = MasterPage();
+			Flyout = MasterPage();
 		}
 
-		ContentPage MasterPage() 
+		ContentPage MasterPage()
 		{
 			var page = new ContentPage();
 
 			var menu = new StackLayout();
 
-			var instructions = new Label { Margin = 3, Text = "Tap 'Other' to change the Detail page. " +
+			var instructions = new Label
+			{
+				Margin = 3,
+				Text = "Tap 'Other' to change the Detail page. " +
 				"Then tap 'Items' to return to this page. " +
-				"If the CollectionView does not show a garbled mess at the top, this test has passed." };
+				"If the CollectionView does not show a garbled mess at the top, this test has passed."
+			};
 
 			menu.Children.Add(instructions);
 
@@ -53,7 +57,7 @@ namespace Xamarin.Forms.Controls.Issues
 			menu.Children.Add(buttonItems);
 			menu.Children.Add(buttonOther);
 
-			page.Title = "8366 Master";
+			page.Title = "8366 Flyout";
 
 			return page;
 		}
@@ -71,7 +75,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 			cv.ItemsSource = items;
 
-			cv.ItemTemplate = new DataTemplate(() => {
+			cv.ItemTemplate = new DataTemplate(() =>
+			{
 				var root = new Label();
 				root.SetBinding(Label.TextProperty, new Binding("."));
 				return root;

@@ -55,18 +55,23 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_disposed)
 				return;
 
+			_disposed = true;
+
 			if (disposing)
 			{
 				ItemsSource?.Dispose();
+
+				CollectionView.Delegate = null;
 				Delegator?.Dispose();
 
 				_emptyUIView?.Dispose();
 				_emptyUIView = null;
-	
-				_emptyViewFormsElement = null;
-			}
 
-			_disposed = true;
+				_emptyViewFormsElement = null;
+
+				ItemsViewLayout?.Dispose();
+				CollectionView?.Dispose();
+			}
 
 			base.Dispose(disposing);
 		}

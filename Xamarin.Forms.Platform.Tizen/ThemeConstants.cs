@@ -81,6 +81,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				{
 					public const string PopupLeft = "popup/circle/left_delete";
 					public const string PopupRight = "popup/circle/right_check";
+					public const string Text = "textbutton";
 				}
 			}
 
@@ -113,6 +114,12 @@ namespace Xamarin.Forms.Platform.Tizen
 			public class Parts
 			{
 				public const string PlaceHolderText = "elm.guide";
+			}
+
+			public class Signals
+			{
+				public const string SelectionChanged = "selection,changed";
+				public const string SelectionCleared = "selection,cleared";
 			}
 		}
 		#endregion
@@ -349,7 +356,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				public const string Pending = "pending";
 				public const string Small = "process_small";
 				public const string Large = "process_large";
-				
+
 				public class Watch
 				{
 					public const string PopupSmall = "process/popup/small";
@@ -549,9 +556,9 @@ namespace Xamarin.Forms.Platform.Tizen
 			public class Resources
 			{
 				// The source of icon resources is https://materialdesignicons.com/
-				public const string MenuIcon = "Xamarin.Forms.Platform.Tizen.Resource.menu.png";
-				public const string BackIcon = "Xamarin.Forms.Platform.Tizen.Resource.arrow_left.png";
-				public const string DotsIcon = "Xamarin.Forms.Platform.Tizen.Resource.dots_horizontal.png";
+				public const string MenuIcon = "Resource.menu.png";
+				public const string BackIcon = "Resource.arrow_left.png";
+				public const string DotsIcon = "Resource.dots_horizontal.png";
 
 				public class Watch
 				{
@@ -575,17 +582,6 @@ namespace Xamarin.Forms.Platform.Tizen
 					public static readonly EColor DefaultNavigationViewForegroundColor = EColor.Default;
 					public static readonly EColor DefaultNavigationViewBackgroundColor = EColor.Black;
 				}
-			}
-		}
-		#endregion
-
-		#region CollectionView
-		public class CollectionView
-		{
-			public class ColorClass
-			{
-				public static readonly EColor DefaultFocusedColor = EColor.FromRgba(244, 244, 244, 200);
-				public static readonly EColor DefaultSelectedColor = EColor.FromRgba(227, 242, 253, 200);
 			}
 		}
 		#endregion
