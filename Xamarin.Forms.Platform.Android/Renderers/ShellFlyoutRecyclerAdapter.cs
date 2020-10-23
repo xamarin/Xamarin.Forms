@@ -1,10 +1,10 @@
-﻿using Android.Runtime;
-using AndroidX.RecyclerView.Widget;
-using Android.Views;
-using Android.Widget;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Android.Runtime;
+using Android.Views;
+using Android.Widget;
+using AndroidX.RecyclerView.Widget;
 using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		readonly IShellContext _shellContext;
 		List<AdapterListItem> _listItems;
+		List<List<Element>> _flyoutGroupings;
 		Dictionary<int, DataTemplate> _templateMap = new Dictionary<int, DataTemplate>();
 		Action<Element> _selectedCallback;
 		bool _disposed;
@@ -173,7 +174,12 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var result = new List<AdapterListItem>();
 
-			var grouping = ((IShellController)_shellContext.Shell).GenerateFlyoutGrouping();
+			List<List<Element>> grouping = ((IShellController)_shellContext.Shell).GenerateFlyoutGrouping();
+
+			if (_flyoutGroupings == grouping)
+				return _listItems;
+
+			_flyoutGroupings = grouping;
 
 			bool skip = true;
 
@@ -193,8 +199,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void OnShellStructureChanged(object sender, EventArgs e)
 		{
-			_listItems = GenerateItemList();
-			NotifyDataSetChanged();
+			var newListItems = GenerateItemList();
+
+			if (newListItems != _listItems)
+			{
+				_listItems = newListItems;
+				NotifyDataSetChanged();
+			}
 		}
 
 		protected override void Dispose(bool disposing)
@@ -275,7 +286,7 @@ namespace Xamarin.Forms.Platform.Android
 					}
 
 					_element = value;
-					
+
 					// Set Parent after binding context so parent binding context doesn't propagate to view
 					View.BindingContext = value;
 					View.Parent = _shell;
