@@ -37,6 +37,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue11769.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6761.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue12060.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue12246.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8613.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue9137.cs" />
