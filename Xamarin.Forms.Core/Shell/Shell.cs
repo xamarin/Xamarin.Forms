@@ -267,6 +267,7 @@ namespace Xamarin.Forms
 		event EventHandler _structureChanged;
 
 		View IShellController.FlyoutHeader => FlyoutHeaderView;
+		View IShellController.FlyoutFooter => FlyoutFooterView;
 
 		IShellController ShellController => this;
 
@@ -499,7 +500,7 @@ namespace Xamarin.Forms
 			{
 				TargetState = state,
 				Animated = animate,
-				EnableRelativeShellRoutes = enableRelativeShellRoutes, 
+				EnableRelativeShellRoutes = enableRelativeShellRoutes,
 				DeferredArgs = deferredArgs
 			});
 		}
@@ -509,7 +510,7 @@ namespace Xamarin.Forms
 			if (shellNavigationParameters.PagePushing != null)
 				Routing.RegisterImplicitPageRoute(shellNavigationParameters.PagePushing);
 
-			ShellNavigationState state = shellNavigationParameters.TargetState ?? Routing.GetRoute(shellNavigationParameters.PagePushing);			
+			ShellNavigationState state = shellNavigationParameters.TargetState ?? Routing.GetRoute(shellNavigationParameters.PagePushing);
 			bool? animate = shellNavigationParameters.Animated;
 			bool enableRelativeShellRoutes = shellNavigationParameters.EnableRelativeShellRoutes;
 			ShellNavigatingEventArgs deferredArgs = shellNavigationParameters.DeferredArgs;
@@ -555,7 +556,7 @@ namespace Xamarin.Forms
 			bool modalStackPreBuilt = false;
 
 			// If we're replacing the whole stack and there are global routes then build the navigation stack before setting the shell section visible
-			if (navigationRequest.Request.GlobalRoutes.Count > 0 && 
+			if (navigationRequest.Request.GlobalRoutes.Count > 0 &&
 				nextActiveSection != null &&
 				navigationRequest.StackRequest == NavigationRequest.WhatToDoWithTheStack.ReplaceIt)
 			{
@@ -602,6 +603,14 @@ namespace Xamarin.Forms
 					// - or route contains no global route requests
 					if (navigatedToNewShellElement || navigationRequest.Request.GlobalRoutes.Count == 0)
 					{
+						// remove all non visible pages first so the transition just smoothly goes from
+						// currently visible modal to base page
+						if (navigationRequest.Request.GlobalRoutes.Count == 0)
+						{
+							for (int i = currentShellSection.Stack.Count - 1; i >= 1; i--)
+								currentShellSection.Navigation.RemovePage(currentShellSection.Stack[i]);
+						}
+
 						await currentShellSection.PopModalStackToPage(null, animate);
 					}
 				}
@@ -803,9 +812,17 @@ namespace Xamarin.Forms
 			BindableProperty.Create(nameof(FlyoutHeader), typeof(object), typeof(Shell), null, BindingMode.OneTime,
 				propertyChanging: OnFlyoutHeaderChanging);
 
+		public static readonly BindableProperty FlyoutFooterProperty =
+			BindableProperty.Create(nameof(FlyoutFooter), typeof(object), typeof(Shell), null, BindingMode.OneTime,
+				propertyChanging: OnFlyoutFooterChanging);
+
 		public static readonly BindableProperty FlyoutHeaderTemplateProperty =
 			BindableProperty.Create(nameof(FlyoutHeaderTemplate), typeof(DataTemplate), typeof(Shell), null, BindingMode.OneTime,
 				propertyChanging: OnFlyoutHeaderTemplateChanging);
+
+		public static readonly BindableProperty FlyoutFooterTemplateProperty =
+			BindableProperty.Create(nameof(FlyoutFooterTemplate), typeof(DataTemplate), typeof(Shell), null, BindingMode.OneTime,
+				propertyChanging: OnFlyoutFooterTemplateChanging);
 
 		public static readonly BindableProperty FlyoutIsPresentedProperty =
 			BindableProperty.Create(nameof(FlyoutIsPresented), typeof(bool), typeof(Shell), false, BindingMode.TwoWay);
@@ -821,6 +838,8 @@ namespace Xamarin.Forms
 		ShellNavigatedEventArgs _accumulatedEvent;
 		bool _accumulateNavigatedEvents;
 		View _flyoutHeaderView;
+		View _flyoutFooterView;
+		List<List<Element>> _currentFlyoutViews;
 
 		public Shell()
 		{
@@ -975,6 +994,12 @@ namespace Xamarin.Forms
 			set => SetValue(FlyoutHeaderProperty, value);
 		}
 
+		public object FlyoutFooter
+		{
+			get => GetValue(FlyoutFooterProperty);
+			set => SetValue(FlyoutFooterProperty, value);
+		}
+
 		public FlyoutHeaderBehavior FlyoutHeaderBehavior
 		{
 			get => (FlyoutHeaderBehavior)GetValue(FlyoutHeaderBehaviorProperty);
@@ -985,6 +1010,12 @@ namespace Xamarin.Forms
 		{
 			get => (DataTemplate)GetValue(FlyoutHeaderTemplateProperty);
 			set => SetValue(FlyoutHeaderTemplateProperty, value);
+		}
+
+		public DataTemplate FlyoutFooterTemplate
+		{
+			get => (DataTemplate)GetValue(FlyoutFooterTemplateProperty);
+			set => SetValue(FlyoutFooterTemplateProperty, value);
 		}
 
 		public bool FlyoutIsPresented
@@ -1033,11 +1064,30 @@ namespace Xamarin.Forms
 			}
 		}
 
+		View FlyoutFooterView
+		{
+			get => _flyoutFooterView;
+			set
+			{
+				if (_flyoutFooterView == value)
+					return;
+
+				if (_flyoutFooterView != null)
+					OnChildRemoved(_flyoutFooterView, -1);
+				_flyoutFooterView = value;
+				if (_flyoutFooterView != null)
+					OnChildAdded(_flyoutFooterView);
+			}
+		}
+
 		protected override void OnBindingContextChanged()
 		{
 			base.OnBindingContextChanged();
 			if (FlyoutHeaderView != null)
 				SetInheritedBindingContext(FlyoutHeaderView, BindingContext);
+
+			if (FlyoutFooterView != null)
+				SetInheritedBindingContext(FlyoutFooterView, BindingContext);
 		}
 
 		List<List<Element>> IShellController.GenerateFlyoutGrouping()
@@ -1056,58 +1106,62 @@ namespace Xamarin.Forms
 
 			foreach (var shellItem in ShellController.GetItems())
 			{
-				if (!FlyoutItem.GetIsVisible(shellItem))
+				if (!ShowInFlyoutMenu(shellItem))
 					continue;
 
-				if (shellItem.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
+				if (Routing.IsImplicit(shellItem) || shellItem.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
 				{
-					IncrementGroup();
+					if (shellItem.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
+						IncrementGroup();
 
 					foreach (var shellSection in (shellItem as IShellItemController).GetItems())
 					{
-						if (!FlyoutItem.GetIsVisible(shellSection))
+						if (!ShowInFlyoutMenu(shellSection))
 							continue;
 
-						if (shellSection.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
+						var shellContents = ((IShellSectionController)shellSection).GetItems();
+						if (Routing.IsImplicit(shellSection) || shellSection.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
 						{
-							IncrementGroup();
-
-							foreach (var shellContent in shellSection.Items)
+							foreach (var shellContent in shellContents)
 							{
-								if (!FlyoutItem.GetIsVisible(shellContent))
+								if (!ShowInFlyoutMenu(shellContent))
 									continue;
 
 								currentGroup.Add(shellContent);
 								if (shellContent == shellSection.CurrentItem)
 								{
-									currentGroup.AddRange(shellContent.MenuItems);
+									AddMenuItems(shellContent.MenuItems);
 								}
 							}
-							IncrementGroup();
+
+							if (shellSection.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
+								IncrementGroup();
 						}
 						else
 						{
 							if (!(shellSection.Parent is TabBar))
 							{
-								if (Routing.IsImplicit(shellSection) && shellSection.Items.Count == 1)
+								if (Routing.IsImplicit(shellSection) && shellContents.Count == 1)
 								{
-									if (!FlyoutItem.GetIsVisible(shellSection.Items[0]))
+									if (!ShowInFlyoutMenu(shellContents[0]))
 										continue;
 
-									currentGroup.Add(shellSection.Items[0]);
+									currentGroup.Add(shellContents[0]);
 								}
 								else
 									currentGroup.Add(shellSection);
 							}
 
 							// If we have only a single child we will also show the items menu items
-							if ((shellSection as IShellSectionController).GetItems().Count == 1 && shellSection == shellItem.CurrentItem)
+							if (shellContents.Count == 1 && shellSection == shellItem.CurrentItem && shellSection.CurrentItem.MenuItems.Count > 0)
 							{
-								currentGroup.AddRange(shellSection.CurrentItem.MenuItems);
+								AddMenuItems(shellSection.CurrentItem.MenuItems);
 							}
 						}
 					}
-					IncrementGroup();
+
+					if (shellItem.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
+						IncrementGroup();
 				}
 				else
 				{
@@ -1118,8 +1172,57 @@ namespace Xamarin.Forms
 
 			IncrementGroup();
 
+			// If the flyout groupings haven't changed just return
+			// the same instance so the caller knows it hasn't changed
+			// at a later point this will all get converted to an observable collection
+			if (_currentFlyoutViews?.Count == result.Count)
+			{
+				bool hasChanged = false;
+				for (var i = 0; i < result.Count && !hasChanged; i++)
+				{
+					var topLevelNew = result[i];
+					var topLevelPrevious = _currentFlyoutViews[i];
+
+					if (topLevelNew.Count != topLevelPrevious.Count)
+					{
+						hasChanged = true;
+						break;
+					}
+
+					for (var j = 0; j > topLevelNew.Count; j++)
+					{
+						if (topLevelNew[j] != topLevelPrevious[j])
+						{
+							hasChanged = true;
+							break;
+						}
+					}
+
+				}
+
+				if (!hasChanged)
+					return _currentFlyoutViews;
+			}
+
+			_currentFlyoutViews = result;
 			return result;
 
+			bool ShowInFlyoutMenu(BindableObject bo)
+			{
+				if (bo is MenuShellItem msi)
+					return FlyoutItem.GetIsVisible(msi.MenuItem);
+
+				return FlyoutItem.GetIsVisible(bo);
+			}
+
+			void AddMenuItems(MenuItemCollection menuItems)
+			{
+				foreach (var item in menuItems)
+				{
+					if (ShowInFlyoutMenu(item))
+						currentGroup.Add(item);
+				}
+			}
 
 			void IncrementGroup()
 			{
@@ -1174,6 +1277,9 @@ namespace Xamarin.Forms
 			{
 				if (FlyoutHeaderView != null)
 					yield return FlyoutHeaderView;
+
+				if (FlyoutFooterView != null)
+					yield return FlyoutFooterView;
 			}
 		}
 
@@ -1231,7 +1337,7 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			if(args.DeferralCount > 0 && args.CanCancel)
+			if (args.DeferralCount > 0 && args.CanCancel)
 			{
 				_deferredEventArgs = args;
 				args.RegisterDeferralCompletedCallBack(async () =>
@@ -1244,7 +1350,7 @@ namespace Xamarin.Forms
 
 					await CompleteDeferredNavigating(args);
 				});
-			}	
+			}
 		}
 
 		static void OnCurrentItemChanged(BindableObject bindable, object oldValue, object newValue)
@@ -1335,10 +1441,22 @@ namespace Xamarin.Forms
 			shell.OnFlyoutHeaderChanged(oldValue, newValue);
 		}
 
+		static void OnFlyoutFooterChanging(BindableObject bindable, object oldValue, object newValue)
+		{
+			var shell = (Shell)bindable;
+			shell.OnFlyoutFooterChanged(oldValue, newValue);
+		}
+
 		static void OnFlyoutHeaderTemplateChanging(BindableObject bindable, object oldValue, object newValue)
 		{
 			var shell = (Shell)bindable;
 			shell.OnFlyoutHeaderTemplateChanged((DataTemplate)oldValue, (DataTemplate)newValue);
+		}
+
+		static void OnFlyoutFooterTemplateChanging(BindableObject bindable, object oldValue, object newValue)
+		{
+			var shell = (Shell)bindable;
+			shell.OnFlyoutFooterTemplateChanged((DataTemplate)oldValue, (DataTemplate)newValue);
 		}
 
 		static void OnTitleViewChanged(BindableObject bindable, object oldValue, object newValue)
@@ -1498,6 +1616,33 @@ namespace Xamarin.Forms
 			}
 		}
 
+		void OnFlyoutFooterChanged(object oldVal, object newVal)
+		{
+			if (FlyoutFooterTemplate == null)
+			{
+				if (newVal is View newFlyoutFooter)
+					FlyoutFooterView = newFlyoutFooter;
+				else
+					FlyoutFooterView = null;
+			}
+		}
+
+		void OnFlyoutFooterTemplateChanged(DataTemplate oldValue, DataTemplate newValue)
+		{
+			if (newValue == null)
+			{
+				if (FlyoutFooter is View flyoutFooterView)
+					FlyoutFooterView = flyoutFooterView;
+				else
+					FlyoutFooterView = null;
+			}
+			else
+			{
+				var newFooterView = (View)newValue.CreateContent(FlyoutFooter, this);
+				FlyoutFooterView = newFooterView;
+			}
+		}
+
 		bool ProposeNavigation(ShellNavigationSource source, ShellNavigationState proposedState, bool canCancel, ShellNavigatingEventArgs deferredArgs)
 		{
 			if (_accumulateNavigatedEvents)
@@ -1542,6 +1687,8 @@ namespace Xamarin.Forms
 			PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, LogicalChildren);
 			if (FlyoutHeaderView != null)
 				PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, new[] { FlyoutHeaderView });
+			if (FlyoutFooterView != null)
+				PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, new[] { FlyoutFooterView });
 		}
 
 

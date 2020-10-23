@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
@@ -16,13 +17,12 @@ using Android.Content.Res;
 using Android.OS;
 using Android.Util;
 using Android.Views;
+using AndroidX.Core.Content;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
+using AColor = Android.Graphics.Color;
 using Resource = Android.Resource;
 using Trace = System.Diagnostics.Trace;
-using System.ComponentModel;
-using AColor = Android.Graphics.Color;
-using AndroidX.Core.Content;
 
 namespace Xamarin.Forms
 {
@@ -94,7 +94,7 @@ namespace Xamarin.Forms
 				return s_is29OrNewer.Value;
 			}
 		}
-		
+
 		internal static bool IsJellyBeanMr1OrNewer
 		{
 			get
@@ -296,7 +296,11 @@ namespace Xamarin.Forms
 			// We want this to be updated when we have a new activity (e.g. on a configuration change)
 			// because AndroidPlatformServices needs a current activity to launch URIs from
 			Profile.FramePartition("Device.PlatformServices");
-			Device.PlatformServices = new AndroidPlatformServices(activity);
+
+			var androidServices = new AndroidPlatformServices(activity);
+
+			Device.PlatformServices = androidServices;
+			Device.PlatformInvalidator = androidServices;
 
 			// use field and not property to avoid exception in getter
 			if (Device.info != null)
@@ -427,7 +431,7 @@ namespace Xamarin.Forms
 			}
 
 			s_flags = (string[])flags.Clone();
-			if (s_flags.Contains ("Profile"))
+			if (s_flags.Contains("Profile"))
 				Profile.Enable();
 			FlagsSet = true;
 		}
@@ -610,7 +614,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		class AndroidPlatformServices : IPlatformServices
+		class AndroidPlatformServices : IPlatformServices, IPlatformInvalidate
 		{
 			double _buttonDefaultSize;
 			double _editTextDefaultSize;
@@ -917,19 +921,31 @@ namespace Xamarin.Forms
 				return Platform.Android.Platform.GetNativeSize(view, widthConstraint, heightConstraint);
 			}
 
+			public void Invalidate(VisualElement visualElement)
+			{
+				var renderer = visualElement.GetRenderer();
+				if (renderer == null || renderer.View.IsDisposed())
+				{
+					return;
+				}
+
+				renderer.View.Invalidate();
+				renderer.View.RequestLayout();
+			}
+
 			public OSAppTheme RequestedTheme
-            {
-                get
-                {
-                    var nightMode = _context.Resources.Configuration.UiMode & UiMode.NightMask;
-                    switch (nightMode)
-                    {
-                        case UiMode.NightYes:
-                            return OSAppTheme.Dark;
-                        case UiMode.NightNo:
-                            return OSAppTheme.Light;
-                        default:
-                            return OSAppTheme.Unspecified;
+			{
+				get
+				{
+					var nightMode = _context.Resources.Configuration.UiMode & UiMode.NightMask;
+					switch (nightMode)
+					{
+						case UiMode.NightYes:
+							return OSAppTheme.Dark;
+						case UiMode.NightNo:
+							return OSAppTheme.Light;
+						default:
+							return OSAppTheme.Unspecified;
 					};
 				}
 			}

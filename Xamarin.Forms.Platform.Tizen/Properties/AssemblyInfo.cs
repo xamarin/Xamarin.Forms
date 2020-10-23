@@ -1,5 +1,6 @@
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Tizen;
+using Xamarin.Forms.Shapes;
 
 [assembly: Dependency(typeof(ResourcesProvider))]
 [assembly: Dependency(typeof(Deserializer))]
@@ -14,6 +15,7 @@ using Xamarin.Forms.Platform.Tizen;
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: ExportRenderer(typeof(MasterDetailPage), typeof(MasterDetailPageRenderer))]
 #pragma warning restore CS0618 // Type or member is obsolete
+[assembly: ExportRenderer(typeof(FlyoutPage), typeof(FlyoutPageRenderer))]
 [assembly: ExportRenderer(typeof(TabbedPage), typeof(TabbedPageRenderer))]
 [assembly: ExportRenderer(typeof(Shell), typeof(ShellRenderer))]
 
@@ -65,3 +67,10 @@ using Xamarin.Forms.Platform.Tizen;
 [assembly: ExportHandler(typeof(SwipeGestureRecognizer), typeof(SwipeGestureHandler))]
 
 [assembly: ExportRenderer(typeof(Shell), typeof(Xamarin.Forms.Platform.Tizen.Watch.ShellRenderer), TargetIdiom.Watch)]
+
+[assembly: ExportRenderer(typeof(Ellipse), typeof(EllipseRenderer))]
+[assembly: ExportRenderer(typeof(Line), typeof(LineRenderer))]
+[assembly: ExportRenderer(typeof(Path), typeof(PathRenderer))]
+[assembly: ExportRenderer(typeof(Polygon), typeof(PolygonRenderer))]
+[assembly: ExportRenderer(typeof(Polyline), typeof(PolylineRenderer))]
+[assembly: ExportRenderer(typeof(Xamarin.Forms.Shapes.Rectangle), typeof(RectangleRenderer))]
