@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<controls:TestContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                          xmlns:controls="clr-namespace:Xamarin.Forms.Controls;assembly=Xamarin.Forms.Core.Android.UITests"
+                          x:Class="Xamarin.Forms.Controls.Issues.Issue9992">
+    <StackLayout>
+        <CollectionView ItemsSource="{Binding Items}" SelectionMode="Single" Margin="0,10,0,0">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout VerticalItemSpacing="5" Orientation="Vertical" />
+                <!--<GridItemsLayout HorizontalItemSpacing="5" Orientation="Horizontal" />-->
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="5,10,5,10" BackgroundColor="#777777">
+                        <Label Text="{Binding Name}" FontSize="Medium" TextColor="#FFFFFF" />
+                        <!--<StackLayout Grid.Row="1" Orientation="Horizontal" HorizontalOptions="EndAndExpand">
+                        </StackLayout>-->
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <Button Text="Add" Command="{Binding AddCommand}" />
+        <Button Text="Reload" Command="{Binding ReloadCommand}" />
+    </StackLayout>
+</controls:TestContentPage>

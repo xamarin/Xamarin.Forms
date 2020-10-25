@@ -74,17 +74,32 @@ namespace Xamarin.Forms.Platform.Android
 			if (_orientation == ItemsLayoutOrientation.Vertical)
 			{
 				outRect.Left = spanIndex == 0 ? 0 : (int)_adjustedHorizontalSpacing;
+				
+				var vertical = (int)_adjustedVerticalSpacing;
+				if (vertical != 0)
+				{
+					outRect.Top = vertical;
+					outRect.Bottom = vertical;
+				}
 
 				if (parent.GetChildAdapterPosition(view) != parent.GetAdapter().ItemCount - 1)
-					outRect.Bottom = (int)_adjustedVerticalSpacing;
+					outRect.Bottom = vertical;
 			}
 
 			if (_orientation == ItemsLayoutOrientation.Horizontal)
 			{
 				outRect.Top = spanIndex == 0 ? 0 : (int)_adjustedVerticalSpacing;
 
+				var horizontal = (int)_adjustedHorizontalSpacing;
+
+				if (horizontal != 0)
+				{
+					outRect.Left = horizontal;
+					outRect.Right = horizontal;
+				}
+
 				if (parent.GetChildAdapterPosition(view) != parent.GetAdapter().ItemCount - 1)
-					outRect.Right = (int)_adjustedHorizontalSpacing;
+					outRect.Right = horizontal;
 			}
 		}
 	}

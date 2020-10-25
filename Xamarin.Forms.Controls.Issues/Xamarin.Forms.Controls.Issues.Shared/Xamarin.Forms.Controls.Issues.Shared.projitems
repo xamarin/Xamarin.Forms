@@ -285,6 +285,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue9833.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue9929.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue9088.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue9992.xaml.cs">
+      <DependentUpon>Issue9992.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)RefreshViewTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7338.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScrollToGroup.cs" />
@@ -2405,6 +2409,12 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue11794.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue9992.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
