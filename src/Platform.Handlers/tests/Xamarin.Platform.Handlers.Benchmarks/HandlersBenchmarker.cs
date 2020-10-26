@@ -64,7 +64,7 @@ namespace Xamarin.Platform.Handlers.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		[Benchmark(Baseline = true)]
 		public void GetHandlerUsingRegistrar()
 		{
 			for (int i = 0; i < _numberOfItems; i++)
