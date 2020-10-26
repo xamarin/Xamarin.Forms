@@ -225,7 +225,7 @@
 
   <!-- UWP Targets-->
   <Target Name="WinUICheckTargetPlatformVersion" BeforeTargets="PrepareForBuild"
-      Condition="'$(TargetPlatformVersion)' != '' and '$(TargetPlatformMinVersion)' != ''">
+      Condition="'$(TargetPlatformIdentifier)' == 'UAP' AND '$(TargetPlatformVersion)' != '' AND '$(TargetPlatformMinVersion)' != ''">
     <PropertyGroup>
       <MicrosoftUIXamlTargetPlatformMinCheckValue>$([System.Version]::Parse('$(TargetPlatformMinVersion)').Build)</MicrosoftUIXamlTargetPlatformMinCheckValue>
     </PropertyGroup>
