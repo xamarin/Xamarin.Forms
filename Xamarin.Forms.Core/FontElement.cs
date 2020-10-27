@@ -1,8 +1,10 @@
+using System.ComponentModel;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	static class FontElement
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public static class FontElement
 	{
 		public static readonly BindableProperty FontProperty =
 			BindableProperty.Create("Font", typeof(Font), typeof(IFontElement), default(Font),
