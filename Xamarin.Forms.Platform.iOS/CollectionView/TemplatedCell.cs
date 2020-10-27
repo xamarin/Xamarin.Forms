@@ -91,7 +91,9 @@ namespace Xamarin.Forms.Platform.iOS
                 var view = itemTemplate.CreateContent() as View;
 
                 // Prevents the use of default color when there are VisualStateManager with Selected state setting the background color
-                if (IsUsingCustomSelectionColor(view) && SelectedBackgroundView.BackgroundColor == ColorExtensions.Gray)
+				// First we check whether the cell has the default selected background color; if it does, then we should check
+				// to see if the cell content is the VSM to set a selected color 
+                if (SelectedBackgroundView.BackgroundColor == ColorExtensions.Gray && IsUsingVSMForSelectionColor(view))
                 {
                     SelectedBackgroundView = new UIView
                     {
@@ -155,21 +157,24 @@ namespace Xamarin.Forms.Platform.iOS
             }
         }
 
-		bool IsUsingCustomSelectionColor(View view) 
+		bool IsUsingVSMForSelectionColor(View view) 
 		{
 			var groups = VisualStateManager.GetVisualStateGroups(view);
-			foreach (var group in groups)
+			for (var groupIndex = 0; groupIndex < groups.Count; groupIndex++)
 			{
-				foreach (var state in group.States)
+				var group = groups[groupIndex];
+				for (var stateIndex = 0; stateIndex < group.States.Count; stateIndex++)
 				{
+					var state = group.States[stateIndex];
 					if (state.Name != VisualStateManager.CommonStates.Selected)
 					{
 						continue;
 					}
 
-					foreach (var setter in state.Setters)
+					for (var setterIndex = 0; setterIndex < state.Setters.Count; setterIndex++)
 					{
-						if (setter.Property.PropertyName == View.BackgroundColorProperty.PropertyName)
+						var setter = state.Setters[setterIndex];
+						if (setter.Property.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 						{
 							return true;
 						}
@@ -179,58 +184,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			return false;
 		}
-
-        //bool UseDefaultsSelectionColor(ItemsView itemsView, View view)
-        //{
-        //    // Walks through the resource dictionary to know
-        //    // if there is a resource dictionary that have VisualStateGroups
-        //    // with Selected State overrides the selection
-        //    // background color
-
-        //    if (_useDefaultSelectionColors.HasValue)
-        //    {
-        //        return _useDefaultSelectionColors.Value;
-        //    }
-
-        //    if (itemsView.FindParentOfType<Page>() is Page page)
-        //    {
-        //        foreach (var resourceDictionary in page.Resources)
-        //        {
-        //            if (resourceDictionary.Value is Style style
-        //                && style.TargetType.IsAssignableFrom(view.GetType()))
-        //            {
-        //                foreach (var setter in style.Setters)
-        //                {
-        //                    if (setter.Property == VisualStateManager.VisualStateGroupsProperty
-        //                        && setter.Value is VisualStateGroupList visualStateGroups)
-        //                    {
-        //                        foreach (var group in visualStateGroups)
-        //                        {
-        //                            foreach (var state in group.States)
-        //                            {
-        //                                if (state.Name == "Selected")
-        //                                {
-        //                                    foreach (var visualStateSetter in state.Setters)
-        //                                    {
-        //                                        if (visualStateSetter.Property == VisualElement.BackgroundColorProperty)
-        //                                        {
-        //                                            _useDefaultSelectionColors = false;
-        //                                            return false;
-        //                                        }
-        //                                    }
-        //                                }
-        //                            }
-        //                        }
-        //                    }
-        //                }
-        //            }
-
-        //        }
-        //    }
-
-        //    _useDefaultSelectionColors = true;
-        //    return true;
-        //}
 
         public override bool Selected
         {
