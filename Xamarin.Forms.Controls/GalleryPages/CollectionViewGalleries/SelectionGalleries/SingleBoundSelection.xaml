@@ -3,29 +3,7 @@
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SelectionGalleries.SingleBoundSelection">
-    <ContentPage.Resources>
-        <Style
-            TargetType="Frame">
-            <Setter
-                Property="VisualStateManager.VisualStateGroups">
-                <VisualStateGroupList>
-                    <VisualStateGroup
-                        x:Name="CommonStates">
-                        <VisualState
-                            x:Name="Normal" />
-                        <VisualState
-                            x:Name="Selected">
-                            <VisualState.Setters>
-                                <Setter
-                                    Property="BackgroundColor"
-                                    Value="RoyalBlue" />
-                            </VisualState.Setters>
-                        </VisualState>
-                    </VisualStateGroup>
-                </VisualStateGroupList>
-            </Setter>
-        </Style>
-    </ContentPage.Resources>
+    
     <ContentPage.Content>
         <StackLayout
             Spacing="5">
@@ -68,6 +46,25 @@
                                 <Label
                                     Text="{Binding Caption}"></Label>
                             </StackLayout>
+
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroupList>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter
+                                                    Property="BackgroundColor"
+                                                    Value="RoyalBlue" />
+                                                <Setter
+                                                    Property="Scale"
+                                                    Value="0.9" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateGroupList>
+                            </VisualStateManager.VisualStateGroups>
+                            
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
