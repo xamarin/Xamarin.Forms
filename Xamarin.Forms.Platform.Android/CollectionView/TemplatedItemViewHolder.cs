@@ -7,6 +7,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class TemplatedItemViewHolder : SelectableViewHolder
 	{
+		bool? _useAndroidDefaultsDrawableSelectionColors;
 		readonly ItemContentView _itemContentView;
 		readonly DataTemplate _template;
 		DataTemplate _selectedTemplate;
@@ -95,50 +96,48 @@ namespace Xamarin.Forms.Platform.Android
 			// with Selected State, overriding the Android default
 			// selection color
 
-			bool useAndroidDefaultsDrawableSelectionColors = true;
+			if (_useAndroidDefaultsDrawableSelectionColors.HasValue)
+            {
+                return _useAndroidDefaultsDrawableSelectionColors.Value;
+            }
 
-			if (itemsView.FindParentOfType<Page>() is Page page)
-			{
-				foreach (var resourceDictionary in page.Resources)
-				{
-					if (resourceDictionary.Value is Style style
-							&& style.TargetType.IsAssignableFrom(View.GetType()))
-					{
-						foreach (var setter in style.Setters)
-						{
-							if (setter.Property == VisualStateManager.VisualStateGroupsProperty)
-							{
-								if (setter.Value is VisualStateGroupList visualStateGroups)
-								{
-									foreach (var group in visualStateGroups)
-									{
-										foreach (var state in group.States)
-										{
-											if (state.Name == "Selected")
-											{
-												foreach (var visualStateSetter in state.Setters)
-												{
-													if (visualStateSetter.Property == VisualElement.BackgroundColorProperty)
-													{
-														useAndroidDefaultsDrawableSelectionColors = false;
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-							else
-							{
-								continue;
-							}
-						}
-					}
+            if (itemsView.FindParentOfType<Page>() is Page page)
+            {
+                foreach (var resourceDictionary in page.Resources)
+                {
+                    if (resourceDictionary.Value is Style style
+						&& style.TargetType.IsAssignableFrom(View.GetType()))
+                    {
+                        foreach (var setter in style.Setters)
+                        {
+                            if (setter.Property == VisualStateManager.VisualStateGroupsProperty
+								&& setter.Value is VisualStateGroupList visualStateGroups)
+                            {
+                                foreach (var group in visualStateGroups)
+                                {
+                                    foreach (var state in group.States)
+                                    {
+                                        if (state.Name == "Selected")
+                                        {
+                                            foreach (var visualStateSetter in state.Setters)
+                                            {
+                                                if (visualStateSetter.Property == VisualElement.BackgroundColorProperty)
+                                                {
+                                                    _useAndroidDefaultsDrawableSelectionColors = false;
+                                                    return false;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
-				}
-			}
-
-			return useAndroidDefaultsDrawableSelectionColors;
+			_useAndroidDefaultsDrawableSelectionColors = true;
+            return true;
 		}
 	}
 }
