@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace Xamarin.Forms
 {
@@ -28,6 +27,14 @@ namespace Xamarin.Forms
 		static void OnGradientStopsChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			(bindable as GradientBrush)?.UpdateGradientStops(oldValue as GradientStopCollection, newValue as GradientStopCollection);
+		}
+
+		protected override void OnBindingContextChanged()
+		{
+			base.OnBindingContextChanged();
+
+			foreach (var item in GradientStops)
+				SetInheritedBindingContext(item, BindingContext);
 		}
 
 		void UpdateGradientStops(GradientStopCollection oldCollection, GradientStopCollection newCollection)
