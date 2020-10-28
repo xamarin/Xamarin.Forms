@@ -7,7 +7,6 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class TemplatedItemViewHolder : SelectableViewHolder
 	{
-		bool? _useAndroidDefaultsDrawableSelectionColors;
 		readonly ItemContentView _itemContentView;
 		readonly DataTemplate _template;
 		DataTemplate _selectedTemplate;
@@ -68,9 +67,6 @@ namespace Xamarin.Forms.Platform.Android
 				// Make sure the Visual property is available when the renderer is created
 				PropertyPropagationExtensions.PropagatePropertyChanged(null, View, itemsView);
 
-				// Prevents the use of Android default color for selected item
-				UseAndroidDefaultColorsForSelection = UseAndroidDefaultsSelectionColors(itemsView);
-
 				// Actually create the native renderer
 				_itemContentView.RealizeContent(View);
 
@@ -88,56 +84,42 @@ namespace Xamarin.Forms.Platform.Android
 			itemsView.AddLogicalChild(View);
 		}
 
-
-		bool UseAndroidDefaultsSelectionColors(ItemsView itemsView)
+		protected override bool UseDefaultSelectionColor
 		{
-			// Walks through the resource dictionary to know
-			// if there are a resource dictionary that have VisualStateGroups
-			// with Selected State, overriding the Android default
-			// selection color
+			get 
+			{
+				if (View != null)
+				{
+					return !IsUsingCustomSelectionColor(View);
+				}
 
-			if (_useAndroidDefaultsDrawableSelectionColors.HasValue)
-            {
-                return _useAndroidDefaultsDrawableSelectionColors.Value;
-            }
+				return base.UseDefaultSelectionColor;
+			}
+		}
 
-            if (itemsView.FindParentOfType<Page>() is Page page)
-            {
-                foreach (var resourceDictionary in page.Resources)
-                {
-                    if (resourceDictionary.Value is Style style
-						&& style.TargetType.IsAssignableFrom(View.GetType()))
-                    {
-                        foreach (var setter in style.Setters)
-                        {
-                            if (setter.Property == VisualStateManager.VisualStateGroupsProperty
-								&& setter.Value is VisualStateGroupList visualStateGroups)
-                            {
-                                foreach (var group in visualStateGroups)
-                                {
-                                    foreach (var state in group.States)
-                                    {
-                                        if (state.Name == "Selected")
-                                        {
-                                            foreach (var visualStateSetter in state.Setters)
-                                            {
-                                                if (visualStateSetter.Property == VisualElement.BackgroundColorProperty)
-                                                {
-                                                    _useAndroidDefaultsDrawableSelectionColors = false;
-                                                    return false;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+		bool IsUsingCustomSelectionColor(View view)
+		{
+			var groups = VisualStateManager.GetVisualStateGroups(view);
+			foreach (var group in groups)
+			{
+				foreach (var state in group.States)
+				{
+					if (state.Name != VisualStateManager.CommonStates.Selected)
+					{
+						continue;
+					}
 
-			_useAndroidDefaultsDrawableSelectionColors = true;
-            return true;
+					foreach (var setter in state.Setters)
+					{
+						if (setter.Property.PropertyName == View.BackgroundColorProperty.PropertyName)
+						{
+							return true;
+						}
+					}
+				}
+			}
+
+			return false;
 		}
 	}
 }

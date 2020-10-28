@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		internal bool UseAndroidDefaultColorsForSelection { get; set; }
+		protected virtual bool UseDefaultSelectionColor => true;
 
 		public void OnClick(global::Android.Views.View view)
 		{
@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void SetSelectionStates(bool isSelected)
 		{
-			if (!UseAndroidDefaultColorsForSelection)
+			if (!UseDefaultSelectionColor)
 			{
 				return;
 			}
