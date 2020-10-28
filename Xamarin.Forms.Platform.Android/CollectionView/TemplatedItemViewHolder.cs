@@ -90,28 +90,31 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (View != null)
 				{
-					return !IsUsingCustomSelectionColor(View);
+					return !IsUsingVSMForSelectionColor(View);
 				}
 
 				return base.UseDefaultSelectionColor;
 			}
 		}
 
-		bool IsUsingCustomSelectionColor(View view)
+		bool IsUsingVSMForSelectionColor(View view)
 		{
 			var groups = VisualStateManager.GetVisualStateGroups(view);
-			foreach (var group in groups)
+			for (var groupIndex = 0; groupIndex < groups.Count; groupIndex++)
 			{
-				foreach (var state in group.States)
+				var group = groups[groupIndex];
+				for (var stateIndex = 0; stateIndex < group.States.Count; stateIndex++)
 				{
+					var state = group.States[stateIndex];
 					if (state.Name != VisualStateManager.CommonStates.Selected)
 					{
 						continue;
 					}
 
-					foreach (var setter in state.Setters)
+					for (var setterIndex = 0; setterIndex < state.Setters.Count; setterIndex++)
 					{
-						if (setter.Property.PropertyName == View.BackgroundColorProperty.PropertyName)
+						var setter = state.Setters[setterIndex];
+						if (setter.Property.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 						{
 							return true;
 						}
