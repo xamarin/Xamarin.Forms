@@ -16,8 +16,6 @@ namespace Xamarin.Forms.Platform.iOS
 
         DataTemplate _currentTemplate;
 
-        bool? _useDefaultSelectionColors;
-
         // Keep track of the cell size so we can verify whether a measure invalidation 
         // actually changed the size of the cell
         Size _size;
@@ -93,7 +91,7 @@ namespace Xamarin.Forms.Platform.iOS
                 var view = itemTemplate.CreateContent() as View;
 
                 // Prevents the use of default color when there are VisualStateManager with Selected state setting the background color
-                if (!UseDefaultsSelectionColor(itemsView, view))
+                if (IsUsingCustomSelectionColor(view) && SelectedBackgroundView.BackgroundColor == ColorExtensions.Gray)
                 {
                     SelectedBackgroundView = new UIView
                     {
@@ -157,57 +155,82 @@ namespace Xamarin.Forms.Platform.iOS
             }
         }
 
-        bool UseDefaultsSelectionColor(ItemsView itemsView, View view)
-        {
-            // Walks through the resource dictionary to know
-            // if there is a resource dictionary that have VisualStateGroups
-            // with Selected State overrides the selection
-            // background color
+		bool IsUsingCustomSelectionColor(View view) 
+		{
+			var groups = VisualStateManager.GetVisualStateGroups(view);
+			foreach (var group in groups)
+			{
+				foreach (var state in group.States)
+				{
+					if (state.Name != VisualStateManager.CommonStates.Selected)
+					{
+						continue;
+					}
 
-            if (_useDefaultSelectionColors.HasValue)
-            {
-                return _useDefaultSelectionColors.Value;
-            }
+					foreach (var setter in state.Setters)
+					{
+						if (setter.Property.PropertyName == View.BackgroundColorProperty.PropertyName)
+						{
+							return true;
+						}
+					}
+				}
+			}
 
-            if (itemsView.FindParentOfType<Page>() is Page page)
-            {
-                foreach (var resourceDictionary in page.Resources)
-                {
-                    if (resourceDictionary.Value is Style style
-                        && style.TargetType.IsAssignableFrom(view.GetType()))
-                    {
-                        foreach (var setter in style.Setters)
-                        {
-                            if (setter.Property == VisualStateManager.VisualStateGroupsProperty
-                                && setter.Value is VisualStateGroupList visualStateGroups)
-                            {
-                                foreach (var group in visualStateGroups)
-                                {
-                                    foreach (var state in group.States)
-                                    {
-                                        if (state.Name == "Selected")
-                                        {
-                                            foreach (var visualStateSetter in state.Setters)
-                                            {
-                                                if (visualStateSetter.Property == VisualElement.BackgroundColorProperty)
-                                                {
-                                                    _useDefaultSelectionColors = false;
-                                                    return false;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+			return false;
+		}
 
-                }
-            }
+        //bool UseDefaultsSelectionColor(ItemsView itemsView, View view)
+        //{
+        //    // Walks through the resource dictionary to know
+        //    // if there is a resource dictionary that have VisualStateGroups
+        //    // with Selected State overrides the selection
+        //    // background color
 
-            _useDefaultSelectionColors = true;
-            return true;
-        }
+        //    if (_useDefaultSelectionColors.HasValue)
+        //    {
+        //        return _useDefaultSelectionColors.Value;
+        //    }
+
+        //    if (itemsView.FindParentOfType<Page>() is Page page)
+        //    {
+        //        foreach (var resourceDictionary in page.Resources)
+        //        {
+        //            if (resourceDictionary.Value is Style style
+        //                && style.TargetType.IsAssignableFrom(view.GetType()))
+        //            {
+        //                foreach (var setter in style.Setters)
+        //                {
+        //                    if (setter.Property == VisualStateManager.VisualStateGroupsProperty
+        //                        && setter.Value is VisualStateGroupList visualStateGroups)
+        //                    {
+        //                        foreach (var group in visualStateGroups)
+        //                        {
+        //                            foreach (var state in group.States)
+        //                            {
+        //                                if (state.Name == "Selected")
+        //                                {
+        //                                    foreach (var visualStateSetter in state.Setters)
+        //                                    {
+        //                                        if (visualStateSetter.Property == VisualElement.BackgroundColorProperty)
+        //                                        {
+        //                                            _useDefaultSelectionColors = false;
+        //                                            return false;
+        //                                        }
+        //                                    }
+        //                                }
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+
+        //        }
+        //    }
+
+        //    _useDefaultSelectionColors = true;
+        //    return true;
+        //}
 
         public override bool Selected
         {
