@@ -821,6 +821,8 @@ namespace Xamarin.Forms
 		protected override void OnBindingContextChanged()
 		{
 			PropagateBindingContextToStateTriggers();
+			PropagateBindingContextToBrush();
+
 			base.OnBindingContextChanged();
 		}
 
@@ -984,6 +986,21 @@ namespace Xamarin.Forms
 						SetInheritedBindingContext(stateTrigger, BindingContext);
 		}
 
+		void PropagateBindingContextToBrush()
+		{
+			var brush = (Brush)GetValue(BackgroundProperty);
+
+			if (brush != null)
+			{
+				if (brush is SolidColorBrush solidColorBrush)
+					SetInheritedBindingContext(solidColorBrush, BindingContext);
+
+				if (brush is GradientBrush gradientBrush)
+					foreach (var item in gradientBrush.GradientStops)
+						SetInheritedBindingContext(item, BindingContext);
+			}
+		}
+		
 		void OnFocused() => Focused?.Invoke(this, new FocusEventArgs(this, true));
 
 		internal void ChangeVisualStateInternal() => ChangeVisualState();
