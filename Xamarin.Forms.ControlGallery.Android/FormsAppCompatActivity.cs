@@ -96,7 +96,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 			
 			LoadApplication(_app);
 
-#if !!LEGACY_RENDERERS
+#if LEGACY_RENDERERS
 			if ((int)Build.VERSION.SdkInt >= 21)
 			{
 				// Show a purple status bar if we're looking at legacy renderers
