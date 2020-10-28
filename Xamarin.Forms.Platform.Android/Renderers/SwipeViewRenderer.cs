@@ -46,6 +46,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _isSwipeEnabled;
 		bool _isResettingSwipe;
 		bool _isOpen;
+		OpenSwipeItem _previousOpenSwipeItem;
 		bool _isDisposed;
 
 		public SwipeViewRenderer(Context context) : base(context)
@@ -1355,7 +1356,14 @@ namespace Xamarin.Forms.Platform.Android
 		void ProgrammaticallyOpenSwipeItem(OpenSwipeItem openSwipeItem, bool animated)
 		{
 			if (_isOpen)
+			{
+				if (_previousOpenSwipeItem == openSwipeItem)
+					return;
+
 				ResetSwipe(false);
+			}
+
+			_previousOpenSwipeItem = openSwipeItem;
 
 			switch (openSwipeItem)
 			{

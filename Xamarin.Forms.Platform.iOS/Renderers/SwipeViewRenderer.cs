@@ -42,6 +42,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _isScrollEnabled;
 		bool _isResettingSwipe;
 		bool _isOpen;
+		OpenSwipeItem _previousOpenSwipeItem;
 		bool _isDisposed;
 
 		[Internals.Preserve(Conditional = true)]
@@ -1475,7 +1476,14 @@ namespace Xamarin.Forms.Platform.iOS
 		void ProgrammaticallyOpenSwipeItem(OpenSwipeItem openSwipeItem, bool animated)
 		{
 			if (_isOpen)
+			{
+				if (_previousOpenSwipeItem == openSwipeItem)
+					return;
+
 				ResetSwipe(false);
+			}
+
+			_previousOpenSwipeItem = openSwipeItem;
 
 			switch (openSwipeItem)
 			{
