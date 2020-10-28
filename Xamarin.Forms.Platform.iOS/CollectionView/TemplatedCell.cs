@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -6,247 +6,248 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public abstract class TemplatedCell : ItemsViewCell
-	{
-		public event EventHandler<EventArgs> ContentSizeChanged;
+    public abstract class TemplatedCell : ItemsViewCell
+    {
+        public event EventHandler<EventArgs> ContentSizeChanged;
 
-		protected CGSize ConstrainedSize;
+        protected CGSize ConstrainedSize;
 
-		protected nfloat ConstrainedDimension;
+        protected nfloat ConstrainedDimension;
 
-		DataTemplate _currentTemplate;
+        DataTemplate _currentTemplate;
 
-		// Keep track of the cell size so we can verify whether a measure invalidation 
-		// actually changed the size of the cell
-		Size _size;
+        bool? _useDefaultSelectionColors;
 
-		[Export("initWithFrame:")]
-		[Internals.Preserve(Conditional = true)]
-		protected TemplatedCell(CGRect frame) : base(frame)
-		{
-		}
+        // Keep track of the cell size so we can verify whether a measure invalidation 
+        // actually changed the size of the cell
+        Size _size;
 
-		internal IVisualElementRenderer VisualElementRenderer { get; private set; }
+        [Export("initWithFrame:")]
+        [Internals.Preserve(Conditional = true)]
+        protected TemplatedCell(CGRect frame) : base(frame)
+        {
+        }
 
-		public override void ConstrainTo(CGSize constraint)
-		{
-			ClearConstraints();
-			ConstrainedSize = constraint;
-		}
+        internal IVisualElementRenderer VisualElementRenderer { get; private set; }
 
-		public override void ConstrainTo(nfloat constant)
-		{
-			ClearConstraints();
-			ConstrainedDimension = constant;
-		}
+        public override void ConstrainTo(CGSize constraint)
+        {
+            ClearConstraints();
+            ConstrainedSize = constraint;
+        }
 
-		protected void ClearConstraints()
-		{
-			ConstrainedSize = default;
-			ConstrainedDimension = default;
-		}
+        public override void ConstrainTo(nfloat constant)
+        {
+            ClearConstraints();
+            ConstrainedDimension = constant;
+        }
 
-		public override UICollectionViewLayoutAttributes PreferredLayoutAttributesFittingAttributes(
-			UICollectionViewLayoutAttributes layoutAttributes)
-		{
-			var preferredAttributes = base.PreferredLayoutAttributesFittingAttributes(layoutAttributes);
+        protected void ClearConstraints()
+        {
+            ConstrainedSize = default;
+            ConstrainedDimension = default;
+        }
 
-			// Measure this cell (including the Forms element) if there is no constrained size
-			var size = ConstrainedSize == default(CGSize) ? Measure() : ConstrainedSize;
+        public override UICollectionViewLayoutAttributes PreferredLayoutAttributesFittingAttributes(
+            UICollectionViewLayoutAttributes layoutAttributes)
+        {
+            var preferredAttributes = base.PreferredLayoutAttributesFittingAttributes(layoutAttributes);
 
-			// Update the size of the root view to accommodate the Forms element
-			var nativeView = VisualElementRenderer.NativeView;
-			nativeView.Frame = new CGRect(CGPoint.Empty, size);
+            // Measure this cell (including the Forms element) if there is no constrained size
+            var size = ConstrainedSize == default(CGSize) ? Measure() : ConstrainedSize;
 
-			// Layout the Forms element 
-			var nativeBounds = nativeView.Frame.ToRectangle();
-			VisualElementRenderer.Element.Layout(nativeBounds);
-			_size = nativeBounds.Size;
+            // Update the size of the root view to accommodate the Forms element
+            var nativeView = VisualElementRenderer.NativeView;
+            nativeView.Frame = new CGRect(CGPoint.Empty, size);
 
-			// Adjust the preferred attributes to include space for the Forms element
-			preferredAttributes.Frame = new CGRect(preferredAttributes.Frame.Location, size);
+            // Layout the Forms element 
+            var nativeBounds = nativeView.Frame.ToRectangle();
+            VisualElementRenderer.Element.Layout(nativeBounds);
+            _size = nativeBounds.Size;
 
-			return preferredAttributes;
-		}
+            // Adjust the preferred attributes to include space for the Forms element
+            preferredAttributes.Frame = new CGRect(preferredAttributes.Frame.Location, size);
 
-		public void Bind(DataTemplate template, object bindingContext, ItemsView itemsView)
-		{
-			var oldElement = VisualElementRenderer?.Element;
+            return preferredAttributes;
+        }
 
-			// Run this through the extension method in case it's really a DataTemplateSelector
-			var itemTemplate = template.SelectDataTemplate(bindingContext, itemsView);
+        public void Bind(DataTemplate template, object bindingContext, ItemsView itemsView)
+        {
+            var oldElement = VisualElementRenderer?.Element;
 
-			if (itemTemplate != _currentTemplate)
-			{
-				// Remove the old view, if it exists
-				if (oldElement != null)
-				{
-					oldElement.MeasureInvalidated -= MeasureInvalidated;
-					itemsView.RemoveLogicalChild(oldElement);
-					ClearSubviews();
-					_size = Size.Zero;
-				}
+            // Run this through the extension method in case it's really a DataTemplateSelector
+            var itemTemplate = template.SelectDataTemplate(bindingContext, itemsView);
 
-				// Create the content and renderer for the view 
-				var view = itemTemplate.CreateContent() as View;
+            if (itemTemplate != _currentTemplate)
+            {
+                // Remove the old view, if it exists
+                if (oldElement != null)
+                {
+                    oldElement.MeasureInvalidated -= MeasureInvalidated;
+                    itemsView.RemoveLogicalChild(oldElement);
+                    ClearSubviews();
+                    _size = Size.Zero;
+                }
 
-				// Prevents the use of default color when there are VisualStateManager with Selected state background color
-				if (!UseDefaultsSelectionColor(itemsView, view))
-				{
-					SelectedBackgroundView = new UIView
-					{
-						BackgroundColor = UIColor.Clear
-					};
-				}
+                // Create the content and renderer for the view 
+                var view = itemTemplate.CreateContent() as View;
 
-				// Set the binding context _before_ we create the renderer; that way, it's available during OnElementChanged
-				view.BindingContext = bindingContext;
+                // Prevents the use of default color when there are VisualStateManager with Selected state setting the background color
+                if (!UseDefaultsSelectionColor(itemsView, view))
+                {
+                    SelectedBackgroundView = new UIView
+                    {
+                        BackgroundColor = UIColor.Clear
+                    };
+                }
 
-				var renderer = TemplateHelpers.CreateRenderer(view);
-				SetRenderer(renderer);
+                // Set the binding context _before_ we create the renderer; that way, it's available during OnElementChanged
+                view.BindingContext = bindingContext;
 
-				// And make the new Element a "child" of the ItemsView
-				// We deliberately do this _after_ setting the binding context for the new element;
-				// if we do it before, the element briefly inherits the ItemsView's bindingcontext and we 
-				// emit a bunch of needless binding errors
-				itemsView.AddLogicalChild(view);
-			}
-			else
-			{
-				// Same template, different data
-				var currentElement = VisualElementRenderer?.Element;
+                var renderer = TemplateHelpers.CreateRenderer(view);
+                SetRenderer(renderer);
 
-				if (currentElement != null)
-					currentElement.BindingContext = bindingContext;
-			}
+                // And make the new Element a "child" of the ItemsView
+                // We deliberately do this _after_ setting the binding context for the new element;
+                // if we do it before, the element briefly inherits the ItemsView's bindingcontext and we 
+                // emit a bunch of needless binding errors
+                itemsView.AddLogicalChild(view);
+            }
+            else
+            {
+                // Same template, different data
+                var currentElement = VisualElementRenderer?.Element;
 
-			_currentTemplate = itemTemplate;
-		}
+                if (currentElement != null)
+                    currentElement.BindingContext = bindingContext;
+            }
 
-		void SetRenderer(IVisualElementRenderer renderer)
-		{
-			VisualElementRenderer = renderer;
-			var nativeView = VisualElementRenderer.NativeView;
+            _currentTemplate = itemTemplate;
+        }
 
-			InitializeContentConstraints(nativeView);
+        void SetRenderer(IVisualElementRenderer renderer)
+        {
+            VisualElementRenderer = renderer;
+            var nativeView = VisualElementRenderer.NativeView;
 
-			renderer.Element.MeasureInvalidated += MeasureInvalidated;
-		}
+            InitializeContentConstraints(nativeView);
 
-		protected void Layout(CGSize constraints)
-		{
-			var nativeView = VisualElementRenderer.NativeView;
+            renderer.Element.MeasureInvalidated += MeasureInvalidated;
+        }
 
-			var width = constraints.Width;
-			var height = constraints.Height;
+        protected void Layout(CGSize constraints)
+        {
+            var nativeView = VisualElementRenderer.NativeView;
 
-			VisualElementRenderer.Element.Measure(width, height, MeasureFlags.IncludeMargins);
+            var width = constraints.Width;
+            var height = constraints.Height;
 
-			nativeView.Frame = new CGRect(0, 0, width, height);
+            VisualElementRenderer.Element.Measure(width, height, MeasureFlags.IncludeMargins);
 
-			VisualElementRenderer.Element.Layout(nativeView.Frame.ToRectangle());
-		}
+            nativeView.Frame = new CGRect(0, 0, width, height);
 
-		void ClearSubviews()
-		{
-			for (int n = ContentView.Subviews.Length - 1; n >= 0; n--)
-			{
-				ContentView.Subviews[n].RemoveFromSuperview();
-			}
-		}
+            VisualElementRenderer.Element.Layout(nativeView.Frame.ToRectangle());
+        }
 
-		bool UseDefaultsSelectionColor(ItemsView itemsView, View view)
-		{
-			// Walks through the resource dictionary to know
-			// if there are a resource dictionary that have VisualStateGroups
-			// with Selected State, overriding the Android default
-			// selection color
+        void ClearSubviews()
+        {
+            for (int n = ContentView.Subviews.Length - 1; n >= 0; n--)
+            {
+                ContentView.Subviews[n].RemoveFromSuperview();
+            }
+        }
 
-			bool useDefaultSelectionColors = true;
+        bool UseDefaultsSelectionColor(ItemsView itemsView, View view)
+        {
+            // Walks through the resource dictionary to know
+            // if there is a resource dictionary that have VisualStateGroups
+            // with Selected State overrides the selection
+            // background color
 
-			if (itemsView.FindParentOfType<Page>() is Page page)
-			{
-				foreach (var resourceDictionary in page.Resources)
-				{
-					if (resourceDictionary.Value is Style style
-							&& style.TargetType.IsAssignableFrom(view.GetType()))
-					{
-						foreach (var setter in style.Setters)
-						{
-							if (setter.Property == VisualStateManager.VisualStateGroupsProperty)
-							{
-								if (setter.Value is VisualStateGroupList visualStateGroups)
-								{
-									foreach (var group in visualStateGroups)
-									{
-										foreach (var state in group.States)
-										{
-											if (state.Name == "Selected")
-											{
-												foreach (var visualStateSetter in state.Setters)
-												{
-													if (visualStateSetter.Property == VisualElement.BackgroundColorProperty)
-													{
-														useDefaultSelectionColors = false;
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-							else
-							{
-								continue;
-							}
-						}
-					}
+            if (_useDefaultSelectionColors.HasValue)
+            {
+                return _useDefaultSelectionColors.Value;
+            }
 
-				}
-			}
+            if (itemsView.FindParentOfType<Page>() is Page page)
+            {
+                foreach (var resourceDictionary in page.Resources)
+                {
+                    if (resourceDictionary.Value is Style style
+                        && style.TargetType.IsAssignableFrom(view.GetType()))
+                    {
+                        foreach (var setter in style.Setters)
+                        {
+                            if (setter.Property == VisualStateManager.VisualStateGroupsProperty
+                                && setter.Value is VisualStateGroupList visualStateGroups)
+                            {
+                                foreach (var group in visualStateGroups)
+                                {
+                                    foreach (var state in group.States)
+                                    {
+                                        if (state.Name == "Selected")
+                                        {
+                                            foreach (var visualStateSetter in state.Setters)
+                                            {
+                                                if (visualStateSetter.Property == VisualElement.BackgroundColorProperty)
+                                                {
+                                                    _useDefaultSelectionColors = false;
+                                                    return false;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
 
-			return useDefaultSelectionColors;
-		}
+                }
+            }
 
-		public override bool Selected
-		{
-			get => base.Selected;
-			set
-			{
-				base.Selected = value;
+            _useDefaultSelectionColors = true;
+            return true;
+        }
 
-				var element = VisualElementRenderer?.Element;
+        public override bool Selected
+        {
+            get => base.Selected;
+            set
+            {
+                base.Selected = value;
 
-				if (element != null)
-				{
-					VisualStateManager.GoToState(element, value
-						? VisualStateManager.CommonStates.Selected
-						: VisualStateManager.CommonStates.Normal);
-				}
-			}
-		}
+                var element = VisualElementRenderer?.Element;
 
-		protected abstract (bool, Size) NeedsContentSizeUpdate(Size currentSize);
+                if (element != null)
+                {
+                    VisualStateManager.GoToState(element, value
+                        ? VisualStateManager.CommonStates.Selected
+                        : VisualStateManager.CommonStates.Normal);
+                }
+            }
+        }
 
-		void MeasureInvalidated(object sender, EventArgs args)
-		{
-			var (needsUpdate, toSize) = NeedsContentSizeUpdate(_size);
+        protected abstract (bool, Size) NeedsContentSizeUpdate(Size currentSize);
 
-			if (!needsUpdate)
-			{
-				return;
-			}
+        void MeasureInvalidated(object sender, EventArgs args)
+        {
+            var (needsUpdate, toSize) = NeedsContentSizeUpdate(_size);
 
-			// Cache the size for next time
-			_size = toSize;
+            if (!needsUpdate)
+            {
+                return;
+            }
 
-			// Let the controller know that things need to be laid out again
-			OnContentSizeChanged();
-		}
+            // Cache the size for next time
+            _size = toSize;
 
-		protected void OnContentSizeChanged()
-		{
-			ContentSizeChanged?.Invoke(this, EventArgs.Empty);
-		}
-	}
+            // Let the controller know that things need to be laid out again
+            OnContentSizeChanged();
+        }
+
+        protected void OnContentSizeChanged()
+        {
+            ContentSizeChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
 }
