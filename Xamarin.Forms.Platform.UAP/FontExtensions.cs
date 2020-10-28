@@ -24,22 +24,6 @@ namespace Xamarin.Forms.Platform.UWP
 			self.FontWeight = font.FontAttributes.HasFlag(FontAttributes.Bold) ? FontWeights.Bold : FontWeights.Normal;
 		}
 
-		public static void ApplyFont(this TextBlock self, Font font)
-		{
-			self.FontSize = font.UseNamedSize ? font.NamedSize.GetFontSize() : font.FontSize;
-			self.FontFamily = font.ToFontFamily();
-			self.FontStyle = font.FontAttributes.HasFlag(FontAttributes.Italic) ? FontStyle.Italic : FontStyle.Normal;
-			self.FontWeight = font.FontAttributes.HasFlag(FontAttributes.Bold) ? FontWeights.Bold : FontWeights.Normal;
-		}
-
-		public static void ApplyFont(this Windows.UI.Xaml.Documents.TextElement self, Font font)
-		{
-			self.FontSize = font.UseNamedSize ? font.NamedSize.GetFontSize() : font.FontSize;
-			self.FontFamily = font.ToFontFamily();
-			self.FontStyle = font.FontAttributes.HasFlag(FontAttributes.Italic) ? FontStyle.Italic : FontStyle.Normal;
-			self.FontWeight = font.FontAttributes.HasFlag(FontAttributes.Bold) ? FontWeights.Bold : FontWeights.Normal;
-		}
-
 		internal static void ApplyFont(this Control self, IFontElement element)
 		{
 			self.FontSize = element.FontSize;
@@ -55,7 +39,7 @@ namespace Xamarin.Forms.Platform.UWP
 			switch (size)
 			{
 				case NamedSize.Default:
-					if(DefaultFontSize == double.NegativeInfinity)
+					if (DefaultFontSize == double.NegativeInfinity)
 					{
 						DefaultFontSize = (double)WApplication.Current.Resources["ControlContentThemeFontSize"];
 					}
@@ -118,17 +102,17 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					using (var fontSet = new CanvasFontSet(fontUri))
 					{
-						if (fontSet.Fonts.Count != 0) 
+						if (fontSet.Fonts.Count != 0)
 							return fontSet.GetPropertyValues(CanvasFontPropertyIdentifier.FamilyName).FirstOrDefault().Value;
 					}
 				}
 
 				return null;
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				// the CanvasFontSet constructor can throw an exception in case something's wrong with the font. It should not crash the app
-				Internals.Log.Warning("Font",$"Error loading font {fontFile}: {ex.Message}");
+				Internals.Log.Warning("Font", $"Error loading font {fontFile}: {ex.Message}");
 				return null;
 			}
 		}

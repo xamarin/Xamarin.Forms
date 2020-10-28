@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using Windows.Foundation;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Xamarin.Forms.Platform.UAP;
@@ -28,9 +26,12 @@ namespace Xamarin.Forms.Platform.UWP
 				run.Foreground = span.TextColor.ToBrush();
 
 			if (!span.IsDefault())
-#pragma warning disable 618
-				run.ApplyFont(span.Font);
-#pragma warning restore 618
+			{
+				run.FontSize = span.FontSize;
+				run.FontFamily = span.FontFamily.ToFontFamily();
+				run.FontStyle = span.FontAttributes.HasFlag(FontAttributes.Italic) ? FontStyle.Italic : FontStyle.Normal;
+				run.FontWeight = span.FontAttributes.HasFlag(FontAttributes.Bold) ? FontWeights.Bold : FontWeights.Normal;
+			}
 
 			if (span.IsSet(Span.TextDecorationsProperty))
 				run.TextDecorations = (Windows.UI.Text.TextDecorations)span.TextDecorations;
@@ -166,7 +167,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateColor(Control);
 			else if (e.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName || e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
 				UpdateAlign(Control);
-			else if (e.PropertyName == Label.FontProperty.PropertyName)
+			else if (e.PropertyName == Label.FontAttributesProperty.PropertyName || e.PropertyName == Label.FontFamilyProperty.PropertyName || e.PropertyName == Label.FontSizeProperty.PropertyName)
 				UpdateFont(Control);
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations(Control);
@@ -184,7 +185,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateMaxLines(Control);
 			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
 				UpdatePadding(Control);
-				
+
 			base.OnElementPropertyChanged(sender, e);
 		}
 
@@ -263,11 +264,23 @@ namespace Xamarin.Forms.Platform.UWP
 			if (label == null || (label.IsDefault() && !_fontApplied))
 				return;
 
-#pragma warning disable 618
-			Font fontToApply = label.IsDefault() && _isInitiallyDefault ? Font.SystemFontOfSize(NamedSize.Medium) : label.Font;
-#pragma warning restore 618
+			if (label.IsDefault() && _isInitiallyDefault)
+			{
+				var font = Font.SystemFontOfSize(NamedSize.Medium);
 
-			textBlock.ApplyFont(fontToApply);
+				textBlock.FontSize = font.FontSize;
+				textBlock.FontFamily = font.FontFamily.ToFontFamily();
+				textBlock.FontStyle = font.FontAttributes.HasFlag(FontAttributes.Italic) ? FontStyle.Italic : FontStyle.Normal;
+				textBlock.FontWeight = font.FontAttributes.HasFlag(FontAttributes.Bold) ? FontWeights.Bold : FontWeights.Normal;
+			}
+			else
+			{
+				textBlock.FontSize = label.FontSize;
+				textBlock.FontFamily = label.FontFamily.ToFontFamily();
+				textBlock.FontStyle = label.FontAttributes.HasFlag(FontAttributes.Italic) ? FontStyle.Italic : FontStyle.Normal;
+				textBlock.FontWeight = label.FontAttributes.HasFlag(FontAttributes.Bold) ? FontWeights.Bold : FontWeights.Normal;
+			}
+
 			_fontApplied = true;
 		}
 
