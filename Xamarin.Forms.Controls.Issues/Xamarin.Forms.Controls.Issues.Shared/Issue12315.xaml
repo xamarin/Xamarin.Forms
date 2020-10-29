@@ -11,14 +11,12 @@
     <controls:TestContentPage.Resources>
         <ResourceDictionary>
 
-            <LinearGradientBrush
-                x:Key="LinearBrush"
-                StartPoint="0, 0" EndPoint="1, 1">
-                <LinearGradientBrush.GradientStops>
-                    <GradientStop Color="DarkBlue" Offset="0.1" />
-                    <GradientStop Color="Pink" Offset="0.6" />
-                    <GradientStop Color="LightPink" Offset="1.0" />
-                </LinearGradientBrush.GradientStops>
+            <Color x:Key="DarkBlue">#0091FF</Color>
+            <Color x:Key="LightBlue">#32C5FF</Color>
+
+            <LinearGradientBrush x:Key="LinearBrush" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="{StaticResource DarkBlue}" Offset="0.5" />
+                <GradientStop Color="{StaticResource LightBlue}" Offset="1.0" />
             </LinearGradientBrush>
 
         </ResourceDictionary>
@@ -37,7 +35,7 @@
                 FontSize="12"
                 Padding="2"
                 CornerRadius="{OnPlatform Android=8, Default=8}"
-                Text="If the Button is visible, test test has passed."/>
+                Text="If the Button is visible, the test has passed."/>
         </StackLayout>
     </ContentPage.Content>
 </controls:TestContentPage>
