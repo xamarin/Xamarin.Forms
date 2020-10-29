@@ -1,7 +1,6 @@
 ﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
-using System.Collections.Generic;
 using System;
 
 #if UITEST
@@ -28,7 +27,6 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 #if APP
 			Title = "Issue 11643";
-			Device.SetFlags(new List<string> { ExperimentalFlags.SwipeViewExperimental });
 			InitializeComponent();
 #endif
 		}
