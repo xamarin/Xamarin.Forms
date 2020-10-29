@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Controls;
 using Xamarin.Forms.Internals;
 using NativeAutomationProperties = Windows.UI.Xaml.Automation.AutomationProperties;
 using WImage = Windows.UI.Xaml.Controls.Image;
+using WFlowDirection = Windows.UI.Xaml.FlowDirection;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -683,11 +684,11 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if ((sender as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
 				{
-					alertDialog.FlowDirection = FlowDirection.RightToLeft;
+					alertDialog.FlowDirection = WFlowDirection.RightToLeft;
 				}
 				else if ((sender as IVisualElementController).EffectiveFlowDirection.IsLeftToRight())
 				{
-					alertDialog.FlowDirection = FlowDirection.LeftToRight;
+					alertDialog.FlowDirection = WFlowDirection.LeftToRight;
 				}
 			}
 
