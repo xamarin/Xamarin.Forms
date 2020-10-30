@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net5.0-android;net5.0-ios</TargetFrameworks>
+    <RootNamespace>Xamarin.Platform</RootNamespace>
+    <AssemblyName>Xamarin.Platform</AssemblyName> 
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageId>Xamarin.Platform</PackageId>
+    <Product>Xamarin</Product>
+  </PropertyGroup>
+  <Import Project="..\..\..\..\.nuspec\Xamarin.Forms.MultiTargeting.targets" />
+</Project>
