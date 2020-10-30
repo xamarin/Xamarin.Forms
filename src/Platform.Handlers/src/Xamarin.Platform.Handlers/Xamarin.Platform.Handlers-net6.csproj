@@ -33,8 +33,8 @@
   </ItemGroup>
 
   <!-- Android -->
-  <PropertyGroup Condition=" '$(TargetPlatformIdentifier)' == 'android' ">
-    <DefineConstants>$(DefineConstants);MONOANDROID</DefineConstants>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net5.0-android' ">
+    <DefineConstants>$(DefineConstants);MONOANDROID;NET6</DefineConstants>
 <!--    <Compile Include="$(AndroidProjectFolder)**$(DefaultLanguageSourceExtension)" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
     <AndroidResource Include="$(MonoAndroidResourcePrefix)\*\*.xml" />
     <AndroidResource Include="$(MonoAndroidResourcePrefix)\*\*.axml" />
@@ -49,8 +49,8 @@
   </PropertyGroup>
 
   <!-- iOS -->
-  <PropertyGroup Condition=" '$(TargetPlatformIdentifier)' == 'ios' ">
-    <DefineConstants>$(DefineConstants);__IOS__</DefineConstants>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net5.0-ios' ">
+    <DefineConstants>$(DefineConstants);__IOS__;NET6</DefineConstants>
   </PropertyGroup>
   
   

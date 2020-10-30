@@ -294,8 +294,11 @@ namespace Xamarin.Forms
 				return hashcode;
 			}
 		}
-
+#if NET6
+		public override bool Equals(object? obj)
+#else
 		public override bool Equals(object obj)
+#endif
 		{
 			if (obj is Color)
 			{
