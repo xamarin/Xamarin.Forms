@@ -7,8 +7,9 @@ namespace Xamarin.Forms.Xaml.Diagnostics
 {
 	public class BindingBaseErrorEventArgs : EventArgs
 	{
-		internal BindingBaseErrorEventArgs(BindingBase binding, string errorCode, string message, object[] messageArgs)
+		internal BindingBaseErrorEventArgs(XamlSourceInfo xamlSourceInfo, BindingBase binding, string errorCode, string message, object[] messageArgs)
 		{
+			XamlSourceInfo = xamlSourceInfo;
 			Binding = binding;
 			ErrorCode = errorCode;
 			Message = message;
@@ -25,13 +26,14 @@ namespace Xamarin.Forms.Xaml.Diagnostics
 	public class BindingErrorEventArgs : BindingBaseErrorEventArgs
 	{
 		internal BindingErrorEventArgs(
+			XamlSourceInfo xamlSourceInfo,
 			BindingBase binding,
 			object bindingsource,
 			BindableObject target,
 			BindableProperty property,
 			string errorCode,
 			string message,
-			object[] messageArgs) : base(binding, errorCode, message, messageArgs)
+			object[] messageArgs) : base(xamlSourceInfo, binding, errorCode, message, messageArgs)
 		{
 			Source = bindingsource;
 			Target = target;
