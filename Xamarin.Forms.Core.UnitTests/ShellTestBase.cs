@@ -82,6 +82,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return shellSection;
 		}
 
+		[QueryProperty("DoubleQueryParameter", "DoubleQueryParameter")]
 		[QueryProperty("SomeQueryParameter", "SomeQueryParameter")]
 		[QueryProperty("CancelNavigationOnBackButtonPressed", "CancelNavigationOnBackButtonPressed")]
 		public class ShellTestPage : ContentPage
@@ -92,6 +93,12 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 
 			public string SomeQueryParameter
+			{
+				get;
+				set;
+			}
+
+			public double DoubleQueryParameter
 			{
 				get;
 				set;
@@ -304,6 +311,31 @@ namespace Xamarin.Forms.Core.UnitTests
 				shellItems.ForEach(x => Items.Add(x));
 			}
 
+			public ContentPage RegisterPage(string route)
+			{
+				ContentPage page = new ContentPage();
+				RegisterPage(route, page);
+				return page;
+			}
+
+			public void RegisterPage(string route, ContentPage contentPage)
+			{
+				Routing.SetRoute(contentPage, route);
+				Routing.RegisterRoute(route, new ConcretePageFactory(contentPage));
+			}
+
+			public class ConcretePageFactory : RouteFactory
+			{
+				ContentPage _contentPage;
+
+				public ConcretePageFactory(ContentPage contentPage)
+				{
+					_contentPage = contentPage;
+				}
+
+				public override Element GetOrCreate() => _contentPage;
+			}
+
 			public Action<ShellNavigatedEventArgs> OnNavigatedHandler { get; set; }
 			protected override void OnNavigated(ShellNavigatedEventArgs args)
 			{
@@ -318,6 +350,38 @@ namespace Xamarin.Forms.Core.UnitTests
 				LastShellNavigatingEventArgs = args;
 				base.OnNavigating(args);
 				OnNavigatingCount++;
+			}
+
+
+
+			public void TestNavigationArgs(ShellNavigationSource source, string from, string to)
+			{
+				TestNavigatingArgs(source, from, to);
+				TestNavigatedArgs(source, from, to);
+			}
+
+			public void TestNavigatedArgs(ShellNavigationSource source, string from, string to)
+			{
+				Assert.AreEqual(source, this.LastShellNavigatedEventArgs.Source);
+
+				if (from == null)
+					Assert.AreEqual(LastShellNavigatedEventArgs.Previous, null);
+				else
+					Assert.AreEqual(from, this.LastShellNavigatedEventArgs.Previous.Location.ToString());
+
+				Assert.AreEqual(to, this.LastShellNavigatedEventArgs.Current.Location.ToString());
+			}
+
+			public void TestNavigatingArgs(ShellNavigationSource source, string from, string to)
+			{
+				Assert.AreEqual(source, this.LastShellNavigatingEventArgs.Source);
+
+				if (from == null)
+					Assert.AreEqual(LastShellNavigatingEventArgs.Current, null);
+				else
+					Assert.AreEqual(from, this.LastShellNavigatingEventArgs.Current.Location.ToString());
+
+				Assert.AreEqual(to, this.LastShellNavigatingEventArgs.Target.Location.ToString());
 			}
 
 			public Func<bool> OnBackButtonPressedFunc;
