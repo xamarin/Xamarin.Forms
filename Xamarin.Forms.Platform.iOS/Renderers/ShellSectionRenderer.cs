@@ -415,7 +415,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (viewController != null)
 			{
-				ViewControllers = ViewControllers.Remove(viewController);
+				if (ViewControllers.Contains(viewController))
+					ViewControllers = ViewControllers.Remove(viewController);
 
 				DisposePage(page);
 			}
@@ -605,7 +606,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (element == null)
 					return;
-				
+
 				bool navBarVisible;
 				if (element is ShellSection)
 					navBarVisible = _self._renderer.ShowNavBar;
