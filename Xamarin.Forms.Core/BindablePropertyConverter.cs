@@ -25,19 +25,16 @@ namespace Xamarin.Forms
 				return null;
 			if (serviceProvider == null)
 				return null;
-			var parentValuesProvider = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideParentValues;
-			var typeResolver = serviceProvider.GetService(typeof(IXamlTypeResolver)) as IXamlTypeResolver;
-			if (typeResolver == null)
+			if (!(serviceProvider.GetService(typeof(IXamlTypeResolver)) is IXamlTypeResolver typeResolver))
 				return null;
 			IXmlLineInfo lineinfo = null;
-			var xmlLineInfoProvider = serviceProvider.GetService(typeof(IXmlLineInfoProvider)) as IXmlLineInfoProvider;
-			if (xmlLineInfoProvider != null)
+			if (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) is IXmlLineInfoProvider xmlLineInfoProvider)
 				lineinfo = xmlLineInfoProvider.XmlLineInfo;
 			string[] parts = value.Split('.');
 			Type type = null;
 			if (parts.Length == 1)
 			{
-				if (parentValuesProvider == null)
+				if (!(serviceProvider.GetService(typeof(IProvideValueTarget)) is IProvideParentValues parentValuesProvider))
 				{
 					string msg = string.Format("Can't resolve {0}", parts[0]);
 					throw new XamlParseException(msg, lineinfo);
@@ -45,14 +42,11 @@ namespace Xamarin.Forms
 				object parent = parentValuesProvider.ParentObjects.Skip(1).FirstOrDefault();
 				if (parentValuesProvider.TargetObject is Setter)
 				{
-					var style = parent as Style;
-					var triggerBase = parent as TriggerBase;
-					var visualState = parent as VisualState;
-					if (style != null)
+					if (parent is Style style)
 						type = style.TargetType;
-					else if (triggerBase != null)
+					else if (parent is TriggerBase triggerBase)
 						type = triggerBase.TargetType;
-					else if (visualState != null)
+					else if (parent is VisualState visualState)
 						type = FindTypeForVisualState(parentValuesProvider, lineinfo);
 				}
 				else if (parentValuesProvider.TargetObject is Trigger)
@@ -61,7 +55,7 @@ namespace Xamarin.Forms
 					type = (parent as TriggerBase).TargetType;
 
 				if (type == null)
-					throw new XamlParseException($"Can't resolve {parts [0]}", lineinfo);
+					throw new XamlParseException($"Can't resolve {parts[0]}", lineinfo);
 
 				return ConvertFrom(type, parts[0], lineinfo);
 			}
@@ -117,7 +111,8 @@ namespace Xamarin.Forms
 			// Skip 1; we would not be making this check if the immediate parent were not a VisualState
 
 			// VisualStates must be in a VisualStateGroup
-			if(!(parents[2] is VisualStateGroup)) {
+			if (!(parents[2] is VisualStateGroup))
+			{
 				throw new XamlParseException($"Expected {nameof(VisualStateGroup)} but found {parents[2]}.", lineInfo);
 			}
 
@@ -146,6 +141,13 @@ namespace Xamarin.Forms
 			}
 
 			return style.TargetType;
+		}
+
+		public override string ConvertToInvariantString(object value)
+		{
+			if (!(value is BindableProperty bp))
+				throw new NotSupportedException();
+			return $"{bp.DeclaringType.Name}.{bp.PropertyName}";
 		}
 	}
 }

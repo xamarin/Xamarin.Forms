@@ -8,8 +8,6 @@ namespace Xamarin.Forms.Core.UnitTests
 		public override void Setup()
 		{
 			base.Setup();
-
-			Device.SetFlags(new[] { ExperimentalFlags.BrushExperimental });
 		}
 
 		[Test]
@@ -68,5 +66,5 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNotNull(white.Color);
 			Assert.AreEqual("#FFFFFFFF", white.Color.ToHex());
 		}
-	}		
+	}
 }

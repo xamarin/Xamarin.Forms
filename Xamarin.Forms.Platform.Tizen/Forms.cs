@@ -4,14 +4,15 @@ using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using ElmSharp;
+using ElmSharp.Wearable;
+using Tizen.Applications;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Tizen;
-using ElmSharp;
-using Tizen.Applications;
-using TSystemInfo = Tizen.System.Information;
-using ELayout = ElmSharp.Layout;
+using Xamarin.Forms.Shapes;
 using DeviceOrientation = Xamarin.Forms.Internals.DeviceOrientation;
-using ElmSharp.Wearable;
+using ELayout = ElmSharp.Layout;
+using TSystemInfo = Tizen.System.Information;
 
 namespace Xamarin.Forms
 {
@@ -32,6 +33,7 @@ namespace Xamarin.Forms
 	{
 		public CoreApplication Context { get; set; }
 		public bool UseDeviceIndependentPixel { get; set; }
+		public bool UseSkiaSharp { get; set; }
 		public HandlerAttribute[] Handlers { get; set; }
 		public Dictionary<Type, Func<IRegisterable>> CustomHandlers { get; set; } // for static registers
 		public Assembly[] Assemblies { get; set; }
@@ -40,6 +42,8 @@ namespace Xamarin.Forms
 		public StaticRegistrarStrategy StaticRegistarStrategy { get; set; }
 		public PlatformType PlatformType { get; set; }
 		public bool UseMessagingCenter { get; set; } = true;
+
+		public DisplayResolutionUnit DisplayResolutionUnit { get; set; }
 
 		public struct EffectScope
 		{
@@ -66,7 +70,7 @@ namespace Xamarin.Forms
 			Assemblies = assemblies;
 		}
 
-		public void UseStaticRegistrar(StaticRegistrarStrategy strategy, Dictionary<Type, Func<IRegisterable>> customHandlers=null, bool disableCss=false)
+		public void UseStaticRegistrar(StaticRegistrarStrategy strategy, Dictionary<Type, Func<IRegisterable>> customHandlers = null, bool disableCss = false)
 		{
 			StaticRegistarStrategy = strategy;
 			CustomHandlers = customHandlers;
@@ -102,7 +106,27 @@ namespace Xamarin.Forms
 
 		static Lazy<string> s_deviceType = new Lazy<string>(() =>
 		{
-			TSystemInfo.TryGetValue("http://tizen.org/system/device_type", out string deviceType);
+			if (!TSystemInfo.TryGetValue("http://tizen.org/system/device_type", out string deviceType))
+			{
+				// Since, above key("http://tizen.org/system/device_type") is not available on Tizen 4.0, we uses profile to decide the type of device on 4.0.
+				var profile = GetProfile();
+				if (profile == "mobile")
+				{
+					deviceType = "Mobile";
+				}
+				else if (profile == "tv")
+				{
+					deviceType = "TV";
+				}
+				else if (profile == "wearable")
+				{
+					deviceType = "Wearable";
+				}
+				else
+				{
+					deviceType = "Unknown";
+				}
+			}
 			return deviceType;
 		});
 
@@ -138,6 +162,8 @@ namespace Xamarin.Forms
 				}
 			}
 
+			public Size PhysicalScreenSize { get; }
+
 			public override double ScalingFactor
 			{
 				get
@@ -162,10 +188,33 @@ namespace Xamarin.Forms
 				TSystemInfo.TryGetValue("http://tizen.org/feature/screen.width", out width);
 				TSystemInfo.TryGetValue("http://tizen.org/feature/screen.height", out height);
 
+				var physicalScale = s_dpi.Value / 160.0;
+				PhysicalScreenSize = new Size(width / physicalScale, height / physicalScale);
+
 				scalingFactor = 1.0;  // scaling is disabled, we're using pixels as Xamarin's geometry units
-				if (s_useDeviceIndependentPixel)
+				if (DisplayResolutionUnit.UseVP && DisplayResolutionUnit.ViewportWidth > 0)
 				{
-					scalingFactor = s_dpi.Value / 160.0;
+					scalingFactor = width / DisplayResolutionUnit.ViewportWidth;
+				}
+				else
+				{
+					if (DisplayResolutionUnit.UseDP)
+					{
+						scalingFactor = s_dpi.Value / 160.0;
+					}
+
+					if (DisplayResolutionUnit.UseDeviceScale)
+					{
+						var portraitSize = Math.Min(PhysicalScreenSize.Width, PhysicalScreenSize.Height);
+						if (portraitSize > 2000)
+						{
+							scalingFactor *= 4;
+						}
+						else if (portraitSize > 1000)
+						{
+							scalingFactor *= 2.5;
+						}
+					}
 				}
 
 				pixelScreenSize = new Size(width, height);
@@ -173,8 +222,6 @@ namespace Xamarin.Forms
 				profile = s_profile.Value;
 			}
 		}
-
-		static bool s_useDeviceIndependentPixel = false;
 
 		static StaticRegistrarStrategy s_staticRegistrarStrategy = StaticRegistrarStrategy.None;
 
@@ -221,6 +268,14 @@ namespace Xamarin.Forms
 		public static PlatformType PlatformType => s_platformType;
 
 		public static bool UseMessagingCenter => s_useMessagingCenter;
+
+		public static bool UseSkiaSharp { get; private set; }
+
+		public static DisplayResolutionUnit DisplayResolutionUnit { get; private set; }
+
+		public static int ScreenDPI => s_dpi.Value;
+
+		public static Size PhysicalScreenSize => (Device.info as TizenDeviceInfo).PhysicalScreenSize;
 
 		internal static TizenTitleBarVisibility TitleBarVisibility
 		{
@@ -269,7 +324,7 @@ namespace Xamarin.Forms
 			}
 
 			s_flags = (string[])flags.Clone();
-			if (s_flags.Contains ("Profile"))
+			if (s_flags.Contains("Profile"))
 				Profile.Enable();
 		}
 
@@ -348,13 +403,24 @@ namespace Xamarin.Forms
 
 		public static void Init(CoreApplication application, bool useDeviceIndependentPixel)
 		{
-			s_useDeviceIndependentPixel = useDeviceIndependentPixel;
+			DisplayResolutionUnit = DisplayResolutionUnit.FromInit(useDeviceIndependentPixel);
+			SetupInit(application);
+		}
+
+		public static void Init(CoreApplication application, DisplayResolutionUnit unit)
+		{
+			DisplayResolutionUnit = unit ?? DisplayResolutionUnit.Pixel();
 			SetupInit(application);
 		}
 
 		public static void Init(InitializationOptions options)
 		{
-			s_useDeviceIndependentPixel = options?.UseDeviceIndependentPixel ?? false;
+			if (options == null)
+			{
+				throw new ArgumentException("Must be set options", nameof(options));
+			}
+
+			DisplayResolutionUnit = options.DisplayResolutionUnit ?? DisplayResolutionUnit.FromInit(options.UseDeviceIndependentPixel);
 			SetupInit(options.Context, options);
 		}
 
@@ -413,6 +479,7 @@ namespace Xamarin.Forms
 				{
 					s_platformType = options.PlatformType;
 					s_useMessagingCenter = options.UseMessagingCenter;
+					UseSkiaSharp = options.UseSkiaSharp;
 
 					if (options.Assemblies != null && options.Assemblies.Length > 0)
 					{
@@ -432,23 +499,28 @@ namespace Xamarin.Forms
 						// static registrar
 						if (options.StaticRegistarStrategy != StaticRegistrarStrategy.None)
 						{
-								s_staticRegistrarStrategy = options.StaticRegistarStrategy;
-								StaticRegistrar.RegisterHandlers(options.CustomHandlers);
+							s_staticRegistrarStrategy = options.StaticRegistarStrategy;
+							StaticRegistrar.RegisterHandlers(options.CustomHandlers);
 
-								if (options.StaticRegistarStrategy == StaticRegistrarStrategy.All)
+							if (options.StaticRegistarStrategy == StaticRegistrarStrategy.All)
+							{
+								Registrar.RegisterAll(new Type[]
 								{
-									Registrar.RegisterAll(new Type[]
-									{
 										typeof(ExportRendererAttribute),
 										typeof(ExportImageSourceHandlerAttribute),
 										typeof(ExportCellAttribute),
 										typeof(ExportHandlerAttribute),
 										typeof(ExportFontAttribute)
-									});
-								}
+								});
+
+								if (UseSkiaSharp)
+									RegisterSkiaSharpRenderers();
+							}
 						}
 						else
 						{
+							// The assembly of the executing application and referenced assemblies of it are added into the list here.
+							TizenPlatformServices.AppDomain.CurrentDomain.RegisterAssemblyRecursively(application.GetType().GetTypeInfo().Assembly);
 							Registrar.RegisterAll(new Type[]
 							{
 								typeof(ExportRendererAttribute),
@@ -457,6 +529,9 @@ namespace Xamarin.Forms
 								typeof(ExportHandlerAttribute),
 								typeof(ExportFontAttribute)
 							});
+
+							if (UseSkiaSharp)
+								RegisterSkiaSharpRenderers();
 						}
 					}
 
@@ -499,6 +574,21 @@ namespace Xamarin.Forms
 				s_platformType = PlatformType.Lightweight;
 
 			IsInitialized = true;
+		}
+
+		static void RegisterSkiaSharpRenderers()
+		{
+			// Register all skiasharp-based rednerers here.
+			Registrar.Registered.Register(typeof(Frame), typeof(Platform.Tizen.SkiaSharp.FrameRenderer));
+			Registrar.Registered.Register(typeof(BoxView), typeof(Platform.Tizen.SkiaSharp.BoxViewRenderer));
+			Registrar.Registered.Register(typeof(Image), typeof(Platform.Tizen.SkiaSharp.ImageRenderer));
+
+			Registrar.Registered.Register(typeof(Ellipse), typeof(Platform.Tizen.SkiaSharp.EllipseRenderer));
+			Registrar.Registered.Register(typeof(Line), typeof(Platform.Tizen.SkiaSharp.LineRenderer));
+			Registrar.Registered.Register(typeof(Path), typeof(Platform.Tizen.SkiaSharp.PathRenderer));
+			Registrar.Registered.Register(typeof(Shapes.Polygon), typeof(Platform.Tizen.SkiaSharp.PolygonRenderer));
+			Registrar.Registered.Register(typeof(Polyline), typeof(Platform.Tizen.SkiaSharp.PolylineRenderer));
+			Registrar.Registered.Register(typeof(Shapes.Rectangle), typeof(Platform.Tizen.SkiaSharp.RectangleRenderer));
 		}
 
 		static Color GetAccentColor(string profile)

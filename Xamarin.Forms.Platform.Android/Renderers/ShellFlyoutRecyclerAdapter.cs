@@ -1,10 +1,10 @@
-﻿using Android.Runtime;
-using AndroidX.RecyclerView.Widget;
-using Android.Views;
-using Android.Widget;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Android.Runtime;
+using Android.Views;
+using Android.Widget;
+using AndroidX.RecyclerView.Widget;
 using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		readonly IShellContext _shellContext;
 		List<AdapterListItem> _listItems;
+		List<List<Element>> _flyoutGroupings;
 		Dictionary<int, DataTemplate> _templateMap = new Dictionary<int, DataTemplate>();
 		Action<Element> _selectedCallback;
 		bool _disposed;
@@ -146,7 +147,6 @@ namespace Xamarin.Forms.Platform.Android
 			var template = _templateMap[viewType];
 
 			var content = (View)template.CreateContent();
-			content.Parent = _shellContext.Shell;
 
 			var linearLayout = new LinearLayoutWithFocus(parent.Context)
 			{
@@ -165,7 +165,7 @@ namespace Xamarin.Forms.Platform.Android
 			container.LayoutParameters = new LP(LP.MatchParent, LP.WrapContent);
 			linearLayout.AddView(container);
 
-			_elementViewHolder = new ElementViewHolder(content, linearLayout, bar, _selectedCallback);
+			_elementViewHolder = new ElementViewHolder(content, linearLayout, bar, _selectedCallback, _shellContext.Shell);
 
 			return _elementViewHolder;
 		}
@@ -174,7 +174,12 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var result = new List<AdapterListItem>();
 
-			var grouping = ((IShellController)_shellContext.Shell).GenerateFlyoutGrouping();
+			List<List<Element>> grouping = ((IShellController)_shellContext.Shell).GenerateFlyoutGrouping();
+
+			if (_flyoutGroupings == grouping)
+				return _listItems;
+
+			_flyoutGroupings = grouping;
 
 			bool skip = true;
 
@@ -194,8 +199,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void OnShellStructureChanged(object sender, EventArgs e)
 		{
-			_listItems = GenerateItemList();
-			NotifyDataSetChanged();
+			var newListItems = GenerateItemList();
+
+			if (newListItems != _listItems)
+			{
+				_listItems = newListItems;
+				NotifyDataSetChanged();
+			}
 		}
 
 		protected override void Dispose(bool disposing)
@@ -237,14 +247,26 @@ namespace Xamarin.Forms.Platform.Android
 			Element _element;
 			AView _itemView;
 			bool _disposed;
+			Shell _shell;
 
-			public ElementViewHolder(View view, AView itemView, AView bar, Action<Element> selectedCallback) : base(itemView)
+			[Obsolete]
+			public ElementViewHolder(View view, AView itemView, AView bar, Action<Element> selectedCallback) : this(view, itemView, bar, selectedCallback, null)
 			{
 				_itemView = itemView;
 				itemView.Click += OnClicked;
 				View = view;
 				Bar = bar;
 				_selectedCallback = selectedCallback;
+			}
+
+			public ElementViewHolder(View view, AView itemView, AView bar, Action<Element> selectedCallback, Shell shell) : base(itemView)
+			{
+				_itemView = itemView;
+				itemView.Click += OnClicked;
+				View = view;
+				Bar = bar;
+				_selectedCallback = selectedCallback;
+				_shell = shell;
 			}
 
 			public View View { get; }
@@ -264,7 +286,10 @@ namespace Xamarin.Forms.Platform.Android
 					}
 
 					_element = value;
+
+					// Set Parent after binding context so parent binding context doesn't propagate to view
 					View.BindingContext = value;
+					View.Parent = _shell;
 
 					if (_element != null)
 					{

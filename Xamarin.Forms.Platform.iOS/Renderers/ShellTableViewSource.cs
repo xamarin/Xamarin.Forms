@@ -32,6 +32,7 @@ namespace Xamarin.Forms.Platform.iOS
 					_groups = ((IShellController)_context.Shell).GenerateFlyoutGrouping();
 					_views = new Dictionary<Element, View>();
 				}
+
 				return _groups;
 			}
 		}
@@ -42,8 +43,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public void ClearCache()
 		{
-			_groups = null;
-			_views = null;
+			var newGroups = ((IShellController)_context.Shell).GenerateFlyoutGrouping();
+
+			if(newGroups != _groups)
+			{
+				_groups = newGroups;
+				_views = new Dictionary<Element, View>();
+			}
 		}
 
 		public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
@@ -102,9 +108,11 @@ namespace Xamarin.Forms.Platform.iOS
 			if (cell == null)
 			{
 				var view = (View)template.CreateContent(context, _context.Shell);
-				view.Parent = _context.Shell;
 				cell = new UIContainerCell(cellId, view);
+				
+				// Set Parent after binding context so parent binding context doesn't propagate to view
 				cell.BindingContext = context;
+				view.Parent = _context.Shell;
 			}
 			else
 			{

@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CoreGraphics;
-using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -20,9 +19,10 @@ namespace Xamarin.Forms.Platform.iOS
 	public class NavigationRenderer : UINavigationController, IVisualElementRenderer, IEffectControlProvider
 	{
 		internal const string UpdateToolbarButtons = "Xamarin.UpdateToolbarButtons";
+		bool _appeared;
 		bool _ignorePopCall;
 		bool _loaded;
-		MasterDetailPage _parentMasterDetailPage;
+		FlyoutPage _parentFlyoutPage;
 		Size _queuedSize;
 		UIViewController[] _removeControllers;
 		UIToolbar _secondaryToolbar;
@@ -32,9 +32,8 @@ namespace Xamarin.Forms.Platform.iOS
 		UIImage _defaultNavBarShadowImage;
 		UIImage _defaultNavBarBackImage;
 		bool _disposed;
-		PageLifecycleManager _pageLifecycleManager;
 
-		[Internals.Preserve(Conditional = true)]
+		[Preserve(Conditional = true)]
 		public NavigationRenderer() : base(typeof(FormsNavigationBar), null)
 		{
 			MessagingCenter.Subscribe<IVisualElementRenderer>(this, UpdateToolbarButtons, sender =>
@@ -72,9 +71,8 @@ namespace Xamarin.Forms.Platform.iOS
 			Element = element;
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 
-			_pageLifecycleManager = new PageLifecycleManager(Element as IPageController);
-
-			element?.SendViewInitialized(NativeView);
+			if (element != null)
+				element.SendViewInitialized(NativeView);
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 		}
@@ -134,7 +132,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidAppear(bool animated)
 		{
-			_pageLifecycleManager?.HandlePageAppearing();
+			if (!_appeared)
+			{
+				_appeared = true;
+				PageController?.SendAppearing();
+			}
 
 			base.ViewDidAppear(animated);
 
@@ -152,7 +154,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidDisappear(animated);
 
-			_pageLifecycleManager?.HandlePageDisappearing();
+			if (!_appeared || Element == null)
+				return;
+
+			_appeared = false;
+			PageController.SendDisappearing();
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -204,7 +210,7 @@ namespace Xamarin.Forms.Platform.iOS
 			View.Add(_secondaryToolbar);
 			_secondaryToolbar.Hidden = true;
 
-			FindParentMasterDetail();
+			FindParentFlyoutPage();
 
 			var navPage = NavPage;
 
@@ -264,7 +270,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_secondaryToolbar.Dispose();
 				_secondaryToolbar = null;
 
-				_parentMasterDetailPage = null;
+				_parentFlyoutPage = null;
 				Current = null; // unhooks events
 
 				var navPage = NavPage;
@@ -275,12 +281,16 @@ namespace Xamarin.Forms.Platform.iOS
 				navPage.PopToRootRequested -= OnPopToRootRequested;
 				navPage.RemovePageRequested -= OnRemovedPageRequested;
 				navPage.InsertPageBeforeRequested -= OnInsertPageBeforeRequested;
-
-				_pageLifecycleManager?.Dispose();
-				_pageLifecycleManager = null;
 			}
 
 			base.Dispose(disposing);
+
+			if (disposing && _appeared)
+			{
+				PageController.SendDisappearing();
+
+				_appeared = false;
+			}
 		}
 
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)
@@ -335,8 +345,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual async Task<bool> OnPushAsync(Page page, bool animated)
 		{
-			if (page is MasterDetailPage)
-				System.Diagnostics.Trace.WriteLine($"Pushing a {nameof(MasterDetailPage)} onto a {nameof(NavigationPage)} is not a supported UI pattern on iOS. " +
+			if (page is FlyoutPage)
+				System.Diagnostics.Trace.WriteLine($"Pushing a {nameof(FlyoutPage)} onto a {nameof(NavigationPage)} is not a supported UI pattern on iOS. " +
 					"Please see https://developer.apple.com/documentation/uikit/uisplitviewcontroller for more details.");
 
 			var pack = CreateViewControllerForPage(page);
@@ -356,6 +366,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
 				UpdateBackgroundColor();
 		}
+
 
 		ParentingViewController CreateViewControllerForPage(Page page)
 		{
@@ -384,14 +395,14 @@ namespace Xamarin.Forms.Platform.iOS
 			return ViewControllers.Last() as ParentingViewController;
 		}
 
-		void FindParentMasterDetail()
+		void FindParentFlyoutPage()
 		{
 			var page = Element as Page;
 			var parentPages = page.GetParentPages();
-			var masterDetail = parentPages.OfType<MasterDetailPage>().FirstOrDefault();
+			var flyoutDetail = parentPages.OfType<FlyoutPage>().FirstOrDefault();
 
-			if (masterDetail != null && parentPages.Append((Page)Element).Contains(masterDetail.Detail))
-				_parentMasterDetailPage = masterDetail;
+			if (flyoutDetail != null && parentPages.Append((Page)Element).Contains(flyoutDetail.Detail))
+				_parentFlyoutPage = flyoutDetail;
 		}
 
 		Task<bool> GetAppearedOrDisappearedTask(Page page)
@@ -819,15 +830,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		}
 
-		internal static async void SetMasterLeftBarButton(UIViewController containerController, MasterDetailPage masterDetailPage)
+		internal static async void SetFlyoutLeftBarButton(UIViewController containerController, FlyoutPage FlyoutPage)
 		{
-			if (!masterDetailPage.ShouldShowToolbarButton())
+			if (!FlyoutPage.ShouldShowToolbarButton())
 			{
 				containerController.NavigationItem.LeftBarButtonItem = null;
 				return;
 			}
 
-			await masterDetailPage.Master.ApplyNativeImageAsync(Page.IconImageSourceProperty, icon =>
+			await FlyoutPage.Flyout.ApplyNativeImageAsync(Page.IconImageSourceProperty, icon =>
 			{
 				if (icon != null)
 				{
@@ -843,20 +854,20 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if(icon == null || containerController.NavigationItem.LeftBarButtonItem == null)
 				{
-					containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(masterDetailPage.Master.Title, UIBarButtonItemStyle.Plain, OnItemTapped);
+					containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(FlyoutPage.Flyout.Title, UIBarButtonItemStyle.Plain, OnItemTapped);
 				}
 
-				if (masterDetailPage != null && !string.IsNullOrEmpty(masterDetailPage.AutomationId))
-					SetAutomationId(containerController.NavigationItem.LeftBarButtonItem, $"btn_{masterDetailPage.AutomationId}");
+				if (FlyoutPage != null && !string.IsNullOrEmpty(FlyoutPage.AutomationId))
+					SetAutomationId(containerController.NavigationItem.LeftBarButtonItem, $"btn_{FlyoutPage.AutomationId}");
 #if __MOBILE__
-				containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityHint(masterDetailPage);
-				containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityLabel(masterDetailPage);
+				containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityHint(FlyoutPage);
+				containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityLabel(FlyoutPage);
 #endif
 			});
 
 			void OnItemTapped(object sender, EventArgs e)
 			{
-				masterDetailPage.IsPresented = !masterDetailPage.IsPresented;
+				FlyoutPage.IsPresented = !FlyoutPage.IsPresented;
 			}
 		}
 
@@ -1231,7 +1242,7 @@ namespace Xamarin.Forms.Platform.iOS
 				var firstPage = n.NavPage.Pages.FirstOrDefault();
 
 
-				if (n._parentMasterDetailPage == null)
+				if (n._parentFlyoutPage == null)
 					return;
 
 				if (firstPage != pageBeingRemoved && currentChild != firstPage && NavigationPage.GetHasBackButton(currentChild))
@@ -1240,7 +1251,7 @@ namespace Xamarin.Forms.Platform.iOS
 					return;
 				}
 
-				SetMasterLeftBarButton(this, n._parentMasterDetailPage);
+				SetFlyoutLeftBarButton(this, n._parentFlyoutPage);
 			}
 
 
@@ -1277,7 +1288,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (!Forms.IsiOS11OrNewer && !isBackButtonTextSet)
 					backButtonText = "";
 
-				// First page and we have a master detail to contend with
+				// First page and we have a flyout detail to contend with
 				UpdateLeftBarButtonItem();
 				UpdateBackButtonTitle(page.Title, backButtonText);
 
@@ -1357,7 +1368,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (!_navigation.TryGetTarget(out n))
 					return;
 
-				if (!Forms.IsiOS11OrNewer || n._parentMasterDetailPage != null)
+				if (!Forms.IsiOS11OrNewer || n._parentFlyoutPage != null)
 					UpdateTitleArea(Child);
 			}
 

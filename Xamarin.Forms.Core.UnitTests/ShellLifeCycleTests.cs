@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			var item0 = CreateShellItem(shellContentRoute: "Outbox", templated: true);
 			var item1 = CreateShellItem(shellSectionRoute: "RequestType1", shellContentRoute: "RequestType1Details", templated: true);
-			var section2 = CreateShellSection(shellSectionRoute: "RequestType2",  shellContentRoute: "RequestType2Dates", templated: true);
+			var section2 = CreateShellSection(shellSectionRoute: "RequestType2", shellContentRoute: "RequestType2Dates", templated: true);
 
 			item1.Items.Add(section2);
 			shell.Items.Add(item0);
@@ -161,14 +161,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(nonVisiblePage.Appearing);
 			Assert.IsTrue(page.Appearing);
 		}
-		
+
 		[Test]
 		public async Task EnsureOnAppearingFiresForLastPageOnlyAbsoluteRoute()
 		{
 			Shell shell = new Shell();
 			LifeCyclePage shellContentPage = new LifeCyclePage();
 			shell.Items.Add(CreateShellItem());
-			shell.Items.Add(CreateShellItem(page: shellContentPage, shellItemRoute:"ShellItemRoute"));
+			shell.Items.Add(CreateShellItem(page: shellContentPage, shellItemRoute: "ShellItemRoute"));
 			await shell.GoToAsync("///ShellItemRoute/LifeCyclePage/LifeCyclePage");
 
 			var page = (LifeCyclePage)shell.GetVisiblePage();
@@ -348,20 +348,21 @@ namespace Xamarin.Forms.Core.UnitTests
 			lifeCycleState.AllTrue();
 
 			await shell.Navigation.PushAsync(new ContentPage());
+
 			//if you're just pushing a page then the section and item are still visible but the content is not
-			Assert.IsFalse(lifeCycleState.PageAppearing);
+			Assert.IsFalse(lifeCycleState.ShellContentPageAppearing);
 			Assert.IsFalse(lifeCycleState.ContentAppearing);
 			Assert.IsTrue(lifeCycleState.SectionAppearing);
 			Assert.IsTrue(lifeCycleState.ItemAppearing);
 
 			await shell.Navigation.PushAsync(new ContentPage());
-			Assert.IsFalse(lifeCycleState.PageAppearing);
+			Assert.IsFalse(lifeCycleState.ShellContentPageAppearing);
 			Assert.IsFalse(lifeCycleState.ContentAppearing);
 			Assert.IsTrue(lifeCycleState.SectionAppearing);
 			Assert.IsTrue(lifeCycleState.ItemAppearing);
 
 			await shell.Navigation.PopAsync();
-			Assert.IsFalse(lifeCycleState.PageAppearing);
+			Assert.IsFalse(lifeCycleState.ShellContentPageAppearing);
 			Assert.IsFalse(lifeCycleState.ContentAppearing);
 			Assert.IsTrue(lifeCycleState.SectionAppearing);
 			Assert.IsTrue(lifeCycleState.ItemAppearing);
@@ -383,7 +384,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			await shell.Navigation.PushAsync(new ContentPage());
 			await shell.Navigation.PushAsync(new ContentPage());
 			await shell.Navigation.PushAsync(new ContentPage());
-			Assert.IsFalse(lifeCycleState.PageAppearing);
+			Assert.IsFalse(lifeCycleState.ShellContentPageAppearing);
 			Assert.IsFalse(lifeCycleState.ContentAppearing);
 			Assert.IsTrue(lifeCycleState.SectionAppearing);
 			Assert.IsTrue(lifeCycleState.ItemAppearing);
@@ -582,7 +583,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				set;
 			}
 
-			public bool PageAppearing
+			public bool ShellContentPageAppearing
 			{
 				get;
 				set;
@@ -597,13 +598,14 @@ namespace Xamarin.Forms.Core.UnitTests
 				shell.SearchForRoute(SectionRoute).Appearing += (_, __) => SectionAppearing = true;
 				shell.SearchForRoute(ContentRoute).Appearing += (_, __) => ContentAppearing = true;
 				shellContent.Appearing += (_, __) => ContentAppearing = true;
-				contentPage.Appearing += (_, __) => PageAppearing = true;
+				contentPage.Appearing += (_, __) => ShellContentPageAppearing = true;
 
 				shell.SearchForRoute(ItemRoute).Disappearing += (_, __) => ItemAppearing = false;
 				shell.SearchForRoute(SectionRoute).Disappearing += (_, __) => SectionAppearing = false;
 				shellContent.Disappearing += (_, __) => ContentAppearing = false;
-				contentPage.Disappearing += (_, __) => PageAppearing = false;
+				contentPage.Disappearing += (_, __) => ShellContentPageAppearing = false;
 			}
+
 			public ShellLifeCycleState(BaseShellItem baseShellItem)
 			{
 				var shellContent = baseShellItem.SearchForRoute<ShellContent>(ContentRoute);
@@ -612,12 +614,12 @@ namespace Xamarin.Forms.Core.UnitTests
 				baseShellItem.SearchForRoute(ItemRoute).Appearing += (_, __) => ItemAppearing = true;
 				baseShellItem.SearchForRoute(SectionRoute).Appearing += (_, __) => SectionAppearing = true;
 				shellContent.Appearing += (_, __) => ContentAppearing = true;
-				contentPage.Appearing += (_, __) => PageAppearing = true;
+				contentPage.Appearing += (_, __) => ShellContentPageAppearing = true;
 
 				baseShellItem.SearchForRoute(ItemRoute).Disappearing += (_, __) => ItemAppearing = false;
 				baseShellItem.SearchForRoute(SectionRoute).Disappearing += (_, __) => SectionAppearing = false;
 				shellContent.Disappearing += (_, __) => ContentAppearing = false;
-				contentPage.Disappearing += (_, __) => PageAppearing = false;
+				contentPage.Disappearing += (_, __) => ShellContentPageAppearing = false;
 			}
 
 			public void AllFalse()
@@ -625,7 +627,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Assert.IsFalse(ItemAppearing);
 				Assert.IsFalse(SectionAppearing);
 				Assert.IsFalse(ContentAppearing);
-				Assert.IsFalse(PageAppearing);
+				Assert.IsFalse(ShellContentPageAppearing);
 			}
 
 			public void AllTrue()
@@ -633,7 +635,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Assert.IsTrue(ItemAppearing);
 				Assert.IsTrue(SectionAppearing);
 				Assert.IsTrue(ContentAppearing);
-				Assert.IsTrue(PageAppearing);
+				Assert.IsTrue(ShellContentPageAppearing);
 			}
 		}
 	}

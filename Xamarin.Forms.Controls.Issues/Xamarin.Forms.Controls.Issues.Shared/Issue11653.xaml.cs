@@ -1,7 +1,7 @@
-﻿using Xamarin.Forms.Internals;
+﻿using System.Collections.Generic;
 using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Shapes;
-using System.Collections.Generic;
 
 #if UITEST
 using Xamarin.UITest;
@@ -23,14 +23,13 @@ namespace Xamarin.Forms.Controls.Issues
 		public Issue11653()
 		{
 #if APP
-			Device.SetFlags(new List<string> { ExperimentalFlags.BrushExperimental, ExperimentalFlags.ShapesExperimental });
 			InitializeComponent();
 #endif
 		}
 
 		protected override void Init()
 		{
-		
+
 		}
 	}
 }

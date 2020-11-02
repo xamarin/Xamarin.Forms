@@ -2,13 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Android.Content;
-using AndroidX.RecyclerView.Widget;
-using Android.Views;
-using FormsCarouselView = Xamarin.Forms.CarouselView;
-using Xamarin.Forms.Platform.Android.CollectionView;
 using System.Threading.Tasks;
+using Android.Content;
 using Android.Runtime;
+using Android.Views;
+using AndroidX.RecyclerView.Widget;
+using Xamarin.Forms.Platform.Android.CollectionView;
+using FormsCarouselView = Xamarin.Forms.CarouselView;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -30,7 +30,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		public CarouselViewRenderer(Context context) : base(context)
 		{
-			FormsCarouselView.VerifyCarouselViewFlagEnabled(nameof(CarouselViewRenderer));
 			_oldViews = new List<View>();
 			_carouselViewLoopManager = new CarouselViewLoopManager();
 		}
@@ -620,8 +619,8 @@ namespace Xamarin.Forms.Platform.Android
 					var firstView = recyclerView.FindViewHolderForAdapterPosition(linearLayoutManager.FindFirstVisibleItemPosition());
 					var lastView = recyclerView.FindViewHolderForAdapterPosition(linearLayoutManager.FindLastVisibleItemPosition());
 					var centerView = recyclerView.GetCenteredView();
-					firstVisibleItemIndex = GetIndexFromTemplatedCell(firstView.ItemView);
-					lastVisibleItemIndex = GetIndexFromTemplatedCell(lastView.ItemView);
+					firstVisibleItemIndex = GetIndexFromTemplatedCell(firstView?.ItemView);
+					lastVisibleItemIndex = GetIndexFromTemplatedCell(lastView?.ItemView);
 					centerItemIndex = GetIndexFromTemplatedCell(centerView);
 				}
 

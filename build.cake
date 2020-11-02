@@ -42,8 +42,8 @@ string workingDirectory = EnvironmentVariable("SYSTEM_DEFAULTWORKINGDIRECTORY", 
 var configuration = Argument("BUILD_CONFIGURATION", "Debug");
 
 var target = Argument("target", "Default");
-var IOS_SIM_NAME = Argument("IOS_SIM_NAME", "iPhone 7");
-var IOS_SIM_RUNTIME = Argument("IOS_SIM_RUNTIME", "com.apple.CoreSimulator.SimRuntime.iOS-12-4");
+var IOS_SIM_NAME = GetBuildVariable("IOS_SIM_NAME", "iPhone 7");
+var IOS_SIM_RUNTIME = GetBuildVariable("IOS_SIM_RUNTIME", "com.apple.CoreSimulator.SimRuntime.iOS-12-4");
 var IOS_TEST_PROJ = "./Xamarin.Forms.Core.iOS.UITests/Xamarin.Forms.Core.iOS.UITests.csproj";
 var IOS_TEST_LIBRARY = Argument("IOS_TEST_LIBRARY", $"./Xamarin.Forms.Core.iOS.UITests/bin/{configuration}/Xamarin.Forms.Core.iOS.UITests.dll");
 var IOS_IPA_PATH = Argument("IOS_IPA_PATH", $"./Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/{configuration}/XamarinFormsControlGalleryiOS.app");
@@ -181,21 +181,15 @@ string monoVersion = "";
 
 if(releaseChannel == ReleaseChannel.Stable)
 {
-    if(IsXcodeVersionOver("11.4"))
+    if(IsXcodeVersionAtLeast("12.0"))
     {
-        // Xcode 11.4 just uses boots enums
-        Information ("XCODE 11.4");
     }
     else
     {
-        // Xcode 11.3
         monoMajorVersion = "";
         monoPatchVersion = "";
-        androidSDK_macos = "https://download.visualstudio.microsoft.com/download/pr/8f94ca38-039a-4c9f-a51a-a6cb33c76a8c/aa46188c5f7a2e0c6f2d4bd4dc261604/xamarin.android-10.2.0.100.pkg";
-        iOSSDK_macos = $"https://download.visualstudio.microsoft.com/download/pr/8f94ca38-039a-4c9f-a51a-a6cb33c76a8c/21e09d8084eb7c15eaa07c970e0eccdc/xamarin.ios-13.14.1.39.pkg";
-        macSDK_macos = $"https://download.visualstudio.microsoft.com/download/pr/8f94ca38-039a-4c9f-a51a-a6cb33c76a8c/979144aead55378df75482d35957cdc9/xamarin.mac-6.14.1.39.pkg";
-        monoSDK_macos = "https://download.visualstudio.microsoft.com/download/pr/8f94ca38-039a-4c9f-a51a-a6cb33c76a8c/3a376d8c817ec4d720ecca2d95ceb4c1/monoframework-mdk-6.8.0.123.macos10.xamarin.universal.pkg";
-
+        iOSSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-7-xcode11.7/3016ffe2b0ee27bf4a2d61e6161430d6bbd62f78/7/package/notarized/xamarin.ios-13.20.3.5.pkg";
+    	macSDK_macos = $"https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/d16-7-xcode11.7/3016ffe2b0ee27bf4a2d61e6161430d6bbd62f78/7/package/notarized/xamarin.mac-6.20.3.5.pkg";
     }
 }
 
@@ -247,8 +241,8 @@ Task("Clean")
     .Description("Deletes all the obj/bin directories")
     .Does(() =>
 {
-    CleanDirectories("./**/obj", (fsi)=> !fsi.Path.FullPath.Contains("XFCorePostProcessor") && !fsi.Path.FullPath.StartsWith("tools"));
-    CleanDirectories("./**/bin", (fsi)=> !fsi.Path.FullPath.Contains("XFCorePostProcessor") && !fsi.Path.FullPath.StartsWith("tools"));
+    CleanDirectories("./**/obj", (fsi)=> !fsi.Path.FullPath.StartsWith("tools"));
+    CleanDirectories("./**/bin", (fsi)=> !fsi.Path.FullPath.StartsWith("tools"));
 });
 
 Task("provision-macsdk")
@@ -950,6 +944,7 @@ Task("cg-ios-build-tests")
                 .WithProperty("MtouchArch", "x86_64")
                 .WithProperty("iOSPlatform", "iPhoneSimulator")
                 .WithProperty("BuildIpa", $"true")
+                .WithProperty("CI", $"true")
                 .WithRestore();
 
         if(isCIBuild)
@@ -1081,6 +1076,7 @@ MSBuildSettings GetMSBuildSettings(PlatformTarget? platformTarget = PlatformTarg
         Configuration = buildConfiguration ?? configuration,
     };
 
+    buildSettings = buildSettings.WithProperty("ANDROID_RENDERERS", $"{ANDROID_RENDERERS}");
     if(!String.IsNullOrWhiteSpace(XamarinFormsVersion))
     {
         buildSettings = buildSettings.WithProperty("XamarinFormsVersion", XamarinFormsVersion);
@@ -1090,10 +1086,18 @@ MSBuildSettings GetMSBuildSettings(PlatformTarget? platformTarget = PlatformTarg
     return buildSettings;
 }
 
-bool IsXcodeVersionOver(string version)
+bool IsXcodeVersionAtLeast(string version)
 {
     if(IsRunningOnWindows())
         return true;
+
+    return XcodeVersion() >= Version.Parse(version); 
+}
+
+Version XcodeVersion()
+{
+    if(IsRunningOnWindows())
+        return null;
 
     IEnumerable<string> redirectedStandardOutput;
     StartProcess("xcodebuild", 
@@ -1110,11 +1114,12 @@ bool IsXcodeVersionOver(string version)
         {
             var xcodeVersion = Version.Parse(item.Replace("Xcode", ""));
             Information($"Xcode: {xcodeVersion}");
-            return Version.Parse(item.Replace("Xcode", "")) >= Version.Parse(version); 
+
+            return xcodeVersion; 
         }
     }
 
-    return true;
+    return null;
 }
 
 IReadOnlyList<AppleSimulator> iosSimulators = null;
