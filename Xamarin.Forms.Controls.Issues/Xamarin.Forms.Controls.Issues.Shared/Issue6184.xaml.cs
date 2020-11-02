@@ -30,10 +30,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 		}
 
-#if UITEST
-#if !(__IOS__)
-		[Ignore("This issue is just for iOS")]
-#endif
+#if UITEST && __IOS__
 		[Test]
 		public void GitHubIssue6184()
 		{
