@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
 			{
-				ItemSize = new CGSize(width, height);
+				ItemSize = new CGSize(width, size.Height);
 			}
 			else
 			{
