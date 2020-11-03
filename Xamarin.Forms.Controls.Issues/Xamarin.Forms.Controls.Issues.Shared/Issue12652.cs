@@ -26,33 +26,51 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 			AddBottomTab("Main 1")
-				.Content = new Label()
+				.Content = new StackLayout()
 				{
-					Text = @"Click on the tabs in the following order
-							Top 3,
-							Main 2,
-							Main 1,
-							Top 3,
-							Main 2.
-							If nothing crashes test has passed.",
-					AutomationId = "TopTabPage2"
+					Children =
+					{
+						new Label()
+						{
+							Text = @"Click on the tabs in the following order
+									Top 3,
+									Main 2,
+									Main 1,
+									Top 3,
+									Main 2.
+									If nothing crashes test has passed.",
+							AutomationId = "TopTabPage2"
+						}
+					}
 				};
 
 			AddBottomTab("Main 2")
-				.Content = new Label()
+				.Content = new StackLayout()
 				{
-					Text = "Hello From Page 2",
-					AutomationId = "TopTabPage2"
+					Children =
+					{
+						new Label()
+						{
+							Text = "Hello From Page 2",
+							AutomationId = "TopTabPage2"
+						}
+					}
 				};
 
 
 			AddTopTab("Top 2");
 
 			AddTopTab("Top 3")
-				.Content = new Label()
+				.Content = new StackLayout()
 				{
-					Text = "Hello From Page 3",
-					AutomationId = "TopTabPage3"
+					Children =
+					{
+						new Label()
+						{
+							Text = "Hello From Page 3",
+							AutomationId = "TopTabPage3"
+						}
+					}
 				};
 		}
 
@@ -61,7 +79,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void NavigatingBackToAlreadySelectedTopTabDoesntCrash()
 		{
-			var location = RunningApp.Query("Top 3")[0];
+			var location = RunningApp.WaitForElement("Top 3")[0];
 			RunningApp.TapCoordinates(location.Rect.CenterX, location.Rect.CenterY);
 			RunningApp.WaitForElement("TopTabPage3");
 			RunningApp.Tap("Main 2");
