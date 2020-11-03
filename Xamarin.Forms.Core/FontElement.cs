@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms

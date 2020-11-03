@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace Xamarin.Forms
+﻿namespace Xamarin.Forms
 {
 	static class PaddingElement
 	{
