@@ -741,7 +741,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			// https://stackoverflow.com/questions/37509990/migrating-from-uiwebview-to-wkwebview
-			public override void DecidePolicy(WKWebView webView, WKNavigationAction navigationAction, Action<WKNavigationActionPolicy> decisionHandler)
+			public override async void DecidePolicy(WKWebView webView, WKNavigationAction navigationAction, Action<WKNavigationActionPolicy> decisionHandler)
 			{
 				var navEvent = WebNavigationEvent.NewPage;
 				var navigationType = navigationAction.NavigationType;
@@ -774,11 +774,37 @@ namespace Xamarin.Forms.Platform.iOS
 				_lastEvent = navEvent;
 				var request = navigationAction.Request;
 				var lastUrl = request.Url.ToString();
+
 				var args = new WebNavigatingEventArgs(navEvent, new UrlWebViewSource { Url = lastUrl }, lastUrl);
 
 				WebView.SendNavigating(args);
 				_renderer.UpdateCanGoBackForward();
-				decisionHandler(args.Cancel ? WKNavigationActionPolicy.Cancel : WKNavigationActionPolicy.Allow);
+
+				bool canNavigate = args.Cancel;
+				
+				try
+				{
+					canNavigate = await args?.CancelTask.Invoke();
+				}
+				catch
+				{
+					//handle
+				}
+
+				decisionHandler(BoolToActionPolicy(canNavigate));
+			}
+
+			WKNavigationActionPolicy BoolToActionPolicy(bool val)
+			{
+				switch (val)
+				{
+					case true:
+						return WKNavigationActionPolicy.Allow;
+
+					default:
+					case false:
+						return WKNavigationActionPolicy.Cancel;
+				}
 			}
 
 			string GetCurrentUrl()

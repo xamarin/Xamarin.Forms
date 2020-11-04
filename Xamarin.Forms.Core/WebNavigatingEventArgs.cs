@@ -1,3 +1,6 @@
+using System;
+using System.Threading.Tasks;
+
 namespace Xamarin.Forms
 {
 	public class WebNavigatingEventArgs : WebNavigationEventArgs
@@ -7,5 +10,7 @@ namespace Xamarin.Forms
 		}
 
 		public bool Cancel { get; set; }
+
+		public Func<Task<bool>> CancelTask { get; set; }
 	}
 }
