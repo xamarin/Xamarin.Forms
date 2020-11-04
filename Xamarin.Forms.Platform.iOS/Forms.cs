@@ -39,7 +39,7 @@ namespace Xamarin.Forms
 		static bool? s_isiOS11OrNewer;
 		static bool? s_isiOS12OrNewer;
 		static bool? s_isiOS13OrNewer;
-		 static bool? s_isiOS14OrNewer;
+		static bool? s_isiOS14OrNewer;
 		static bool? s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden;
 
 		internal static bool IsiOS9OrNewer
@@ -92,6 +92,7 @@ namespace Xamarin.Forms
 				return s_isiOS13OrNewer.Value;
 			}
 		}
+
 		internal static bool IsiOS14OrNewer
 		{
 			get
@@ -101,7 +102,6 @@ namespace Xamarin.Forms
 				return s_isiOS14OrNewer.Value;
 			}
 		}
-
 
 
 		internal static bool RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden
@@ -163,7 +163,7 @@ namespace Xamarin.Forms
 			}
 
 			s_flags = (string[])flags.Clone();
-			if (s_flags.Contains ("Profile"))
+			if (s_flags.Contains("Profile"))
 				Profile.Enable();
 		}
 
@@ -737,9 +737,9 @@ namespace Xamarin.Forms
 			}
 
 			public OSAppTheme RequestedTheme
-            {
-                get
-                {
+			{
+				get
+				{
 #if __IOS__ || __TVOS__
 					if (!IsiOS13OrNewer)
 						return OSAppTheme.Unspecified;
