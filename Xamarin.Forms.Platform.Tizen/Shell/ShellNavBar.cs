@@ -39,6 +39,11 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			_menuButton = new EButton(Forms.NativeParent);
 			_menuButton.Clicked += OnMenuClicked;
+			if (Device.Idiom == TargetIdiom.TV)
+			{
+				_menuButton.Style = "circle";
+			}
+
 			_menuIcon = new EImage(Forms.NativeParent);
 			UpdateMenuIcon();
 			_menuIcon.Show();

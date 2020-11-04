@@ -898,7 +898,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (s_shellNavBarDefaultMargin > 0)
 				return s_shellNavBarDefaultMargin;
-			return s_shellNavBarDefaultMargin = CalculateDoubleScaledSizeInLargeScreen(10);
+			return s_shellNavBarDefaultMargin = CalculateDoubleScaledSizeInLargeScreen(15);
 		}
 		static double s_shellNavBarTitleFontSize = -1;
 		public static double GetDefaultTitleFontSize(this ShellNavBar navBar)
