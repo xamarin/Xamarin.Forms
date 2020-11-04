@@ -298,9 +298,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// Make sure we are at the right item
 			GoTo(ShellItem.CurrentItem);
-
+			var moreNavigationCells = GetMoreNavigationCells();
+			var viewControllersLength = ViewControllers.Length;
 			// now that they are applied we can set the enabled state of the TabBar items
-			for (i = 0; i < ViewControllers.Length; i++)
+			for (i = 0; i < viewControllersLength; i++)
 			{
 				var renderer = RendererForViewController(ViewControllers[i]);
 
@@ -308,15 +309,20 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					if (TabBar.Items.Length > i + 1)
 						TabBar.Items[i].Enabled = false;
-					else
+					else if (!Forms.IsiOS14OrNewer)
 					{
-						var tv = MoreNavigationController.ChildViewControllers[0].View as UITableView;
-						var source = tv.IndexPathsForVisibleRows;
-						var cell = tv.CellAt(source[i - 4]);
+						var cell = moreNavigationCells[i - 4];
 						cell.UserInteractionEnabled = false;
 						cell.TextLabel.TextColor = Color.FromRgb(213, 213, 213).ToUIColor();
 					}
 				}
+			}
+
+
+			UITableViewCell[] GetMoreNavigationCells()
+			{
+				var tv = (UITableView)MoreNavigationController.TopViewController.View;
+				return tv.VisibleCells;
 			}
 		}
 
