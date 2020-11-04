@@ -39,7 +39,7 @@ namespace Xamarin.Forms
 		static bool? s_isiOS11OrNewer;
 		static bool? s_isiOS12OrNewer;
 		static bool? s_isiOS13OrNewer;
-		static bool? s_isiOS14OrNewer;
+		 static bool? s_isiOS14OrNewer;
 		static bool? s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden;
 
 		internal static bool IsiOS9OrNewer
@@ -92,7 +92,6 @@ namespace Xamarin.Forms
 				return s_isiOS13OrNewer.Value;
 			}
 		}
-
 		internal static bool IsiOS14OrNewer
 		{
 			get
@@ -102,6 +101,8 @@ namespace Xamarin.Forms
 				return s_isiOS14OrNewer.Value;
 			}
 		}
+
+
 
 		internal static bool RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden
 		{
