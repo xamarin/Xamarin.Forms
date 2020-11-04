@@ -41,4 +41,21 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 #endif
 	}
+
+	[Preserve(AllMembers = true)]
+	public class PageInstruction : ContentPage
+	{
+		public PageInstruction()
+		{
+			var stack = new StackLayout();
+			var label = new Label
+			{
+				Text = "Press the more page, and see if the Cells with Title \"Issue 5\", \"Issue 9\", \"Issue 18\" are Disabled. If don't the test fails",
+				FontSize = 20
+			};
+			stack.Children.Add(label);
+			Content = stack;
+		}
+	}
 }
+
