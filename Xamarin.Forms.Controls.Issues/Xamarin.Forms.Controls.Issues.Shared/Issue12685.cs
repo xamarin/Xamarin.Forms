@@ -21,8 +21,8 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	public partial class Issue12685 : TestContentPage
 	{
-		const string resetStatus = "Path touch event not fired, touch path above.";
-		const string clickedStatus = "Path was clicked, click reset button to start over.";
+		const string ResetStatus = "Path touch event not fired, touch path above.";
+		const string ClickedStatus = "Path was clicked, click reset button to start over.";
 
 		protected override void Init()
 		{
@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var statusLabel = new Label
 			{
 				AutomationId = "LabelValue",
-				Text = resetStatus,
+				Text = ResetStatus,
 			};
 
 			var lgb = new LinearGradientBrush();
@@ -40,22 +40,22 @@ namespace Xamarin.Forms.Controls.Issues
 			var pathGeometry = new PathGeometry();
 			PathFigureCollectionConverter.ParseStringToPathFigureCollection(pathGeometry.Figures, "M0,0 V300 H300 V-300 Z");
 
-			var path = new Shapes.Path
+			var path = new Path
 			{
 				Data = pathGeometry,
-				Fill = lgb,
+				Fill = lgb
 			};
 
 			var touch = new TapGestureRecognizer
 			{
-				Command = new Command(_ => statusLabel.Text = clickedStatus),
+				Command = new Command(_ => statusLabel.Text = ClickedStatus),
 			};
 			path.GestureRecognizers.Add(touch);
 
 			var resetButton = new Button
 			{
 				Text = "Reset",
-				Command = new Command(_ => statusLabel.Text = resetStatus),
+				Command = new Command(_ => statusLabel.Text = ResetStatus),
 			};
 
 			layout.Children.Add(path);
@@ -70,10 +70,10 @@ namespace Xamarin.Forms.Controls.Issues
 		public void ShapesPathReceiveGestureRecognizers()
 		{
 			var testLabel = RunningApp.WaitForFirstElement("LabelValue");
-			Assert.AreEqual(resetStatus, testLabel.ReadText());
+			Assert.AreEqual(ResetStatus, testLabel.ReadText());
 			var pathRect = testLabel.Rect;
 			RunningApp.TapCoordinates(pathRect.X + 100, pathRect.Y-100);
-			Assert.AreEqual(clickedStatus, RunningApp.WaitForFirstElement("LabelValue").ReadText());
+			Assert.AreEqual(ClickedStatus, RunningApp.WaitForFirstElement("LabelValue").ReadText());
 		}
 #endif
 	}
