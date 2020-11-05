@@ -49,6 +49,7 @@ namespace Xamarin.Forms.Platform.iOS
 		Page _displayedPage;
 		bool _disposed;
 		ShellItem _shellItem;
+		static UIColor _defaultMoreTextLabelTextColor;
 
 		IShellSectionRenderer CurrentRenderer { get; set; }
 
@@ -310,13 +311,27 @@ namespace Xamarin.Forms.Platform.iOS
 			// now that they are applied we can set the enabled state of the TabBar items
 			for (int i = 4; i < viewControllersLength; i++)
 			{
-				var renderer = RendererForViewController(ViewControllers[i]);
-
-				if (!renderer.ShellSection.IsEnabled && (i - 4) < (moreNavigationCells.Length - 1))
+				if((i - 4) >= (moreNavigationCells.Length))
 				{
-					var cell = moreNavigationCells[i - 4];
+					break;
+				}
+
+				var renderer = RendererForViewController(ViewControllers[i]);
+				var cell = moreNavigationCells[i - 4];
+
+				if (!renderer.ShellSection.IsEnabled)
+				{
 					cell.UserInteractionEnabled = false;
+
+					if (_defaultMoreTextLabelTextColor == null)
+						_defaultMoreTextLabelTextColor = cell.TextLabel.TextColor;
+
 					cell.TextLabel.TextColor = Color.FromRgb(213, 213, 213).ToUIColor();
+				}
+				else if(!cell.UserInteractionEnabled)
+				{
+					cell.UserInteractionEnabled = true;
+					cell.TextLabel.TextColor = _defaultMoreTextLabelTextColor;
 				}
 			}
 
