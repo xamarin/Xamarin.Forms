@@ -54,41 +54,6 @@
                 <local:PageInstruction PageNumber="9"  />
             </ShellContent>
         </ShellSection>
-        <ShellSection Title="Issue 10">
-            <ShellContent>
-                <local:PageInstruction PageNumber="10"  />
-            </ShellContent>
-        </ShellSection>
-        <ShellSection Title="Issue 12">
-            <ShellContent>
-                <local:PageInstruction PageNumber="12"  />
-            </ShellContent>
-        </ShellSection>
-        <ShellSection Title="Issue 13">
-            <ShellContent>
-                <local:PageInstruction PageNumber="13"  />
-            </ShellContent>
-        </ShellSection>
-        <ShellSection Title="Issue 14">
-            <ShellContent>
-                <local:PageInstruction PageNumber="14"  />
-            </ShellContent>
-        </ShellSection>
-        <ShellSection Title="Issue 15">
-            <ShellContent>
-                <local:PageInstruction PageNumber="15"  />
-            </ShellContent>
-        </ShellSection>
-        <ShellSection Title="Issue 16">
-            <ShellContent>
-                <local:PageInstruction PageNumber="16"  />
-            </ShellContent>
-        </ShellSection>
-        <ShellSection Title="Issue 17">
-            <ShellContent>
-                <local:PageInstruction PageNumber="17"  />
-            </ShellContent>
-        </ShellSection>
         <ShellSection Title="Issue 18" IsEnabled="False">
             <ShellContent>
                 <local:PageInstruction PageNumber="18"  />
