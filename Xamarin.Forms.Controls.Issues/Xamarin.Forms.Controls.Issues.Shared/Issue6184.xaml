@@ -16,82 +16,82 @@
         </ShellSection>
         <ShellSection Title="Issue 2" IsEnabled="False">
             <ShellContent>
-                <local:Issue1900 />
+                <local:PageInstruction />
             </ShellContent>
         </ShellSection>
         <ShellSection Title="Issue 3" IsEnabled="False">
             <ShellContent>
-                <local:Issue1900 />
+                <local:PageInstruction />
             </ShellContent>
         </ShellSection>
         <ShellSection Title="Issue 4" IsEnabled="False">
             <ShellContent>
-                <local:Issue1900 />
+                <local:PageInstruction />
             </ShellContent>
         </ShellSection>
         <ShellSection Title="Issue 5" IsEnabled="False">
             <ShellContent>
-                <local:Issue1900 />
+                <local:PageInstruction />
             </ShellContent>
         </ShellSection>
         <ShellSection Title="Issue 6">
             <ShellContent>
-                <local:Issue1900 />
+                <local:PageInstruction />
             </ShellContent>
         </ShellSection>
         <ShellSection Title="Issue 7">
             <ShellContent>
-                <local:Issue1900 />
+                <local:PageInstruction />
             </ShellContent>
         </ShellSection>
         <ShellSection Title="Issue 8">
             <ShellContent>
-                <local:Issue1900 />
+                <local:PageInstruction />
             </ShellContent>
         </ShellSection>
         <ShellSection Title="Issue 9" IsEnabled="False">
             <ShellContent>
-                <local:Issue1900 />
+                <local:PageInstruction />
             </ShellContent>
         </ShellSection>
         <ShellSection Title="Issue 10">
             <ShellContent>
-                <local:Issue1900 />
+                <local:PageInstruction />
             </ShellContent>
         </ShellSection>
         <ShellSection Title="Issue 12">
             <ShellContent>
-                <local:Issue1900 />
+                <local:PageInstruction />
             </ShellContent>
         </ShellSection>
         <ShellSection Title="Issue 13">
             <ShellContent>
-                <local:Issue1900 />
+                <local:PageInstruction />
             </ShellContent>
         </ShellSection>
         <ShellSection Title="Issue 14">
             <ShellContent>
-                <local:Issue1900 />
+                <local:PageInstruction />
             </ShellContent>
         </ShellSection>
         <ShellSection Title="Issue 15">
             <ShellContent>
-                <local:Issue1900 />
+                <local:PageInstruction />
             </ShellContent>
         </ShellSection>
         <ShellSection Title="Issue 16">
             <ShellContent>
-                <local:Issue1900 />
+                <local:PageInstruction />
             </ShellContent>
         </ShellSection>
         <ShellSection Title="Issue 17">
             <ShellContent>
-                <local:Issue1900 />
+                <local:PageInstruction />
             </ShellContent>
         </ShellSection>
         <ShellSection Title="Issue 18" IsEnabled="False">
             <ShellContent>
-                <local:Issue1900 />
+                <local:PageInstruction />
             </ShellContent>
         </ShellSection>
     </ShellItem>
