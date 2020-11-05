@@ -322,8 +322,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UITableViewCell[] GetMoreNavigationCells()
 			{
-				var tv = (UITableView)MoreNavigationController.TopViewController.View;
-				return tv.VisibleCells;
+				if(MoreNavigationController.TopViewController.View is UITableView uITableView)
+					return uITableView.VisibleCells;
+
+				return new UITableViewCell[0];
 			}
 		}
 
