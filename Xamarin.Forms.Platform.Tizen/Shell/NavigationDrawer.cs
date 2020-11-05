@@ -18,7 +18,6 @@ namespace Xamarin.Forms.Platform.Tizen
 		GestureLayer _gestureOnDimArea;
 
 		bool _isOpen;
-		double _navigationViewRatio = (Device.Idiom == TargetIdiom.TV) ? 0.3 : 0.85;
 
 		public NavigationDrawer(EvasObject parent) : base(parent)
 		{
@@ -72,7 +71,6 @@ namespace Xamarin.Forms.Platform.Tizen
 		void Initialize(EvasObject parent)
 		{
 			SetLayoutCallback(OnLayout);
-
 			_mainContainer = new EBox(parent);
 			_mainContainer.Show();
 			PackEnd(_mainContainer);
@@ -131,7 +129,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			_mainContainer.Geometry = Geometry;
 			_dimArea.Geometry = Geometry;
-			var drawerWidth = (int)(Geometry.Width * _navigationViewRatio);
+			var drawerWidth = (int)(Geometry.Width * this.GetFlyoutRatio(Geometry.Width, Geometry.Height));
 			var bound = Geometry;
 			bound.Width = drawerWidth;
 			bound.X = _isOpen ? bound.X :  bound.X - drawerWidth;
