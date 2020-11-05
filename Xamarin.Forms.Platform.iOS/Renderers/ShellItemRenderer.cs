@@ -75,6 +75,11 @@ namespace Xamarin.Forms.Platform.iOS
 				if (ReferenceEquals(value, MoreNavigationController))
 				{
 					MoreNavigationController.WeakDelegate = this;
+
+					// This ensures that the cells are updated after the UITableView has been populated.
+					// This mainly applies to iOS 14 where the UITableView is populated
+					// after you click on more
+					this.InvokeOnMainThread(UpdateMoreCellsEnabled);
 				}
 			}
 		}
@@ -298,26 +303,25 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// Make sure we are at the right item
 			GoTo(ShellItem.CurrentItem);
+			UpdateMoreCellsEnabled();
+		}
+
+		void UpdateMoreCellsEnabled()
+		{
 			var moreNavigationCells = GetMoreNavigationCells();
 			var viewControllersLength = ViewControllers.Length;
 			// now that they are applied we can set the enabled state of the TabBar items
-			for (i = 0; i < viewControllersLength; i++)
+			for (int i = 4; i < viewControllersLength; i++)
 			{
 				var renderer = RendererForViewController(ViewControllers[i]);
 
-				if (!renderer.ShellSection.IsEnabled)
+				if (!renderer.ShellSection.IsEnabled && (i - 4) < (moreNavigationCells.Length - 1))
 				{
-					if (TabBar.Items.Length > i + 1)
-						TabBar.Items[i].Enabled = false;
-					else if (!Forms.IsiOS14OrNewer)
-					{
-						var cell = moreNavigationCells[i - 4];
-						cell.UserInteractionEnabled = false;
-						cell.TextLabel.TextColor = Color.FromRgb(213, 213, 213).ToUIColor();
-					}
+					var cell = moreNavigationCells[i - 4];
+					cell.UserInteractionEnabled = false;
+					cell.TextLabel.TextColor = Color.FromRgb(213, 213, 213).ToUIColor();
 				}
 			}
-
 
 			UITableViewCell[] GetMoreNavigationCells()
 			{
