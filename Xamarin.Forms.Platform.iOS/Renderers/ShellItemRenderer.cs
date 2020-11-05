@@ -75,17 +75,13 @@ namespace Xamarin.Forms.Platform.iOS
 				if (ReferenceEquals(value, MoreNavigationController))
 				{
 					MoreNavigationController.WeakDelegate = this;
-
-					// This ensures that the cells are updated after the UITableView has been populated.
-					// This mainly applies to iOS 14 where the UITableView is populated
-					// after you click on more
-					this.InvokeOnMainThread(UpdateMoreCellsEnabled);
 				}
 			}
 		}
 
 		[Export("navigationController:didShowViewController:animated:")]
-		public virtual void DidShowViewController(UINavigationController navigationController, [Transient]UIViewController viewController, bool animated)
+		[Preserve(AllMembers = true)]
+		public virtual void DidShowViewController(UINavigationController navigationController, [Transient] UIViewController viewController, bool animated)
 		{
 			var renderer = RendererForViewController(this.SelectedViewController);
 			if (renderer != null)
@@ -93,6 +89,7 @@ namespace Xamarin.Forms.Platform.iOS
 				ShellItem.SetValueFromRenderer(ShellItem.CurrentItemProperty, renderer.ShellSection);
 				CurrentRenderer = renderer;
 			}
+			UpdateMoreCellsEnabled();
 		}
 
 		public override void ViewDidLayoutSubviews()
