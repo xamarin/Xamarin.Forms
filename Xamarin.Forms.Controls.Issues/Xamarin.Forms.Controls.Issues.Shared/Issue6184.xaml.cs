@@ -45,8 +45,19 @@ namespace Xamarin.Forms.Controls.Issues
 	[Preserve(AllMembers = true)]
 	public class PageInstruction : ContentPage
 	{
+
+		Label pageNumber;
+		public int PageNumber
+		{
+			set
+			{
+				pageNumber.Text = $"Page Number: {value}";
+			}
+		}
+
 		public PageInstruction()
 		{
+			pageNumber = new Label();
 			var stack = new StackLayout();
 			var label = new Label
 			{
@@ -54,6 +65,7 @@ namespace Xamarin.Forms.Controls.Issues
 				FontSize = 20
 			};
 			stack.Children.Add(label);
+			stack.Children.Add(pageNumber);
 			Content = stack;
 		}
 	}
