@@ -77,6 +77,8 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					MoreNavigationController.WeakDelegate = this;
 				}
+
+				UpdateMoreCellsEnabled();
 			}
 		}
 
