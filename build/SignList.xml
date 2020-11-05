@@ -9,6 +9,8 @@
     <ThirdParty Include="GMap.NET.Core.dll" />
     <ThirdParty Include="GMap.NET.GTK.dll" />
     <ThirdParty Include="webkit-sharp.dll" />
+    <ThirdParty Include="Mono.Cecil.dll" />
+    <ThirdParty Include="Mono.Cecil.*.dll" />
   </ItemGroup>
 
   <ItemGroup>
