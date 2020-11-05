@@ -26,7 +26,7 @@ resources:
       type: github
       name: xamarin/yaml-templates
       endpoint: xamarin
-      ref: refs/heads/dev/signing-folders # still defaults to master even though main is the main branch
+      ref: refs/heads/main
 
 trigger:
   branches:
