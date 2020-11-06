@@ -16,6 +16,8 @@ namespace Xamarin.Forms
 	{
 		readonly List<Element> _logicalChildren = new List<Element>();
 
+		internal override IEnumerable<Element> ChildrenNotDrawnByThisElement => _logicalChildren;
+
 		public static readonly BindableProperty IsPullToRefreshEnabledProperty = BindableProperty.Create("IsPullToRefreshEnabled", typeof(bool), typeof(ListView), false);
 
 		public static readonly BindableProperty IsRefreshingProperty = BindableProperty.Create("IsRefreshing", typeof(bool), typeof(ListView), false, BindingMode.TwoWay);
@@ -563,7 +565,7 @@ namespace Xamarin.Forms
 			if (newValue != null && lv.GroupHeaderTemplate != null)
 			{
 				lv.GroupHeaderTemplate = null;
-				Log.Warning("ListView", "GroupHeaderTemplate and GroupDisplayBinding can not be set at the same time, setting GroupHeaderTemplate to null");
+				Log.Warning("ListView", "GroupHeaderTemplate and GroupDisplayBinding cannot be set at the same time, setting GroupHeaderTemplate to null");
 			}
 		}
 
@@ -573,7 +575,7 @@ namespace Xamarin.Forms
 			if (newValue != null && lv.GroupDisplayBinding != null)
 			{
 				lv.GroupDisplayBinding = null;
-				Log.Warning("ListView", "GroupHeaderTemplate and GroupDisplayBinding can not be set at the same time, setting GroupDisplayBinding to null");
+				Log.Warning("ListView", "GroupHeaderTemplate and GroupDisplayBinding cannot be set at the same time, setting GroupDisplayBinding to null");
 			}
 		}
 

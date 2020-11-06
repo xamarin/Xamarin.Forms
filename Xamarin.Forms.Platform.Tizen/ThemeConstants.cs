@@ -115,6 +115,12 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				public const string PlaceHolderText = "elm.guide";
 			}
+
+			public class Signals
+			{
+				public const string SelectionChanged = "selection,changed";
+				public const string SelectionCleared = "selection,cleared";
+			}
 		}
 		#endregion
 
@@ -125,6 +131,15 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				public const string BottomLine = "bottomline";
 				public const string Background = Common.ColorClass.BackGround;
+			}
+
+			public class Signals
+			{
+				public class TV
+				{
+					public const string SinglelineIconTextTheme = "theme,singleline,icon,text";
+					public const string SinglelineTextIconTheme = "theme,singleline,text,1icon";
+				}
 			}
 		}
 		#endregion
@@ -560,6 +575,13 @@ namespace Xamarin.Forms.Platform.Tizen
 					public const int DefaultDrawerTouchWidth = 50;
 					public const int DefaultDrawerIconSize = 40;
 					public const string DefaultDrawerIcon = "Xamarin.Forms.Platform.Tizen.Resource.wc_visual_cue.png";
+				}
+
+				public class TV
+				{
+					public const string MenuIconCode = "\u2630";
+					public const string BackIconCode = "\u2190";
+					public const string DotsIconCode = "\u2026";
 				}
 			}
 

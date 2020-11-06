@@ -23,7 +23,7 @@ using Android.Text.Method;
 using Xamarin.Forms.Controls.Issues;
 using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
 using NestedScrollView = global::AndroidX.Core.Widget.NestedScrollView;
-using AMenuItemCompat = global::Android.Support.V4.View.MenuItemCompat;
+using AMenuItemCompat = global::AndroidX.Core.View.MenuItemCompat;
 using IOPath = System.IO.Path;
 
 [assembly: ExportRenderer(typeof(Issue5461.ScrollbarFadingEnabledFalseScrollView), typeof(ScrollbarFadingEnabledFalseScrollViewRenderer))]
@@ -148,7 +148,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 	}
 
 	public class AttachedStateEffectLabelRenderer :
-#if TEST_EXPERIMENTAL_RENDERERS
+#if !LEGACY_RENDERERS
 		Platform.Android.FastRenderers.LabelRenderer
 #else
 		LabelRenderer
