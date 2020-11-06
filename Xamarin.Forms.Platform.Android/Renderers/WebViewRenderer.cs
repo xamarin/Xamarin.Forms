@@ -57,35 +57,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		protected internal async Task<bool> SendNavigatingCanceledAsync(string url)
-		{
-			if (Element == null || string.IsNullOrWhiteSpace(url))
-				return true;
-
-			if (url == AssetBaseUrl)
-				return false;
-
-			var args = new WebNavigatingEventArgs(_eventState, new UrlWebViewSource { Url = url }, url);
-			SyncNativeCookies(url);
-			ElementController.SendNavigating(args);
-			UpdateCanGoBackForward();
-
-
-			var cancelled = false;
-
-			if (args.CancelTask != null)
-			{
-				cancelled = !await args.CancelTask.Invoke();
-			}
-			else
-			{
-				cancelled = args.Cancel;
-			}
-
-			UrlCanceled = cancelled ? null : url;
-			return cancelled;
-		}
-
 		protected internal bool SendNavigatingCanceled(string url)
 		{
 			if (Element == null || string.IsNullOrWhiteSpace(url))
@@ -100,6 +71,34 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateCanGoBackForward();
 			UrlCanceled = args.Cancel ? null : url;
 			return args.Cancel;
+		}
+
+		protected internal async Task<bool> SendNavigatingCanceledAsync(string url)
+		{
+			if (Element == null || string.IsNullOrWhiteSpace(url))
+				return true;
+
+			if (url == AssetBaseUrl)
+				return false;
+
+			var args = new WebNavigatingEventArgs(_eventState, new UrlWebViewSource { Url = url }, url);
+			SyncNativeCookies(url);
+			ElementController.SendNavigating(args);
+			UpdateCanGoBackForward();
+
+			var cancelled = false;
+
+			if (args.CancelTask != null)
+			{
+				cancelled = !await args.CancelTask.Invoke();
+			}
+			else
+			{
+				cancelled = args.Cancel;
+			}
+
+			UrlCanceled = cancelled ? null : url;
+			return cancelled;
 		}
 
 		protected override void Dispose(bool disposing)

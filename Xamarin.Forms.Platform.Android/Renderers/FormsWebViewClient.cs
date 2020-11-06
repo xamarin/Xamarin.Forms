@@ -52,8 +52,6 @@ namespace Xamarin.Forms.Platform.Android
 			return true;
 		}
 
-
-
 		public override void OnPageStarted(WView view, string url, Bitmap favicon)
 		{
 			if (_renderer?.Element == null || string.IsNullOrWhiteSpace(url) || url == WebViewRenderer.AssetBaseUrl)
