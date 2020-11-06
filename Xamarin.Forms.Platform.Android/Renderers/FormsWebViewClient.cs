@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Net;
+using System.Threading.Tasks;
 using Android.Graphics;
 using Android.Runtime;
 using Android.Webkit;
@@ -23,15 +24,35 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool SendNavigatingCanceled(string url) => _renderer?.SendNavigatingCanceled(url) ?? true;
 
+		async Task<bool> SendNavigatingCanceledAsync(string url )
+		{
+			if (_renderer == null)
+				return true;
+
+			return await _renderer.SendNavigatingCanceledAsync(url);
+		}
+
 		[Obsolete("ShouldOverrideUrlLoading(view,url) is obsolete as of version 4.0.0. This method was deprecated in API level 24.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		// api 19-23
 		public override bool ShouldOverrideUrlLoading(WView view, string url)
-			=> SendNavigatingCanceled(url);
+		{
+			OverrideUrlLoading(url, () => SendNavigatingCanceledAsync(url));
+
+			return true;
+		}
 
 		// api 24+
 		public override bool ShouldOverrideUrlLoading(WView view, IWebResourceRequest request)
-			=> SendNavigatingCanceled(request?.Url?.ToString());
+		{
+			var url = request?.Url?.ToString();
+
+			OverrideUrlLoading(url, () => SendNavigatingCanceledAsync(url));
+
+			return true;
+		}
+
+
 
 		public override void OnPageStarted(WView view, string url, Bitmap favicon)
 		{
@@ -112,6 +133,22 @@ namespace Xamarin.Forms.Platform.Android
 			base.Dispose(disposing);
 			if (disposing)
 				_renderer = null;
+		}
+
+		public async void OverrideUrlLoading(string url, Func<Task<bool>> urlEvaluator)
+		{
+			if (urlEvaluator == null)
+			{
+				_renderer.LoadUrl(url);
+				return;
+			}
+
+			var canload = !await urlEvaluator.Invoke();
+
+			if (canload)
+			{
+				_renderer.LoadUrl(url);
+			}
 		}
 	}
 }

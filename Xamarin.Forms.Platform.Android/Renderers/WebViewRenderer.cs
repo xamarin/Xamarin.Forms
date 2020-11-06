@@ -48,13 +48,42 @@ namespace Xamarin.Forms.Platform.Android
 			LoadUrl(url, true);
 		}
 
-		void LoadUrl(string url, bool fireNavigatingCanceled)
+		async void LoadUrl(string url, bool fireNavigatingCanceled)
 		{
-			if (!fireNavigatingCanceled || !SendNavigatingCanceled(url))
+			if (!fireNavigatingCanceled || !await SendNavigatingCanceledAsync(url))
 			{
 				_eventState = WebNavigationEvent.NewPage;
 				Control.LoadUrl(url);
 			}
+		}
+
+		protected internal async Task<bool> SendNavigatingCanceledAsync(string url)
+		{
+			if (Element == null || string.IsNullOrWhiteSpace(url))
+				return true;
+
+			if (url == AssetBaseUrl)
+				return false;
+
+			var args = new WebNavigatingEventArgs(_eventState, new UrlWebViewSource { Url = url }, url);
+			SyncNativeCookies(url);
+			ElementController.SendNavigating(args);
+			UpdateCanGoBackForward();
+
+
+			var cancelled = false;
+
+			if (args.CancelTask != null)
+			{
+				cancelled = !await args.CancelTask.Invoke();
+			}
+			else
+			{
+				cancelled = args.Cancel;
+			}
+
+			UrlCanceled = cancelled ? null : url;
+			return cancelled;
 		}
 
 		protected internal bool SendNavigatingCanceled(string url)
