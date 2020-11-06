@@ -405,6 +405,8 @@ namespace Xamarin.Forms
 				}
 			}
 
+			Device.SetIdiom(currentIdiom);
+
 			if (SdkInt >= BuildVersionCodes.JellyBeanMr1)
 				Device.SetFlowDirection(activity.Resources.Configuration.LayoutDirection.ToFlowDirection());
 
