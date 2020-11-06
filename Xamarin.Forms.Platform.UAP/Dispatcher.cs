@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using Xamarin.Forms;
@@ -25,6 +26,6 @@ namespace Xamarin.Forms.Platform.UWP
 			_coreDispatcher = coreDispatcher;
 		}
 
-		bool IDispatcher.IsInvokeRequired => Device.IsInvokeRequired;
+		bool IDispatcher.IsInvokeRequired => !_coreDispatcher.HasThreadAccess;
 	}
 }

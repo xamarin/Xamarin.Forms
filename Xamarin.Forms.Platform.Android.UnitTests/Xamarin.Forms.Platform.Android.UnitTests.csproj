@@ -50,6 +50,7 @@
     <Compile Include="BackgroundColorTests.cs" />
     <Compile Include="CollectionViewTests.cs" />
     <Compile Include="CornerRadiusTests.cs" />
+    <Compile Include="DispatcherTests.cs" />
     <Compile Include="EmbeddingTests.cs" />
     <Compile Include="IsEnabledTests.cs" />
     <Compile Include="Issues.cs" />

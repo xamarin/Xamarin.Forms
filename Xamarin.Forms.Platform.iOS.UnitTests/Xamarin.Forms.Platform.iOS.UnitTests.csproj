@@ -50,6 +50,7 @@
     <Compile Include="BackgroundColorTests.cs" />
     <Compile Include="ColorComparison.cs" />
     <Compile Include="CornerRadiusTests.cs" />
+    <Compile Include="DispatcherTests.cs" />
     <Compile Include="EmbeddingTests.cs" />
     <Compile Include="FlowDirectionTests.cs" />
     <Compile Include="FrameTests.cs" />
