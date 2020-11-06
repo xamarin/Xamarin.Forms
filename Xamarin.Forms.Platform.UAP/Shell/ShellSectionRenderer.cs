@@ -113,6 +113,13 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			SelectedItem = ShellSection?.CurrentItem;
+
+			for (var i = ShellContentMenuItems.Count - 1; i >= 0; i--)
+			{
+				var item = ShellContentMenuItems[i];
+				if (!newItems.Contains(item))
+					ShellContentMenuItems.RemoveAt(i);
+			}
 		}
 
 		void OnShellSectionRendererCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
