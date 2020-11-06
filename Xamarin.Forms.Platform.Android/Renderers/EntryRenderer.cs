@@ -538,7 +538,14 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.Text = text;
 			if (EditText.IsFocused)
 			{
-				EditText.SetSelection(text.Length);
+                try
+                {
+					EditText.SetSelection(text.Length);
+                }
+				catch (System.Exception ex)
+				{
+					Internals.Log.Warning("Entry", $"Failed to set Control.Selection from CursorPosition/SelectionLength: {ex}");
+				}
 				EditText.ShowKeyboard();
 			}
 		}
