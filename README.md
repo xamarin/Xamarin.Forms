@@ -116,8 +116,6 @@ Here are a few different options we've put together to help make this process ea
     - `msbuild Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj`
   - Now you should be able to run and deploy everything. The only reason you would need to do this process again is if you clean the solution folder or delete the bin/obj folders that are part of the `Xamarin.Forms.Build.Tasks.csproj`
 
-If you are on Visual Studio for Mac 2017, you will need to turn off automatic package restore (Visual Studio => Preferences => Nuget => General => uncheck the Package Restore box) before working on the Xamarin.Forms solution. This step is no longer needed with Visual Studio for Mac 2019.
-
 ##### Solution Configuration #####
 
 Upon opening the Xamarin.Forms solution, you will find that there are a number of errors and warnings under the Error List pane; you can resolve this by changing the filter of `Build + IntelliSense` to `Build Only`. At this point, you should be able to successfully build the solution.
