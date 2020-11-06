@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Threading.Tasks;
 using CoreGraphics;
 using Foundation;
@@ -77,6 +78,9 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			UpdateInitialPosition();
+
+			//if the size changed center the item	
+			Carousel.ScrollTo(Carousel.Position, position: Xamarin.Forms.ScrollToPosition.Center, animate: false);
 		}
 
 		public override void DraggingStarted(UIScrollView scrollView)
