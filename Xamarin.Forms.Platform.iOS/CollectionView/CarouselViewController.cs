@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _updatingScrollOffset;
 		List<View> _oldViews;
 		int _gotoPosition = -1;
+		CGSize _size;
 		ILoopItemsViewSource LoopItemsSource => ItemsSource as ILoopItemsViewSource;
 
 		public CarouselViewController(CarouselView itemsView, ItemsViewLayout layout) : base(itemsView, layout)
@@ -79,6 +80,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateInitialPosition();
 
+			if (CollectionView.Bounds.Size != _size)
+			{
+				_size = CollectionView.Bounds.Size;
+				BoundsSizeChanged();
+			}
+		}
+
+		void BoundsSizeChanged() 
+		{
 			//if the size changed center the item	
 			Carousel.ScrollTo(Carousel.Position, position: Xamarin.Forms.ScrollToPosition.Center, animate: false);
 		}
