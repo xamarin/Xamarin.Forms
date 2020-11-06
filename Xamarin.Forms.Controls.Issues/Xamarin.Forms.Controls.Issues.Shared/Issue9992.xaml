@@ -4,6 +4,7 @@
                           xmlns:controls="clr-namespace:Xamarin.Forms.Controls;assembly=Xamarin.Forms.Core.Android.UITests"
                           x:Class="Xamarin.Forms.Controls.Issues.Issue9992">
     <StackLayout>
+        <Label Text="When adding new items there should be spacings between new added items. When reloading the view the ItemSpacing should not change!"/>
         <CollectionView ItemsSource="{Binding Items}" SelectionMode="Single" Margin="0,10,0,0">
             <CollectionView.ItemsLayout>
                 <GridItemsLayout VerticalItemSpacing="5" Orientation="Vertical" />
