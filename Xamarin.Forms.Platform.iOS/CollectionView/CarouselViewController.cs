@@ -547,7 +547,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var centerOffsetY = (LoopCount * contentHeight - boundsHeight) / 2;
 			var distFromCenter = centerOffsetY - currentOffset.Y;
 
-			if (Math.Abs(distFromCenter) > (contentHeight / 4))
+			if (Math.Abs(distFromCenter) > (contentHeight / GetMinLoopCount()))
 			{
 				var cellcount = distFromCenter / (cellHeight + cellPadding);
 				var shiftCells = (int)((cellcount > 0) ? Math.Floor(cellcount) : Math.Ceiling(cellcount));
@@ -573,14 +573,14 @@ namespace Xamarin.Forms.Platform.iOS
 			var currentOffset = collectionView.ContentOffset;
 			var contentWidth = GetTotalContentWidth();
 			var boundsWidth = collectionView.Bounds.Size.Width;
-
+			
 			if (contentWidth == 0 || cellWidth == 0)
 				return;
 
 			var centerOffsetX = (LoopCount * contentWidth - boundsWidth) / 2;
 			var distFromCentre = centerOffsetX - currentOffset.X;
 
-			if (Math.Abs(distFromCentre) > (contentWidth / 4))
+			if (Math.Abs(distFromCentre) > (contentWidth / GetMinLoopCount()))
 			{
 				var cellcount = distFromCentre / (cellWidth + cellPadding);
 				var shiftCells = (int)((cellcount > 0) ? Math.Floor(cellcount) : Math.Ceiling(cellcount));
@@ -628,6 +628,8 @@ namespace Xamarin.Forms.Platform.iOS
 			var centerIndexPath = collectionView.IndexPathForItemAtPoint(centerPoint);
 			return centerIndexPath;
 		}
+
+		int GetMinLoopCount() => Math.Min(LoopCount, GetItemsSourceCount());
 
 		int GetItemsSourceCount() => _itemsSource.ItemCount;
 
