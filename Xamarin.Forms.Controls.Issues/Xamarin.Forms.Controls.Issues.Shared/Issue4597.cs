@@ -306,9 +306,9 @@ namespace Xamarin.Forms.Controls.Issues
 				RunningApp.WaitForNoElement(activeTest);
 			}
 
-			if (fileSource && RunningApp.Query(_imageFromUri).Length == 0)
+			if (fileSource && RunningApp.Query(_imageFromFile).Length == 0)
 				RunningApp.Tap(_switchUriId);
-			else if (!fileSource && RunningApp.Query(_imageFromFile).Length == 0)
+			else if (!fileSource && RunningApp.Query(_imageFromUri).Length == 0)
 				RunningApp.Tap(_switchUriId);
 		}
 #endif

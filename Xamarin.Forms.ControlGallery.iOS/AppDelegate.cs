@@ -410,7 +410,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			return App.IOSVersion;
 		}
 
-		[Export("hasInternetAccess:")]
+		[Export("hasInternetAccess")]
 		public bool HasInternetAccess()
 		{
 			try
