@@ -476,6 +476,18 @@ namespace Xamarin.Forms.Controls
 		public void TestSetup(Type testType, bool isolate)
 		{
 
+			if (TestContext.CurrentContext.Test.Properties["Category"].Contains(UITestCategories.RequiresInternetConnection))
+			{
+				var hasInternetAccess = $"{_app.Invoke("hasInternetAccess")}";
+				bool checkInternet;
+
+				if (bool.TryParse(hasInternetAccess, out checkInternet))
+				{
+					if (!checkInternet)
+						Assert.Inconclusive("Device Has No Internet Connection");
+				}
+			}
+
 #if __WINDOWS__
 			RestartIfAppIsClosed();
 #endif

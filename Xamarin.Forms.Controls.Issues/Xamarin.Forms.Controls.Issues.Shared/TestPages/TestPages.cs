@@ -415,18 +415,6 @@ namespace Xamarin.Forms.Controls
 		public void Setup()
 		{
 			(RunningApp as ScreenshotConditionalApp).TestSetup(GetType(), Isolate);
-
-			if(TestContext.CurrentContext.Test.Properties["Category"].Contains(UITestCategories.RequiresInternetConnection))
-			{
-				var hasInternetAccess = $"{RunningApp.Invoke("hasInternetAccess")}";
-				bool checkInternet;
-
-				if(bool.TryParse(hasInternetAccess, out checkInternet))
-				{
-					if (!checkInternet)
-						Assert.Inconclusive("Device Has No Internet Connection");
-				}
-			}
 		}
 
 		[TearDown]
