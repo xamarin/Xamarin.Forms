@@ -530,22 +530,18 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateText()
 		{
-			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
-
-			if (EditText.Text == text)
+			if (EditText.Text == text || Element == null)
 				return;
-
+				
+			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
+			
+	        if (EditText.Text == text)
+		        return;
+			
 			EditText.Text = text;
 			if (EditText.IsFocused)
 			{
-                try
-                {
-					EditText.SetSelection(text.Length);
-                }
-				catch (System.Exception ex)
-				{
-					Internals.Log.Warning("Entry", $"Failed to set Control.Selection from CursorPosition/SelectionLength: {ex}");
-				}
+				EditText.SetSelection(text.Length);
 				EditText.ShowKeyboard();
 			}
 		}
