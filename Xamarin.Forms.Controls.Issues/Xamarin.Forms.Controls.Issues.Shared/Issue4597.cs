@@ -180,6 +180,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
+		[NUnit.Framework.Category(UITestCategories.RequiresInternetConnection)]
 		public void ImageFromUriSourceAppearsAndDisappearsCorrectly()
 		{
 			RunTest(nameof(Image), true);
@@ -193,6 +194,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
+		[NUnit.Framework.Category(UITestCategories.RequiresInternetConnection)]
 		public void ButtonFromUriSourceAppearsAndDisappearsCorrectly()
 		{
 			RunTest(nameof(Button), true);
@@ -206,6 +208,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
+		[NUnit.Framework.Category(UITestCategories.RequiresInternetConnection)]
 		public void ImageButtonFromUriSourceAppearsAndDisappearsCorrectly()
 		{
 			RunTest(nameof(ImageButton), true);
@@ -218,6 +221,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
+		[NUnit.Framework.Category(UITestCategories.RequiresInternetConnection)]
 		public void ImageCellFromUriSourceAppearsAndDisappearsCorrectly()
 		{
 			ImageCellTest(false);
@@ -235,6 +239,7 @@ namespace Xamarin.Forms.Controls.Issues
 			SetImageSourceToNull();
 
 			imageVisible = GetImage();
+			Assert.AreEqual(0, imageVisible.Length);
 
 			UITest.Queries.AppResult[] GetImage()
 			{
@@ -300,8 +305,6 @@ namespace Xamarin.Forms.Controls.Issues
 				RunningApp.Tap(_nextTestId);
 				RunningApp.WaitForNoElement(activeTest);
 			}
-
-			var currentSetting = RunningApp.WaitForElement(_switchUriId)[0].ReadText();
 
 			if (fileSource && RunningApp.Query(_imageFromUri).Length == 0)
 				RunningApp.Tap(_switchUriId);
