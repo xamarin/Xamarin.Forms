@@ -541,7 +541,7 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.Text = text;
 			if (EditText.IsFocused)
 			{
-				EditText.SetSelection(text.Length);
+				EditText.SetSelection(EditText.Text.Length);
 				EditText.ShowKeyboard();
 			}
 		}
