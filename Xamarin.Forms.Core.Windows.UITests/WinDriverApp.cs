@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -132,12 +133,29 @@ namespace Xamarin.Forms.Core.UITests
 
 		public void DragAndDrop(Func<AppQuery, AppQuery> from, Func<AppQuery, AppQuery> to)
 		{
-			throw new NotImplementedException();
+			DragAndDrop(
+				FindFirstElement(WinQuery.FromQuery(from)),
+				FindFirstElement(WinQuery.FromQuery(to))
+			);
 		}
 
 		public void DragAndDrop(string from, string to)
 		{
-			throw new NotImplementedException();
+			DragAndDrop(
+				FindFirstElement(WinQuery.FromMarked(from)),
+				FindFirstElement(WinQuery.FromMarked(to))
+			);
+		}
+
+		public void DragAndDrop(WindowsElement fromElement, WindowsElement toElement)
+		{
+			//Action Drag and Drop doesn't appear to work
+			// https://github.com/microsoft/WinAppDriver/issues/1223
+
+			var action = new Actions(_session);
+			action.MoveToElement(fromElement).Build().Perform();
+			action.ClickAndHold(fromElement).MoveByOffset(toElement.Location.X, toElement.Location.Y).Build().Perform();
+			action.Release().Perform();
 		}
 
 		public void DragCoordinates(float fromX, float fromY, float toX, float toY)
@@ -202,6 +220,26 @@ namespace Xamarin.Forms.Core.UITests
 				// devices later. So we're going to use the back door.
 				ContextClick(arguments[0].ToString());
 				return null;
+			}
+			
+			if(methodName == "hasInternetAccess")
+			{
+				try
+				{
+					using (var httpClient = new System.Net.Http.HttpClient())
+					using (var httpResponse = httpClient.GetAsync(@"https://www.github.com"))
+					{
+						httpResponse.Wait();
+						if (httpResponse.Result.StatusCode == System.Net.HttpStatusCode.OK)
+							return true;
+						else
+							return false;
+					}
+				}
+				catch
+				{
+					return false;
+				}
 			}
 
 			return null;
@@ -882,7 +920,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		ReadOnlyCollection<WindowsElement> QueryWindows(WinQuery query, bool findFirst = false)
 		{
-			ReadOnlyCollection<WindowsElement> resultByAccessibilityId = _session.FindElementsByAccessibilityId(query.Marked);
+			var resultByAccessibilityId = _session.FindElementsByAccessibilityId(query.Marked);
 			ReadOnlyCollection<WindowsElement> resultByName = null;
 
 			if (!findFirst || resultByAccessibilityId.Count == 0)
