@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
 	[NUnit.Framework.Category(Core.UITests.UITestCategories.Image)]
 	[NUnit.Framework.Category(Core.UITests.UITestCategories.ListView)]
+	[NUnit.Framework.Category(UITestCategories.RequiresInternetConnection)]
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 2354, "ListView, ImageCell and disabled source cache and same image url", PlatformAffected.iOS | PlatformAffected.Android)]
@@ -124,7 +125,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-		[NUnit.Framework.Category(UITestCategories.RequiresInternetConnection)]
 		public void TestDoesntCrashWithCachingDisable()
 		{
 			RunningApp.WaitForElement("ImageLoaded");
