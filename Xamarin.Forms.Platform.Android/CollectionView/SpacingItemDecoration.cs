@@ -51,11 +51,14 @@ namespace Xamarin.Forms.Platform.Android
 				_adjustedHorizontalSpacing = parent.Context.ToPixels(_horizontalSpacing);
 			}
 
+			var adjustedVerticalSpacing = (int)_adjustedVerticalSpacing;
+			var adjustedHorizontalSpacing = (int)_adjustedHorizontalSpacing;
+
 			var itemViewType = parent.GetChildViewHolder(view).ItemViewType;
 
 			if (itemViewType == ItemViewType.Header)
 			{
-				outRect.Bottom = (int)_adjustedVerticalSpacing;
+				outRect.Bottom = adjustedVerticalSpacing;
 				return;
 			}
 
@@ -73,18 +76,30 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_orientation == ItemsLayoutOrientation.Vertical)
 			{
-				outRect.Left = spanIndex == 0 ? 0 : (int)_adjustedHorizontalSpacing;
+				outRect.Left = spanIndex == 0 ? 0 : adjustedHorizontalSpacing;
+
+				if (adjustedVerticalSpacing != 0)
+				{
+					outRect.Top = adjustedVerticalSpacing;
+					outRect.Bottom = adjustedVerticalSpacing;
+				}
 
 				if (parent.GetChildAdapterPosition(view) != parent.GetAdapter().ItemCount - 1)
-					outRect.Bottom = (int)_adjustedVerticalSpacing;
+					outRect.Bottom = adjustedVerticalSpacing;
 			}
 
 			if (_orientation == ItemsLayoutOrientation.Horizontal)
 			{
-				outRect.Top = spanIndex == 0 ? 0 : (int)_adjustedVerticalSpacing;
+				outRect.Top = spanIndex == 0 ? 0 : adjustedVerticalSpacing;
+
+				if (adjustedHorizontalSpacing != 0)
+				{
+					outRect.Left = adjustedHorizontalSpacing;
+					outRect.Right = adjustedHorizontalSpacing;
+				}
 
 				if (parent.GetChildAdapterPosition(view) != parent.GetAdapter().ItemCount - 1)
-					outRect.Right = (int)_adjustedHorizontalSpacing;
+					outRect.Right = adjustedHorizontalSpacing;
 			}
 		}
 	}
