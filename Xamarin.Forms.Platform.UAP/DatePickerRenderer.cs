@@ -138,7 +138,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		void CheckDateFormat()
+		bool CheckDateFormat()
 		{
 			return String.IsNullOrWhiteSpace(Element.Format) || Element.Format.Equals("d");
 		}
