@@ -530,7 +530,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateText()
 		{
-			if (EditText.Text == text || Element == null)
+			if (EditText == null || Element == null)
 				return;
 				
 			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
