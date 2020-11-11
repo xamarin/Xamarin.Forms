@@ -90,6 +90,11 @@ namespace Xamarin.Forms.Controls.Issues
             AddItems();
         }
 
+        void RemoveItemsButton_Clicked(object sender, EventArgs e)
+        {
+            Items.Clear();
+        }
+
         void CollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.CurrentSelection.Count == 0)
@@ -104,6 +109,18 @@ namespace Xamarin.Forms.Controls.Issues
             {
                 Items.Remove(item);
             }
+        }
+#endif
+
+#if UITEST 
+        [Test]
+        public void Issue12374Test()
+        {
+            RunningApp.WaitForElement("TestReady");
+            RunningApp.Tap("RemoveItems");
+  		    RunningApp.Tap("AddItems");
+            RunningApp.Tap("RemoveItems");
+            RunningApp.Screenshot("CollectionViewWithEmptyView");
         }
 #endif
     }
