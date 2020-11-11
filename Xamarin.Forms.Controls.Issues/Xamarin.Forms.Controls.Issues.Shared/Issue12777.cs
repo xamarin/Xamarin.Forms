@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Controls.Issues
 		PlatformAffected.iOS)]
 #if UITEST
 	[Category(UITestCategories.Github10000)]
-	[Category(UITestCategories.CollectionView)]
+	[Category(UITestCategories.CarouselView)]
 #endif
 	public class Issue12777 : TestContentPage
 	{
@@ -37,7 +37,10 @@ namespace Xamarin.Forms.Controls.Issues
 				Text = "Without exceptions, the test has passed."
 			};
 
-			var carouselView = new CarouselView();
+			var carouselView = new CarouselView
+			{
+				AutomationId = "TestCarouselView"
+			};
 
 			carouselView.SetBinding(ItemsView.ItemsSourceProperty, nameof(Issue12777ViewModel.Items));
 
@@ -46,6 +49,15 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Content = layout;
 		}
+
+#if UITEST
+		[Test]
+		public void Issue12777Test()
+		{
+			RunningApp.WaitForElement("TestCarouselView");
+			RunningApp.Screenshot("Test passed");
+		}
+#endif
 	}
 
 	[Preserve(AllMembers = true)]
