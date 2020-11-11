@@ -81,7 +81,7 @@ namespace Xamarin.Forms.Platform.iOS
 			SendPop();
 
 		internal bool SendPop()
-		{ 
+		{
 			// this means the pop is already done, nothing we can do
 			if (ViewControllers.Length < NavigationBar.Items.Length)
 				return true;
@@ -418,6 +418,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (viewController != null)
 			{
+				if (viewController == TopViewController)
+				{
+					e.Animated = false;
+					OnPopRequested(e);
+				}
+
 				if (ViewControllers.Contains(viewController))
 					ViewControllers = ViewControllers.Remove(viewController);
 
@@ -606,9 +612,6 @@ namespace Xamarin.Forms.Platform.iOS
 			public override void WillShowViewController(UINavigationController navigationController, [Transient] UIViewController viewController, bool animated)
 			{
 				var element = _self.ElementForViewController(viewController);
-
-				if (element == null)
-					return;
 
 				bool navBarVisible;
 				if (element is ShellSection)
