@@ -20,14 +20,14 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public Issue12750()
 		{
-#if APP
-			InitializeComponent();
-
 			_list = new ObservableCollection<string>
 			{
 				"one",
 				"two"
 			};
+#if APP
+			InitializeComponent();
+
 			Issue12750ListView.ItemsSource = _list;
 #endif
 		}
@@ -36,45 +36,47 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 		}
 
+#if APP
 		void OnButtonClicked(object sender, EventArgs e)
 		{
 			Navigation.PushModalAsync(new Issue12750DetailPage(_list));
 		}
-	}
 
-	public class Issue12750DetailPage : ContentPage
-	{
-		ObservableCollection<string> _list;
-
-		public Issue12750DetailPage(ObservableCollection<string> list)
+		public class Issue12750DetailPage : ContentPage
 		{
-			_list = list;
+			ObservableCollection<string> _list;
 
-			var layout = new StackLayout();
-
-			var label = new Label
+			public Issue12750DetailPage(ObservableCollection<string> list)
 			{
-				Text = "Add item:"
-			};
+				_list = list;
 
-			var entry = new Entry();
+				var layout = new StackLayout();
 
-			var button = new Button
-			{
-				Text = "Add"
-			};
+				var label = new Label
+				{
+					Text = "Add item:"
+				};
 
-			layout.Children.Add(label);
-			layout.Children.Add(entry);
-			layout.Children.Add(button);
+				var entry = new Entry();
 
-			Content = layout;
+				var button = new Button
+				{
+					Text = "Add"
+				};
 
-			button.Clicked += (sender, args) =>
-			{
-				_list.Add(entry.Text);
-				Navigation.PopModalAsync();
-			};
+				layout.Children.Add(label);
+				layout.Children.Add(entry);
+				layout.Children.Add(button);
+
+				Content = layout;
+
+				button.Clicked += (sender, args) =>
+				{
+					_list.Add(entry.Text);
+					Navigation.PopModalAsync();
+				};
+			}
 		}
+#endif
 	}
 }
