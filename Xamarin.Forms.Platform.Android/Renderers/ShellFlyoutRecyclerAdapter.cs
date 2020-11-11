@@ -61,6 +61,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_templateMap.ContainsKey(id))
 				_templateMap[id] = template;
+                        Else
+                                _teplateMap.Add(id) = template;
 
 			return id;
 		}
