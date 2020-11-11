@@ -95,6 +95,10 @@
 			((Shape)bindable).UpdateBrushParent((Brush)newValue);
 		}
 
-		void UpdateBrushParent(Brush brush) => brush.Parent = this;
+		void UpdateBrushParent(Brush brush)
+		{
+			if (brush != null)
+				brush.Parent = this;
+		}
 	}
 }

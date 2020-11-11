@@ -73,5 +73,29 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame(context, firstStop.BindingContext);
 			Assert.AreSame(context, secondStop.BindingContext);
 		}
+
+		[Test]
+		public void TestBrushParent()
+		{
+			var context = new object();
+
+			var parent = new Grid
+			{
+				BindingContext = context
+			};
+
+			var linearGradientBrush = new LinearGradientBrush();
+
+			var firstStop = new GradientStop { Offset = 0.1f, Color = Color.Red };
+			var secondStop = new GradientStop { Offset = 1.0f, Color = Color.Blue };
+
+			linearGradientBrush.GradientStops.Add(firstStop);
+			linearGradientBrush.GradientStops.Add(secondStop);
+
+			parent.Background = linearGradientBrush;
+
+			Assert.AreSame(parent, parent.Background.Parent);
+			Assert.AreSame(context, parent.Background.BindingContext);
+		}
 	}
 }
