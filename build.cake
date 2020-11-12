@@ -800,12 +800,22 @@ Task("BuildForNuget")
 
         msbuildSettings = GetMSBuildSettings();
         msbuildSettings.BinaryLogger = binaryLogger;
+        binaryLogger.FileName = $"{artifactStagingDirectory}/win-maps-{configuration}-csproj.binlog";
+        MSBuild("./Xamarin.Forms.Maps.UWP/Xamarin.Forms.Maps.UWP.csproj",
+                    msbuildSettings
+                        .WithProperty("UwpMinTargetFrameworks", "uap10.0.14393")
+                        .WithRestore());
+
+        msbuildSettings = GetMSBuildSettings();
+        msbuildSettings.BinaryLogger = binaryLogger;
         binaryLogger.FileName = $"{artifactStagingDirectory}/win-{configuration}-csproj.binlog";
         MSBuild("./Xamarin.Forms.Platform.UAP/Xamarin.Forms.Platform.UAP.csproj",
                     msbuildSettings
+                        .WithRestore()
                         .WithTarget("rebuild")
                         .WithProperty("DisableEmbeddedXbf", "false")
-                        .WithProperty("EnableTypeInfoReflection", "false"));
+                        .WithProperty("EnableTypeInfoReflection", "false")
+                        .WithProperty("UwpMinTargetFrameworks", "uap10.0.14393;uap10.0.16299"));
 
         msbuildSettings = GetMSBuildSettings();
         msbuildSettings.BinaryLogger = binaryLogger;
