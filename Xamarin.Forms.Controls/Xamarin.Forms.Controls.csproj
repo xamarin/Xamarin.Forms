@@ -67,6 +67,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Update="GalleryPages\CollectionViewGalleries\DataTemplateSelectorGalleries\VariedSizeDataTemplateSelectorGallery.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="GalleryPages\DragAndDropGalleries\DragAndDropBetweenLayouts.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -20,6 +21,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		UIView _emptyUIView;
 		VisualElement _emptyViewFormsElement;
+		Dictionary<NSIndexPath, TemplatedCell> _measurementCells = new Dictionary<NSIndexPath, TemplatedCell>();
 
 		protected UICollectionViewDelegateFlowLayout Delegator { get; set; }
 
@@ -200,6 +202,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public virtual void UpdateItemsSource()
 		{
+			_measurementCells.Clear();
 			ItemsSource = CreateItemsViewSource();
 			CollectionView.ReloadData();
 			CollectionView.CollectionViewLayout.InvalidateLayout();
@@ -240,7 +243,17 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			cell.ContentSizeChanged -= CellContentSizeChanged;
 
-			cell.Bind(ItemsView.ItemTemplate, ItemsSource[indexPath], ItemsView);
+			// If we've already created a cell for this index path (for measurement), re-use the content
+			if (_measurementCells.TryGetValue(indexPath, out TemplatedCell measurementCell))
+			{
+				_measurementCells.Remove(indexPath);
+				measurementCell.ContentSizeChanged -= CellContentSizeChanged;
+				cell.UseContent(measurementCell);
+			}
+			else
+			{
+				cell.Bind(ItemsView.ItemTemplate, ItemsSource[indexPath], ItemsView);
+			}
 
 			cell.ContentSizeChanged += CellContentSizeChanged;
 
@@ -452,20 +465,23 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				return new HorizontalCell(frame);
 			}
-
+			
 			return new VerticalCell(frame);
 		}
 
-		public TemplatedCell CreateMeasurementCell(NSIndexPath indexPath)
+		public TemplatedCell CreateMeasurementCell(NSIndexPath indexPath) 
 		{
 			if (ItemsView.ItemTemplate == null)
 			{
 				return null;
 			}
 
-			TemplatedCell templatedCell = CreateAppropriateCellForLayout();
-
+			TemplatedCell templatedCell = CreateAppropriateCellForLayout(); 
+						
 			UpdateTemplatedCell(templatedCell, indexPath);
+
+			// Keep this cell around, we can transfer the contents to the actual cell when the UICollectionView creates it
+			_measurementCells[indexPath] = templatedCell;
 
 			return templatedCell;
 		}
