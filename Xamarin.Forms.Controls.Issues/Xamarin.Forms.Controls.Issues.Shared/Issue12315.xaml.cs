@@ -23,5 +23,9 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 
 		}
+
+#if APP
+		void OnMarginSliderValueChanged(object sender, ValueChangedEventArgs e) => IssueButton.CornerRadius = (int)e.NewValue;
+#endif
 	}
 }

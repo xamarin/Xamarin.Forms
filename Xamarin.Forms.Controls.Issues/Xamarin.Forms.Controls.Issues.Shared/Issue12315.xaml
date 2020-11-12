@@ -22,9 +22,14 @@
         </ResourceDictionary>
     </controls:TestContentPage.Resources>
     <ContentPage.Content>
-        <StackLayout
-            Padding="12">
+        <StackLayout>
+            <Label
+                Padding="12"
+                BackgroundColor="Black"
+                TextColor="White"
+                Text="Change the Slider Value to modify the Button CornerRadius. If the Button is visible, the test has passed."/>
             <Button
+                x:Name="IssueButton"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
                 HeightRequest="60"
@@ -34,8 +39,15 @@
                 TextColor="White"
                 FontSize="12"
                 Padding="2"
-                CornerRadius="{OnPlatform Android=8, Default=8}"
                 Text="If the Button is visible, the test has passed."/>
+            <Slider
+                MinimumTrackColor="LightBlue"
+                Minimum="0"
+                Value="8"
+                MaximumTrackColor="DarkBlue"
+                Maximum="24"
+                ThumbColor="Blue"
+                ValueChanged="OnMarginSliderValueChanged"/>
         </StackLayout>
     </ContentPage.Content>
 </controls:TestContentPage>
