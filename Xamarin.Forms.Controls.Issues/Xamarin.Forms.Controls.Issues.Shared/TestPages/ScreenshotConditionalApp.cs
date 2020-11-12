@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Core.UITests;
 using Xamarin.UITest;
 using Xamarin.UITest.Queries;
@@ -475,6 +476,8 @@ namespace Xamarin.Forms.Controls
 
 		public void TestSetup(Type testType, bool isolate)
 		{
+
+			UITestHelper.MarkTestInconclusiveIfNoInternetConnectionIsPresent(testType, _app);
 
 #if __WINDOWS__
 			RestartIfAppIsClosed();
