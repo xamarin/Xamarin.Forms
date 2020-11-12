@@ -170,6 +170,81 @@ namespace Xamarin.Forms.Core.UITests
 					.Perform();
 		}
 
+		public string ReadDatePicker(string marked)
+		{
+			_session.FindElementByAccessibilityId(marked).SendKeys(Keys.Space);
+
+			var LTRCharacter = Convert.ToChar(8206);
+			var RTLCharacter = Convert.ToChar(8207);
+			var datePickerFlyout = _session.FindElementByAccessibilityId("DatePickerFlyoutPresenter");
+			List<string> stringSelectors = new List<string>();
+			ReadSelector("DayLoopingSelector", stringSelectors);
+			ReadSelector("MonthLoopingSelector", stringSelectors);
+			ReadSelector("YearLoopingSelector", stringSelectors);
+			datePickerFlyout.FindElementByAccessibilityId("AcceptButton").Click();
+			return String.Join(",", stringSelectors);
+
+			void ReadSelector(string marked, List<string> data)
+			{
+				try
+				{
+					var text = RemoveExtraCharacters(datePickerFlyout.FindElementByAccessibilityId(marked).Text);
+					data.Add(text);
+				}
+				catch
+				{
+					// when the control isn't found an exception is thrown
+				}
+			}
+
+			string RemoveExtraCharacters(string text)
+			{
+				return 
+					new String(text
+						.ToCharArray()
+						.Where(c => c != LTRCharacter && c != RTLCharacter)
+						.ToArray());
+			}
+		}
+
+		public string ReadTimePicker(string marked)
+		{
+			_session.FindElementByAccessibilityId(marked).SendKeys(Keys.Space);
+
+			var LTRCharacter = Convert.ToChar(8206);
+			var RTLCharacter = Convert.ToChar(8207);
+			var datePickerFlyout = _session.FindElementByAccessibilityId("TimePickerFlyoutPresenter");
+
+			List<string> stringSelectors = new List<string>();
+			ReadSelector("HourLoopingSelector", stringSelectors);
+			ReadSelector("MinuteLoopingSelector", stringSelectors);
+			ReadSelector("PeriodLoopingSelector", stringSelectors);
+			datePickerFlyout.FindElementByAccessibilityId("AcceptButton").Click();
+			return String.Join(":", stringSelectors);
+
+			void ReadSelector(string marked, List<string> data)
+			{
+				try
+				{
+					var text = RemoveExtraCharacters(datePickerFlyout.FindElementByAccessibilityId(marked).Text);
+					data.Add(text);
+				}
+				catch
+				{
+					// when the control isn't found an exception is thrown
+				}
+			}
+
+			string RemoveExtraCharacters(string text)
+			{
+				return
+					new String(text
+						.ToCharArray()
+						.Where(c => c != LTRCharacter && c != RTLCharacter)
+						.ToArray());
+			}
+		}
+
 		static RemoteWebElement SwapInUsefulElement(WindowsElement element)
 		{
 			// AutoSuggestBox on UWP has some interaction issues with WebDriver
@@ -640,7 +715,9 @@ namespace Xamarin.Forms.Core.UITests
 			TimeSpan? timeout = null, TimeSpan? retryFrequency = null, TimeSpan? postTimeout = null)
 		{
 			Func<ReadOnlyCollection<WindowsElement>> result = () => QueryWindows(marked);
-			return WaitForAtLeastOne(result, timeoutMessage, timeout, retryFrequency).Select(ToAppResult).ToArray();
+			var results = WaitForAtLeastOne(result, timeoutMessage, timeout, retryFrequency).Select(ToAppResult).ToArray();
+
+			return results;
 		}
 
 		public AppWebResult[] WaitForElement(Func<AppQuery, AppWebQuery> query,
@@ -1116,7 +1193,10 @@ namespace Xamarin.Forms.Core.UITests
 			TimeSpan? timeout = null,
 			TimeSpan? retryFrequency = null)
 		{
-			return Wait(query, i => i > 0, timeoutMessage, timeout, retryFrequency);
+			var results = Wait(query, i => i > 0, timeoutMessage, timeout, retryFrequency);
+
+
+			return results;
 		}
 
 		void WaitForNone(Func<ReadOnlyCollection<WindowsElement>> query,
