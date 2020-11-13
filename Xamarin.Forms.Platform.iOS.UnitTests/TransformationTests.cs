@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 				m44 = 1f,
 			};
 			var actual = await GetRendererProperty(view, r => r.NativeView.Layer.Transform, requiresLayout: true);
-			AssertTransform3DEqual(actual, expected, 0.0001);
+			AssertTransform3DEqual(actual, expected, 0.001);
 		}
 
 		private static void AssertTransform3DEqual(CATransform3D actual, CATransform3D expected, double delta)
