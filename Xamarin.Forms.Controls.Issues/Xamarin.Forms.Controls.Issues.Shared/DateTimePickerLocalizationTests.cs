@@ -101,10 +101,10 @@ namespace Xamarin.Forms.Controls.Issues
 			Assert.AreEqual("2010, Apr, Thu", DateString("yyy, MMM, ddd", "2010, 4, 15"));
 			Assert.AreEqual("August.Saturday.2015", DateString("MMMM.dddd.yyyy", "2015, 8, 1"));
 #else
-			Assert.AreEqual("1,31,99", DateString("d/M/y", "1999, 1, 31"));
-			Assert.AreEqual("2,29,00", DateString("MM-dd-yy", "2000, 2, 29"));
-			Assert.AreEqual("Apr,Thu 15,2010", DateString("yyy, MMM, ddd", "2010, 4, 15"));
-			Assert.AreEqual("August,Saturday,2015", DateString("MMMM.dddd.yyyy", "2015, 8, 1"));
+			Assert.AreEqual("31,1,99", DateString("d/M/y", "1999, 1, 31"));
+			Assert.AreEqual("29,2,00", DateString("MM-dd-yy", "2000, 2, 29"));
+			Assert.AreEqual("Thu 15,Apr,2010", DateString("yyy, MMM, ddd", "2010, 4, 15"));
+			Assert.AreEqual("Saturday,August,2015", DateString("MMMM.dddd.yyyy", "2015, 8, 1"));
 #endif
 		}
 

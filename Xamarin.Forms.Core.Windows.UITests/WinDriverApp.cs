@@ -170,63 +170,25 @@ namespace Xamarin.Forms.Core.UITests
 					.Perform();
 		}
 
-		public string ReadDatePicker(string marked)
+		public string ReadSelectorPicker(string marked, string flyoutPresenterName, string seperator, string[] selectors)
 		{
-			_session.FindElementByAccessibilityId(marked).SendKeys(Keys.Space);
-
+			WaitForAtLeastOne(() => QueryWindows(marked))[0].SendKeys(Keys.Space);
 			var LTRCharacter = Convert.ToChar(8206);
 			var RTLCharacter = Convert.ToChar(8207);
-			var datePickerFlyout = _session.FindElementByAccessibilityId("DatePickerFlyoutPresenter");
+			var pickerFlyout = _session.FindElementByAccessibilityId(flyoutPresenterName);
 			List<string> stringSelectors = new List<string>();
-			ReadSelector("DayLoopingSelector", stringSelectors);
-			ReadSelector("MonthLoopingSelector", stringSelectors);
-			ReadSelector("YearLoopingSelector", stringSelectors);
-			datePickerFlyout.FindElementByAccessibilityId("AcceptButton").Click();
-			return String.Join(",", stringSelectors);
+
+			foreach(var selector in selectors)
+				ReadSelector(selector, stringSelectors);
+
+			pickerFlyout.FindElementByAccessibilityId("AcceptButton").Click();
+			return String.Join(seperator, stringSelectors);
 
 			void ReadSelector(string marked, List<string> data)
 			{
 				try
 				{
-					var text = RemoveExtraCharacters(datePickerFlyout.FindElementByAccessibilityId(marked).Text);
-					data.Add(text);
-				}
-				catch
-				{
-					// when the control isn't found an exception is thrown
-				}
-			}
-
-			string RemoveExtraCharacters(string text)
-			{
-				return 
-					new String(text
-						.ToCharArray()
-						.Where(c => c != LTRCharacter && c != RTLCharacter)
-						.ToArray());
-			}
-		}
-
-		public string ReadTimePicker(string marked)
-		{
-			_session.FindElementByAccessibilityId(marked).SendKeys(Keys.Space);
-
-			var LTRCharacter = Convert.ToChar(8206);
-			var RTLCharacter = Convert.ToChar(8207);
-			var datePickerFlyout = _session.FindElementByAccessibilityId("TimePickerFlyoutPresenter");
-
-			List<string> stringSelectors = new List<string>();
-			ReadSelector("HourLoopingSelector", stringSelectors);
-			ReadSelector("MinuteLoopingSelector", stringSelectors);
-			ReadSelector("PeriodLoopingSelector", stringSelectors);
-			datePickerFlyout.FindElementByAccessibilityId("AcceptButton").Click();
-			return String.Join(":", stringSelectors);
-
-			void ReadSelector(string marked, List<string> data)
-			{
-				try
-				{
-					var text = RemoveExtraCharacters(datePickerFlyout.FindElementByAccessibilityId(marked).Text);
+					var text = RemoveExtraCharacters(pickerFlyout.FindElementByAccessibilityId(marked).Text);
 					data.Add(text);
 				}
 				catch
@@ -243,6 +205,32 @@ namespace Xamarin.Forms.Core.UITests
 						.Where(c => c != LTRCharacter && c != RTLCharacter)
 						.ToArray());
 			}
+		}
+
+		public string ReadDatePicker(string marked)
+		{
+			return ReadSelectorPicker(
+				marked, 
+				"DatePickerFlyoutPresenter",
+				",",
+				new[] {
+					"DayLoopingSelector",
+					"MonthLoopingSelector",
+					"YearLoopingSelector",
+				});
+		}
+
+		public string ReadTimePicker(string marked)
+		{
+			return ReadSelectorPicker(
+				marked,
+				"TimePickerFlyoutPresenter",
+				":",
+				new[] {
+					"HourLoopingSelector",
+					"MinuteLoopingSelector",
+					"PeriodLoopingSelector",
+				});
 		}
 
 		static RemoteWebElement SwapInUsefulElement(WindowsElement element)
