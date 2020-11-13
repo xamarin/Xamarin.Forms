@@ -113,10 +113,10 @@ namespace Xamarin.Forms.Controls.Issues
 			this.ShowFlyout();
 			var initialWidth = RunningApp.WaitForElement("FlyoutHeader")[0].Rect.Width;
 			var initialHeight = RunningApp.WaitForElement("FlyoutFooter")[0].Rect.Y;
-			RunningApp.Tap("ChangeFlyoutSizes");
+			TapInFlyout("ChangeFlyoutSizes", makeSureFlyoutStaysOpen: true);
 			Assert.AreNotEqual(initialWidth, RunningApp.WaitForElement("FlyoutHeader")[0].Rect.Width);
 			Assert.AreNotEqual(initialHeight, RunningApp.WaitForElement("FlyoutFooter")[0].Rect.Y);
-			RunningApp.Tap("ResetFlyoutSizes");
+			TapInFlyout("ResetFlyoutSizes", makeSureFlyoutStaysOpen: true);
 			Assert.AreEqual(initialWidth, RunningApp.WaitForElement("FlyoutHeader")[0].Rect.Width);
 			Assert.AreEqual(initialHeight, RunningApp.WaitForElement("FlyoutFooter")[0].Rect.Y);
 		}
@@ -126,10 +126,10 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement("PageLoaded");
 			this.ShowFlyout();
-			RunningApp.Tap("ChangeFlyoutSizes");
+			TapInFlyout("ChangeFlyoutSizes", makeSureFlyoutStaysOpen: true);
 			var initialWidth = RunningApp.WaitForElement("FlyoutHeader")[0].Rect.Width;
 			var initialHeight = RunningApp.WaitForElement("FlyoutFooter")[0].Rect.Y;
-			RunningApp.Tap("DecreaseFlyoutSizes");
+			TapInFlyout("DecreaseFlyoutSizes", makeSureFlyoutStaysOpen: true);
 			var newWidth = RunningApp.WaitForElement("FlyoutHeader")[0].Rect.Width;
 			var newHeight = RunningApp.WaitForElement("FlyoutFooter")[0].Rect.Y;
 
