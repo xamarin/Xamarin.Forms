@@ -202,11 +202,35 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_gotoPosition = -1;
 
-			if (count > 0)
-				ScrollToPosition(newPosition, carouselPosition, false);
+			ScrollToPositionIfNeeded(newPosition, count, currentItemPosition == -1);
 
 			SetCurrentItem(newPosition);
 			SetPosition(newPosition);
+		}
+
+		void ScrollToPositionIfNeeded(int newPosition, int count, bool removingCurrentItem)
+		{
+			// if we don't have items no need to scroll
+			if (count <= 0)
+				return;
+
+			if (!removingCurrentItem)
+			{
+				ScrollToPosition(newPosition, Carousel.Position, false);
+			}
+			else
+			{
+				// we will Reloadthe VisibleItems so we need delay a bit for the collectionView to reload
+				// and then scroll to the correct position
+				Device.StartTimer(TimeSpan.FromMilliseconds(50), () =>
+				{
+					// reset _goToPosition since we are reloading 
+					// but a ScrollTo could be happening
+					_gotoPosition = -1;
+					ScrollToPosition(newPosition, Carousel.Position, false, removingCurrentItem);
+					return false;
+				});
+			}
 		}
 
 		int GetPositionWhenAddingItems(int carouselPosition, int currentItemPosition)
