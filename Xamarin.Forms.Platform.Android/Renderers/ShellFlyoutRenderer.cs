@@ -130,18 +130,7 @@ namespace Xamarin.Forms.Platform.Android
 			ShellController.AddAppearanceObserver(this, Shell);
 		}
 
-		double FlyoutWidth
-		{
-			get
-			{
-				if(_flyoutWidth == -1)
-				{
-					return _flyoutWidthDefault;
-				}
-
-				return _flyoutWidth;
-			}
-		}
+		double FlyoutWidth => (_flyoutWidth == -1) ? _flyoutWidthDefault : _flyoutWidth;
 
 		int FlyoutHeight => (_flyoutHeight == -1) ? LP.MatchParent : (int)_flyoutHeight;
 		Shell Shell => _shellContext.Shell;
