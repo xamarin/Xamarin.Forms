@@ -18,8 +18,9 @@ namespace Xamarin.Forms.Platform.UAP.UnitTests
 				{
 					element.TranslationX = 10.0;
 					element.TranslationY = 30.0;
-					element.Rotation = 27.0;
+					element.Rotation = 248.0;
 					element.Scale = 2.0;
+					element.ScaleX = 2.0;
 					yield return CreateTestCase(element);
 				}
 			}
@@ -29,7 +30,7 @@ namespace Xamarin.Forms.Platform.UAP.UnitTests
 		[Description("View transformation should match renderer transformation")]
 		public async Task TransformationConsistent(View view)
 		{
-			var expected = (10d, 30d, 27d, 2d, 2d);
+			var expected = (10d, 30d, 248d, 4d, 2d);
 			var actual = await GetRendererProperty(view, ver =>
 			{
 				var t = GetTransform(ver.ContainerElement);
