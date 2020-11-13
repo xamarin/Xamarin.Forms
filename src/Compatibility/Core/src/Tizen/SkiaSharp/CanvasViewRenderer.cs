@@ -3,7 +3,8 @@ using System.Diagnostics;
 using ElmSharp;
 using SkiaSharp;
 using SkiaSharp.Views.Tizen;
-using Microsoft.Maui.Controls.Compatibility.Shapes;
+using Microsoft.Maui.Controls.Shapes;
+using Microsoft.Maui.Controls.Platform.Tizen;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen.SkiaSharp
 {

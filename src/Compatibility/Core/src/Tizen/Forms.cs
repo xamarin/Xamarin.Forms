@@ -7,10 +7,10 @@ using System.Reflection;
 using ElmSharp;
 using ElmSharp.Wearable;
 using Tizen.Applications;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 using Microsoft.Maui.Controls.Compatibility.Platform.Tizen;
-using Microsoft.Maui.Controls.Compatibility.Shapes;
-using DeviceOrientation = Microsoft.Maui.Controls.Compatibility.Internals.DeviceOrientation;
+using Microsoft.Maui.Controls.Shapes;
+using DeviceOrientation = Microsoft.Maui.Controls.Internals.DeviceOrientation;
 using ELayout = ElmSharp.Layout;
 using TSystemInfo = Tizen.System.Information;
 
@@ -397,6 +397,11 @@ namespace Microsoft.Maui.Controls.Compatibility
 				}
 				return ret;
 			}
+		}
+
+		public static void Init(IActivationState activationState)
+		{
+			Init(activationState.Context.Context.CurrentApplication);
 		}
 
 		public static void Init(CoreApplication application)

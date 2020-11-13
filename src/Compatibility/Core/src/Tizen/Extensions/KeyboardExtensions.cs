@@ -1,5 +1,5 @@
 using ElmSharp;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 using EEntry = ElmSharp.Entry;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen

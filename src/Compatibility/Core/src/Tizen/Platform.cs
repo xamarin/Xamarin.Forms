@@ -5,9 +5,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using ElmSharp;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 
-[assembly: InternalsVisibleTo("Microsoft.Maui.Controls.Compatibility.Material")]
+[assembly: InternalsVisibleTo("Microsoft.Maui.Controls.Material")]
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 {
@@ -65,6 +65,15 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 			double width = !double.IsPositiveInfinity(widthConstraint) ? widthConstraint : Int32.MaxValue;
 			double height = !double.IsPositiveInfinity(heightConstraint) ? heightConstraint : Int32.MaxValue;
+
+			var renderView = GetRenderer(view);
+			if (renderView == null || renderView.NativeView == null)
+			{
+				if (view is IView iView)
+					return new SizeRequest(iView.Handler.GetDesiredSize(widthConstraint, heightConstraint));
+
+				return new SizeRequest(Size.Zero);
+			}
 
 			return Platform.GetRenderer(view).GetDesiredSize(width, height);
 		}

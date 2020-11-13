@@ -138,6 +138,11 @@ namespace Microsoft.Maui
 				return assetStream;
 
 			// TODO: check other folders as well
+#elif __TIZEN__
+			var resDirPath = Tizen.Applications.Application.Current.DirectoryInfo.Resource;
+			var fontPath = Path.Combine(resDirPath, nativeFont.Filename);
+			if (File.Exists(fontPath))
+				return File.OpenRead(fontPath);
 #endif
 
 			throw new FileNotFoundException($"Native font with the name {nativeFont.Filename} was not found.");

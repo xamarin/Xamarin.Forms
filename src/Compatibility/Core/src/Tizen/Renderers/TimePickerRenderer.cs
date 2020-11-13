@@ -2,7 +2,8 @@ using System;
 using System.Globalization;
 using Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Native;
 using EEntry = ElmSharp.Entry;
-using Specific = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.TizenSpecific.Application;
+using NIEntry = Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Native.IEntry;
+using Specific = Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific.Application;
 using WatchDateTimePickerDialog = Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Native.Watch.WatchDateTimePickerDialog;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
@@ -47,7 +48,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 				entry.SetVerticalTextAlignment(0.5);
 				SetNativeControl(entry);
 
-				if (entry is IEntry ie)
+				if (entry is NIEntry ie)
 				{
 					ie.TextBlockFocused += OnTextBlockFocused;
 					ie.EntryLayoutFocused += OnFocused;
@@ -85,7 +86,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 			{
 				if (Control != null)
 				{
-					if (Control is IEntry ie)
+					if (Control is NIEntry ie)
 					{
 						ie.TextBlockFocused -= OnTextBlockFocused;
 						ie.EntryLayoutFocused -= OnFocused;
@@ -144,7 +145,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 		}
 		protected virtual void UpdateTextColor()
 		{
-			if (Control is IEntry ie)
+			if (Control is NIEntry ie)
 			{
 				ie.TextColor = Element.TextColor.ToNative();
 			}
@@ -158,7 +159,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void UpdateFontSize()
 		{
-			if (Control is IEntry ie)
+			if (Control is NIEntry ie)
 			{
 				ie.FontSize = Element.FontSize;
 			}
@@ -166,7 +167,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void UpdateFontFamily()
 		{
-			if (Control is IEntry ie)
+			if (Control is NIEntry ie)
 			{
 				ie.FontFamily = Element.FontFamily;
 			}
@@ -174,7 +175,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void UpdateFontAttributes()
 		{
-			if (Control is IEntry ie)
+			if (Control is NIEntry ie)
 			{
 				ie.FontAttributes = Element.FontAttributes;
 			}

@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using ElmSharp;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 using ERect = ElmSharp.Rect;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen

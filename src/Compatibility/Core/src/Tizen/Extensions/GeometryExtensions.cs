@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using SkiaSharp;
-using Microsoft.Maui.Controls.Compatibility.Shapes;
-using FormsRectangle = Microsoft.Maui.Controls.Compatibility.Rectangle;
+using Microsoft.Maui.Controls.Shapes;
+using Microsoft.Maui.Controls.Compatibility;
+using FormsRectangle = Microsoft.Maui.Rectangle;
 
-namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
+namespace Microsoft.Maui.Controls.Platform.Tizen
 {
 	public static class GeometryExtensions
 	{

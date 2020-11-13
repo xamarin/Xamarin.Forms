@@ -7,6 +7,8 @@ using NativeView = UIKit.UIView;
 using NativeView = AppKit.NSView;
 #elif MONOANDROID
 using NativeView = Android.Views.View;
+#elif __TIZEN__
+using NativeView = ElmSharp.EvasObject;
 #elif NETSTANDARD
 using NativeView = System.Object;
 #endif

@@ -23,6 +23,14 @@
     <Compile Remove="**\Android\*.cs" />
     <None Include="**\Android\*.cs" />
   </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('tizen')) != true ">
+    <Compile Remove="**\*.Tizen.cs" />
+    <None Include="**\*.Tizen.cs" />
+    <Compile Remove="**\Tizen\*.cs" />
+    <None Include="**\Tizen\*.cs" />
+    <Compile Remove="**\Tizen\**\*.cs" />
+    <None Include="**\Tizen\**\*.cs" />
+  </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard')) != true ">
     <Compile Remove="**\*.Standard.cs" />
     <None Include="**\*.Standard.cs" />
@@ -65,6 +73,12 @@
   <PropertyGroup Condition="$(TargetFramework.StartsWith('netcoreapp')) == true ">
     <UseWpf>true</UseWpf>
   </PropertyGroup>
+
+  <!-- Tizen  -->
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('tizen')) == true ">
+    <DefineConstants>$(DefineConstants);__TIZEN__;</DefineConstants>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
@@ -82,5 +96,9 @@
   </PropertyGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net5.0-windows')) == true">
     <PackageReference Include="Microsoft.WinUI" Version="3.0.0-preview3.201113.0" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('tizen')) == true ">
+    <PackageReference Include="Tizen.NET" Version="8.0.0.15631" />
+    <PackageReference Include="Tizen.UIExtensions.ElmSharp" Version="0.1.0-pre1" />
   </ItemGroup>
 </Project>

@@ -60,7 +60,7 @@ namespace Maui.Controls.Sample
 		//IAppState state
 		public override IWindow CreateWindow(IActivationState state)
 		{
-#if (__ANDROID__ || __IOS__)
+#if (__ANDROID__ || __IOS__ || __TIZEN__)
 			// This will probably go into a compatibility app or window
 			Microsoft.Maui.Controls.Compatibility.Forms.Init(state);
 #endif

@@ -1,6 +1,5 @@
-using Microsoft.Maui.Controls.Compatibility.Internals;
-using Microsoft.Maui.Controls.Compatibility.Xaml.Internals;
-
+using Microsoft.Maui.Controls.Internals;
+using Microsoft.Maui.Controls.Xaml.Internals;
 using EObject = ElmSharp.EvasObject;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen

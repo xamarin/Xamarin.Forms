@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using ElmSharp;
 using ESize = ElmSharp.Size;
-using XLabel = Microsoft.Maui.Controls.Compatibility.Label;
+using XLabel = Microsoft.Maui.Controls.Label;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Native
 {

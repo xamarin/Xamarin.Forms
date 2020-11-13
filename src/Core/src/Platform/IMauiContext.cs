@@ -12,6 +12,8 @@ namespace Microsoft.Maui
 		global::Android.Content.Context Context { get; }
 #elif __IOS__
 
+#elif __TIZEN__
+		CoreUIAppContext Context { get; }
 #endif
 	}
 }
