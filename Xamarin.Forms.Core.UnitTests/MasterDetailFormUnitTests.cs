@@ -420,6 +420,18 @@ namespace Xamarin.Forms.Core.UnitTests
 			var mdp = new MasterDetailPage();
 			Assert.Throws<InvalidOperationException>(() => mdp.Master = master);
 		}
+
+
+		[Test]
+		public void TestFlyoutLayoutBehaviorGetsSetViaBinding()
+		{
+			var master = new MasterDetailPage { Title = "Foo" };
+
+			master.SetValue(MasterDetailPage.MasterBehaviorProperty, MasterBehavior.Split);
+
+			Assert.AreEqual(MasterBehavior.Split, master.MasterBehavior);
+			Assert.AreEqual(FlyoutLayoutBehavior.Split, master.FlyoutLayoutBehavior);
+		}
 	}
 
 }
