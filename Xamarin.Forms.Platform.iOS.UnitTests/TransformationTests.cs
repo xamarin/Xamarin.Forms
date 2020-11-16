@@ -40,27 +40,27 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 				m44 = 1f,
 			};
 			var actual = await GetRendererProperty(view, r => r.NativeView.Layer.Transform, requiresLayout: true);
-			AssertTransform3DEqual(actual, expected, 0.001);
+			AssertTransform3DEqual(actual, expected, 0.0001);
 		}
 
 		private static void AssertTransform3DEqual(CATransform3D actual, CATransform3D expected, double delta)
 		{
-			Assert.That(actual.m11, Is.EqualTo(expected.m11).Within(delta));
-			Assert.That(actual.m12, Is.EqualTo(expected.m12).Within(delta));
-			Assert.That(actual.m13, Is.EqualTo(expected.m13).Within(delta));
-			Assert.That(actual.m14, Is.EqualTo(expected.m14).Within(delta));
-			Assert.That(actual.m21, Is.EqualTo(expected.m21).Within(delta));
-			Assert.That(actual.m22, Is.EqualTo(expected.m22).Within(delta));
-			Assert.That(actual.m23, Is.EqualTo(expected.m23).Within(delta));
-			Assert.That(actual.m24, Is.EqualTo(expected.m24).Within(delta));
-			Assert.That(actual.m31, Is.EqualTo(expected.m31).Within(delta));
-			Assert.That(actual.m32, Is.EqualTo(expected.m32).Within(delta));
-			Assert.That(actual.m33, Is.EqualTo(expected.m33).Within(delta));
-			Assert.That(actual.m34, Is.EqualTo(expected.m34).Within(delta));
-			Assert.That(actual.m41, Is.EqualTo(expected.m41).Within(delta));
-			Assert.That(actual.m42, Is.EqualTo(expected.m42).Within(delta));
-			Assert.That(actual.m43, Is.EqualTo(expected.m43).Within(delta));
-			Assert.That(actual.m44, Is.EqualTo(expected.m44).Within(delta));
+			Assert.That((double)actual.m11, Is.EqualTo((double)expected.m11).Within(delta));
+			Assert.That((double)actual.m12, Is.EqualTo((double)expected.m12).Within(delta));
+			Assert.That((double)actual.m13, Is.EqualTo((double)expected.m13).Within(delta));
+			Assert.That((double)actual.m14, Is.EqualTo((double)expected.m14).Within(delta));
+			Assert.That((double)actual.m21, Is.EqualTo((double)expected.m21).Within(delta));
+			Assert.That((double)actual.m22, Is.EqualTo((double)expected.m22).Within(delta));
+			Assert.That((double)actual.m23, Is.EqualTo((double)expected.m23).Within(delta));
+			Assert.That((double)actual.m24, Is.EqualTo((double)expected.m24).Within(delta));
+			Assert.That((double)actual.m31, Is.EqualTo((double)expected.m31).Within(delta));
+			Assert.That((double)actual.m32, Is.EqualTo((double)expected.m32).Within(delta));
+			Assert.That((double)actual.m33, Is.EqualTo((double)expected.m33).Within(delta));
+			Assert.That((double)actual.m34, Is.EqualTo((double)expected.m34).Within(delta));
+			Assert.That((double)actual.m41, Is.EqualTo((double)expected.m41).Within(delta));
+			Assert.That((double)actual.m42, Is.EqualTo((double)expected.m42).Within(delta));
+			Assert.That((double)actual.m43, Is.EqualTo((double)expected.m43).Within(delta));
+			Assert.That((double)actual.m44, Is.EqualTo((double)expected.m44).Within(delta));
 		}
 	}
 }
