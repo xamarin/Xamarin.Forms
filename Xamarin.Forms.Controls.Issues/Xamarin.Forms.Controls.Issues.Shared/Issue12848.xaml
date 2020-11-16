@@ -11,7 +11,7 @@
             Padding="12"
             BackgroundColor="Black"
             TextColor="White"
-            Text="Swipe the Carousel to select the item numbered 2. Then, tap the Hide Button to hide the Carousel and then the Show Button to show the Carousel again. If the position of the Carousel is the same as before hiding, the test has passed."/>
+            Text="Swipe the CarouselView to select the item numbered 2. Then, tap the Hide Button to hide the Carousel and the Show Button to show the Carousel again. If the position of the Carousel is the same as before hiding, the test has passed."/>
         <CarouselView
             x:Name="carousel"
             HorizontalOptions="Center"
