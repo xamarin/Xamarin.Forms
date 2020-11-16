@@ -102,7 +102,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement("1 item");
 
 			rightX = rect.X + rect.Width - 1;
-			RunningApp.DragCoordinates(centerX, rect.CenterY, rightX, rect.CenterY);
+			RunningApp.DragCoordinates(rect.X, rect.CenterY, rightX, rect.CenterY);
 
 			RunningApp.WaitForElement("0 item");
 		}
