@@ -10,6 +10,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -76,7 +77,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		internal void NavigateToShellSection(ShellNavigationSource source, ShellSection section, Page page, bool animate = true)
+		internal void NavigateToShellSection(ShellSection section)
 		{
 			_ = section ?? throw new ArgumentNullException(nameof(section));
 
@@ -100,7 +101,13 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			SyncMenuItems();
-			NavigateToContent(source, section.CurrentItem, page, animate);
+
+			var shellContent = ShellSection.CurrentItem;
+			Page nextPage = (ShellSection as IShellSectionController)
+					.PresentedPage ?? ((IShellContentController)shellContent)?.GetOrCreateContent();
+
+			OnShellSectionChanged();
+			NavigateToContent(new NavigationRequestedEventArgs(nextPage, true), ShellSection);
 		}
 
 		void SyncMenuItems()
@@ -131,19 +138,23 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (e.PropertyName == ShellSection.CurrentItemProperty.PropertyName)
 			{
-				NavigateToContent(ShellNavigationSource.ShellSectionChanged, ShellSection.CurrentItem, null);
+				NavigateToShellSection(ShellSection);
 			}
 		}
 
-		protected virtual void NavigateToContent(ShellNavigationSource source, ShellContent shellContent, Page page, bool animate = true)
+		public virtual void NavigateToContent(NavigationRequestedEventArgs args, ShellSection shellSection)
 		{
 			Page nextPage = null;
-
-			if (source == ShellNavigationSource.PopToRoot)
+			ShellContent shellContent = shellSection.CurrentItem;
+			if (args.RequestType == NavigationRequestType.PopToRoot)
+			{
 				nextPage = (shellContent as IShellContentController).GetOrCreateContent();
+			}
 			else
+			{
 				nextPage = (ShellSection as IShellSectionController)
 					.PresentedPage ?? ((IShellContentController)shellContent)?.GetOrCreateContent();
+			}
 
 			if (CurrentContent != null && Page != null)
 			{
@@ -156,31 +167,24 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				Page = nextPage;
 				Page.PropertyChanged += OnPagePropertyChanged;
-				switch (source)
+				switch (args.RequestType)
 				{
-					case ShellNavigationSource.Insert:
-						OnInsertRequested(source, page);
+					case NavigationRequestType.Insert:
+						OnInsertRequested(args);
 						break;
-					case ShellNavigationSource.Pop:
-						OnPopRequested(source);
+					case NavigationRequestType.Pop:
+						OnPopRequested(args);
 						break;
-					case ShellNavigationSource.Unknown:
+					case NavigationRequestType.Unknown:
 						break;
-					case ShellNavigationSource.Push:
-						OnPushRequested(source);
+					case NavigationRequestType.Push:
+						OnPushRequested(args);
 						break;
-					case ShellNavigationSource.PopToRoot:
-						OnPopToRootRequested(source);
+					case NavigationRequestType.PopToRoot:
+						OnPopToRootRequested(args);
 						break;
-					case ShellNavigationSource.Remove:
-						OnRemoveRequested(source, page);
-						break;
-					case ShellNavigationSource.ShellItemChanged:
-						break;
-					case ShellNavigationSource.ShellSectionChanged:
-						OnShellSectionChanged(source);
-						break;
-					case ShellNavigationSource.ShellContentChanged:
+					case NavigationRequestType.Remove:
+						OnRemoveRequested(args);
 						break;
 				}
 
@@ -196,46 +200,52 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		protected virtual void OnPopRequested(ShellNavigationSource source)
+		protected virtual void OnPopRequested(NavigationRequestedEventArgs e)
 		{
-			Frame.GoBack(GetTransitionInfo(source));
+			Frame.GoBack(GetTransitionInfo(e));
 		}
 
-		protected virtual void OnPopToRootRequested(ShellNavigationSource source)
+		protected virtual void OnPopToRootRequested(NavigationRequestedEventArgs e)
 		{
 			while (Frame.BackStackDepth > 2)
 			{
 				Frame.BackStack.RemoveAt(1);
 			}
-			Frame.GoBack(GetTransitionInfo(source));
+			Frame.GoBack(GetTransitionInfo(e));
 		}
 
-		protected virtual void OnPushRequested(ShellNavigationSource source)
+		protected virtual void OnPushRequested(NavigationRequestedEventArgs e)
 		{
-			Frame.Navigate(typeof(ShellPageWrapper), GetTransitionInfo(source));
+			Frame.Navigate(typeof(ShellPageWrapper), GetTransitionInfo(e));
 		}
 
-		protected virtual void OnInsertRequested(ShellNavigationSource source, Page page)
+		protected virtual void OnInsertRequested(NavigationRequestedEventArgs e)
 		{
-			var pageIndex = ShellSection.Stack.ToList().IndexOf(page);
+			var pageIndex = ShellSection.Stack.ToList().IndexOf(e.Page);
+			var transition = GetTransitionInfo(e);
 			if (pageIndex == Frame.BackStack.Count - 1)
-				Frame.Navigate(typeof(ShellPageWrapper), GetTransitionInfo(source));
+				Frame.Navigate(typeof(ShellPageWrapper), transition);
 			else
-				Frame.BackStack.Insert(pageIndex, new PageStackEntry(typeof(ShellPageWrapper), null, GetTransitionInfo(source)));
+				Frame.BackStack.Insert(pageIndex, new PageStackEntry(typeof(ShellPageWrapper), null, transition));
 		}
 
-		protected virtual void OnRemoveRequested(ShellNavigationSource source, Page page)
+		protected virtual void OnRemoveRequested(NavigationRequestedEventArgs e)
 		{
-			var pageIndex = FormsNavigationStack.IndexOf(page);
+			var pageIndex = FormsNavigationStack.IndexOf(e.Page);
 			if (pageIndex == Frame.BackStack.Count - 1)
-				Frame.GoBack(GetTransitionInfo(source));
+				Frame.GoBack(GetTransitionInfo(e));
 			else
 				Frame.BackStack.RemoveAt(pageIndex);
 		}
 
-		protected virtual void OnShellSectionChanged(ShellNavigationSource source)
+		protected virtual void OnShellSectionChanged()
 		{
-			Frame.Navigate(typeof(ShellPageWrapper), GetTransitionInfo(source));
+			Frame.Navigate(typeof(ShellPageWrapper), GetTransitionInfo(ShellNavigationSource.ShellSectionChanged));
+		}
+
+		protected virtual NavigationTransitionInfo GetTransitionInfo(NavigationRequestedEventArgs e)
+		{
+			return GetTransitionInfo((ShellNavigationSource)e.RequestType);
 		}
 
 		protected virtual NavigationTransitionInfo GetTransitionInfo(ShellNavigationSource navSource)
@@ -250,6 +260,7 @@ namespace Xamarin.Forms.Platform.UWP
 				case ShellNavigationSource.ShellSectionChanged:
 					return null;
 			}
+
 			return null;
 		}
 
