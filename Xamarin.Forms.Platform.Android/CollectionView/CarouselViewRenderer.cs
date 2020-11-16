@@ -323,20 +323,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateInitialPosition()
 		{
-			int position = 0;
 			var items = Carousel.ItemsSource as IList;
 			var itemCount = items?.Count ?? 0;
 
+			int position;
+
 			if (Carousel.CurrentItem != null || items == null)
 			{
-				for (int n = 0; n < itemCount; n++)
-				{
-					if (items[n] == Carousel.CurrentItem)
-					{
-						position = n;
-						break;
-					}
-				}
+				position = items.IndexOf(Carousel.CurrentItem);
 
 				Carousel.Position = position;
 			}
