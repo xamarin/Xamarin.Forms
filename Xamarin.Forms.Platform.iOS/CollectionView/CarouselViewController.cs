@@ -202,7 +202,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_gotoPosition = -1;
 
-			ScrollToPositionIfNeeded(newPosition, count, currentItemPosition == -1);
+			bool removingCurrentItem = e.Action == NotifyCollectionChangedAction.Remove &&
+									currentItemPosition == -1;
+
+			ScrollToPositionIfNeeded(newPosition, count, removingCurrentItem);
 
 			SetCurrentItem(newPosition);
 			SetPosition(newPosition);
