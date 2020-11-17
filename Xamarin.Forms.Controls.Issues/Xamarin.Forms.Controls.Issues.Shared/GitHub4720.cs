@@ -49,6 +49,11 @@ namespace Xamarin.Forms.Controls.Issues
 
 #endif
 	}
+	
+	public class _4720WebView : WebView
+	{ 
+	}
+
 	public class GitHub4720WebPage : ContentPage
 	{
 		static int s_count;
@@ -63,7 +68,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var button = new Button { Text = "Close Page" };
 			button.Clicked += Button_Clicked;
 
-			var wv = new WebView()
+			var wv = new _4720WebView()
 			{				
 				Source = new UrlWebViewSource { Url = "https://www.youtube.com/" },
 				HorizontalOptions = LayoutOptions.FillAndExpand,
