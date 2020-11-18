@@ -218,11 +218,16 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			if (removingCurrentElement)
+			{
+				// we are reloading the VisibleItems so we need to wait for the UICollectionView to reload
+				// and then scroll to the correct position
 				CollectionView.ReloadItems(CollectionView.IndexPathsForVisibleItems);
-
-			// we migh be reloading the VisibleItems so we need to wait for the UICollectionView to reload
-			// and then scroll to the correct position
-			CollectionView.PerformBatchUpdates(() => { }, (_) => ScrollToPosition(newPosition, Carousel.Position, false, removingCurrentElement));
+				CollectionView.PerformBatchUpdates(() => { }, (_) => ScrollToPosition(newPosition, Carousel.Position, false, removingCurrentElement));
+			}
+			else
+			{
+				ScrollToPosition(newPosition, Carousel.Position, false, removingCurrentElement);
+			}
 		}
 
 		int GetPositionWhenAddingItems(int carouselPosition, int currentItemPosition)
