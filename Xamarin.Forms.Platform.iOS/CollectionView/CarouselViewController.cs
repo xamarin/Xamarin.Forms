@@ -205,17 +205,20 @@ namespace Xamarin.Forms.Platform.iOS
 			bool removingCurrentItem = e.Action == NotifyCollectionChangedAction.Remove &&
 									currentItemPosition == -1;
 
-			ScrollToPositionIfNeeded(newPosition, count, removingCurrentItem);
+			ReloadAndScrollToPositionIfNeeded(newPosition, count, removingCurrentItem);
 
 			SetCurrentItem(newPosition);
 			SetPosition(newPosition);
 		}
 
-		void ScrollToPositionIfNeeded(int newPosition, int count, bool removingCurrentElement)
-		{
-			// if we don't have items no need to scroll
+		void ReloadAndScrollToPositionIfNeeded(int newPosition, int count, bool removingCurrentElement)
+		{		
+			// if we don't have items no need to scroll or reload
 			if (count <= 0)
 				return;
+
+			if (removingCurrentElement)
+				CollectionView.ReloadItems(CollectionView.IndexPathsForVisibleItems);
 
 			// we migh be reloading the VisibleItems so we need to wait for the UICollectionView to reload
 			// and then scroll to the correct position
@@ -253,9 +256,6 @@ namespace Xamarin.Forms.Platform.iOS
 				//If we are not removing the current element set position to the CurrentItem
 				carouselPosition = currentItemPosition;
 			}
-
-			if (removingCurrentElement)
-				CollectionView.ReloadItems(CollectionView.IndexPathsForVisibleItems);
 
 			return carouselPosition;
 		}
