@@ -866,7 +866,7 @@ Task("BuildPages")
 
         msbuildSettings.BinaryLogger = binaryLogger;
         binaryLogger.FileName = $"{artifactStagingDirectory}/win-pages-{configuration}.binlog";
-        MSBuild("./Xamarin.Forms.Pages.sln", msbuildSettings.WithRestore());
+        MSBuild("./build/Xamarin.Forms.Pages.sln", msbuildSettings.WithRestore());
 
     }
     catch(Exception)
