@@ -852,6 +852,30 @@ Task("BuildForNuget")
     }
 });
 
+Task("BuildPages")
+    .IsDependentOn("BuildTasks")
+    .Description("Build Xamarin.Forms.Pages")
+    .Does(() =>
+{
+    try
+    {
+        var msbuildSettings = GetMSBuildSettings();
+        var binaryLogger = new MSBuildBinaryLogSettings {
+            Enabled  = isCIBuild
+        };
+
+        msbuildSettings.BinaryLogger = binaryLogger;
+        binaryLogger.FileName = $"{artifactStagingDirectory}/win-pages-{configuration}.binlog";
+        MSBuild("./Xamarin.Forms.Pages.sln", msbuildSettings.WithRestore());
+
+    }
+    catch(Exception)
+    {
+        if(IsRunningOnWindows())
+            throw;
+    }
+});
+
 Task("BuildTasks")
     .Description("Build Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj")
     .Does(() =>
