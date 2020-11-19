@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue12910"
+    Title="Issue 12910">
+    <ContentPage.Content>
+        <StackLayout>
+            <CollectionView
+                HeightRequest="200">
+                <CollectionView.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                    <x:String>Item 1</x:String>
+                    <x:String>Item 2</x:String>
+                    <x:String>Item 3</x:String>
+                    <x:String>Item 4</x:String>
+                    <x:String>Item 5</x:String>
+                    <x:String>Item 6</x:String>
+                    <x:String>Item 7</x:String>
+                    <x:String>Item 8</x:String>
+                    <x:String>Item 9</x:String>
+                    <x:String>Item 10</x:String>
+                    </x:Array>
+                </CollectionView.ItemsSource>
+                <CollectionView.EmptyView>
+                        <StackLayout
+                            BackgroundColor="Red">
+                            <Label
+                                HorizontalOptions="CenterAndExpand"
+                                VerticalOptions="CenterAndExpand"
+                                TextColor="White"
+                                Text="EmptyView"
+                                FontAttributes="Bold"/>
+                        </StackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid
+                            Padding="12">
+                            <Label
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                Text="{Binding}"/>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </StackLayout>
+    </ContentPage.Content>
+</controls:TestContentPage>
