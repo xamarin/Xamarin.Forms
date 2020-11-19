@@ -6,23 +6,21 @@
     x:Class="Xamarin.Forms.Controls.Issues.Issue12910"
     Title="Issue 12910">
     <ContentPage.Content>
-        <StackLayout>
+        <Grid
+            RowSpacing="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Label
+                Padding="12"
+                BackgroundColor="Black"
+                TextColor="White"
+                Text="Tap the Button. Without exceptions, the test has passed."/>
             <CollectionView
-                HeightRequest="200">
-                <CollectionView.ItemsSource>
-                    <x:Array Type="{x:Type x:String}">
-                    <x:String>Item 1</x:String>
-                    <x:String>Item 2</x:String>
-                    <x:String>Item 3</x:String>
-                    <x:String>Item 4</x:String>
-                    <x:String>Item 5</x:String>
-                    <x:String>Item 6</x:String>
-                    <x:String>Item 7</x:String>
-                    <x:String>Item 8</x:String>
-                    <x:String>Item 9</x:String>
-                    <x:String>Item 10</x:String>
-                    </x:Array>
-                </CollectionView.ItemsSource>
+                Grid.Row="1"
+                ItemsSource="{Binding Items}">
                 <CollectionView.EmptyView>
                         <StackLayout
                             BackgroundColor="Red">
@@ -46,6 +44,10 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-        </StackLayout>
+            <Button
+                Grid.Row="2"
+                Text="Remove Items"
+                Command="{Binding RemoveItemsCommand}"/>
+        </Grid>
     </ContentPage.Content>
 </controls:TestContentPage>

@@ -1,5 +1,8 @@
 ﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using System;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 #if UITEST
 using Xamarin.UITest;
@@ -22,12 +25,57 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 #if APP
 			InitializeComponent();
+			BindingContext = new Issue12910ViewModel();
 #endif
 		}
 
 		protected override void Init()
 		{
 
+		}
+	}
+
+	public class Issue12910ViewModel : BindableObject
+	{
+		ObservableCollection<string> _items;
+
+		public Issue12910ViewModel()
+		{
+			LoadItems();
+		}
+
+		public ObservableCollection<string> Items
+		{
+			get { return _items; }
+			set
+			{
+				_items = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public ICommand RemoveItemsCommand => new Command(ExecuteRemoveItems);
+
+		void LoadItems()
+		{
+			Items = new ObservableCollection<string>
+			{
+				"Item 1",
+				"Item 2",
+				"Item 3",
+				"Item 4",
+				"Item 5",
+				"Item 6",
+				"Item 7",
+				"Item 8",
+				"Item 9",
+				"Item 10"
+			};
+		}
+
+		void ExecuteRemoveItems()
+		{
+			Items.Clear();
 		}
 	}
 }
