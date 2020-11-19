@@ -165,6 +165,15 @@ namespace Xamarin.Forms.Platform.iOS
 			return centerItemIndex;
 		}
 
+		// Note: we are deliberately avoiding calculating the exact size of every item that the UICollectionViewFlowLayout
+		// requests from us; instead, we use the exact ItemSize (when possible) or the EstimatedItemSize.
+		// UICollectionViewFlowLayout will request the size for _every single item_ in our datasource, even if it's not going
+		// to be on screen yet. For small datasources, realizing the Forms content and measuring it is no problem. 
+		// But for large datasets (hundreds or thousands of items), we'd be realizing a Forms datatemplate and binding it for 
+		// every single item, which defeats virtualization almost entirely. 
+		// So we only create a measurement cell and measure it in this method if we don't already have a cached estimate for 
+		// that item's data template. 
+
 		public override CGSize GetSizeForItem(UICollectionView collectionView, UICollectionViewLayout layout, NSIndexPath indexPath)
 		{
 			if (ItemsViewLayout.EstimatedItemSize.IsEmpty)
