@@ -9,7 +9,6 @@ parameters:
   includeNonUwpAndNonAndroid: 'true'
   includePages: 'false'
 
-
 steps:
   - checkout: self
     clean: true
@@ -37,6 +36,14 @@ steps:
     condition: ne(variables['NUGET_VERSION'], '')
     inputs:
       versionSpec: $(NUGET_VERSION)
+
+  - task: NuGetCommand@2
+    displayName: 'NuGet restore ${{ parameters.slnPath }}'
+    condition: eq(${{ parameters.includePages }}, 'true')
+    inputs:
+      restoreSolution: ${{ parameters.slnPath }}
+      feedsToUse: config
+      nugetConfigPath: 'DevopsNuget.config'
 
   - script: build.cmd -Target BuildForNuget -ScriptArgs '-BUILD_CONFIGURATION="$(BuildConfiguration)"','-Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"'
     name: winbuild
