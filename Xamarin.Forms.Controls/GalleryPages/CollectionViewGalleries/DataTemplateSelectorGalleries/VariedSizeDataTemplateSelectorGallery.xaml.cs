@@ -28,11 +28,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.DataTempla
 			IEnumerable<DrinkBase> CreateDefaultDrinks()
 			{
 				yield return new Coffee("0");
-				//yield return new Milk("1");
-				//yield return new Coffee("2");
-				//yield return new Coffee("3");
-				//yield return new Milk("4");
-				//yield return new Coffee("5");
+				yield return new Milk("1");
+				yield return new Coffee("2");
+				yield return new Coffee("3");
+				yield return new Milk("4");
+				yield return new Coffee("5");
 			}
 		}
 
