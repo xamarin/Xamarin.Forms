@@ -45,32 +45,43 @@ namespace Xamarin.Forms.Controls.Issues
 			BackgroundColor = Color.YellowGreen;
 			Content = layout;
 		}
-	}
 
-	class SecondPage : ContentPage
-	{
-		public SecondPage()
+		[Preserve(AllMembers = true)]
+		class SecondPage : ContentPage
 		{
-			var layout = new StackLayout();
-			var label = new Label
+			public SecondPage()
 			{
-				Text = "This is the Second Page! Pop me and push again. I should look the same",
-				VerticalOptions = LayoutOptions.CenterAndExpand,
-				HorizontalOptions = LayoutOptions.CenterAndExpand,
-				HorizontalTextAlignment = TextAlignment.Center
-			};
-			var button = new Button
+				var layout = new StackLayout();
+				var label = new Label
+				{
+					Text = "This is the Second Page! Pop me and push again. I should look the same",
+					VerticalOptions = LayoutOptions.CenterAndExpand,
+					HorizontalOptions = LayoutOptions.CenterAndExpand,
+					HorizontalTextAlignment = TextAlignment.Center
+				};
+				var button = new Button
+				{
+					Text = "Go Back to Main Page",
+					Command = new Command(() => Navigation.PopModalAsync(false))
+				};
+
+				layout.Children.Add(label);
+				layout.Children.Add(button);
+
+				BackgroundColor = Color.Yellow;
+
+				Content = layout;
+			}
+
+			protected override void LayoutChildren(double x, double y, double width, double height)
 			{
-				Text = "Go Back to Main Page",
-				Command = new Command(() => Navigation.PopModalAsync(false))
-			};
+				base.LayoutChildren(x, y, width, height);
+			}
 
-			layout.Children.Add(label);
-			layout.Children.Add(button);
-
-			BackgroundColor = Color.Yellow;
-
-			Content = layout;
+			protected override void InvalidateMeasure()
+			{
+				base.InvalidateMeasure();
+			}
 		}
 	}
 }

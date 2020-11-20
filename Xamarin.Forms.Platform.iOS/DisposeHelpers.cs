@@ -41,13 +41,6 @@ namespace Xamarin.Forms.Platform.MacOS
 					renderer.Dispose();
 				}
 				view.ClearValue(Platform.RendererProperty);
-#if __MOBILE__
-
-				//reset layout size so we can re-layout the layer if we are reusing the same page.
-				//fixes a issue on split apps on iPad and iOS13
-				if (Forms.IsiOS13OrNewer && visualElement is Page)
-					visualElement.Layout(new Rectangle(0, 0, -1, -1));
-#endif
 			}
 		}
 
