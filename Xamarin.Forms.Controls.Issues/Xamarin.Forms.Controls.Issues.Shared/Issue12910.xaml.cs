@@ -23,13 +23,14 @@ namespace Xamarin.Forms.Controls.Issues
         PlatformAffected.iOS)]
     public partial class Issue12910 : TestContentPage
     {
-        Issue12910ViewModel _viewModel;
+		readonly Issue12910ViewModel _viewModel;
 
         public Issue12910()
         {
+            _viewModel = new Issue12910ViewModel();
 #if APP
             InitializeComponent();
-            BindingContext = _viewModel = new Issue12910ViewModel();
+            BindingContext = _viewModel;
 #endif
         }
 
