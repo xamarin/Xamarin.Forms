@@ -728,7 +728,7 @@ Task("BuildForNuget")
 
         msbuildSettings.BinaryLogger = binaryLogger;
         binaryLogger.FileName = $"{artifactStagingDirectory}/win-{configuration}.binlog";
-        MSBuild("./Xamarin.Forms.sln", msbuildSettings);
+        MSBuild("./Xamarin.Forms.sln", msbuildSettings.WithRestore());
         
         // // This currently fails on CI will revisit later
         // if(isCIBuild)

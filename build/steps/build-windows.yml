@@ -29,24 +29,22 @@ steps:
   #   inputs:
   #     version: $(DOTNET_VERSION)
   #     packageType: 'sdk'
-  
-  - task: NuGetToolInstaller@1	
-    displayName: 'Use NuGet $(NUGET_VERSION)'	
-    condition: ne(variables['NUGET_VERSION'], '')	
-    inputs:	
-      versionSpec: $(NUGET_VERSION)
-
-  - task: NuGetCommand@2	
-    displayName: 'NuGet restore Xamarin.Forms.sln'	
-    inputs:	
-      restoreSolution: 'Xamarin.Forms.sln'
-      feedsToUse: config	
-      nugetConfigPath: 'DevopsNuget.config'
 
   - script: build.cmd -Target BuildForNuget -ScriptArgs '-BUILD_CONFIGURATION="$(BuildConfiguration)"','-Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"'
     name: winbuild
     displayName: 'Build Projects For Nuget'
     condition: ne(${{ parameters.includePages }}, 'true')
+
+  - task: CopyFiles@2
+    displayName: 'Copy Appx Packages Dependencies'
+    condition: and(eq(variables['BuildConfiguration'], 'Release'), ne('${{ parameters.includePages }}', true))
+    inputs:
+      Contents: |
+        Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/*
+        Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/Add-AppDevPackage.resources/**
+        Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/TelemetryDependencies/**
+        Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/Dependencies/x86/**
+      TargetFolder: '$(build.artifactstagingdirectory)'
 
   - script: build.cmd -Target BuildPages -ScriptArgs '-BUILD_CONFIGURATION="$(BuildConfiguration)"','-Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"'
     name: winslnbuild
@@ -202,6 +200,7 @@ steps:
       TargetFolder: '$(build.artifactstagingdirectory)'
       CleanTargetFolder: false
       flattenFolders: false
+      overWrite: true
 
   - task: CopyFiles@2
     displayName: 'Copy Cake File'
