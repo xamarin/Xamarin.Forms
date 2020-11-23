@@ -33,7 +33,8 @@ namespace Xamarin.Forms.Platform.iOS
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
 		}
 
-		internal event NotifyCollectionChangedEventHandler CollectionItemsSourceChanged;
+		internal event NotifyCollectionChangedEventHandler CollectionViewUpdating;
+		internal event NotifyCollectionChangedEventHandler CollectionViewUpdated;
 
 		public int Count { get; private set; }
 
@@ -133,17 +134,21 @@ namespace Xamarin.Forms.Platform.iOS
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
-
-			CollectionItemsSourceChanged?.Invoke(this, args);
 		}
 
 		async Task Reload()
 		{
 			await _batchUpdating.WaitAsync();
 
+			var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+
+			OnCollectionViewUpdating(args);
+
 			_collectionView.ReloadData();
 			_collectionView.CollectionViewLayout.InvalidateLayout();
 			Count = ItemsCount();
+
+			OnCollectionViewUpdated(args);
 
 			_batchUpdating.Release();
 		}
@@ -173,7 +178,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : IndexOf(args.NewItems[0]);
 
 			// Queue up the updates to the UICollectionView
-			BatchUpdate(() => _collectionView.InsertItems(CreateIndexesFrom(startIndex, count)));
+			BatchUpdate(() => _collectionView.InsertItems(CreateIndexesFrom(startIndex, count)), args);
 		}
 
 		async Task Remove(NotifyCollectionChangedEventArgs args)
@@ -199,7 +204,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Count -= count;
 
 			// Queue up the updates to the UICollectionView
-			BatchUpdate(() => _collectionView.DeleteItems(CreateIndexesFrom(startIndex, count)));
+			BatchUpdate(() => _collectionView.DeleteItems(CreateIndexesFrom(startIndex, count)), args);
 		}
 
 		async Task Replace(NotifyCollectionChangedEventArgs args)
@@ -211,7 +216,9 @@ namespace Xamarin.Forms.Platform.iOS
 				var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : IndexOf(args.NewItems[0]);
 
 				// We are replacing one set of items with a set of equal size; we can do a simple item range update
+				OnCollectionViewUpdating(args);
 				_collectionView.ReloadItems(CreateIndexesFrom(startIndex, newCount));
+				OnCollectionViewUpdated(args);
 				return;
 			}
 
@@ -230,13 +237,17 @@ namespace Xamarin.Forms.Platform.iOS
 				var oldPath = NSIndexPath.Create(_section, args.OldStartingIndex);
 				var newPath = NSIndexPath.Create(_section, args.NewStartingIndex);
 
+				OnCollectionViewUpdating(args);
 				_collectionView.MoveItem(oldPath, newPath);
+				OnCollectionViewUpdated(args);
 				return;
 			}
 
 			var start = Math.Min(args.OldStartingIndex, args.NewStartingIndex);
 			var end = Math.Max(args.OldStartingIndex, args.NewStartingIndex) + count;
+			OnCollectionViewUpdating(args);
 			_collectionView.ReloadItems(CreateIndexesFrom(start, end));
+			OnCollectionViewUpdated(args);
 		}
 
 		internal int ItemsCount()
@@ -309,7 +320,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return _collectionView.VisibleCells.Length == 0;
 		}
 
-		void BatchUpdate(Action update)
+		void BatchUpdate(Action update, NotifyCollectionChangedEventArgs args)
 		{
 			_collectionView.PerformBatchUpdates(() =>
 			{
@@ -318,15 +329,28 @@ namespace Xamarin.Forms.Platform.iOS
 					_batchUpdating.Wait();
 				}
 
+				OnCollectionViewUpdating(args);
 				update();
 			},
 					(_) =>
 					{
+						OnCollectionViewUpdated(args);
+
 						if (_batchUpdating.CurrentCount == 0)
 						{
 							_batchUpdating.Release();
 						}
 					});
+		}
+
+		void OnCollectionViewUpdating(NotifyCollectionChangedEventArgs args) 
+		{
+			CollectionViewUpdating?.Invoke(this, args);
+		}
+
+		void OnCollectionViewUpdated(NotifyCollectionChangedEventArgs args)
+		{
+			CollectionViewUpdated?.Invoke(this, args);
 		}
 	}
 }

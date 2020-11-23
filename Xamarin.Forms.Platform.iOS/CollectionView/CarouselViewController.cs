@@ -184,50 +184,38 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateVisualStates();
 		}
 
-		void CollectionItemsSourceChanged(object sender, NotifyCollectionChangedEventArgs e)
+		int _positionAfterUpdate = -1;
+
+		void CollectionViewUpdating(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			int carouselPosition = Carousel.Position;
-			int newPosition = carouselPosition;
+			_positionAfterUpdate = carouselPosition;
 			var currentItemPosition = ItemsSource.GetIndexForItem(Carousel.CurrentItem).Row;
 			var count = ItemsSource.ItemCount;
 
 			if (e.Action == NotifyCollectionChangedAction.Remove)
-				newPosition = GetPositionWhenRemovingItems(e.OldStartingIndex, carouselPosition, currentItemPosition, count);
+				_positionAfterUpdate = GetPositionWhenRemovingItems(e.OldStartingIndex, carouselPosition, currentItemPosition, count);
 
 			if (e.Action == NotifyCollectionChangedAction.Reset)
-				newPosition = GetPositionWhenResetItems();
+				_positionAfterUpdate = GetPositionWhenResetItems();
 
 			if (e.Action == NotifyCollectionChangedAction.Add)
-				newPosition = GetPositionWhenAddingItems(carouselPosition, currentItemPosition);
+				_positionAfterUpdate = GetPositionWhenAddingItems(carouselPosition, currentItemPosition);
+		}
+
+		void CollectionViewUpdated(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (_positionAfterUpdate == -1)
+			{
+				return;
+			}
 
 			_gotoPosition = -1;
 
-			bool removingCurrentItem = e.Action == NotifyCollectionChangedAction.Remove &&
-									currentItemPosition == -1;
+			var targetPosition = _positionAfterUpdate;
+			_positionAfterUpdate = -1;
 
-			ReloadAndScrollToPositionIfNeeded(newPosition, count, removingCurrentItem);
-
-			SetCurrentItem(newPosition);
-			SetPosition(newPosition);
-		}
-
-		void ReloadAndScrollToPositionIfNeeded(int newPosition, int count, bool removingCurrentElement)
-		{		
-			// if we don't have items no need to scroll or reload
-			if (count <= 0)
-				return;
-
-			if (removingCurrentElement)
-			{
-				// we are reloading the VisibleItems so we need to wait for the UICollectionView to reload
-				// and then scroll to the correct position
-				CollectionView.ReloadItems(CollectionView.IndexPathsForVisibleItems);
-				CollectionView.PerformBatchUpdates(() => { }, (_) => ScrollToPosition(newPosition, Carousel.Position, false, removingCurrentElement));
-			}
-			else
-			{
-				ScrollToPosition(newPosition, Carousel.Position, false, removingCurrentElement);
-			}
+			SetPosition(targetPosition);
 		}
 
 		int GetPositionWhenAddingItems(int carouselPosition, int currentItemPosition)
@@ -268,13 +256,19 @@ namespace Xamarin.Forms.Platform.iOS
 		void SubscribeCollectionItemsSourceChanged(IItemsViewSource itemsSource)
 		{
 			if (itemsSource is ObservableItemsSource newItemsSource)
-				newItemsSource.CollectionItemsSourceChanged += CollectionItemsSourceChanged;
+			{
+				newItemsSource.CollectionViewUpdating += CollectionViewUpdating;
+				newItemsSource.CollectionViewUpdated += CollectionViewUpdated;
+			}
 		}
 
 		void UnsubscribeCollectionItemsSourceChanged(IItemsViewSource oldItemsSource)
 		{
 			if (oldItemsSource is ObservableItemsSource oldObservableItemsSource)
-				oldObservableItemsSource.CollectionItemsSourceChanged -= CollectionItemsSourceChanged;
+			{
+				oldObservableItemsSource.CollectionViewUpdating -= CollectionViewUpdating;
+				oldObservableItemsSource.CollectionViewUpdated -= CollectionViewUpdated;
+			}
 		}
 
 		void CarouselViewPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs changedProperty)
