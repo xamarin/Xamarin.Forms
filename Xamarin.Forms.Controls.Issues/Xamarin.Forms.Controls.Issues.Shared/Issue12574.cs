@@ -121,11 +121,12 @@ namespace Xamarin.Forms.Controls.Issues
 			Title = "CarouselView Looping";
 			Items = new ObservableCollection<ModelIssue12574>();
 			LoadItemsCommand = new Command(() => ExecuteLoadItemsCommand());
-			RemoveItemsCommand = new Command(() => ExecuteRemoveItemsCommand());
+			RemoveItemsCommand = new Command(() => ExecuteRemoveItemsCommand(), () => Items.Count > 0);
 		}
 		void ExecuteRemoveItemsCommand()
 		{
 			Items.Remove(Items.Last());
+			RemoveItemsCommand.ChangeCanExecute();
 		}
 		void ExecuteLoadItemsCommand()
 		{
@@ -146,6 +147,7 @@ namespace Xamarin.Forms.Controls.Issues
 			finally
 			{
 				IsBusy = false;
+				RemoveItemsCommand.ChangeCanExecute();
 			}
 		}
 
