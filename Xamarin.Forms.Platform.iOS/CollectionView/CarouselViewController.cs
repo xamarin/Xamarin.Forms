@@ -215,7 +215,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var targetPosition = _positionAfterUpdate;
 			_positionAfterUpdate = -1;
 
-			SetPosition(targetPosition);
+			ScrollToPosition(targetPosition, Carousel.Position, false);
 		}
 
 		int GetPositionWhenAddingItems(int carouselPosition, int currentItemPosition)
