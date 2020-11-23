@@ -5,28 +5,38 @@ using SkiaSharp.Views.Tizen;
 
 namespace Xamarin.Forms.Platform.Tizen.SkiaSharp
 {
-	public class SKCliperView : SKCanvasView
+	public class SKClipperView : SKCanvasView
 	{
-		public SKCliperView(EvasObject parent) : base(parent) { }
+		public SKClipperView(EvasObject parent) : base(parent) { }
 
 		public new void Invalidate()
 		{
 			OnDrawFrame();
 		}
-
 	}
 
-	public static class CliperExtension
+	public static class ClipperExtension
 	{
-		public static void SetCliperCanvas(this VisualElement target, SKCliperView cliper)
+		public static void SetClipperCanvas(this VisualElement target, SKClipperView clipper)
 		{
 			if (target != null)
 			{
 				var nativeView = Platform.GetOrCreateRenderer(target)?.NativeView;
-				var realHandle = elm_object_part_content_get(cliper, "elm.swallow.content");
+				var realHandle = elm_object_part_content_get(clipper, "elm.swallow.content");
 
 				nativeView?.SetClip(null); // To restore original image
 				evas_object_clip_set(nativeView, realHandle);
+			}
+		}
+
+		public static void SetClipperCanvas(this EvasObject target, SKClipperView clipper)
+		{
+			if (target != null)
+			{
+				var realHandle = elm_object_part_content_get(clipper, "elm.swallow.content");
+
+				target.SetClip(null); // To restore original image
+				evas_object_clip_set(target, realHandle);
 			}
 		}
 
