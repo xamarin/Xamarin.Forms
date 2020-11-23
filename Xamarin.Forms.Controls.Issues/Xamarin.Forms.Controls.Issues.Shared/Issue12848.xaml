@@ -13,6 +13,7 @@
             TextColor="White"
             Text="Swipe the CarouselView to select the item numbered 2. Then, tap the Hide Button to hide the Carousel and the Show Button to show the Carousel again. If the position of the Carousel is the same as before hiding, the test has passed."/>
         <CarouselView
+            AutomationId="TestCarouselView"
             x:Name="carousel"
             HorizontalOptions="Center"
             ItemsSource="{Binding}">
@@ -25,10 +26,16 @@
                 </DataTemplate>
             </CarouselView.ItemTemplate>
         </CarouselView>
+        <Label
+           AutomationId="CarouselPosition"
+            Text="{Binding Source={x:Reference carousel}, Path=Position}"
+            HorizontalOptions="Center"/>
         <Button
+            AutomationId="HideButton"
             Text="Hide CarouselView"
             Clicked="OnHideButtonClicked"/>
         <Button
+            AutomationId="ShowButton"
             Text="Show CarouselView"
             Clicked="OnShowButtonClicked"/>
     </StackLayout>

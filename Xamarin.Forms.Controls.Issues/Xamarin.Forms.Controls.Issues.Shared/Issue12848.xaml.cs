@@ -35,5 +35,19 @@ namespace Xamarin.Forms.Controls.Issues
 			carousel.IsVisible = false;
 		}
 #endif
+
+#if UITEST
+		[Test]
+		public void Issue12848Test()
+		{
+			RunningApp.WaitForElement("TestCarouselView");
+			RunningApp.SwipeRightToLeft();
+			Assert.AreEqual(1, int.Parse(RunningApp.Query(q => q.Marked("CarouselPosition"))[0].Text));
+			RunningApp.Tap("HideButton");
+			RunningApp.Tap("ShowButton");
+			Assert.AreEqual(1, int.Parse(RunningApp.Query(q => q.Marked("CarouselPosition"))[0].Text));
+			RunningApp.Screenshot("Test passed");
+		}
+#endif
 	}
 }
