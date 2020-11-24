@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Threading;
 using System.Threading.Tasks;
 using Foundation;
 using UIKit;
@@ -15,7 +14,6 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly UICollectionViewController _collectionViewController;
 		readonly IList _groupSource;
 		bool _disposed;
-		SemaphoreSlim _batchUpdating = new SemaphoreSlim(1, 1);
 		List<ObservableItemsSource> _groups = new List<ObservableItemsSource>();
 
 		public ObservableGroupedSource(IEnumerable groupSource, UICollectionViewController collectionViewController)
@@ -169,14 +167,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 		async Task Reload()
 		{
+			await Task.Delay(1);
+
 			ResetGroupTracking();
 
-			await _batchUpdating.WaitAsync();
+			//await _batchUpdating.WaitAsync();
 
 			_collectionView.ReloadData();
 			_collectionView.CollectionViewLayout.InvalidateLayout();
 
-			_batchUpdating.Release();
+			//_batchUpdating.Release();
 		}
 
 		NSIndexSet CreateIndexSetFrom(int startIndex, int count)
@@ -207,7 +207,7 @@ namespace Xamarin.Forms.Platform.iOS
 			ResetGroupTracking();
 
 			// Queue up the updates to the UICollectionView
-			BatchUpdate(() => _collectionView.InsertSections(CreateIndexSetFrom(startIndex, count)));
+			_collectionView.InsertSections(CreateIndexSetFrom(startIndex, count));
 		}
 
 		async Task Remove(NotifyCollectionChangedEventArgs args)
@@ -236,7 +236,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var count = args.OldItems.Count;
 
 			// Queue up the updates to the UICollectionView
-			BatchUpdate(() => _collectionView.DeleteSections(CreateIndexSetFrom(startIndex, count)));
+			_collectionView.DeleteSections(CreateIndexSetFrom(startIndex, count));
 		}
 
 		async Task Replace(NotifyCollectionChangedEventArgs args)
@@ -351,26 +351,6 @@ namespace Xamarin.Forms.Platform.iOS
 			return NotLoadedYet()
 				|| _collectionView.NumberOfSections() == 0
 				|| _collectionView.VisibleCells.Length == 0;
-		}
-
-		void BatchUpdate(Action update)
-		{
-			_collectionView.PerformBatchUpdates(() =>
-			{
-				if (_batchUpdating.CurrentCount > 0)
-				{
-					_batchUpdating.Wait();
-				}
-
-				update();
-			},
-					(_) =>
-					{
-						if (_batchUpdating.CurrentCount == 0)
-						{
-							_batchUpdating.Release();
-						}
-					});
 		}
 	}
 }

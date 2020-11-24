@@ -86,12 +86,14 @@ namespace Xamarin.Forms.Platform.iOS
 				_updatingScrollOffset = false;
 			}
 
-			UpdateInitialPosition();
-
 			if (CollectionView.Bounds.Size != _size)
 			{
 				_size = CollectionView.Bounds.Size;
 				BoundsSizeChanged();
+			}
+			else
+			{
+				UpdateInitialPosition();
 			}
 		}
 
@@ -188,6 +190,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CollectionViewUpdating(object sender, NotifyCollectionChangedEventArgs e)
 		{
+			if (e.Action == NotifyCollectionChangedAction.Reset)
+			{
+				return;
+			}
+
 			int carouselPosition = Carousel.Position;
 			_positionAfterUpdate = carouselPosition;
 			var currentItemPosition = ItemsSource.GetIndexForItem(Carousel.CurrentItem).Row;
@@ -205,7 +212,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CollectionViewUpdated(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (_positionAfterUpdate == -1)
+			if (e.Action == NotifyCollectionChangedAction.Reset || _positionAfterUpdate == -1)
 			{
 				return;
 			}
@@ -215,7 +222,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var targetPosition = _positionAfterUpdate;
 			_positionAfterUpdate = -1;
 
-			ScrollToPosition(targetPosition, Carousel.Position, false);
+			Carousel.ScrollTo(targetPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: false);
 		}
 
 		int GetPositionWhenAddingItems(int carouselPosition, int currentItemPosition)
@@ -337,7 +344,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateFromCurrentItem()
 		{
-			if (Carousel?.CurrentItem == null || ItemsSource?.ItemCount == 0)
+			if (Carousel?.CurrentItem == null || ItemsSource == null || ItemsSource.ItemCount == 0)
 				return;
 
 			var currentItemPosition = GetIndexForItem(Carousel.CurrentItem).Row;
