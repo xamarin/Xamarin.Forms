@@ -47,10 +47,12 @@ namespace Xamarin.Forms.Controls.Issues
 
 #endif
 
+		[Preserve(AllMembers = true)]
 		public class _4720WebView : WebView
 		{
 		}
 
+		[Preserve(AllMembers = true)]
 		public class Issue4720WebPage : ContentPage
 		{
 			static int s_count;
@@ -60,7 +62,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Interlocked.Increment(ref s_count);
 				Debug.WriteLine($"++++++++ Issue4720WebPage : Constructor, count is {s_count}");
 
-				var label = new Label { Text = "Test case for GitHub issue #4720 -  sorry youtube." };
+				var label = new Label { Text = "Test case for GitHub issue #4720." };
 
 				var button = new Button { Text = "Close Page" };
 				button.Clicked += Button_Clicked;
@@ -76,6 +78,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 				Content = new StackLayout { Children = { label, button, wv } };
 			}
+
 			void Button_Clicked(object sender, EventArgs e)
 			{
 				Navigation.PopAsync();
@@ -104,7 +107,8 @@ namespace Xamarin.Forms.Controls.Issues
 				var gcbutton = new Button { Text = "GC" };
 				gcbutton.Clicked += GCbutton_Clicked;
 
-				Content = new StackLayout { Children = { button, gcbutton } };
+				var instructions = new Label() { Text = "Navigate forward and back multiple times. If you don't see any out of memory exceptions the test has passed." };
+				Content = new StackLayout { Children = { button, gcbutton, instructions } };
 			}
 
 			void GCbutton_Clicked(object sender, EventArgs e)
