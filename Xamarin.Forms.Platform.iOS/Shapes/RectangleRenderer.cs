@@ -50,14 +50,20 @@ namespace Xamarin.Forms.Platform.MacOS
 
         void UpdateRadiusX()
         {
-            var radiusX = ValidateRadius(Element.RadiusX / Element.WidthRequest);
-            Control.UpdateRadiusX(radiusX);
+            if (Element.WidthRequest > 0)
+            {
+                var radiusX = ValidateRadius(Element.RadiusX / Element.WidthRequest);
+                Control.UpdateRadiusX(radiusX);
+            }
         }
 
         void UpdateRadiusY()
         {
-            var radiusY = ValidateRadius(Element.RadiusY / Element.HeightRequest);
-            Control.UpdateRadiusY(radiusY);
+            if (Element.HeightRequest > 0)
+            {
+                var radiusY = ValidateRadius(Element.RadiusY / Element.HeightRequest);
+                Control.UpdateRadiusY(radiusY);
+            }
         }
 
         double ValidateRadius(double radius)

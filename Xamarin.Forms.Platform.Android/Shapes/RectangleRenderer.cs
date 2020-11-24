@@ -43,14 +43,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateRadiusX()
 		{
-			if (Element.Width > 0)
-				Control.UpdateRadiusX(Element.RadiusX / Element.Width);
+			if (Element.WidthRequest > 0)
+				Control.UpdateRadiusX(Element.RadiusX / Element.WidthRequest);
 		}
 
 		void UpdateRadiusY()
 		{
-			if (Element.Height > 0)
-				Control.UpdateRadiusY(Element.RadiusY / Element.Height);
+			if (Element.HeightRequest > 0)
+				Control.UpdateRadiusY(Element.RadiusY / Element.HeightRequest);
 		}
 	}
 
