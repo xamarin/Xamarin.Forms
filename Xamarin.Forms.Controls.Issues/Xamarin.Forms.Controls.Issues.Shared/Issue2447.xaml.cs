@@ -10,7 +10,6 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Controls.Issues
 {
 
-#if APP
 #if UITEST
 	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
 #endif
@@ -18,10 +17,11 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 2447, "Force label text direction", PlatformAffected.Android)]
 	public partial class Issue2447 : ContentPage
 	{
+#if APP
 		public Issue2447()
 		{
 			InitializeComponent();
 		}
-	}
 #endif
+	}
 }
