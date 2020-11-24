@@ -19,13 +19,11 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 4720, "UWP: Webview: Memory Leak in WebView", PlatformAffected.UWP)]
-	public class GitHub4720 : TestNavigationPage
+	public class Issue4720 : TestNavigationPage
 	{
-		//shameless copy of the test case for Bugzilla39489.
-
 		protected override void Init()
 		{
-			PushAsync(new GitHub4720Content());
+			PushAsync(new Issue4720Content());
 		}
 
 #if UITEST
@@ -53,14 +51,14 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 		}
 
-		public class GitHub4720WebPage : ContentPage
+		public class Issue4720WebPage : ContentPage
 		{
 			static int s_count;
 
-			public GitHub4720WebPage()
+			public Issue4720WebPage()
 			{
 				Interlocked.Increment(ref s_count);
-				Debug.WriteLine($"++++++++ GitHub4720WebPage : Constructor, count is {s_count}");
+				Debug.WriteLine($"++++++++ Issue4720WebPage : Constructor, count is {s_count}");
 
 				var label = new Label { Text = "Test case for GitHub issue #4720 -  sorry youtube." };
 
@@ -75,6 +73,7 @@ namespace Xamarin.Forms.Controls.Issues
 					BackgroundColor = Color.Red
 
 				};
+
 				Content = new StackLayout { Children = { label, button, wv } };
 			}
 			void Button_Clicked(object sender, EventArgs e)
@@ -82,22 +81,22 @@ namespace Xamarin.Forms.Controls.Issues
 				Navigation.PopAsync();
 			}
 
-			~GitHub4720WebPage()
+			~Issue4720WebPage()
 			{
 				Interlocked.Decrement(ref s_count);
-				Debug.WriteLine($"-------- GitHub4720WebPage: Destructor, count is {s_count}");
+				Debug.WriteLine($"-------- Issue4720WebPage: Destructor, count is {s_count}");
 			}
 		}
 
 		[Preserve(AllMembers = true)]
-		public class GitHub4720Content : ContentPage
+		public class Issue4720Content : ContentPage
 		{
 			static int s_count;
 
-			public GitHub4720Content()
+			public Issue4720Content()
 			{
 				Interlocked.Increment(ref s_count);
-				Debug.WriteLine($">>>>> GitHub4720Content GitHub4720Content : Constructor, count is {s_count}");
+				Debug.WriteLine($">>>>> Issue4720Content Issue4720Content : Constructor, count is {s_count}");
 
 				var button = new Button { Text = "New Page" };
 				button.Clicked += Button_Clicked;
@@ -117,19 +116,14 @@ namespace Xamarin.Forms.Controls.Issues
 
 			void Button_Clicked(object sender, EventArgs e)
 			{
-				Navigation.PushAsync(new GitHub4720WebPage());
+				Navigation.PushAsync(new Issue4720WebPage());
 			}
 
-			~GitHub4720Content()
+			~Issue4720Content()
 			{
 				Interlocked.Decrement(ref s_count);
-				Debug.WriteLine($">>>>> GitHub4720Content ~GitHub4720Content : Destructor, count is {s_count}");
+				Debug.WriteLine($">>>>> Issue4720Content ~Issue4720Content : Destructor, count is {s_count}");
 			}
 		}
-
-
 	}
-
-
-
 }

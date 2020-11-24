@@ -101,13 +101,6 @@ if(bases.length == 0){
 			}
 		}
 
-		/// <summary>
-		/// Set this in the constructor of a custom renderer to chose an execution mode other than the default of 'SameThread'
-		/// </summary>
-		/// <remarks>
-		/// This may be required in certain case (eg, frequent opening and closing of large websites) there may be 
-		/// a need to host the WebView in a different thread or process to avoid out of memory situations.
-		/// </remarks>
 		[DefaultValue(WebViewExecutionMode.SameThread)]
 		protected WebViewExecutionMode ExecutionMode
 		{

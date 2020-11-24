@@ -4,7 +4,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.ControlGallery.WindowsUniversal;
 using Xamarin.Forms.Platform.UWP;
 
-[assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.Issues.GitHub4720._4720WebView), typeof(_4720CustomRenderer))]
+[assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.Issues.Issue4720._4720WebView), typeof(_4720CustomRenderer))]
 namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 {
 	public class _4720CustomRenderer : WebViewRenderer
@@ -13,6 +13,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 		{
 			base.ExecutionMode = Windows.UI.Xaml.Controls.WebViewExecutionMode.SeparateProcess;
 		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<WebView> e)
 		{
 			base.OnElementChanged(e);
