@@ -28,8 +28,7 @@
         <StackPanel Orientation="Horizontal" />
     </ItemsPanelTemplate>
     <DataTemplate x:Key="ShellToolbarItemTemplate">
-        <xf:ShellToolbarItemRenderer ToolbarItem="{Binding}" Margin="0" Background="Transparent" BorderThickness="1"
-                      IsEnabled="{Binding IsEnabled}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}">
+        <xf:ShellToolbarItemRenderer  ToolbarItem="{Binding}" Margin="0" Background="Transparent" BorderThickness="1" IsEnabled="{Binding IsEnabled}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -476,6 +475,7 @@
                                             HorizontalAlignment="Stretch"
                                             VerticalAlignment="Top">
                                             <ScrollViewer
+                                                x:Name="LeftNavScrollViewer"
                                                 TabNavigation="Once"
                                                 VerticalScrollBarVisibility="Auto">
                                                 <winui:ItemsRepeater
