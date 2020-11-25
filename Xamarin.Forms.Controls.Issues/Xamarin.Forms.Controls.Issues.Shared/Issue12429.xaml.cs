@@ -22,6 +22,16 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 		}
+
+		void ResizeFlyoutItem(System.Object sender, System.EventArgs e)
+		{
+			((sender as Element).Parent as VisualElement).HeightRequest += 20;
+		}
+
+		void ResizeFlyoutItemDown(System.Object sender, System.EventArgs e)
+		{
+			((sender as Element).Parent as VisualElement).HeightRequest -= 20;
+		}
 	}
 
 
@@ -35,8 +45,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Text = "The FlyoutItems shouldn't have any extra space. You should see 4 items",
 				VerticalTextAlignment = TextAlignment.Center,
 				TextColor = Color.Black,
-				FontSize = 30,
-				IsVisible = false
+				FontSize = 30
 			};
 
 			Content = label;

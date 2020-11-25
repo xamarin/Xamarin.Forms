@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!view.IsVisible)
 				return 0;
 
-			nfloat defaultHeight = tableView.EstimatedRowHeight == -1 ? 44 : tableView.EstimatedRowHeight;
+			nfloat defaultHeight = tableView.EstimatedRowHeight == -1 ? 0 : tableView.EstimatedRowHeight;
 			nfloat height = -1;
 
 			if (view.HeightRequest >= 0)

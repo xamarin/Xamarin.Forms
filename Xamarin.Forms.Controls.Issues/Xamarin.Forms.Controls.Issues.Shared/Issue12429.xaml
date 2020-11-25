@@ -41,12 +41,20 @@
             <local:Issue12429Page />
         </ShellContent>
     </FlyoutItem>
-    <FlyoutItem IsVisible="False">
+    <FlyoutItem>
+        <Shell.ItemTemplate>
+            <DataTemplate>
+                <StackLayout BackgroundColor="LightGray" HeightRequest="50">
+                    <Button Text="Grow Me" Clicked="ResizeFlyoutItem" />
+                    <Button Text="Shrink Me" Clicked="ResizeFlyoutItemDown" />
+                </StackLayout>
+            </DataTemplate>
+        </Shell.ItemTemplate>
         <ShellContent>
             <local:Issue12429Page />
         </ShellContent>
     </FlyoutItem>
-    <FlyoutItem>
+    <FlyoutItem Title="Bottom Flyout Item">
         <ShellContent>
             <local:Issue12429Page />
         </ShellContent>

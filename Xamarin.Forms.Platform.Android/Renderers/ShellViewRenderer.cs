@@ -61,10 +61,10 @@ namespace Xamarin.Forms.Platform.Android
 			var request = View.Measure(width, height, MeasureFlags.None);
 
 			var layoutParams = NativeView.LayoutParameters;
-			if (height == -1)
+			if (height == -1 || double.IsInfinity(height))
 				height = request.Request.Height;
 
-			if (width == -1)
+			if (width == -1 || double.IsInfinity(width))
 				width = request.Request.Width;
 
 			if (layoutParams.Width != LP.MatchParent)

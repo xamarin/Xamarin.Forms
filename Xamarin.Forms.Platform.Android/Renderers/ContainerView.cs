@@ -8,9 +8,8 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class ContainerView : ViewGroup
 	{
-		IVisualElementRenderer _renderer;
 		View _view;
-
+		ShellViewRenderer _shellViewRenderer;
 		public ContainerView(Context context, View view) : base(context)
 		{
 			View = view;
@@ -48,22 +47,20 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
-				_renderer?.Dispose();
-				_renderer = null;
+				_shellViewRenderer?.TearDown();
 				_view = null;
 			}
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
-			if (_renderer == null)
+			if (_shellViewRenderer == null)
 				return;
 
 			var width = Context.FromPixels(r - l);
 			var height = Context.FromPixels(b - t);
 
-			LayoutView(0, 0, width, height);
-			_renderer.UpdateLayout();
+			_shellViewRenderer.LayoutView(width, height);
 		}
 
 		protected virtual void LayoutView(double x, double y, double width, double height)
@@ -74,6 +71,29 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
 		{
 			if (View == null)
+			{
+				SetMeasuredDimension(0, 0);
+				return;
+			}
+			if (!View.IsVisible)
+			{
+				View.Measure(0, 0);
+				SetMeasuredDimension(0, 0);
+				return;
+			}
+
+			var width = MeasureSpecFactory.GetSize(widthMeasureSpec);
+			var height = MeasureSpecFactory.GetSize(heightMeasureSpec);
+
+			var measureWidth = width > 0 ? Context.FromPixels(width) : double.PositiveInfinity;
+			var measureHeight = height > 0 ? Context.FromPixels(height) : double.PositiveInfinity;
+
+			_shellViewRenderer.LayoutView(measureWidth, measureHeight);
+
+			SetMeasuredDimension((MatchWidth && width != 0) ? width : (int)Context.ToPixels(View.Width),
+								 (MatchHeight && height != 0) ? height : (int)Context.ToPixels(View.Height));
+
+			/*if (View == null)
 			{
 				SetMeasuredDimension(0, 0);
 				return;
@@ -100,15 +120,21 @@ namespace Xamarin.Forms.Platform.Android
 									 (MatchHeight && height != 0) ? height : (int)Context.ToPixels(sizeReq.Request.Height));
 			}
 
-			Visibility = View.IsVisible ? ViewStates.Visible : ViewStates.Invisible;
+			Visibility = View.IsVisible ? ViewStates.Visible : ViewStates.Invisible;*/
 		}
 
-		VisualElementTracker _visualElementTracker;
 		protected virtual void OnViewSet(View view)
 		{
-			if (_renderer != null)
+			if (_shellViewRenderer == null)
+				_shellViewRenderer = new ShellViewRenderer(this.Context, view);
+			else
+				_shellViewRenderer.OnViewSet(view);
+
+			if (_shellViewRenderer.NativeView != null)
+				AddView(_shellViewRenderer.NativeView);
+
+			/*if (_renderer != null)
 			{
-				_visualElementTracker?.Dispose();
 				_renderer.View.RemoveFromParent();
 				_renderer.Dispose();
 				_renderer = null;
@@ -119,9 +145,8 @@ namespace Xamarin.Forms.Platform.Android
 				_renderer = Platform.CreateRenderer(view, Context);
 				Platform.SetRenderer(view, _renderer);
 
-				_visualElementTracker = new VisualElementTracker(_renderer);
 				AddView(_renderer.View);
-			}
+			}*/
 		}
 	}
 }
