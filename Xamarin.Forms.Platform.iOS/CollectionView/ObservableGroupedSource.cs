@@ -342,8 +342,7 @@ namespace Xamarin.Forms.Platform.iOS
 			// hard. We'll need to reload the data instead.
 
 			return NotLoadedYet()
-				|| _collectionView.NumberOfSections() == 0
-				|| _collectionView.VisibleCells.Length == 0;
+				|| _collectionView.NumberOfSections() == 0;
 		}
 	}
 }
