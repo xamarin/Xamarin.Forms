@@ -5,26 +5,38 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
     xmlns:local="clr-namespace:Xamarin.Forms.Controls.Issues">
-    <Shell.ItemTemplate>
-        <DataTemplate>
-            <StackLayout Spacing="0">
-                <Label Text="Item" />
-                <BoxView BackgroundColor="Black" HeightRequest="1" />
-            </StackLayout>
-        </DataTemplate>
-    </Shell.ItemTemplate>
-
     <FlyoutItem>
+        <Shell.ItemTemplate>
+            <DataTemplate>
+                <StackLayout Spacing="0" HeightRequest="5" BackgroundColor="LightBlue" >
+                    <Label Text="I'm set to a Height of 5" TextColor="White" />
+                </StackLayout>
+            </DataTemplate>
+        </Shell.ItemTemplate>
         <ShellContent>
             <local:Issue12429Page />
         </ShellContent>
     </FlyoutItem>
     <FlyoutItem>
+        <Shell.ItemTemplate>
+            <DataTemplate>
+                <StackLayout IsVisible="False" BackgroundColor="Black" >
+                    <Label Text="Not Visible" />
+                </StackLayout>
+            </DataTemplate>
+        </Shell.ItemTemplate>
         <ShellContent>
             <local:Issue12429Page />
         </ShellContent>
     </FlyoutItem>
     <FlyoutItem>
+        <Shell.ItemTemplate>
+            <DataTemplate>
+                <StackLayout BackgroundColor="Purple">
+                    <Label Text="I'm still 44px" />
+                </StackLayout>
+            </DataTemplate>
+        </Shell.ItemTemplate>
         <ShellContent>
             <local:Issue12429Page />
         </ShellContent>

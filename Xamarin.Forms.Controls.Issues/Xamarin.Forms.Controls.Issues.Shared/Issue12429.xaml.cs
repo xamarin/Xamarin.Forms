@@ -35,7 +35,8 @@ namespace Xamarin.Forms.Controls.Issues
 				Text = "The FlyoutItems shouldn't have any extra space. You should see 4 items",
 				VerticalTextAlignment = TextAlignment.Center,
 				TextColor = Color.Black,
-				FontSize = 30
+				FontSize = 30,
+				IsVisible = false
 			};
 
 			Content = label;

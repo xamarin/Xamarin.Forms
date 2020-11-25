@@ -85,19 +85,30 @@ namespace Xamarin.Forms.Platform.Android
 			var width = MeasureSpecFactory.GetSize(widthMeasureSpec);
 			var height = MeasureSpecFactory.GetSize(heightMeasureSpec);
 
-			var measureWidth = width > 0 ? Context.FromPixels(width) : double.PositiveInfinity;
-			var measureHeight = height > 0 ? Context.FromPixels(height) : double.PositiveInfinity;
+			if (!View.IsVisible)
+			{
+				View.Measure(0, 0);
+				SetMeasuredDimension(0, 0);
+			}
+			else
+			{
+				var measureWidth = width > 0 ? Context.FromPixels(width) : double.PositiveInfinity;
+				var measureHeight = height > 0 ? Context.FromPixels(height) : double.PositiveInfinity;
+				var sizeReq = View.Measure(measureWidth, measureHeight);
 
-			var sizeReq = View.Measure(measureWidth, measureHeight);
+				SetMeasuredDimension((MatchWidth && width != 0) ? width : (int)Context.ToPixels(sizeReq.Request.Width),
+									 (MatchHeight && height != 0) ? height : (int)Context.ToPixels(sizeReq.Request.Height));
+			}
 
-			SetMeasuredDimension((MatchWidth && width != 0) ? width : (int)Context.ToPixels(sizeReq.Request.Width),
-								 (MatchHeight && height != 0) ? height : (int)Context.ToPixels(sizeReq.Request.Height));
+			Visibility = View.IsVisible ? ViewStates.Visible : ViewStates.Invisible;
 		}
 
+		VisualElementTracker _visualElementTracker;
 		protected virtual void OnViewSet(View view)
 		{
 			if (_renderer != null)
 			{
+				_visualElementTracker?.Dispose();
 				_renderer.View.RemoveFromParent();
 				_renderer.Dispose();
 				_renderer = null;
@@ -108,6 +119,7 @@ namespace Xamarin.Forms.Platform.Android
 				_renderer = Platform.CreateRenderer(view, Context);
 				Platform.SetRenderer(view, _renderer);
 
+				_visualElementTracker = new VisualElementTracker(_renderer);
 				AddView(_renderer.View);
 			}
 		}

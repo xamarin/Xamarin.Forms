@@ -17,6 +17,8 @@ namespace Xamarin.Forms.Platform.iOS
 			Platform.SetRenderer(view, _renderer);
 
 			AddSubview(_renderer.NativeView);
+			_renderer.NativeView.ClipsToBounds = true;
+			ContentView.ClipsToBounds = true;
 		}
 
 		public View View { get; }
