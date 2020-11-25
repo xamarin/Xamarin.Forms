@@ -33,7 +33,7 @@
         <Shell.ItemTemplate>
             <DataTemplate>
                 <StackLayout BackgroundColor="Purple">
-                    <Label Text="I'm still 44px" />
+                    <Label Text="I'm sized to my layout" />
                 </StackLayout>
             </DataTemplate>
         </Shell.ItemTemplate>
@@ -54,7 +54,7 @@
             <local:Issue12429Page />
         </ShellContent>
     </FlyoutItem>
-    <FlyoutItem Title="Bottom Flyout Item">
+    <FlyoutItem Title="Bottom Flyout Item (44 on iOS/50 on Android)">
         <ShellContent>
             <local:Issue12429Page />
         </ShellContent>
