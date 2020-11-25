@@ -57,12 +57,11 @@ namespace Xamarin.Forms.Platform.iOS
 			int section = indexPath.Section;
 			int row = indexPath.Row;
 			var context = Groups[section][row];
-			View view;
 
-			if (!_views.TryGetValue(context, out view))
+			if (!_views.TryGetValue(context, out var view))
 				return UITableView.AutomaticDimension;
 
-			nfloat defaultHeight = tableView.EstimatedRowHeight == -1 ? 44 : tableView.EstimatedRowHeight;
+			nfloat defaultHeight = tableView.EstimatedRowHeight == -1 ? 0 : tableView.EstimatedRowHeight;
 			nfloat height = -1;
 
 			if (view.HeightRequest >= 0)

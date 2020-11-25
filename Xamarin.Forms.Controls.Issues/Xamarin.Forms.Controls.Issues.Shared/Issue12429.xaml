@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestShell
+    x:Class="Xamarin.Forms.Controls.Issues.Issue12429"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns:local="clr-namespace:Xamarin.Forms.Controls.Issues">
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <StackLayout Spacing="0">
+                <Label Text="Item" />
+                <BoxView BackgroundColor="Black" HeightRequest="1" />
+            </StackLayout>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+
+    <FlyoutItem>
+        <ShellContent>
+            <local:Issue12429Page />
+        </ShellContent>
+    </FlyoutItem>
+    <FlyoutItem>
+        <ShellContent>
+            <local:Issue12429Page />
+        </ShellContent>
+    </FlyoutItem>
+    <FlyoutItem>
+        <ShellContent>
+            <local:Issue12429Page />
+        </ShellContent>
+    </FlyoutItem>
+    <FlyoutItem IsVisible="False">
+        <ShellContent>
+            <local:Issue12429Page />
+        </ShellContent>
+    </FlyoutItem>
+    <FlyoutItem>
+        <ShellContent>
+            <local:Issue12429Page />
+        </ShellContent>
+    </FlyoutItem>
+
+
+</controls:TestShell>
