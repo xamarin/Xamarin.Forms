@@ -301,6 +301,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue9833.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue9929.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue9088.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NavPageOverrideUWP.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RefreshViewTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7338.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScrollToGroup.cs" />
@@ -1641,6 +1642,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue11911.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11691.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue12912.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue8988.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue12084.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue12512.cs" />
   </ItemGroup>
