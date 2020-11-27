@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+	xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+	xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue11514"
+    Title="Issue 11514">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If the image is clipped, the test has passed." />
+        <Image
+            Source="http://upload.wikimedia.org/wikipedia/commons/thumb/8/83/BlueMonkey.jpg/220px-BlueMonkey.jpg">
+            <Image.Clip>
+                <GeometryGroup>
+                    <GeometryGroup 
+                        FillRule="EvenOdd">
+                        <EllipseGeometry Center="150, 150" RadiusX="100" RadiusY="100" />
+                        <EllipseGeometry Center="250, 150" RadiusX="100" RadiusY="100" />
+                        <EllipseGeometry Center="150, 250" RadiusX="100" RadiusY="100" />
+                        <EllipseGeometry Center="250, 250" RadiusX="100" RadiusY="100" />
+                    </GeometryGroup>
+                </GeometryGroup>
+            </Image.Clip>
+        </Image>
+    </StackLayout>
+</controls:TestContentPage>
