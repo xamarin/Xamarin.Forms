@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 		}
 
-#if UITEST && __IOS__ // Grouping for Android hasn't been merged yet
+#if UITEST 
 		[Test]
 		public void CanScrollToGroupAndItemIndex()
 		{

@@ -21,4 +21,9 @@ namespace Xamarin.Forms.Platform.Android
 		bool IsGroupHeader(int position);
 		bool IsGroupFooter(int position);
 	}
+
+	public interface IGroupedItemsPosition
+	{
+		int GetPosition(int groupIndex, int itemIndex);
+	}
 }
