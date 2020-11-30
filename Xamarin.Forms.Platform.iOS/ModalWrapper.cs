@@ -21,10 +21,20 @@ namespace Xamarin.Forms.Platform.iOS
 			if (elementConfiguration?.On<PlatformConfiguration.iOS>()?.ModalPresentationStyle() is PlatformConfiguration.iOSSpecific.UIModalPresentationStyle style)
 			{
 				var result = style.ToNativeModalPresentationStyle();
+
 				if (!Forms.IsiOS13OrNewer && result == UIKit.UIModalPresentationStyle.Automatic)
 				{
 					result = UIKit.UIModalPresentationStyle.FullScreen;
 				}
+
+				if (result == UIKit.UIModalPresentationStyle.FullScreen)
+				{
+					Color modalBkgndColor = ((Page)_modal.Element).BackgroundColor;
+
+					if (modalBkgndColor.A > 0)
+						result = UIKit.UIModalPresentationStyle.OverFullScreen;
+				}
+
 				ModalPresentationStyle = result;
 			}
 
@@ -39,9 +49,6 @@ namespace Xamarin.Forms.Platform.iOS
 				PresentationController.Delegate = this;
 
 			((Page)modal.Element).PropertyChanged += OnModalPagePropertyChanged;
-
-			if (Forms.IsiOS13OrNewer)
-				PresentationController.Delegate = this;
 		}
 
 		[Export("presentationControllerDidDismiss:")]
@@ -109,13 +116,12 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewDidLayoutSubviews()
 		{
 			base.ViewDidLayoutSubviews();
-			if (_modal != null)
-				_modal.SetElementSize(new Size(View.Bounds.Width, View.Bounds.Height));
+			_modal?.SetElementSize(new Size(View.Bounds.Width, View.Bounds.Height));
 		}
 
 		public override void ViewWillAppear(bool animated)
 		{
-			if(!_isDisposed)
+			if (!_isDisposed)
 				UpdateBackgroundColor();
 
 			base.ViewWillAppear(animated);
@@ -131,8 +137,9 @@ namespace Xamarin.Forms.Platform.iOS
 			if (disposing)
 			{
 				if (_modal?.Element is Page modalPage)
+				{
 					modalPage.PropertyChanged -= OnModalPagePropertyChanged;
-
+				}
 				_modal = null;
 			}
 

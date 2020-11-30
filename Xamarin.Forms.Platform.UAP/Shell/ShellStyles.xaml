@@ -28,16 +28,15 @@
         <StackPanel Orientation="Horizontal" />
     </ItemsPanelTemplate>
     <DataTemplate x:Key="ShellToolbarItemTemplate">
-        <xf:ShellToolbarItemRenderer ToolbarItem="{Binding}" Margin="0" Background="Transparent" BorderThickness="1"
-                      IsEnabled="{Binding IsEnabled}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}">
+        <xf:ShellToolbarItemRenderer  ToolbarItem="{Binding}" Margin="0" Background="Transparent" BorderThickness="1" IsEnabled="{Binding IsEnabled}">
             <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
                 <Image
-				    Source="{Binding IconImageSource, Converter={StaticResource ImageConverter}}" VerticalAlignment="Center" />
-                <TextBlock Grid.Row="1" Foreground="White" VerticalAlignment="Center" Text="{Binding Text}"></TextBlock>
+				    DataContext="{Binding IconImageSource, Converter={StaticResource ImageConverter}}" Source="{Binding Value}" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Foreground="White" VerticalAlignment="Center" Text="{Binding Text}"></TextBlock>
             </Grid>
         </xf:ShellToolbarItemRenderer>
     </DataTemplate>
@@ -476,6 +475,7 @@
                                             HorizontalAlignment="Stretch"
                                             VerticalAlignment="Top">
                                             <ScrollViewer
+                                                x:Name="LeftNavScrollViewer"
                                                 TabNavigation="Once"
                                                 VerticalScrollBarVisibility="Auto">
                                                 <winui:ItemsRepeater
