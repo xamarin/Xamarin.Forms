@@ -634,7 +634,7 @@ namespace Xamarin.Forms
 				HandleNavigated(_accumulatedEvent);
 		}
 
-		internal static void ApplyQueryAttributes(Element element, ShellParameter query, bool isLastItem, bool isPopping)
+		internal static void ApplyQueryAttributes(Element element, ShellRouteParameter query, bool isLastItem, bool isPopping)
 		{
 			string prefix = "";
 			if (!isLastItem)
@@ -677,25 +677,25 @@ namespace Xamarin.Forms
 			else if (isLastItem)
 				element.SetValue(ShellContent.QueryAttributesProperty, MergeData(element, query, isPopping));
 
-			IDictionary<string, string> MergeData(Element shellElement, IDictionary<string, string> data, bool isPopping)
+			static ShellRouteParameter MergeData(Element shellElement, ShellRouteParameter data, bool isPopping)
 			{
 				if (!isPopping)
 					return data;
 
-				var returnValue = new Dictionary<string, string>(data);
+				//var returnValue = new Dictionary<string, string>(data);
 
-				var existing = (IDictionary<string, string>)shellElement.GetValue(ShellContent.QueryAttributesProperty);
+				var existing = (ShellRouteParameter)shellElement.GetValue(ShellContent.QueryAttributesProperty);
 
 				if (existing == null)
 					return data;
 
 				foreach (var datum in existing)
 				{
-					if (!returnValue.ContainsKey(datum.Key))
-						returnValue[datum.Key] = datum.Value;
+					if (data.ContainsKey(datum.Key))
+						data[datum.Key] = datum.Value;
 				}
 
-				return returnValue;
+				return data;
 			}
 		}
 

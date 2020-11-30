@@ -88,11 +88,11 @@ namespace Xamarin.Forms
 				// TODO get rid of this hack and fix so if there's a stack the current page doesn't display
 				Device.BeginInvokeOnMainThread(async () =>
 				{
-					await GoToAsync(request, queryData, false);
+					await GoToAsync(request, queryData, false, true);
 				});
 			}
 
-			Shell.ApplyQueryAttributes(shellContent, queryData, request.Request.GlobalRoutes.Count == 0);
+			Shell.ApplyQueryAttributes(shellContent, queryData, request.Request.GlobalRoutes.Count == 0, false);
 
 			if (CurrentItem != shellContent)
 				SetValueFromRenderer(CurrentItemProperty, shellContent);
@@ -337,7 +337,7 @@ namespace Xamarin.Forms
 			return (ShellSection)(ShellContent)page;
 		}
 
-		async Task PrepareCurrentStackForBeingReplaced(NavigationRequest request, ShellParameter queryData, bool? animate, List<string> globalRoutes, bool isRelativePopping)
+		async Task PrepareCurrentStackForBeingReplaced(NavigationRequest request, ShellRouteParameter queryData, bool? animate, List<string> globalRoutes, bool isRelativePopping)
 		{
 			string route = "";
 			List<Page> navStack = null;
@@ -517,7 +517,7 @@ namespace Xamarin.Forms
 			return startingList;
 		}
 
-		Page GetOrCreateFromRoute(string route, ShellParameter queryData, bool isLast, bool isPopping)
+		Page GetOrCreateFromRoute(string route, ShellRouteParameter queryData, bool isLast, bool isPopping)
 		{
 			var content = Routing.GetOrCreateContent(route) as Page;
 			if (content == null)
@@ -529,7 +529,7 @@ namespace Xamarin.Forms
 			return content;
 		}
 
-		internal async Task GoToAsync(NavigationRequest request, ShellParameter queryData, bool? animate, bool isRelativePopping)
+		internal async Task GoToAsync(NavigationRequest request, ShellRouteParameter queryData, bool? animate, bool isRelativePopping)
 		{
 			List<string> globalRoutes = request.Request.GlobalRoutes;
 			if (globalRoutes == null || globalRoutes.Count == 0)

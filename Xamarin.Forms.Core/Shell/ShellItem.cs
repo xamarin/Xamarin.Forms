@@ -68,7 +68,7 @@ namespace Xamarin.Forms
 			if (shellSection == null)
 				shellSection = ShellItemController.GetItems()[0];
 
-			Shell.ApplyQueryAttributes(shellSection, queryData, request.Request.Content == null);
+			Shell.ApplyQueryAttributes(shellSection, queryData, request.Request.Content == null, true);
 
 			if (CurrentItem != shellSection)
 				SetValueFromRenderer(CurrentItemProperty, shellSection);

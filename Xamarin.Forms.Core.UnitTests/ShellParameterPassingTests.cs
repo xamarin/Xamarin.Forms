@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace Xamarin.Forms.Core.UnitTests
@@ -299,6 +298,9 @@ namespace Xamarin.Forms.Core.UnitTests
 			await shell.Navigation.PushAsync(new ContentPage());
 			await shell.GoToAsync($"//content");
 			Assert.AreEqual(null, page.SomeQueryParameter);
+		}
+
+		[Test]
 		public async Task BasicShellParameterTest()
 		{
 			var shell = new Shell();
@@ -375,4 +377,5 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(urlTest, testPage.SomeQueryParameter);
 		}
 	}
+
 }
