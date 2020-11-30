@@ -119,6 +119,10 @@ namespace Xamarin.Forms.Platform.iOS
 			base.UpdateItemsSource();
 			//we don't need to Subscribe because base calls CreateItemsViewSource
 			_carouselViewLoopManager?.SetItemsSource(LoopItemsSource);
+
+			Carousel.SetValueFromRenderer(CarouselView.CurrentItemProperty, null);
+			Carousel.SetValueFromRenderer(CarouselView.PositionProperty, 0);
+
 			_initialPositionSet = false;
 			UpdateInitialPosition();
 		}
