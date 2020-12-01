@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (appearance == null)
 			{
 				UpdateScrim(Brush.Transparent);
-				_flyoutWidth = _flyoutWidthDefault;
+				_flyoutWidth = -1;
 				_flyoutHeight = LP.MatchParent;
 			}
 			else
@@ -108,7 +108,7 @@ namespace Xamarin.Forms.Platform.Android
 		AView _content;
 		IShellFlyoutContentRenderer _flyoutContent;
 		int _flyoutWidthDefault;
-		double _flyoutWidth;
+		double _flyoutWidth = -1;
 		double _flyoutHeight;
 
 		int _currentLockMode;
