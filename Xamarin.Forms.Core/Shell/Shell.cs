@@ -682,7 +682,7 @@ namespace Xamarin.Forms
 				if (!isPopping)
 					return data;
 
-				//var returnValue = new Dictionary<string, string>(data);
+				var returnValue = new ShellRouteParameter(data);
 
 				var existing = (ShellRouteParameter)shellElement.GetValue(ShellContent.QueryAttributesProperty);
 
@@ -691,11 +691,11 @@ namespace Xamarin.Forms
 
 				foreach (var datum in existing)
 				{
-					if (data.ContainsKey(datum.Key))
-						data[datum.Key] = datum.Value;
+					if (!returnValue.ContainsKey(datum.Key))
+						returnValue[datum.Key] = datum.Value;
 				}
 
-				return data;
+				return returnValue;
 			}
 		}
 

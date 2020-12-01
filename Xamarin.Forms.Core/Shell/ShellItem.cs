@@ -61,21 +61,6 @@ namespace Xamarin.Forms
 
 		IShellItemController ShellItemController => this;
 
-		internal Task GoToPart(NavigationRequest request, ShellRouteParameter queryData)
-		{
-			var shellSection = request.Request.Section;
-
-			if (shellSection == null)
-				shellSection = ShellItemController.GetItems()[0];
-
-			Shell.ApplyQueryAttributes(shellSection, queryData, request.Request.Content == null, true);
-
-			if (CurrentItem != shellSection)
-				SetValueFromRenderer(CurrentItemProperty, shellSection);
-
-			return shellSection.GoToPart(request, queryData);
-		}
-
 		bool IShellItemController.ProposeSection(ShellSection shellSection, bool setValue)
 		{
 			var controller = (IShellController)Parent;

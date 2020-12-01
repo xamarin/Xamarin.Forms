@@ -10,6 +10,10 @@ namespace Xamarin.Forms
 		{
 		}
 
+		public ShellRouteParameter(ShellRouteParameter shellRouteParams) : base(shellRouteParams)
+		{
+		}
+
 		public ShellRouteParameter(int count)
 			: base(count)
 		{

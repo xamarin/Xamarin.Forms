@@ -76,30 +76,6 @@ namespace Xamarin.Forms
 			callback(DisplayedPage);
 		}
 
-		internal Task GoToPart(NavigationRequest request, ShellRouteParameter queryData)
-		{
-			ShellContent shellContent = request.Request.Content;
-
-			if (shellContent == null)
-				shellContent = ShellSectionController.GetItems()[0];
-
-			if (request.Request.GlobalRoutes.Count > 0)
-			{
-				// TODO get rid of this hack and fix so if there's a stack the current page doesn't display
-				Device.BeginInvokeOnMainThread(async () =>
-				{
-					await GoToAsync(request, queryData, false, true);
-				});
-			}
-
-			Shell.ApplyQueryAttributes(shellContent, queryData, request.Request.GlobalRoutes.Count == 0, false);
-
-			if (CurrentItem != shellContent)
-				SetValueFromRenderer(CurrentItemProperty, shellContent);
-
-			return Task.FromResult(true);
-		}
-
 		bool IShellSectionController.RemoveContentInsetObserver(IShellContentInsetObserver observer)
 		{
 			return _observers.Remove(observer);
