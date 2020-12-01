@@ -12,16 +12,20 @@
             TextColor="White"
             Text="If the image is clipped, the test has passed." />
         <Image
+            Aspect="AspectFill"
+            HeightRequest="144"
+            WidthRequest="144"
+            HorizontalOptions="Center"
+            BackgroundColor="LightGray"
             Source="http://upload.wikimedia.org/wikipedia/commons/thumb/8/83/BlueMonkey.jpg/220px-BlueMonkey.jpg">
             <Image.Clip>
-                <GeometryGroup>
-                    <GeometryGroup 
-                        FillRule="EvenOdd">
-                        <EllipseGeometry Center="150, 150" RadiusX="100" RadiusY="100" />
-                        <EllipseGeometry Center="250, 150" RadiusX="100" RadiusY="100" />
-                        <EllipseGeometry Center="150, 250" RadiusX="100" RadiusY="100" />
-                        <EllipseGeometry Center="250, 250" RadiusX="100" RadiusY="100" />
-                    </GeometryGroup>
+                <GeometryGroup FillRule="Nonzero">
+                    <EllipseGeometry RadiusX="8" RadiusY="8" Center="8,8" />
+                    <EllipseGeometry RadiusX="8" RadiusY="8" Center="8,136" />
+                    <EllipseGeometry RadiusX="8" RadiusY="8" Center="136,8" />
+                    <EllipseGeometry RadiusX="8" RadiusY="8" Center="136,136" />
+                    <RectangleGeometry Rect="8,0,128,144"/>
+                    <RectangleGeometry Rect="0,8,144,128"/>
                 </GeometryGroup>
             </Image.Clip>
         </Image>
