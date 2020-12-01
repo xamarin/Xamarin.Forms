@@ -313,7 +313,7 @@ namespace Xamarin.Forms
 			return (ShellSection)(ShellContent)page;
 		}
 
-		async Task PrepareCurrentStackForBeingReplaced(NavigationRequest request, ShellRouteParameter queryData, bool? animate, List<string> globalRoutes, bool isRelativePopping)
+		async Task PrepareCurrentStackForBeingReplaced(NavigationRequest request, ShellRouteParameters queryData, bool? animate, List<string> globalRoutes, bool isRelativePopping)
 		{
 			string route = "";
 			List<Page> navStack = null;
@@ -493,7 +493,7 @@ namespace Xamarin.Forms
 			return startingList;
 		}
 
-		Page GetOrCreateFromRoute(string route, ShellRouteParameter queryData, bool isLast, bool isPopping)
+		Page GetOrCreateFromRoute(string route, ShellRouteParameters queryData, bool isLast, bool isPopping)
 		{
 			var content = Routing.GetOrCreateContent(route) as Page;
 			if (content == null)
@@ -505,7 +505,7 @@ namespace Xamarin.Forms
 			return content;
 		}
 
-		internal async Task GoToAsync(NavigationRequest request, ShellRouteParameter queryData, bool? animate, bool isRelativePopping)
+		internal async Task GoToAsync(NavigationRequest request, ShellRouteParameters queryData, bool? animate, bool isRelativePopping)
 		{
 			List<string> globalRoutes = request.Request.GlobalRoutes;
 			if (globalRoutes == null || globalRoutes.Count == 0)

@@ -4,17 +4,21 @@ using System.Text;
 
 namespace Xamarin.Forms
 {
-	public class ShellRouteParameter : Dictionary<string, object>
+	public class ShellRouteParameters : Dictionary<string, object>
 	{
-		public ShellRouteParameter()
+		public ShellRouteParameters()
 		{
 		}
 
-		public ShellRouteParameter(ShellRouteParameter shellRouteParams) : base(shellRouteParams)
+		public ShellRouteParameters(ShellRouteParameters shellRouteParams) : base(shellRouteParams)
 		{
 		}
 
-		public ShellRouteParameter(int count)
+		public ShellRouteParameters(IDictionary<string,object> shellRouteParams) : base(shellRouteParams)
+		{
+		}
+
+		public ShellRouteParameters(int count)
 			: base(count)
 		{
 		}
@@ -39,7 +43,7 @@ namespace Xamarin.Forms
 		}
 
 
-		public static Dictionary<string, string> GetStringValues(this ShellRouteParameter parameter)
+		public static Dictionary<string, string> GetStringValues(this ShellRouteParameters parameter)
 		{
 			var dic = new Dictionary<string, string>();
 

@@ -464,17 +464,27 @@ namespace Xamarin.Forms
 			return GoToAsync(state, animate, false);
 		}
 
-		public Task GoToAsync(ShellNavigationState state, ShellRouteParameter parameters)
+		public Task GoToAsync(ShellNavigationState state, ShellRouteParameters parameters)
 		{
 			return GoToAsync(state, null, false, parameters: parameters);
 		}
 
-		public Task GoToAsync(ShellNavigationState state, bool animate, ShellRouteParameter parameters)
+		public Task GoToAsync(ShellNavigationState state, bool animate, ShellRouteParameters parameters)
 		{
 			return GoToAsync(state, animate, false, parameters: parameters);
 		}
 
-		internal Task GoToAsync(ShellNavigationState state, bool? animate, bool enableRelativeShellRoutes, ShellNavigatingEventArgs deferredArgs = null, ShellRouteParameter parameters = null)
+		public Task GoToAsync(ShellNavigationState state, IDictionary<string,object> parameters)
+		{
+			return GoToAsync(state, null, false, parameters: new ShellRouteParameters(parameters));
+		}
+
+		public Task GoToAsync(ShellNavigationState state, bool animate, IDictionary<string, object> parameters)
+		{
+			return GoToAsync(state, animate, false, parameters: new ShellRouteParameters(parameters));
+		}
+
+		internal Task GoToAsync(ShellNavigationState state, bool? animate, bool enableRelativeShellRoutes, ShellNavigatingEventArgs deferredArgs = null, ShellRouteParameters parameters = null)
 		{
 			return GoToAsync(new ShellNavigationParameters
 			{
@@ -495,7 +505,7 @@ namespace Xamarin.Forms
 			bool? animate = shellNavigationParameters.Animated;
 			bool enableRelativeShellRoutes = shellNavigationParameters.EnableRelativeShellRoutes;
 			ShellNavigatingEventArgs deferredArgs = shellNavigationParameters.DeferredArgs;
-			var parameters = shellNavigationParameters.Parameters ?? new ShellRouteParameter();
+			var parameters = shellNavigationParameters.Parameters ?? new ShellRouteParameters();
 
 			if (_deferredEventArgs != null && _deferredEventArgs != deferredArgs)
 			{
@@ -634,7 +644,7 @@ namespace Xamarin.Forms
 				HandleNavigated(_accumulatedEvent);
 		}
 
-		internal static void ApplyQueryAttributes(Element element, ShellRouteParameter query, bool isLastItem, bool isPopping)
+		internal static void ApplyQueryAttributes(Element element, ShellRouteParameters query, bool isLastItem, bool isPopping)
 		{
 			string prefix = "";
 			if (!isLastItem)
@@ -660,7 +670,7 @@ namespace Xamarin.Forms
 				baseShellItem = element?.Parent as BaseShellItem;
 
 			//filter the query to only apply the keys with matching prefix
-			var filteredQuery = new ShellRouteParameter(query.Count);
+			var filteredQuery = new ShellRouteParameters(query.Count);
 			foreach (var q in query)
 			{
 				if (!q.Key.StartsWith(prefix, StringComparison.Ordinal))
@@ -677,14 +687,14 @@ namespace Xamarin.Forms
 			else if (isLastItem)
 				element.SetValue(ShellContent.QueryAttributesProperty, MergeData(element, query, isPopping));
 
-			static ShellRouteParameter MergeData(Element shellElement, ShellRouteParameter data, bool isPopping)
+			static ShellRouteParameters MergeData(Element shellElement, ShellRouteParameters data, bool isPopping)
 			{
 				if (!isPopping)
 					return data;
 
-				var returnValue = new ShellRouteParameter(data);
+				var returnValue = new ShellRouteParameters(data);
 
-				var existing = (ShellRouteParameter)shellElement.GetValue(ShellContent.QueryAttributesProperty);
+				var existing = (ShellRouteParameters)shellElement.GetValue(ShellContent.QueryAttributesProperty);
 
 				if (existing == null)
 					return data;
