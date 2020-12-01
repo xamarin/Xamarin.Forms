@@ -464,12 +464,12 @@ namespace Xamarin.Forms
 			return GoToAsync(state, animate, false);
 		}
 
-		public Task GoToAsync(ShellNavigationState state, ShellRouteParameters parameters)
+		internal Task GoToAsync(ShellNavigationState state, ShellRouteParameters parameters)
 		{
 			return GoToAsync(state, null, false, parameters: parameters);
 		}
 
-		public Task GoToAsync(ShellNavigationState state, bool animate, ShellRouteParameters parameters)
+		internal Task GoToAsync(ShellNavigationState state, bool animate, ShellRouteParameters parameters)
 		{
 			return GoToAsync(state, animate, false, parameters: parameters);
 		}

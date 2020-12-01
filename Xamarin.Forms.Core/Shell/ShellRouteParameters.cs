@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Xamarin.Forms
 {
-	public class ShellRouteParameters : Dictionary<string, object>
+	internal class ShellRouteParameters : Dictionary<string, object>
 	{
 		public ShellRouteParameters()
 		{
@@ -34,7 +34,7 @@ namespace Xamarin.Forms
 	}
 
 
-	public static class ShellParameterExtensions
+	internal static class ShellParameterExtensions
 	{
 		public static void Deconstruct(this KeyValuePair<string, object> tuple, out string key, out object value)
 		{
