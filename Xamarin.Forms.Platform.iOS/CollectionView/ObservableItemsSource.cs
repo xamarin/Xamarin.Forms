@@ -154,12 +154,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void Add(NotifyCollectionChangedEventArgs args)
 		{
-			if (ReloadRequired())
-			{
-				Reload();
-				return;
-			}
-
 			var count = args.NewItems.Count;
 			Count += count;
 			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : IndexOf(args.NewItems[0]);
@@ -176,12 +170,6 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				// INCC implementation isn't giving us enough information to know where the removed items were in the
 				// collection. So the best we can do is a ReloadData()
-				Reload();
-				return;
-			}
-
-			if (ReloadRequired())
-			{
 				Reload();
 				return;
 			}
@@ -278,35 +266,6 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return -1;
-		}
-
-		bool NotLoadedYet()
-		{
-			// If the UICollectionView hasn't actually been loaded, then calling InsertItems or DeleteItems is 
-			// going to crash or get in an unusable state; instead, ReloadData should be used
-			return !_collectionViewController.IsViewLoaded || _collectionViewController.View.Window == null;
-		}
-
-		bool ReloadRequired()
-		{
-			return false;
-
-			//if (NotLoadedYet())
-			//{
-			//	return true;
-			//}
-
-			//// UICollectionView doesn't like when we insert items into a completely empty un-grouped CV,
-			//// and it doesn't like when we insert items into a grouped CV with no actual cells (just empty groups)
-			//// In those circumstances, we just need to ask it to reload the data so it can get its internal
-			//// accounting in order
-
-			//if (!_grouped && CollectionView.NumberOfItemsInSection(_section) == 0)
-			//{
-			//	return true;
-			//}
-
-			//return CollectionView.VisibleCells.Length == 0;
 		}
 
 		void Update(Action update, NotifyCollectionChangedEventArgs args)
