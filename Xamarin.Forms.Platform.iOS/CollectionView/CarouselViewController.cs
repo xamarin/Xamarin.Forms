@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Threading.Tasks;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -21,6 +18,7 @@ namespace Xamarin.Forms.Platform.iOS
 		int _gotoPosition = -1;
 		CGSize _size;
 		ILoopItemsViewSource LoopItemsSource => ItemsSource as ILoopItemsViewSource;
+		bool _isDragging;
 
 		public CarouselViewController(CarouselView itemsView, ItemsViewLayout layout) : base(itemsView, layout)
 		{
@@ -105,12 +103,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void DraggingStarted(UIScrollView scrollView)
 		{
+			_isDragging = true;
 			Carousel.SetIsDragging(true);
 		}
 
 		public override void DraggingEnded(UIScrollView scrollView, bool willDecelerate)
 		{
 			Carousel.SetIsDragging(false);
+			_isDragging = false;
 		}
 
 		public override void UpdateItemsSource()
@@ -120,8 +120,11 @@ namespace Xamarin.Forms.Platform.iOS
 			//we don't need to Subscribe because base calls CreateItemsViewSource
 			_carouselViewLoopManager?.SetItemsSource(LoopItemsSource);
 
-			Carousel.SetValueFromRenderer(CarouselView.CurrentItemProperty, null);
-			Carousel.SetValueFromRenderer(CarouselView.PositionProperty, 0);
+			if (_initialPositionSet)
+			{
+				Carousel.SetValueFromRenderer(CarouselView.CurrentItemProperty, null);
+				Carousel.SetValueFromRenderer(CarouselView.PositionProperty, 0);
+			}
 
 			_initialPositionSet = false;
 			UpdateInitialPosition();
@@ -185,6 +188,11 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_updatingScrollOffset)
 				return;
 
+			if (_isDragging)
+			{
+				return;
+			}
+
 			SetPosition(e.CenterItemIndex);
 
 			UpdateVisualStates();
@@ -194,11 +202,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CollectionViewUpdating(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (e.Action == NotifyCollectionChangedAction.Reset)
-			{
-				return;
-			}
-
 			int carouselPosition = Carousel.Position;
 			_positionAfterUpdate = carouselPosition;
 			var currentItemPosition = ItemsSource.GetIndexForItem(Carousel.CurrentItem).Row;
@@ -216,7 +219,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CollectionViewUpdated(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (e.Action == NotifyCollectionChangedAction.Reset || _positionAfterUpdate == -1)
+			if (_positionAfterUpdate == -1)
 			{
 				return;
 			}
@@ -226,7 +229,8 @@ namespace Xamarin.Forms.Platform.iOS
 			var targetPosition = _positionAfterUpdate;
 			_positionAfterUpdate = -1;
 
-			Carousel.ScrollTo(targetPosition, position: Xamarin.Forms.ScrollToPosition.Center, animate: false);
+			SetPosition(targetPosition);
+			SetCurrentItem(targetPosition);
 		}
 
 		int GetPositionWhenAddingItems(int carouselPosition, int currentItemPosition)

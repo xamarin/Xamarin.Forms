@@ -129,6 +129,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var index = Items.IndexOf(carousel.CurrentItem as ModelIssue10300);
 			System.Diagnostics.Debug.WriteLine($"Delete {index}");
 			Items.RemoveAt(index);
+			MessagingCenter.Instance.Unsubscribe<Page>(this, "Delete");
 		}
 
 		public ObservableCollection<ModelIssue10300> Items { get; set; }

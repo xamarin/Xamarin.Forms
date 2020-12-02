@@ -137,11 +137,12 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
 
+			Count = ItemsCount();
+
 			OnCollectionViewUpdating(args);
 
 			CollectionView.ReloadData();
 			CollectionView.CollectionViewLayout.InvalidateLayout();
-			Count = ItemsCount();
 
 			OnCollectionViewUpdated(args);
 		}
@@ -288,22 +289,24 @@ namespace Xamarin.Forms.Platform.iOS
 
 		bool ReloadRequired()
 		{
-			if (NotLoadedYet())
-			{
-				return true;
-			}
+			return false;
 
-			// UICollectionView doesn't like when we insert items into a completely empty un-grouped CV,
-			// and it doesn't like when we insert items into a grouped CV with no actual cells (just empty groups)
-			// In those circumstances, we just need to ask it to reload the data so it can get its internal
-			// accounting in order
+			//if (NotLoadedYet())
+			//{
+			//	return true;
+			//}
 
-			if (!_grouped && CollectionView.NumberOfItemsInSection(_section) == 0)
-			{
-				return true;
-			}
+			//// UICollectionView doesn't like when we insert items into a completely empty un-grouped CV,
+			//// and it doesn't like when we insert items into a grouped CV with no actual cells (just empty groups)
+			//// In those circumstances, we just need to ask it to reload the data so it can get its internal
+			//// accounting in order
 
-			return CollectionView.VisibleCells.Length == 0;
+			//if (!_grouped && CollectionView.NumberOfItemsInSection(_section) == 0)
+			//{
+			//	return true;
+			//}
+
+			//return CollectionView.VisibleCells.Length == 0;
 		}
 
 		void Update(Action update, NotifyCollectionChangedEventArgs args)
