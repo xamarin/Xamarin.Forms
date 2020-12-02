@@ -37,9 +37,6 @@ namespace Xamarin.Forms
 		public void SetAndLoadSource(Uri value, string resourcePath, Assembly assembly, System.Xml.IXmlLineInfo lineInfo)
 		{
 			_source = value;
-      
-			if (_mergedWith != null)
-				throw new ArgumentException("Source cannot be used with MergedWith");
 
 			//this will return a type if the RD as an x:Class element, and codebehind
 			var type = XamlResourceIdAttribute.GetTypeForPath(assembly, resourcePath);
