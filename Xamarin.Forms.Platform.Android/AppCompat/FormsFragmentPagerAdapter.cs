@@ -1,10 +1,6 @@
 using System.Collections.Generic;
 using Android.OS;
-#if __ANDROID_29__
 using AndroidX.Fragment.App;
-#else
-using Android.Support.V4.App;
-#endif
 using Java.Lang;
 using Xamarin.Forms.Internals;
 using FragmentTransit = Android.App.FragmentTransit;
@@ -18,11 +14,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		List<Fragment> _fragments;
 		bool _disposed;
 
-#if __ANDROID_29__
 		public FormsFragmentPagerAdapter(MultiPage<T> page, FragmentManager fragmentManager) : base(fragmentManager, FragmentStatePagerAdapter.BehaviorResumeOnlyCurrentFragment)
-#else
-		public FormsFragmentPagerAdapter(MultiPage<T> page, FragmentManager fragmentManager) : base(fragmentManager)
-#endif
 		{
 			_page = page;
 			_fragmentManager = fragmentManager;
@@ -50,11 +42,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		public override int GetItemPosition(Object objectValue)
 		{
 			var fragContainer = objectValue as FragmentContainer;
-			
+
 			if (fragContainer?.Page != null)
 			{
 				int index = _page.Children.IndexOf(fragContainer.Page);
-				
+
 				if (index >= 0)
 					return index;
 			}
@@ -90,7 +82,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (!_fragmentManager.IsDestroyed)
 				{
 					FragmentTransaction transaction = _fragmentManager.BeginTransactionEx();
-			
+
 					foreach (Fragment fragment in _fragments)
 					{
 						transaction.RemoveEx(fragment);

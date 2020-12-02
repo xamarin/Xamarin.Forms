@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 using System.Text;
+using System.Threading;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Linq;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
-using System.Threading;
-using System.ComponentModel;
 
 #if UITEST
 using Xamarin.UITest;
@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap(ClearShellItems);
 
 			var label = RunningApp.WaitForElement(StatusLabel)[0];
-			Assert.AreEqual(label.Text, StatusLabelText);
+			Assert.AreEqual(StatusLabelText, label.ReadText());
 			RunningApp.Tap(PostClearTopTab);
 		}
 #endif

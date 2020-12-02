@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -6,10 +7,9 @@ using Android.Content;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using AView = Android.Views.View;
-using AListView = Android.Widget.ListView;
 using Xamarin.Forms.Internals;
-using System.Collections;
+using AListView = Android.Widget.ListView;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -63,7 +63,7 @@ namespace Xamarin.Forms.Platform.Android
 			realListView.OnItemClickListener = this;
 			realListView.OnItemLongClickListener = this;
 
-			MessagingCenter.Subscribe<ListViewAdapter>(this, Platform.CloseContextActionsSignalName, lva => CloseContextActions());
+			MessagingCenter.Subscribe<ListViewAdapter>(this, AppCompat.Platform.CloseContextActionsSignalName, lva => CloseContextActions());
 
 			InvalidateCount();
 		}
@@ -227,7 +227,7 @@ namespace Xamarin.Forms.Platform.Android
 					if (cell == null)
 					{
 						Performance.Stop(reference);
-						
+
 						return new AView(_context);
 					}
 				}
@@ -441,7 +441,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				CloseContextActions();
 
-				MessagingCenter.Unsubscribe<ListViewAdapter>(this, Platform.CloseContextActionsSignalName);
+				MessagingCenter.Unsubscribe<ListViewAdapter>(this, AppCompat.Platform.CloseContextActionsSignalName);
 
 				_realListView.OnItemClickListener = null;
 				_realListView.OnItemLongClickListener = null;
@@ -504,7 +504,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (layout.IsDisposed())
 					continue;
-				
+
 				DisposeOfConditionalFocusLayout(layout);
 			}
 
@@ -520,10 +520,10 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (view != null)
 			{
-				var renderer = Platform.GetRenderer(view);
+				var renderer = AppCompat.Platform.GetRenderer(view);
 
 				if (renderer == renderedView)
-					element.ClearValue(Platform.RendererProperty);
+					element.ClearValue(AppCompat.Platform.RendererProperty);
 
 				renderer?.Dispose();
 				renderer = null;

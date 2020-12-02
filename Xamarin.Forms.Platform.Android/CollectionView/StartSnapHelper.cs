@@ -1,9 +1,4 @@
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
 using AndroidX.RecyclerView.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
@@ -51,7 +46,7 @@ namespace Xamarin.Forms.Platform.Android
 			var firstView = linearLayoutManager.FindViewByPosition(firstVisibleItemPosition);
 
 			// If the first visible item is in the last row/col of the collection, snap to it
-			if(firstVisibleItemPosition >= linearLayoutManager.ItemCount - span)
+			if (firstVisibleItemPosition >= linearLayoutManager.ItemCount - span)
 			{
 				return firstView;
 			}

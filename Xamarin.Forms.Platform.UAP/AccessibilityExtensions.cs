@@ -92,7 +92,7 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		// TODO: This is not having any effect on anything I've tested yet. See if we need it  
-		// after we test the MDP and NP w/ back button explicitly enabled. 
+		// after we test the FP and NP w/ back button explicitly enabled. 
 		public static void SetBackButtonTitle(this PageControl Control, Element Element)
 		{
 			if (Element == null)
@@ -123,5 +123,16 @@ namespace Xamarin.Forms.Platform.UWP
 
 		}
 
+		internal static void SetAutomationProperties(
+			this FrameworkElement frameworkElement, 
+			Element element,
+			string defaultName = null)
+		{
+			frameworkElement.SetAutomationPropertiesAutomationId(element?.AutomationId);
+			 frameworkElement.SetAutomationPropertiesName(element, defaultName);
+			frameworkElement.SetAutomationPropertiesHelpText(element);
+			frameworkElement.SetAutomationPropertiesLabeledBy(element);
+			frameworkElement.SetAutomationPropertiesAccessibilityView(element);
+		}
 	}
 }

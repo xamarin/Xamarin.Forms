@@ -1,13 +1,7 @@
 ﻿using System;
-using Android.Graphics;
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
 using AndroidX.RecyclerView.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
-using AView = Android.Views.View;
 using ARect = Android.Graphics.Rect;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -72,7 +66,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var spanIndex = 0;
 
-			if(view.LayoutParameters is GridLayoutManager.LayoutParams gridLayoutParameters)
+			if (view.LayoutParameters is GridLayoutManager.LayoutParams gridLayoutParameters)
 			{
 				spanIndex = gridLayoutParameters.SpanIndex;
 			}

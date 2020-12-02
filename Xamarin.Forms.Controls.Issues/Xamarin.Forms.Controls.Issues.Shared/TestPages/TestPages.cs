@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using Xamarin.Forms.CustomAttributes;
-using IOPath = System.IO.Path;
 using NUnit.Framework.Interfaces;
 using Xamarin.Forms.Controls.Issues;
+using Xamarin.Forms.CustomAttributes;
+using IOPath = System.IO.Path;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -75,15 +77,9 @@ namespace Xamarin.Forms.Controls
 
 			var app = appConfiguration.StartApp(UITest.Configuration.AppDataMode.DoNotClear);
 
-			if (bool.Parse((string)app.Invoke("IsPreAppCompat")))
-			{
-				IsFormsApplicationActivity = true;
-			}
-
 			return app;
 		}
 
-		public static bool IsFormsApplicationActivity { get; private set; }
 #endif
 
 #if __IOS__
@@ -462,9 +458,9 @@ namespace Xamarin.Forms.Controls
 	}
 
 #if UITEST
-	[Category(Core.UITests.UITestCategories.MasterDetailPage)]
+	[Category(Core.UITests.UITestCategories.FlyoutPage)]
 #endif
-	public abstract class TestMasterDetailPage : MasterDetailPage
+	public abstract class TestFlyoutPage : FlyoutPage
 	{
 #if UITEST
 		public IApp RunningApp => AppSetup.RunningApp;
@@ -472,7 +468,7 @@ namespace Xamarin.Forms.Controls
 		protected virtual bool Isolate => false;
 #endif
 
-		protected TestMasterDetailPage()
+		protected TestFlyoutPage()
 		{
 #if APP
 			Init();
@@ -574,7 +570,7 @@ namespace Xamarin.Forms.Controls
 	public abstract class TestShell : Shell
 	{
 		protected const string FlyoutIconAutomationId = "OK";
-#if __IOS__
+#if __IOS__ || __WINDOWS__
 		protected const string BackButtonAutomationId = "Back";
 #else
 		protected const string BackButtonAutomationId = "OK";
@@ -604,6 +600,7 @@ namespace Xamarin.Forms.Controls
 
 		protected TestShell() : base()
 		{
+			Device.SetFlags(new List<string> { ExperimentalFlags.ShellUWPExperimental });
 			Routing.Clear();
 #if APP
 			Init();
@@ -618,19 +615,19 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
-		public ContentPage AddTopTab(string title, string icon = null)
+		public ContentPage AddTopTab(string title, string icon = null, ShellSection root = null)
 		{
 			var page = new ContentPage()
 			{
 				Title = title
 			};
 
-			AddTopTab(page, title, icon);
+			AddTopTab(page, title, icon, root);
 			return page;
 		}
 
 
-		public void AddTopTab(ContentPage page, string title = null, string icon = null)
+		public void AddTopTab(ContentPage page, string title = null, string icon = null, ShellSection root = null)
 		{
 			if (Items.Count == 0)
 			{
@@ -639,14 +636,17 @@ namespace Xamarin.Forms.Controls
 				return;
 			}
 
+			root = Items[0].Items[0];
+			title = title ?? page.Title;
 			var content = new ShellContent()
 			{
-				Title = title ?? page.Title,
+				Title = title,
 				Content = page,
-				Icon = icon
+				Icon = icon,
+				AutomationId = title
 			};
 
-			Items[0].Items[0].Items.Add(content);
+			root.Items.Add(content);
 
 			if (!String.IsNullOrWhiteSpace(content.Title))
 				content.Route = content.Title;
@@ -681,34 +681,22 @@ namespace Xamarin.Forms.Controls
 			return page;
 		}
 
-		public ContentPage AddFlyoutItem(string title)
+		public ContentPage CreateContentPage<TShellItem>(string title)
+			where TShellItem : ShellItem
 		{
 			ContentPage page = new ContentPage() { Title = title };
-			AddFlyoutItem(page, title);
+			AddContentPage<TShellItem, Tab>(page, title);
 			return page;
+		}
+
+		public FlyoutItem AddFlyoutItem(string title)
+		{
+			return AddContentPage<FlyoutItem, Tab>(new ContentPage(), title);
 		}
 
 		public FlyoutItem AddFlyoutItem(ContentPage page, string title)
 		{
-			var item = new FlyoutItem
-			{
-				Title = title,
-				Items =
-				{
-					new Tab
-					{
-						Title = title,
-						Items =
-						{
-							page
-						}
-					}
-				}
-			};
-
-			Items.Add(item);
-
-			return item;
+			return AddContentPage<FlyoutItem, Tab>(page, title);
 		}
 
 		public ContentPage CreateContentPage(string shellItemTitle = null)
@@ -762,7 +750,7 @@ namespace Xamarin.Forms.Controls
 
 			shellSection.Items.Add(content);
 
-			if(!String.IsNullOrWhiteSpace(title))
+			if (!String.IsNullOrWhiteSpace(title))
 			{
 				content.Route = title;
 			}

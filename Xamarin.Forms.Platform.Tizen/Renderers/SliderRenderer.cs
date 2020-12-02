@@ -1,8 +1,8 @@
 using System;
 using System.ComponentModel;
-using ESlider = ElmSharp.Slider;
-using ESize = ElmSharp.Size;
 using EColor = ElmSharp.Color;
+using ESize = ElmSharp.Size;
+using ESlider = ElmSharp.Slider;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -16,19 +16,25 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (Control == null)
 			{
-				SetNativeControl(new ESlider(Forms.NativeParent));
+				SetNativeControl(CreateNativeControl());
 				Control.ValueChanged += OnValueChanged;
 				Control.DragStarted += OnDragStarted;
 				Control.DragStopped += OnDragStopped;
-				_defaultMinColor = Control.GetPartColor("bar");
-				_defaultMaxColor = Control.GetPartColor("bg");
-				_defaultThumbColor = Control.GetPartColor("handler");
+				_defaultMinColor = Control.GetBarColor();
+				_defaultMaxColor = Control.GetBackgroundColor();
+				_defaultThumbColor = Control.GetHandlerColor();
 			}
+
 			UpdateMinimum();
 			UpdateMaximum();
 			UpdateValue();
 			UpdateSliderColors();
 			base.OnElementChanged(e);
+		}
+
+		protected virtual ESlider CreateNativeControl()
+		{
+			return new ESlider(Forms.NativeParent);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -109,23 +115,21 @@ namespace Xamarin.Forms.Platform.Tizen
 			Control.Maximum = Element.Maximum;
 		}
 
-		protected void UpdateMinimumTrackColor()
+		protected virtual void UpdateMinimumTrackColor()
 		{
 			var color = Element.MinimumTrackColor.IsDefault ? _defaultMinColor : Element.MinimumTrackColor.ToNative();
-			Control.SetPartColor("bar", color);
-			Control.SetPartColor("bar_pressed", color);
+			Control.SetBarColor(color);
 		}
 
-		protected void UpdateMaximumTrackColor()
+		protected virtual void UpdateMaximumTrackColor()
 		{
-			Control.SetPartColor("bg", Element.MaximumTrackColor.IsDefault ? _defaultMaxColor : Element.MaximumTrackColor.ToNative());
+			Control.SetBackgroundColor(Element.MaximumTrackColor.IsDefault ? _defaultMaxColor : Element.MaximumTrackColor.ToNative());
 		}
 
 		protected virtual void UpdateThumbColor()
 		{
 			var color = Element.ThumbColor.IsDefault ? _defaultThumbColor : Element.ThumbColor.ToNative();
-			Control.SetPartColor("handler", color);
-			Control.SetPartColor("handler_pressed", color);
+			Control.SetHandlerColor(color);
 		}
 
 		protected void UpdateSliderColors()

@@ -37,7 +37,7 @@ namespace Xamarin.Forms
 		Element _parentOverride;
 
 		string _styleId;
-		
+
 
 		public string AutomationId
 		{
@@ -180,7 +180,7 @@ namespace Xamarin.Forms
 				{
 					((IElement)RealParent).RemoveResourcesChangedListener(OnParentResourcesChanged);
 
-					if(value != null && (RealParent is Layout || RealParent is IControlTemplated))
+					if (value != null && (RealParent is Layout || RealParent is IControlTemplated))
 						Log.Warning("Element", $"{this} is already a child of {RealParent}. Remove {this} from {RealParent} before adding to {value}.");
 				}
 
@@ -200,8 +200,6 @@ namespace Xamarin.Forms
 				{
 					SetInheritedBindingContext(this, null);
 				}
-
-				VisualDiagnostics.SendVisualTreeChanged(value, this);
 
 				OnParentSet();
 
@@ -277,10 +275,14 @@ namespace Xamarin.Forms
 
 		void INameScope.RegisterName(string name, object scopedElement)
 		{
-			var namescope = GetNameScope();
-			if (namescope == null)
-				throw new InvalidOperationException("this element is not in a namescope");
+			var namescope = GetNameScope() ?? throw new InvalidOperationException("this element is not in a namescope");
 			namescope.RegisterName(name, scopedElement);
+		}
+
+		void INameScope.UnregisterName(string name)
+		{
+			var namescope = GetNameScope() ?? throw new InvalidOperationException("this element is not in a namescope");
+			namescope.UnregisterName(name);
 		}
 
 		public event EventHandler<ElementEventArgs> ChildAdded;
@@ -325,16 +327,23 @@ namespace Xamarin.Forms
 
 			ChildAdded?.Invoke(this, new ElementEventArgs(child));
 
+			VisualDiagnostics.OnChildAdded(this, child);
+
 			OnDescendantAdded(child);
 			foreach (Element element in child.Descendants())
 				OnDescendantAdded(element);
 		}
 
-		protected virtual void OnChildRemoved(Element child)
+		[Obsolete("OnChildRemoved(Element) is obsolete as of version 4.8.0. Please use OnChildRemoved(Element, int) instead.")]
+		protected virtual void OnChildRemoved(Element child) => OnChildRemoved(child, -1);
+
+		protected virtual void OnChildRemoved(Element child, int oldLogicalIndex)
 		{
 			child.Parent = null;
 
 			ChildRemoved?.Invoke(child, new ElementEventArgs(child));
+
+			VisualDiagnostics.OnChildRemoved(this, child, oldLogicalIndex);
 
 			OnDescendantRemoved(child);
 			foreach (Element element in child.Descendants())
@@ -351,9 +360,9 @@ namespace Xamarin.Forms
 		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			base.OnPropertyChanged(propertyName);
-			foreach(var logicalChildren in ChildrenNotDrawnByThisElement)
+			foreach (var logicalChildren in ChildrenNotDrawnByThisElement)
 			{
-				if(logicalChildren is IPropertyPropagationController controller)
+				if (logicalChildren is IPropertyPropagationController controller)
 					PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, new[] { logicalChildren });
 			}
 
@@ -608,14 +617,14 @@ namespace Xamarin.Forms
 			get => _platform;
 			set
 			{
-				if (_platform == value)	
-					return;	
-				_platform = value;	
-				PlatformSet?.Invoke(this, EventArgs.Empty);	
+				if (_platform == value)
+					return;
+				_platform = value;
+				PlatformSet?.Invoke(this, EventArgs.Empty);
 				foreach (Element descendant in Descendants())
-				{	
-					descendant._platform = _platform;	
-					descendant.PlatformSet?.Invoke(this, EventArgs.Empty);	
+				{
+					descendant._platform = _platform;
+					descendant.PlatformSet?.Invoke(this, EventArgs.Empty);
 				}
 			}
 		}

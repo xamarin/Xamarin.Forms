@@ -13,20 +13,20 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 53909, "XML drawables cannot be used as ToolbarItem.Icon ", PlatformAffected.Default)]
-	public class Bugzilla53909 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Bugzilla53909 : TestContentPage // or TestFlyoutPage, etc ...
 	{
 		protected override void Init()
 		{
 
-            var tbi = new ToolbarItem();
-            tbi.IconImageSource = "synchronize.png";
-            tbi.Order = ToolbarItemOrder.Primary;
-            tbi.Priority = 0;
+			var tbi = new ToolbarItem();
+			tbi.IconImageSource = "synchronize.png";
+			tbi.Order = ToolbarItemOrder.Primary;
+			tbi.Priority = 0;
 
-            ToolbarItems.Add(tbi);
+			ToolbarItems.Add(tbi);
 
-            // Initialize ui here instead of ctor
-            Content = new Label
+			// Initialize ui here instead of ctor
+			Content = new Label
 			{
 				Text = "We need to check the icon appears"
 			};

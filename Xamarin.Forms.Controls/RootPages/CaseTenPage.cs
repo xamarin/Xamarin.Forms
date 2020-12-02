@@ -9,18 +9,18 @@ namespace Xamarin.Forms.Controls
 {
 	// May not behave
 	// NavigationPage with multiple tabbed pages	
-	public class CaseTenPage : MasterDetailPage 
+	public class CaseTenPage : FlyoutPage
 	{
-		public CaseTenPage () 
+		public CaseTenPage()
 		{
-			var btn = new Button {Text = "Click Me"};
-			btn.Clicked += (sender, args) => btn.Navigation.PushModalAsync (new NavigationPage (new ContentPage ()));	
-			
-			var detail = new ContentPage {Content = btn};
+			var btn = new Button { Text = "Click Me" };
+			btn.Clicked += (sender, args) => btn.Navigation.PushModalAsync(new NavigationPage(new ContentPage()));
 
-			NavigationPage.SetHasNavigationBar (detail, false);
-			
-			Master = new ListPage (){Title = "Master"};
+			var detail = new ContentPage { Content = btn };
+
+			NavigationPage.SetHasNavigationBar(detail, false);
+
+			Flyout = new ListPage() { Title = "Flyout" };
 			Detail = detail;
 		}
 	}

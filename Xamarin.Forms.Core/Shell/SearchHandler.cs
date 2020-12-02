@@ -50,7 +50,7 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SetIsFocused(bool value)
 		{
-			SetValueCore(IsFocusedPropertyKey.BindableProperty, value);
+			SetValueCore(IsFocusedPropertyKey, value);
 		}
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public event EventHandler<FocusRequestArgs> FocusChangeRequested;
@@ -78,12 +78,12 @@ namespace Xamarin.Forms
 
 		protected virtual void OnFocused()
 		{
-			
+
 		}
 
 		protected virtual void OnUnfocus()
 		{
-			
+
 		}
 
 		public static readonly BindableProperty KeyboardProperty = BindableProperty.Create(nameof(Keyboard), typeof(Keyboard), typeof(SearchHandler), Keyboard.Default, coerceValue: (o, v) => (Keyboard)v ?? Keyboard.Default);
@@ -336,7 +336,7 @@ namespace Xamarin.Forms
 			BindableProperty.Create(nameof(SearchBoxVisibility), typeof(SearchBoxVisibility), typeof(SearchHandler), SearchBoxVisibility.Expanded, BindingMode.OneWay);
 
 		static readonly BindablePropertyKey SelectedItemPropertyKey =
-			BindableProperty.CreateReadOnly (nameof(SelectedItem), typeof(object), typeof(SearchHandler), null, BindingMode.OneWayToSource);
+			BindableProperty.CreateReadOnly(nameof(SelectedItem), typeof(object), typeof(SearchHandler), null, BindingMode.OneWayToSource);
 
 		public static BindableProperty SelectedItemProperty = SelectedItemPropertyKey.BindableProperty;
 
@@ -533,7 +533,7 @@ namespace Xamarin.Forms
 
 		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
 		{
-			
+
 		}
 
 		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)

@@ -1,11 +1,5 @@
 ﻿using System;
-using Android.Graphics;
-#if __ANDROID_29__
 using AndroidX.RecyclerView.Widget;
-using AndroidX.AppCompat.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
 using ARect = Android.Graphics.Rect;
 using AView = Android.Views.View;
 using FormsCarouselView = Xamarin.Forms.CarouselView;
@@ -24,7 +18,7 @@ namespace Xamarin.Forms.Platform.Android
 		public CarouselSpacingItemDecoration(IItemsLayout itemsLayout, FormsCarouselView carouselView)
 		{
 			var layout = itemsLayout ?? throw new ArgumentNullException(nameof(itemsLayout));
-		
+
 			switch (layout)
 			{
 				case GridItemsLayout gridItemsLayout:

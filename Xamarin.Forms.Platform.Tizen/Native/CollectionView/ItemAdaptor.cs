@@ -27,6 +27,10 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			ItemSelected?.Invoke(this, new SelectedItemChangedEventArgs(this[index], index));
 		}
 
+		public virtual void UpdateViewState(EvasObject view, ViewHolderState state)
+		{
+		}
+
 		public void RequestItemSelected(object item)
 		{
 			if (CollectionView != null)
@@ -99,6 +103,10 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		public abstract EvasObject CreateNativeView(int index, EvasObject parent);
 
+		public abstract EvasObject GetHeaderView(EvasObject parent);
+
+		public abstract EvasObject GetFooterView(EvasObject parent);
+
 		public abstract void RemoveNativeView(EvasObject native);
 
 		public abstract void SetBinding(EvasObject view, int index);
@@ -107,5 +115,9 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		public abstract ESize MeasureItem(int widthConstraint, int heightConstraint);
 
 		public abstract ESize MeasureItem(int index, int widthConstraint, int heightConstraint);
+
+		public abstract ESize MeasureHeader(int widthConstraint, int heightConstraint);
+
+		public abstract ESize MeasureFooter(int widthConstraint, int heightConstraint);
 	}
 }

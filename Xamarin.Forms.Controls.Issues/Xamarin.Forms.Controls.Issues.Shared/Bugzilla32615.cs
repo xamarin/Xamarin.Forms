@@ -1,7 +1,6 @@
 ﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
 using System.Threading.Tasks;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -16,7 +15,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 32615, "OnAppearing is not called on previous page when modal page is popped")]
-	public class Bugzilla32615 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Bugzilla32615 : TestContentPage // or TestFlyoutPage, etc ...
 	{
 		int _counter;
 		Label _textField;

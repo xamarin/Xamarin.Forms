@@ -1,7 +1,7 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
+﻿using System;
 using System.Threading.Tasks;
-using System;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.UITest;
@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Category(Core.UITests.UITestCategories.Bugzilla)]
 #endif
 	[Issue(IssueTracker.Bugzilla, 31688, "'Navigation.InsertPageBefore()' does not work for more than two pages, \"throws java.lang.IndexOutOfBoundsException: index=3 count=2", PlatformAffected.Android)]
-	public class Bugzilla31688 : TestNavigationPage // or TestMasterDetailPage, etc ...
+	public class Bugzilla31688 : TestNavigationPage // or TestFlyoutPage, etc ...
 	{
 		MyMainPage page;
 		protected override async void Init()

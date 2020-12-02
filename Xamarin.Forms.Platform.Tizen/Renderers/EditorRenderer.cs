@@ -33,6 +33,8 @@ namespace Xamarin.Forms.Platform.Tizen
 				if (entry is IEntry ie)
 				{
 					ie.TextChanged += OnTextChanged;
+					ie.EntryLayoutFocused += OnFocused;
+					ie.EntryLayoutUnfocused += OnUnfocused;
 				}
 				SetNativeControl(entry);
 			}
@@ -42,7 +44,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		protected virtual EEntry CreateNativeControl()
 		{
 			// Multiline EditField style is only available on Mobile and TV profile
-			var entry = Device.Idiom == TargetIdiom.Phone || Device.Idiom == TargetIdiom.TV ? new Native.EditfieldEntry(Forms.NativeParent, "multiline") : new Native.Entry(Forms.NativeParent)
+			var entry = Device.Idiom == TargetIdiom.Phone || Device.Idiom == TargetIdiom.TV ? new EditfieldEntry(Forms.NativeParent, EditFieldEntryLayout.Styles.MulitLine) : new Native.Entry(Forms.NativeParent)
 			{
 				IsSingleLine = false,
 			};
@@ -62,6 +64,8 @@ namespace Xamarin.Forms.Platform.Tizen
 					if (Control is IEntry ie)
 					{
 						ie.TextChanged -= OnTextChanged;
+						ie.EntryLayoutFocused -= OnFocused;
+						ie.EntryLayoutUnfocused -= OnUnfocused;
 					}
 				}
 			}
@@ -101,7 +105,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			// BackButtonPressed is only passed to the object that is at the highest Z-Order, and it does not propagate to lower objects.
 			// When the object is unfocesed BackButtonPressed event has to be released to stop using it.
 			Control.BackButtonPressed -= OnCompleted;
-			if(!_isSendComplate)
+			if (!_isSendComplate)
 				Element.SendCompleted();
 		}
 
@@ -114,7 +118,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void UpdateText()
 		{
-			Control.Text = Element.Text;
+			Control.Text = Element.Text ?? "";
 			if (!Control.IsFocused)
 			{
 				Control.MoveCursorEnd();

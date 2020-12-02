@@ -3,19 +3,12 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using Android.Content;
 using Android.Views;
-
-#if __ANDROID_29__
 using AndroidX.Fragment.App;
 using AndroidX.ViewPager.Widget;
-using AndroidX.Core.View;
-#else
-using Android.Support.V4.App;
-using Android.Support.V4.View;
-#endif
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
-	
+
 	public class CarouselPageRenderer : VisualElementRenderer<CarouselPage>, ViewPager.IOnPageChangeListener, IManageFragments
 	{
 		bool _disposed;
@@ -92,14 +85,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					foreach (ContentPage pageToRemove in Element.Children)
 					{
-						IVisualElementRenderer pageRenderer = Android.Platform.GetRenderer(pageToRemove);
+						IVisualElementRenderer pageRenderer = Platform.GetRenderer(pageToRemove);
 						if (pageRenderer != null)
 						{
 							pageRenderer.View.RemoveFromParent();
 							pageRenderer.Dispose();
 						}
 
-						pageToRemove.ClearValue(Android.Platform.RendererProperty);
+						pageToRemove.ClearValue(Platform.RendererProperty);
 					}
 				}
 			}

@@ -1,38 +1,27 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
-#if __ANDROID_29__
-using AndroidX.Core.Widget;
+using Android.Views;
 using AndroidX.AppCompat.Graphics.Drawable;
+using AndroidX.AppCompat.Widget;
 using AndroidX.DrawerLayout.Widget;
 using Google.Android.Material.AppBar;
-using AndroidX.AppCompat.Widget;
-using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
-using ADrawableCompat = AndroidX.Core.Graphics.Drawable.DrawableCompat;
+using Xamarin.Forms.Internals;
+using AColor = Android.Graphics.Color;
 using ActionBarDrawerToggle = AndroidX.AppCompat.App.ActionBarDrawerToggle;
-#else
-using Android.Support.V4.Widget;
-using Android.Support.V7.Widget;
-using Toolbar = Android.Support.V7.Widget.Toolbar;
-using ADrawableCompat = Android.Support.V4.Graphics.Drawable.DrawableCompat;
-using Android.Support.V7.Graphics.Drawable;
-using Android.Support.Design.Widget;
-using ActionBarDrawerToggle = Android.Support.V7.App.ActionBarDrawerToggle;
-#endif
-using Android.Views;
-using System;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Threading.Tasks;
-using System.Windows.Input;
+using ADrawableCompat = AndroidX.Core.Graphics.Drawable.DrawableCompat;
+using ATextView = global::Android.Widget.TextView;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
 using R = Android.Resource;
-using ATextView = global::Android.Widget.TextView;
-using AColor = Android.Graphics.Color;
-using Xamarin.Forms.Internals;
-using System.Collections.Generic;
-using System.Linq;
+using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -217,7 +206,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				await Page.Navigation.PopAsync();
 			}
-			catch(Exception exc)
+			catch (Exception exc)
 			{
 				Internals.Log.Warning(nameof(Shell), $"Failed to Navigate Back: {exc}");
 			}
@@ -283,7 +272,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnBackButtonBehaviorChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if(!e.Is(BackButtonBehavior.CommandParameterProperty))
+			if (!e.Is(BackButtonBehavior.CommandParameterProperty))
 				UpdateLeftBarButtonItem();
 		}
 
@@ -408,7 +397,7 @@ namespace Xamarin.Forms.Platform.Android
 				defaultDrawerArrowDrawable = true;
 			}
 
-			if(icon != null)
+			if (icon != null)
 				icon.Progress = (CanNavigateBack) ? 1 : 0;
 
 			if (command != null || CanNavigateBack)
@@ -416,7 +405,7 @@ namespace Xamarin.Forms.Platform.Android
 				_drawerToggle.DrawerIndicatorEnabled = false;
 				toolbar.NavigationIcon = icon;
 			}
-			else if(_flyoutBehavior == FlyoutBehavior.Flyout || !defaultDrawerArrowDrawable)
+			else if (_flyoutBehavior == FlyoutBehavior.Flyout || !defaultDrawerArrowDrawable)
 			{
 				bool drawerEnabled = isEnabled && icon != null;
 				_drawerToggle.DrawerIndicatorEnabled = drawerEnabled;
@@ -684,7 +673,7 @@ namespace Xamarin.Forms.Platform.Android
 				TintColor = defaultColor;
 				_defaultSize = Forms.GetFontSizeNormal(context);
 				IconBitmap = icon;
-				Text = text;		
+				Text = text;
 			}
 
 			public override void Draw(Canvas canvas)

@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using ElmSharp;
 using ElmSharp.Accessible;
-using ElmSharp.Wearable;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Tizen.Native;
 using EFocusDirection = ElmSharp.FocusDirection;
@@ -47,6 +46,8 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(VisualElement.IsEnabledProperty, UpdateIsEnabled);
 			RegisterPropertyHandler(VisualElement.InputTransparentProperty, UpdateInputTransparent);
 			RegisterPropertyHandler(VisualElement.BackgroundColorProperty, UpdateBackgroundColor);
+			RegisterPropertyHandler(VisualElement.BackgroundProperty, UpdateBackground);
+			RegisterPropertyHandler(VisualElement.ClipProperty, UpdateClip);
 
 			RegisterPropertyHandler(Specific.StyleProperty, UpdateThemeStyle);
 			RegisterPropertyHandler(Specific.IsFocusAllowedProperty, UpdateFocusAllowed);
@@ -656,6 +657,28 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 		}
 
+		protected virtual void UpdateBackground(bool initialize)
+		{
+			if (!Forms.UseSkiaSharp || (initialize && Element.Background.Equals(Brush.Default)))
+				return;
+
+			if (this is SkiaSharp.IBackgroundCanvas canvasRenderer)
+			{
+				canvasRenderer.BackgroundCanvas.Invalidate();
+			}
+		}
+
+		protected virtual void UpdateClip(bool initialize)
+		{
+			if (!Forms.UseSkiaSharp || (initialize && Element.Clip == null))
+				return;
+
+			if (this is SkiaSharp.IClipperCanvas canvasRenderer)
+			{
+				canvasRenderer.ClipperCanvas.Invalidate();
+			}
+		}
+
 		protected virtual void UpdateOpacity(bool initialize)
 		{
 			if (initialize && Element.Opacity == 1d)
@@ -678,12 +701,12 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		static double ComputeAbsoluteX(VisualElement e)
 		{
-			return e.X + ((e.RealParent is VisualElement) && !(e.RealParent is ListView || e.RealParent is ItemsView) ? Forms.ConvertToScaledDP(Platform.GetRenderer(e.RealParent).GetNativeContentGeometry().X) : 0.0);
+			return e.X + ((e.RealParent is VisualElement) ? Forms.ConvertToScaledDP(Platform.GetRenderer(e.RealParent).GetNativeContentGeometry().X) : 0.0);
 		}
 
 		static double ComputeAbsoluteY(VisualElement e)
 		{
-			return e.Y + ((e.RealParent is VisualElement) && !(e.RealParent is ListView || e.RealParent is ItemsView) ? Forms.ConvertToScaledDP(Platform.GetRenderer(e.RealParent).GetNativeContentGeometry().Y) : 0.0);
+			return e.Y + ((e.RealParent is VisualElement) ? Forms.ConvertToScaledDP(Platform.GetRenderer(e.RealParent).GetNativeContentGeometry().Y) : 0.0);
 		}
 
 		static Point ComputeAbsolutePoint(VisualElement e)
@@ -717,7 +740,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// Adds a new child if it's derived from the VisualElement class. Otherwise this method does nothing.
 		/// </summary>
 		/// <param name="child">Child to be added.</param>
-		void AddChild(Element child)
+		protected virtual void AddChild(Element child)
 		{
 			VisualElement vElement = child as VisualElement;
 			if (vElement != null)
@@ -732,7 +755,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 		}
 
-		void RemoveChild(VisualElement view)
+		protected virtual void RemoveChild(VisualElement view)
 		{
 			var renderer = Platform.GetRenderer(view);
 			var containerObject = NativeView as Native.IContainable<EvasObject>;
@@ -1018,6 +1041,10 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				map.Rotate3D(rotationX, rotationY, rotationZ, (int)(geometry.X + geometry.Width * anchorX),
 															  (int)(geometry.Y + geometry.Height * anchorY), 0);
+				// the last argument is focal length, it determine the strength of distortion. We compared it with the Android implementation
+				map.Perspective3D(geometry.X + geometry.Width / 2, geometry.Y + geometry.Height / 2, 0, (int)(1.3 * Math.Max(geometry.Height, geometry.Width)));
+				// Need to unset clip because perspective 3d rotation is going beyond the container bound
+				NativeView.SetClip(null);
 				changed = true;
 			}
 		}
@@ -1084,8 +1111,8 @@ namespace Xamarin.Forms.Platform.Tizen
 			map.PopulatePoints(geometry, 0);
 
 			bool changed = false;
-			ApplyRotation(map, geometry, ref changed);
 			ApplyScale(map, geometry, ref changed);
+			ApplyRotation(map, geometry, ref changed);
 			ApplyTranslation(map, geometry, ref changed);
 
 			NativeView.IsMapEnabled = changed;
@@ -1136,12 +1163,18 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		EFocusDirection ConvertToNativeFocusDirection(string direction)
 		{
-			if (direction == XFocusDirection.Back) return EFocusDirection.Previous;
-			if (direction == XFocusDirection.Forward) return EFocusDirection.Next;
-			if (direction == XFocusDirection.Up) return EFocusDirection.Up;
-			if (direction == XFocusDirection.Down) return EFocusDirection.Down;
-			if (direction == XFocusDirection.Right) return EFocusDirection.Right;
-			if (direction == XFocusDirection.Left) return EFocusDirection.Left;
+			if (direction == XFocusDirection.Back)
+				return EFocusDirection.Previous;
+			if (direction == XFocusDirection.Forward)
+				return EFocusDirection.Next;
+			if (direction == XFocusDirection.Up)
+				return EFocusDirection.Up;
+			if (direction == XFocusDirection.Down)
+				return EFocusDirection.Down;
+			if (direction == XFocusDirection.Right)
+				return EFocusDirection.Right;
+			if (direction == XFocusDirection.Left)
+				return EFocusDirection.Left;
 
 			return EFocusDirection.Next;
 		}

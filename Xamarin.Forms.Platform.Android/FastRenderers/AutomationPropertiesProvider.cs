@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		static readonly string s_defaultDrawerIdOpenSuffix = "_open";
 		static readonly string s_defaultDrawerIdCloseSuffix = "_close";
 
-		internal static void GetDrawerAccessibilityResources(global::Android.Content.Context context, MasterDetailPage page, out int resourceIdOpen, out int resourceIdClose)
+		internal static void GetDrawerAccessibilityResources(global::Android.Content.Context context, FlyoutPage page, out int resourceIdOpen, out int resourceIdClose)
 		{
 			resourceIdOpen = 0;
 			resourceIdClose = 0;
@@ -20,9 +20,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				return;
 
 			var automationIdParent = s_defaultDrawerId;
-			var icon = page.Master?.IconImageSource;
+			var icon = page.Flyout?.IconImageSource;
 			if (icon != null && !icon.IsEmpty)
-				automationIdParent = page.Master.IconImageSource.AutomationId;
+				automationIdParent = page.Flyout.IconImageSource.AutomationId;
 			else if (!string.IsNullOrEmpty(page.AutomationId))
 				automationIdParent = page.AutomationId;
 
@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			bool? isInAccessibleTree = (bool?)element.GetValue(AutomationProperties.IsInAccessibleTreeProperty);
 			control.Focusable = (bool)(isInAccessibleTree ?? defaultFocusable);
 			control.ImportantForAccessibility = !isInAccessibleTree.HasValue ? (ImportantForAccessibility)defaultImportantForAccessibility : (bool)isInAccessibleTree ? ImportantForAccessibility.Yes : ImportantForAccessibility.No;
-	}
+		}
 
 		internal static void SetLabeledBy(AView control, Element element)
 		{
@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				var id = control.Id;
 				if (id == AView.NoId)
-					id = control.Id = Platform.GenerateViewId();
+					id = control.Id = AppCompat.Platform.GenerateViewId();
 
 				var renderer = elemValue?.GetRenderer();
 				renderer?.SetLabelFor(id);

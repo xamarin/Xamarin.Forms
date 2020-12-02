@@ -2,20 +2,13 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
-#if __ANDROID_29__
-using AndroidX.Core.View;
-using MaterialCardView = Google.Android.Material.Card.MaterialCardView;
-#else
-using Android.Support.V4.View;
-using MaterialCardView = Android.Support.Design.Card.MaterialCardView;
-#endif
-using Android.Views;
-using Xamarin.Forms;
-using Xamarin.Forms.Platform.Android.FastRenderers;
-using Xamarin.Forms.Material.Android;
-using AView = Android.Views.View;
-using Xamarin.Forms.Platform.Android;
 using Android.Graphics.Drawables;
+using Android.Views;
+using AndroidX.Core.View;
+using Xamarin.Forms.Platform.Android;
+using Xamarin.Forms.Platform.Android.FastRenderers;
+using AView = Android.Views.View;
+using MaterialCardView = Google.Android.Material.Card.MaterialCardView;
 
 namespace Xamarin.Forms.Material.Android
 {
@@ -114,8 +107,8 @@ namespace Xamarin.Forms.Material.Android
 				{
 					Element.PropertyChanged -= OnElementPropertyChanged;
 
-					if (Platform.Android.Platform.GetRenderer(Element) == this)
-						Element.ClearValue(Platform.Android.Platform.RendererProperty);
+					if (Platform.Android.AppCompat.Platform.GetRenderer(Element) == this)
+						Element.ClearValue(Platform.Android.AppCompat.Platform.RendererProperty);
 				}
 			}
 
@@ -177,7 +170,7 @@ namespace Xamarin.Forms.Material.Android
 			{
 				if (children[i] is VisualElement visualElement)
 				{
-					var renderer = Platform.Android.Platform.GetRenderer(visualElement);
+					var renderer = Platform.Android.AppCompat.Platform.GetRenderer(visualElement);
 					renderer?.UpdateLayout();
 				}
 			}

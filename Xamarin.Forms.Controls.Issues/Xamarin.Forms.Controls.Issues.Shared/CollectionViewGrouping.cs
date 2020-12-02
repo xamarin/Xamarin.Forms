@@ -14,6 +14,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.CollectionView)]
+	[Category(UITestCategories.UwpIgnore)]
 #endif
 
 	[Preserve(AllMembers = true)]
@@ -29,7 +30,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 		}
 
-#if UITEST 
+#if UITEST
 		[Test]
 		public void RemoveSelectedItem()
 		{

@@ -7,17 +7,16 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
-using Android.Support.Design.Widget;
-using Android.Support.V7.View.Menu;
 using Android.Text;
 using Android.Text.Style;
 using Android.Views;
 using Android.Widget;
+using AndroidX.AppCompat.View.Menu;
 using NUnit.Framework;
 using Xamarin.Forms;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Platform.Android.UnitTests;
-using AToolBar = Android.Support.V7.Widget.Toolbar;
+using AToolBar = AndroidX.AppCompat.Widget.Toolbar;
 using AView = Android.Views.View;
 
 [assembly: ExportRenderer(typeof(TestShell), typeof(TestShellRenderer))]
