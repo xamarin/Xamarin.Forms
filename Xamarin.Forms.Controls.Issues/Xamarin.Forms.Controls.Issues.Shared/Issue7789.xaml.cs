@@ -33,5 +33,13 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 
 		}
+
+#if UITEST
+		[Test]
+		public void CarouselShouldNotCrashDisplayingStrings()
+		{
+			RunningApp.WaitForElement("Success");
+		}
+#endif
 	}
 }
