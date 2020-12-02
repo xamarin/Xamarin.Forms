@@ -3,6 +3,8 @@ using System.Linq;
 
 using Xamarin.Forms.Platform.Tizen.Native;
 
+using Specific = Xamarin.Forms.PlatformConfiguration.TizenSpecific.ItemsView;
+
 namespace Xamarin.Forms.Platform.Tizen
 {
 	public abstract class ItemsViewRenderer<TItemsView, TNative> : ViewRenderer<TItemsView, TNative>
@@ -19,6 +21,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(ItemsView.ItemTemplateProperty, UpdateAdaptor);
 			RegisterPropertyHandler(ItemsView.HorizontalScrollBarVisibilityProperty, UpdateHorizontalScrollBarVisibility);
 			RegisterPropertyHandler(ItemsView.VerticalScrollBarVisibilityProperty, UpdateVerticalScrollBarVisibility);
+			RegisterPropertyHandler(Specific.FocusedItemScrollPositionProperty, UpdateFocusedItemScrollPosition);
 		}
 
 		protected abstract TNative CreateNativeControl(ElmSharp.EvasObject parent);
@@ -70,6 +73,15 @@ namespace Xamarin.Forms.Platform.Tizen
 				Control.SnapPointsType = ((ItemsLayout)ItemsLayout)?.SnapPointsType ?? SnapPointsType.None;
 				ItemsLayout.PropertyChanged += OnLayoutPropertyChanged;
 			}
+		}
+
+		protected override void AddChild(Element child)
+		{
+			// empty on purpose
+		}
+		protected override void RemoveChild(VisualElement view)
+		{
+			// empty on purpose
 		}
 
 		protected virtual void OnLayoutPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -175,6 +187,13 @@ namespace Xamarin.Forms.Platform.Tizen
 		protected virtual void UpdateVerticalScrollBarVisibility()
 		{
 			Control.VerticalScrollBarVisiblePolicy = Element.VerticalScrollBarVisibility.ToNative();
+		}
+
+		void UpdateFocusedItemScrollPosition(bool init)
+		{
+			if (init && Specific.GetFocusedItemScrollPosition(Element) == ScrollToPosition.MakeVisible)
+				return;
+			Control.FocusedItemScrollPosition = Specific.GetFocusedItemScrollPosition(Element);
 		}
 	}
 

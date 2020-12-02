@@ -8,7 +8,7 @@ namespace Xamarin.Forms
 {
 	public sealed class Binding : BindingBase
 	{
-		internal const string SelfPath = ".";
+		public const string SelfPath = ".";
 		IValueConverter _converter;
 		object _converterParameter;
 
@@ -26,7 +26,7 @@ namespace Xamarin.Forms
 			if (path == null)
 				throw new ArgumentNullException(nameof(path));
 			if (string.IsNullOrWhiteSpace(path))
-				throw new ArgumentException("path can not be an empty string", nameof(path));
+				throw new ArgumentException("path cannot be an empty string", nameof(path));
 
 			Path = path;
 			Converter = converter;

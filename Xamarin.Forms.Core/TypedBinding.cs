@@ -121,11 +121,11 @@ namespace Xamarin.Forms.Internals
 #if (!DO_NOT_CHECK_FOR_BINDING_REUSE)
 			BindableObject prevTarget;
 			if (_weakTarget.TryGetTarget(out prevTarget) && !ReferenceEquals(prevTarget, bindObj))
-				throw new InvalidOperationException("Binding instances can not be reused");
+				throw new InvalidOperationException("Binding instances cannot be reused");
 
 			object previousSource;
 			if (_weakSource.TryGetTarget(out previousSource) && !ReferenceEquals(previousSource, source))
-				throw new InvalidOperationException("Binding instances can not be reused");
+				throw new InvalidOperationException("Binding instances cannot be reused");
 #endif
 			_weakSource.SetTarget(source);
 			_weakTarget.SetTarget(bindObj);
@@ -218,8 +218,7 @@ namespace Xamarin.Forms.Internals
 				}
 				if (!BindingExpression.TryConvert(ref value, property, property.ReturnType, true))
 				{
-					Log.Warning("Binding", "'{0}' can not be converted to type '{1}'.", value, property.ReturnType);
-					BindingDiagnostics.SendBindingFailure(this, sourceObject, target, property, null, "{0} can not be converted to type '{1}'", new[] { value, property.ReturnType });
+					BindingDiagnostics.SendBindingFailure(this, sourceObject, target, property, "Binding", BindingExpression.CannotConvertTypeErrorMessage, value, property.ReturnType);
 					return;
 				}
 				target.SetValueCore(property, value, SetValueFlags.ClearDynamicResource, BindableObject.SetValuePrivateFlags.Default | BindableObject.SetValuePrivateFlags.Converted);
@@ -232,8 +231,7 @@ namespace Xamarin.Forms.Internals
 				var value = GetTargetValue(target.GetValue(property), typeof(TProperty));
 				if (!BindingExpression.TryConvert(ref value, property, typeof(TProperty), false))
 				{
-					Log.Warning("Binding", "'{0}' can not be converted to type '{1}'.", value, typeof(TProperty));
-					BindingDiagnostics.SendBindingFailure(this, sourceObject, target, property, null, "{0} can not be converted to type '{1}'", new[] { value, property.ReturnType });
+					BindingDiagnostics.SendBindingFailure(this, sourceObject, target, property, "Binding", BindingExpression.CannotConvertTypeErrorMessage, value, typeof(TProperty));
 					return;
 				}
 				_setter((TSource)sourceObject, (TProperty)value);

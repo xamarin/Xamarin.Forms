@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics.Drawables;
+using Android.Text.Method;
 using AndroidX.Core.View;
 using AndroidX.Core.Widget;
 using Xamarin.Forms.Internals;
@@ -33,6 +34,8 @@ namespace Xamarin.Forms.Platform.Android
 		bool _borderAdjustsPadding;
 		bool _maintainLegacyMeasurements;
 		bool _hasLayoutOccurred;
+		ITransformationMethod _defaultTransformationMethod;
+		bool _elementAlreadyChanged = false;
 
 		public ButtonLayoutManager(IButtonLayoutRenderer renderer)
 			: this(renderer, false, false, false, true)
@@ -180,8 +183,15 @@ namespace Xamarin.Forms.Platform.Android
 			if (View?.LayoutParameters == null && _hasLayoutOccurred)
 				return;
 
+			if (View != null && !_elementAlreadyChanged)
+			{
+				_defaultTransformationMethod = View.TransformationMethod;
+				_elementAlreadyChanged = true;
+			}
+
 			if (!UpdateTextAndImage())
 				UpdateImage();
+
 			UpdatePadding();
 			UpdateLineBreakMode();
 		}
@@ -257,6 +267,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool UpdateTextAndImage()
 		{
+
 			if (_disposed || _renderer?.View == null || _element == null)
 				return false;
 
@@ -267,12 +278,10 @@ namespace Xamarin.Forms.Platform.Android
 			if (view == null)
 				return false;
 
-			var textTransform = _element.TextTransform;
-
-			_renderer.View.SetAllCaps(textTransform == TextTransform.Default);
+			UpdateTransformationMethod(view);
 
 			string oldText = view.Text;
-			view.Text = _element.UpdateFormsText(_element.Text, textTransform);
+			view.Text = _element.UpdateFormsText(_element.Text, _element.TextTransform);
 
 			// If we went from or to having no text, we need to update the image position
 			if (string.IsNullOrEmpty(oldText) != string.IsNullOrEmpty(view.Text))
@@ -282,6 +291,15 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			return false;
+		}
+
+		void UpdateTransformationMethod(AButton view)
+		{
+			// Use defaults only when user hasn't specified alternative TextTransform settings
+			if (_element.TextTransform == TextTransform.Default)
+				view.TransformationMethod = _defaultTransformationMethod;
+			else
+				view.TransformationMethod = null;
 		}
 
 		void UpdateImage()
@@ -359,7 +377,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			view.SetLineBreakMode(_element);
-			_renderer.View.SetAllCaps(_element.TextTransform == TextTransform.Default);
+			UpdateTransformationMethod(view);
 		}
 	}
 }

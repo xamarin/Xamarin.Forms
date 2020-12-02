@@ -16,5 +16,7 @@ namespace Xamarin.Forms
 		{
 			return null;
 		}
+
+		public virtual string ConvertToInvariantString(object value) => throw new NotSupportedException();
 	}
 }

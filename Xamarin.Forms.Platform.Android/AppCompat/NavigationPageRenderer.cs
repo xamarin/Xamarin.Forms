@@ -712,7 +712,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 #if DEBUG
 			// Enables logging of moveToState operations to logcat
+#pragma warning disable CS0618 // Type or member is obsolete
 			FragmentManager.EnableDebugLogging(true);
+#pragma warning restore CS0618 // Type or member is obsolete
 #endif
 
 			// Go ahead and take care of the fragment bookkeeping for the page being removed
@@ -796,7 +798,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 #if DEBUG
 			// Enables logging of moveToState operations to logcat
+#pragma warning disable CS0618 // Type or member is obsolete
 			FragmentManager.EnableDebugLogging(true);
+#pragma warning restore CS0618 // Type or member is obsolete
 #endif
 
 			Current?.SendDisappearing();

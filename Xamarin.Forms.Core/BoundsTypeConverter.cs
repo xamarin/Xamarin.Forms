@@ -40,5 +40,12 @@ namespace Xamarin.Forms
 
 			throw new InvalidOperationException($"Cannot convert \"{value}\" into {typeof(Rectangle)}");
 		}
+
+		public override string ConvertToInvariantString(object value)
+		{
+			if (!(value is Rectangle rect))
+				throw new NotSupportedException();
+			return $"{rect.X.ToString(CultureInfo.InvariantCulture)}, {rect.Y.ToString(CultureInfo.InvariantCulture)}, {(rect.Width == AbsoluteLayout.AutoSize ? nameof(AbsoluteLayout.AutoSize) : rect.Width.ToString(CultureInfo.InvariantCulture))}, {(rect.Height == AbsoluteLayout.AutoSize ? nameof(AbsoluteLayout.AutoSize) : rect.Height.ToString(CultureInfo.InvariantCulture))}";
+		}
 	}
 }

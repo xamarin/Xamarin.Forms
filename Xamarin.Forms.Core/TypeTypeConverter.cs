@@ -18,5 +18,7 @@ namespace Xamarin.Forms
 		}
 
 		public override object ConvertFromInvariantString(string value) => throw new NotImplementedException();
+
+		public override string ConvertToInvariantString(object value) => throw new NotSupportedException();
 	}
 }
