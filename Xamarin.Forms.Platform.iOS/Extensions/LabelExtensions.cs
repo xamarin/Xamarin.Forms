@@ -29,15 +29,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (finalSize.Width <= 1 || finalSize.Height <= 1)
                 return;
-
-            // Rounding Correction on Height
-#if __MOBILE__
-            var roundingCorrection = UIScreen.MainScreen.Scale;
-#else			
-            var roundingCorrection = NSScreen.MainScreen.BackingScaleFactor;
-#endif
 			
-            finalSize = new RectangleF((float)finalSize.X, (float)finalSize.Y, (float)finalSize.Width, (float)finalSize.Height + (float)roundingCorrection);
+            finalSize = new RectangleF((float)finalSize.X, (float)finalSize.Y, (float)finalSize.Width, nfloat.MaxValue);
 
 #if __MOBILE__
 			var inline = control.AttributedText;
