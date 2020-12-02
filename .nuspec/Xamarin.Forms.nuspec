@@ -15,9 +15,9 @@
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <dependencies>
       <group targetFramework="MonoAndroid10.0">
-        <dependency id="Xamarin.AndroidX.Lifecycle.LiveData" version="2.1.0.1" />
+        <dependency id="Xamarin.AndroidX.Lifecycle.LiveData" version="2.2.0.3" />
         <dependency id="Xamarin.Google.Android.Material" version="1.0.0.1" />
-        <dependency id="Xamarin.AndroidX.Legacy.Support.V4" version="1.0.0.1" />
+        <dependency id="Xamarin.AndroidX.Legacy.Support.V4" version="1.0.0.5" />
         <dependency id="Xamarin.AndroidX.Browser" version="1.0.0.1" />
       </group>
       <group targetFramework="uap10.0.14393">
@@ -28,10 +28,11 @@
       </group>
       <group targetFramework="uap10.0.16299">
         <dependency id="Win2D.uwp" version="1.20.0" />
-        <dependency id="Microsoft.UI.Xaml" version="2.4.2" />
+        <dependency id="Microsoft.UI.Xaml" version="2.4.3" />
       </group>
       <group targetFramework="tizen40">
         <dependency id="Tizen.NET" version="4.0.0"/>
+        <dependency id="SkiaSharp.Views" version="2.80.2"/>
       </group>
     </dependencies>
 
