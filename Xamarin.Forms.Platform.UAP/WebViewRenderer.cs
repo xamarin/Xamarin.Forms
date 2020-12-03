@@ -102,20 +102,26 @@ if(bases.length == 0){
 			}
 		}
 
-		void TearDown()
+		void TearDown(WWebView webView)
 		{
-			if (Control != null)
+			if (webView == null)
 			{
-				Control.SeparateProcessLost -= OnSeparateProcessLost;
-				Control.NavigationStarting -= OnNavigationStarted;
-				Control.NavigationCompleted -= OnNavigationCompleted;
-				Control.NavigationFailed -= OnNavigationFailed;
-				Control.ScriptNotify -= OnScriptNotify;
+				return;
 			}
+			webView.SeparateProcessLost -= OnSeparateProcessLost;
+			webView.NavigationStarting -= OnNavigationStarted;
+			webView.NavigationCompleted -= OnNavigationCompleted;
+			webView.NavigationFailed -= OnNavigationFailed;
+			webView.ScriptNotify -= OnScriptNotify;
 		}
 
 		void Connect(WWebView webView)
 		{
+			if (webView == null)
+			{
+				return;
+			}
+
 			webView.SeparateProcessLost += OnSeparateProcessLost;
 			webView.NavigationStarting += OnNavigationStarted;
 			webView.NavigationCompleted += OnNavigationCompleted;
@@ -127,7 +133,7 @@ if(bases.length == 0){
 		{
 			if (disposing)
 			{
-				TearDown();
+				TearDown(Control);
 				if (Element != null)
 				{
 					Element.EvalRequested -= OnEvalRequested;
@@ -455,7 +461,7 @@ if(bases.length == 0){
 
 		void UpdateExecutionMode()
 		{
-			TearDown();
+			TearDown(Control);
 			var webView = CreateNativeControl();
 			Connect(webView);
 			SetNativeControl(webView);
