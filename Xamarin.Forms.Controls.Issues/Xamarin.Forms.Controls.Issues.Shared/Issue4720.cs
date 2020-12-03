@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System;
 using System.Threading.Tasks;
 using Xamarin.Forms.Controls.GalleryPages;
+using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -30,7 +31,7 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override bool Isolate => true;
 
 		[Test]
-		public async Task GitHub4720Test()
+		public async Task WebViewDoesntCrashWhenLoadingAHeavyPageAndUsingExecutionModeSeparateProcess()
 		{
 			//4 iterations were enough to run out of memory before the fix.
 			int iterations = 10;
@@ -48,14 +49,10 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 
 		[Preserve(AllMembers = true)]
-		public class _4720WebView : WebView
-		{
-		}
-
-		[Preserve(AllMembers = true)]
 		public class Issue4720WebPage : ContentPage
 		{
 			static int s_count;
+			WebView _webView;
 
 			public Issue4720WebPage()
 			{
@@ -65,9 +62,13 @@ namespace Xamarin.Forms.Controls.Issues
 				var label = new Label { Text = "Test case for GitHub issue #4720." };
 
 				var button = new Button { Text = "Close Page" };
-				button.Clicked += Button_Clicked;
+				button.Clicked += ClosePageClicked;
 
-				var wv = new _4720WebView()
+
+				var btnChangeExecutionMode = new Button { Text = "Change Execution Mode" };
+				btnChangeExecutionMode.Clicked += ChangeExecutionModeClicked;
+
+				_webView = new WebView()
 				{
 					Source = new UrlWebViewSource { Url = "https://www.youtube.com/" },
 					HorizontalOptions = LayoutOptions.FillAndExpand,
@@ -76,12 +77,22 @@ namespace Xamarin.Forms.Controls.Issues
 
 				};
 
-				Content = new StackLayout { Children = { label, button, wv } };
+				//_webView.On<PlatformConfiguration.Windows>().SetExecutionMode(WebViewExecutionMode.SeparateProcess);
+
+				Content = new StackLayout { Children = { label, button, btnChangeExecutionMode, _webView } };
 			}
 
-			void Button_Clicked(object sender, EventArgs e)
+			async void ClosePageClicked(object sender, EventArgs e)
 			{
-				Navigation.PopAsync();
+				await Navigation.PopAsync();
+			}
+
+			void ChangeExecutionModeClicked(object sender, EventArgs e)
+			{
+				if(_webView.On<PlatformConfiguration.Windows>().GetExecutionMode() == WebViewExecutionMode.SameThread)
+					_webView.On<PlatformConfiguration.Windows>().SetExecutionMode(WebViewExecutionMode.SeparateProcess);
+				else
+					_webView.On<PlatformConfiguration.Windows>().SetExecutionMode(WebViewExecutionMode.SameThread);
 			}
 
 			~Issue4720WebPage()

@@ -10,14 +10,15 @@ using System.Net;
 using Windows.Web.Http;
 using System.Collections.Generic;
 using System.Linq;
-
+using WWebView = Windows.UI.Xaml.Controls.WebView;
+using WWebViewExecutionMode = Windows.UI.Xaml.Controls.WebViewExecutionMode;
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class WebViewRenderer : ViewRenderer<WebView, Windows.UI.Xaml.Controls.WebView>, IWebViewDelegate
+	public class WebViewRenderer : ViewRenderer<WebView, WWebView>, IWebViewDelegate
 	{
 		WebNavigationEvent _eventState;
 		bool _updating;
-		Windows.UI.Xaml.Controls.WebView _internalWebView;
+		WWebView _internalWebView;
 		const string LocalScheme = "ms-appx-web:///";
 
 		// Script to insert a <base> tag into an HTML document
@@ -41,7 +42,7 @@ if(bases.length == 0){
 
 			// Set up an internal WebView we can use to load and parse the original HTML string
 			// Make _internalWebView a field instead of local variable to avoid garbage collection
-			_internalWebView = new Windows.UI.Xaml.Controls.WebView();
+			_internalWebView = new WWebView();
 
 			// When the 'navigation' to the original HTML string is done, we can modify it to include our <base> tag
 			_internalWebView.NavigationCompleted += async (sender, args) =>
@@ -101,24 +102,32 @@ if(bases.length == 0){
 			}
 		}
 
-		[DefaultValue(WebViewExecutionMode.SameThread)]
-		protected WebViewExecutionMode ExecutionMode
+		void TearDown()
 		{
-			get;set;
+			if (Control != null)
+			{
+				Control.SeparateProcessLost -= OnSeparateProcessLost;
+				Control.NavigationStarting -= OnNavigationStarted;
+				Control.NavigationCompleted -= OnNavigationCompleted;
+				Control.NavigationFailed -= OnNavigationFailed;
+				Control.ScriptNotify -= OnScriptNotify;
+			}
+		}
+
+		void Connect(WWebView webView)
+		{
+			webView.SeparateProcessLost += OnSeparateProcessLost;
+			webView.NavigationStarting += OnNavigationStarted;
+			webView.NavigationCompleted += OnNavigationCompleted;
+			webView.NavigationFailed += OnNavigationFailed;
+			webView.ScriptNotify += OnScriptNotify;
 		}
 
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
 			{
-				if (Control != null)
-				{
-					Control.SeparateProcessLost -= OnSeparateProcessLost;
-					Control.NavigationStarting -= OnNavigationStarted;
-					Control.NavigationCompleted -= OnNavigationCompleted;
-					Control.NavigationFailed -= OnNavigationFailed;
-					Control.ScriptNotify -= OnScriptNotify;
-				}
+				TearDown();
 				if (Element != null)
 				{
 					Element.EvalRequested -= OnEvalRequested;
@@ -130,6 +139,32 @@ if(bases.length == 0){
 			}
 
 			base.Dispose(disposing);
+		}
+
+		protected virtual WWebView CreateNativeControl()
+		{
+			if (Element.IsSet(PlatformConfiguration.WindowsSpecific.WebView.ExecutionModeProperty))
+			{
+				WWebViewExecutionMode webViewExecutionMode = WWebViewExecutionMode.SameThread;
+
+				switch (Element.OnThisPlatform().GetExecutionMode())
+				{
+					case PlatformConfiguration.WindowsSpecific.WebViewExecutionMode.SameThread:
+						webViewExecutionMode = WWebViewExecutionMode.SameThread;
+						break;
+					case PlatformConfiguration.WindowsSpecific.WebViewExecutionMode.SeparateProcess:
+						webViewExecutionMode = WWebViewExecutionMode.SeparateProcess;
+						break;
+					case PlatformConfiguration.WindowsSpecific.WebViewExecutionMode.SeparateThread:
+						webViewExecutionMode = WWebViewExecutionMode.SeparateThread;
+						break;
+
+				}
+
+				return new WWebView(webViewExecutionMode);
+			}
+
+			return new WWebView();
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<WebView> e)
@@ -150,12 +185,8 @@ if(bases.length == 0){
 			{
 				if (Control == null)
 				{
-					var webView = new Windows.UI.Xaml.Controls.WebView(ExecutionMode);
-					webView.SeparateProcessLost += OnSeparateProcessLost;
-					webView.NavigationStarting += OnNavigationStarted;
-					webView.NavigationCompleted += OnNavigationCompleted;
-					webView.NavigationFailed += OnNavigationFailed;
-					webView.ScriptNotify += OnScriptNotify;
+					var webView = CreateNativeControl();
+					Connect(webView);
 					SetNativeControl(webView);
 				}
 
@@ -178,6 +209,10 @@ if(bases.length == 0){
 			{
 				if (!_updating)
 					Load();
+			}
+			else if(e.Is(PlatformConfiguration.WindowsSpecific.WebView.ExecutionModeProperty))
+			{
+				UpdateExecutionMode();
 			}
 		}
 
@@ -359,7 +394,7 @@ if(bases.length == 0){
 			Control.Refresh();
 		}
 
-		async void OnNavigationCompleted(Windows.UI.Xaml.Controls.WebView sender, WebViewNavigationCompletedEventArgs e)
+		async void OnNavigationCompleted(WWebView sender, WebViewNavigationCompletedEventArgs e)
 		{
 			if (e.Uri != null)
 				SendNavigated(new UrlWebViewSource { Url = e.Uri.AbsoluteUri }, _eventState, WebNavigationResult.Success);
@@ -376,7 +411,7 @@ if(bases.length == 0){
 				SendNavigated(new UrlWebViewSource { Url = e.Uri.AbsoluteUri }, _eventState, WebNavigationResult.Failure);
 		}
 
-		void OnNavigationStarted(Windows.UI.Xaml.Controls.WebView sender, WebViewNavigationStartingEventArgs e)
+		void OnNavigationStarted(WWebView sender, WebViewNavigationStartingEventArgs e)
 		{
 			Uri uri = e.Uri;
 
@@ -418,16 +453,18 @@ if(bases.length == 0){
 			((IWebViewController)Element).CanGoForward = Control.CanGoForward;
 		}
 
-		void OnSeparateProcessLost(Windows.UI.Xaml.Controls.WebView sender, WebViewSeparateProcessLostEventArgs e)
+		void UpdateExecutionMode()
 		{
-			var webView = new Windows.UI.Xaml.Controls.WebView(ExecutionMode);
-			webView.SeparateProcessLost += OnSeparateProcessLost;
-			webView.NavigationStarting += OnNavigationStarted;
-			webView.NavigationCompleted += OnNavigationCompleted;
-			webView.NavigationFailed += OnNavigationFailed;
-			webView.ScriptNotify += OnScriptNotify;
-
+			TearDown();
+			var webView = CreateNativeControl();
+			Connect(webView);
 			SetNativeControl(webView);
+			Load();
+		}
+
+		void OnSeparateProcessLost(WWebView sender, WebViewSeparateProcessLostEventArgs e)
+		{
+			UpdateExecutionMode();
         }
 	}
 }
