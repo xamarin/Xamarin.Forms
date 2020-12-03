@@ -210,7 +210,7 @@ if(bases.length == 0){
 				if (!_updating)
 					Load();
 			}
-			else if(e.Is(PlatformConfiguration.WindowsSpecific.WebView.ExecutionModeProperty))
+			else if (e.Is(PlatformConfiguration.WindowsSpecific.WebView.ExecutionModeProperty))
 			{
 				UpdateExecutionMode();
 			}
@@ -243,7 +243,7 @@ if(bases.length == 0){
 		{
 			var uri = CreateUriForCookies(url);
 			CookieContainer existingCookies = new CookieContainer();
-			var filter = new Windows.Web.Http.Filters.HttpBaseProtocolFilter();			
+			var filter = new Windows.Web.Http.Filters.HttpBaseProtocolFilter();
 			var nativeCookies = filter.CookieManager.GetCookies(uri);
 			return nativeCookies;
 		}
@@ -347,14 +347,14 @@ if(bases.length == 0){
 
 		async void OnEvalRequested(object sender, EvalRequested eventArg)
 		{
-			await Control.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, 
+			await Control.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
 				async () =>
 				{
 					try
 					{
 						await Control.InvokeScriptAsync("eval", new[] { eventArg.Script });
 					}
-					catch(Exception exc)
+					catch (Exception exc)
 					{
 						Log.Warning(nameof(WebView), $"Eval of script failed: {exc} Script: {eventArg.Script}");
 					}
@@ -465,6 +465,6 @@ if(bases.length == 0){
 		void OnSeparateProcessLost(WWebView sender, WebViewSeparateProcessLostEventArgs e)
 		{
 			UpdateExecutionMode();
-        }
+		}
 	}
 }
