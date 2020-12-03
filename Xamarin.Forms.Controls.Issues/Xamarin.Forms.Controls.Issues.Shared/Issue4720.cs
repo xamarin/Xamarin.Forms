@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Controls.Issues
 				RunningApp.WaitForElement(q => q.Marked("New Page"));
 				RunningApp.Tap(q => q.Marked("New Page"));
 				RunningApp.WaitForElement(q => q.Marked("Close Page"));
-				await Task.Delay(2000);
+				await Task.Delay(250);
 				RunningApp.Tap(q => q.Marked("Close Page"));
 			}
 		}
@@ -70,14 +70,14 @@ namespace Xamarin.Forms.Controls.Issues
 
 				_webView = new WebView()
 				{
-					Source = new UrlWebViewSource { Url = "https://www.youtube.com/" },
+					Source = new UrlWebViewSource { Url = "https://www.microsoft.com/" },
 					HorizontalOptions = LayoutOptions.FillAndExpand,
 					VerticalOptions = LayoutOptions.FillAndExpand,
 					BackgroundColor = Color.Red
 
 				};
 
-				//_webView.On<PlatformConfiguration.Windows>().SetExecutionMode(WebViewExecutionMode.SeparateProcess);
+				_webView.On<PlatformConfiguration.Windows>().SetExecutionMode(WebViewExecutionMode.SeparateProcess);
 
 				Content = new StackLayout { Children = { label, button, btnChangeExecutionMode, _webView } };
 			}
