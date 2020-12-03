@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Platform.Android
 	public abstract class CellAdapter : BaseAdapter<object>, AdapterView.IOnItemLongClickListener, ActionMode.ICallback, AdapterView.IOnItemClickListener, AActionMode.ICallback
 	{
 		readonly Context _context;
+		readonly ListViewCachingStrategy? _cachingStrategy;
 		ActionMode _actionMode;
 		Cell _actionModeContext;
 
@@ -28,6 +29,15 @@ namespace Xamarin.Forms.Platform.Android
 				throw new ArgumentNullException("context");
 
 			_context = context;
+		}
+
+		protected CellAdapter(Context context, ListViewCachingStrategy cachingStrategy)
+		{
+			if (context == null)
+				throw new ArgumentNullException("context");
+
+			_context = context;
+			_cachingStrategy = cachingStrategy;
 		}
 
 		internal Cell ActionModeContext
@@ -145,6 +155,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public bool OnItemLongClick(AdapterView parent, AView view, int position, long id)
 		{
+			if (_cachingStrategy != null && _cachingStrategy != ListViewCachingStrategy.RecycleElement) return true;
+
 			var listView = parent as AListView;
 			if (listView != null)
 				position -= listView.HeaderViewsCount;
@@ -212,6 +224,17 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		internal bool HandleCachedContextMode(AView view, Cell cell)
+		{
+			if (view is EditText || view is TextView || view is SearchView)
+				return false;
+
+			if (cell == null)
+				return false;
+
+			return HandleContextModeImpl(view, cell);
+		}
+
 		bool HandleContextMode(AView view, int position)
 		{
 			if (view is EditText || view is TextView || view is SearchView)
@@ -219,6 +242,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			Cell cell = GetCellForPosition(position);
 
+			return HandleContextModeImpl(view, cell);
+		}
+
+		bool HandleContextModeImpl(AView view, Cell cell)
+		{
 			if (cell == null)
 				return false;
 

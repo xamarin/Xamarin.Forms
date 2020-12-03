@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class ListViewRenderer : ViewRenderer<ListView, AListView>, SwipeRefreshLayout.IOnRefreshListener
 	{
-		ListViewAdapter _adapter;
+	 	internal ListViewAdapter _adapter;
 		bool _disposed;
 		IVisualElementRenderer _headerRenderer;
 		IVisualElementRenderer _footerRenderer;

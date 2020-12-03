@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.Android
 		IListViewController Controller => _listView;
 		protected ITemplatedItemsView<Cell> TemplatedItemsView => _listView;
 
-		public ListViewAdapter(Context context, AListView realListView, ListView listView) : base(context)
+		public ListViewAdapter(Context context, AListView realListView, ListView listView) : base(context, listView.CachingStrategy)
 		{
 			_context = context;
 			_realListView = realListView;
@@ -550,7 +550,8 @@ namespace Xamarin.Forms.Platform.Android
 					if (position + x >= templatedItemsCount)
 						return cells;
 
-					cells.Add(templatedItems[x + position]);
+					var item = templatedItems[x + position];
+					cells.Add(item);
 				}
 
 				return cells;
