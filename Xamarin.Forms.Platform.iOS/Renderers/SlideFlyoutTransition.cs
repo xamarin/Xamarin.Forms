@@ -6,13 +6,13 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class SlideFlyoutTransition : IShellFlyoutTransition
 	{
-		double _height = -1d;
-		double _width = -1d;
+		internal double Height { get; private set; } = -1d;
+		internal double Width { get; private set; } = -1d;
 
 		internal void SetFlyoutSizes(double height, double width)
 		{
-			_height = height;
-			_width = width;
+			Height = height;
+			Width = width;
 		}
 
 		public void LayoutViews(CGRect bounds, nfloat openPercent, UIView flyout, UIView shell, FlyoutBehavior behavior)
@@ -23,17 +23,17 @@ namespace Xamarin.Forms.Platform.iOS
 			nfloat flyoutHeight;
 			nfloat flyoutWidth;
 
-			if (_width != -1d)
-				flyoutWidth = (nfloat)_width;
+			if (Width != -1d)
+				flyoutWidth = (nfloat)Width;
 			else if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
 				flyoutWidth = 320;
 			else
 				flyoutWidth = (nfloat)(Math.Min(bounds.Width, bounds.Height) * 0.8);
 
-			if (_height == -1d)
-				flyoutHeight = bounds.Height;
+			if (Height == -1d)
+				flyoutHeight = bounds.Height;	
 			else
-				flyoutHeight = (nfloat)_height;
+				flyoutHeight = (nfloat)Height;
 
 			nfloat openLimit = flyoutWidth;
 			nfloat openPixels = openLimit * openPercent;

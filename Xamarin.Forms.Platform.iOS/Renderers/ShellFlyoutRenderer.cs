@@ -21,7 +21,15 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 			{
 				_backdropBrush = appearance.FlyoutBackdrop;
-				SlideFlyoutTransition?.SetFlyoutSizes(appearance.FlyoutHeight, appearance.FlyoutWidth);
+
+				if (appearance.FlyoutHeight != SlideFlyoutTransition.Height ||
+					appearance.FlyoutWidth != SlideFlyoutTransition.Width)
+				{
+					SlideFlyoutTransition?.SetFlyoutSizes(appearance.FlyoutHeight, appearance.FlyoutWidth);
+
+					if(_layoutOccured)
+						LayoutSidebar(false, true);
+				}
 			}
 
 			UpdateTapoffViewBackgroundColor();
@@ -110,6 +118,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _isOpen;
 		UIViewPropertyAnimator _flyoutAnimation;
 		Brush _backdropBrush;
+		bool _layoutOccured;
 
 		public UIViewAnimationCurve AnimationCurve { get; set; } = UIViewAnimationCurve.EaseOut;
 
@@ -379,6 +388,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void LayoutSidebar(bool animate, bool cancelExisting = false)
 		{
+			_layoutOccured = true;
 			if (_gestureActive)
 				return;
 

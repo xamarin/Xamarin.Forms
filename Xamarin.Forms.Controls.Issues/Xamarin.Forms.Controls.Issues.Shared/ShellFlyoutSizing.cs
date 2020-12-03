@@ -53,7 +53,10 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 
-			var scale = 10 / Device.info.ScalingFactor;
+			var scale = 10d;
+
+			if (Device.RuntimePlatform == Device.Android)
+				scale = scale  / Device.info.ScalingFactor;
 
 			var increaseMenuItem = new MenuItem()
 			{
