@@ -36,6 +36,16 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			Title = "Issue 8326";
 		}
+
+#if UITEST
+		[Test]
+		public void EmptyViewShouldShowUpWhenHeaderPresent()
+		{
+			RunningApp.WaitForElement("Header");
+			RunningApp.WaitForElement("Footer");
+			RunningApp.WaitForElement("Empty view");
+		}
+#endif
 	}
 
 	[Preserve(AllMembers = true)]
