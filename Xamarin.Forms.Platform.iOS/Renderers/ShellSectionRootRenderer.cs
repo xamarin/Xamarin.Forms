@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Platform.iOS
 		int _lastTabThickness = Int32.MinValue;
 		Thickness _lastInset;
 		bool _isDisposed;
-		private UIViewPropertyAnimator _pageAnimation;
+		UIViewPropertyAnimator _pageAnimation;
 
 		ShellSection ShellSection
 		{
