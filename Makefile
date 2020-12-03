@@ -9,6 +9,7 @@ endif
 DOTNETPCL=$(MONOHOME)/xbuild-frameworks/.NETPortable/v4.5/Profile/Profile259/
 CORE=Xamarin.Forms.Core
 COREASSEMBLY=$(CORE)/bin/Release/netstandard2.0/$(CORE).dll
+COREXML=$(CORE)/bin/Release/netstandard2.0/$(CORE).xml
 XAML=Xamarin.Forms.Xaml
 XAMLASSEMBLY=$(XAML)/bin/Release/netstandard2.0/$(XAML).dll
 MAPS=Xamarin.Forms.Maps
@@ -20,7 +21,7 @@ MDOC=mdoc
 docs: $(CORE).docs $(MAPS).docs $(XAML).docs $(PAGES).docs
 
 $(CORE).docs: $(COREASSEMBLY)
-	$(MDOC) update --delete -o docs/$(CORE) $(COREASSEMBLY) -L $(DOTNETPCL)
+	$(MDOC) update --delete -import "$(COREXML)" -o docs/$(CORE) $(COREASSEMBLY) -L $(DOTNETPCL)
 
 $(XAML).docs: $(XAMLASSEMBLY)
 	$(MDOC) update --delete -o docs/$(XAML) $(XAMLASSEMBLY) -L $(DOTNETPCL)

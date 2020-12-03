@@ -94,11 +94,20 @@ namespace Xamarin.Forms
 		}
 	}
 
+	/// <include file="docs/Xamarin.Forms/On.xml" path="/Type/Docs" />
 	[ContentProperty("Value")]
 	public class On
 	{
+		/// <include file="docs/Xamarin.Forms/On.xml" path="/Type/Members/Member[@MemberName='.ctor']/Docs" />
+		public On()
+		{
+		}
+
+		/// <include file="docs/Xamarin.Forms/On.xml" path="/Type/Members/Member[@MemberName='Platform']/Docs" />
 		[TypeConverter(typeof(ListStringTypeConverter))]
 		public IList<string> Platform { get; set; }
+
+		/// <include file="docs/Xamarin.Forms/On.xml" path="/Type/Members/Member[@MemberName='Value']/Docs" />
 		public object Value { get; set; }
 	}
 }
