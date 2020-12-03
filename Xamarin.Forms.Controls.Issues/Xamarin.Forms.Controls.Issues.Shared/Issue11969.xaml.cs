@@ -20,6 +20,12 @@ namespace Xamarin.Forms.Controls.Issues
 		PlatformAffected.iOS)]
 	public partial class Issue11969 : TestContentPage
 	{
+		const string SwipeViewId = "SwipeViewId";
+		const string SwipeButtonId = "SwipeButtonId";
+
+		const string Failed = "SwipeView Button not tapped";
+		const string Success = "SUCCESS";
+
 		public Issue11969()
 		{
 #if APP
@@ -32,6 +38,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		}
 
+#if APP
 		void OnCollectionViewSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			Debug.WriteLine("CollectionView SelectionChanged");
@@ -50,7 +57,26 @@ namespace Xamarin.Forms.Controls.Issues
 		void OnButtonClicked(object sender, EventArgs e)
 		{
 			Debug.WriteLine("Button Clicked");
+			TestLabel.Text = Success;
 			DisplayAlert("Issue 11969", "Button Clicked", "Ok");
 		}
+#endif
+
+#if UITEST && __IOS__
+		[Test]
+		[Category(UITestCategories.SwipeView)]
+		public void SwipeDisableChildButton()
+		{
+			RunningApp.WaitForElement(SwipeViewId);
+			RunningApp.Tap(SwipeButtonId);
+			RunningApp.WaitForElement(q => q.Marked(Failed));
+			RunningApp.Tap("SwipeViewCheckBoxId");
+			RunningApp.Tap(SwipeButtonId);
+			RunningApp.WaitForElement(q => q.Marked(Failed));
+			RunningApp.Tap("SwipeViewContentCheckBox");
+			RunningApp.Tap(SwipeButtonId);
+			RunningApp.WaitForElement(q => q.Marked(Success));
+		}
+#endif
 	}
 }
