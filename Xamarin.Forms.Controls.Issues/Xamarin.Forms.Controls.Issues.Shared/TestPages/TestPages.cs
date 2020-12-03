@@ -803,6 +803,9 @@ namespace Xamarin.Forms.Controls
 		public void TapInFlyout(string text, string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, string timeoutMessage = null, bool makeSureFlyoutStaysOpen = false)
 		{
 			timeoutMessage = timeoutMessage ?? text;
+#if __WINDOWS__
+			RunningApp.WaitForElement(flyoutIcon);
+#endif
 
 			if (RunningApp.Query(text).Count() == 0)
 			{
