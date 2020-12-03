@@ -807,19 +807,33 @@ namespace Xamarin.Forms.Controls
 			RunningApp.WaitForElement(flyoutIcon);
 #endif
 
-			if (RunningApp.Query(text).Count() == 0)
+			System.Threading.Thread.Sleep(500);
+			CheckIfOpen();
+			try
 			{
-				ShowFlyout(flyoutIcon, usingSwipe);
-				RunningApp.WaitForElement(text, timeoutMessage);
+				RunningApp.Tap(text);
 			}
-
-			RunningApp.Tap(text);
+			catch
+			{
+				// Give it one more try
+				CheckIfOpen();
+				RunningApp.Tap(text);
+			}
 
 			if (makeSureFlyoutStaysOpen)
 			{
 				System.Threading.Thread.Sleep(500);
 				if(RunningApp.Query(text).Count() == 0)
 					this.ShowFlyout(flyoutIcon);
+			}
+
+			void CheckIfOpen()
+			{
+				if (RunningApp.Query(text).Count() == 0)
+				{
+					ShowFlyout(flyoutIcon, usingSwipe);
+					RunningApp.WaitForElement(text, timeoutMessage);
+				}
 			}
 		}
 
