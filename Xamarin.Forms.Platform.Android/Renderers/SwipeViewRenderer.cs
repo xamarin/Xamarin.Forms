@@ -256,6 +256,11 @@ namespace Xamarin.Forms.Platform.Android
 				_initialPoint = new APointF(e.GetX() / _density, e.GetY() / _density);
 			}
 
+			if (e.Action == MotionEventActions.Move)
+			{
+				ResetSwipe(e);
+			}
+
 			if (e.Action == MotionEventActions.Up)
 			{
 				var touchUpPoint = new APointF(e.GetX() / _density, e.GetY() / _density);
@@ -264,9 +269,7 @@ namespace Xamarin.Forms.Platform.Android
 					ProcessTouchSwipeItems(touchUpPoint);
 				else
 				{
-					if (!_isSwiping && _isOpen && TouchInsideContent(touchUpPoint))
-						ResetSwipe();
-
+					ResetSwipe(e);
 					PropagateParentTouch();
 				}
 			}
@@ -431,9 +434,6 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_isSwiping || _isTouchDown || _contentView == null)
 				return false;
-
-			if (TouchInsideContent(point) && _isOpen)
-				ResetSwipe();
 
 			_initialPoint = point;
 			_isTouchDown = true;
@@ -909,6 +909,17 @@ namespace Xamarin.Forms.Platform.Android
 			DisposeSwipeItems();
 		}
 
+		void ResetSwipe(MotionEvent e, bool animated = true)
+		{
+			if (!_isSwiping && _isOpen)
+			{
+				var touchPoint = new APointF(e.GetX() / _density, e.GetY() / _density);
+
+				if (TouchInsideContent(touchPoint))
+					ResetSwipe(animated);
+			}
+		}
+
 		void ResetSwipe(bool animated = true)
 		{
 			if (_contentView == null)
@@ -1088,9 +1099,7 @@ namespace Xamarin.Forms.Platform.Android
 					SwipeToThreshold();
 			}
 			else
-			{
 				ResetSwipe();
-			}
 		}
 
 		float GetSwipeThreshold()
