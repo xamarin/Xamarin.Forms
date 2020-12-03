@@ -1,7 +1,7 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
+﻿using System;
 using System.Threading.Tasks;
-using System;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.UITest;
@@ -11,8 +11,11 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
+#if UITEST
+	[Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Issue(IssueTracker.Bugzilla, 31688, "'Navigation.InsertPageBefore()' does not work for more than two pages, \"throws java.lang.IndexOutOfBoundsException: index=3 count=2", PlatformAffected.Android)]
-	public class Bugzilla31688 : TestNavigationPage // or TestMasterDetailPage, etc ...
+	public class Bugzilla31688 : TestNavigationPage // or TestFlyoutPage, etc ...
 	{
 		MyMainPage page;
 		protected override async void Init()
@@ -43,7 +46,7 @@ namespace Xamarin.Forms.Controls.Issues
 				var page3 = await Page3.CreateAsync();
 				Navigation.InsertPageBefore(page3, aip);
 
-			
+
 				//// try to remove last page (with AcitivityIndicator) and here it bombs with the error: "java.lang.IndexOutOfBoundsException: index=3 count=2"
 				await Navigation.PopAsync();
 			}
@@ -119,9 +122,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-		public void Bugzilla31688Test ()
+		public void Bugzilla31688Test()
 		{
-			RunningApp.WaitForElement (q => q.Marked ("Page 3"));
+			RunningApp.WaitForElement(q => q.Marked("Page 3"));
 		}
 #endif
 	}

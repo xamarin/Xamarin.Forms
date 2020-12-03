@@ -16,6 +16,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.Navigation)]
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
 #endif
 	public class Bugzilla43519 : TestTabbedPage
 	{
@@ -44,12 +45,12 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			};
 
-			var mdp = new MasterDetailPage
+			var mdp = new FlyoutPage
 			{
 				Title = "Page 1",
-				Master = new ContentPage
+				Flyout = new ContentPage
 				{
-					Title = "Master",
+					Title = "Flyout",
 					Content = new StackLayout()
 				},
 				Detail = new ContentPage

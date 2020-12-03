@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows.Input;
-using System.Windows.Media;
+using WBrush = System.Windows.Media.Brush;
 using WControl = System.Windows.Controls.Control;
 
 namespace Xamarin.Forms.Platform.WPF
@@ -8,9 +8,10 @@ namespace Xamarin.Forms.Platform.WPF
 	public class SearchBarRenderer : ViewRenderer<SearchBar, FormsTextBox>
 	{
 		const string DefaultPlaceholder = "Search";
-		Brush _defaultPlaceholderColorBrush;
-		Brush _defaultTextColorBrush;
+		WBrush _defaultPlaceholderColorBrush;
+		WBrush _defaultTextColorBrush;
 		bool _fontApplied;
+		string _transformedText;
 
 		protected override void OnElementChanged(ElementChangedEventArgs<SearchBar> e)
 		{
@@ -22,7 +23,7 @@ namespace Xamarin.Forms.Platform.WPF
 					var name = new InputScopeName();
 					//name.NameValue = InputScopeNameValue.;
 					scope.Names.Add(name);
-					
+
 					SetNativeControl(new FormsTextBox { InputScope = scope });
 					Control.KeyUp += PhoneTextBoxOnKeyUp;
 					Control.TextChanged += PhoneTextBoxOnTextChanged;
@@ -45,7 +46,8 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == SearchBar.TextProperty.PropertyName)
+			if (e.PropertyName == SearchBar.TextProperty.PropertyName ||
+				e.PropertyName == SearchBar.TextTransformProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == SearchBar.PlaceholderProperty.PropertyName)
 				UpdatePlaceholder();
@@ -64,7 +66,7 @@ namespace Xamarin.Forms.Platform.WPF
 			else if (e.PropertyName == SearchBar.TextColorProperty.PropertyName)
 				UpdateTextColor();
 		}
-		
+
 		void PhoneTextBoxOnKeyUp(object sender, KeyEventArgs keyEventArgs)
 		{
 			if (keyEventArgs.Key == Key.Enter)
@@ -73,7 +75,10 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void PhoneTextBoxOnTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs textChangedEventArgs)
 		{
-			((IElementController)Element).SetValueFromRenderer(SearchBar.TextProperty, Control.Text);
+			if (Control.Text == _transformedText)
+				return;
+			_transformedText = Element.UpdateFormsText(Control.Text, Element.TextTransform);
+			((IElementController)Element).SetValueFromRenderer(SearchBar.TextProperty, _transformedText);
 		}
 
 		void UpdateHorizontalTextAlignment()
@@ -128,7 +133,7 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				if (_defaultPlaceholderColorBrush == null)
 				{
-					_defaultPlaceholderColorBrush = (Brush)WControl.ForegroundProperty.GetMetadata(typeof(FormsTextBox)).DefaultValue;
+					_defaultPlaceholderColorBrush = (WBrush)WControl.ForegroundProperty.GetMetadata(typeof(FormsTextBox)).DefaultValue;
 				}
 				Control.PlaceholderForegroundBrush = _defaultPlaceholderColorBrush;
 				return;
@@ -142,7 +147,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void UpdateText()
 		{
-			Control.Text = Element.Text ?? "";
+			Control.Text = _transformedText = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 		}
 
 		void UpdateTextColor()

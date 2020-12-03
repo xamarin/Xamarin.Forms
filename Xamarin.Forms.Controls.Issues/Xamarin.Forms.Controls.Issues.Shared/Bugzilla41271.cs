@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System;
 
 #if UITEST
 using Xamarin.UITest;
@@ -16,6 +16,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 	[Category(UITestCategories.ListView)]
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
 #endif
 
 	public class Bugzilla41271 : TestTabbedPage

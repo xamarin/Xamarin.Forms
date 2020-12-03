@@ -344,6 +344,9 @@ namespace Xamarin.Forms.Platform.iOS
 					var weakItem = new WeakReference<MenuItem>(item);
 					var action = UIAlertAction.Create(item.Text, UIAlertActionStyle.Default, a =>
 					{
+						if (_scroller == null)
+							return;
+
 						_scroller.SetContentOffset(new PointF(0, 0), true);
 						if (weakItem.TryGetTarget(out MenuItem mi))
 							((IMenuItemController)mi).Activate();
@@ -472,9 +475,12 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (e.PropertyName == "HasContextActions")
 			{
-				var parentListView = _cell.RealParent as ListView;
-				var recycling = parentListView != null && 
+				if (_cell == null)
+					return;
+
+				var recycling = _cell.RealParent is ListView parentListView &&
 					((parentListView.CachingStrategy & ListViewCachingStrategy.RecycleElement) != 0);
+
 				if (!recycling)
 					ReloadRow();
 			}
@@ -482,7 +488,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnContextItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			var parentListView = _cell.RealParent as ListView;
+			var parentListView = _cell?.RealParent as ListView;
 			var recycling = parentListView != null && 
 				((parentListView.CachingStrategy & ListViewCachingStrategy.RecycleElement) != 0);
 			if (recycling)

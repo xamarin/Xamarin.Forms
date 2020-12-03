@@ -10,6 +10,9 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 39458, "[UWP/WinRT] Cannot Set CarouselPage.CurrentPage Inside Constructor", PlatformAffected.WinRT)]
 	public class Bugzilla39458 : TestCarouselPage
@@ -19,14 +22,16 @@ namespace Xamarin.Forms.Controls.Issues
 			public ChildPage(int pageNumber)
 			{
 				var layout = new StackLayout();
-				var MyLabel = new Label {
+				var MyLabel = new Label
+				{
 					VerticalOptions = LayoutOptions.Center,
 					HorizontalOptions = LayoutOptions.Center,
 					FontSize = 21,
 					TextColor = Color.White,
 					Text = $"This is page {pageNumber}"
 				};
-				var TestBtn = new Button {
+				var TestBtn = new Button
+				{
 					Text = "Go to Page 2",
 					IsEnabled = false,
 					BackgroundColor = Color.White

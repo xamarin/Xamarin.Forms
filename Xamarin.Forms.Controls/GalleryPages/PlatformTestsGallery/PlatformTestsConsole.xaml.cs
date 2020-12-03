@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework.Interfaces;
-using Xamarin.Forms.Controls.Tests;
-using Xamarin.Forms.Xaml;
-using NUnit.Framework.Internal;
-using Xamarin.Forms.Internals;
-using System;
-using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
+using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
+using Xamarin.Forms.Controls.Tests;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 {
@@ -28,6 +29,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 		int _testsRunCount = 0;
 
 		readonly PlatformTestRunner _runner = new PlatformTestRunner();
+		DisplaySettings _displaySettings;
 
 		public PlatformTestsConsole()
 		{
@@ -40,15 +42,26 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			MessagingCenter.Subscribe<Exception>(this, "TestRunnerError", OutputTestRunnerError);
 
 			Rerun.Clicked += RerunClicked;
+			togglePassed.Clicked += ToggledPassedClicked;
+
+			_displaySettings = new DisplaySettings();
+			BindingContext = _displaySettings;
+		}
+
+		private void ToggledPassedClicked(object sender, EventArgs e)
+		{
+			_displaySettings.ShowPassed = !_displaySettings.ShowPassed;
 		}
 
 		async void RerunClicked(object sender, EventArgs e)
 		{
-			await Device.InvokeOnMainThreadAsync(() => {
+			await Device.InvokeOnMainThreadAsync(() =>
+			{
 				Status.Text = "Running...";
 				RunCount.Text = "";
 				Results.Children.Clear();
 				Rerun.IsEnabled = false;
+				_displaySettings.ShowPassed = true;
 			});
 
 			await Task.Delay(50);
@@ -59,10 +72,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 		protected override async void OnAppearing()
 		{
 			base.OnAppearing();
-			await Run().ConfigureAwait(false);
+
+			if (_testsRunCount == 0)
+			{
+				await Run().ConfigureAwait(false);
+			}
 		}
 
-		async Task Run() 
+		async Task Run()
 		{
 			_finishedAssemblyCount = 0;
 			_testsRunCount = 0;
@@ -91,6 +108,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 				{
 					Status.Text = SuccessText;
 					Status.TextColor = _successColor;
+					_displaySettings.ShowPassed = true;
 				}
 
 				RunCount.Text = $"{_testsRunCount} tests run";
@@ -99,12 +117,13 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			});
 		}
 
-		void DisplayFailResult(string failText = null) 
+		void DisplayFailResult(string failText = null)
 		{
 			failText = failText ?? FailedText;
 
 			Status.Text = failText;
 			Status.TextColor = _failColor;
+			_displaySettings.ShowPassed = false;
 		}
 
 		void AssemblyFinished(ITestResult assembly)
@@ -130,12 +149,18 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			}
 		}
 
-		void OutputFixtureStarted(TestFixture testFixture) 
+		void OutputFixtureStarted(TestFixture testFixture)
 		{
 			var name = testFixture.Name;
 
-			var label = new Label { Text = $"{name} Started", LineBreakMode = LineBreakMode.HeadTruncation,
-				FontAttributes = FontAttributes.Bold };
+			var label = new Label
+			{
+				Text = $"{name} Started",
+				LineBreakMode = LineBreakMode.HeadTruncation,
+				FontAttributes = FontAttributes.Bold
+			};
+
+			SetupPassedLabelBindings(label);
 
 			Device.BeginInvokeOnMainThread(() =>
 			{
@@ -160,7 +185,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 
 		void OutputTestCaseResult(TestCaseResult result)
 		{
-			var name = result.Test.Name; 
+			var name = result.Test.Name;
 
 			var outcome = "Fail";
 
@@ -188,6 +213,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			else
 			{
 				label.TextColor = _successColor;
+				SetupPassedLabelBindings(label);
 			}
 
 			var margin = new Thickness(15, 0, 0, 0);
@@ -234,7 +260,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 				{
 					Results.Children.Add(outputView);
 				}
-				
+
 			});
 		}
 
@@ -261,6 +287,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			else
 			{
 				label.TextColor = _successColor;
+				SetupPassedLabelBindings(label);
+				SetupPassedLabelBindings(counts);
 			}
 
 			counts.TextColor = label.TextColor;
@@ -280,7 +308,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 			});
 		}
 
-		static void ExtractErrorMessage(List<View> views, string message) 
+		static void ExtractErrorMessage(List<View> views, string message)
 		{
 			const string openTag = "<img>";
 			const string closeTag = "</img>";
@@ -298,7 +326,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 				if (!string.IsNullOrEmpty(messageBefore))
 				{
 					views.Add(new Label { Text = messageBefore });
-				} 
+				}
 
 				views.Add(new Image { Source = ImageSource.FromStream(() => stream) });
 
@@ -316,6 +344,35 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformTestsGallery
 		async void ResultsAdded(object sender, ElementEventArgs e)
 		{
 			await ResultsScrollView.ScrollToAsync(e.Element, ScrollToPosition.MakeVisible, false);
+		}
+
+		[Preserve(AllMembers = true)]
+		public class DisplaySettings : INotifyPropertyChanged
+		{
+			bool _showPassed;
+
+			public DisplaySettings()
+			{
+				_showPassed = true;
+			}
+
+			public event PropertyChangedEventHandler PropertyChanged;
+
+			public bool ShowPassed
+			{
+				get => _showPassed;
+				set
+				{
+					_showPassed = value;
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowPassed)));
+				}
+			}
+		}
+
+		public Label SetupPassedLabelBindings(Label label)
+		{
+			label.SetBinding(Label.IsVisibleProperty, "ShowPassed");
+			return label;
 		}
 	}
 }

@@ -5,7 +5,6 @@ using CoreAnimation;
 using CoreGraphics;
 using MaterialComponents;
 using UIKit;
-using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 using MCard = MaterialComponents.Card;
 
@@ -20,7 +19,6 @@ namespace Xamarin.Forms.Material.iOS
 		VisualElementPackager _packager;
 		VisualElementTracker _tracker;
 		EventTracker _events;
-
 		bool _disposed = false;
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
@@ -56,6 +54,8 @@ namespace Xamarin.Forms.Material.iOS
 					};
 				}
 			}
+
+			ApplyThemeIfNeeded();
 		}
 
 		public void SetElement(VisualElement element)
@@ -120,7 +120,7 @@ namespace Xamarin.Forms.Material.iOS
 
 				_events.Dispose();
 				_events = null;
-				
+
 				if (Element != null)
 				{
 					Element.ClearValue(Platform.iOS.Platform.RendererProperty);
@@ -131,6 +131,15 @@ namespace Xamarin.Forms.Material.iOS
 			base.Dispose(disposing);
 		}
 
+		protected virtual void ApplyThemeIfNeeded()
+		{
+			var bgBrush = Element.Background;
+
+			if (Brush.IsNullOrEmpty(bgBrush))
+				return;
+
+			UpdateBackground();
+		}
 
 		protected virtual CardScheme CreateCardScheme()
 		{
@@ -144,7 +153,7 @@ namespace Xamarin.Forms.Material.iOS
 		{
 			UpdateCornerRadius();
 			UpdateBorderColor();
-			UpdateBackgroundColor();
+			UpdateBackground();
 
 			if (Element.BorderColor.IsDefault)
 				CardThemer.ApplyScheme(_cardScheme, this);
@@ -169,7 +178,6 @@ namespace Xamarin.Forms.Material.iOS
 				// this is set in the theme, so we must always disable it		
 				Interactable = false;
 			}
-
 		}
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -190,6 +198,10 @@ namespace Xamarin.Forms.Material.iOS
 				updatedTheme = true;
 			}
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			{
+				updatedTheme = true;
+			}
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
 			{
 				updatedTheme = true;
 			}
@@ -238,16 +250,40 @@ namespace Xamarin.Forms.Material.iOS
 				SetBorderWidth(borderColor.IsDefault ? 0f : 1f, UIControlState.Normal);
 			}
 		}
-
-		void UpdateBackgroundColor()
+				
+		void UpdateBackground()
 		{
 			if (_cardScheme.ColorScheme is SemanticColorScheme colorScheme)
 			{
-				var bgColor = Element.BackgroundColor;
-				if (bgColor.IsDefault)
-					colorScheme.SurfaceColor = _defaultCardScheme.ColorScheme.SurfaceColor;
+				colorScheme.SurfaceColor = UIColor.Clear;
+
+				var bgBrush = Element.Background;
+
+				if (Brush.IsNullOrEmpty(bgBrush))
+				{
+					var bgColor = Element.BackgroundColor;
+					if (bgColor.IsDefault)
+						colorScheme.SurfaceColor = _defaultCardScheme.ColorScheme.SurfaceColor;
+					else
+						colorScheme.SurfaceColor = bgColor.ToUIColor();
+				}
 				else
-					colorScheme.SurfaceColor = bgColor.ToUIColor();
+				{
+					var backgroundLayer = this.GetBackgroundLayer(bgBrush);
+
+					if (backgroundLayer != null)
+					{
+						Layer.BackgroundColor = UIColor.Clear.CGColor;
+						Layer.InsertBackgroundLayer(backgroundLayer, 0);
+
+						var cornerRadius = Element.CornerRadius;
+						if (cornerRadius < 0)
+							cornerRadius = _defaultCornerRadius;
+
+						backgroundLayer.CornerRadius = cornerRadius;
+						backgroundLayer.BorderColor = Element.BorderColor.ToCGColor();
+					}
+				}
 			}
 		}
 
@@ -259,7 +295,10 @@ namespace Xamarin.Forms.Material.iOS
 			this.GetSizeRequest(widthConstraint, heightConstraint, 44, 44);
 		void IVisualElementRenderer.SetElement(VisualElement element) =>
 			SetElement(element);
-		void IVisualElementRenderer.SetElementSize(Size size) =>
+
+		void IVisualElementRenderer.SetElementSize(Size size)
+		{
 			Layout.LayoutChildIntoBoundingRegion(Element, new Rectangle(Element.X, Element.Y, size.Width, size.Height));
+		}
 	}
 }

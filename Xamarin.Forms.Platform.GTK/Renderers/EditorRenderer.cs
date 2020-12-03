@@ -1,7 +1,7 @@
-﻿using Gtk;
-using Pango;
-using System;
+﻿using System;
 using System.ComponentModel;
+using Gtk;
+using Pango;
 using Xamarin.Forms.Platform.GTK.Controls;
 using Xamarin.Forms.Platform.GTK.Extensions;
 using Xamarin.Forms.Platform.GTK.Helpers;
@@ -59,7 +59,8 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Editor.TextProperty.PropertyName)
+			if (e.PropertyName == Editor.TextProperty.PropertyName ||
+				e.PropertyName == Editor.TextTransformProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Editor.TextColorProperty.PropertyName)
 				UpdateTextColor();
@@ -98,9 +99,10 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 		{
 			TextBuffer buffer = Control.TextView.Buffer;
 
-			if (buffer.Text != Element.Text)
+			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
+			if (buffer.Text != text)
 			{
-				buffer.Text = Element.Text ?? string.Empty;
+				buffer.Text = text;
 				UpdateTextColor();
 			}
 		}

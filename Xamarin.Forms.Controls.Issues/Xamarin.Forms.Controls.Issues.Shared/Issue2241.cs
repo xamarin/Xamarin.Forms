@@ -1,9 +1,8 @@
 ﻿using System;
-
+using System.Linq;
 using Xamarin.Forms;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Linq;
 
 #if UITEST
 using NUnit.Framework;
@@ -13,11 +12,14 @@ using Xamarin.UITest.Android;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Github, 2241, "ScrollView content can become stuck on orientation change (iOS)", PlatformAffected.iOS)]
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+#endif
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 2241, "ScrollView content can become stuck on orientation change (iOS)", PlatformAffected.iOS)]
 	public class Issue2241 : TestContentPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
 			var grid = new Grid
 			{
@@ -63,7 +65,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				HorizontalOptions = LayoutOptions.FillAndExpand,
 				VerticalOptions = LayoutOptions.FillAndExpand,
-				Padding = new Thickness (20),
+				Padding = new Thickness(20),
 				Content = grid
 			};
 

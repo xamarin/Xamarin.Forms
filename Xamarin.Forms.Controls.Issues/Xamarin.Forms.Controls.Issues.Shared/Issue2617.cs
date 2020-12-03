@@ -1,8 +1,8 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 2617, "Error on binding ListView with duplicated items", PlatformAffected.UWP)]
 
 #if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
 	[NUnit.Framework.Category(UITestCategories.ListView)]
 #endif
 	public class Issue2617 : TestContentPage
@@ -122,7 +123,7 @@ namespace Xamarin.Forms.Controls.Issues
 			await Task.Delay(500);
 			listViewIsGrouped.ItemsSource = null;
 			await Task.Delay(500);
-			listView.ScrollTo("Scroll to me", ScrollToPosition.Center, true);			
+			listView.ScrollTo("Scroll to me", ScrollToPosition.Center, true);
 			await Task.Delay(1000);
 			listView.ScrollTo("Item 1", ScrollToPosition.Start, true);
 			await Task.Delay(1000);

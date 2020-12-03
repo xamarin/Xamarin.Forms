@@ -1,14 +1,17 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Generic;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 39802, "Gap between ListView cells even if SeparatorVisablity is set to none ", 
+	[Issue(IssueTracker.Bugzilla, 39802, "Gap between ListView cells even if SeparatorVisablity is set to none ",
 		PlatformAffected.iOS)]
-	public class Bugzilla39802 : TestContentPage 
+	public class Bugzilla39802 : TestContentPage
 	{
 		protected override void Init()
 		{

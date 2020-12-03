@@ -1,50 +1,95 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Xamarin.Forms.DualScreen
 {
+	public class HingeAngleChangedEventArgs : EventArgs
+	{
+		public HingeAngleChangedEventArgs(double hingeAngleInDegrees)
+		{
+			HingeAngleInDegrees = hingeAngleInDegrees;
+		}
+
+		public double HingeAngleInDegrees { get; }
+	}
+
 	public partial class DualScreenInfo : INotifyPropertyChanged
 	{
-		static Lazy<DualScreenInfo> _dualScreenInfo { get; } = new Lazy<DualScreenInfo>(OnCreate);
-		public event PropertyChangedEventHandler PropertyChanged;
 		Rectangle[] _spanningBounds;
 		Rectangle _hingeBounds;
 		bool _isLandscape;
 		TwoPaneViewMode _spanMode;
 		TwoPaneViewLayoutGuide _twoPaneViewLayoutGuide;
-		IDualScreenService _dualScreenService;
-		public static DualScreenInfo Current => _dualScreenInfo.Value;
+		IDualScreenService _dualScreenService;		
 		IDualScreenService DualScreenService =>
 			_dualScreenService ?? DependencyService.Get<IDualScreenService>() ?? NoDualScreenServiceImpl.Instance;
 
-		public DualScreenInfo(VisualElement layout) : this(layout, null)
+		internal VisualElement Element { get; }
+
+		static Lazy<DualScreenInfo> _dualScreenInfo { get; } = new Lazy<DualScreenInfo>(OnCreate);
+
+		public static DualScreenInfo Current => _dualScreenInfo.Value;
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		public DualScreenInfo(VisualElement element) : this(element, null)
 		{
 		}
 
-		internal DualScreenInfo(VisualElement layout, IDualScreenService dualScreenService)
+		internal DualScreenInfo(VisualElement element, IDualScreenService dualScreenService)
 		{
+			_spanningBounds = new Rectangle[0];
+			Element = element;
 			_dualScreenService = dualScreenService;
-			if (layout == null)
+
+			if (element == null)
 			{
 				_twoPaneViewLayoutGuide = TwoPaneViewLayoutGuide.Instance;
 			}
 			else
 			{
-				_twoPaneViewLayoutGuide = new TwoPaneViewLayoutGuide(layout, dualScreenService);
-				_twoPaneViewLayoutGuide.PropertyChanged += OnTwoPaneViewLayoutGuideChanged;
+				_twoPaneViewLayoutGuide = new TwoPaneViewLayoutGuide(element, dualScreenService);
+				_twoPaneViewLayoutGuide.PropertyChanged += OnTwoPaneViewLayoutGuideChanged;				
 			}
 		}
+
+
+		EventHandler<HingeAngleChangedEventArgs> _hingeAngleChanged;
+		int subscriberCount = 0;
+		public event EventHandler<HingeAngleChangedEventArgs> HingeAngleChanged
+		{
+			add
+			{
+				ProcessHingeAngleSubscriberCount(Interlocked.Increment(ref subscriberCount));
+				_hingeAngleChanged += value;
+			}
+			remove
+			{
+				ProcessHingeAngleSubscriberCount(Interlocked.Decrement(ref subscriberCount));
+				_hingeAngleChanged -= value;
+			}
+		}
+
 
 		public Rectangle[] SpanningBounds
 		{
 			get => GetSpanningBounds();
 			set
 			{
-				SetProperty(ref _spanningBounds, value);
+				if (_spanningBounds == null && value == null)
+					return;
+
+				if (_spanningBounds == null ||
+					value == null ||
+					!Enumerable.SequenceEqual(_spanningBounds, value))
+				{
+					SetProperty(ref _spanningBounds, value);
+				}
 			}
 		}
 

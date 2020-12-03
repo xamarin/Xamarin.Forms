@@ -1,4 +1,3 @@
-﻿using Gdk;
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -8,8 +7,10 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Gdk;
 using Xamarin.Forms.Platform.GTK.Extensions;
 using DrawingFont = System.Drawing.Font;
+using IOPath = System.IO.Path;
 
 namespace Xamarin.Forms.Platform.GTK.Renderers
 {
@@ -49,6 +50,9 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				SetImage(e.OldElement);
 				SetAspect();
 				SetOpacity();
+				SetScaleX();
+				SetScaleY();
+				SetRotation();
 			}
 
 			base.OnElementChanged(e);
@@ -64,6 +68,14 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				SetOpacity();
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				SetAspect();
+			else if (e.PropertyName == Image.ScaleProperty.PropertyName)
+				SetScale();
+			else if (e.PropertyName == Image.ScaleXProperty.PropertyName)
+				SetScaleX();
+			else if (e.PropertyName == Image.ScaleYProperty.PropertyName)
+				SetScaleY();
+			else if (e.PropertyName == Image.RotationProperty.PropertyName)
+				SetRotation();
 		}
 
 		protected override void OnSizeAllocated(Gdk.Rectangle allocation)
@@ -129,6 +141,26 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 			Control.SetAlpha(opacity);
 		}
+
+		void SetScale()
+		{
+			Control.Scale = Element.Scale;
+		}
+
+		void SetScaleX()
+		{
+			Control.ScaleX = Element.ScaleX;
+		}
+
+		void SetScaleY()
+		{
+			Control.ScaleY = Element.ScaleY;
+		}
+
+		void SetRotation()
+		{
+			Control.Rotation = Element.Rotation;
+		}
 	}
 
 	public interface IImageSourceHandler : IRegisterable
@@ -152,7 +184,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				var file = filesource.File;
 				if (!string.IsNullOrEmpty(file))
 				{
-					var imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file);
+					var imagePath = IOPath.Combine(AppDomain.CurrentDomain.BaseDirectory, file);
 
 					if (File.Exists(imagePath))
 					{
@@ -172,7 +204,8 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			Pixbuf image = null;
 
 			var streamsource = imagesource as StreamImageSource;
-			if (streamsource?.Stream == null) return null;
+			if (streamsource?.Stream == null)
+				return null;
 			using (var streamImage = await ((IStreamImageSource)streamsource)
 				.GetStreamAsync(cancelationToken).ConfigureAwait(false))
 			{
@@ -253,7 +286,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				var fontPathAndFamily = fontImageSource.FontFamily.Split('#');
 				privateFontCollection.AddFontFile(fontPathAndFamily[0]);
 				fontFamily = fontPathAndFamily.Length > 1 ?
-					privateFontCollection.Families.FirstOrDefault(f => f.Name.Equals(fontPathAndFamily[1], StringComparison.InvariantCultureIgnoreCase)) ?? privateFontCollection.Families[0] : 
+					privateFontCollection.Families.FirstOrDefault(f => f.Name.Equals(fontPathAndFamily[1], StringComparison.InvariantCultureIgnoreCase)) ?? privateFontCollection.Families[0] :
 					privateFontCollection.Families[0];
 			}
 			else
@@ -266,3 +299,4 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 		}
 	}
 }
+

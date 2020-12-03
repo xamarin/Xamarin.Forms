@@ -10,14 +10,17 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 38827, "UWP - Text not wrapping")]
 	public partial class Bugzilla38827 : ContentPage
 	{
-		public Bugzilla38827 ()
+		public Bugzilla38827()
 		{
 #if !UITEST
-			InitializeComponent ();
+			InitializeComponent();
 #endif
 		}
 	}

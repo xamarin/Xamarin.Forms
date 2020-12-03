@@ -9,9 +9,12 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 31141, "Change Entry keyboard type while typing", PlatformAffected.iOS)]
-	public class Bugzilla31141 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Bugzilla31141 : TestContentPage // or TestFlyoutPage, etc ...
 	{
 		protected override void Init()
 		{

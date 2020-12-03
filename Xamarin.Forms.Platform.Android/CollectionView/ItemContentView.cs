@@ -7,11 +7,17 @@ namespace Xamarin.Forms.Platform.Android
 	public class ItemContentView : ViewGroup
 	{
 		protected IVisualElementRenderer Content;
+		internal Element Element => Content?.Element;
 		Size? _size;
 		Action<Size> _reportMeasure;
 
 		public ItemContentView(Context context) : base(context)
 		{
+		}
+
+		internal void ClickOn()
+		{
+			CallOnClick();
 		}
 
 		internal void RealizeContent(View view)
@@ -27,7 +33,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				RequestLayout();
 			}
-			else if(sender is VisualElement ve)
+			else if (sender is VisualElement ve)
 			{
 				ve.MeasureInvalidated -= ElementMeasureInvalidated;
 			}
@@ -117,8 +123,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		static IVisualElementRenderer CreateRenderer(View view, Context context)
 		{
-			var renderer = Platform.CreateRenderer(view, context);
-			Platform.SetRenderer(view, renderer);
+			var renderer = AppCompat.Platform.CreateRenderer(view, context);
+			AppCompat.Platform.SetRenderer(view, renderer);
 
 			return renderer;
 		}

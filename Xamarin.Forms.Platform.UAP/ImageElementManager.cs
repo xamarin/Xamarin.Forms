@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.UWP;
+using WStretch = Windows.UI.Xaml.Media.Stretch;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -49,7 +46,6 @@ namespace Xamarin.Forms.Platform.UWP
 				StartStopAnimation(renderer, controller);
 		}
 
-
 		static void StartStopAnimation(IImageVisualElementRenderer renderer, IImageElement controller)
 		{
 			if (renderer.IsDisposed || controller == null)
@@ -59,7 +55,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (controller.IsLoading)
 				return;
-			
 
 			if (renderer.GetImage()?.Source is BitmapImage bitmapImage)
 			{
@@ -89,8 +84,6 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateAspect(renderer, controller);
 			}
 		}
-
-
 
 		static void OnControlChanged(object sender, EventArgs e)
 		{
@@ -126,17 +119,17 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		static Stretch GetStretch(Aspect aspect)
+		static WStretch GetStretch(Aspect aspect)
 		{
 			switch (aspect)
 			{
 				case Aspect.Fill:
-					return Stretch.Fill;
+					return WStretch.Fill;
 				case Aspect.AspectFill:
-					return Stretch.UniformToFill;
+					return WStretch.UniformToFill;
 				default:
 				case Aspect.AspectFit:
-					return Stretch.Uniform;
+					return WStretch.Uniform;
 			}
 		}
 
@@ -162,7 +155,6 @@ namespace Xamarin.Forms.Platform.UWP
 				if (renderer.IsDisposed)
 					return;
 
-
 				if (imagesource is BitmapImage bitmapImage && _nativeAnimationSupport)
 					bitmapImage.AutoPlay = false;
 
@@ -176,7 +168,6 @@ namespace Xamarin.Forms.Platform.UWP
 				imageController?.SetIsLoading(false);
 			}
 		}
-
 
 		static internal void RefreshImage(IImageVisualElementRenderer renderer)
 		{

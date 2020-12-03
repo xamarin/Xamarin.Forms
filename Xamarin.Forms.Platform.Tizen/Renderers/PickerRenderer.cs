@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using ElmSharp;
 using Xamarin.Forms.Platform.Tizen.Native;
 using Xamarin.Forms.Platform.Tizen.Native.Watch;
-using ElmSharp;
 using EEntry = ElmSharp.Entry;
 
 namespace Xamarin.Forms.Platform.Tizen
@@ -22,6 +22,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(Picker.FontAttributesProperty, UpdateFontAttributes);
 			RegisterPropertyHandler(Picker.TitleProperty, UpdateTitle);
 			RegisterPropertyHandler(Picker.TitleColorProperty, UpdateTitleColor);
+			RegisterPropertyHandler(Picker.HorizontalTextAlignmentProperty, UpdateHorizontalTextAlignment);
 		}
 
 		protected override void Dispose(bool disposing)
@@ -33,6 +34,8 @@ namespace Xamarin.Forms.Platform.Tizen
 					if (Control is IEntry ie)
 					{
 						ie.TextBlockFocused -= OnTextBlockFocused;
+						ie.EntryLayoutFocused -= OnFocused;
+						ie.EntryLayoutUnfocused -= OnUnfocused;
 						if (Device.Idiom == TargetIdiom.TV)
 						{
 							ie.EntryLayoutFocused -= OnLayoutFocused;
@@ -50,10 +53,12 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (Control == null)
 			{
 				var entry = CreateNativeControl();
-				entry.SetVerticalTextAlignment("elm.text", 0.5);
+				entry.SetVerticalTextAlignment(0.5);
 				if (entry is IEntry ie)
 				{
 					ie.TextBlockFocused += OnTextBlockFocused;
+					ie.EntryLayoutFocused += OnFocused;
+					ie.EntryLayoutUnfocused += OnUnfocused;
 
 					if (Device.Idiom == TargetIdiom.TV)
 					{
@@ -128,6 +133,14 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (Control is IEntry ie)
 			{
 				ie.Placeholder = Element.Title;
+			}
+		}
+
+		void UpdateHorizontalTextAlignment()
+		{
+			if (Control is IEntry ie)
+			{
+				ie.HorizontalTextAlignment = Element.HorizontalTextAlignment.ToNative();
 			}
 		}
 

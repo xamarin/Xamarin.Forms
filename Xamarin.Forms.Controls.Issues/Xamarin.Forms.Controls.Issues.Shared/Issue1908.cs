@@ -8,7 +8,9 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1908, "Image reuse", PlatformAffected.Android)]
 	public class Issue1908 : TestContentPage
@@ -25,7 +27,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			for (int i = 0; i < 1000; i++)
 			{
-				listView.Children.Add(new Image() { Source = "oasis.jpg",  ClassId = $"OASIS{i}", AutomationId = $"OASIS{i}" });
+				listView.Children.Add(new Image() { Source = "oasis.jpg", ClassId = $"OASIS{i}", AutomationId = $"OASIS{i}" });
 			}
 
 			Content = new ScrollView() { Content = listView };

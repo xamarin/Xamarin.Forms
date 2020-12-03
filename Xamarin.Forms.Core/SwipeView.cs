@@ -16,13 +16,8 @@ namespace Xamarin.Forms
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<SwipeView>>(() => new PlatformConfigurationRegistry<SwipeView>(this));
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static void VerifySwipeViewFlagEnabled(
-			string constructorHint = null,
-			[CallerMemberName] string memberName = "")
-		{
-			ExperimentalFlags.VerifyFlagEnabled(nameof(SwipeView), ExperimentalFlags.SwipeViewExperimental, memberName: memberName);
-		}
+		public static readonly BindableProperty ThresholdProperty =
+			BindableProperty.Create(nameof(Threshold), typeof(double), typeof(SwipeView), default(double));
 
 		public static readonly BindableProperty LeftItemsProperty =
 			BindableProperty.Create(nameof(LeftItems), typeof(SwipeItems), typeof(SwipeView), null, BindingMode.OneWay, null, defaultValueCreator: SwipeItemsDefaultValueCreator,
@@ -39,6 +34,12 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty BottomItemsProperty =
 			BindableProperty.Create(nameof(BottomItems), typeof(SwipeItems), typeof(SwipeView), null, BindingMode.OneWay, null, defaultValueCreator: SwipeItemsDefaultValueCreator,
 				propertyChanged: OnSwipeItemsChanged);
+
+		public double Threshold
+		{
+			get { return (double)GetValue(ThresholdProperty); }
+			set { SetValue(ThresholdProperty, value); }
+		}
 
 		public SwipeItems LeftItems
 		{
@@ -63,6 +64,8 @@ namespace Xamarin.Forms
 			get { return (SwipeItems)GetValue(BottomItemsProperty); }
 			set { SetValue(BottomItemsProperty, value); }
 		}
+
+		bool ISwipeViewController.IsOpen { get; set; }
 
 		static void OnSwipeItemsChanged(BindableObject bindable, object oldValue, object newValue)
 		{
@@ -112,7 +115,7 @@ namespace Xamarin.Forms
 			if (BottomItems != null)
 				SetInheritedBindingContext(BottomItems, bc);
 		}
-  
+
 		SwipeItems SwipeItemsDefaultValueCreator() => new SwipeItems();
 
 		static object SwipeItemsDefaultValueCreator(BindableObject bindable)
@@ -127,10 +130,14 @@ namespace Xamarin.Forms
 
 		void UpdateSwipeItemsParent(SwipeItems swipeItems)
 		{
-			swipeItems.Parent = this;
+			if (swipeItems.Parent == null)
+				swipeItems.Parent = this;
 
-			foreach (var swipeItem in swipeItems)
-				((Element)swipeItem).Parent = swipeItems;
+			foreach (var item in swipeItems)
+			{
+				if (item is Element swipeItem && swipeItem.Parent == null)
+					swipeItem.Parent = swipeItems;
+			}
 		}
 	}
 }

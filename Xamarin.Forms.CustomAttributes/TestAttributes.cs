@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Xamarin.Forms.CustomAttributes
 {
-	
+
 	[AttributeUsage(
 		AttributeTargets.Class |
 		AttributeTargets.Event |
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.CustomAttributes
 		Default
 	}
 
-	
+
 	[AttributeUsage(
 		AttributeTargets.Class |
 		AttributeTargets.Method,
@@ -88,7 +88,7 @@ namespace Xamarin.Forms.CustomAttributes
 			: $"{IssueTracker.ToString().Substring(0, 1)}{IssueNumber} ({IssueTestNumber})";
 	}
 
-	
+
 	public class UiTestExemptAttribute : Attribute
 	{
 		// optional string reason
@@ -106,7 +106,7 @@ namespace Xamarin.Forms.CustomAttributes
 		public string Description => "Description: " + _description;
 	}
 
-	
+
 	public class UiTestFragileAttribute : Attribute
 	{
 		// optional string reason
@@ -120,7 +120,7 @@ namespace Xamarin.Forms.CustomAttributes
 		public string Description => "Description: " + _description;
 	}
 
-	
+
 	[AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
 	public class UiTestBrokenAttribute : Attribute
 	{
@@ -233,7 +233,8 @@ namespace Xamarin.Forms.CustomAttributes
 			BorderRadius,
 			Image,
 			Padding,
-			Pressed
+			Pressed,
+			LineBreakMode
 		}
 
 		public enum VisualElement
@@ -258,6 +259,7 @@ namespace Xamarin.Forms.CustomAttributes
 			IsVisible,
 			Opacity,
 			BackgroundColor,
+			Background,
 			IsFocused,
 			Focus,
 			Unfocus,
@@ -655,7 +657,7 @@ namespace Xamarin.Forms.CustomAttributes
 			Detail,
 			IsGestureEnabled,
 			IsPresented,
-			MasterBehavior
+			FlyoutLayoutBehavior
 		}
 
 		public enum OpenGlView
@@ -830,6 +832,8 @@ namespace Xamarin.Forms.CustomAttributes
 			Items,
 			SelectedIndex,
 			Focus,
+			HorizontalTextAlignment,
+			VerticalTextAlignment,
 			TextColor,
 			FontAttributes,
 			FontFamily,
@@ -887,7 +891,7 @@ namespace Xamarin.Forms.CustomAttributes
 			CurrentItem,
 			IsSwipeEnabled,
 			IsScrollAnimated,
-			NumberOfSideItems, 
+			NumberOfSideItems,
 			PeekAreaInsets,
 			Position,
 			IsBounceEnabled

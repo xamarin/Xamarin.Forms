@@ -130,6 +130,10 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var label1 = new Label();
 			Assert.False(label1.HasVisualStateGroups());
+			var vsg = VisualStateManager.GetVisualStateGroups(label1);
+			Assert.False(label1.HasVisualStateGroups());
+			vsg.Add(new VisualStateGroup());
+			Assert.True(label1.HasVisualStateGroups());
 		}
 
 		[Test]
@@ -355,7 +359,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			stateGroups.Add(visualStateGroup);
 			visualStateGroup.States.Add(normalState);
 			visualStateGroup.States.Add(invalidState);
-			
+
 			stateGroups.Add(secondVisualStateGroup);
 
 			var name = stateGroups[0].Name;
@@ -390,7 +394,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			{
 				vsgs.Add(group);
 			}
-			
+
 			watch.Stop();
 
 			double iterations = states;

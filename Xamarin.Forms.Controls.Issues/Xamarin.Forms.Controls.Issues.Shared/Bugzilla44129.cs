@@ -10,9 +10,12 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 44129, "Crash when adding tabbed page after removing all pages using DataTemplates")]
-	public class Bugzilla44129 : TestTabbedPage // or TestMasterDetailPage, etc ...
+	public class Bugzilla44129 : TestTabbedPage // or TestFlyoutPage, etc ...
 	{
 		protected override void Init()
 		{
@@ -42,11 +45,11 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-		public void Issue44129Test ()
+		public void Issue44129Test()
 		{
-			RunningApp.Screenshot ("I am at Issue 1");
-			RunningApp.WaitForElement (q => q.Marked ("First"));
-			RunningApp.Screenshot ("I see the Label");
+			RunningApp.Screenshot("I am at Issue 1");
+			RunningApp.WaitForElement(q => q.Marked("First"));
+			RunningApp.Screenshot("I see the Label");
 			RunningApp.Tap(q => q.Marked("Second"));
 			RunningApp.Tap(q => q.Marked("Crash Me"));
 		}

@@ -1,11 +1,11 @@
-using Android.Content;
-using Android.Views;
-using AView = Android.Views.View;
-using Xamarin.Forms.Internals;
 using System;
 using System.Linq;
+using Android.Content;
 using Android.Runtime;
+using Android.Views;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -41,8 +41,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (cell.View == null)
 				throw new InvalidOperationException($"ViewCell must have a {nameof(cell.View)}");
 
-			IVisualElementRenderer view = Platform.CreateRenderer(cell.View, context);
-			Platform.SetRenderer(cell.View, view);
+			IVisualElementRenderer view = AppCompat.Platform.CreateRenderer(cell.View, context);
+			AppCompat.Platform.SetRenderer(cell.View, view);
 			cell.View.IsPlatformEnabled = true;
 			var c = new ViewCellContainer(context, view, cell, ParentView, unevenRows, rowHeight);
 
@@ -58,6 +58,7 @@ namespace Xamarin.Forms.Platform.Android
 			readonly BindableProperty _unevenRows;
 			IVisualElementRenderer _view;
 			ViewCell _viewCell;
+			GestureDetector _tapGestureDetector;
 			GestureDetector _longPressGestureDetector;
 			ListViewRenderer _listViewRenderer;
 			bool _watchForLongPress;
@@ -78,9 +79,23 @@ namespace Xamarin.Forms.Platform.Android
 						return null;
 					}
 
-					_listViewRenderer = Platform.GetRenderer(listView) as ListViewRenderer;
+					_listViewRenderer = AppCompat.Platform.GetRenderer(listView) as ListViewRenderer;
 
 					return _listViewRenderer;
+				}
+			}
+
+			GestureDetector TapGestureDetector
+			{
+				get
+				{
+					if (_tapGestureDetector != null)
+					{
+						return _tapGestureDetector;
+					}
+
+					_tapGestureDetector = new GestureDetector(Context, new TapGestureListener(TriggerClick));
+					return _tapGestureDetector;
 				}
 			}
 
@@ -96,6 +111,11 @@ namespace Xamarin.Forms.Platform.Android
 					_longPressGestureDetector = new GestureDetector(Context, new LongPressGestureListener(TriggerLongClick));
 					return _longPressGestureDetector;
 				}
+			}
+
+			public ViewCellContainer(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
+			{
+				// Added default constructor to prevent crash when accessing selected row in ListViewAdapter.Dispose
 			}
 
 			public ViewCellContainer(Context context, IVisualElementRenderer view, ViewCell viewCell, View parent,
@@ -141,9 +161,15 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_watchForLongPress)
 				{
-					// Feed the gestue through the LongPress detector; for this to wor we *must* return true 
+					// Feed the gesture through the LongPress detector; for this to work we *must* return true 
 					// afterward (or the LPGD goes nuts and immediately fires onLongPress)
 					LongPressGestureDetector.OnTouchEvent(e);
+					return true;
+				}
+
+				if (WatchForSwipeViewTap())
+				{
+					TapGestureDetector.OnTouchEvent(e);
 					return true;
 				}
 
@@ -154,7 +180,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				Performance.Start(out string reference);
 				var renderer = GetChildAt(0) as IVisualElementRenderer;
-				var viewHandlerType = Registrar.Registered.GetHandlerTypeForObject(cell.View) ?? typeof(Platform.DefaultRenderer);
+				var viewHandlerType = Registrar.Registered.GetHandlerTypeForObject(cell.View) ?? typeof(AppCompat.Platform.DefaultRenderer);
 				var reflectableType = renderer as System.Reflection.IReflectableType;
 				var rendererType = reflectableType != null ? reflectableType.GetTypeInfo().AsType() : (renderer != null ? renderer.GetType() : typeof(System.Object));
 				if (renderer != null && rendererType == viewHandlerType)
@@ -170,7 +196,7 @@ namespace Xamarin.Forms.Platform.Android
 					renderer.SetElement(cell.View);
 					Performance.Stop(reference, "Reuse.SetElement");
 
-					Platform.SetRenderer(cell.View, _view);
+					AppCompat.Platform.SetRenderer(cell.View, _view);
 
 					cell.View.DisableLayout = false;
 					foreach (VisualElement c in cell.View.Descendants())
@@ -188,14 +214,14 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				RemoveView(_view.View);
-				Platform.SetRenderer(_viewCell.View, null);
+				AppCompat.Platform.SetRenderer(_viewCell.View, null);
 				_viewCell.View.IsPlatformEnabled = false;
 				_view.View.Dispose();
 
 				_viewCell = cell;
-				_view = Platform.CreateRenderer(_viewCell.View, Context);
+				_view = AppCompat.Platform.CreateRenderer(_viewCell.View, Context);
 
-				Platform.SetRenderer(_viewCell.View, _view);
+				AppCompat.Platform.SetRenderer(_viewCell.View, _view);
 				AddView(_view.View);
 
 				UpdateIsEnabled();
@@ -244,6 +270,23 @@ namespace Xamarin.Forms.Platform.Android
 				Performance.Stop(reference);
 			}
 
+			bool WatchForSwipeViewTap()
+			{
+				if (!(_view.Element is SwipeView swipeView))
+				{
+					return false;
+				}
+				// If the cell contains a SwipeView, we will have conflicts capturing the touch.
+				// So we need to watch locally for Tap and if we see it (and the SwipeView is open),
+				// trigger the Click manually.
+				if (!((ISwipeViewController)swipeView).IsOpen)
+				{
+					return true;
+				}
+
+				return false;
+			}
+
 			void UpdateWatchForLongPress()
 			{
 				var vw = _view.Element as Xamarin.Forms.View;
@@ -266,9 +309,59 @@ namespace Xamarin.Forms.Platform.Android
 					|| view.LogicalChildren.OfType<View>().Any(HasTapGestureRecognizers);
 			}
 
+			void TriggerClick()
+			{
+				ListViewRenderer?.ClickOn(this);
+			}
+
 			void TriggerLongClick()
 			{
 				ListViewRenderer?.LongClickOn(this);
+			}
+
+			internal class TapGestureListener : Java.Lang.Object, GestureDetector.IOnGestureListener
+			{
+				readonly Action _onClick;
+
+				internal TapGestureListener(Action onClick)
+				{
+					_onClick = onClick;
+				}
+
+				internal TapGestureListener(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership)
+				{
+				}
+
+				public bool OnDown(MotionEvent e)
+				{
+					return true;
+				}
+
+				public bool OnFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
+				{
+					return false;
+				}
+
+				public void OnLongPress(MotionEvent e)
+				{
+
+				}
+
+				public bool OnScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
+				{
+					return false;
+				}
+
+				public void OnShowPress(MotionEvent e)
+				{
+
+				}
+
+				public bool OnSingleTapUp(MotionEvent e)
+				{
+					_onClick();
+					return false;
+				}
 			}
 
 			internal class LongPressGestureListener : Java.Lang.Object, GestureDetector.IOnGestureListener

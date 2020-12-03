@@ -1,7 +1,7 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
-using System;
+﻿using System;
 using System.Runtime.CompilerServices;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 
 #if UITEST
@@ -18,6 +18,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.Navigation)]
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
 #endif
 	public class Bugzilla43663 : TestNavigationPage
 	{

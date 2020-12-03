@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Specialized;
 using ElmSharp.Wearable;
+using SkiaSharp.Views.Tizen;
 using Xamarin.Forms.Platform.Tizen.Native.Watch;
 using EColor = ElmSharp.Color;
 
@@ -9,17 +10,14 @@ namespace Xamarin.Forms.Platform.Tizen
 	/// <summary>
 	/// Renderer of ContentPage.
 	/// </summary>
-	public class PageRenderer : VisualElementRenderer<Page>
+	public class PageRenderer : VisualElementRenderer<Page>, SkiaSharp.IBackgroundCanvas
 	{
-		/// <summary>
-		/// Native control which holds the contents.
-		/// </summary>
 		Native.Page _page;
 		Lazy<MoreOption> _moreOption;
+		Lazy<SKCanvasView> _backgroundCanvas;
 
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
+		public SKCanvasView BackgroundCanvas => _backgroundCanvas.Value;
+
 		public PageRenderer()
 		{
 			RegisterPropertyHandler(Page.BackgroundImageSourceProperty, UpdateBackgroundImage);
@@ -32,6 +30,20 @@ namespace Xamarin.Forms.Platform.Tizen
 				_page = new Native.Page(Forms.NativeParent);
 				_page.LayoutUpdated += OnLayoutUpdated;
 				SetNativeView(_page);
+			}
+
+			if (Forms.UseSkiaSharp)
+			{
+				_backgroundCanvas = new Lazy<SKCanvasView>(() =>
+				{
+					var canvas = new SKCanvasView(Forms.NativeParent);
+					canvas.PassEvents = true;
+					canvas.PaintSurface += OnBackgroundPaint;
+					canvas.Show();
+					_page.Children.Add(canvas);
+					canvas.Lower();
+					return canvas;
+				});
 			}
 			base.OnElementChanged(e);
 		}
@@ -71,9 +83,18 @@ namespace Xamarin.Forms.Platform.Tizen
 					if (_moreOption.IsValueCreated)
 					{
 						_moreOption.Value.Clicked -= OnMoreOptionItemClicked;
+						_moreOption.Value.Closed -= SendMoreOptionClosed;
+						_moreOption.Value.Opened -= SendMoreOptionOpened;
 						_moreOption.Value.Items.Clear();
 						_moreOption.Value.Unrealize();
 					}
+				}
+
+				if (Forms.UseSkiaSharp && _backgroundCanvas.IsValueCreated)
+				{
+					BackgroundCanvas.PaintSurface -= OnBackgroundPaint;
+					BackgroundCanvas.Unrealize();
+					_backgroundCanvas = null;
 				}
 			}
 			base.Dispose(disposing);
@@ -113,6 +134,14 @@ namespace Xamarin.Forms.Platform.Tizen
 			return moreOptionItem;
 		}
 
+		protected virtual void OnMoreOptionClosed()
+		{
+		}
+
+		protected virtual void OnMoreOptionOpened()
+		{
+		}
+
 		void UpdateBackgroundImage(bool initialize)
 		{
 			if (initialize && Element.BackgroundImageSource.IsNullOrEmpty())
@@ -135,23 +164,56 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				_moreOption.Value.Geometry = _page.Geometry;
 			}
+
+			if (_backgroundCanvas != null && _backgroundCanvas.IsValueCreated)
+			{
+				BackgroundCanvas.Geometry = _page.Geometry;
+			}
+		}
+
+		void OnBackgroundPaint(object sender, SKPaintSurfaceEventArgs e)
+		{
+			var canvas = e.Surface.Canvas;
+			canvas.Clear();
+
+			var bounds = e.Info.Rect;
+			var paint = Element.GetBackgroundPaint(bounds);
+
+			if (paint != null)
+			{
+				using (paint)
+				using (var path = bounds.ToPath())
+				{
+					canvas.DrawPath(path, paint);
+				}
+			}
 		}
 
 		MoreOption CreateMoreOption()
 		{
 			var moreOption = new MoreOption(_page);
-			moreOption.Clicked += OnMoreOptionItemClicked;
+			moreOption.Geometry = _page.Geometry;
 			_page.Children.Add(moreOption);
 			moreOption.Show();
+			moreOption.Clicked += OnMoreOptionItemClicked;
+			moreOption.Closed += SendMoreOptionClosed;
+			moreOption.Opened += SendMoreOptionOpened;
 			return moreOption;
+		}
+
+		void SendMoreOptionClosed(object sender, EventArgs e)
+		{
+			OnMoreOptionClosed();
+		}
+
+		void SendMoreOptionOpened(object sender, EventArgs e)
+		{
+			OnMoreOptionOpened();
 		}
 
 		void OnToolbarCollectionChanged(object sender, EventArgs eventArgs)
 		{
-			if (Element.ToolbarItems.Count > 0 || _moreOption.IsValueCreated)
-			{
-				UpdateToolbarItems(false);
-			}
+			UpdateToolbarItems(false);
 		}
 
 		void UpdateToolbarItems(bool initialize)
@@ -162,9 +224,17 @@ namespace Xamarin.Forms.Platform.Tizen
 				_moreOption.Value.Items.Clear();
 			}
 
-			foreach (var item in Element.ToolbarItems)
+			if (Element.ToolbarItems.Count > 0)
 			{
-				_moreOption.Value.Items.Add(CreateMoreOptionItem(item));
+				_moreOption.Value.Show();
+				foreach (var item in Element.ToolbarItems)
+				{
+					_moreOption.Value.Items.Add(CreateMoreOptionItem(item));
+				}
+			}
+			else
+			{
+				_moreOption.Value.Hide();
 			}
 		}
 

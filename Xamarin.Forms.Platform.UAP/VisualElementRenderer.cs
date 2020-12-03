@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.VisualElement;
 using Xamarin.Forms.Internals;
 using Windows.UI.Xaml.Input;
+using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.VisualElement;
+using WRect = Windows.Foundation.Rect;
+using WSolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -147,7 +148,10 @@ namespace Xamarin.Forms.Platform.UWP
 				// Disabled until reason for crashes with unhandled exceptions is discovered
 				// Without this some layouts may end up with improper sizes, however their children
 				// will position correctly
-				//Loaded += (sender, args) => {
+				// Consider using Loading vs Loaded if this is added back, calling in Loaded appears to be to late in the layout cycle
+				// and may cause issues
+				//Loaded += (sender, args) =>
+				//{
 				if (Packager != null)
 					Packager.Load();
 				//};
@@ -205,7 +209,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			Element.IsInNativeLayout = true;
 
-			var myRect = new Rect(0, 0, finalSize.Width, finalSize.Height);
+			var myRect = new WRect(0, 0, finalSize.Width, finalSize.Height);
 
 			if (Control != null)
 			{
@@ -223,7 +227,7 @@ namespace Xamarin.Forms.Platform.UWP
 					continue;
 				Rectangle bounds = child.Bounds;
 
-				renderer.ContainerElement.Arrange(new Rect(bounds.X, bounds.Y, Math.Max(0, bounds.Width), Math.Max(0, bounds.Height)));
+				renderer.ContainerElement.Arrange(new WRect(bounds.X, bounds.Y, Math.Max(0, bounds.Width), Math.Max(0, bounds.Height)));
 
 				if (ArrangeNativeChildren)
 				{
@@ -358,6 +362,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateEnabled();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				UpdateBackground();
 			else if (e.PropertyName == AutomationProperties.HelpTextProperty.PropertyName)
 				SetAutomationPropertiesHelpText();
 			else if (e.PropertyName == AutomationProperties.NameProperty.PropertyName)
@@ -462,7 +468,9 @@ namespace Xamarin.Forms.Platform.UWP
 			control.GotFocus += OnControlGotFocus;
 			control.LostFocus += OnControlLostFocus;
 			Children.Add(control);
+			
 			UpdateBackgroundColor();
+			UpdateBackground();
 
 			if (Element != null && !string.IsNullOrEmpty(Element.AutomationId))
 				SetAutomationId(Element.AutomationId);
@@ -490,6 +498,7 @@ namespace Xamarin.Forms.Platform.UWP
 				else
 				{
 					_control.ClearValue(Windows.UI.Xaml.Controls.Control.BackgroundProperty);
+					backgroundLayer.ClearValue(BackgroundProperty);
 				}
 			}
 			else
@@ -501,6 +510,47 @@ namespace Xamarin.Forms.Platform.UWP
 				else
 				{
 					backgroundLayer.ClearValue(BackgroundProperty);
+				}
+			}
+		}
+
+		protected virtual void UpdateBackground()
+		{
+			Color backgroundColor = Element.BackgroundColor;
+			Brush background = Element.Background;
+
+			var backgroundLayer = (Panel)this;
+			if (_backgroundLayer != null)
+			{
+				backgroundLayer = _backgroundLayer;
+				Background = null;
+			}
+
+			if (_control != null)
+			{
+				if (!Brush.IsNullOrEmpty(background))
+					_control.Background = background.ToBrush();
+				else
+				{
+					if (!backgroundColor.IsDefault)
+						_control.Background = backgroundColor.ToBrush();
+					else
+					{
+						_control.ClearValue(Windows.UI.Xaml.Controls.Control.BackgroundProperty);
+						backgroundLayer.ClearValue(BackgroundProperty);
+					}
+				}
+			}
+			else
+			{
+				if (!Brush.IsNullOrEmpty(background))
+					backgroundLayer.Background = background.ToBrush();
+				else
+				{
+					if (!backgroundColor.IsDefault)
+						backgroundLayer.Background = backgroundColor.ToBrush();
+					else
+						backgroundLayer.ClearValue(BackgroundProperty);
 				}
 			}
 		}
@@ -628,7 +678,7 @@ namespace Xamarin.Forms.Platform.UWP
 				// in hit testing. 
 				if (Element is Layout && Background == null)
 				{
-					Background = new SolidColorBrush(Windows.UI.Colors.Transparent);
+					Background = new WSolidColorBrush(Windows.UI.Colors.Transparent);
 				}
 			}
 		}
@@ -652,7 +702,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_backgroundLayer = new Canvas { IsHitTestVisible = false };
 			Children.Insert(0, _backgroundLayer);
+
 			UpdateBackgroundColor();
+			UpdateBackground();
 		}
 
 		void RemoveBackgroundLayer()
@@ -664,7 +716,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 			Children.Remove(_backgroundLayer);
 			_backgroundLayer = null;
+
 			UpdateBackgroundColor();
+			UpdateBackground();
 		}
 
 		internal static bool NeedsBackgroundLayer(VisualElement element)

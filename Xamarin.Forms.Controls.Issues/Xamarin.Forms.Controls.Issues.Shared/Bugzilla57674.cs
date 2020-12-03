@@ -1,9 +1,9 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System;
-using System.Collections;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.UITest;
@@ -12,6 +12,9 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 57674, "ListView not honoring INotifyCollectionChanged ", PlatformAffected.UWP)]
 	public class Bugzilla57674 : TestContentPage
@@ -23,7 +26,8 @@ namespace Xamarin.Forms.Controls.Issues
 			_myCollection = new MyCollection();
 
 			var stackLayout = new StackLayout();
-			var button = new Button {
+			var button = new Button
+			{
 				AutomationId = "IssueButton",
 				Text = "Add new element to ListView"
 			};
@@ -31,7 +35,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 			stackLayout.Children.Add(button);
 
-			stackLayout.Children.Add(new ListView {
+			stackLayout.Children.Add(new ListView
+			{
 				AutomationId = "IssueListView",
 				ItemsSource = _myCollection
 			});

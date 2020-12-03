@@ -1,6 +1,7 @@
 ﻿using System;
 using ElmSharp;
 using EButton = ElmSharp.Button;
+using ERect = ElmSharp.Rect;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -32,14 +33,13 @@ namespace Xamarin.Forms.Platform.Tizen
 				_border.Show();
 				_image = new Native.Image(Forms.NativeParent);
 				_image.Show();
-				_button = new EButton(Forms.NativeParent)
-				{
-					Style = "transparent"
-				};
+				_button = new EButton(Forms.NativeParent).SetTransparentStyle();
 				_button.Clicked += OnClicked;
 				_button.Pressed += OnPressed;
 				_button.Released += OnReleased;
 				_button.Show();
+				_button.Focused += OnFocused;
+				_button.Unfocused += OnUnfocused;
 				Control.PackEnd(_round);
 				Control.PackEnd(_image);
 				Control.PackEnd(_border);
@@ -50,7 +50,8 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		protected virtual void UpdateAfterLoading()
 		{
-			_image.IsOpaque = Element.IsOpaque;
+			if (_image.IsOpaque != Element.IsOpaque)
+				_image.IsOpaque = Element.IsOpaque;
 		}
 
 		protected override ElmSharp.Size Measure(int availableWidth, int availableHeight)
@@ -75,6 +76,8 @@ namespace Xamarin.Forms.Platform.Tizen
 					_button.Clicked -= OnClicked;
 					_button.Pressed -= OnPressed;
 					_button.Released -= OnReleased;
+					_button.Focused -= OnFocused;
+					_button.Unfocused -= OnUnfocused;
 					_button = null;
 				}
 			}
@@ -103,7 +106,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			var height = outter.Height - Forms.ConvertToScaledPixel(Element.Padding.VerticalThickness);
 			var left = outter.Left + Forms.ConvertToScaledPixel(Element.Padding.Left);
 			var top = outter.Top + Forms.ConvertToScaledPixel(Element.Padding.Top);
-			var imageBound = new Rect(left, top, width, height);
+			var imageBound = new ERect(left, top, width, height);
 
 			_image.Geometry = imageBound;
 			_button.Geometry = outter;
@@ -123,7 +126,16 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			if (Control != null)
 			{
-				bool success = await _image.LoadFromImageSourceAsync(source);
+				bool success;
+				if (source is FileImageSource fis)
+				{
+					success = _image.LoadFromFile(fis.File);
+				}
+				else
+				{
+					success = await _image.LoadFromImageSourceAsync(source);
+				}
+
 				if (!IsDisposed && success)
 				{
 					(Element as IVisualElementController)?.NativeSizeChanged();

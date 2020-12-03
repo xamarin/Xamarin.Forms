@@ -15,11 +15,12 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.ListView)]
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
 #endif
 
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 42329, "ListView in Frame and FormsAppCompatActivity Memory Leak")]
-	public class Bugzilla42329 : TestMasterDetailPage
+	public class Bugzilla42329 : TestFlyoutPage
 	{
 		const string DestructorMessage = "ContentPageEx Destructor called";
 		const string Page1Title = "Page1";
@@ -29,12 +30,12 @@ namespace Xamarin.Forms.Controls.Issues
 		const string LabelPage2 = "Open the drawer menu and select Page3";
 		readonly static string LabelPage3 = $"The console should have displayed the text '{DestructorMessage}' at least once. If not, this test has failed.";
 		static string Success { get; set; } = string.Empty;
-		static MasterDetailPage Reference;
+		static FlyoutPage Reference;
 
 		protected override void Init()
 		{
 			var masterPage = new MasterPage();
-			Master = masterPage;
+			Flyout = masterPage;
 			masterPage.ListView.ItemSelected += (sender, e) =>
 			{
 				var item = e.SelectedItem as MasterPageItem;
@@ -119,7 +120,7 @@ namespace Xamarin.Forms.Controls.Issues
 			public _42329_FrameWithListView()
 			{
 				var lv = new ListView();
-				var label = new Label() { Text =  LabelPage1};
+				var label = new Label() { Text = LabelPage1 };
 				label.GestureRecognizers.Add(new TapGestureRecognizer
 				{
 					Command = new Command(OpenMaster)

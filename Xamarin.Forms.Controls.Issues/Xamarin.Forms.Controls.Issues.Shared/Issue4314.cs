@@ -10,11 +10,12 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
 	[Category(UITestCategories.ContextActions)]
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 4314, "When ListView items is removed and it is empty, Xamarin Forms crash", PlatformAffected.iOS)]
-	public class Issue4314 : TestNavigationPage // or TestMasterDetailPage, etc ...
+	public class Issue4314 : TestNavigationPage // or TestFlyoutPage, etc ...
 	{
 		const string Success = "Success";
 #if !UITEST
@@ -39,15 +40,15 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 #if UITEST && __IOS__
 		[Test]
-		public void Issue4341Test() 
+		public void Issue4341Test()
 		{
-			RunningApp.WaitForElement(c=> c.Marked("Email"));
+			RunningApp.WaitForElement(c => c.Marked("Email"));
 			RunningApp.ActivateContextMenu("Subject Line 0");
 			RunningApp.WaitForElement("Delete");
 			RunningApp.Tap("Delete");
 			RunningApp.ActivateContextMenu("Subject Line 1");
 			RunningApp.Tap("Delete");
-			RunningApp.WaitForElement(c=> c.Marked(Success));
+			RunningApp.WaitForElement(c => c.Marked(Success));
 			RunningApp.Back();
 			RunningApp.WaitForElement(c => c.Marked("Email"));
 			RunningApp.SwipeRightToLeft();

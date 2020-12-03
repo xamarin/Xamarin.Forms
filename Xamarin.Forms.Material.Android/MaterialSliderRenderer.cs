@@ -1,19 +1,12 @@
-
 using System;
 using System.ComponentModel;
 using Android.Content;
-#if __ANDROID_29__
-using AndroidX.Core.View;
-#else
-using Android.Support.V4.View;
-#endif
 using Android.Views;
 using Android.Widget;
-using Xamarin.Forms;
-using Xamarin.Forms.Platform.Android.FastRenderers;
-using Xamarin.Forms.Material.Android;
-using AView = Android.Views.View;
+using AndroidX.Core.View;
 using Xamarin.Forms.Platform.Android;
+using Xamarin.Forms.Platform.Android.FastRenderers;
+using AView = Android.Views.View;
 
 
 namespace Xamarin.Forms.Material.Android
@@ -98,8 +91,8 @@ namespace Xamarin.Forms.Material.Android
 				{
 					Element.PropertyChanged -= OnElementPropertyChanged;
 
-					if (Platform.Android.Platform.GetRenderer(Element) == this)
-						Element.ClearValue(Platform.Android.Platform.RendererProperty);
+					if (Platform.Android.AppCompat.Platform.GetRenderer(Element) == this)
+						Element.ClearValue(Platform.Android.AppCompat.Platform.RendererProperty);
 				}
 			}
 
@@ -138,7 +131,7 @@ namespace Xamarin.Forms.Material.Android
 
 			if (e.IsOneOf(Slider.ValueProperty, Slider.MinimumProperty, Slider.MaximumProperty))
 				UpdateValue();
-			else if (e.IsOneOf(VisualElement.BackgroundColorProperty, Slider.MaximumTrackColorProperty, Slider.MinimumTrackColorProperty, Slider.ThumbColorProperty))
+			else if (e.IsOneOf(VisualElement.BackgroundColorProperty, VisualElement.BackgroundProperty, Slider.MaximumTrackColorProperty, Slider.MinimumTrackColorProperty, Slider.ThumbColorProperty))
 				UpdateColors();
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
@@ -166,7 +159,7 @@ namespace Xamarin.Forms.Material.Android
 
 			this.ApplySeekBarColors(progressColor, backgroundColor, thumbColor);
 		}
-		
+
 		double Value
 		{
 			get { return _min + (_max - _min) * (Control.Progress / MaximumValue); }

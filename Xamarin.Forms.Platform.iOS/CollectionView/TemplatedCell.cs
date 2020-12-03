@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -30,16 +30,20 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ConstrainTo(CGSize constraint)
 		{
+			ClearConstraints();
 			ConstrainedSize = constraint;
 		}
 
 		public override void ConstrainTo(nfloat constant)
 		{
+			ClearConstraints();
 			ConstrainedDimension = constant;
+		}
 
-			// Reset constrained size in case ItemSizingStrategy changes
-			// and we want to measure each item
-			ConstrainedSize = default(CGSize);
+		protected void ClearConstraints()
+		{
+			ConstrainedSize = default;
+			ConstrainedDimension = default;
 		}
 
 		public override UICollectionViewLayoutAttributes PreferredLayoutAttributesFittingAttributes(
@@ -48,7 +52,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var preferredAttributes = base.PreferredLayoutAttributesFittingAttributes(layoutAttributes);
 
 			// Measure this cell (including the Forms element) if there is no constrained size
-			var	size = ConstrainedSize == default(CGSize) ? Measure() : ConstrainedSize;
+			var size = ConstrainedSize == default(CGSize) ? Measure() : ConstrainedSize;
 
 			// Update the size of the root view to accommodate the Forms element
 			var nativeView = VisualElementRenderer.NativeView;
@@ -86,6 +90,17 @@ namespace Xamarin.Forms.Platform.iOS
 				// Create the content and renderer for the view 
 				var view = itemTemplate.CreateContent() as View;
 
+				// Prevents the use of default color when there are VisualStateManager with Selected state setting the background color
+				// First we check whether the cell has the default selected background color; if it does, then we should check
+				// to see if the cell content is the VSM to set a selected color 
+				if (SelectedBackgroundView.BackgroundColor == ColorExtensions.Gray && IsUsingVSMForSelectionColor(view))
+				{
+					SelectedBackgroundView = new UIView
+					{
+						BackgroundColor = UIColor.Clear
+					};
+				}
+
 				// Set the binding context _before_ we create the renderer; that way, it's available during OnElementChanged
 				view.BindingContext = bindingContext;
 
@@ -98,7 +113,7 @@ namespace Xamarin.Forms.Platform.iOS
 				// emit a bunch of needless binding errors
 				itemsView.AddLogicalChild(view);
 			}
-			else 
+			else
 			{
 				// Same template, different data
 				var currentElement = VisualElementRenderer?.Element;
@@ -140,6 +155,34 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				ContentView.Subviews[n].RemoveFromSuperview();
 			}
+		}
+
+		bool IsUsingVSMForSelectionColor(View view)
+		{
+			var groups = VisualStateManager.GetVisualStateGroups(view);
+			for (var groupIndex = 0; groupIndex < groups.Count; groupIndex++)
+			{
+				var group = groups[groupIndex];
+				for (var stateIndex = 0; stateIndex < group.States.Count; stateIndex++)
+				{
+					var state = group.States[stateIndex];
+					if (state.Name != VisualStateManager.CommonStates.Selected)
+					{
+						continue;
+					}
+
+					for (var setterIndex = 0; setterIndex < state.Setters.Count; setterIndex++)
+					{
+						var setter = state.Setters[setterIndex];
+						if (setter.Property.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+						{
+							return true;
+						}
+					}
+				}
+			}
+
+			return false;
 		}
 
 		public override bool Selected

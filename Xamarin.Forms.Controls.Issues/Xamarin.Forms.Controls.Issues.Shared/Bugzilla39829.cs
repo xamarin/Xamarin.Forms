@@ -10,17 +10,20 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 39829, "RowHeight of ListView is not working for UWP", PlatformAffected.UWP)]
 	public class Bugzilla39829 : TestContentPage
 	{
 		protected override void Init()
 		{
-			Title = "Master";
+			Title = "Flyout";
 
-			var instructions = new Label 
-			{ 
-				Text = "The text items in the list below should be spaced far apart vertically. " 
+			var instructions = new Label
+			{
+				Text = "The text items in the list below should be spaced far apart vertically. "
 					+ "If they are close together, this test has failed."
 
 			};

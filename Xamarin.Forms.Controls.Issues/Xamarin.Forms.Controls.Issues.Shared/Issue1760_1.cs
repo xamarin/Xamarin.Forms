@@ -7,13 +7,16 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1760, "Content set after an await is not visible", PlatformAffected.Android, issueTestNumber: 1)]
-	public class Issue1760_1 : TestMasterDetailPage
+	public class Issue1760_1 : TestFlyoutPage
 	{
 		protected override void Init()
 		{
-			Master = new Issue1760._1760Master(false);
+			Flyout = new Issue1760._1760Master(false);
 			Detail = new Issue1760._1760TestPage(false);
 			IsPresented = true;
 		}

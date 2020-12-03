@@ -158,7 +158,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdatePlaceholder();
 			else if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
 				UpdatePassword();
-			else if (e.PropertyName == Entry.TextProperty.PropertyName)
+			else if (e.IsOneOf(Entry.TextProperty, Entry.TextTransformProperty))
 			{
 				UpdateText();
 				UpdateCharacterSpacing();
@@ -361,9 +361,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateText()
 		{
+			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 			// ReSharper disable once RedundantCheckBeforeAssignment
-			if (Control.Text != Element.Text)
-				Control.Text = Element.Text;
+			if (Control.Text != text)
+				Control.Text = text;
 		}
 
 		void UpdateCharacterSpacing()
@@ -389,7 +390,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		bool ShouldChangeCharacters(UITextField textField, NSRange range, string replacementString)
 		{
-			var newLength = textField?.Text?.Length + replacementString.Length - range.Length;
+			var newLength = textField?.Text?.Length + replacementString?.Length - range.Length;
 			return newLength <= Element?.MaxLength;
 		}
 

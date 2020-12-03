@@ -1,5 +1,5 @@
-using ElmSharp;
 using System.Collections.Generic;
+using ElmSharp;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -65,6 +65,11 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			return null;
 		}
+
+		protected virtual void OnCreated(Cell cell, bool isGroup)
+		{
+		}
+
 		protected virtual void OnDeleted(Cell cell)
 		{
 		}
@@ -129,6 +134,11 @@ namespace Xamarin.Forms.Platform.Tizen
 			_realizedNativeViews.TryGetValue(cell, out realizedView);
 			realizedView?.Clear();
 			OnUnrealizedCell(cell);
+		}
+
+		public void SendCreatedCell(Cell cell, bool isGroup = false)
+		{
+			OnCreated(cell, isGroup);
 		}
 
 		internal Native.ListView.ItemContext GetCurrentItem()

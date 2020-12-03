@@ -1,15 +1,9 @@
 using System;
 using System.Linq;
 using Android.Graphics.Drawables;
-#if __ANDROID_29__
-using AndroidX.Core.Content;
-using AndroidX.AppCompat.Widget;
-using AndroidX.RecyclerView.Widget;
-#else
-using Android.Support.V4.Content;
-using Android.Support.V7.Widget;
-#endif
 using Android.Util;
+using AndroidX.Core.Content;
+using AndroidX.RecyclerView.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -40,6 +34,8 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		protected virtual bool UseDefaultSelectionColor => true;
+
 		public void OnClick(global::Android.Views.View view)
 		{
 			if (_isSelectionEnabled)
@@ -61,6 +57,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		void SetSelectionStates(bool isSelected)
 		{
+			if (!UseDefaultSelectionColor)
+			{
+				return;
+			}
+
 			if (Forms.IsMarshmallowOrNewer)
 			{
 				// We're looking for the foreground ripple effect, which is not available on older APIs
@@ -80,12 +81,12 @@ namespace Xamarin.Forms.Platform.Android
 			using (var value = new TypedValue())
 			{
 				var context = ItemView.Context;
-				
-				if(!context.Theme.ResolveAttribute(global::Android.Resource.Attribute.ColorActivatedHighlight, value, true))
+
+				if (!context.Theme.ResolveAttribute(global::Android.Resource.Attribute.ColorActivatedHighlight, value, true))
 				{
 					return null;
 				}
-			
+
 				var color = Color.FromUint((uint)value.Data);
 				var colorDrawable = new ColorDrawable(color.ToAndroid());
 

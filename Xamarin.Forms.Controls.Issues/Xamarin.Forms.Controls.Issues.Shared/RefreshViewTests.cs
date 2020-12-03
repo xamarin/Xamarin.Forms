@@ -1,8 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Controls.Issues
 			bool canExecute = true;
 			_refreshCommand = new Command(async (parameter) =>
 			{
-				if(!_refreshView.IsRefreshing)
+				if (!_refreshView.IsRefreshing)
 				{
 					throw new Exception("IsRefreshing should be true when command executes");
 				}
@@ -140,6 +140,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
+		[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
 		public void IsRefreshingAndCommandTest_SwipeDown()
 		{
 			RunningApp.WaitForElement(q => q.Marked("IsRefreshing: False"));
@@ -152,6 +153,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
+		[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
 		public void RefreshDisablesWithCommand()
 		{
 			RunningApp.WaitForElement("IsRefreshing: False");

@@ -1,7 +1,7 @@
-using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
 using System;
 using System.Threading.Tasks;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.UITest;
@@ -16,6 +16,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.DisplayAlert)]
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
 #endif
 	public class Bugzilla43469 : TestContentPage
 	{

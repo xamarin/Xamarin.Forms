@@ -1,7 +1,8 @@
 using System;
 using Xamarin.Forms.Platform.Tizen.Native;
-using WatchDataTimePickerDialog = Xamarin.Forms.Platform.Tizen.Native.Watch.WatchDataTimePickerDialog;
 using EEntry = ElmSharp.Entry;
+using Specific = Xamarin.Forms.PlatformConfiguration.TizenSpecific.Application;
+using WatchDateTimePickerDialog = Xamarin.Forms.Platform.Tizen.Native.Watch.WatchDateTimePickerDialog;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -25,7 +26,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (Device.Idiom == TargetIdiom.Watch)
 			{
-				return new WatchDataTimePickerDialog(Forms.NativeParent);
+				return new WatchDateTimePickerDialog(Forms.NativeParent);
 			}
 			else
 			{
@@ -38,12 +39,14 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (Control == null)
 			{
 				var entry = CreateNativeControl();
-				entry.SetVerticalTextAlignment("elm.text", 0.5);
+				entry.SetVerticalTextAlignment(0.5);
 				SetNativeControl(entry);
 
 				if (entry is IEntry ie)
 				{
 					ie.TextBlockFocused += OnTextBlockFocused;
+					ie.EntryLayoutFocused += OnFocused;
+					ie.EntryLayoutUnfocused += OnUnfocused;
 				}
 
 				_lazyDialog = new Lazy<IDateTimeDialog>(() =>
@@ -51,6 +54,8 @@ namespace Xamarin.Forms.Platform.Tizen
 					var dialog = CreateDialog();
 					dialog.Title = DialogTitle;
 					dialog.DateTimeChanged += OnDateTimeChanged;
+					dialog.PickerOpened += OnPickerOpened;
+					dialog.PickerClosed += OnPickerClosed;
 					return dialog;
 				});
 			}
@@ -89,11 +94,15 @@ namespace Xamarin.Forms.Platform.Tizen
 					if (Control is IEntry ie)
 					{
 						ie.TextBlockFocused -= OnTextBlockFocused;
+						ie.EntryLayoutFocused -= OnFocused;
+						ie.EntryLayoutUnfocused -= OnUnfocused;
 					}
 				}
 				if (_lazyDialog.IsValueCreated)
 				{
 					_lazyDialog.Value.DateTimeChanged -= OnDateTimeChanged;
+					_lazyDialog.Value.PickerOpened -= OnPickerOpened;
+					_lazyDialog.Value.PickerClosed -= OnPickerClosed;
 					_lazyDialog.Value.Unrealize();
 				}
 			}
@@ -107,9 +116,9 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (Element.IsEnabled)
 			{
 				var dialog = _lazyDialog.Value;
-				dialog.Picker.DateTime = Element.Date;
-				dialog.Picker.MaximumDateTime = Element.MaximumDate;
-				dialog.Picker.MinimumDateTime = Element.MinimumDate;
+				dialog.DateTime = Element.Date;
+				dialog.MaximumDateTime = Element.MaximumDate;
+				dialog.MinimumDateTime = Element.MinimumDate;
 				// You need to call Show() after ui thread occupation because of EFL problem.
 				// Otherwise, the content of the popup will not receive focus.
 				Device.BeginInvokeOnMainThread(() => dialog.Show());
@@ -132,6 +141,27 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (Control is IEntry ie)
 			{
 				ie.TextColor = Element.TextColor.ToNative();
+			}
+		}
+
+		protected virtual void OnPickerOpened(object sender, EventArgs args)
+		{
+			if (Specific.GetUseBezelInteraction(Application.Current))
+			{
+				// picker included in WatchDatePickedDialog has been activated, whenever the dialog is opend.
+				Forms.RotaryFocusObject = Element;
+				Specific.SetActiveBezelInteractionElement(Application.Current, Element);
+			}
+		}
+
+		protected virtual void OnPickerClosed(object sender, EventArgs args)
+		{
+			if (Specific.GetUseBezelInteraction(Application.Current))
+			{
+				if (Forms.RotaryFocusObject == Element)
+					Forms.RotaryFocusObject = null;
+				if (Specific.GetActiveBezelInteractionElement(Application.Current) == Element)
+					Specific.SetActiveBezelInteractionElement(Application.Current, null);
 			}
 		}
 

@@ -1,7 +1,7 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.UITest;
@@ -10,9 +10,12 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 28953, "Device.StartTimer (still) behaves differently on different platforms", PlatformAffected.All)]
-	public class Bugzilla28953 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Bugzilla28953 : TestContentPage // or TestFlyoutPage, etc ...
 	{
 		int count = 0, count2 = 0;
 		Label label2, label3;

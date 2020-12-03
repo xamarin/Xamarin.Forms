@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using AppKit;
+using CoreGraphics;
 using Foundation;
 
 namespace Xamarin.Forms.Platform.MacOS
@@ -89,11 +90,22 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 		bool _disposed;
+		CGSize _previousSize;
 		NSColor _defaultTextColor;
 
 		IElementController ElementController => Element;
 
 		IEntryController EntryController => Element;
+
+		public override void Layout()
+		{
+			base.Layout();
+
+			if (_previousSize != Bounds.Size)
+				SetBackground(Element.Background);
+
+			_previousSize = Bounds.Size;
+		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
 		{
@@ -116,7 +128,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdatePlaceholder();
 			else if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
 				UpdatePassword();
-			else if (e.PropertyName == Entry.TextProperty.PropertyName)
+			else if (e.PropertyName == Entry.TextProperty.PropertyName ||
+				e.PropertyName == Entry.TextTransformProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Entry.TextColorProperty.PropertyName)
 				UpdateColor();
@@ -147,9 +160,20 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (Control == null)
 				return;
-			Control.BackgroundColor = color == Color.Default ? NSColor.Clear : color.ToNSColor();
+			Control.BackgroundColor = color == Color.Default ? ColorExtensions.ControlBackgroundColor : color.ToNSColor();
 
 			base.SetBackgroundColor(color);
+		}
+
+		protected override void SetBackground(Brush brush)
+		{
+			if (Control == null)
+				return;
+
+			var backgroundImage = this.GetBackgroundImage(brush);
+			Control.BackgroundColor = backgroundImage != null ? NSColor.FromPatternImage(backgroundImage) : NSColor.Clear;
+
+			base.SetBackground(brush);
 		}
 
 		protected override void Dispose(bool disposing)
@@ -177,7 +201,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			SetNativeControl(textField);
 
-			_defaultTextColor = textField.TextColor;
+			_defaultTextColor = ColorExtensions.TextColor;
 
 			textField.Changed += OnChanged;
 			textField.EditingBegan += OnEditingBegan;
@@ -264,7 +288,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			ClearControl();
 			CreateControl();
 			UpdateControl();
-			Layout();
+			base.Layout();
 		}
 
 		void UpdateFont()
@@ -287,10 +311,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			var targetColor = Element.PlaceholderColor;
 
-			// Placeholder default color is 70% gray
-			// https://developer.apple.com/library/prerelease/ios/documentation/UIKit/Reference/UITextField_Class/index.html#//apple_ref/occ/instp/UITextField/placeholder
-
-			var color = Element.IsEnabled && !targetColor.IsDefault ? targetColor : ColorExtensions.SeventyPercentGrey.ToColor();
+			var color = Element.IsEnabled && !targetColor.IsDefault ? targetColor : ColorExtensions.PlaceholderColor.ToColor(NSColorSpace.DeviceRGBColorSpace);
 
 			Control.PlaceholderAttributedString = formatted.ToAttributed(Element, color, Element.HorizontalTextAlignment);
 		}
@@ -307,9 +328,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (IsElementOrControlEmpty)
 				return;
 
+      var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
+
 			// ReSharper disable once RedundantCheckBeforeAssignment
-			if (Control.StringValue != Element.Text)
-				Control.StringValue = Element.Text ?? string.Empty;
+			if (Control.StringValue != text)
+				Control.StringValue = text;
 		}
 
 		void UpdateMaxLength()

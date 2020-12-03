@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 
 using Xamarin.Forms;
+using Xamarin.Forms.Build.Tasks;
 using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
@@ -39,10 +40,14 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			[TestCase(true)]
 			public void BetterExceptionReport(bool useCompiledXaml)
 			{
-				if(useCompiledXaml) {
-					try {
+				if (useCompiledXaml)
+				{
+					try
+					{
 						MockCompiler.Compile(typeof(Gh4099));
-					} catch (XamlParseException xpe) {
+					}
+					catch (BuildException xpe)
+					{
 						Assert.That(xpe.XmlInfo.LineNumber, Is.EqualTo(5));
 						Assert.Pass();
 					}

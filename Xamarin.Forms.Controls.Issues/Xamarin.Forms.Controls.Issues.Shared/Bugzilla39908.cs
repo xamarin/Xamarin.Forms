@@ -10,9 +10,12 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 39908, " Back button hit quickly results in jumbled pages")]
-	public class Bugzilla39908 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Bugzilla39908 : TestContentPage // or TestFlyoutPage, etc ...
 	{
 		protected override void Init()
 		{

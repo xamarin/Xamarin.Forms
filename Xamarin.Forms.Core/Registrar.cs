@@ -48,9 +48,9 @@ namespace Xamarin.Forms.Internals
 
 			for (int i = 0; i < supportedVisuals.Length; i++)
 			{
-				if(visualRenderers.TryGetValue(supportedVisuals[i], out (Type target, short priority) existingTargetValue))
+				if (visualRenderers.TryGetValue(supportedVisuals[i], out (Type target, short priority) existingTargetValue))
 				{
-					if(existingTargetValue.priority <= priority)
+					if (existingTargetValue.priority <= priority)
 						visualRenderers[supportedVisuals[i]] = (trender, priority);
 				}
 				else
@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Internals
 			if (handlerType == null)
 				return null;
 
-			
+
 			return (TRegistrable)DependencyResolver.ResolveOrCreate(handlerType, source, visual?.GetType(), args);
 		}
 
@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Internals
 
 			return GetHandler(type, obj, (obj as IVisualController)?.EffectiveVisual, args) as TOut;
 		}
-		
+
 
 		public Type GetHandlerType(Type viewType) => GetHandlerType(viewType, _defaultVisualType);
 
@@ -193,7 +193,7 @@ namespace Xamarin.Forms.Internals
 				// Only go through this process if we have not registered something for this type;
 				// we don't want RenderWith renderers to override ExportRenderers that are already registered.
 				// Plus, there's no need to do this again if we already have a renderer registered.
-				if (!_handlers.TryGetValue(viewType, out Dictionary<Type, (Type target, short priority)> visualRenderers) || 
+				if (!_handlers.TryGetValue(viewType, out Dictionary<Type, (Type target, short priority)> visualRenderers) ||
 					!(visualRenderers.ContainsKey(visualType) ||
 					  visualRenderers.ContainsKey(_defaultVisualType)))
 				{
@@ -254,7 +254,10 @@ namespace Xamarin.Forms.Internals
 		}
 
 		internal static Dictionary<string, Type> Effects { get; } = new Dictionary<string, Type>();
-		internal static Dictionary<string, IList<StyleSheets.StylePropertyAttribute>> StyleProperties { get; } = new Dictionary<string, IList<StyleSheets.StylePropertyAttribute>>();
+		internal static Dictionary<string, IList<StylePropertyAttribute>> StyleProperties => LazyStyleProperties.Value;
+
+		static bool DisableCSS = false;
+		static readonly Lazy<Dictionary<string, IList<StylePropertyAttribute>>> LazyStyleProperties = new Lazy<Dictionary<string, IList<StylePropertyAttribute>>>(LoadStyleSheets);
 
 		public static IEnumerable<Assembly> ExtraAssemblies { get; set; }
 
@@ -275,24 +278,29 @@ namespace Xamarin.Forms.Internals
 			}
 		}
 
-		public static void RegisterStylesheets()
+		public static void RegisterStylesheets(InitializationFlags flags)
 		{
-			var assembly = typeof(StylePropertyAttribute).GetTypeInfo().Assembly;
+			if ((flags & InitializationFlags.DisableCss) == InitializationFlags.DisableCss)
+				DisableCSS = true;
+		}
 
-#if NETSTANDARD2_0
-			object[] styleAttributes = assembly.GetCustomAttributes(typeof(StylePropertyAttribute), true);
-#else
-			object[] styleAttributes = assembly.GetCustomAttributes(typeof(StyleSheets.StylePropertyAttribute)).ToArray();
-#endif
-			var stylePropertiesLength = styleAttributes.Length;
+		static Dictionary<string, IList<StylePropertyAttribute>> LoadStyleSheets()
+		{
+			var properties = new Dictionary<string, IList<StylePropertyAttribute>>();
+			if (DisableCSS)
+				return properties;
+			var assembly = typeof(StylePropertyAttribute).GetTypeInfo().Assembly;
+			var styleAttributes = assembly.GetCustomAttributesSafe(typeof(StylePropertyAttribute));
+			var stylePropertiesLength = styleAttributes?.Length ?? 0;
 			for (var i = 0; i < stylePropertiesLength; i++)
 			{
 				var attribute = (StylePropertyAttribute)styleAttributes[i];
-				if (StyleProperties.TryGetValue(attribute.CssPropertyName, out var attrList))
+				if (properties.TryGetValue(attribute.CssPropertyName, out var attrList))
 					attrList.Add(attribute);
 				else
-					StyleProperties[attribute.CssPropertyName] = new List<StylePropertyAttribute> { attribute };
+					properties[attribute.CssPropertyName] = new List<StylePropertyAttribute> { attribute };
 			}
+			return properties;
 		}
 
 		public static void RegisterEffects(string resolutionName, ExportEffectAttribute[] effectAttributes)
@@ -332,21 +340,21 @@ namespace Xamarin.Forms.Internals
 			Profile.FramePartition("Reflect");
 			foreach (Assembly assembly in assemblies)
 			{
-				var assemblyName = assembly.GetName().Name;
-				Profile.FrameBegin(assemblyName);
+				string frameName = Profile.IsEnabled ? assembly.GetName().Name : "Assembly";
+				Profile.FrameBegin(frameName);
 
 				foreach (Type attrType in attrTypes)
 				{
 					object[] attributes = assembly.GetCustomAttributesSafe(attrType);
 					if (attributes == null || attributes.Length == 0)
 						continue;
-					
+
 					var length = attributes.Length;
 					for (var i = 0; i < length; i++)
 					{
 						var a = attributes[i];
 						var attribute = a as HandlerAttribute;
-						if(attribute == null && (a is ExportFontAttribute fa))
+						if (attribute == null && (a is ExportFontAttribute fa))
 						{
 							FontRegistrar.Register(fa, assembly);
 						}
@@ -358,10 +366,10 @@ namespace Xamarin.Forms.Internals
 					}
 				}
 
-				object[] effectAttributes = assembly.GetCustomAttributesSafe(typeof (ExportEffectAttribute));
+				object[] effectAttributes = assembly.GetCustomAttributesSafe(typeof(ExportEffectAttribute));
 				if (effectAttributes == null || effectAttributes.Length == 0)
 				{
-					Profile.FrameEnd(assemblyName);
+					Profile.FrameEnd(frameName);
 					continue;
 				}
 
@@ -374,12 +382,10 @@ namespace Xamarin.Forms.Internals
 				Array.Copy(effectAttributes, typedEffectAttributes, effectAttributes.Length);
 				RegisterEffects(resolutionName, typedEffectAttributes);
 
-				Profile.FrameEnd(assemblyName);
+				Profile.FrameEnd(frameName);
 			}
 
-			if ((flags & InitializationFlags.DisableCss) == 0)
-				RegisterStylesheets();
-
+			RegisterStylesheets(flags);
 			Profile.FramePartition("DependencyService.Initialize");
 			DependencyService.Initialize(assemblies);
 

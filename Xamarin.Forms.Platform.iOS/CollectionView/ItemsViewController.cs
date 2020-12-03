@@ -13,12 +13,10 @@ namespace Xamarin.Forms.Platform.iOS
 		public IItemsViewSource ItemsSource { get; protected set; }
 		public TItemsView ItemsView { get; }
 		protected ItemsViewLayout ItemsViewLayout { get; set; }
-		bool _initialConstraintsSet;
+		bool _initialized;
 		bool _isEmpty;
 		bool _emptyViewDisplayed;
 		bool _disposed;
-
-		CGSize _size;
 
 		UIView _emptyUIView;
 		VisualElement _emptyViewFormsElement;
@@ -38,18 +36,16 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			ItemsViewLayout = newLayout;
-			ItemsViewLayout.GetPrototype = GetPrototype;
 
-            Delegator = CreateDelegator();
-			CollectionView.Delegate = Delegator;
+			_initialized = false;
 
-			// Make sure the new layout is sized properly
-			ItemsViewLayout.ConstrainTo(CollectionView.Bounds.Size);
+			EnsureLayoutInitialized();
 
-			CollectionView.SetCollectionViewLayout(ItemsViewLayout, false);
-
-			// Reload the data so the currently visible cells get laid out according to the new layout
-			CollectionView.ReloadData();
+			if (_initialized)
+			{
+				// Reload the data so the currently visible cells get laid out according to the new layout
+				CollectionView.ReloadData();
+			}
 		}
 
 		protected override void Dispose(bool disposing)
@@ -57,18 +53,23 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_disposed)
 				return;
 
+			_disposed = true;
+
 			if (disposing)
 			{
 				ItemsSource?.Dispose();
+
+				CollectionView.Delegate = null;
 				Delegator?.Dispose();
 
 				_emptyUIView?.Dispose();
 				_emptyUIView = null;
-	
-				_emptyViewFormsElement = null;
-			}
 
-			_disposed = true;
+				_emptyViewFormsElement = null;
+
+				ItemsViewLayout?.Dispose();
+				CollectionView?.Dispose();
+			}
 
 			base.Dispose(disposing);
 		}
@@ -92,6 +93,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override nint GetItemsCount(UICollectionView collectionView, nint section)
 		{
+			if (!_initialized)
+			{
+				return 0;
+			}
+
 			CheckForEmptySource();
 
 			return ItemsSource.ItemCountInGroup(section);
@@ -122,10 +128,6 @@ namespace Xamarin.Forms.Platform.iOS
 			base.ViewDidLoad();
 
 			ItemsSource = CreateItemsViewSource();
-			ItemsViewLayout.GetPrototype = GetPrototype;
-
-			Delegator = CreateDelegator();
-			CollectionView.Delegate = Delegator;
 
 			if (!Forms.IsiOS11OrNewer)
 				AutomaticallyAdjustsScrollViewInsets = false;
@@ -144,42 +146,47 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewWillLayoutSubviews()
 		{
 			base.ViewWillLayoutSubviews();
-			
-			// We can't set this constraint up on ViewDidLoad, because Forms does other stuff that resizes the view
+
+			if (!_initialized)
+			{
+				UpdateEmptyView();
+			}
+
+			// We can't set this up during ViewDidLoad, because Forms does other stuff that resizes the view
 			// and we end up with massive layout errors. And View[Will/Did]Appear do not fire for this controller
 			// reliably. So until one of those options is cleared up, we set this flag so that the initial constraints
 			// are set up the first time this method is called.
-			if (!_initialConstraintsSet)
-			{
-				_size = CollectionView.Bounds.Size;
-				ItemsViewLayout.ConstrainTo(_size);
-				UpdateEmptyView();
-				_initialConstraintsSet = true;
-			}
-			else
+			EnsureLayoutInitialized();
+						
+			if(_initialized)
 			{
 				LayoutEmptyView();
 			}
 		}
 
-		
-		public override void ViewDidLayoutSubviews()
+		void EnsureLayoutInitialized() 
 		{
-			base.ViewDidLayoutSubviews();
-			if (CollectionView.Bounds.Size != _size)
+			if (_initialized)
 			{
-				_size = CollectionView.Bounds.Size;
-				BoundsSizeChanged();
+				return;
 			}
-		}
 
-		protected virtual void BoundsSizeChanged()
-		{
-			//We are changing orientation and we need to tell our layout
-			//to update based on new size constrains
-			ItemsViewLayout.ConstrainTo(CollectionView.Bounds.Size);
-			//We call ReloadData so our VisibleCells also update their size
-			CollectionView.ReloadData();
+			if (!ItemsView.IsVisible)
+			{
+				// If the CollectionView starts out invisible, we'll get a layout pass with a size of 1,1 and everything will
+				// go pear-shaped. So until the first time this CollectionView is visible, we do nothing.
+				return;
+			}
+
+			_initialized = true;
+
+			ItemsViewLayout.GetPrototype = GetPrototype;
+
+			Delegator = CreateDelegator();
+			CollectionView.Delegate = Delegator;
+
+			ItemsViewLayout.SetInitialConstraints(CollectionView.Bounds.Size);
+			CollectionView.SetCollectionViewLayout(ItemsViewLayout, false);
 		}
 
 		protected virtual UICollectionViewDelegateFlowLayout CreateDelegator()
@@ -199,8 +206,23 @@ namespace Xamarin.Forms.Platform.iOS
 			CollectionView.CollectionViewLayout.InvalidateLayout();
 		}
 
+		public virtual void UpdateFlowDirection()
+		{
+			CollectionView.UpdateFlowDirection(ItemsView);
+
+			if (ItemsSource?.ItemCount == 0)
+				_emptyUIView?.UpdateFlowDirection(_emptyViewFormsElement);
+
+			Layout.InvalidateLayout();
+		}
+
 		public override nint NumberOfSections(UICollectionView collectionView)
 		{
+			if(!_initialized)
+			{
+				return 0;
+			}
+
 			CheckForEmptySource();
 			return ItemsSource.GroupCount;
 		}
@@ -225,7 +247,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			ItemsViewLayout.PrepareCellForLayout(cell);
 		}
-
+		
 		public virtual NSIndexPath GetIndexForItem(object item)
 		{
 			return ItemsSource.GetIndexForItem(item);
@@ -307,15 +329,20 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual CGRect DetermineEmptyViewFrame() 
 		{
 			return new CGRect(CollectionView.Frame.X, CollectionView.Frame.Y,
-					CollectionView.Frame.Width, CollectionView.Frame.Height);
+				CollectionView.Frame.Width, CollectionView.Frame.Height);
 		}
 
 		void LayoutEmptyView()
 		{
-			var frame = DetermineEmptyViewFrame();	
+			if (_emptyUIView == null)
+			{
+				UpdateEmptyView();
+				return;
+			}
 
-			if (_emptyUIView != null)
-				_emptyUIView.Frame = frame;
+			var frame = DetermineEmptyViewFrame();
+
+			_emptyUIView.Frame = frame;
 
 			if (_emptyViewFormsElement != null && ItemsView.LogicalChildren.Contains(_emptyViewFormsElement))
 				_emptyViewFormsElement.Layout(frame.ToRectangle());
@@ -382,7 +409,10 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				_emptyUIView.Tag = EmptyTag;
-				CollectionView.AddSubview(_emptyUIView);
+
+				var collectionViewContainer = CollectionView.Superview;
+				collectionViewContainer.AddSubview(_emptyUIView);
+
 				LayoutEmptyView();
 
 				if (_emptyViewFormsElement != null)
@@ -405,6 +435,9 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_emptyViewDisplayed)
 				{
 					_emptyUIView.RemoveFromSuperview();
+					_emptyUIView.Dispose();
+					_emptyUIView = null;
+
 					ItemsView.RemoveLogicalChild(_emptyViewFormsElement);
 				}
 

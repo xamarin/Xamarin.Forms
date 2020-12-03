@@ -5,6 +5,9 @@ using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1707, "[Enhancement] Drop shadow support for iOS", PlatformAffected.iOS)]
 	public class Issue1707 : ContentPage
@@ -17,7 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var layout = new StackLayout();
 			var box = new BoxView();
 			box.Color = Color.Aqua;
-			
+
 			box.On<iOS>().SetIsShadowEnabled(true);
 			box.On<iOS>().SetShadowOffset(new Size(10, 10));
 			box.On<iOS>().SetShadowColor(Color.Purple);

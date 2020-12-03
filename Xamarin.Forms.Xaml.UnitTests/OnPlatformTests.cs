@@ -1,6 +1,5 @@
-﻿using NUnit.Framework;
-using System;
-
+﻿using System;
+using NUnit.Framework;
 using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
@@ -23,7 +22,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		}
 
 		[Test]
-		public void ApplyToProperty ()
+		public void ApplyToProperty()
 		{
 			var xaml = @"
 			<ContentPage 
@@ -36,12 +35,12 @@ namespace Xamarin.Forms.Xaml.UnitTests
 					<OnPlatform.WinPhone><Button Text=""WinPhone""/></OnPlatform.WinPhone>
 				</OnPlatform>
 			</ContentPage>";
-			var layout = new ContentPage ().LoadFromXaml (xaml);
-			Assert.NotNull (layout.Content);
+			var layout = new ContentPage().LoadFromXaml(xaml);
+			Assert.NotNull(layout.Content);
 		}
 
 		[Test]
-		public void UseTypeConverters ()
+		public void UseTypeConverters()
 		{
 			var xaml = @"
 			<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -65,21 +64,21 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			ContentPage layout;
 
 			((MockPlatformServices)Device.PlatformServices).RuntimePlatform = Device.iOS;
-			layout = new ContentPage ().LoadFromXaml (xaml);
-			Assert.AreEqual (new Thickness (0, 20, 0, 0), layout.Padding);
+			layout = new ContentPage().LoadFromXaml(xaml);
+			Assert.AreEqual(new Thickness(0, 20, 0, 0), layout.Padding);
 
 			((MockPlatformServices)Device.PlatformServices).RuntimePlatform = Device.Android;
-			layout = new ContentPage ().LoadFromXaml (xaml);
-			Assert.AreEqual (new Thickness (0, 0, 10, 0), layout.Padding);
+			layout = new ContentPage().LoadFromXaml(xaml);
+			Assert.AreEqual(new Thickness(0, 0, 10, 0), layout.Padding);
 
 			((MockPlatformServices)Device.PlatformServices).RuntimePlatform = Device.UWP;
-			layout = new ContentPage ().LoadFromXaml (xaml);
-			Assert.AreEqual (new Thickness (0, 20, 0, 20), layout.Padding);
+			layout = new ContentPage().LoadFromXaml(xaml);
+			Assert.AreEqual(new Thickness(0, 20, 0, 20), layout.Padding);
 		}
 
 		[Test]
 		//Issue 1480
-		public void TypeConverterAndDerivedTypes ()
+		public void TypeConverterAndDerivedTypes()
 		{
 			var xaml = @"
 			<Image xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -96,8 +95,8 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Image image;
 
 			((MockPlatformServices)Device.PlatformServices).RuntimePlatform = Device.iOS;
-			image = new Image ().LoadFromXaml (xaml);
-			Assert.AreEqual ("icon_twitter.png", (image.Source as FileImageSource).File);
+			image = new Image().LoadFromXaml(xaml);
+			Assert.AreEqual("icon_twitter.png", (image.Source as FileImageSource).File);
 		}
 	}
 
@@ -105,7 +104,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	public class OnIdiomTests : BaseTestFixture
 	{
 		[Test]
-		public void StackLayoutOrientation ()
+		public void StackLayoutOrientation()
 		{
 			var xaml = @"
 			<StackLayout 
@@ -121,165 +120,12 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				<Label Text=""child1""/>			
 			</StackLayout>";
 			Device.Idiom = TargetIdiom.Phone;
-			var layout = new StackLayout ().LoadFromXaml (xaml);
-			Assert.AreEqual (StackOrientation.Vertical, layout.Orientation);
+			var layout = new StackLayout().LoadFromXaml(xaml);
+			Assert.AreEqual(StackOrientation.Vertical, layout.Orientation);
 
 			Device.Idiom = TargetIdiom.Tablet;
-			layout = new StackLayout ().LoadFromXaml (xaml);
-			Assert.AreEqual (StackOrientation.Horizontal, layout.Orientation);
+			layout = new StackLayout().LoadFromXaml(xaml);
+			Assert.AreEqual(StackOrientation.Horizontal, layout.Orientation);
 		}
 	}
-
-	[TestFixture]
-	public class OnAppThemeTests : BaseTestFixture
-	{
-		[SetUp]
-		public override void Setup()
-		{
-			base.Setup();
-			Device.SetFlags(new[] { "AppTheme_Experimental" });
-			Application.Current = new MockApplication();
-		}
-
-		[TearDown]
-		public override void TearDown()
-		{
-			Application.Current = null;
-			base.TearDown();
-		}
-
-		[Test]
-		public void OnAppThemeExtensionLightDarkColor()
-		{
-			var xaml = @"
-			<Label 
-			xmlns=""http://xamarin.com/schemas/2014/forms""
-			xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml"" TextColor=""{OnAppTheme Light = Green, Dark = Red}
-			"">This text is green or red depending on Light (or default) or Dark</Label>";
-
-            ((MockPlatformServices)Device.PlatformServices).RequestedTheme = OSAppTheme.Light;
-            var label = new Label().LoadFromXaml(xaml);
-            Assert.AreEqual(Color.Green, label.TextColor);
-
-            ((MockPlatformServices)Device.PlatformServices).RequestedTheme = OSAppTheme.Dark;
-            label = new Label().LoadFromXaml(xaml);
-            Assert.AreEqual(Color.Red, label.TextColor);
-        }
-
-		[Test]
-		public void OnAppThemeLightDarkColor()
-		{
-			var xaml = @"
-			<Label
-			xmlns=""http://xamarin.com/schemas/2014/forms""
-			xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
-			Text=""This text is green or red depending on Light(or default) or Dark"">
-                <Label.TextColor>
-                    <OnAppTheme x:DataType=""Color"" Light=""Green"" Dark=""Red"" />
-				</Label.TextColor>
-			</Label> ";
-
-            ((MockPlatformServices)Device.PlatformServices).RequestedTheme = OSAppTheme.Light;
-            var label = new Label().LoadFromXaml(xaml);
-            Assert.AreEqual(Color.Green, label.TextColor);
-
-            ((MockPlatformServices)Device.PlatformServices).RequestedTheme = OSAppTheme.Dark;
-            label = new Label().LoadFromXaml(xaml);
-            Assert.AreEqual(Color.Red, label.TextColor);
-        }
-
-		[Test]
-		public void OnAppThemeUnspecifiedThemeDefaultsToLightColor()
-		{
-			var xaml = @"
-			<Label
-			xmlns=""http://xamarin.com/schemas/2014/forms""
-			xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
-			Text=""This text is green or red depending on Light(or default) or Dark"">
-                <Label.TextColor>
-                    <OnAppTheme x:DataType=""Color"" Light=""Green"" Dark=""Red"" />
-				</Label.TextColor>
-			</Label> ";
-
-            ((MockPlatformServices)Device.PlatformServices).RequestedTheme = OSAppTheme.Unspecified;
-            var label = new Label().LoadFromXaml(xaml);
-            Assert.AreEqual(Color.Green, label.TextColor);
-        }
-
-		[Test]
-		public void OnAppThemeUnspecifiedLightColorDefaultsToDefault()
-		{
-			var xaml = @"
-			<Label
-			xmlns=""http://xamarin.com/schemas/2014/forms""
-			xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
-			Text=""This text is green or red depending on Light(or default) or Dark"">
-                <Label.TextColor>
-                    <OnAppTheme x:DataType=""Color"" Default=""Green"" Dark=""Red"" />
-				</Label.TextColor>
-			</Label> ";
-
-            ((MockPlatformServices)Device.PlatformServices).RequestedTheme = OSAppTheme.Light;
-            var label = new Label().LoadFromXaml(xaml);
-            Assert.AreEqual(Color.Green, label.TextColor);
-        }
-
-		[Test]
-		public void AppThemeColorLightDark()
-		{
-			var xaml = @"
-			<Label
-			xmlns=""http://xamarin.com/schemas/2014/forms""
-			xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
-			Text=""This text is green or red depending on Light(or default) or Dark"">
-                <Label.TextColor>
-                    <AppThemeColor Light=""Green"" Dark=""Red"" />
-				</Label.TextColor>
-			</Label> ";
-
-            ((MockPlatformServices)Device.PlatformServices).RequestedTheme = OSAppTheme.Light;
-            var label = new Label().LoadFromXaml(xaml);
-            Assert.AreEqual(Color.Green, label.TextColor);
-
-            ((MockPlatformServices)Device.PlatformServices).RequestedTheme = OSAppTheme.Dark;
-            label = new Label().LoadFromXaml(xaml);
-            Assert.AreEqual(Color.Red, label.TextColor);
-        }
-
-		[Test]
-		public void AppThemeColorUnspecifiedThemeDefaultsToLightColor()
-		{
-			var xaml = @"
-			<Label
-			xmlns=""http://xamarin.com/schemas/2014/forms""
-			xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
-			Text=""This text is green or red depending on Light(or default) or Dark"">
-                <Label.TextColor>
-                    <AppThemeColor Light=""Green"" Dark=""Red"" />
-				</Label.TextColor>
-			</Label> ";
-
-            ((MockPlatformServices)Device.PlatformServices).RequestedTheme = OSAppTheme.Unspecified;
-            var label = new Label().LoadFromXaml(xaml);
-            Assert.AreEqual(Color.Green, label.TextColor);
-        }
-
-		[Test]
-		public void AppThemeColorUnspecifiedLightColorDefaultsToDefault()
-		{
-			var xaml = @"
-			<Label
-			xmlns=""http://xamarin.com/schemas/2014/forms""
-			xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
-			Text=""This text is green or red depending on Light(or default) or Dark"">
-                <Label.TextColor>
-                    <AppThemeColor Default=""Green"" Dark=""Red"" />
-				</Label.TextColor>
-			</Label> ";
-
-            ((MockPlatformServices)Device.PlatformServices).RequestedTheme = OSAppTheme.Unspecified;
-            var label = new Label().LoadFromXaml(xaml);
-            Assert.AreEqual(Color.Green, label.TextColor);
-        }
-    }
 }

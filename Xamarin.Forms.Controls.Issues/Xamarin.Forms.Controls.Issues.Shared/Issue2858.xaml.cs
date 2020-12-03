@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 	[Category(UITestCategories.InputTransparent)]
 	[Category(UITestCategories.Gestures)]
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
 #endif
 
 	[Preserve(AllMembers = true)]
@@ -36,10 +37,10 @@ namespace Xamarin.Forms.Controls.Issues
 		int _tapCount = 0;
 #pragma warning restore CS0414
 
-		public Issue2858 ()
+		public Issue2858()
 		{
 #if APP
-			InitializeComponent ();
+			InitializeComponent();
 #endif
 		}
 
@@ -61,7 +62,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			
+
 		}
 
 

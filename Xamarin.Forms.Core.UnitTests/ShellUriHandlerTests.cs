@@ -81,10 +81,10 @@ namespace Xamarin.Forms.Core.UnitTests
 
 
 		[Test]
-		public async Task GlobalRegisterAbsoluteMatching()	
+		public async Task GlobalRegisterAbsoluteMatching()
 		{
 			var shell = new Shell();
-			Routing.RegisterRoute("/seg1/seg2/seg3", typeof(object));			
+			Routing.RegisterRoute("/seg1/seg2/seg3", typeof(object));
 			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("/seg1/seg2/seg3"));
 
 			Assert.AreEqual("app://shell/IMPL_shell/seg1/seg2/seg3", request.Request.FullUri.ToString());
@@ -154,7 +154,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			var request = ShellUriHandler.GetNavigationRequest(shell, CreateUri("//rootlevelcontent1/edit"));
 
-			Assert.AreEqual(1, request.Request.GlobalRoutes.Count);			
+			Assert.AreEqual(1, request.Request.GlobalRoutes.Count);
 			Assert.AreEqual("edit", request.Request.GlobalRoutes.First());
 		}
 
@@ -173,6 +173,52 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.AreEqual(1, request.Request.GlobalRoutes.Count);
 			Assert.AreEqual("edit", request.Request.GlobalRoutes.First());
+		}
+
+		[TestCase(true, 2)]
+		[TestCase(false, 2)]
+		[TestCase(true, 3)]
+		[TestCase(false, 3)]
+		public async Task ShellItemContentRouteWithGlobalRouteRelative(bool modal, int depth)
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem<FlyoutItem>(asImplicit: true, shellItemRoute: "animals", shellContentRoute: "monkeys");
+
+			string route = "monkeys/details";
+
+			if (depth == 3)
+			{
+				route = "animals/monkeys/details";
+			}
+
+			if (modal)
+				Routing.RegisterRoute(route, typeof(ShellModalTests.ModalTestPage));
+			else
+				Routing.RegisterRoute(route, typeof(ContentPage));
+
+			shell.Items.Add(item1);
+
+			await shell.GoToAsync("details");
+			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//animals/monkeys/details"));
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public async Task GotoSameGlobalRoutesCollapsesUriCorrectly(bool modal)
+		{
+			var shell = new Shell();
+			var item1 = CreateShellItem<FlyoutItem>(asImplicit: true, shellItemRoute: "animals", shellContentRoute: "monkeys");
+
+			if (modal)
+				Routing.RegisterRoute("details", typeof(ShellModalTests.ModalTestPage));
+			else
+				Routing.RegisterRoute("details", typeof(ContentPage));
+
+			shell.Items.Add(item1);
+
+			await shell.GoToAsync("details");
+			await shell.GoToAsync("details");
+			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//animals/monkeys/details/details"));
 		}
 
 
@@ -196,7 +242,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		public async Task ShellSectionWithRelativeEdit()
 		{
 			var shell = new Shell();
-			var item1 = CreateShellItem(asImplicit: true, shellContentRoute: "rootlevelcontent1", shellSectionRoute:"section1");
+			var item1 = CreateShellItem(asImplicit: true, shellContentRoute: "rootlevelcontent1", shellSectionRoute: "section1");
 			var editShellContent = CreateShellContent(shellContentRoute: "edit");
 
 
@@ -237,14 +283,14 @@ namespace Xamarin.Forms.Core.UnitTests
 		public async Task ShellSectionAndContentOnly()
 		{
 			var shell = new Shell();
-			var item1 = CreateShellItem(asImplicit: true, shellContentRoute: "rootlevelcontent", shellSectionRoute:"section1");
+			var item1 = CreateShellItem(asImplicit: true, shellContentRoute: "rootlevelcontent", shellSectionRoute: "section1");
 			var item2 = CreateShellItem(asImplicit: true, shellContentRoute: "rootlevelcontent", shellSectionRoute: "section2");
 
 			shell.Items.Add(item1);
 			shell.Items.Add(item2);
 
 
-			var builders = ShellUriHandler.GenerateRoutePaths(shell, CreateUri("//section1/rootlevelcontent")).Select(x=> x.PathNoImplicit).ToArray();
+			var builders = ShellUriHandler.GenerateRoutePaths(shell, CreateUri("//section1/rootlevelcontent")).Select(x => x.PathNoImplicit).ToArray();
 
 			Assert.AreEqual(1, builders.Length);
 			Assert.IsTrue(builders.Contains("//section1/rootlevelcontent"));
@@ -297,6 +343,20 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public async Task RelativeNavigationToShellElementThrows()
+		{
+			var shell = new Shell();
+
+			var item1 = CreateShellItem(asImplicit: true, shellContentRoute: "dogs");
+			var item2 = CreateShellItem(asImplicit: true, shellSectionRoute: "domestic", shellContentRoute: "cats", shellItemRoute: "animals");
+
+			shell.Items.Add(item1);
+			shell.Items.Add(item2);
+
+			Assert.That(async () => await shell.GoToAsync($"domestic"), Throws.Exception);
+		}
+
+		[Test]
 		public async Task RelativeNavigationWithRoute()
 		{
 			var shell = new Shell();
@@ -318,7 +378,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			//	);
 
 		}
-
 
 		[Test]
 		public async Task ConvertToStandardFormat()
@@ -348,16 +407,16 @@ namespace Xamarin.Forms.Core.UnitTests
 			};
 
 
-			foreach(var uri in TestUris)
+			foreach (var uri in TestUris)
 			{
 				Assert.AreEqual(new Uri("app://shell/IMPL_shell/path"), ShellUriHandler.ConvertToStandardFormat(shell, uri), $"{uri}");
 
-				if(!uri.IsAbsoluteUri)
+				if (!uri.IsAbsoluteUri)
 				{
 					var reverse = new Uri(uri.OriginalString.Replace("/", "\\"), UriKind.Relative);
 					Assert.AreEqual(new Uri("app://shell/IMPL_shell/path"), ShellUriHandler.ConvertToStandardFormat(shell, reverse));
 				}
-				
+
 			}
 		}
 	}

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Threading;
 
 #if UITEST
 using Xamarin.UITest;
@@ -11,6 +11,9 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 43941, "Memory leak with ListView's RecycleElement on iOS", PlatformAffected.iOS)]
 	public class Bugzilla43941 : TestNavigationPage
@@ -42,7 +45,7 @@ namespace Xamarin.Forms.Controls.Issues
 				return RunningApp.Query("Counter: 0");
 			});
 
-			
+
 		}
 #endif
 	}

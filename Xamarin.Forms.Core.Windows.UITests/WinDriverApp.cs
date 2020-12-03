@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
+using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium.Windows;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Remote;
+using Xamarin.Forms.Controls.Issues;
 using Xamarin.UITest;
 using Xamarin.UITest.Queries;
 using Xamarin.UITest.Queries.Tokens;
@@ -21,6 +26,7 @@ namespace Xamarin.Forms.Core.UITests
 	public class WinDriverApp : IApp
 	{
 		public const string AppName = "Xamarin.Forms.ControlGallery.WindowsUniversal";
+		public static TimeSpan DefaultTimeout = TimeSpan.FromSeconds(15);
 
 		readonly Dictionary<string, string> _controlNameToTag = new Dictionary<string, string>
 		{
@@ -52,19 +58,40 @@ namespace Xamarin.Forms.Core.UITests
 			TestServer = new WindowsTestServer(_session, this);
 		}
 
+		public bool RestartIfAppIsClosed()
+		{
+			try
+			{
+				var handle = _session.CurrentWindowHandle;
+				return false;
+			}
+			catch
+			{
+				RestartFromCrash();
+			}
+
+			return true;
+		}
+
 		public void RestartFromCrash()
 		{
 			Init(WindowsTestBase.CreateWindowsDriver());
 		}
 
+		public void RestartApp()
+		{
+			_session.CloseApp();
+			Init(WindowsTestBase.CreateWindowsDriver());
+		}
+
 		public void Back()
 		{
-			QueryWindows("Back").First().Click();
+			QueryWindows("Back", true).First().Click();
 		}
 
 		public void ClearText(Func<AppQuery, AppQuery> query)
 		{
-			QueryWindows(query).First().Clear();
+			SwapInUsefulElement(QueryWindows(query, true).First()).Clear();
 		}
 
 		public void ClearText(Func<AppQuery, AppWebQuery> query)
@@ -74,7 +101,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		public void ClearText(string marked)
 		{
-			QueryWindows(marked).First().Clear();
+			SwapInUsefulElement(QueryWindows(marked, true).First()).Clear();
 		}
 
 		public void ClearText()
@@ -106,12 +133,29 @@ namespace Xamarin.Forms.Core.UITests
 
 		public void DragAndDrop(Func<AppQuery, AppQuery> from, Func<AppQuery, AppQuery> to)
 		{
-			throw new NotImplementedException();
+			DragAndDrop(
+				FindFirstElement(WinQuery.FromQuery(from)),
+				FindFirstElement(WinQuery.FromQuery(to))
+			);
 		}
 
 		public void DragAndDrop(string from, string to)
 		{
-			throw new NotImplementedException();
+			DragAndDrop(
+				FindFirstElement(WinQuery.FromMarked(from)),
+				FindFirstElement(WinQuery.FromMarked(to))
+			);
+		}
+
+		public void DragAndDrop(WindowsElement fromElement, WindowsElement toElement)
+		{
+			//Action Drag and Drop doesn't appear to work
+			// https://github.com/microsoft/WinAppDriver/issues/1223
+
+			var action = new Actions(_session);
+			action.MoveToElement(fromElement).Build().Perform();
+			action.ClickAndHold(fromElement).MoveByOffset(toElement.Location.X, toElement.Location.Y).Build().Perform();
+			action.Release().Perform();
 		}
 
 		public void DragCoordinates(float fromX, float fromY, float toX, float toY)
@@ -126,16 +170,88 @@ namespace Xamarin.Forms.Core.UITests
 					.Perform();
 		}
 
+		public string ReadSelectorPicker(string marked, string flyoutPresenterName, string seperator, string[] selectors)
+		{
+			WaitForAtLeastOne(() => QueryWindows(marked))[0].SendKeys(Keys.Space);
+			var LTRCharacter = Convert.ToChar(8206);
+			var RTLCharacter = Convert.ToChar(8207);
+			var pickerFlyout = _session.FindElementByAccessibilityId(flyoutPresenterName);
+			List<string> stringSelectors = new List<string>();
+
+			foreach (var selector in selectors)
+				ReadSelector(selector, stringSelectors);
+
+			pickerFlyout.FindElementByAccessibilityId("AcceptButton").Click();
+			return String.Join(seperator, stringSelectors);
+
+			void ReadSelector(string marked, List<string> data)
+			{
+				try
+				{
+					var text = RemoveExtraCharacters(pickerFlyout.FindElementByAccessibilityId(marked).Text);
+					data.Add(text);
+				}
+				catch
+				{
+					// when the control isn't found an exception is thrown
+				}
+			}
+
+			string RemoveExtraCharacters(string text)
+			{
+				return
+					new String(text
+						.ToCharArray()
+						.Where(c => c != LTRCharacter && c != RTLCharacter)
+						.ToArray());
+			}
+		}
+
+		public string ReadDatePicker(string marked)
+		{
+			return ReadSelectorPicker(
+				marked,
+				"DatePickerFlyoutPresenter",
+				",",
+				new[] {
+					"DayLoopingSelector",
+					"MonthLoopingSelector",
+					"YearLoopingSelector",
+				});
+		}
+
+		public string ReadTimePicker(string marked)
+		{
+			return ReadSelectorPicker(
+				marked,
+				"TimePickerFlyoutPresenter",
+				":",
+				new[] {
+					"HourLoopingSelector",
+					"MinuteLoopingSelector",
+					"PeriodLoopingSelector",
+				});
+		}
+
+		static RemoteWebElement SwapInUsefulElement(WindowsElement element)
+		{
+			// AutoSuggestBox on UWP has some interaction issues with WebDriver
+			// The AutomationID is set on the control group not the actual TextBox
+			// This retrieves the actual TextBox which makes the behavior more consistent
+			var isAutoSuggest = element?.FindElementsByXPath("//*[contains(@AutomationId,'_AutoSuggestBox')]")?.FirstOrDefault();
+			return isAutoSuggest ?? element;
+		}
+
 		public void EnterText(Func<AppQuery, AppQuery> query, string text)
 		{
-			var result = QueryWindows(query).First();
-			result.SendKeys(text);
+			var result = QueryWindows(query, true).First();
+			SwapInUsefulElement(result).SendKeys(text);
 		}
 
 		public void EnterText(string marked, string text)
 		{
-			var results = QueryWindows(marked).First();
-			results.SendKeys(text);
+			var result = QueryWindows(marked, true).First();
+			SwapInUsefulElement(result).SendKeys(text);
 		}
 
 		public void EnterText(Func<AppQuery, AppWebQuery> query, string text)
@@ -167,6 +283,26 @@ namespace Xamarin.Forms.Core.UITests
 				// devices later. So we're going to use the back door.
 				ContextClick(arguments[0].ToString());
 				return null;
+			}
+
+			if (methodName == "hasInternetAccess")
+			{
+				try
+				{
+					using (var httpClient = new System.Net.Http.HttpClient())
+					using (var httpResponse = httpClient.GetAsync(@"https://www.github.com"))
+					{
+						httpResponse.Wait();
+						if (httpResponse.Result.StatusCode == System.Net.HttpStatusCode.OK)
+							return true;
+						else
+							return false;
+					}
+				}
+				catch
+				{
+					return false;
+				}
 			}
 
 			return null;
@@ -289,12 +425,23 @@ namespace Xamarin.Forms.Core.UITests
 
 		public FileInfo Screenshot(string title)
 		{
-			// TODO hartez 2017/07/18 10:16:56 Verify that this is working; seems a bit too simple	
-			string filename = $"{title}.png";
-
-			Screenshot screenshot = _session.GetScreenshot();
-			screenshot.SaveAsFile(filename, ScreenshotImageFormat.Png);
-			return new FileInfo(filename);
+			try
+			{
+				string filename = $"{title}.png";
+				Screenshot screenshot = _session.GetScreenshot();
+				screenshot.SaveAsFile(filename, ScreenshotImageFormat.Png);
+				var file = new FileInfo(filename);
+				return file;
+			}
+			catch (OpenQA.Selenium.WebDriverException we)
+			when (we.IsWindowClosedException())
+			{
+				return null;
+			}
+			catch (Exception exception)
+			{
+				throw;
+			}
 		}
 
 		public void ScrollDown(Func<AppQuery, AppQuery> withinQuery = null, ScrollStrategy strategy = ScrollStrategy.Auto,
@@ -556,7 +703,9 @@ namespace Xamarin.Forms.Core.UITests
 			TimeSpan? timeout = null, TimeSpan? retryFrequency = null, TimeSpan? postTimeout = null)
 		{
 			Func<ReadOnlyCollection<WindowsElement>> result = () => QueryWindows(marked);
-			return WaitForAtLeastOne(result, timeoutMessage, timeout, retryFrequency).Select(ToAppResult).ToArray();
+			var results = WaitForAtLeastOne(result, timeoutMessage, timeout, retryFrequency).Select(ToAppResult).ToArray();
+
+			return results;
 		}
 
 		public AppWebResult[] WaitForElement(Func<AppQuery, AppWebQuery> query,
@@ -564,6 +713,15 @@ namespace Xamarin.Forms.Core.UITests
 			TimeSpan? timeout = null, TimeSpan? retryFrequency = null, TimeSpan? postTimeout = null)
 		{
 			throw new NotImplementedException();
+		}
+
+		public AppResult WaitForFirstElement(string marked, string timeoutMessage = "Timed out waiting for element...",
+			TimeSpan? timeout = null, TimeSpan? retryFrequency = null)
+		{
+			Func<ReadOnlyCollection<WindowsElement>> result = () => QueryWindows(marked, true);
+			return WaitForAtLeastOne(result, timeoutMessage, timeout, retryFrequency)
+				.Select(ToAppResult)
+				.FirstOrDefault();
 		}
 
 		public void WaitForNoElement(Func<AppQuery, AppQuery> query,
@@ -590,7 +748,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		public void ContextClick(string marked)
 		{
-			WindowsElement element = QueryWindows(marked).First();
+			WindowsElement element = QueryWindows(marked, true).First();
 			PointF point = ElementToClickablePoint(element);
 
 			MouseClickAt(point.X, point.Y, ClickType.ContextClick);
@@ -621,11 +779,11 @@ namespace Xamarin.Forms.Core.UITests
 					actions.DoubleClick();
 					break;
 				case ClickType.ContextClick:
-					actions.ContextClick();					
+					actions.ContextClick();
 					break;
 				case ClickType.SingleClick:
 				default:
-					actions.Click();					
+					actions.Click();
 					break;
 			}
 
@@ -643,7 +801,7 @@ namespace Xamarin.Forms.Core.UITests
 			{
 				ProcessException();
 			}
-			catch(WebDriverException)
+			catch (WebDriverException)
 			{
 				ProcessException();
 			}
@@ -710,11 +868,13 @@ namespace Xamarin.Forms.Core.UITests
 
 		WindowsElement FindFirstElement(WinQuery query)
 		{
-			Func<ReadOnlyCollection<WindowsElement>> fquery = () => QueryWindows(query);
+			Func<ReadOnlyCollection<WindowsElement>> fquery =
+				() => QueryWindows(query, true);
 
 			string timeoutMessage = $"Timed out waiting for element: {query.Raw}";
 
-			ReadOnlyCollection<WindowsElement> results = WaitForAtLeastOne(fquery, timeoutMessage);
+			ReadOnlyCollection<WindowsElement> results =
+				WaitForAtLeastOne(fquery, timeoutMessage);
 
 			WindowsElement element = results.FirstOrDefault();
 
@@ -786,7 +946,12 @@ namespace Xamarin.Forms.Core.UITests
 			}
 
 			ReadOnlyCollection<WindowsElement> candidates = QueryWindows(AppName);
-			_viewPort = candidates[3]; // We really just want the viewport; skip the full window, title bar, min/max buttons...
+
+			// When you go full screen there are less candidates because certain elements go away on the window
+			if (candidates.Count >= 4)
+				_viewPort = candidates[3]; // We really just want the viewport; skip the full window, title bar, min/max buttons...
+			else
+				_viewPort = candidates.Last();
 
 			int xOffset = _viewPort.Coordinates.LocationInViewport.X;
 
@@ -818,12 +983,18 @@ namespace Xamarin.Forms.Core.UITests
 			new Actions(_session).MoveToElement(viewPort, xOffset, yOffset);
 		}
 
-		ReadOnlyCollection<WindowsElement> QueryWindows(WinQuery query)
+		ReadOnlyCollection<WindowsElement> QueryWindows(WinQuery query, bool findFirst = false)
 		{
-			ReadOnlyCollection<WindowsElement> resultByAccessibilityId = _session.FindElementsByAccessibilityId(query.Marked);
-			ReadOnlyCollection<WindowsElement> resultByName = _session.FindElementsByName(query.Marked);
+			var resultByAccessibilityId = _session.FindElementsByAccessibilityId(query.Marked);
+			ReadOnlyCollection<WindowsElement> resultByName = null;
 
-			IEnumerable<WindowsElement> result = resultByAccessibilityId.Concat(resultByName);
+			if (!findFirst || resultByAccessibilityId.Count == 0)
+				resultByName = _session.FindElementsByName(query.Marked);
+
+			IEnumerable<WindowsElement> result = resultByAccessibilityId;
+
+			if (resultByName != null)
+				result = result.Concat(resultByName);
 
 			// TODO hartez 2017/10/30 09:47:44 Should this be == "*" || == "TextBox"?	
 			// what about other controls where we might be looking by content? TextBlock?
@@ -837,16 +1008,16 @@ namespace Xamarin.Forms.Core.UITests
 			return FilterControlType(result, query.ControlType);
 		}
 
-		ReadOnlyCollection<WindowsElement> QueryWindows(string marked)
+		ReadOnlyCollection<WindowsElement> QueryWindows(string marked, bool findFirst = false)
 		{
 			WinQuery winQuery = WinQuery.FromMarked(marked);
-			return QueryWindows(winQuery);
+			return QueryWindows(winQuery, findFirst);
 		}
 
-		ReadOnlyCollection<WindowsElement> QueryWindows(Func<AppQuery, AppQuery> query)
+		ReadOnlyCollection<WindowsElement> QueryWindows(Func<AppQuery, AppQuery> query, bool findFirst = false)
 		{
 			WinQuery winQuery = WinQuery.FromQuery(query);
-			return QueryWindows(winQuery);
+			return QueryWindows(winQuery, findFirst);
 		}
 
 		void Scroll(WinQuery query, bool down)
@@ -887,7 +1058,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		void ScrollTo(WinQuery toQuery, WinQuery withinQuery, TimeSpan? timeout = null, bool down = true)
 		{
-			timeout = timeout ?? TimeSpan.FromSeconds(5);
+			timeout = timeout ?? DefaultTimeout;
 			DateTime start = DateTime.Now;
 
 			while (true)
@@ -969,7 +1140,7 @@ namespace Xamarin.Forms.Core.UITests
 			{
 				Rect = ToAppRect(windowsElement),
 				Label = windowsElement.Id, // Not entirely sure about this one
-				Description = windowsElement.Text, // or this one
+				Description = SwapInUsefulElement(windowsElement).Text, // or this one
 				Enabled = windowsElement.Enabled,
 				Id = windowsElement.Id
 			};
@@ -980,7 +1151,7 @@ namespace Xamarin.Forms.Core.UITests
 			string timeoutMessage = null,
 			TimeSpan? timeout = null, TimeSpan? retryFrequency = null)
 		{
-			timeout = timeout ?? TimeSpan.FromSeconds(5);
+			timeout = timeout ?? DefaultTimeout;
 			retryFrequency = retryFrequency ?? TimeSpan.FromMilliseconds(500);
 			timeoutMessage = timeoutMessage ?? "Timed out on query.";
 
@@ -1007,9 +1178,13 @@ namespace Xamarin.Forms.Core.UITests
 
 		static ReadOnlyCollection<WindowsElement> WaitForAtLeastOne(Func<ReadOnlyCollection<WindowsElement>> query,
 			string timeoutMessage = null,
-			TimeSpan? timeout = null, TimeSpan? retryFrequency = null)
+			TimeSpan? timeout = null,
+			TimeSpan? retryFrequency = null)
 		{
-			return Wait(query, i => i > 0, timeoutMessage, timeout, retryFrequency);
+			var results = Wait(query, i => i > 0, timeoutMessage, timeout, retryFrequency);
+
+
+			return results;
 		}
 
 		void WaitForNone(Func<ReadOnlyCollection<WindowsElement>> query,

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using NUnit.Framework;
-
-using Xamarin.Forms.Core.UnitTests;
 using Xamarin.Forms;
+using Xamarin.Forms.Build.Tasks;
+using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {
@@ -40,7 +39,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void ErrorOnMissingBindingTarget(bool useCompiledXaml)
 			{
 				if (useCompiledXaml)
-					Assert.Throws<XamlParseException>(()=> MockCompiler.Compile(typeof(Gh2517)));
+					Assert.Throws<BuildException>(() => MockCompiler.Compile(typeof(Gh2517)));
 			}
 		}
 	}

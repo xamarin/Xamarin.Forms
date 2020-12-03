@@ -84,6 +84,10 @@ namespace Xamarin.Forms.Platform.iOS
 			if (measured.Height < minHeight)
 				measured.Height = minHeight;
 
+			var titleHeight = control.TitleLabel.Frame.Height;
+			if (titleHeight > measured.Height)
+				measured.Height = titleHeight;
+
 			return measured;
 		}
 
@@ -93,6 +97,39 @@ namespace Xamarin.Forms.Platform.iOS
 			_ = UpdateImageAsync();
 			UpdateText();
 			UpdateEdgeInsets();
+			UpdateLineBreakMode();
+		}
+
+		void UpdateLineBreakMode()
+		{
+			var control = Control;
+
+			if (_disposed || _renderer == null || _element == null || control == null)
+				return;
+
+			switch (_element.LineBreakMode)
+			{
+				case LineBreakMode.NoWrap:
+					control.LineBreakMode = UILineBreakMode.Clip;
+					break;
+				case LineBreakMode.WordWrap:
+					control.LineBreakMode = UILineBreakMode.WordWrap;
+					break;
+				case LineBreakMode.CharacterWrap:
+					control.LineBreakMode = UILineBreakMode.CharacterWrap;
+					break;
+				case LineBreakMode.HeadTruncation:
+					control.LineBreakMode = UILineBreakMode.HeadTruncation;
+					break;
+				case LineBreakMode.TailTruncation:
+					control.LineBreakMode = UILineBreakMode.TailTruncation;
+					break;
+				case LineBreakMode.MiddleTruncation:
+					control.LineBreakMode = UILineBreakMode.MiddleTruncation;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
 		}
 
 		public void SetImage(UIImage image)
@@ -144,12 +181,15 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Button.ImageSourceProperty.PropertyName)
 				_ = UpdateImageAsync();
 			else if (e.PropertyName == Button.TextProperty.PropertyName ||
+					 e.PropertyName == Button.TextTransformProperty.PropertyName ||
 					 e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Button.ContentLayoutProperty.PropertyName)
 				UpdateEdgeInsets();
 			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName && _borderAdjustsPadding)
 				UpdateEdgeInsets();
+			else if (e.PropertyName == Button.LineBreakModeProperty.PropertyName)
+				UpdateLineBreakMode();
 		}
 
 		internal void UpdateText()
@@ -161,19 +201,23 @@ namespace Xamarin.Forms.Platform.iOS
 			if (control == null)
 				return;
 
+			var transformedText = _element.UpdateFormsText(_element.Text, _element.TextTransform);
+
+			control.SetTitle(transformedText, UIControlState.Normal);
+
 			var normalTitle = control
 				.GetAttributedTitle(UIControlState.Normal);
 
 			if (_element.CharacterSpacing == 0 && normalTitle == null)
 			{
-				control.SetTitle(_element.Text, UIControlState.Normal);
+				control.SetTitle(transformedText, UIControlState.Normal);
 				return;
 			}
 
 			if (control.Title(UIControlState.Normal) != null)
 				control.SetTitle(null, UIControlState.Normal);
 
-			string text = _element.Text ?? string.Empty;
+			string text = transformedText ?? string.Empty;
 			var colorRange = new NSRange(0, text.Length);
 
 			var normal =

@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Platform.UWP;
 using WColor = Windows.UI.Color;
+using WSolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 
 namespace Xamarin.Forms.Platform.UAP.UnitTests
 {
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Platform.UAP.UnitTests
 		{
 			if (control is FormsButton button)
 			{
-				return (button.BackgroundColor as SolidColorBrush).Color;
+				return (button.BackgroundColor as WSolidColorBrush).Color;
 			}
 
 			if (control is StepperControl stepper)
@@ -39,17 +39,17 @@ namespace Xamarin.Forms.Platform.UAP.UnitTests
 				return stepper.ButtonBackgroundColor.ToWindowsColor();
 			}
 
-			return (control.Background as SolidColorBrush).Color;
+			return (control.Background as WSolidColorBrush).Color;
 		}
 
 		WColor GetBackgroundColor(Panel panel)
 		{
-			return (panel.Background as SolidColorBrush).Color;
+			return (panel.Background as WSolidColorBrush).Color;
 		}
 
 		WColor GetBackgroundColor(Border border)
 		{
-			return (border.Background as SolidColorBrush).Color;
+			return (border.Background as WSolidColorBrush).Color;
 		}
 
 		async Task<WColor> GetNativeColor(View view)
@@ -96,7 +96,25 @@ namespace Xamarin.Forms.Platform.UAP.UnitTests
 				var renderer = GetRenderer(frame);
 				var nativeElement = renderer.GetNativeElement() as Border;
 
-				var backgroundBrush = nativeElement.Background as SolidColorBrush;
+				var backgroundBrush = nativeElement.Background as WSolidColorBrush;
+				return backgroundBrush.Color;
+			});
+
+			Assert.That(actualColor, Is.EqualTo(expectedColor));
+		}
+
+		[Test, Category("Color"), Category("BoxView")]
+		public async Task BoxViewColorConsistent() 
+		{
+			var box = new BoxView() { Color = Color.PapayaWhip };
+			var expectedColor = box.Color.ToWindowsColor();
+
+			var actualColor = await Device.InvokeOnMainThreadAsync(() =>
+			{
+				var renderer = GetRenderer(box);
+				var nativeElement = renderer.GetNativeElement() as Border;
+
+				var backgroundBrush = nativeElement.Background as WSolidColorBrush;
 				return backgroundBrush.Color;
 			});
 

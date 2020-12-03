@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
 using Android.Views;
+using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 using Object = Java.Lang.Object;
-using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _initialUpdateNeeded = true;
 		bool _layoutNeeded;
 		IVisualElementRenderer _renderer;
-
+		AttachTracker _attachTracker;
 		public VisualElementTracker(IVisualElementRenderer renderer)
 		{
 			_batchCommittedHandler = HandleRedrawNeeded;
@@ -37,7 +37,15 @@ namespace Xamarin.Forms.Platform.Android
 
 			renderer.View.SetCameraDistance(3600);
 
-			renderer.View.AddOnAttachStateChangeListener(AttachTracker.Instance);
+			if (!_context.IsDesignerContext())
+			{
+				_attachTracker = AttachTracker.Instance;
+				renderer.View.AddOnAttachStateChangeListener(_attachTracker);
+			}
+			else
+			{
+				_attachTracker = new AttachTracker();
+			}
 		}
 
 		public void Dispose()
@@ -60,7 +68,13 @@ namespace Xamarin.Forms.Platform.Android
 				if (_renderer != null)
 				{
 					_renderer.ElementChanged -= RendererOnElementChanged;
-					_renderer.View.RemoveOnAttachStateChangeListener(AttachTracker.Instance);
+
+					if (_renderer.View.IsAlive() && _attachTracker.IsAlive())
+					{
+						_renderer.View.RemoveOnAttachStateChangeListener(_attachTracker);
+						_attachTracker = null;
+					}
+
 					_renderer = null;
 					_context = null;
 				}
@@ -104,6 +118,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateClipToBounds();
 			}
+
+			UpdateClip();
 
 			Performance.Stop(reference);
 
@@ -168,6 +184,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateTranslationY();
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateIsEnabled();
+			else if (e.PropertyName == VisualElement.ClipProperty.PropertyName)
+				UpdateClip();
 		}
 
 		void HandleRedrawNeeded(object sender, EventArg<VisualElement> e)
@@ -190,6 +208,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			UpdateClipToBounds();
+			UpdateClip();
 		}
 
 		void RendererOnElementChanged(object sender, VisualElementChangedEventArgs args)
@@ -272,7 +291,40 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			_renderer.View.SetClipToOutline(layout.IsClippedToBounds, _renderer.Element);
+			bool shouldClip = layout.IsClippedToBounds;
+
+			// setClipBounds is only available in API 18 +	
+			if ((int)Forms.SdkInt >= 18)
+			{
+				if (!(_renderer.View is ViewGroup viewGroup))
+				{
+					return;
+				}
+
+				// Forms layouts should not impose clipping on their children	
+				viewGroup.SetClipChildren(false);
+
+				// But if IsClippedToBounds is true, they _should_ enforce clipping at their own edges	
+				viewGroup.ClipBounds = shouldClip ? new global::Android.Graphics.Rect(0, 0, viewGroup.Width, viewGroup.Height) : null;
+			}
+			else
+			{
+				// For everything in 17 and below, use the setClipChildren method	
+				if (!(_renderer.View.Parent is ViewGroup parent))
+					return;
+
+				if ((int)Forms.SdkInt >= 18 && parent.ClipChildren == shouldClip)
+					return;
+
+				parent.SetClipChildren(shouldClip);
+				parent.Invalidate();
+			}
+		}
+
+		void UpdateClip()
+		{
+			var aView = _renderer.View;
+			aView?.Invalidate();
 		}
 
 		void UpdateIsVisible()
@@ -284,6 +336,9 @@ namespace Xamarin.Forms.Platform.Android
 				aview.Visibility = ViewStates.Visible;
 			if (!view.IsVisible && aview.Visibility != ViewStates.Gone)
 				aview.Visibility = ViewStates.Gone;
+
+			aview.Invalidate();
+			aview.RequestLayout();
 		}
 
 		void UpdateNativeView(object sender, EventArgs e)

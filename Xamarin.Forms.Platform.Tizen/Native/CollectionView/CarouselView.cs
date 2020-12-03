@@ -10,9 +10,6 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 			SelectionMode = CollectionViewSelectionMode.Single;
 			Scroll.ScrollBlock = ScrollBlock.None;
-			Scroll.HorizontalPageScrollLimit = 1;
-			Scroll.VerticalPageScrollLimit = 1;
-			Scroll.SetPageSize(1.0, 1.0);
 		}
 
 		public EScroller Scroll => base.Scroller;

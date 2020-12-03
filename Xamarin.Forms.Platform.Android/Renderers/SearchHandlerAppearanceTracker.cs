@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using Android.App;
 using Android.Content;
 using Android.Graphics;
@@ -12,9 +11,9 @@ using Android.Text;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using AView = Android.Views.View;
-using AImageButton = Android.Widget.ImageButton;
 using Xamarin.Forms.Internals;
+using AImageButton = Android.Widget.ImageButton;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -70,6 +69,10 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateTextColor();
 			}
+			else if (e.Is(SearchHandler.TextTransformProperty))
+			{
+				UpdateTextTransform();
+			}
 			else if (e.Is(SearchHandler.PlaceholderColorProperty))
 			{
 				UpdatePlaceholderColor();
@@ -100,6 +103,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			UpdateBackgroundColor();
 			UpdateTextColor();
+			UpdateTextTransform();
 			UpdatePlaceholderColor();
 			UpdateCancelButtonColor();
 		}
@@ -125,12 +129,17 @@ namespace Xamarin.Forms.Platform.Android
 			_editText.UpdateVerticalAlignment(_searchHandler.VerticalTextAlignment, Xamarin.Forms.TextAlignment.Center.ToVerticalGravityFlags());
 		}
 
+		void UpdateTextTransform()
+		{
+			_editText.Text = _searchHandler.UpdateFormsText(_editText.Text, _searchHandler.TextTransform);
+		}
+
 		void UpdateBackgroundColor()
 		{
 			var linearLayout = (_control as ViewGroup).GetChildrenOfType<LinearLayout>().FirstOrDefault();
 			linearLayout.SetBackgroundColor(_searchHandler.BackgroundColor.ToAndroid());
 		}
-		
+
 		void UpdateCancelButtonColor()
 		{
 			//For now we are using the clear icon 
@@ -140,7 +149,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateClearIconColor()
 		{
-			UpdateImageButtonIconColor(nameof(SearchHandler.ClearIcon),_searchHandler.CancelButtonColor);
+			UpdateImageButtonIconColor(nameof(SearchHandler.ClearIcon), _searchHandler.CancelButtonColor);
 		}
 
 		void UpdateClearPlaceholderIconColor()

@@ -1,9 +1,8 @@
 ﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
 using System.Collections;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 #if UITEST
 using Xamarin.UITest.iOS;
@@ -13,6 +12,9 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 21177, "Using a UICollectionView in a ViewRenderer results in issues with selection")]
 	public class Bugzilla21177 : TestContentPage

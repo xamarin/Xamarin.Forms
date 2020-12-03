@@ -12,13 +12,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 			Title = "CarouselView Galleries";
 
-			var button = new Button
-			{
-				Text = "Enable IndicatorView",
-				AutomationId = "EnableIndicatorView"
-			};
-			button.Clicked += ButtonClicked;
-
 			Content = new ScrollView
 			{
 				Content = new StackLayout
@@ -26,19 +19,20 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 					Children =
 					{
 						descriptionLabel,
-						button,
 						GalleryBuilder.NavButton("CarouselView (Code, Horizontal)", () =>
 							new CarouselCodeGallery(ItemsLayoutOrientation.Horizontal), Navigation),
 						GalleryBuilder.NavButton("CarouselView (Code, Vertical)", () =>
 							new CarouselCodeGallery(ItemsLayoutOrientation.Vertical), Navigation),
 						GalleryBuilder.NavButton("CarouselView (XAML, Horizontal)", () =>
-							new CarouselXamlGallery(), Navigation),
+							new CarouselXamlGallery(false), Navigation),
+						GalleryBuilder.NavButton("CarouselView (XAML, Horizontal, Loop)", () =>
+							new CarouselXamlGallery(true), Navigation),
 						GalleryBuilder.NavButton("CarouselView (Indicators Forms)", () =>
-							new CarouselItemsGallery(false,false,false), Navigation),
+							new CarouselItemsGallery(), Navigation),
 						GalleryBuilder.NavButton("CarouselView (Indicators Default (Native))", () =>
-							new CarouselItemsGallery(false,false,true), Navigation),
+							new CarouselItemsGallery(useNativeIndicators: true), Navigation),
 						GalleryBuilder.NavButton("CarouselView Async", () =>
-							new CarouselItemsGallery(false,true,true), Navigation),
+							new CarouselItemsGallery(setCollectionWithAsync:true, useNativeIndicators: true), Navigation),
 	  					GalleryBuilder.NavButton("CarouselView Snap", () =>
  							new CarouselSnapGallery(), Navigation),
 						GalleryBuilder.NavButton("ObservableCollection and CarouselView", () =>
@@ -46,21 +40,16 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 						GalleryBuilder.NavButton("CarouselView EmptyView", () =>
   							new EmptyCarouselGallery(), Navigation),
 						GalleryBuilder.NavButton("IndicatorView", () =>
-  							new IndicatorCodeGallery(), Navigation)
+  							new IndicatorCodeGallery(), Navigation),
+						GalleryBuilder.NavButton("CarouselView SetPosition Ctor", () =>
+							new CarouselItemsGallery(useNativeIndicators: true, setPositionOnConstructor: true), Navigation),
+						GalleryBuilder.NavButton("CarouselView SetPosition Appearing", () =>
+							new CarouselItemsGallery(useNativeIndicators: true, setPositionOnAppearing: true), Navigation),
+						GalleryBuilder.NavButton("CarouselView loop", () =>
+							new CarouselXamlGallery(true), Navigation),
 					}
 				}
 			};
-		}
-
-		void ButtonClicked(object sender, System.EventArgs e)
-		{
-			var button = sender as Button;
-
-			button.Text = "IndicatorView Enabled!";
-			button.TextColor = Color.Black;
-			button.IsEnabled = false;
-
-			Device.SetFlags(new[] { ExperimentalFlags.CarouselViewExperimental, ExperimentalFlags.IndicatorViewExperimental });
 		}
 	}
 }

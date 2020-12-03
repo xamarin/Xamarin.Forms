@@ -11,10 +11,11 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.LifeCycle)]
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 4303, "[Android] TabbedPage's child is appearing before it should be", PlatformAffected.Android)]
-	public class Issue4303 : TestTabbedPage // or TestMasterDetailPage, etc ...
+	public class Issue4303 : TestTabbedPage // or TestFlyoutPage, etc ...
 	{
 		bool appeared = false;
 		bool childAppeared = false;
@@ -64,7 +65,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		void UpdateLabel()
 		{
-			if(appeared && !navigatedToChhild && !childAppeared)
+			if (appeared && !navigatedToChhild && !childAppeared)
 			{
 				lbl.Text = Success;
 			}
@@ -88,9 +89,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-		public void Issue4303Test() 
+		public void Issue4303Test()
 		{
-			RunningApp.WaitForElement ( c => c.Text(Success));
+			RunningApp.WaitForElement(c => c.Text(Success));
 			RunningApp.WaitForElement(c => c.Marked(btnAutomationID));
 			RunningApp.Tap(c => c.Marked(btnAutomationID));
 			RunningApp.WaitForElement(c => c.Text(ChildSuccess));

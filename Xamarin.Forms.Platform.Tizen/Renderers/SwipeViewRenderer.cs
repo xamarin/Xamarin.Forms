@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using ElmSharp;
 using Xamarin.Forms.Internals;
+using ERect = ElmSharp.Rect;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -168,7 +169,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				opendBound.Y += MaximumSwipeSize * (IsNegativeDirection ? -1 : 1);
 			}
-			
+
 			await AnimatedMove(SwipeView.Content, Platform.GetRenderer(SwipeView.Content).NativeView, opendBound, length: SwipeAnimationDuration);
 			DrawerState = SwipeDrawerState.Opend;
 		}
@@ -187,7 +188,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				_itemsRenderer = null;
 			}
 
-			((ISwipeViewController)Element).SendSwipeEnded(new SwipeEndedEventArgs(SwipeDirection));
+			((ISwipeViewController)Element).SendSwipeEnded(new SwipeEndedEventArgs(SwipeDirection, DrawerState == SwipeDrawerState.Opend));
 			DrawerState = SwipeDrawerState.Closed;
 			SwipeDirection = 0;
 		}
@@ -208,11 +209,12 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (IsHorizontalSwipe)
 			{
-				return DrawerState == SwipeDrawerState.Closed ? (data.X2 - data.X1) : 
+				return DrawerState == SwipeDrawerState.Closed ? (data.X2 - data.X1) :
 					(((IsNegativeDirection ? -1 : 1) * MaximumSwipeSize) - (data.X1 - data.X2));
-			} else
+			}
+			else
 			{
-				return DrawerState == SwipeDrawerState.Closed ? (data.Y2 - data.Y1) : 
+				return DrawerState == SwipeDrawerState.Closed ? (data.Y2 - data.Y1) :
 					(((IsNegativeDirection ? -1 : 1) * MaximumSwipeSize) - (data.Y1 - data.Y2));
 			}
 		}
@@ -320,7 +322,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			_itemsRenderer = itemsRenderer;
 		}
 
-		static Task AnimatedMove(IAnimatable animatable, EvasObject target, Rect dest, Easing easing = null, uint length = 120)
+		static Task AnimatedMove(IAnimatable animatable, EvasObject target, ERect dest, Easing easing = null, uint length = 120)
 		{
 			var tcs = new TaskCompletionSource<bool>();
 
@@ -329,14 +331,14 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			new Animation((progress) =>
 			{
-				var toMove = dest;
+				ERect toMove = dest;
 				toMove.X += (int)(dx * (1 - progress));
 				toMove.Y += (int)(dy * (1 - progress));
 				target.Geometry = toMove;
-			}).Commit(animatable, "Move", rate: 60, length: length, easing:easing, finished:(p,e)=>
-			{
-				tcs.SetResult(true);
-			});
+			}).Commit(animatable, "Move", rate: 60, length: length, easing: easing, finished: (p, e) =>
+			  {
+				  tcs.SetResult(true);
+			  });
 			return tcs.Task;
 		}
 

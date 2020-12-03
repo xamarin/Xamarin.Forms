@@ -108,9 +108,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.PropertyName == SearchBar.TextColorProperty.PropertyName)
 				UpdateTextColor();
-			else if (e.PropertyName == SearchBar.CharacterSpacingProperty.PropertyName)
-				UpdateCharacterSpacing();
-			else if (e.PropertyName == SearchBar.TextProperty.PropertyName)
+			else if (e.IsOneOf(SearchBar.TextProperty, SearchBar.TextTransformProperty,
+				SearchBar.CharacterSpacingProperty))
 			{
 				UpdateText();
 				UpdateCharacterSpacing();
@@ -161,6 +160,17 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateCancelButton();
 		}
 
+		protected override void SetBackground(Brush brush)
+		{
+			base.SetBackground(brush);
+
+			if (Control == null)
+				return;
+
+			if (brush is SolidColorBrush solidColorBrush)
+				Control.BarTintColor = solidColorBrush.Color.ToUIColor(_defaultTintColor);
+		}
+
 		public override CoreGraphics.CGSize SizeThatFits(CoreGraphics.CGSize size)
 		{
 			if (nfloat.IsInfinity(size.Width))
@@ -180,11 +190,9 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
-#if __XCODE11__
 			// Make sure the control adheres to changes in UI theme
 			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
 				UpdateTextColor();
-#endif
 		}
 
 		void OnCancelClicked(object sender, EventArgs args)
@@ -205,8 +213,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnSearchButtonClicked(object sender, EventArgs e)
 		{
-			Element.OnSearchButtonPressed();
-			Control.ResignFirstResponder();
+			Element?.OnSearchButtonPressed();
+			Control?.ResignFirstResponder();
 		}
 
 		void OnTextChanged(object sender, UISearchBarTextChangedEventArgs a)
@@ -333,7 +341,7 @@ namespace Xamarin.Forms.Platform.iOS
 			// when typing, so by keeping track of whether or not text was typed, we can respect
 			// other changes to Element.Text.
 			if (!_textWasTyped)
-				Control.Text = Element.Text;
+				Control.Text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 			
 			UpdateCancelButton();
 		}

@@ -1,7 +1,7 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
+﻿using System;
 using Xamarin.Forms.Controls;
-using System;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -93,10 +93,7 @@ namespace Xamarin.Forms.Controls.Issues
 			});
 		}
 
-#if UITEST
-#if !(__ANDROID__ || __IOS__)
-		[Ignore("Shell test is only supported on Android and iOS")]
-#endif
+#if UITEST && __SHELL__
 		[Test]
 		public void FlyoutNavigationBetweenItemsWithNavigationStacks()
 		{

@@ -44,9 +44,9 @@ namespace Xamarin.Forms.Platform.Tizen
 		protected override Size MinimumSize()
 		{
 			Size measured;
-			if(Control is IMeasurable im)
+			if (Control is IMeasurable im)
 			{
-				measured = im.Measure(Control.MinimumWidth, Control.MinimumHeight).ToDP(); 
+				measured = im.Measure(Control.MinimumWidth, Control.MinimumHeight).ToDP();
 			}
 			else
 			{
@@ -63,6 +63,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				(Control as IButton)?.UpdateStyle(style);
 				((IVisualElementController)Element).NativeSizeChanged();
+				UpdateBackgroundColor(false);
 			}
 		}
 
@@ -102,7 +103,6 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void UpdateFontSize()
 		{
-			//(Control as IButton).FontSize = Element.FontSize;
 			if (Control is IButton ib)
 			{
 				ib.FontSize = Element.FontSize;
@@ -114,7 +114,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (Control is IButton ib)
 			{
 				ib.FontAttributes = Element.FontAttributes;
-			}				
+			}
 		}
 
 		void UpdateFontFamily()
@@ -122,7 +122,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (Control is IButton ib)
 			{
 				ib.FontFamily = Element.FontFamily.ToNativeFontFamily();
-			}			
+			}
 		}
 
 		void UpdateTextColor()
@@ -130,7 +130,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (Control is IButton ib)
 			{
 				ib.TextColor = Element.TextColor.ToNative();
-			}			
+			}
 		}
 
 		void UpdateBitmap()
@@ -140,13 +140,20 @@ namespace Xamarin.Forms.Platform.Tizen
 				if (Element.ImageSource != null)
 				{
 					ib.Image = new Native.Image(Control);
-					var task = ib.Image.LoadFromImageSourceAsync(Element.ImageSource);
+					if (Element.ImageSource is FileImageSource fis)
+					{
+						ib.Image.LoadFromFile(fis.File);
+					}
+					else
+					{
+						var task = ib.Image.LoadFromImageSourceAsync(Element.ImageSource);
+					}
 				}
 				else
 				{
 					ib.Image = null;
 				}
-			}			
+			}
 		}
 
 		void UpdateBorder()

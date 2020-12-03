@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using ElmSharp;
 using Tizen.NET.MaterialComponents;
 using Xamarin.Forms;
 using Xamarin.Forms.Material.Tizen;
@@ -8,6 +7,7 @@ using Xamarin.Forms.Platform.Tizen;
 using Xamarin.Forms.Platform.Tizen.Native;
 using EBox = ElmSharp.Box;
 using EColor = ElmSharp.Color;
+using ERect = ElmSharp.Rect;
 
 [assembly: ExportRenderer(typeof(Stepper), typeof(MaterialStepperRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
 namespace Xamarin.Forms.Material.Tizen
@@ -118,9 +118,9 @@ namespace Xamarin.Forms.Material.Tizen
 
 		protected override void Dispose(bool disposing)
 		{
-			if(disposing)
+			if (disposing)
 			{
-				if(Control != null)
+				if (Control != null)
 				{
 					_buttonL.Clicked -= OnDecrementButtonClicked;
 					_buttonR.Clicked -= OnIncrementButtonClicked;
@@ -153,19 +153,19 @@ namespace Xamarin.Forms.Material.Tizen
 			var y = Control.Geometry.Y;
 			var w = (int)(Control.Geometry.Width - (horizontalPadding * 3)) / 2;
 			var h = Control.Geometry.Height;
-			var rectL = new Rect(x, y, w, h);
+			var rectL = new ERect(x, y, w, h);
 			_borderL.Draw(rectL);
 			_buttonL.Geometry = rectL;
 
 			var x2 = Control.Geometry.X + w + (horizontalPadding * 2);
-			var rectR = new Rect(x2, y, w, h);
+			var rectR = new ERect(x2, y, w, h);
 			_borderR.Draw(rectR);
 			_buttonR.Geometry = rectR;
 		}
 
 		void OnIncrementButtonClicked(object sender, EventArgs e)
 		{
-			if ( _value < _maximum)
+			if (_value < _maximum)
 			{
 				_value = Math.Min((_value + _increment), _maximum);
 				((IElementController)Element).SetValueFromRenderer(Stepper.ValueProperty, _value);

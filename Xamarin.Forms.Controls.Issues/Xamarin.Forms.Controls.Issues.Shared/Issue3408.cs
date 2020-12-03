@@ -1,8 +1,8 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 using static Xamarin.Forms.Controls.Issues.Issue3408;
 
 #if UITEST
@@ -12,6 +12,9 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+#endif
 	// This may crash for you on Android if you click too many buttons
 	// https://github.com/xamarin/Xamarin.Forms/issues/3603
 	[Preserve(AllMembers = true)]
@@ -22,9 +25,12 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			switch (e)
 			{
-				case List<RecommendationsViewModel> pc: return pc.First().Recommendations;
-				case List<RecommendationsViewModel2> pc: return pc.First().Recommendations;
-				default: return null;
+				case List<RecommendationsViewModel> pc:
+					return pc.First().Recommendations;
+				case List<RecommendationsViewModel2> pc:
+					return pc.First().Recommendations;
+				default:
+					return null;
 			}
 		}
 #if UITEST
@@ -76,10 +82,10 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-		public void Issue3408Test ()
+		public void Issue3408Test()
 		{
-			RunningApp.WaitForElement (q => q.Marked ("btn1"));
-			RunningApp.WaitForElement (q => q.Marked ("Click to Change"));
+			RunningApp.WaitForElement(q => q.Marked("btn1"));
+			RunningApp.WaitForElement(q => q.Marked("Click to Change"));
 			RunningApp.Tap(q => q.Marked("btn1"));
 			RunningApp.WaitForElement(q => q.Marked("This should have changed"));
 			RunningApp.Tap(q => q.Marked("btn2"));

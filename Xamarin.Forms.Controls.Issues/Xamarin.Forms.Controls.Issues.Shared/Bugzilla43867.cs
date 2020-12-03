@@ -10,9 +10,12 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 43867, "Numeric keyboard shows text / default keyboard when back button is hit", PlatformAffected.Android)]
-	public class Bugzilla43867 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Bugzilla43867 : TestContentPage // or TestFlyoutPage, etc ...
 	{
 		protected override void Init()
 		{

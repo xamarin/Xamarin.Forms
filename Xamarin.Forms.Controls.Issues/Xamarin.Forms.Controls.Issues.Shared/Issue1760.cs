@@ -9,9 +9,12 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1760, "Content set after an await is not visible", PlatformAffected.Android)]
-	public class Issue1760 : TestMasterDetailPage
+	public class Issue1760 : TestFlyoutPage
 	{
 		public const string Before = "Before";
 		public const string After = "After";
@@ -19,7 +22,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			Master = new _1760Master(true);
+			Flyout = new _1760Master(true);
 			Detail = new _1760TestPage(true);
 			IsPresented = true;
 		}
@@ -40,7 +43,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 				menuView.ItemSelected += OnMenuClicked;
 
-				Content = new StackLayout{Children = { instructions, menuView }};
+				Content = new StackLayout { Children = { instructions, menuView } };
 				Title = "GH 1760 Test App";
 
 				_scrollEnabled = scrollEnabled;
@@ -48,7 +51,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			void OnMenuClicked(object sender, SelectedItemChangedEventArgs e)
 			{
-				var mainPage = (MasterDetailPage)Parent;
+				var mainPage = (FlyoutPage)Parent;
 				mainPage.Detail = new _1760TestPage(_scrollEnabled);
 				mainPage.IsPresented = false;
 			}
@@ -62,11 +65,11 @@ namespace Xamarin.Forms.Controls.Issues
 			public async Task DisplayPage()
 			{
 				IsBusy = true;
-				HeaderPageContent = new Label {Text = Before, TextColor = Color.Black};
+				HeaderPageContent = new Label { Text = Before, TextColor = Color.Black };
 
 				await Task.Delay(Wait * 1000);
 
-				HeaderPageContent = new Label { Text = After, TextColor = Color.Black};
+				HeaderPageContent = new Label { Text = After, TextColor = Color.Black };
 				IsBusy = false;
 			}
 

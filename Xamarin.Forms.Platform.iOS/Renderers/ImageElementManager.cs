@@ -199,16 +199,16 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MOBILE__
 				bool useAnimation = imageController.GetLoadAsAnimation();
 				IAnimationSourceHandler handler = null;
-				if(useAnimation && source != null)
+				if (useAnimation && source != null)
 					handler = Internals.Registrar.Registered.GetHandlerForObject<IAnimationSourceHandler>(source);
 
 				if (handler != null)
-				{					
+				{
 					FormsCAKeyFrameAnimation animation = await handler.LoadImageAnimationAsync(source, scale: (float)UIScreen.MainScreen.Scale).ConfigureAwait(false);
 
 					if (animation != null && Control is FormsUIImageView imageView && imageElement.Source == source)
 					{
-						if(imageView.Animation != null)
+						if (imageView.Animation != null)
 							imageView.AnimationStopped -= OnAnimationStopped;
 
 						imageView.Animation = animation;
@@ -250,8 +250,8 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MOBILE__
 		static void OnAnimationStopped(object sender, CAAnimationStateEventArgs e)
 		{
-			if(sender is FormsUIImageView imageView && 
-				e.Finished && 
+			if (sender is FormsUIImageView imageView &&
+				e.Finished &&
 				imageView.Superview is IImageVisualElementRenderer renderer &&
 				renderer.Element is IElementController imageController)
 			{

@@ -5,8 +5,13 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Platform.WPF.Extensions;
+using WRotateTransform = System.Windows.Media.RotateTransform;
+using WScaleTransform = System.Windows.Media.ScaleTransform;
+using WTransformCollection = System.Windows.Media.TransformCollection;
+using WTransformGroup = System.Windows.Media.TransformGroup;
+using WTranslateTransform = System.Windows.Media.TranslateTransform;
 
 namespace Xamarin.Forms.Platform.WPF
 {
@@ -133,6 +138,8 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateOpacity();
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
+			else if (e.PropertyName == VisualElement.ClipProperty.PropertyName)
+				UpdateClip();
 		}
 
 		protected virtual void UpdateNativeControl()
@@ -143,6 +150,7 @@ namespace Xamarin.Forms.Platform.WPF
 			UpdateOpacity();
 			UpdateScaleAndTranslateAndRotation();
 			UpdateInputTransparent();
+			UpdateClip();
 			UpdateVisibility();
 
 			if (_invalidateArrangeNeeded)
@@ -250,6 +258,11 @@ namespace Xamarin.Forms.Platform.WPF
 			Control.IsHitTestVisible = !Element.InputTransparent;
 		}
 
+		void UpdateClip()
+		{
+			Control.Clip = Element.Clip.ToWindows();
+		}
+
 		void UpdateOpacity()
 		{
 			Control.Opacity = Element.Opacity;
@@ -266,31 +279,30 @@ namespace Xamarin.Forms.Platform.WPF
 			double translationX = Element.TranslationX;
 			double translationY = Element.TranslationY;
 			double scale = Element.Scale;
-
-			double offsetX = scale == 0 ? 0 : translationX / scale;
-			double offsetY = scale == 0 ? 0 : translationY / scale;
+			double scaleX = Element.ScaleX * scale;
+			double scaleY = Element.ScaleY * scale;
 
 			Control.RenderTransformOrigin = new System.Windows.Point(anchorX, anchorY);
-			Control.RenderTransform = new TransformGroup()
+			Control.RenderTransform = new WTransformGroup()
 			{
-				Children = new TransformCollection()
+				Children = new WTransformCollection()
 				{
-					new RotateTransform()
+					new WScaleTransform
+					{
+						ScaleX = scaleX,
+						ScaleY = scaleY
+					},
+					new WRotateTransform()
 					{
 						CenterX = anchorX,
 						CenterY = anchorY,
-						Angle = Element.Rotation
+						Angle = rotation
 					},
-					new TranslateTransform()
+					new WTranslateTransform()
 					{
-						X = offsetX,
-						Y = offsetY
+						X = translationX,
+						Y = translationY
 					},
-					new ScaleTransform
-					{
-						ScaleX = scale,
-						ScaleY = scale
-					}
 				}
 			};
 		}

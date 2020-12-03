@@ -11,7 +11,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_PickerRenderer))]
-	public class Picker : View, IFontElement, ITextElement, IElementConfiguration<Picker>
+	public class Picker : View, IFontElement, ITextElement, ITextAlignmentElement, IElementConfiguration<Picker>
 	{
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 
@@ -40,7 +40,13 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty FontSizeProperty = FontElement.FontSizeProperty;
 
 		public static readonly BindableProperty FontAttributesProperty = FontElement.FontAttributesProperty;
-		
+
+		public static readonly BindableProperty HorizontalTextAlignmentProperty = TextAlignmentElement.HorizontalTextAlignmentProperty;
+
+		public static readonly BindableProperty VerticalTextAlignmentProperty = TextAlignmentElement.VerticalTextAlignmentProperty;
+
+		public static readonly BindableProperty TextTransformProperty = TextElement.TextTransformProperty;
+
 		readonly Lazy<PlatformConfigurationRegistry<Picker>> _platformConfigurationRegistry;
 
 		public Picker()
@@ -67,6 +73,15 @@ namespace Xamarin.Forms
 			set { SetValue(FontSizeProperty, value); }
 		}
 
+		public TextTransform TextTransform
+		{
+			get => (TextTransform)GetValue(TextTransformProperty);
+			set => SetValue(TextTransformProperty, value);
+		}
+
+		public virtual string UpdateFormsText(string source, TextTransform textTransform)
+			=> TextTransformUtilites.GetTransformedText(source, textTransform);
+
 		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue) =>
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 
@@ -80,6 +95,9 @@ namespace Xamarin.Forms
 			Device.GetNamedSize(NamedSize.Default, (Picker)this);
 
 		void IFontElement.OnFontAttributesChanged(FontAttributes oldValue, FontAttributes newValue) =>
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+
+		void ITextElement.OnTextTransformChanged(TextTransform oldValue, TextTransform newValue) =>
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 
 		public IList<string> Items { get; } = new LockableObservableListWrapper();
@@ -126,10 +144,24 @@ namespace Xamarin.Forms
 			set { SetValue(TitleColorProperty, value); }
 		}
 
+		public TextAlignment HorizontalTextAlignment
+		{
+			get { return (TextAlignment)GetValue(TextAlignmentElement.HorizontalTextAlignmentProperty); }
+			set { SetValue(TextAlignmentElement.HorizontalTextAlignmentProperty, value); }
+		}
+
+		public TextAlignment VerticalTextAlignment
+		{
+			get { return (TextAlignment)GetValue(TextAlignmentElement.VerticalTextAlignmentProperty); }
+			set { SetValue(TextAlignmentElement.VerticalTextAlignmentProperty, value); }
+		}
+
 		BindingBase _itemDisplayBinding;
-		public BindingBase ItemDisplayBinding {
+		public BindingBase ItemDisplayBinding
+		{
 			get { return _itemDisplayBinding; }
-			set {
+			set
+			{
 				if (_itemDisplayBinding == value)
 					return;
 
@@ -182,20 +214,24 @@ namespace Xamarin.Forms
 		}
 
 		void OnItemsSourceChanged(IList oldValue, IList newValue)
-		{ 
+		{
 			var oldObservable = oldValue as INotifyCollectionChanged;
 			if (oldObservable != null)
 				oldObservable.CollectionChanged -= CollectionChanged;
 
 			var newObservable = newValue as INotifyCollectionChanged;
-			if (newObservable != null) {
+			if (newObservable != null)
+			{
 				newObservable.CollectionChanged += CollectionChanged;
 			}
 
-			if (newValue != null) {
+			if (newValue != null)
+			{
 				((LockableObservableListWrapper)Items).IsLocked = true;
 				ResetItems();
-			} else {
+			}
+			else
+			{
 				((LockableObservableListWrapper)Items).InternalClear();
 				((LockableObservableListWrapper)Items).IsLocked = false;
 			}
@@ -203,16 +239,17 @@ namespace Xamarin.Forms
 
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			switch (e.Action) {
-			case NotifyCollectionChangedAction.Add:
-				AddItems(e);
-				break;
-			case NotifyCollectionChangedAction.Remove:
-				RemoveItems(e);
-				break;
-			default: //Move, Replace, Reset
-				ResetItems();
-				break;
+			switch (e.Action)
+			{
+				case NotifyCollectionChangedAction.Add:
+					AddItems(e);
+					break;
+				case NotifyCollectionChangedAction.Remove:
+					RemoveItems(e);
+					break;
+				default: //Move, Replace, Reset
+					ResetItems();
+					break;
 			}
 		}
 		void AddItems(NotifyCollectionChangedEventArgs e)
@@ -254,7 +291,8 @@ namespace Xamarin.Forms
 
 		void UpdateSelectedIndex(object selectedItem)
 		{
-			if (ItemsSource != null) {
+			if (ItemsSource != null)
+			{
 				SelectedIndex = ItemsSource.IndexOf(selectedItem);
 				return;
 			}
@@ -263,17 +301,19 @@ namespace Xamarin.Forms
 
 		void UpdateSelectedItem(int index)
 		{
-			if (index == -1) {
+			if (index == -1)
+			{
 				SelectedItem = null;
 				return;
 			}
 
-			if (ItemsSource != null) {
-				SelectedItem = ItemsSource [index];
+			if (ItemsSource != null)
+			{
+				SelectedItem = ItemsSource[index];
 				return;
 			}
 
-			SelectedItem = Items [index];
+			SelectedItem = Items[index];
 		}
 
 		public IPlatformElementConfiguration<T, Picker> On<T>() where T : IConfigPlatform
@@ -288,6 +328,11 @@ namespace Xamarin.Forms
 		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
 		{
 			InvalidateMeasure();
+		}
+
+		void ITextAlignmentElement.OnHorizontalTextAlignmentPropertyChanged(TextAlignment oldValue, TextAlignment newValue)
+		{
+
 		}
 
 	}

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel; 
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Xamarin.Forms.Platform.WPF.Extensions;
+using WAutomationProperties = System.Windows.Automation.AutomationProperties;
 using WControl = System.Windows.Controls.Control;
 
 namespace Xamarin.Forms.Platform.WPF
@@ -127,7 +129,7 @@ namespace Xamarin.Forms.Platform.WPF
 			var args = new VisualElementChangedEventArgs(e.OldElement, e.NewElement);
 			for (var i = 0; i < _elementChangedHandlers.Count; i++)
 				_elementChangedHandlers[i](this, args);
-			
+
 			ElementChanged?.Invoke(this, e);
 		}
 
@@ -139,7 +141,7 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateHeight();
 			else if (e.PropertyName == VisualElement.WidthProperty.PropertyName)
 				UpdateWidth();
-			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
 				UpdateBackground();
 			else if (e.PropertyName == View.HorizontalOptionsProperty.PropertyName || e.PropertyName == View.VerticalOptionsProperty.PropertyName)
 				UpdateAlignment();
@@ -147,6 +149,14 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateTabStop();
 			else if (e.PropertyName == VisualElement.TabIndexProperty.PropertyName)
 				UpdateTabIndex();
+			else if (e.PropertyName == Xamarin.Forms.Element.AutomationIdProperty.PropertyName)
+				UpdateAutomationId();
+			else if (e.PropertyName == AutomationProperties.NameProperty.PropertyName)
+				UpdateAutomationName();
+			else if (e.PropertyName == AutomationProperties.LabeledByProperty.PropertyName)
+				UpdateAutomationLabeledBy();
+			else if (e.PropertyName == AutomationProperties.HelpTextProperty.PropertyName)
+				UpdateAutomationHelpText();
 		}
 
 		protected virtual void OnGotFocus(object sender, RoutedEventArgs args)
@@ -184,7 +194,7 @@ namespace Xamarin.Forms.Platform.WPF
 			UpdateWidth();
 			UpdateHeight();
 		}
-		
+
 		private void Control_Loaded(object sender, RoutedEventArgs e)
 		{
 			Control.Loaded -= Control_Loaded;
@@ -210,15 +220,20 @@ namespace Xamarin.Forms.Platform.WPF
 
 		protected virtual void UpdateBackground()
 		{
-			if(Control is WControl wControl)
-				wControl?.UpdateDependencyColor(WControl.BackgroundProperty, Element.BackgroundColor);
+			if (Control is WControl wControl)
+			{
+				if (Brush.IsNullOrEmpty(Element.Background))
+					wControl?.UpdateDependencyColor(WControl.BackgroundProperty, Element.BackgroundColor);
+				else
+					wControl.Background = Element.Background.ToBrush();
+			}
 		}
 
 		protected virtual void UpdateHeight()
 		{
 			if (Control == null || Element == null)
 				return;
-			
+
 			Control.Height = Element.Height > 0 ? Element.Height : Double.NaN;
 		}
 
@@ -229,12 +244,20 @@ namespace Xamarin.Forms.Platform.WPF
 
 			Control.Width = Element.Width > 0 ? Element.Width : Double.NaN;
 		}
-		
+
 		protected virtual void UpdateNativeWidget()
 		{
 			UpdateEnabled();
 			UpdateTabStop();
 			UpdateTabIndex();
+			UpdateAutomationId();
+			var isInAccessibleTree = AutomationProperties.GetIsInAccessibleTree(Element);
+			if (!(isInAccessibleTree.HasValue && !isInAccessibleTree.Value))
+			{
+				UpdateAutomationLabeledBy();
+				UpdateAutomationName();
+				UpdateAutomationHelpText();
+			}
 		}
 
 		internal virtual void OnModelFocusChangeRequested(object sender, VisualElement.FocusRequestArgs args)
@@ -255,7 +278,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			if (control == null || !control.IsEnabled)
 				return;
-			control.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next)); 
+			control.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
 		}
 
 		void HandleTrackerUpdated(object sender, EventArgs e)
@@ -280,6 +303,41 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			if (Control is WControl wControl)
 				wControl.TabIndex = Element.TabIndex;
+		}
+
+		protected void UpdateAutomationId()
+		{
+			if (!string.IsNullOrEmpty(Element.AutomationId))
+			{
+				WAutomationProperties.SetAutomationId(Control, Element.AutomationId);
+			}
+		}
+
+		protected void UpdateAutomationName()
+		{
+			var name = AutomationProperties.GetName(Element);
+			if (!string.IsNullOrEmpty(name))
+			{
+				WAutomationProperties.SetName(Control, name);
+			}
+		}
+
+		protected void UpdateAutomationLabeledBy()
+		{
+			var label = AutomationProperties.GetLabeledBy(Element);
+			if (label != null)
+			{
+				WAutomationProperties.SetLabeledBy(Control, Platform.GetRenderer(label)?.GetNativeElement());
+			}
+		}
+
+		protected void UpdateAutomationHelpText()
+		{
+			var helpText = AutomationProperties.GetHelpText(Element);
+			if (!string.IsNullOrEmpty(helpText))
+			{
+				WAutomationProperties.SetHelpText(Control, helpText);
+			}
 		}
 
 		protected virtual void UpdateEnabled()

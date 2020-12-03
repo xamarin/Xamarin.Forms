@@ -1,7 +1,8 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
-using System;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -16,7 +17,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 5470, "ApplinkEntry Thumbnail required after upgrading to 3.5/3.6", PlatformAffected.iOS)]
-	public class Issue5470 : TestContentPage 
+	public class Issue5470 : TestContentPage
 	{
 		protected override void Init()
 		{
@@ -56,9 +57,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST && __IOS__
 		[Test]
-		public async void Issue5470Test() 
+		public void Issue5470Test() 
 		{
-			await Task.Delay(500); // give it time to crash
+			Thread.Sleep(500); // give it time to crash
 			RunningApp.WaitForElement (q => q.Marked ("IssuePageLabel"));
 		}
 #endif

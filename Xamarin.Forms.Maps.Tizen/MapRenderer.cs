@@ -79,6 +79,7 @@ namespace Xamarin.Forms.Maps.Tizen
 				UpdateHasZoomEnabled();
 				UpdateIsShowingUser();
 				UpdateVisibleRegion();
+				UpdateTrafficEnabled();
 			}
 			base.OnElementChanged(e);
 		}
@@ -123,7 +124,10 @@ namespace Xamarin.Forms.Maps.Tizen
 				UpdateHasScrollEnabled();
 			else if (e.PropertyName == Map.HasZoomEnabledProperty.PropertyName)
 				UpdateHasZoomEnabled();
+			else if (e.PropertyName == Map.TrafficEnabledProperty.PropertyName)
+				UpdateTrafficEnabled();
 		}
+
 
 		void OnMoveToRegion(Map map, MapSpan span)
 		{
@@ -132,7 +136,8 @@ namespace Xamarin.Forms.Maps.Tizen
 			int latitudeZoomFactor = GetZoomFactor(span.LatitudeDegrees, 90.0);
 			int longitudeZoomFactor = GetZoomFactor(span.LongitudeDegrees, 180.0);
 
-			Control.Center = new Geocoordinates(span.Center.Latitude, span.Center.Longitude); ;
+			Control.Center = new Geocoordinates(span.Center.Latitude, span.Center.Longitude);
+			;
 			Control.ZoomLevel = BaseZoomLevel + Math.Min(latitudeZoomFactor, longitudeZoomFactor);
 			UpdateVisibleRegion();
 		}
@@ -236,6 +241,11 @@ namespace Xamarin.Forms.Maps.Tizen
 			_pins.Clear();
 			Control.RemoveAll();
 			AddPins((Element as Map).Pins);
+		}
+
+		void UpdateTrafficEnabled()
+		{
+			Control.TrafficEnabled = Element.TrafficEnabled;
 		}
 
 		void UpdateHasZoomEnabled()

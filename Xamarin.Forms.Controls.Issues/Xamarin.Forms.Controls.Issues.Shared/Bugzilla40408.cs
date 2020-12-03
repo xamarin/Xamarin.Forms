@@ -1,6 +1,6 @@
-﻿using Xamarin.Forms.CustomAttributes;
+﻿using System;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -11,9 +11,10 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 40408, "MasterDetailPage and TabbedPage only firing Appearing once", PlatformAffected.WinRT)]
+	[Issue(IssueTracker.Bugzilla, 40408, "FlyoutPage and TabbedPage only firing Appearing once", PlatformAffected.WinRT)]
 #if UITEST
 	[Category(UITestCategories.Navigation)]
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
 #endif
 	public class Bugzilla40408 : TestNavigationPage
 	{
@@ -23,20 +24,20 @@ namespace Xamarin.Forms.Controls.Issues
 		const string ThisDisappearing = "Disappearing";
 		const string Page3 = "Page 3";
 		const string Content = "View Content";
-		const string MasterDetailPage = "View Master Detail";
+		const string FlyoutPage = "View Flyout Detail";
 		const string TabbedPage2 = "View TabbedPage";
 		const string Ok = "OK";
 		protected override void Init()
 		{
 			BarBackgroundColor = Color.Red;
-			
+
 			var contentPage2 = new ContentPage();
 			contentPage2.Title = Page2;
 			contentPage2.BackgroundColor = Color.Green;
 
 			contentPage2.Appearing += ContentPage2_Appearing;
 			contentPage2.Disappearing += ContentPage2_Disappearing;
-			
+
 			var tabbedPage1 = new TabbedPage();
 			tabbedPage1.Appearing += TabbedPage1_Appearing;
 			tabbedPage1.Disappearing += TabbedPage1_Disappearing;
@@ -44,21 +45,21 @@ namespace Xamarin.Forms.Controls.Issues
 			var contentPage3 = new ContentPage() { Title = Page3 };
 			contentPage3.BackgroundColor = Color.Pink;
 			tabbedPage1.Children.Add(contentPage3);
-			
-			var masterDetailPage1 = new MasterDetailPage();
-			masterDetailPage1.Title = Page3;
+
+			var FlyoutPage1 = new FlyoutPage();
+			FlyoutPage1.Title = Page3;
 			var master1 = new ContentPage();
 			master1.BackgroundColor = Color.Yellow;
-			master1.Title = "Master 1";
+			master1.Title = "Flyout 1";
 			var detail1 = new ContentPage();
 			detail1.Title = "Detail 1";
 			detail1.BackgroundColor = Color.Purple;
-			masterDetailPage1.Master = master1;
-			masterDetailPage1.Detail = detail1;
-			masterDetailPage1.BackgroundColor = Color.Yellow;
-			masterDetailPage1.Detail.Appearing += MasterDetailPage1_Appearing;
-			masterDetailPage1.Detail.Disappearing += MasterDetailPage1_Disappearing;
-			
+			FlyoutPage1.Flyout = master1;
+			FlyoutPage1.Detail = detail1;
+			FlyoutPage1.BackgroundColor = Color.Yellow;
+			FlyoutPage1.Detail.Appearing += FlyoutPage1_Appearing;
+			FlyoutPage1.Detail.Disappearing += FlyoutPage1_Disappearing;
+
 			var contentPage1 = new ContentPage();
 			SetHasBackButton(contentPage1, true);
 			contentPage1.BackgroundColor = Color.Blue;
@@ -67,7 +68,7 @@ namespace Xamarin.Forms.Controls.Issues
 			contentPage1.Content = stack;
 
 			stack.Children.Add(new Button() { Text = Content, Command = new Command(() => PushAsync(contentPage2)) });
-			stack.Children.Add(new Button() { Text = MasterDetailPage, Command = new Command(() => PushAsync(masterDetailPage1)) });
+			stack.Children.Add(new Button() { Text = FlyoutPage, Command = new Command(() => PushAsync(FlyoutPage1)) });
 			stack.Children.Add(new Button() { Text = TabbedPage2, Command = new Command(() => PushAsync(tabbedPage1)) });
 			stack.Children.Add(new Label()
 			{
@@ -75,19 +76,19 @@ namespace Xamarin.Forms.Controls.Issues
 				TextColor = Color.White,
 				HorizontalTextAlignment = TextAlignment.Center
 			});
-			
+
 			PushAsync(contentPage1);
 		}
 
-		private void MasterDetailPage1_DisappearingDetail(object sender, EventArgs e)
+		private void FlyoutPage1_DisappearingDetail(object sender, EventArgs e)
 		{
-			DisplayAlert(ThisDisappearing, "MasterDetailPage Detail", Ok);
+			DisplayAlert(ThisDisappearing, "FlyoutPage Detail", Ok);
 
 		}
 
-		private void MasterDetailPage1_AppearingDetail(object sender, EventArgs e)
+		private void FlyoutPage1_AppearingDetail(object sender, EventArgs e)
 		{
-			DisplayAlert(ThisAppearing, "MasterDetailPage Detail", Ok);
+			DisplayAlert(ThisAppearing, "FlyoutPage Detail", Ok);
 
 		}
 
@@ -101,9 +102,9 @@ namespace Xamarin.Forms.Controls.Issues
 			DisplayAlert(ThisDisappearing, "TabbedPage", Ok);
 		}
 
-		void MasterDetailPage1_Disappearing(object sender, EventArgs e)
+		void FlyoutPage1_Disappearing(object sender, EventArgs e)
 		{
-			DisplayAlert(ThisDisappearing, "MasterDetailPage", Ok);
+			DisplayAlert(ThisDisappearing, "FlyoutPage", Ok);
 		}
 
 		void TabbedPage1_Appearing(object sender, EventArgs e)
@@ -116,9 +117,9 @@ namespace Xamarin.Forms.Controls.Issues
 			DisplayAlert(ThisAppearing, "ContentPage", Ok);
 		}
 
-		void MasterDetailPage1_Appearing(object sender, EventArgs e)
+		void FlyoutPage1_Appearing(object sender, EventArgs e)
 		{
-			DisplayAlert(ThisAppearing, "MasterDetailPage", Ok);
+			DisplayAlert(ThisAppearing, "FlyoutPage", Ok);
 		}
 
 
@@ -133,8 +134,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 			// This one fails in UWP
 
-			NavigateTo(MasterDetailPage, Page3);
-			NavigateTo(MasterDetailPage, Page3);
+			NavigateTo(FlyoutPage, Page3);
+			NavigateTo(FlyoutPage, Page3);
 		}
 
 		void NavigateTo(string goTo, string destination)

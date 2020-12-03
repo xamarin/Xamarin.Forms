@@ -9,8 +9,8 @@ using Android.OS;
 using Android.Text;
 using Android.Text.Method;
 using Android.Util;
-using Android.Widget;
 using Android.Views;
+using Android.Widget;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool SearchView.IOnQueryTextListener.OnQueryTextChange(string newText)
 		{
-			((IElementController)Element).SetValueFromRenderer(SearchBar.TextProperty, newText);
+			Internals.TextTransformUtilites.SetPlainText(Element, newText);
 
 			return true;
 		}
@@ -144,7 +144,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.PropertyName == SearchBar.PlaceholderProperty.PropertyName)
 				UpdatePlaceholder();
-			else if (e.PropertyName == SearchBar.TextProperty.PropertyName)
+			else if (e.IsOneOf(SearchBar.TextProperty, SearchBar.TextTransformProperty))
 				UpdateText();
 			else if (e.PropertyName == SearchBar.CancelButtonColorProperty.PropertyName)
 				UpdateCancelButtonColor();
@@ -170,9 +170,9 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateHorizontalTextAlignment();
 			else if (e.PropertyName == InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
-			else if(e.PropertyName == InputView.KeyboardProperty.PropertyName)
+			else if (e.PropertyName == InputView.KeyboardProperty.PropertyName)
 				UpdateInputType();
-			else if(e.PropertyName == InputView.IsSpellCheckEnabledProperty.PropertyName)
+			else if (e.PropertyName == InputView.IsSpellCheckEnabledProperty.PropertyName)
 				UpdateInputType();
 		}
 
@@ -266,13 +266,14 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateText()
 		{
 			string query = Control.Query;
-			if (query != Element.Text)
-				Control.SetQuery(Element.Text, false);
+			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
+			if (query != text)
+				Control.SetQuery(text, false);
 		}
 
 		void UpdateCharacterSpacing()
 		{
-			if(!Forms.IsLollipopOrNewer)
+			if (!Forms.IsLollipopOrNewer)
 				return;
 
 			_editText = _editText ?? Control.GetChildrenOfType<EditText>().FirstOrDefault();
@@ -335,7 +336,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (keyboard == Keyboard.Numeric)
 			{
 				_editText = _editText ?? Control.GetChildrenOfType<EditText>().FirstOrDefault();
-				if(_editText != null)
+				if (_editText != null)
 					_editText.KeyListener = GetDigitsKeyListener(_inputType);
 			}
 		}

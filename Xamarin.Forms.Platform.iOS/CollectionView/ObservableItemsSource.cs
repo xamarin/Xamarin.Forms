@@ -37,6 +37,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public int Count { get; private set; }
 
+		public int Section => _section;
+
 		public object this[int index] => ElementAt(index);
 
 		public void Dispose()
@@ -146,7 +148,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_batchUpdating.Release();
 		}
 
-		NSIndexPath[] CreateIndexesFrom(int startIndex, int count)
+		protected virtual NSIndexPath[] CreateIndexesFrom(int startIndex, int count)
 		{
 			var result = new NSIndexPath[count];
 
@@ -320,7 +322,7 @@ namespace Xamarin.Forms.Platform.iOS
 			},
 					(_) =>
 					{
-						if (_batchUpdating.CurrentCount > 0)
+						if (_batchUpdating.CurrentCount == 0)
 						{
 							_batchUpdating.Release();
 						}

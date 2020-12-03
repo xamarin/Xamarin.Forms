@@ -48,6 +48,7 @@ namespace Xamarin.Forms.Core.UITests
 		// ActivityIndicator tests
 		[Test]
 		[UiTest(typeof(ActivityIndicator), "IsRunning")]
+		[Category(UITestCategories.UwpIgnore)]
 		public void IsRunning()
 		{
 			var remote = new ViewContainerRemote(App, Test.ActivityIndicator.IsRunning, PlatformViewType);
@@ -57,8 +58,8 @@ namespace Xamarin.Forms.Core.UITests
 #elif __WINDOWS__
 			Assert.Inconclusive(PleaseInspect);
 #else
-			var isRunning = remote.GetProperty<bool> (ActivityIndicator.IsRunningProperty);
-			Assert.IsTrue (isRunning);
+			var isRunning = remote.GetProperty<bool>(ActivityIndicator.IsRunningProperty);
+			Assert.IsTrue(isRunning);
 #endif
 		}
 

@@ -109,7 +109,8 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewDidLayoutSubviews()
 		{
 			base.ViewDidLayoutSubviews();
-			_currentShellItemRenderer.ViewController.View.Frame = View.Bounds;
+			if(_currentShellItemRenderer != null)
+				_currentShellItemRenderer.ViewController.View.Frame = View.Bounds;
 
 			SetElementSize(new Size(View.Bounds.Width, View.Bounds.Height));
 		}
@@ -130,11 +131,6 @@ namespace Xamarin.Forms.Platform.iOS
 			if(UIApplication.SharedApplication?.Delegate?.GetType()?.FullName == "XamarinFormsPreviewer.iOS.AppDelegate")
 			{
 				return new DesignerFlyoutRenderer(this);
-			}
-
-			if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
-			{
-				return new TabletShellFlyoutRenderer();
 			}
 
 			return new ShellFlyoutRenderer()
@@ -249,6 +245,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected async void SetCurrentShellItemController(IShellItemRenderer value)
 		{
 			var oldRenderer = _currentShellItemRenderer;
+			(oldRenderer as IDisconnectable)?.Disconnect();
 			var newRenderer = value;
 
 			_currentShellItemRenderer = value;
@@ -258,7 +255,7 @@ namespace Xamarin.Forms.Platform.iOS
 			View.SendSubviewToBack(newRenderer.ViewController.View);
 
 			newRenderer.ViewController.View.Frame = View.Bounds;
-
+			
 			if (oldRenderer != null)
 			{
 				var transition = CreateShellItemTransition();
@@ -283,7 +280,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (Shell.CurrentItem == null)
 			{
-				throw new InvalidOperationException("Shell CurrentItem should not be null");
+				return;
 			}
 			else if (_currentShellItemRenderer == null)
 			{

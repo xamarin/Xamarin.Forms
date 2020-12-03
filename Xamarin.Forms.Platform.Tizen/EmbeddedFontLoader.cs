@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using ElmSharp;
+using Tizen.Common;
+using IOPath = System.IO.Path;
 using TApplication = Tizen.Applications.Application;
 
 namespace Xamarin.Forms.Platform.Tizen
@@ -13,13 +15,13 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		public EmbeddedFontLoader()
 		{
-			FontCacheDirectory = Directory.CreateDirectory(Path.Combine(TApplication.Current.DirectoryInfo.Data, _fontCacheFolderName));
+			FontCacheDirectory = Directory.CreateDirectory(IOPath.Combine(TApplication.Current.DirectoryInfo.Data, _fontCacheFolderName));
 			Utility.AppendGlobalFontPath(FontCacheDirectory.FullName);
 		}
 
 		public (bool success, string filePath) LoadFont(EmbeddedFont font)
 		{
-			var filePath = Path.Combine(FontCacheDirectory.FullName, font.FontName);
+			var filePath = IOPath.Combine(FontCacheDirectory.FullName, font.FontName);
 			if (File.Exists(filePath))
 				return (true, filePath);
 			try
@@ -28,6 +30,12 @@ namespace Xamarin.Forms.Platform.Tizen
 				{
 					font.ResourceStream.CopyTo(fileStream);
 				}
+
+				if (DotnetUtil.TizenAPIVersion > 5)
+				{
+					FontExtensions.FontReinit();
+				}
+
 				return (true, filePath);
 			}
 			catch (Exception ex)

@@ -14,13 +14,14 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 3884, "BoxView corner radius", PlatformAffected.Android)]
-	public class Issue3884 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Issue3884 : TestContentPage // or TestFlyoutPage, etc ...
 	{
 		protected override void Init()
 		{
 			var label = new Label { Text = "You should see a blue circle" };
 			var box = new BoxView
 			{
+				AutomationId = "TestReady",
 				HorizontalOptions = LayoutOptions.Center,
 				VerticalOptions = LayoutOptions.Center,
 				BackgroundColor = Color.Blue,
@@ -31,16 +32,17 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Content = new StackLayout
 			{
-				Children = { label,box}
+				Children = { label, box }
 			};
 		}
 
 #if UITEST
 		[Test]
 		[Category(UITestCategories.ManualReview)]
-		public void Issue3884Test() 
+		public void Issue3884Test()
 		{
-			RunningApp.Screenshot ("I see a blue circle");
+			RunningApp.WaitForElement("TestReady");
+			RunningApp.Screenshot("I see a blue circle");
 		}
 #endif
 	}

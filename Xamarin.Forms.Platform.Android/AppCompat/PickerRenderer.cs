@@ -1,13 +1,13 @@
-using Android.App;
-using Android.Util;
 using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using Android.App;
 using Android.Content;
-using Android.Widget;
 using Android.Text;
 using Android.Text.Style;
+using Android.Util;
+using Android.Widget;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -67,6 +67,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdatePicker();
 				UpdateTextColor();
 				UpdateCharacterSpacing();
+				UpdateGravity();
 			}
 
 			base.OnElementChanged(e);
@@ -91,6 +92,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateTextColor();
 			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == Picker.HorizontalTextAlignmentProperty.PropertyName || e.PropertyName == Picker.VerticalTextAlignmentProperty.PropertyName)
+				UpdateGravity();
 		}
 
 		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
@@ -145,7 +148,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				_dialog.DismissEvent += (sender, args) =>
 				{
 					(Element as IElementController)?.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
-					_dialog.Dispose();
+					_dialog?.Dispose();
 					_dialog = null;
 				};
 
@@ -188,6 +191,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		abstract protected void UpdateTextColor();
 		abstract protected void UpdateTitleColor();
 		abstract protected void UpdatePlaceHolderText();
+		abstract protected void UpdateGravity();
 	}
 
 	public class PickerRenderer : PickerRendererBase<EditText>
@@ -225,6 +229,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		protected override void UpdatePlaceHolderText()
 		{
 			EditText.Hint = Element.Title;
+		}
+
+		protected override void UpdateGravity()
+		{
+			EditText.Gravity = Element.HorizontalTextAlignment.ToHorizontalGravityFlags() | Element.VerticalTextAlignment.ToVerticalGravityFlags();
 		}
 	}
 }

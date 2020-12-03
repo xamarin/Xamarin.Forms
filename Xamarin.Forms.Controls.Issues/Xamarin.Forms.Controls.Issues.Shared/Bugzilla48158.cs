@@ -8,9 +8,12 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 48158, "Hidden controls become transparent, needs manual verification", PlatformAffected.iOS)]
-	public class Bugzilla48158 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Bugzilla48158 : TestContentPage // or TestFlyoutPage, etc ...
 	{
 		protected override void Init()
 		{

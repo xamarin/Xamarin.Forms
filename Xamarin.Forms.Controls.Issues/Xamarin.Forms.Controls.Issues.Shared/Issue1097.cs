@@ -5,19 +5,23 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 1097, "Not resizing elements on rotation", PlatformAffected.iOS)]
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+#endif
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 1097, "Not resizing elements on rotation", PlatformAffected.iOS)]
 	public class Issue1097 : ContentPage
 	{
-		public Issue1097 ()
+		public Issue1097()
 		{
-			Grid grid = new Grid {
+			Grid grid = new Grid
+			{
 				RowSpacing = 0,
 				ColumnSpacing = 0,
 			};
 
 			grid.AddRowDef(count: 2);
-			grid.AddColumnDef(count : 2);
+			grid.AddColumnDef(count: 2);
 
 			grid.Children.Add(new BoxView() { Color = Color.Red });
 
@@ -41,8 +45,10 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public static void AddRowDef(this Grid grid, double size = 1, GridUnitType type = GridUnitType.Star, int count = 1)
 		{
-			for (int i = 0; i < count; i++) {
-				grid.RowDefinitions.Add(new RowDefinition() {
+			for (int i = 0; i < count; i++)
+			{
+				grid.RowDefinitions.Add(new RowDefinition()
+				{
 					Height = new GridLength(size, type)
 				});
 			}
@@ -50,8 +56,10 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public static void AddColumnDef(this Grid grid, double size = 1, GridUnitType type = GridUnitType.Star, int count = 1)
 		{
-			for (int i = 0; i < count; i++) {
-				grid.ColumnDefinitions.Add(new ColumnDefinition() {
+			for (int i = 0; i < count; i++)
+			{
+				grid.ColumnDefinitions.Add(new ColumnDefinition()
+				{
 					Width = new GridLength(size, type)
 				});
 			}

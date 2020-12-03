@@ -1,20 +1,15 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
-using AView = Android.Views.View;
-using Android.Views;
-using Xamarin.Forms.Internals;
-using AColor = Android.Graphics.Color;
-using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using Android.Graphics.Drawables;
 using Android.Graphics;
+using Android.Graphics.Drawables;
+using Android.Views;
+using AndroidX.AppCompat.Widget;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.FastRenderers;
-using Android.OS;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+using AColor = Android.Graphics.Color;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -38,7 +33,7 @@ namespace Xamarin.Forms.Platform.Android
 		VisualElementRenderer _visualElementRenderer;
 		BorderBackgroundManager _backgroundTracker;
 		IPlatformElementConfiguration<PlatformConfiguration.Android, ImageButton> _platformElementConfiguration;
-		ImageButton _imageButton;		
+		ImageButton _imageButton;
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
@@ -113,9 +108,9 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (Element != null)
 				{
-					if (Platform.GetRenderer(Element) == this)
+					if (AppCompat.Platform.GetRenderer(Element) == this)
 					{
-						Element.ClearValue(Platform.RendererProperty);
+						Element.ClearValue(AppCompat.Platform.RendererProperty);
 					}
 
 					Element = null;
@@ -202,7 +197,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
 		}
-		
+
 		public override void Draw(Canvas canvas)
 		{
 			if (Element == null)
@@ -219,7 +214,7 @@ namespace Xamarin.Forms.Platform.Android
 					var height = (float)canvas.Height;
 					var widthRatio = 1f;
 					var heightRatio = 1f;
-						
+
 					if (Element.Aspect == Aspect.AspectFill && OnThisPlatform().GetIsShadowEnabled())
 						Internals.Log.Warning(nameof(ImageButtonRenderer), "AspectFill isn't fully supported when using shadows. Image may be clipped incorrectly to Border");
 

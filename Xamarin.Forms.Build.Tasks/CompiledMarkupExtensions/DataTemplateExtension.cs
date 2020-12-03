@@ -1,12 +1,9 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
-using System.Collections.Generic;
-
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-
 using Xamarin.Forms.Xaml;
-
 using static Mono.Cecil.Cil.Instruction;
 using static Mono.Cecil.Cil.OpCodes;
 
@@ -23,10 +20,10 @@ namespace Xamarin.Forms.Build.Tasks
 				typeNameNode = node.CollectionItems[0];
 
 			if (!(typeNameNode is ValueNode valueNode))
-				throw new XamlParseException("TypeName isn't set.", node as XmlLineInfo);
+				throw new BuildException(BuildExceptionCode.PropertyMissing, node as IXmlLineInfo, null, "TypeName", typeof(Xamarin.Forms.Xaml.DataTemplateExtension));
 
 			var contentTypeRef = module.ImportReference(XmlTypeExtensions.GetTypeReference(valueNode.Value as string, module, node as BaseNode))
-				?? throw new XamlParseException($"Can't resolve type `{valueNode.Value}'.", node as IXmlLineInfo);
+				?? throw new BuildException(BuildExceptionCode.TypeResolution, node as IXmlLineInfo, null, valueNode.Value);
 
 			var dataTemplateCtor = module.ImportCtorReference(typeRef, new[] { module.ImportReference(("mscorlib", "System", "Type")) });
 			return new List<Instruction> {

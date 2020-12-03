@@ -1,7 +1,7 @@
 using System;
 using System.IO;
-
 using AppFW = Tizen.Applications;
+using IOPath = System.IO.Path;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.Tizen
 	{
 		public static string GetPath(string res)
 		{
-			if (Path.IsPathRooted(res))
+			if (IOPath.IsPathRooted(res))
 			{
 				return res;
 			}

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using Xamarin.Forms;
+using Xamarin.Forms.Build.Tasks;
 using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
@@ -22,10 +23,10 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			[TearDown] public void TearDown() => Device.PlatformServices = null;
 
 			[Test]
-			public void ThrowsOnInvalidXaml([Values(false, true)]bool useCompiledXaml)
+			public void ThrowsOnInvalidXaml([Values(false, true)] bool useCompiledXaml)
 			{
 				if (useCompiledXaml)
-					Assert.Throws<XamlParseException>(() => MockCompiler.Compile(typeof(Gh5095)));
+					Assert.Throws<BuildException>(() => MockCompiler.Compile(typeof(Gh5095)));
 				else
 					Assert.Throws<XamlParseException>(() => new Gh5095(false));
 			}

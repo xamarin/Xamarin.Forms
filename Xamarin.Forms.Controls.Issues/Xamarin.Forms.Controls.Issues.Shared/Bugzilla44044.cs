@@ -1,7 +1,7 @@
 ﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 #if UITEST
 using Xamarin.UITest;
@@ -13,6 +13,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.Gestures)]
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
 #endif
 
 	[Preserve(AllMembers = true)]
@@ -34,7 +35,7 @@ namespace Xamarin.Forms.Controls.Issues
 						new Button
 						{
 							Text = "Click to Toggle Swipe Paging",
-							Command = new Command(() => On<Android>().SetIsSwipePagingEnabled(!On<Android>().IsSwipePagingEnabled())), 
+							Command = new Command(() => On<Android>().SetIsSwipePagingEnabled(!On<Android>().IsSwipePagingEnabled())),
 							AutomationId = _btnToggleSwipe
 						}
 					}
@@ -51,7 +52,7 @@ namespace Xamarin.Forms.Controls.Issues
 						new Button
 						{
 							Text = "Click to DisplayAlert",
-							Command = new Command(() => DisplayAlert("Page 2", "Message", "Cancel")), 
+							Command = new Command(() => DisplayAlert("Page 2", "Message", "Cancel")),
 							AutomationId = _btnDisplayAlert
 						}
 					}

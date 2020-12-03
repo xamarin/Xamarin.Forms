@@ -27,7 +27,9 @@
 						GalleryBuilder.NavButton("AppTheme Code", () =>
 							new AppThemeCodeGallery(), Navigation),
 						GalleryBuilder.NavButton("AppTheme XAML", () =>
-							new AppThemeXamlGallery(), Navigation)
+							new AppThemeXamlGallery(), Navigation),
+						GalleryBuilder.NavButton("GetNamedColor", () =>
+							new NamedPlatformColorGallery(), Navigation)
 					}
 				}
 			};
@@ -40,8 +42,6 @@
 			button.Text = "AppTheme Enabled!";
 			button.TextColor = Color.Black;
 			button.IsEnabled = false;
-
-			Device.SetFlags(new[] { ExperimentalFlags.AppThemeExperimental });
 		}
 	}
 }

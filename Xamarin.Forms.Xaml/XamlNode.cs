@@ -91,7 +91,8 @@ namespace Xamarin.Forms.Xaml
 			visitor.Visit(this, parentNode);
 		}
 
-		public override INode Clone() => new ValueNode(Value, NamespaceResolver, LineNumber, LinePosition) {
+		public override INode Clone() => new ValueNode(Value, NamespaceResolver, LineNumber, LinePosition)
+		{
 			IgnorablePrefixes = IgnorablePrefixes
 		};
 	}
@@ -112,7 +113,8 @@ namespace Xamarin.Forms.Xaml
 			visitor.Visit(this, parentNode);
 		}
 
-		public override INode Clone() => new MarkupNode(MarkupString, NamespaceResolver, LineNumber, LinePosition) {
+		public override INode Clone() => new MarkupNode(MarkupString, NamespaceResolver, LineNumber, LinePosition)
+		{
 			IgnorablePrefixes = IgnorablePrefixes
 		};
 	}
@@ -141,17 +143,18 @@ namespace Xamarin.Forms.Xaml
 
 		public override void Accept(IXamlNodeVisitor visitor, INode parentNode)
 		{
-			if (!SkipVisitNode(visitor, parentNode) && visitor.VisitingMode == TreeVisitingMode.TopDown)
+			if (visitor.VisitingMode == TreeVisitingMode.TopDown && !SkipVisitNode(visitor, parentNode))
 				visitor.Visit(this, parentNode);
 
-			if (!SkipChildren(visitor, this, parentNode)) {
+			if (!SkipChildren(visitor, this, parentNode))
+			{
 				foreach (var node in Properties.Values.ToList())
 					node.Accept(visitor, this);
 				foreach (var node in CollectionItems)
 					node.Accept(visitor, this);
 			}
 
-			if (!SkipVisitNode(visitor, parentNode) && visitor.VisitingMode == TreeVisitingMode.BottomUp)
+			if (visitor.VisitingMode == TreeVisitingMode.BottomUp && !SkipVisitNode(visitor, parentNode))
 				visitor.Visit(this, parentNode);
 
 		}
@@ -175,7 +178,8 @@ namespace Xamarin.Forms.Xaml
 
 		public override INode Clone()
 		{
-			var clone = new ElementNode(XmlType, NamespaceURI, NamespaceResolver, LineNumber, LinePosition) {
+			var clone = new ElementNode(XmlType, NamespaceURI, NamespaceResolver, LineNumber, LinePosition)
+			{
 				IgnorablePrefixes = IgnorablePrefixes
 			};
 			foreach (var kvp in Properties)
@@ -196,17 +200,18 @@ namespace Xamarin.Forms.Xaml
 
 		public override void Accept(IXamlNodeVisitor visitor, INode parentNode)
 		{
-			if (!SkipVisitNode(visitor, parentNode) && visitor.VisitingMode == TreeVisitingMode.TopDown)
+			if (visitor.VisitingMode == TreeVisitingMode.TopDown && !SkipVisitNode(visitor, parentNode))
 				visitor.Visit(this, parentNode);
 
-			if (!SkipChildren(visitor, this, parentNode)) {
+			if (!SkipChildren(visitor, this, parentNode))
+			{
 				foreach (var node in Properties.Values.ToList())
 					node.Accept(visitor, this);
 				foreach (var node in CollectionItems)
 					node.Accept(visitor, this);
 			}
 
-			if (!SkipVisitNode(visitor, parentNode) && visitor.VisitingMode == TreeVisitingMode.BottomUp)
+			if (visitor.VisitingMode == TreeVisitingMode.BottomUp && !SkipVisitNode(visitor, parentNode))
 				visitor.Visit(this, parentNode);
 		}
 	}
@@ -237,7 +242,8 @@ namespace Xamarin.Forms.Xaml
 			var items = new List<INode>();
 			foreach (var p in CollectionItems)
 				items.Add(p.Clone());
-			return new ListNode(items, NamespaceResolver, LineNumber, LinePosition) {
+			return new ListNode(items, NamespaceResolver, LineNumber, LinePosition)
+			{
 				IgnorablePrefixes = IgnorablePrefixes
 			};
 		}
@@ -247,7 +253,8 @@ namespace Xamarin.Forms.Xaml
 	{
 		public static bool SkipPrefix(this INode node, string prefix)
 		{
-			do {
+			do
+			{
 				if (node.IgnorablePrefixes != null && node.IgnorablePrefixes.Contains(prefix))
 					return true;
 				node = node.Parent;

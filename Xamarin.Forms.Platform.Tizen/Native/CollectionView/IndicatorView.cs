@@ -6,15 +6,15 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 {
 	public class IndicatorView : Index
 	{
+		const int OddMiddleItem = 10;
+		const int EvenMiddleItem = 11;
 		List<IndexItem> _list = new List<IndexItem>();
 
 		public IndicatorView(EvasObject parent) : base(parent)
 		{
 			AutoHide = false;
 			IsHorizontal = true;
-			Style = "pagecontrol";
-			if (Device.Idiom == TargetIdiom.Watch)
-				Style = "circle";
+			this.SetStyledIndex();
 		}
 
 		public event EventHandler<SelectedPositionChangedEventArgs> SelectedPosition;
@@ -53,20 +53,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 			foreach (var item in _list)
 			{
-				int center = 10;
-				int start = center - (_list.Count / 2);
-				int index = _list.IndexOf(item);
-				int position = start + index;
-				if (_list.Count % 2 == 0)
-				{
-					string itemStyle = "item/even_" + position;
-					item.Style = itemStyle;
-				}
-				else
-				{
-					string itemStyle = "item/odd_" + position;
-					item.Style = itemStyle;
-				}
+				item.SetIndexItemStyle(_list.Count, _list.IndexOf(item), EvenMiddleItem, OddMiddleItem);
 			}
 		}
 

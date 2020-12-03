@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using AppKit;
+using CoreGraphics;
 using Foundation;
 
 namespace Xamarin.Forms.Platform.MacOS
@@ -9,8 +10,19 @@ namespace Xamarin.Forms.Platform.MacOS
 	{
 		const string NewLineSelector = "insertNewline";
 		bool _disposed;
+		CGSize _previousSize;
 
 		IEditorController ElementController => Element;
+
+		public override void Layout()
+		{
+			base.Layout();
+
+			if (_previousSize != Bounds.Size)
+				SetBackground(Element.Background);
+
+			_previousSize = Bounds.Size;
+		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Editor> e)
 		{
@@ -49,7 +61,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Editor.TextProperty.PropertyName)
+			if (e.PropertyName == Editor.TextProperty.PropertyName ||
+				e.PropertyName == Editor.TextTransformProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateEditable();
@@ -86,6 +99,17 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 
 			base.SetBackgroundColor(color);
+		}
+
+		protected override void SetBackground(Brush brush)
+		{
+			if (Control == null)
+				return;
+
+			var backgroundImage = this.GetBackgroundImage(brush);
+			Control.BackgroundColor = backgroundImage != null ? NSColor.FromPatternImage(backgroundImage) : NSColor.Clear;
+
+			base.SetBackground(brush);
 		}
 
 		protected override void Dispose(bool disposing)
@@ -133,8 +157,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateText()
 		{
-			if (Control.StringValue != Element.Text)
-				Control.StringValue = Element.Text ?? string.Empty;
+			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
+			if (Control.StringValue != text)
+				Control.StringValue = text;
 		}
 
 		void UpdateTextColor()

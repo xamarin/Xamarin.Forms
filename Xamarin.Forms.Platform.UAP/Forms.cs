@@ -5,12 +5,10 @@ using System.Linq;
 using System.Reflection;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Resources.Core;
-using Windows.Foundation.Metadata;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.UWP;
+using WSolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 
 namespace Xamarin.Forms
 {
@@ -27,10 +25,10 @@ namespace Xamarin.Forms
 			if (IsInitialized)
 				return;
 
-			var accent = (SolidColorBrush)Windows.UI.Xaml.Application.Current.Resources["SystemColorControlAccentBrush"];
+			var accent = (WSolidColorBrush)Windows.UI.Xaml.Application.Current.Resources["SystemColorControlAccentBrush"];
 			Color.SetAccent(accent.ToFormsColor());
 
-#if UWP_14393
+#if !UWP_16299
 			Log.Listeners.Add(new DelegateLogListener((c, m) => Debug.WriteLine(LogFormat, c, m)));
 #else
 			Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
@@ -43,6 +41,13 @@ namespace Xamarin.Forms
 			try
 			{
 				Windows.UI.Xaml.Application.Current.Resources.MergedDictionaries.Add(new Microsoft.UI.Xaml.Controls.XamlControlsResources());
+#if UWP_16299
+				Windows.UI.Xaml.Application.Current.Resources.MergedDictionaries.Add(
+					new Windows.UI.Xaml.ResourceDictionary
+					{
+						Source = new Uri("ms-appx:///Xamarin.Forms.Platform.UAP/Shell/ShellStyles.xbf")
+					});
+#endif
 			}
 			catch
 			{
@@ -51,7 +56,12 @@ namespace Xamarin.Forms
 
 			Device.SetIdiom(TargetIdiom.Tablet);
 			Device.SetFlowDirection(GetFlowDirection());
-			Device.PlatformServices = new WindowsPlatformServices(Window.Current.Dispatcher);
+
+			var platformServices = new WindowsPlatformServices(Window.Current.Dispatcher);
+
+			Device.PlatformServices = platformServices;
+			Device.PlatformInvalidator = platformServices;
+			
 			Device.SetFlags(s_flags);
 			Device.Info = new WindowsDeviceInfo();
 

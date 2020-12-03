@@ -15,6 +15,8 @@ namespace Xamarin.Forms.Maps
 
 		public static readonly BindableProperty IsShowingUserProperty = BindableProperty.Create("IsShowingUser", typeof(bool), typeof(Map), default(bool));
 
+		public static readonly BindableProperty TrafficEnabledProperty = BindableProperty.Create("TrafficEnabled", typeof(bool), typeof(Map), default(bool));
+
 		public static readonly BindableProperty HasScrollEnabledProperty = BindableProperty.Create("HasScrollEnabled", typeof(bool), typeof(Map), true);
 
 		public static readonly BindableProperty HasZoomEnabledProperty = BindableProperty.Create("HasZoomEnabled", typeof(bool), typeof(Map), true);
@@ -66,6 +68,12 @@ namespace Xamarin.Forms.Maps
 			set { SetValue(IsShowingUserProperty, value); }
 		}
 
+		public bool TrafficEnabled
+		{
+			get => (bool)GetValue(TrafficEnabledProperty);
+			set => SetValue(TrafficEnabledProperty, value);
+		}
+
 		public MapType MapType
 		{
 			get { return (MapType)GetValue(MapTypeProperty); }
@@ -100,11 +108,11 @@ namespace Xamarin.Forms.Maps
 			get { return (bool)GetValue(MoveToLastRegionOnLayoutChangeProperty); }
 			set { SetValue(MoveToLastRegionOnLayoutChangeProperty, value); }
 		}
-        
+
 		public IList<MapElement> MapElements => _mapElements;
 
 		public event EventHandler<MapClickedEventArgs> MapClicked;
-		
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendMapClicked(Position position) => MapClicked?.Invoke(this, new MapClickedEventArgs(position));
 

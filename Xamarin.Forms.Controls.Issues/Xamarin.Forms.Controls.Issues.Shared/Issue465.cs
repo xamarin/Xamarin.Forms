@@ -15,32 +15,38 @@ using Xamarin.UITest;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Github, 465, "Change in Navigation.PushModal", PlatformAffected.All)]
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+#endif
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 465, "Change in Navigation.PushModal", PlatformAffected.All)]
 	public class Issue465 : TestTabbedPage
 	{
-		protected override async void Init ()
+		protected override async void Init()
 		{
-			Children.Add (
-				new ContentPage {
-					Content = new Label {
+			Children.Add(
+				new ContentPage
+				{
+					Content = new Label
+					{
 						Text = "I was popppppped"
 					}
 				}
 			);
 
-			await Navigation.PushModalAsync (new ModalPage ());
+			await Navigation.PushModalAsync(new ModalPage());
 		}
-			
-		[Preserve (AllMembers = true)]
+
+		[Preserve(AllMembers = true)]
 		public class ModalPage : ContentPage
 		{
-			public ModalPage ()
+			public ModalPage()
 			{
-				var popButton = new Button {
+				var popButton = new Button
+				{
 					Text = "Pop this page"
 				};
-				popButton.Clicked += (s, e) => Navigation.PopModalAsync ();
+				popButton.Clicked += (s, e) => Navigation.PopModalAsync();
 
 				Content = popButton;
 			}

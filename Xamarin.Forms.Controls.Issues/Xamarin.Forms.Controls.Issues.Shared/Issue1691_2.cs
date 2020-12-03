@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
 using Xamarin.Forms;
-using Xamarin.Forms.Internals;
 using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
-
 using WindowsOS = Xamarin.Forms.PlatformConfiguration.Windows;
 
 #if UITEST
@@ -17,6 +15,9 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1691, "[Enhancement] Add SearchBar platform specific for IsSpellCheckEnabled",
 		PlatformAffected.UWP, issueTestNumber: 2)]
@@ -41,8 +42,9 @@ namespace Xamarin.Forms.Controls.Issues
 			_searchBarToggleSpellCheck = new SearchBar();
 
 			_toggleSpellCheckButton = new Button { Text = "Enable SpellCheck" };
-			_toggleSpellCheckButton.Clicked += (object sender, EventArgs e) => {
-				if(_searchBarToggleSpellCheck.On<WindowsOS>().IsSpellCheckEnabled())
+			_toggleSpellCheckButton.Clicked += (object sender, EventArgs e) =>
+			{
+				if (_searchBarToggleSpellCheck.On<WindowsOS>().IsSpellCheckEnabled())
 				{
 					_searchBarToggleSpellCheck.On<WindowsOS>().DisableSpellCheck();
 					_toggleSpellCheckButton.Text = "Enable SpellCheck";
@@ -54,7 +56,8 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			};
 
-			Content = new StackLayout {
+			Content = new StackLayout
+			{
 				Children = {
 					searchBarWithSpellCheckLabel,
 					_searchBarWithSpellCheck,

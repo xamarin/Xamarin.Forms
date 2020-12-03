@@ -3,15 +3,16 @@ using System.ComponentModel;
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Text;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
+using Windows.UI.Xaml.Controls.Primitives;
+using WBrush = Windows.UI.Xaml.Media.Brush;
 
 namespace Xamarin.Forms.Platform.UWP
 {
 	public class TimePickerRenderer : ViewRenderer<TimePicker, Windows.UI.Xaml.Controls.TimePicker>, ITabStopOnDescendants
 	{
-		Brush _defaultBrush;
+		WBrush _defaultBrush;
 		bool _fontApplied;
 		FontFamily _defaultFontFamily;
 
@@ -52,6 +53,18 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
+		internal override void OnElementFocusChangeRequested(object sender, VisualElement.FocusRequestArgs args)
+		{
+			base.OnElementFocusChangeRequested(sender, args);
+
+			// Show a picker fly out on focus to match iOS and Android behavior
+			var flyout = new TimePickerFlyout { Placement = FlyoutPlacementMode.Bottom, Time = Control.Time };
+			flyout.TimePicked += (p, e) => Control.Time = p.Time;
+			if (!Element.IsVisible)
+				flyout.Placement = FlyoutPlacementMode.Full;
+			flyout.ShowAt(Control);
+		}
+
 		void ControlOnLoaded(object sender, RoutedEventArgs routedEventArgs)
 		{
 			WireUpFormsVsm();
@@ -84,7 +97,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == TimePicker.TimeProperty.PropertyName)
+			if (e.PropertyName == TimePicker.TimeProperty.PropertyName || e.PropertyName == TimePicker.FormatProperty.PropertyName)
 				UpdateTime();
 			else if (e.PropertyName == TimePicker.TextColorProperty.PropertyName)
 				UpdateTextColor();
@@ -151,6 +164,14 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateTime()
 		{
 			Control.Time = Element.Time;
+			if (Element.Format?.Contains('H') == true)
+			{
+				Control.ClockIdentifier = "24HourClock";
+			}
+			else
+			{
+				Control.ClockIdentifier = "12HourClock";
+			}
 		}
 
 		void UpdateCharacterSpacing()

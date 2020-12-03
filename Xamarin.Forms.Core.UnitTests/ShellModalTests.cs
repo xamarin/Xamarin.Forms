@@ -243,7 +243,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			await shell.GoToAsync("ModalTestPage");
 			Assert.AreEqual("//NewRoute/Section/Content/ModalTestPage", shell.CurrentState.Location.ToString());
-			
+
 			await shell.GoToAsync("ModalTestPage");
 			Assert.AreEqual("//NewRoute/Section/Content/ModalTestPage/ModalTestPage", shell.CurrentState.Location.ToString());
 		}
@@ -262,7 +262,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				{
 					action();
 				}
-				catch(InvalidOperationException) 
+				catch (InvalidOperationException)
 				{
 					invalidOperationThrown = true;
 				}
@@ -340,9 +340,27 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNotNull(shellNavigatingEventArgs, "Shell.Navigating never fired");
 			Assert.IsNotNull(shellNavigatedEventArgs, "Shell.Navigated never fired");
 
-			Assert.AreEqual("//NewRoute/Section/Content/", shellNavigatingEventArgs.Current.FullLocation.ToString());
+			Assert.AreEqual("//NewRoute/Section/Content", shellNavigatingEventArgs.Current.FullLocation.ToString());
 			Assert.AreEqual("//NewRoute/Section/Content/ModalTestPage", shellNavigatedEventArgs.Current.FullLocation.ToString());
 
+		}
+
+		[Test]
+		public async Task GetCurrentPageInModalNavigation()
+		{
+			Shell shell = new Shell();
+			shell.Items.Add(CreateShellItem(shellItemRoute: "NewRoute", shellSectionRoute: "Section", shellContentRoute: "Content"));
+
+			Page page = null;
+
+			shell.Navigated += (_, __) =>
+			{
+				page = shell.CurrentPage;
+			};
+
+			await shell.GoToAsync("ModalTestPage");
+			Assert.IsNotNull(page);
+			Assert.AreEqual(page.GetType(), typeof(ModalTestPage));
 		}
 
 
@@ -364,7 +382,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			{
 				base.OnAppearing();
 			}
-			
+
 
 			protected override void OnParentSet()
 			{

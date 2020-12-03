@@ -8,13 +8,16 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 52318, "OnAppearing/Disappearing triggers for all pages in navigationstack backgrounding/foregrounding app", PlatformAffected.Android)]
-	public class Bugzilla52318 : TestMasterDetailPage // or TestMasterDetailPage, etc ...
+	public class Bugzilla52318 : TestFlyoutPage // or TestFlyoutPage, etc ...
 	{
 		protected override void Init()
 		{
-			Master = new ContentPage { Title = "Master page", Content = new Label { Text = "Master page" } };
+			Flyout = new ContentPage { Title = "Flyout page", Content = new Label { Text = "Flyout page" } };
 			Detail = new NavigationPage(new ContentPage52318());
 		}
 	}

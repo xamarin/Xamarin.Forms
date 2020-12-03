@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-
-using Xamarin.Forms;
-using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Threading.Tasks;
+using Xamarin.Forms;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -15,6 +14,9 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 4356, "[iOS] NSInternalInconsistencyException thrown when adding item to ListView after clearing bound ObservableCollection")]
 	public partial class Issue4356 : TestContentPage

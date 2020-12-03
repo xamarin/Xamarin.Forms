@@ -1,9 +1,7 @@
 ﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
 using System.Collections.Generic;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Linq;
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
@@ -13,11 +11,12 @@ using Xamarin.Forms.Core.UITests;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
-	[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
+	[Category(UITestCategories.UwpIgnore)]
+	[Category(UITestCategories.Bugzilla)]
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 26993, "https://bugzilla.xamarin.com/show_bug.cgi?id=26993")]
-	public class Bugzilla26993 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Bugzilla26993 : TestContentPage // or TestFlyoutPage, etc ...
 	{
 		[Preserve(AllMembers = true)]
 		public class Bz26993ViewCell : ViewCell
@@ -130,5 +129,5 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot("I see the Label");
 		}
 #endif
-		}
+	}
 }

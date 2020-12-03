@@ -9,13 +9,16 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 44047, "Memory leak when using SetBackButtonTitle on iOS", PlatformAffected.iOS)]
-	public class Bugzilla44047 : TestMasterDetailPage
+	public class Bugzilla44047 : TestFlyoutPage
 	{
 		protected override void Init()
 		{
-			Master = new ContentPage
+			Flyout = new ContentPage
 			{
 				Title = "Menu"
 			};

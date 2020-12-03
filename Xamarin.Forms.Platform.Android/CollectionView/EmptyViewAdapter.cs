@@ -1,13 +1,7 @@
 using System;
 using Android.Content;
-using Android.Content.Res;
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
-using AndroidX.RecyclerView.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
 using Android.Views;
+using AndroidX.RecyclerView.Widget;
 using Object = Java.Lang.Object;
 
 namespace Xamarin.Forms.Platform.Android
@@ -84,7 +78,7 @@ namespace Xamarin.Forms.Platform.Android
 				_emptyItemViewType += 1;
 			}
 		}
-		
+
 		public DataTemplate EmptyViewTemplate
 		{
 			get => _emptyViewTemplate;
@@ -208,13 +202,18 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (template != null)
 			{
-				var footerContentView = new ItemContentView(context);
-				return new TemplatedItemViewHolder(footerContentView, template, isSelectionEnabled: false);
+				var itemContentView = new ItemContentView(context);
+				return new TemplatedItemViewHolder(itemContentView, template, isSelectionEnabled: false);
 			}
 
 			if (content is View formsView)
 			{
-				return SimpleViewHolder.FromFormsView(formsView, context);
+				var viewHolder = SimpleViewHolder.FromFormsView(formsView, context);
+
+				// Propagate the binding context, visual, etc. from the ItemsView to the header/footer
+				ItemsView.AddLogicalChild(viewHolder.View);
+
+				return viewHolder;
 			}
 
 			// No template, Footer is not a Forms View, so just display Footer.ToString
@@ -277,7 +276,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		int GetWidth(ViewGroup parent)
-		{	
+		{
 			return parent.MeasuredWidth;
 		}
 

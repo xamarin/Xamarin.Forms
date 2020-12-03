@@ -62,7 +62,7 @@ namespace Xamarin.Forms
 			get
 			{
 				if (info == null)
-					throw new InvalidOperationException("You MUST call Xamarin.Forms.Init(); prior to using it.");
+					throw new InvalidOperationException("You must call Xamarin.Forms.Forms.Init(); prior to using this property.");
 				return info;
 			}
 			set { info = value; }
@@ -84,11 +84,13 @@ namespace Xamarin.Forms
 			get
 			{
 				if (s_platformServices == null)
-					throw new InvalidOperationException("You MUST call Xamarin.Forms.Init(); prior to using it.");
+					throw new InvalidOperationException("You must call Xamarin.Forms.Forms.Init(); prior to using this property.");
 				return s_platformServices;
 			}
 			set { s_platformServices = value; }
 		}
+
+		public static IPlatformInvalidate PlatformInvalidator { get; set; }
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static IReadOnlyList<string> Flags { get; private set; }
@@ -124,7 +126,8 @@ namespace Xamarin.Forms
 
 		public static Task InvokeOnMainThreadAsync(Action action)
 		{
-			object wrapAction() { action(); return null; }
+			object wrapAction()
+			{ action(); return null; }
 			return InvokeOnMainThreadAsync((Func<object>)wrapAction);
 		}
 
@@ -132,7 +135,7 @@ namespace Xamarin.Forms
 		{
 			var tcs = new TaskCompletionSource<T>();
 			BeginInvokeOnMainThread(
-				async() =>
+				async () =>
 				{
 					try
 					{
@@ -151,7 +154,8 @@ namespace Xamarin.Forms
 
 		public static Task InvokeOnMainThreadAsync(Func<Task> funcTask)
 		{
-			async Task<object> wrapFunction() { await funcTask().ConfigureAwait(false); return null; }
+			async Task<object> wrapFunction()
+			{ await funcTask().ConfigureAwait(false); return null; }
 			return InvokeOnMainThreadAsync(wrapFunction);
 		}
 
@@ -224,7 +228,7 @@ namespace Xamarin.Forms
 			return iOS;
 		}
 
-		[Obsolete("OpenUri is obsolete as of version 4.3.0. Use Launcher.OpenUri (or CanOpen, or TryOpen) from Xamarin.Essentials")]
+		[Obsolete("OpenUri is obsolete as of version 4.3.0. Use Launcher.OpenAsync (or CanOpenAsync, or TryOpenAsync) from Xamarin.Essentials instead.")]
 		public static void OpenUri(Uri uri)
 		{
 			PlatformServices.OpenUriAction(uri);
@@ -282,6 +286,11 @@ namespace Xamarin.Forms
 			public static readonly Style ListItemDetailTextStyle = new Style(typeof(Label)) { BaseResourceKey = ListItemDetailTextStyleKey };
 
 			public static readonly Style CaptionStyle = new Style(typeof(Label)) { BaseResourceKey = CaptionStyleKey };
+		}
+
+		public static void Invalidate(VisualElement visualElement)
+		{
+			PlatformInvalidator?.Invalidate(visualElement);
 		}
 	}
 }

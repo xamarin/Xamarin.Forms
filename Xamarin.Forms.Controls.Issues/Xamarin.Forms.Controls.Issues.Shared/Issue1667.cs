@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.ComponentModel;
-
+using System.Linq;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -100,7 +99,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement("CursorTextEntry");
 
-			RunningApp.ClearText( "CursorStart");
+			RunningApp.ClearText("CursorStart");
 			RunningApp.EnterText("CursorStart", "2");
 			RunningApp.ClearText("SelectionLength");
 			RunningApp.EnterText("SelectionLength", "3");

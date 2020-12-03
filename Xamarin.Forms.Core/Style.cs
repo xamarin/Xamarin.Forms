@@ -26,7 +26,7 @@ namespace Xamarin.Forms
 
 		IList<TriggerBase> _triggers;
 
-		public Style([TypeConverter(typeof(TypeTypeConverter))] [Parameter("TargetType")] Type targetType)
+		public Style([TypeConverter(typeof(TypeTypeConverter))][Parameter("TargetType")] Type targetType)
 		{
 			TargetType = targetType ?? throw new ArgumentNullException(nameof(targetType));
 			Setters = new List<Setter>();
@@ -62,8 +62,7 @@ namespace Xamarin.Forms
 				//update all DynamicResources
 				foreach (WeakReference<BindableObject> bindableWr in _targets)
 				{
-					BindableObject target;
-					if (!bindableWr.TryGetTarget(out target))
+					if (!bindableWr.TryGetTarget(out BindableObject target))
 						continue;
 					target.RemoveDynamicResource(_basedOnResourceProperty);
 					if (value != null)
@@ -74,10 +73,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public IList<Behavior> Behaviors
-		{
-			get { return _behaviors ?? (_behaviors = new AttachedCollection<Behavior>()); }
-		}
+		public IList<Behavior> Behaviors => _behaviors ??= new AttachedCollection<Behavior>();
 
 		public bool CanCascade { get; set; }
 
@@ -85,10 +81,7 @@ namespace Xamarin.Forms
 
 		public IList<Setter> Setters { get; }
 
-		public IList<TriggerBase> Triggers
-		{
-			get { return _triggers ?? (_triggers = new AttachedCollection<TriggerBase>()); }
-		}
+		public IList<TriggerBase> Triggers => _triggers ??= new AttachedCollection<TriggerBase>();
 
 		void IStyle.Apply(BindableObject bindable)
 		{
@@ -106,11 +99,10 @@ namespace Xamarin.Forms
 		{
 			UnApplyCore(bindable, BasedOn ?? GetBasedOnResource(bindable));
 			bindable.RemoveDynamicResource(_basedOnResourceProperty);
-			_targets.RemoveAll(wr =>
+			lock (_targets)
 			{
-				BindableObject target;
-				return wr.TryGetTarget(out target) && target == bindable;
-			});
+				_targets.RemoveAll(wr => wr != null && wr.TryGetTarget(out BindableObject target) && target == bindable);
+			}
 		}
 
 		internal bool CanBeAppliedTo(Type targetType)
@@ -143,8 +135,7 @@ namespace Xamarin.Forms
 		{
 			foreach (WeakReference<BindableObject> bindableRef in _targets)
 			{
-				BindableObject bindable;
-				if (!bindableRef.TryGetTarget(out bindable))
+				if (!bindableRef.TryGetTarget(out BindableObject bindable))
 					continue;
 
 				UnApplyCore(bindable, oldValue);
@@ -152,10 +143,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		Style GetBasedOnResource(BindableObject bindable)
-		{
-			return (Style)bindable.GetValue(_basedOnResourceProperty);
-		}
+		Style GetBasedOnResource(BindableObject bindable) => (Style)bindable.GetValue(_basedOnResourceProperty);
 
 		static void OnBasedOnResourceChanged(BindableObject bindable, object oldValue, object newValue)
 		{
@@ -187,12 +175,13 @@ namespace Xamarin.Forms
 		void CleanUpWeakReferences()
 		{
 			if (_targets.Count < _cleanupThreshold)
-			{
 				return;
-			}
 
-			_targets.RemoveAll(t => t == null || !t.TryGetTarget(out _));
-			_cleanupThreshold = _targets.Count + CleanupTrigger;
+			lock (_targets)
+			{
+				_targets.RemoveAll(t => t == null || !t.TryGetTarget(out _));
+				_cleanupThreshold = _targets.Count + CleanupTrigger;
+			}
 		}
 	}
 }

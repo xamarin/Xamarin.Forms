@@ -4,11 +4,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
-using System.Windows.Input;
 
 #if UITEST
 using Xamarin.UITest.Queries;
@@ -17,6 +17,9 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1455, "Context action are not changed when selected item changed on Android", PlatformAffected.Android)]
 	public partial class Issue1455 : TestContentPage
@@ -30,7 +33,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 		MyViewModel ViewModel
 		{
-			get {
+			get
+			{
 				return (MyViewModel)BindingContext;
 			}
 		}

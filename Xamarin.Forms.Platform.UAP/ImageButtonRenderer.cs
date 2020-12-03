@@ -1,14 +1,14 @@
 using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 using Xamarin.Forms.Internals;
-using WThickness = Windows.UI.Xaml.Thickness;
-using WImage = Windows.UI.Xaml.Controls.Image;
 using Windows.UI.Xaml.Input;
-using System.Threading.Tasks;
-using System.Diagnostics;
+using WBrush = Windows.UI.Xaml.Media.Brush;
+using WImage = Windows.UI.Xaml.Controls.Image;
+using WStretch = Windows.UI.Xaml.Media.Stretch;
+using WThickness = Windows.UI.Xaml.Thickness;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -23,7 +23,6 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			ImageElementManager.Init(this);
 		}
-
 
 		protected override void Dispose(bool disposing)
 		{
@@ -81,7 +80,7 @@ namespace Xamarin.Forms.Platform.UWP
 					{
 						VerticalAlignment = VerticalAlignment.Center,
 						HorizontalAlignment = HorizontalAlignment.Center,
-						Stretch = Stretch.Uniform,
+						Stretch = WStretch.Uniform,
 					};
 
 					_image.ImageOpened += OnImageOpened;
@@ -102,7 +101,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 				//TODO: We may want to revisit this strategy later. If a user wants to reset any of these to the default, the UI won't update.
 				if (Element.IsSet(VisualElement.BackgroundColorProperty) && Element.BackgroundColor != (Color)VisualElement.BackgroundColorProperty.DefaultValue)
-					UpdateBackground();
+					UpdateImageButtonBackground();
+
+				if (Element.IsSet(VisualElement.BackgroundProperty) && Element.Background != (Brush)VisualElement.BackgroundProperty.DefaultValue)
+					UpdateImageButtonBackground();
 
 				if (Element.IsSet(ImageButton.BorderColorProperty) && Element.BorderColor != (Color)ImageButton.BorderColorProperty.DefaultValue)
 					UpdateBorderColor();
@@ -183,9 +185,9 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
 			{
-				UpdateBackground();
+				UpdateImageButtonBackground();
 			}
 			else if (e.PropertyName == ImageButton.BorderColorProperty.PropertyName)
 			{
@@ -226,6 +228,11 @@ namespace Xamarin.Forms.Platform.UWP
 			return;
 		}
 
+		protected override void UpdateBackground()
+		{
+			return;
+		}
+
 		protected override bool PreventGestureBubbling { get; set; } = true;
 
 		bool IImageVisualElementRenderer.IsDisposed => _disposed;
@@ -241,14 +248,17 @@ namespace Xamarin.Forms.Platform.UWP
 			((IButtonController)Element)?.SendPressed();
 		}
 
-		void UpdateBackground()
+		void UpdateImageButtonBackground()
 		{
-			Control.BackgroundColor = Element.BackgroundColor != Color.Default ? Element.BackgroundColor.ToBrush() : (Brush)Windows.UI.Xaml.Application.Current.Resources["ButtonBackgroundThemeBrush"];
+			if (Brush.IsNullOrEmpty(Element.Background))
+				Control.BackgroundColor = Element.BackgroundColor != Color.Default ? Element.BackgroundColor.ToBrush() : (WBrush)Windows.UI.Xaml.Application.Current.Resources["ButtonBackgroundThemeBrush"];
+			else
+				Control.BackgroundColor = Element.Background.ToBrush();
 		}
 
 		void UpdateBorderColor()
 		{
-			Control.BorderBrush = Element.BorderColor != Color.Default ? Element.BorderColor.ToBrush() : (Brush)Windows.UI.Xaml.Application.Current.Resources["ButtonBorderThemeBrush"];
+			Control.BorderBrush = Element.BorderColor != Color.Default ? Element.BorderColor.ToBrush() : (WBrush)Windows.UI.Xaml.Application.Current.Resources["ButtonBorderThemeBrush"];
 		}
 
 		void UpdateBorderRadius()

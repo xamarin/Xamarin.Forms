@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -16,7 +15,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var stateGroups = new VisualStateGroupList();
 			var visualStateGroup = new VisualStateGroup();
-			
+
 			var normalState = new VisualState { Name = NormalStateName };
 
 			var greenStateTrigger = new CompareStateTrigger { Property = TestEntry.Text, Value = "Test" };
@@ -36,13 +35,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			return stateGroups;
 		}
 
-
-		[SetUp]
-		public void Setup()
-		{
-			Device.SetFlags(new List<string> { ExperimentalFlags.StateTriggersExperimental });
-		}
-
 		[Test]
 		public void InitialStateIsNormalIfAvailable()
 		{
@@ -59,7 +51,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void StateTriggerDefaultVisualState()
 		{
 			var grid = new Grid();
-			
+
 			TestEntry.Text = string.Empty;
 
 			grid.Children.Add(TestEntry);

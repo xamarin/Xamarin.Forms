@@ -1,7 +1,7 @@
 ﻿using System;
-using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using WRect = Windows.Foundation.Rect; 
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -89,7 +89,7 @@ namespace Xamarin.Forms.Platform.UWP
 				else
 				{
 					Opacity = 1;
-					FrameworkElement?.Arrange(new Rect(_view.X, _view.Y, _view.Width, _view.Height));
+					FrameworkElement?.Arrange(new WRect(_view.X, _view.Y, _view.Width, _view.Height));
 				}
 				_view.IsInNativeLayout = false;
 
@@ -114,8 +114,6 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					result = new Windows.Foundation.Size(request.Width, request.Height);
 				}
-
-				Layout.LayoutChildIntoBoundingRegion(_view, new Rectangle(0, 0, result.Width, result.Height));
 
 				FrameworkElement?.Measure(availableSize);
 

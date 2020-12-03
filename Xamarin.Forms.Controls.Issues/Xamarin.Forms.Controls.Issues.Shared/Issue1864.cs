@@ -1,6 +1,6 @@
-﻿using Xamarin.Forms.CustomAttributes;
+﻿using System.Collections.ObjectModel;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Collections.ObjectModel;
 
 #if UITEST
 using Xamarin.UITest;
@@ -10,6 +10,9 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1864, "[WPF] Xamarin.Forms WPF load local html throw ArgumentException with message 'Relative URIs are not allowed'", PlatformAffected.WPF)]
 	public class Issue1864 : TestContentPage

@@ -7,15 +7,16 @@ using EButton = ElmSharp.Button;
 using EColor = ElmSharp.Color;
 using EImage = ElmSharp.Image;
 using ELayout = ElmSharp.Layout;
+using ERect = ElmSharp.Rect;
 using EWidget = ElmSharp.Widget;
 
 namespace Xamarin.Forms.Platform.Tizen.Watch
 {
 	public class NavigationDrawer : ELayout, IAnimatable
 	{
-		static readonly int TouchWidth = 50;
-		static readonly int IconSize = 40;
-		static readonly string DefaultIcon = "Xamarin.Forms.Platform.Tizen.Resource.wc_visual_cue.png";
+		static readonly int TouchWidth = ThemeConstants.Shell.Resources.Watch.DefaultDrawerTouchWidth;
+		static readonly int IconSize = ThemeConstants.Shell.Resources.Watch.DefaultDrawerIconSize;
+		static readonly string DefaultIcon = ThemeConstants.Shell.Resources.Watch.DefaultDrawerIcon;
 
 		Box _mainLayout;
 		Box _contentGestureBox;
@@ -240,7 +241,7 @@ namespace Xamarin.Forms.Platform.Tizen.Watch
 				Color = EColor.Transparent,
 				BackgroundColor = EColor.Transparent,
 			};
-			_touchArea.SetPartColor("effect", EColor.Transparent);
+			_touchArea.SetEffectColor(EColor.Transparent);
 			_touchArea.Show();
 			_touchArea.RepeatEvents = true;
 			_touchArea.Clicked += OnIconClicked;
@@ -492,7 +493,7 @@ namespace Xamarin.Forms.Platform.Tizen.Watch
 			_drawerIcon.Orientation = ImageOrientation.None;
 		}
 
-		Task RunMoveAnimation(EvasObject target, Rect dest, uint length, Easing easing = null)
+		Task RunMoveAnimation(EvasObject target, ERect dest, uint length, Easing easing = null)
 		{
 			var tcs = new TaskCompletionSource<bool>();
 

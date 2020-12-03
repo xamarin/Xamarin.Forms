@@ -9,14 +9,17 @@ using Xamarin.Forms.CustomAttributes;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Bugzilla)]
+#endif
 	[Issue(IssueTracker.Bugzilla, 39483, "ListView Context Menu localization", PlatformAffected.iOS)]
 	public partial class Bugzilla39483 : ContentPage
 	{
-		public Bugzilla39483 ()
+		public Bugzilla39483()
 		{
 #if APP
 
-			InitializeComponent ();
+			InitializeComponent();
 
 			BindingContext = new DemoViewModel();
 
@@ -42,7 +45,9 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				return _dataList;
 			}
-			set { _dataList = value;
+			set
+			{
+				_dataList = value;
 				OnPropertyChanged();
 			}
 		}

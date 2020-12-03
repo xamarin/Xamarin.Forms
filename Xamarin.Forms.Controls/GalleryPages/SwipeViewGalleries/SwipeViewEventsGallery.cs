@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 		public SwipeViewEventsGallery()
 		{
 			Title = "SwipeView Events Gallery";
-   
+
 			var swipeLayout = new Grid
 			{
 				RowDefinitions = new RowDefinitionCollection
@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Star }
 				},
-	       		Margin = new Thickness(12)
+				Margin = new Thickness(12)
 			};
 
 			var deleteSwipeItem = new SwipeItem
@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 				deleteSwipeItem
 			};
 
-			leftSwipeItems.Mode = SwipeMode.Execute;
+			leftSwipeItems.Mode = SwipeMode.Reveal;
 
 			var swipeContent = new Grid
 			{
@@ -53,7 +53,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 			var scroll = new ScrollView();
 			var eventsInfo = new Label();
 			scroll.Content = eventsInfo;
-   
+
 			var swipeView = new SwipeView
 			{
 				HeightRequest = 60,
@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 				LeftItems = leftSwipeItems,
 				Content = swipeContent
 			};
-   
+
 			swipeLayout.Children.Add(swipeView, 0, 0);
 			swipeLayout.Children.Add(scroll, 0, 1);
 
@@ -69,8 +69,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 
 			swipeView.SwipeStarted += (sender, e) =>
 			{
-				eventsInfo.Text += $"SwipeStarted - Direction:{e.SwipeDirection}" +  Environment.NewLine;
-   			};
+				eventsInfo.Text += $"SwipeStarted - Direction:{e.SwipeDirection}" + Environment.NewLine;
+			};
 
 			swipeView.SwipeChanging += (sender, e) =>
 			{
@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.SwipeViewGalleries
 
 			swipeView.SwipeEnded += (sender, e) =>
 			{
-				eventsInfo.Text += $"SwipeEnded - Direction:{e.SwipeDirection}" + Environment.NewLine;
+				eventsInfo.Text += $"SwipeEnded - Direction:{e.SwipeDirection}, IsOpen: {e.IsOpen}" + Environment.NewLine;
 			};
 		}
 	}

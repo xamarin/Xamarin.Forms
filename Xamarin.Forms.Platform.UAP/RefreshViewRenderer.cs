@@ -7,6 +7,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.RefreshView;
+using WBrush = Windows.UI.Xaml.Media.Brush;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -142,13 +143,13 @@ namespace Xamarin.Forms.Platform.UWP
 			if (!_isLoaded)
 				return;
 
-			if (!Element.IsRefreshing)
+			if (!Element?.IsRefreshing??false)
 			{
 				CompleteRefresh();
 			}
 			else if (_refreshCompletionDeferral == null)
 			{
-				Control.RequestRefresh();
+				Control?.RequestRefresh();
 			}
 		}
 
@@ -159,7 +160,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			Control.Visualizer.Foreground = Element.RefreshColor != Color.Default
 				? Element.RefreshColor.ToBrush()
-				: (Brush)Windows.UI.Xaml.Application.Current.Resources["DefaultTextForegroundThemeBrush"];
+				: (WBrush)Windows.UI.Xaml.Application.Current.Resources["DefaultTextForegroundThemeBrush"];
 
 			UpdateBackgroundColor();
 		}

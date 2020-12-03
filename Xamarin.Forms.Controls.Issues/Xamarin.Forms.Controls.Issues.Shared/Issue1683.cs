@@ -1,9 +1,8 @@
 ﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
 using System.Collections.Generic;
 using System.Linq;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.UITest;
@@ -13,6 +12,9 @@ using System.Diagnostics;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1683, "Auto Capitalization Implementation")]
 	public class Issue1683 : TestContentPage

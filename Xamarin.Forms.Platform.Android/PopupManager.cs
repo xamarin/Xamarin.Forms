@@ -7,13 +7,8 @@ using Android.Text;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Internals;
-#if __ANDROID_29__
-using AppCompatAlertDialog = AndroidX.AppCompat.App.AlertDialog;
 using AppCompatActivity = AndroidX.AppCompat.App.AppCompatActivity;
-#else
-using AppCompatAlertDialog = global::Android.Support.V7.App.AlertDialog;
-using AppCompatActivity =global::Android.Support.V7.App.AppCompatActivity;
-#endif
+using AppCompatAlertDialog = AndroidX.AppCompat.App.AlertDialog;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -31,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 			s_subscriptions.Add(new PopupRequestHelper(context));
 		}
 
-		internal static void Unsubscribe(Context context)
+		internal static void Unsubscribe(Activity context)
 		{
 			var toRemove = s_subscriptions.Where(s => s.Activity == context).ToList();
 			foreach (PopupRequestHelper popupRequestHelper in toRemove)
@@ -82,7 +77,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					return;
 				}
-				
+
 				_busyCount = Math.Max(0, enabled ? _busyCount + 1 : _busyCount - 1);
 
 				UpdateProgressBarVisibility(_busyCount > 0);
@@ -131,7 +126,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (arguments.Accept != null)
 					alert.SetButton((int)DialogButtonType.Positive, arguments.Accept, (o, args) => arguments.SetResult(true));
 				alert.SetButton((int)DialogButtonType.Negative, arguments.Cancel, (o, args) => arguments.SetResult(false));
-				alert.SetCancelEvent((o, args) => { arguments.SetResult(false); }); 
+				alert.SetCancelEvent((o, args) => { arguments.SetResult(false); });
 				alert.Show();
 			}
 
@@ -161,7 +156,7 @@ namespace Xamarin.Forms.Platform.Android
 					editText.KeyListener = LocalizedDigitsKeyListener.Create(editText.InputType);
 
 				if (arguments.MaxLength > -1)
-					editText.SetFilters(new IInputFilter[]{ new InputFilterLengthFilter(arguments.MaxLength)});
+					editText.SetFilters(new IInputFilter[] { new InputFilterLengthFilter(arguments.MaxLength) });
 
 				frameLayout.AddView(editText);
 				alertDialog.SetView(frameLayout);
@@ -206,7 +201,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			bool PageIsInThisContext(Page page)
 			{
-				var renderer = Platform.GetRenderer(page);
+				var renderer = AppCompat.Platform.GetRenderer(page);
 
 				if (renderer?.View?.Context == null)
 				{
@@ -227,7 +222,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				public DialogBuilder(Activity activity)
 				{
-					if (activity is AppCompatActivity)				
+					if (activity is AppCompatActivity)
 					{
 						_appcompatBuilder = new AppCompatAlertDialog.Builder(activity);
 						_useAppCompat = true;

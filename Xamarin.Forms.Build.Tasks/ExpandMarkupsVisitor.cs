@@ -43,10 +43,11 @@ namespace Xamarin.Forms.Build.Tasks
 				return;
 			if (_skips.Contains(propertyName))
 				return;
-			if (parentNode is IElementNode && ((IElementNode)parentNode).SkipProperties.Contains (propertyName))
+			if (parentNode is IElementNode && ((IElementNode)parentNode).SkipProperties.Contains(propertyName))
 				return;
 			var markupString = markupnode.MarkupString;
-			if (ParseExpression(ref markupString, Context, markupnode.NamespaceResolver, markupnode) is IElementNode node) {
+			if (ParseExpression(ref markupString, Context, markupnode.NamespaceResolver, markupnode) is IElementNode node)
+			{
 				((IElementNode)parentNode).Properties[propertyName] = node;
 				node.Accept(new XamlNodeVisitor((n, parent) => n.Parent = parent), parentNode);
 			}
@@ -69,7 +70,8 @@ namespace Xamarin.Forms.Build.Tasks
 			name = default(XmlName);
 			if (!(parentNode is IElementNode parentElement))
 				return false;
-			foreach (var kvp in parentElement.Properties) {
+			foreach (var kvp in parentElement.Properties)
+			{
 				if (kvp.Value != node)
 					continue;
 				name = kvp.Key;
@@ -85,18 +87,18 @@ namespace Xamarin.Forms.Build.Tasks
 				return new ValueNode(expression.Substring(2), null);
 
 			if (expression[expression.Length - 1] != '}')
-				throw new XamlParseException("Markup expression missing its closing tag", xmlLineInfo);
+				throw new BuildException(BuildExceptionCode.MarkupNotClosed, xmlLineInfo, null);
 
 			if (!MarkupExpressionParser.MatchMarkup(out var match, expression, out var len))
-				throw new XamlParseException("Error while parsing markup expression", xmlLineInfo);
+				throw new BuildException(BuildExceptionCode.MarkupParsingFailed, xmlLineInfo, null);
 			expression = expression.Substring(len).TrimStart();
 			if (expression.Length == 0)
-				throw new XamlParseException("Markup expression not closed", xmlLineInfo);
+				throw new BuildException(BuildExceptionCode.MarkupNotClosed, xmlLineInfo, null);
 
 			var provider = new XamlServiceProvider(null, null);
-			provider.Add(typeof (ILContextProvider), new ILContextProvider(context));
-			provider.Add(typeof (IXmlNamespaceResolver), nsResolver);
-			provider.Add(typeof (IXmlLineInfoProvider), new XmlLineInfoProvider(xmlLineInfo));
+			provider.Add(typeof(ILContextProvider), new ILContextProvider(context));
+			provider.Add(typeof(IXmlNamespaceResolver), nsResolver);
+			provider.Add(typeof(IXmlLineInfoProvider), new XmlLineInfoProvider(xmlLineInfo));
 
 			return new MarkupExpansionParser().Parse(match, ref expression, provider);
 		}
@@ -121,7 +123,7 @@ namespace Xamarin.Forms.Build.Tasks
 				IXmlLineInfo xmlLineInfo = null;
 				if (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) is IXmlLineInfoProvider xmlLineInfoProvider)
 					xmlLineInfo = xmlLineInfoProvider.XmlLineInfo;
-				var contextProvider = serviceProvider.GetService(typeof (ILContextProvider)) as ILContextProvider;
+				var contextProvider = serviceProvider.GetService(typeof(ILContextProvider)) as ILContextProvider;
 
 				var split = match.Split(':');
 				if (split.Length > 2)
@@ -131,7 +133,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 				var namespaceuri = nsResolver.LookupNamespace(prefix) ?? "";
 				if (!string.IsNullOrEmpty(prefix) && string.IsNullOrEmpty(namespaceuri))
-					throw new XamlParseException($"Undeclared xmlns prefix '{prefix}'", xmlLineInfo);
+					throw new BuildException(BuildExceptionCode.XmlnsUndeclared, xmlLineInfo, null, prefix);
 
 				IList<XmlType> typeArguments = null;
 				var childnodes = new List<(XmlName, INode)>();
@@ -146,8 +148,14 @@ namespace Xamarin.Forms.Build.Tasks
 					Property parsed;
 					do
 					{
-						parsed = ParseProperty(serviceProvider, ref remaining);
-
+						try
+						{
+							parsed = ParseProperty(serviceProvider, ref remaining);
+						}
+						catch (XamlParseException xpe)
+						{
+							throw new BuildException(BuildExceptionCode.MarkupParsingFailed, xmlLineInfo, xpe);
+						}
 						XmlName childname;
 
 						if (parsed.name == null)
@@ -181,16 +189,9 @@ namespace Xamarin.Forms.Build.Tasks
 				}
 
 				//The order of lookup is to look for the Extension-suffixed class name first and then look for the class name without the Extension suffix.
-				XmlType type;
-				try
-				{
-					type = new XmlType(namespaceuri, name + "Extension", typeArguments);
-					type.GetTypeReference(contextProvider.Context.Module, null);
-				}
-				catch (XamlParseException)
-				{
+				XmlType type = new XmlType(namespaceuri, name + "Extension", typeArguments);
+				if (!type.TryGetTypeReference(contextProvider.Context.Module, null, out _))
 					type = new XmlType(namespaceuri, name, typeArguments);
-				}
 
 				if (type == null)
 					throw new NotSupportedException();
@@ -199,12 +200,15 @@ namespace Xamarin.Forms.Build.Tasks
 					? new ElementNode(type, "", nsResolver)
 					: new ElementNode(type, "", nsResolver, xmlLineInfo.LineNumber, xmlLineInfo.LinePosition);
 
-				foreach (var (childname, childnode) in childnodes) {
-					if (childname == contentname) {
+				foreach (var (childname, childnode) in childnodes)
+				{
+					if (childname == contentname)
+					{
 						//ContentProperty
 						_node.CollectionItems.Add(childnode);
 					}
-					else {
+					else
+					{
 						_node.Properties[childname] = childnode;
 					}
 				}

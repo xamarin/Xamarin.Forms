@@ -1,7 +1,7 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -28,8 +28,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			Device.SetFlags(new List<string> { ExperimentalFlags.SwipeViewExperimental });
-
 			Title = PageTitle;
 
 			_leftSwipeCountLabel = new Label
@@ -69,6 +67,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 
 		[Test]
+		[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
 		public void Issue9306SwipeViewCloseSwiping()
 		{
 			RunningApp.WaitForElement(x => x.Marked(SwipeViewId));

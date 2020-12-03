@@ -9,9 +9,10 @@
 		<ResourceDictionary Source="PageControlStyle.xaml" />
 		<ResourceDictionary Source="FormsProgressBarStyle.xaml" />
 		<ResourceDictionary Source="FormsTextBoxStyle.xaml" />
-		<ResourceDictionary Source="FormsCheckBoxStyle.xaml" />
+        <ResourceDictionary Source="FormsCheckBoxStyle.xaml" />
 		<ResourceDictionary Source="FormsAutoSuggestBoxStyle.xaml" />
-		<ResourceDictionary Source="MasterDetailControlStyle.xaml" />
+        <ResourceDictionary Source="MasterDetailControlStyle.xaml" />
+        <ResourceDictionary Source="FlyoutPageControlStyle.xaml" />
 		<ResourceDictionary Source="TabbedPageStyle.xaml" />
 		<ResourceDictionary Source="SliderStyle.xaml" />
 		<ResourceDictionary Source="CollectionView/ItemsViewStyles.xaml" />
@@ -23,6 +24,7 @@
 	<uwp:HeightConverter x:Key="HeightConverter" />
 	<uwp:CollapseWhenEmptyConverter x:Key="CollapseWhenEmpty" />
 	<uwp:BoolToVisibilityConverter x:Key="BoolVisibilityConverter" />
+    <uwp:BrushConverter x:Key="BrushConverter" />
 	<uwp:BoolToVisibilityConverter x:Key="InvertedBoolVisibilityConverter" FalseIsVisible="True" />
 	<uwp:PageToRenderedElementConverter x:Key="PageToRenderer" />
 	<uwp:ImageConverter x:Key="ImageConverter" />
@@ -31,9 +33,9 @@
 	<uwp:HorizontalTextAlignmentConverter x:Key="HorizontalTextAlignmentConverter" />
 	<uwp:TextAlignmentToHorizontalAlignmentConverter x:Key="AlignmentConverter" />
 	<uwp:KeyboardConverter x:Key="KeyboardConverter" />
-	<uwp:MasterBackgroundConverter x:Key="MasterBackgroundConverter" />
+    <uwp:MasterBackgroundConverter x:Key="MasterBackgroundConverter" />
 	<uwp:ImageSourceIconElementConverter x:Key="ImageSourceIconElementConverter" />
-    <!-- We probably want to keep this in sync with AppBarThemeCompactHeight in MasterDetailControlStyle.xaml (in uwp:FormsCommandBar.Resources) -->
+    <!-- We probably want to keep this in sync with AppBarThemeCompactHeight in FlyoutPageControlStyle.xaml (in uwp:FormsCommandBar.Resources) -->
 	<x:Double x:Key="TitleBarHeight">48</x:Double>
     <x:Double x:Key="ListViewHeaderItemMinHeight">0</x:Double>
 

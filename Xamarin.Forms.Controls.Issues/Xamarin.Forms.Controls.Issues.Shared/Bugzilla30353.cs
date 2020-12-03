@@ -12,12 +12,13 @@ using Xamarin.Forms.Core.UITests;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 30353, "MasterDetailPage.IsPresentedChanged is not raised")]
+	[Issue(IssueTracker.Bugzilla, 30353, "FlyoutPage.IsPresentedChanged is not raised")]
 #if UITEST
 	[Category(UITestCategories.UwpIgnore)]
-	[Category(UITestCategories.MasterDetailPage)]
+	[Category(UITestCategories.FlyoutPage)]
+	[Category(UITestCategories.Bugzilla)]
 #endif
-	public class Bugzilla30353 : TestMasterDetailPage
+	public class Bugzilla30353 : TestFlyoutPage
 	{
 		protected override void Init()
 		{
@@ -39,7 +40,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				HorizontalOptions = LayoutOptions.CenterAndExpand,
 				VerticalOptions = LayoutOptions.CenterAndExpand,
-				Text = "Master"
+				Text = "Flyout"
 			};
 			var btn = new Button()
 			{
@@ -61,7 +62,7 @@ namespace Xamarin.Forms.Controls.Issues
 			stacklayout1.Children.Add(lblMaster);
 			stacklayout1.Children.Add(btn1);
 
-			Master = new ContentPage
+			Flyout = new ContentPage
 			{
 				Title = "IsPresentedChanged Test",
 				BackgroundColor = Color.Green,
@@ -72,51 +73,51 @@ namespace Xamarin.Forms.Controls.Issues
 				BackgroundColor = Color.Gray,
 				Content = stacklayout
 			};
-			MasterBehavior = MasterBehavior.Popover;
+			FlyoutLayoutBehavior = FlyoutLayoutBehavior.Popover;
 			IsPresentedChanged += (s, e) =>
-				lblMaster.Text = lbl.Text = string.Format("The Master is now {0}", IsPresented ? "visible" : "invisible");
+				lblMaster.Text = lbl.Text = string.Format("The Flyout is now {0}", IsPresented ? "visible" : "invisible");
 		}
 
 #if UITEST
 		[Test]
-		public void MasterDetailPageIsPresentedChangedRaised()
+		public void FlyoutPageIsPresentedChangedRaised()
 		{
-			var dontRun = RunningApp.Query (q => q.Marked ("Don't run"));
+			var dontRun = RunningApp.Query(q => q.Marked("Don't run"));
 			if (dontRun.Length > 0)
 			{
-				return;	
+				return;
 			}
-			RunningApp.SetOrientationPortrait ();
-			RunningApp.Screenshot ("Portrait");
-			RunningApp.Tap (q => q.Marked ("Toggle"));
-			RunningApp.Screenshot ("Portrait Visible");
-			RunningApp.WaitForElement (q => q.Marked ("The Master is now visible"));
+			RunningApp.SetOrientationPortrait();
+			RunningApp.Screenshot("Portrait");
+			RunningApp.Tap(q => q.Marked("Toggle"));
+			RunningApp.Screenshot("Portrait Visible");
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now visible"));
 			Back();
-			RunningApp.Screenshot ("Portrait Invisible");
-			RunningApp.WaitForElement (q => q.Marked ("The Master is now invisible"));
-			RunningApp.SetOrientationLandscape ();
-			RunningApp.Screenshot ("Landscape Invisible");
-			RunningApp.WaitForElement (q => q.Marked ("The Master is now invisible"));
-			RunningApp.Tap (q => q.Marked ("Toggle"));
-			RunningApp.Screenshot ("Landscape Visible");
-			RunningApp.WaitForElement (q => q.Marked ("The Master is now visible"));
+			RunningApp.Screenshot("Portrait Invisible");
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"));
+			RunningApp.SetOrientationLandscape();
+			RunningApp.Screenshot("Landscape Invisible");
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"));
+			RunningApp.Tap(q => q.Marked("Toggle"));
+			RunningApp.Screenshot("Landscape Visible");
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now visible"));
 			Back();
-			RunningApp.Screenshot ("Landscape InVisible");
-			RunningApp.WaitForElement (q => q.Marked ("The Master is now invisible"));
-			RunningApp.SetOrientationPortrait ();
-			RunningApp.Tap (q => q.Marked ("Toggle"));
-			RunningApp.Screenshot ("Portrait Visible");
-			RunningApp.WaitForElement (q => q.Marked ("The Master is now visible"));
+			RunningApp.Screenshot("Landscape InVisible");
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"));
+			RunningApp.SetOrientationPortrait();
+			RunningApp.Tap(q => q.Marked("Toggle"));
+			RunningApp.Screenshot("Portrait Visible");
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now visible"));
 			Back();
-			RunningApp.Screenshot ("Portrait Invisible");
-			RunningApp.WaitForElement (q => q.Marked ("The Master is now invisible"));
-			RunningApp.SetOrientationLandscape ();
+			RunningApp.Screenshot("Portrait Invisible");
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"));
+			RunningApp.SetOrientationLandscape();
 		}
 
 		[TearDown]
-		public override void TearDown() 
+		public override void TearDown()
 		{
-			RunningApp.SetOrientationPortrait ();
+			RunningApp.SetOrientationPortrait();
 
 			base.TearDown();
 		}
@@ -124,7 +125,7 @@ namespace Xamarin.Forms.Controls.Issues
 		void Back()
 		{
 #if __IOS__ || __WINDOWS__
-			RunningApp.Tap (q => q.Marked ("Toggle"));
+			RunningApp.Tap(q => q.Marked("Toggle"));
 #else
 			RunningApp.Back();
 #endif

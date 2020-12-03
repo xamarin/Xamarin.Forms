@@ -3,14 +3,15 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
 using System.Linq;
+using System.Xml;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Microsoft.CSharp;
-using Xamarin.Forms.Xaml;
-using Xamarin.Forms.Internals;
 using Mono.Cecil;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.Xaml;
+using IOPath = System.IO.Path;
 
 namespace Xamarin.Forms.Build.Tasks
 {
@@ -122,12 +123,14 @@ namespace Xamarin.Forms.Build.Tasks
 			nsmgr.AddNamespace("__f__", XamlParser.XFUri);
 
 			var root = xmlDoc.SelectSingleNode("/*", nsmgr);
-			if (root == null) {
+			if (root == null)
+			{
 				Logger?.LogMessage(MessageImportance.Low, " No root node found");
 				return false;
 			}
 
-			foreach (XmlAttribute attr in root.Attributes) {
+			foreach (XmlAttribute attr in root.Attributes)
+			{
 				if (attr.Name == "xmlns")
 					nsmgr.AddNamespace("", attr.Value); //Add default xmlns
 				if (attr.Prefix != "xmlns")
@@ -138,20 +141,23 @@ namespace Xamarin.Forms.Build.Tasks
 			var rootClass = root.Attributes["Class", XamlParser.X2006Uri]
 						 ?? root.Attributes["Class", XamlParser.X2009Uri];
 
-			if (rootClass != null) {
+			if (rootClass != null)
+			{
 				string rootType, rootNs, rootAsm, targetPlatform;
 				XmlnsHelper.ParseXmlns(rootClass.Value, out rootType, out rootNs, out rootAsm, out targetPlatform);
 				RootType = rootType;
 				RootClrNamespace = rootNs;
 			}
-			else if (hasXamlCompilationProcessingInstruction) {
+			else if (hasXamlCompilationProcessingInstruction)
+			{
 				RootClrNamespace = "__XamlGeneratedCode__";
 				RootType = $"__Type{Guid.NewGuid().ToString("N")}";
 				GenerateDefaultCtor = true;
 				AddXamlCompilationAttribute = true;
 				HideFromIntellisense = true;
 			}
-			else { // rootClass == null && !hasXamlCompilationProcessingInstruction) {
+			else
+			{ // rootClass == null && !hasXamlCompilationProcessingInstruction) {
 				XamlResourceIdOnly = true; //only generate the XamlResourceId assembly attribute
 				return true;
 			}
@@ -173,7 +179,7 @@ namespace Xamarin.Forms.Build.Tasks
 		void GenerateCode()
 		{
 			//Create the target directory if required
-			Directory.CreateDirectory(Path.GetDirectoryName(OutputFile));
+			Directory.CreateDirectory(IOPath.GetDirectoryName(OutputFile));
 
 			var ccu = new CodeCompileUnit();
 			ccu.AssemblyCustomAttributes.Add(
@@ -191,7 +197,8 @@ namespace Xamarin.Forms.Build.Tasks
 			var declNs = new CodeNamespace(RootClrNamespace);
 			ccu.Namespaces.Add(declNs);
 
-			var declType = new CodeTypeDeclaration(RootType) {
+			var declType = new CodeTypeDeclaration(RootType)
+			{
 				IsPartial = true,
 				CustomAttributes = {
 					new CodeAttributeDeclaration(new CodeTypeReference($"global::{typeof(XamlFilePathAttribute).FullName}"),
@@ -212,8 +219,10 @@ namespace Xamarin.Forms.Build.Tasks
 			declNs.Types.Add(declType);
 
 			//Create a default ctor calling InitializeComponent
-			if (GenerateDefaultCtor) {
-				var ctor = new CodeConstructor {
+			if (GenerateDefaultCtor)
+			{
+				var ctor = new CodeConstructor
+				{
 					Attributes = MemberAttributes.Public,
 					CustomAttributes = { GeneratedCodeAttrDecl },
 					Statements = {
@@ -225,7 +234,8 @@ namespace Xamarin.Forms.Build.Tasks
 			}
 
 			//Create InitializeComponent()
-			var initcomp = new CodeMemberMethod {
+			var initcomp = new CodeMemberMethod
+			{
 				Name = "InitializeComponent",
 				CustomAttributes = { GeneratedCodeAttrDecl }
 			};
@@ -237,7 +247,8 @@ namespace Xamarin.Forms.Build.Tasks
 				new CodeTypeReferenceExpression(new CodeTypeReference($"global::{typeof(Extensions).FullName}")),
 				"LoadFromXaml", new CodeThisReferenceExpression(), new CodeTypeOfExpression(declType.Name)));
 
-			foreach (var namedField in NamedFields) {
+			foreach (var namedField in NamedFields)
+			{
 				declType.Members.Add(namedField);
 
 				var find_invoke = new CodeMethodInvokeExpression(
@@ -268,7 +279,8 @@ namespace Xamarin.Forms.Build.Tasks
 				root.SelectNodes(
 					"//*[@" + xPrefix + ":Name" +
 					"][not(ancestor:: __f__:DataTemplate) and not(ancestor:: __f__:ControlTemplate) and not(ancestor:: __f__:Style) and not(ancestor:: __f__:VisualStateManager.VisualStateGroups)]", nsmgr);
-			foreach (XmlNode node in names) {
+			foreach (XmlNode node in names)
+			{
 				var name = GetAttributeValue(node, "Name", XamlParser.X2006Uri, XamlParser.X2009Uri);
 				var typeArguments = GetAttributeValue(node, "TypeArguments", XamlParser.X2006Uri, XamlParser.X2009Uri);
 				var fieldModifier = GetAttributeValue(node, "FieldModifier", XamlParser.X2006Uri, XamlParser.X2009Uri);
@@ -279,8 +291,10 @@ namespace Xamarin.Forms.Build.Tasks
 										  : null);
 
 				var access = MemberAttributes.Private;
-				if (fieldModifier != null) {
-					switch (fieldModifier.ToLowerInvariant()) {
+				if (fieldModifier != null)
+				{
+					switch (fieldModifier.ToLowerInvariant())
+					{
 						default:
 						case "private":
 							access = MemberAttributes.Private;
@@ -298,7 +312,8 @@ namespace Xamarin.Forms.Build.Tasks
 					}
 				}
 
-				yield return new CodeMemberField {
+				yield return new CodeMemberField
+				{
 					Name = name,
 					Type = GetType(xmlType, node.GetNamespaceOfPrefix),
 					Attributes = access,
@@ -326,11 +341,13 @@ namespace Xamarin.Forms.Build.Tasks
 		{
 			CodeTypeReference returnType = null;
 			var ns = GetClrNamespace(xmlType.NamespaceUri);
-			if (ns == null) {
+			if (ns == null)
+			{
 				// It's an external, non-built-in namespace URL.
 				returnType = GetCustomNamespaceUrlType(xmlType);
 			}
-			else {
+			else
+			{
 				var type = xmlType.Name;
 				type = $"{ns}.{type}";
 
@@ -351,12 +368,10 @@ namespace Xamarin.Forms.Build.Tasks
 
 		static string GetClrNamespace(string namespaceuri)
 		{
-			if (namespaceuri == XamlParser.XFUri)
-				return "Xamarin.Forms";
 			if (namespaceuri == XamlParser.X2009Uri)
 				return "System";
-			if (namespaceuri != XamlParser.X2006Uri && 
-				!namespaceuri.StartsWith("clr-namespace", StringComparison.InvariantCulture) &&  
+			if (namespaceuri != XamlParser.X2006Uri &&
+				!namespaceuri.StartsWith("clr-namespace", StringComparison.InvariantCulture) &&
 				!namespaceuri.StartsWith("using:", StringComparison.InvariantCulture))
 				return null;
 			return XmlnsHelper.ParseNamespaceFromXmlns(namespaceuri);
@@ -370,44 +385,51 @@ namespace Xamarin.Forms.Build.Tasks
 				throw new ArgumentNullException(nameof(localName));
 			if (namespaceURIs == null)
 				throw new ArgumentNullException(nameof(namespaceURIs));
-			foreach (var namespaceURI in namespaceURIs) {
+			foreach (var namespaceURI in namespaceURIs)
+			{
 				var attr = node.Attributes[localName, namespaceURI];
 				if (attr == null)
 					continue;
 				return attr.Value;
 			}
 			return null;
-		}		
+		}
 
 		void GatherXmlnsDefinitionAttributes()
 		{
 			_xmlnsDefinitions = new List<XmlnsDefinitionAttribute>();
 			_xmlnsModules = new Dictionary<string, ModuleDefinition>();
 
-			if (string.IsNullOrEmpty(References))
-				return;
+			var paths = References?.Split(';').Distinct().ToList() ?? new List<string>();
+			//Load xmlnsdef from Core and Xaml
+			paths.Add(typeof(Label).Assembly.Location);
+			paths.Add(typeof(Xamarin.Forms.Xaml.Extensions).Assembly.Location);
 
-			string[] paths = References.Split(';').Distinct().ToArray();
-
-			foreach (var path in paths) {
-				string asmName = Path.GetFileName(path);
+			foreach (var path in paths)
+			{
+				string asmName = IOPath.GetFileName(path);
 				if (AssemblyIsSystem(asmName))
 					// Skip the myriad "System." assemblies and others
-					continue;				
+					continue;
 
-				using (var asmDef = AssemblyDefinition.ReadAssembly(path)) {
-					foreach (var ca in asmDef.CustomAttributes) {
-						if (ca.AttributeType.FullName == typeof(XmlnsDefinitionAttribute).FullName) {
+				using (var asmDef = AssemblyDefinition.ReadAssembly(path))
+				{
+					foreach (var ca in asmDef.CustomAttributes)
+					{
+						if (ca.AttributeType.FullName == typeof(XmlnsDefinitionAttribute).FullName)
+						{
 							_xmlnsDefinitions.Add(ca.GetXmlnsDefinition(asmDef));
 							_xmlnsModules[asmDef.FullName] = asmDef.MainModule;
 						}
-					}					
-				}								
+					}
+				}
 			}
 		}
 
 		bool AssemblyIsSystem(string name)
 		{
+			if (name.StartsWith("System.Maui", StringComparison.CurrentCultureIgnoreCase))
+				return false;
 			if (name.StartsWith("System.", StringComparison.CurrentCultureIgnoreCase))
 				return true;
 			else if (name.Equals("mscorlib.dll", StringComparison.CurrentCultureIgnoreCase))
@@ -429,9 +451,9 @@ namespace Xamarin.Forms.Build.Tasks
 				null,
 				(typeInfo) =>
 				{
-					ModuleDefinition module = null;
-					if (!_xmlnsModules.TryGetValue(typeInfo.AssemblyName, out module))
+					if (typeInfo.AssemblyName == null || !_xmlnsModules.TryGetValue(typeInfo.AssemblyName, out ModuleDefinition module))
 						return null;
+
 					string typeName = typeInfo.TypeName.Replace('+', '/'); //Nested types
 					string fullName = $"{typeInfo.ClrNamespace}.{typeInfo.TypeName}";
 					return module.Types.Where(t => t.FullName == fullName).FirstOrDefault();
@@ -439,15 +461,17 @@ namespace Xamarin.Forms.Build.Tasks
 				out potentialTypes);
 
 			if (typeReference == null)
-				throw new Exception($"Type {xmlType.Name} not found in xmlns {xmlType.NamespaceUri}");
+				throw new BuildException(BuildExceptionCode.TypeResolution, null, null, xmlType.Name);
 
 			return new CodeTypeReference(typeReference.FullName);
 		}
 
 		void CleanupXmlnsAssemblyData()
-		{			
-			if ( _xmlnsModules != null ) {
-				foreach (var moduleDef in _xmlnsModules.Values) {
+		{
+			if (_xmlnsModules != null)
+			{
+				foreach (var moduleDef in _xmlnsModules.Values)
+				{
 					moduleDef.Dispose();
 				}
 			}

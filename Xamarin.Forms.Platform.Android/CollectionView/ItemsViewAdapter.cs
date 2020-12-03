@@ -1,29 +1,24 @@
 using System;
 using Android.Content;
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
-using AndroidX.RecyclerView.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
 using Android.Widget;
+using AndroidX.RecyclerView.Widget;
 using Object = Java.Lang.Object;
 using ViewGroup = Android.Views.ViewGroup;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class ItemsViewAdapter<TItemsView, TItemsViewSource> : RecyclerView.Adapter 
+	public class ItemsViewAdapter<TItemsView, TItemsViewSource> : RecyclerView.Adapter
 		where TItemsView : ItemsView
 		where TItemsViewSource : IItemsViewSource
 	{
 		protected readonly TItemsView ItemsView;
 		readonly Func<View, Context, ItemContentView> _createItemContentView;
-		internal TItemsViewSource ItemsSource;
+		protected internal TItemsViewSource ItemsSource;
 
 		bool _disposed;
 		bool _usingItemTemplate = false;
 
-		internal ItemsViewAdapter(TItemsView itemsView, Func<View, Context, ItemContentView> createItemContentView = null)
+		protected internal ItemsViewAdapter(TItemsView itemsView, Func<View, Context, ItemContentView> createItemContentView = null)
 		{
 			ItemsView = itemsView ?? throw new ArgumentNullException(nameof(itemsView));
 
@@ -103,7 +98,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				return ItemViewType.TemplatedItem;
 			}
-		
+
 			// No template, just use the Text view
 			return ItemViewType.TextItem;
 		}

@@ -42,8 +42,19 @@ namespace Xamarin.Forms.Platform.UWP
 			if (element == null)
 				throw new ArgumentNullException(nameof(element));
 
-			IVisualElementRenderer renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element) ??
-			                                  new DefaultRenderer();
+			IVisualElementRenderer renderer = null;
+
+			if (element is TemplatedView tv && tv.ResolveControlTemplate() != null)
+			{
+				renderer = new DefaultRenderer();
+			}
+
+			if (renderer == null)
+			{
+				renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element) ??
+												  new DefaultRenderer();
+			}
+
 			renderer.SetElement(element);
 			return renderer;
 		}
@@ -72,7 +83,7 @@ namespace Xamarin.Forms.Platform.UWP
 				Windows.UI.Xaml.Application.Current.Resources.MergedDictionaries.Add(Forms.GetTabletResources());
 			}
 
-#if !UWP_14393
+#if UWP_16299
 			if (!current.Resources.ContainsKey(ShellRenderer.ShellStyle))
 			{
 				var myResourceDictionary = new Windows.UI.Xaml.ResourceDictionary();
@@ -103,6 +114,21 @@ namespace Xamarin.Forms.Platform.UWP
 			InitializeStatusBar();
 
 			SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
+			Windows.UI.Xaml.Application.Current.Resuming += OnResumingAsync;
+		}
+
+		async void OnResumingAsync(object sender, object e)
+		{
+			try
+			{
+				await UpdateToolbarItems();
+			}
+			catch (Exception exception)
+			{
+				Log.Warning("Update toolbar items after app resume", 
+					$"UpdateToolbarItems failed after app resume: {exception.Message}");
+
+			}
 		}
 
 		internal void SetPage(Page newRoot)
@@ -319,6 +345,14 @@ namespace Xamarin.Forms.Platform.UWP
 					else
 					{
 						RemovePage(previousPage);
+
+						if(!modal && _modalBackgroundPage != null)
+						{
+							RemovePage(_modalBackgroundPage);
+							_modalBackgroundPage.Cleanup();
+							_modalBackgroundPage.Parent = null;
+						}
+						
 						_modalBackgroundPage = null;
 					}
 
