@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override bool Isolate => true;
 
 		[Test]
-		public async Task WebViewDoesntCrashWhenLoadingAHeavyPageAndUsingExecutionModeSeparateProcess()
+		public void WebViewDoesntCrashWhenLoadingAHeavyPageAndUsingExecutionModeSeparateProcess()
 		{
 			//4 iterations were enough to run out of memory before the fix.
 			int iterations = 10;
@@ -41,9 +41,10 @@ namespace Xamarin.Forms.Controls.Issues
 				RunningApp.WaitForElement(q => q.Marked("New Page"));
 				RunningApp.Tap(q => q.Marked("New Page"));
 				RunningApp.WaitForElement(q => q.Marked("Close Page"));
-				await Task.Delay(250);
+				Thread.Sleep(250);
 				RunningApp.Tap(q => q.Marked("Close Page"));
 			}
+			RunningApp.Tap(q => q.Marked("GC"));
 		}
 
 #endif
