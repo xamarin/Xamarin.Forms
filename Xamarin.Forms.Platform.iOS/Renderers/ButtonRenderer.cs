@@ -16,7 +16,6 @@ namespace Xamarin.Forms.Platform.iOS
 		UIColor _buttonTextColorDefaultHighlighted;
 		UIColor _buttonTextColorDefaultNormal;
 		bool _useLegacyColorManagement;
-		bool _useBackgroundBrush;
 
 		ButtonLayoutManager _buttonLayoutManager;
 
@@ -82,7 +81,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (_previousSize != Bounds.Size)
 			{
-				SetBackground(Element.Background);
+				Brush brush = Element.Background;
+
+				if (!Brush.IsNullOrEmpty(brush))
+					SetBackground(brush);
+
 				SetNeedsDisplay();
 			}
 
@@ -155,7 +158,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Control == null)
 				return;
 
-			UIColor backgroundColor = null;
+			UIColor backgroundColor = Element.BackgroundColor == Color.Default ? null : Element.BackgroundColor.ToUIColor();
 
 			if (!Brush.IsNullOrEmpty(brush))
 			{
@@ -166,12 +169,9 @@ namespace Xamarin.Forms.Platform.iOS
 					var backgroundImage = this.GetBackgroundImage(brush);
 					backgroundColor = backgroundImage != null ? UIColor.FromPatternImage(backgroundImage) : UIColor.Clear;
 				}
-
-				_useBackgroundBrush = true;
 			}
 
-			if (_useBackgroundBrush)
-				Control.BackgroundColor = backgroundColor;
+			Control.BackgroundColor = backgroundColor;
 		}
 
 		void SetControlPropertiesFromProxy()
