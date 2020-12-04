@@ -37,6 +37,17 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			});
 
+			FlyoutBackground = new LinearGradientBrush
+			{
+				StartPoint = new Point(0, 0),
+				EndPoint = new Point(1, 0),
+				GradientStops = new GradientStopCollection
+				{
+					new GradientStop { Color = Color.Blue, Offset = 0.1f },
+					new GradientStop { Color = Color.BlueViolet, Offset = 1.0f },
+				}
+			};
+
 			FlyoutHeader = new Label()
 			{
 				BackgroundColor = Color.LightBlue,
