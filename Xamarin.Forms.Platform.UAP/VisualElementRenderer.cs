@@ -595,6 +595,11 @@ namespace Xamarin.Forms.Platform.UWP
 			if (control == null || !control.IsEnabled || !control.IsTabStop)
 				return;
 
+			UnfocusOnContainingPage(control);
+		}
+
+		internal void UnfocusOnContainingPage(FrameworkElement control)
+		{
 			// "Unfocusing" doesn't really make sense on Windows; for accessibility reasons,
 			// something always has focus. So forcing the unfocusing of a control would normally 
 			// just move focus to the next control, or leave it on the current control if no other
@@ -605,7 +610,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (_containingPage == null)
 			{
 				// Work our way up the tree to find the containing Page
-				DependencyObject parent = _control;
+				DependencyObject parent = control;
 				while (parent != null && !(parent is Windows.UI.Xaml.Controls.Page))
 				{
 					parent = VisualTreeHelper.GetParent(parent);

@@ -48,6 +48,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		VisualElementPackager _packager;
 		VisualElementTracker _tracker;
+		TabIndexManager _tabIndexManager;
 
 #if __MOBILE__
 		UIVisualEffectView _blur;
@@ -141,8 +142,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			remove { _elementChangedHandlers.Remove(value); }
 		}
 
-
-
 		public virtual SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			return NativeView.GetSizeRequest(widthConstraint, heightConstraint);
@@ -156,8 +155,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		void IVisualElementRenderer.SetElement(VisualElement element)
 		{
 			SetElement((TElement)element);
-			UpdateTabStop();
-			UpdateTabIndex();
+			_tabIndexManager.UpdateTabStopAndIndex();
 		}
 
 		public void SetElementSize(Size size)
@@ -169,55 +167,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public event EventHandler<ElementChangedEventArgs<TElement>> ElementChanged;
 
-		protected int TabIndex { get; set; } = 0;
-
-		protected bool TabStop { get; set; } = true;
-
-		protected void UpdateTabStop()
-		{
-			if (Element == null)
-				return;
-
-			TabStop = Element.IsTabStop;
-			UpdateParentPageAccessibilityElements();
-		}
-
-		protected void UpdateTabIndex()
-		{
-			if (Element == null)
-				return;
-
-			TabIndex = Element.TabIndex;
-			UpdateParentPageAccessibilityElements();
-		}
-
 		public NativeView FocusSearch(bool forwardDirection)
 		{
-			VisualElement element = Element as VisualElement;
-			int maxAttempts = 0;
-			var tabIndexes = element?.GetTabIndexesOnParentPage(out maxAttempts);
-			if (tabIndexes == null)
-				return null;
-
-			int tabIndex = Element.TabIndex;
-			int attempt = 0;
-
-			do
-			{
-				element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex) as VisualElement;
-				if (element == null)
-					break;
-#if __MACOS__
-				var renderer = Platform.GetRenderer(element);
-				var control = (renderer as ITabStop)?.TabStop;
-				if (control != null && control.AcceptsFirstResponder())
-					return control;
-#endif
-				element.Focus();
-			} while (!(element.IsFocused || ++attempt >= maxAttempts));
-			return null;
+			return _tabIndexManager.FocusSearch(forwardDirection);
 		}
-
 #if __MACOS__
 		public override void KeyDown(NSEvent theEvent)
 		{
@@ -233,14 +186,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 			base.KeyUp(theEvent);
 		}
+
 #else
-		UIKeyCommand[] tabCommands = {
-			UIKeyCommand.Create ((Foundation.NSString)"\t", 0, new ObjCRuntime.Selector ("tabForward:")),
-			UIKeyCommand.Create ((Foundation.NSString)"\t", UIKeyModifierFlags.Shift, new ObjCRuntime.Selector ("tabBackward:"))
-		};
 
-		public override UIKeyCommand[] KeyCommands => tabCommands;
-
+		public override UIKeyCommand[] KeyCommands => _tabIndexManager.TabCommands;
 
 		[Foundation.Export("tabForward:")]
 		[Internals.Preserve(Conditional = true)]
@@ -250,6 +199,13 @@ namespace Xamarin.Forms.Platform.MacOS
 		[Internals.Preserve(Conditional = true)]
 		void TabBackward(UIKeyCommand cmd) => FocusSearch(forwardDirection: false);
 #endif
+
+		public override bool BecomeFirstResponder()
+		{
+			var result = base.BecomeFirstResponder();
+			Element?.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, result);
+			return result;
+		}
 
 		public void SetElement(TElement element)
 		{
@@ -288,6 +244,9 @@ namespace Xamarin.Forms.Platform.MacOS
 					_events = new EventTracker(this);
 					_events.LoadEvents(this);
 				}
+
+				if (_tabIndexManager == null)
+					_tabIndexManager = new TabIndexManager(this);
 
 				element.PropertyChanged += _propertyChangedHandler;
 
@@ -377,6 +336,12 @@ namespace Xamarin.Forms.Platform.MacOS
 					_packager = null;
 				}
 
+				if(_tabIndexManager != null)
+				{
+					_tabIndexManager.Dispose();
+					_tabIndexManager = null;
+				}
+
 				// The ListView can create renderers and unhook them from the Element before Dispose is called in CalculateHeightForCell.
 				// Thus, it is possible that this work is already completed.
 				if (Element != null)
@@ -409,10 +374,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				SetBackground(Element.Background);
 			else if (e.PropertyName == Xamarin.Forms.Layout.IsClippedToBoundsProperty.PropertyName)
 				UpdateClipToBounds();
-			else if (e.PropertyName == VisualElement.IsTabStopProperty.PropertyName)
-				UpdateTabStop();
-			else if (e.PropertyName == VisualElement.TabIndexProperty.PropertyName)
-				UpdateTabIndex();
 #if __MOBILE__
 			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.VisualElement.BlurEffectProperty.PropertyName)
 				SetBlur((BlurEffectStyle)Element.GetValue(PlatformConfiguration.iOSSpecific.VisualElement.BlurEffectProperty));

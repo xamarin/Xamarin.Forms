@@ -274,6 +274,7 @@
     <Compile Include="CollectionView\LoopListSource.cs" />
     <Compile Include="CollectionView\ILoopItemsViewSource.cs" />
     <Compile Include="Renderers\IDisconnectable.cs" />
+    <Compile Include="TabIndexManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />

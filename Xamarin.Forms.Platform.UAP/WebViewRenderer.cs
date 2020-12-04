@@ -10,6 +10,7 @@ using System.Net;
 using Windows.Web.Http;
 using System.Collections.Generic;
 using System.Linq;
+using Windows.UI.Xaml;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -152,6 +153,25 @@ if(bases.length == 0){
 
 				Load();
 			}
+		}
+
+		internal override void OnElementFocusChangeRequested(object sender, VisualElement.FocusRequestArgs args)
+		{
+			base.OnElementFocusChangeRequested(sender, args);
+			if (args.Focus)
+				args.Result = Control.Focus(FocusState.Programmatic);
+			else
+			{
+				UnfocusControl(Control);
+				args.Result = true;
+			}
+		}
+
+		internal void UnfocusControl(Windows.UI.Xaml.Controls.WebView control)
+		{
+			if (control == null)
+				return;
+			UnfocusOnContainingPage(control);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)

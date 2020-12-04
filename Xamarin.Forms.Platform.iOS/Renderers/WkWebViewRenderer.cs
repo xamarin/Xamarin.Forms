@@ -29,6 +29,8 @@ namespace Xamarin.Forms.Platform.iOS
 		VisualElementTracker _tracker;
 #pragma warning restore 0414
 
+		TabIndexManager _tabIndexManager;
+
 		static WKProcessPool _sharedPool;
 		bool _disposed;
 		static int _sharedPoolCount = 0;
@@ -113,6 +115,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 					_events = new EventTracker(this);
 					_events.LoadEvents(this);
+
+					_tabIndexManager = new TabIndexManager(this);
 				}
 
 				Load();
@@ -286,10 +290,12 @@ namespace Xamarin.Forms.Platform.iOS
 				_events?.Dispose();
 				_tracker?.Dispose();
 				_packager?.Dispose();
+				_tabIndexManager?.Dispose();
 
 				_events = null;
 				_tracker = null;
 				_events = null;
+				_tabIndexManager = null;
 			}
 
 			base.Dispose(disposing);
@@ -570,6 +576,23 @@ namespace Xamarin.Forms.Platform.iOS
 			if (e.PropertyName == WebView.SourceProperty.PropertyName)
 				Load();
 		}
+
+		public override UIKeyCommand[] KeyCommands => _tabIndexManager.TabCommands;
+
+		public override bool BecomeFirstResponder()
+		{
+			var result = base.BecomeFirstResponder();
+			Element?.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, result);
+			return result;
+		}
+
+		[Foundation.Export("tabForward:")]
+		[Internals.Preserve(Conditional = true)]
+		void TabForward(UIKeyCommand cmd) => _tabIndexManager.FocusSearch(forwardDirection: true);
+
+		[Foundation.Export("tabBackward:")]
+		[Internals.Preserve(Conditional = true)]
+		void TabBackward(UIKeyCommand cmd) => _tabIndexManager.FocusSearch(forwardDirection: false);
 
 		void Load()
 		{
