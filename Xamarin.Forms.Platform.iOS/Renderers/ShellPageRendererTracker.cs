@@ -154,9 +154,9 @@ namespace Xamarin.Forms.Platform.iOS
 				if (oldPage == null)
 					((IShellController)_context.Shell).AddFlyoutBehaviorObserver(this);
 			}
-			else if(newPage == null)
+			else if(newPage == null && _context?.Shell is IShellController shellController)
 			{
-				((IShellController)_context.Shell).RemoveFlyoutBehaviorObserver(this);
+				shellController.RemoveFlyoutBehaviorObserver(this);
 			}
 
 			if (newPage != null)
