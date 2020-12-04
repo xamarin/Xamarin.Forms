@@ -206,6 +206,16 @@ namespace Xamarin.Forms.Platform.iOS
 			CollectionView.CollectionViewLayout.InvalidateLayout();
 		}
 
+		public virtual void UpdateFlowDirection()
+		{
+			CollectionView.UpdateFlowDirection(ItemsView);
+
+			if (ItemsSource?.ItemCount == 0)
+				_emptyUIView?.UpdateFlowDirection(_emptyViewFormsElement);
+
+			Layout.InvalidateLayout();
+		}
+
 		public override nint NumberOfSections(UICollectionView collectionView)
 		{
 			if(!_initialized)
@@ -295,7 +305,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var indexPath = NSIndexPath.Create(group, 0);
 
-			return GetCell(CollectionView, indexPath);
+			return CreateMeasurementCell(indexPath);
 		}
 
 		protected virtual void RegisterViewTypes()
@@ -319,15 +329,20 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual CGRect DetermineEmptyViewFrame() 
 		{
 			return new CGRect(CollectionView.Frame.X, CollectionView.Frame.Y,
-					CollectionView.Frame.Width, CollectionView.Frame.Height);
+				CollectionView.Frame.Width, CollectionView.Frame.Height);
 		}
 
 		void LayoutEmptyView()
 		{
-			var frame = DetermineEmptyViewFrame();	
+			if (_emptyUIView == null)
+			{
+				UpdateEmptyView();
+				return;
+			}
 
-			if (_emptyUIView != null)
-				_emptyUIView.Frame = frame;
+			var frame = DetermineEmptyViewFrame();
+
+			_emptyUIView.Frame = frame;
 
 			if (_emptyViewFormsElement != null && ItemsView.LogicalChildren.Contains(_emptyViewFormsElement))
 				_emptyViewFormsElement.Layout(frame.ToRectangle());
@@ -394,7 +409,10 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				_emptyUIView.Tag = EmptyTag;
-				CollectionView.AddSubview(_emptyUIView);
+
+				var collectionViewContainer = CollectionView.Superview;
+				collectionViewContainer.AddSubview(_emptyUIView);
+
 				LayoutEmptyView();
 
 				if (_emptyViewFormsElement != null)
@@ -417,11 +435,40 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_emptyViewDisplayed)
 				{
 					_emptyUIView.RemoveFromSuperview();
+					_emptyUIView.Dispose();
+					_emptyUIView = null;
+
 					ItemsView.RemoveLogicalChild(_emptyViewFormsElement);
 				}
 
 				_emptyViewDisplayed = false;
 			}
+		}
+
+		TemplatedCell CreateAppropriateCellForLayout()
+		{
+			var frame = new CGRect(0, 0, ItemsViewLayout.EstimatedItemSize.Width, ItemsViewLayout.EstimatedItemSize.Height);
+
+			if (ItemsViewLayout.ScrollDirection == UICollectionViewScrollDirection.Horizontal)
+			{
+				return new HorizontalCell(frame);
+			}
+
+			return new VerticalCell(frame);
+		}
+
+		public TemplatedCell CreateMeasurementCell(NSIndexPath indexPath)
+		{
+			if (ItemsView.ItemTemplate == null)
+			{
+				return null;
+			}
+
+			TemplatedCell templatedCell = CreateAppropriateCellForLayout();
+
+			UpdateTemplatedCell(templatedCell, indexPath);
+
+			return templatedCell;
 		}
 	}
 }

@@ -32,8 +32,6 @@ namespace Xamarin.Forms.Platform.Android
 		AView _contentView;
 		LinearLayoutCompat _actionView;
 		SwipeTransitionMode _swipeTransitionMode;
-		float _downX;
-		float _downY;
 		float _density;
 		bool _isTouchDown;
 		bool _isSwiping;
@@ -278,9 +276,12 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (e.Action == MotionEventActions.Down)
 			{
-				_downX = e.RawX;
-				_downY = e.RawY;
 				_initialPoint = new APointF(e.GetX() / _density, e.GetY() / _density);
+			}
+
+			if (e.Action == MotionEventActions.Move)
+			{
+				ResetSwipe(e);
 			}
 
 			if (e.Action == MotionEventActions.Up)
@@ -291,9 +292,7 @@ namespace Xamarin.Forms.Platform.Android
 					ProcessTouchSwipeItems(touchUpPoint);
 				else
 				{
-					if (!_isSwiping && _isOpen && TouchInsideContent(touchUpPoint))
-						ResetSwipe();
-
+					ResetSwipe(e);
 					PropagateParentTouch();
 				}
 			}
@@ -369,11 +368,6 @@ namespace Xamarin.Forms.Platform.Android
 			return swipeItems;
 		}
 
-		bool HasSwipeItems()
-		{
-			return Element != null && (IsValidSwipeItems(Element.LeftItems) || IsValidSwipeItems(Element.RightItems) || IsValidSwipeItems(Element.TopItems) || IsValidSwipeItems(Element.BottomItems));
-		}
-
 		bool IsHorizontalSwipe()
 		{
 			return _swipeDirection == SwipeDirection.Left || _swipeDirection == SwipeDirection.Right;
@@ -392,9 +386,6 @@ namespace Xamarin.Forms.Platform.Android
 			switch (e.Action)
 			{
 				case MotionEventActions.Down:
-					_downX = e.RawX;
-					_downY = e.RawY;
-
 					handled = HandleTouchInteractions(GestureStatus.Started, point);
 
 					if (handled == true)
@@ -459,9 +450,6 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_isSwiping || _isTouchDown || _contentView == null)
 				return false;
-
-			if (TouchInsideContent(point) && _isOpen)
-				ResetSwipe();
 
 			_initialPoint = point;
 			_isTouchDown = true;
@@ -937,6 +925,17 @@ namespace Xamarin.Forms.Platform.Android
 			DisposeSwipeItems();
 		}
 
+		void ResetSwipe(MotionEvent e, bool animated = true)
+		{
+			if (!_isSwiping && _isOpen)
+			{
+				var touchPoint = new APointF(e.GetX() / _density, e.GetY() / _density);
+
+				if (TouchInsideContent(touchPoint))
+					ResetSwipe(animated);
+			}
+		}
+
 		void ResetSwipe(bool animated = true)
 		{
 			if (_contentView == null)
@@ -1125,9 +1124,7 @@ namespace Xamarin.Forms.Platform.Android
 					SwipeToThreshold();
 			}
 			else
-			{
 				ResetSwipe();
-			}
 		}
 
 		float GetSwipeThreshold()
