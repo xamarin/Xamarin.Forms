@@ -12,7 +12,7 @@
             Padding="12"
             BackgroundColor="Black"
             TextColor="White"
-            Text="Tap the Button, add a new Item and then, check open the first SwipView. Without duplicate items or a wrong layout, the test has passed."/>
+            Text="Tap `Add To List` button, add a new Item, and then open each SwipeView. If there are no duplicate items and the layout is correct the test has passed."/>
         <StackLayout>
             <ListView
                 x:Name="Issue12750ListView"
