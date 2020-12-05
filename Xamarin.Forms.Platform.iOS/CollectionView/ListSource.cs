@@ -7,21 +7,25 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	sealed class ListSource : List<object>, IItemsViewSource
 	{
-		public ListSource()
+		readonly int _section;
+
+		public ListSource(int section = 0)
 		{
+			_section = section;
 		}
 
-		public ListSource(IEnumerable<object> enumerable) : base(enumerable)
+		public ListSource(IEnumerable<object> enumerable, int section = 0) : base(enumerable)
 		{
-			
+			_section = section;
 		}
 
-		public ListSource(IEnumerable enumerable)
+		public ListSource(IEnumerable enumerable, int section = 0)
 		{
 			foreach (object item in enumerable)
 			{
 				Add(item);
 			}
+			_section = section;
 		}
 
 		public void Dispose()
@@ -33,7 +37,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get
 			{
-				if (indexPath.Section > 0)
+				if (indexPath.Section != _section)
 				{
 					throw new ArgumentOutOfRangeException(nameof(indexPath));
 				}
