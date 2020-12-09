@@ -88,6 +88,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
+		[Ignore]
 		[Category(UITestCategories.SwipeView)]
 		public void SwipeItemNoTextWindows()
 		{
