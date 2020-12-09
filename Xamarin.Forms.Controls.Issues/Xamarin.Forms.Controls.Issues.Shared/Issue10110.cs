@@ -11,6 +11,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.CollectionView)]
+	[Category(UITestCategories.UwpIgnore)] // CollectionView contents aren't currently visible to test automation
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 10110, "CollectionView EmptyView doesn't show up on UWP HorizontalList", PlatformAffected.UWP)]

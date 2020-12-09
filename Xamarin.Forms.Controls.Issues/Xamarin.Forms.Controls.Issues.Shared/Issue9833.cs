@@ -13,6 +13,7 @@ namespace Xamarin.Forms.Controls.Issues
 		PlatformAffected.UWP)]
 #if UITEST
 	[Category(UITestCategories.CollectionView)]
+	[Category(UITestCategories.UwpIgnore)] // CollectionView contents aren't currently visible to test automation
 #endif
 	public class Issue9833 : TestContentPage
 	{
