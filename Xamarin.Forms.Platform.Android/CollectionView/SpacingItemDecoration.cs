@@ -9,11 +9,9 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		readonly ItemsLayoutOrientation _orientation;
 		readonly double _verticalSpacing;
-		double _adjustedVerticalSpacing = -1;
-		double _adjustedVerticalOffset;
+		int _adjustedVerticalSpacing = -1;
 		readonly double _horizontalSpacing;
-		double _adjustedHorizontalSpacing = -1;
-		double _adjustedHorizontalOffset;
+		int _adjustedHorizontalSpacing = -1;
 		readonly int _spanCount;
 
 		public SpacingItemDecoration(IItemsLayout itemsLayout)
@@ -48,21 +46,27 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_adjustedVerticalSpacing == -1)
 			{
-				_adjustedVerticalSpacing = parent.Context.ToPixels(_verticalSpacing);
-				_adjustedVerticalOffset = _adjustedVerticalSpacing / 2;
+				_adjustedVerticalSpacing = (int)parent.Context.ToPixels(_verticalSpacing);
 			}
 
 			if (_adjustedHorizontalSpacing == -1)
 			{
-				_adjustedHorizontalSpacing = parent.Context.ToPixels(_horizontalSpacing);
-				_adjustedHorizontalOffset = _adjustedHorizontalSpacing / 2;
+				_adjustedHorizontalSpacing = (int)parent.Context.ToPixels(_horizontalSpacing);
 			}
 
 			var itemViewType = parent.GetChildViewHolder(view).ItemViewType;
 
 			if (itemViewType == ItemViewType.Header)
 			{
-				outRect.Bottom = (int)_adjustedVerticalSpacing;
+				if (_orientation == ItemsLayoutOrientation.Vertical)
+				{
+					outRect.Bottom = _adjustedVerticalSpacing;
+				}
+				else
+				{
+					outRect.Right = _adjustedHorizontalSpacing;
+				}
+
 				return;
 			}
 
@@ -78,33 +82,34 @@ namespace Xamarin.Forms.Platform.Android
 				spanIndex = gridLayoutParameters.SpanIndex;
 			}
 
-			var adapter = parent.GetAdapter();
-			var childCount = adapter.ItemCount;
-			var index = parent.GetChildAdapterPosition(view);
-			var lastSpanIndex = childCount - childCount % _spanCount;
+			var spanGroupIndex = GetSpanGroupIndex(view, parent);
 
 			if (_orientation == ItemsLayoutOrientation.Vertical)
 			{
-				outRect.Left = spanIndex == 0 ? 0 : (int)_adjustedHorizontalOffset;
-				outRect.Right = spanIndex == _spanCount - 1 ? 0 : (int)_adjustedHorizontalOffset;
-				outRect.Top = index < _spanCount ? 0 : (int)_adjustedVerticalOffset;
-				if (_spanCount > 1)
-					outRect.Bottom = index < lastSpanIndex ? (int)_adjustedVerticalOffset : 0;
-				else
-					outRect.Bottom = index < childCount ? (int)_adjustedVerticalOffset : 0;
+				outRect.Left = spanIndex == 0 ? 0 : _adjustedHorizontalSpacing;
+				outRect.Top = spanGroupIndex == 0 ? 0 : _adjustedVerticalSpacing;
 			}
 
 			if (_orientation == ItemsLayoutOrientation.Horizontal)
 			{
-				outRect.Left = index < _spanCount ? 0 : (int)_adjustedHorizontalOffset;
-				if (_spanCount > 1)
-					outRect.Right = index < lastSpanIndex ? (int)_adjustedHorizontalOffset : 0;
-				else
-					outRect.Right = index < childCount ? (int)_adjustedHorizontalOffset : 0;
-				outRect.Top = spanIndex == 0 ? 0 : (int)_adjustedVerticalOffset;
-				outRect.Bottom = spanIndex == _spanCount - 1 ? 0 : (int)_adjustedVerticalOffset;
-
+				outRect.Top = spanIndex == 0 ? 0 : _adjustedVerticalSpacing;
+				outRect.Left = spanGroupIndex == 0 ? 0 : _adjustedHorizontalSpacing;
 			}
+		}
+
+		int GetSpanGroupIndex(AView view, RecyclerView parent)
+		{
+			var position = parent.GetChildAdapterPosition(view);
+
+			if (_spanCount > 1)
+			{
+				if (parent.GetLayoutManager() is GridLayoutManager gridLayoutManager)
+				{
+					return gridLayoutManager.GetSpanSizeLookup().GetSpanGroupIndex(position, _spanCount);
+				}
+			}
+
+			return position;
 		}
 	}
 }
