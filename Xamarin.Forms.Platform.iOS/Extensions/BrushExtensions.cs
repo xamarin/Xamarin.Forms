@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using CoreAnimation;
 using CoreGraphics;
 using Foundation;
@@ -69,7 +70,7 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					var orderedStops = linearGradientBrush.GradientStops.OrderBy(x => x.Offset).ToList();
 					linearGradientLayer.Colors = orderedStops.Select(x => x.Color.ToCGColor()).ToArray();
-					linearGradientLayer.Locations = orderedStops.Select(x => new NSNumber(x.Offset)).ToArray();
+					linearGradientLayer.Locations = GetCAGradientLayerLocations(orderedStops);
 				}
 
 				return linearGradientLayer;
@@ -95,7 +96,7 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					var orderedStops = radialGradientBrush.GradientStops.OrderBy(x => x.Offset).ToList();
 					radialGradientLayer.Colors = orderedStops.Select(x => x.Color.ToCGColor()).ToArray();
-					radialGradientLayer.Locations = orderedStops.Select(x => new NSNumber(x.Offset)).ToArray();
+					radialGradientLayer.Locations = GetCAGradientLayerLocations(orderedStops);
 				}
 
 				return radialGradientLayer;
@@ -206,6 +207,38 @@ namespace Xamarin.Forms.Platform.iOS
 			double y = startPoint.Y == 1 ? (startPoint.Y - radius) : (startPoint.Y + radius);
 
 			return new CGPoint(x, y);
+		}
+
+		static NSNumber[] GetCAGradientLayerLocations(List<GradientStop> gradientStops)
+		{
+			if (gradientStops == null || gradientStops.Count == 0)
+				return new NSNumber[0];
+
+			if (gradientStops.Count > 1 && gradientStops.Any(gt => gt.Offset != 0))
+				return gradientStops.Select(x => new NSNumber(x.Offset)).ToArray();
+			else
+			{
+				int itemCount = gradientStops.Count;
+				int index = 0;
+				float step = 1.0f / itemCount;
+
+				NSNumber[] locations = new NSNumber[itemCount];
+
+				foreach (var gradientStop in gradientStops)
+				{
+					float location = step * index;
+					bool setLocation = !gradientStops.Any(gt => gt.Offset > location);
+
+					if (gradientStop.Offset == 0 && setLocation)
+						locations[index] = new NSNumber(location);
+					else
+						locations[index] = new NSNumber(gradientStop.Offset);
+
+					index++;
+				}
+
+				return locations;
+			}
 		}
 	}
 }
