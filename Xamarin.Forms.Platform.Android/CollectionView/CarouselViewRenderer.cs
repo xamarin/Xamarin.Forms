@@ -297,20 +297,22 @@ namespace Xamarin.Forms.Platform.Android
 				carouselPosition = currentItemPosition;
 			}
 
-			if (!Carousel.Loop)
-			{
+			// Queue the rest up for later after the Adapter has finished processing item change notifications
+
+			Device.BeginInvokeOnMainThread(() => {
+
 				SetCurrentItem(carouselPosition);
 				UpdatePosition(carouselPosition);
-			}
 
-			//If we are adding or removing the last item we need to update
-			//the inset that we give to items so they are centered
-			if (e.NewStartingIndex == count - 1 || removingLastElement)
-			{
-				UpdateItemDecoration();
-			}
+				//If we are adding or removing the last item we need to update
+				//the inset that we give to items so they are centered
+				if (e.NewStartingIndex == count - 1 || removingLastElement)
+				{
+					UpdateItemDecoration();
+				}
 
-			UpdateVisualStates();
+				UpdateVisualStates();
+			});
 		}
 
 		void UpdateItemDecoration()
