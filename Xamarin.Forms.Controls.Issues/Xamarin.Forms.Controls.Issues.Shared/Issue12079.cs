@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-		[Ignore]
+		[Ignore("Selenium cannot find the SwipeControl, we have to review the reason.")]
 		[Category(UITestCategories.SwipeView)]
 		public void SwipeItemNoTextWindows()
 		{
