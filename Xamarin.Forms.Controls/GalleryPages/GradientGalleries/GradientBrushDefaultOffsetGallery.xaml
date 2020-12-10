@@ -17,6 +17,26 @@
                             StartPoint="0, 0"
                             EndPoint="1, 0">
                             <LinearGradientBrush.GradientStops>
+                                <GradientStop Color="Red" Offset="0"  />
+                                <GradientStop Color="Blue" Offset="0.5" />
+                            </LinearGradientBrush.GradientStops>
+                        </LinearGradientBrush>
+                    </Frame.Background>
+                    <Label
+                        Text="GradientBrush with Offsets (2 GradientStops)"
+                        HorizontalTextAlignment="Center"
+                        TextColor="White"
+                        FontSize="24"/>
+                </Frame>
+                <Frame
+                    Padding="12"
+                    CornerRadius="0"
+                    HasShadow="False">
+                    <Frame.Background>
+                        <LinearGradientBrush
+                            StartPoint="0, 0"
+                            EndPoint="1, 0">
+                            <LinearGradientBrush.GradientStops>
                                 <GradientStop Color="Red" />
                                 <GradientStop Color="Blue" />
                             </LinearGradientBrush.GradientStops>
@@ -24,6 +44,28 @@
                     </Frame.Background>
                     <Label
                         Text="GradientBrush without set Offsets (2 GradientStops)"
+                        HorizontalTextAlignment="Center"
+                        TextColor="White"
+                        FontSize="24"/>
+                </Frame>
+                <Frame
+                    Padding="12"
+                    CornerRadius="0"
+                    HasShadow="False">
+                    <Frame.Background>
+                        <LinearGradientBrush
+                            StartPoint="0, 0"
+                            EndPoint="1, 0">
+                            <LinearGradientBrush.GradientStops>
+                                <GradientStop Color="GreenYellow" Offset="0" />
+                                <GradientStop Color="LawnGreen" Offset="0.25" />
+                                <GradientStop Color="Green" Offset="0.5" />
+                                <GradientStop Color="DarkGreen" Offset="0.75" />
+                            </LinearGradientBrush.GradientStops>
+                        </LinearGradientBrush>
+                    </Frame.Background>
+                    <Label
+                        Text="GradientBrush with Offsets (4 GradientStops)"
                         HorizontalTextAlignment="Center"
                         TextColor="White"
                         FontSize="24"/>
