@@ -28,16 +28,20 @@ namespace Xamarin.Forms.Controls.Issues
 			InitializeComponent();
 
 			grouped = new ObservableCollection<GroupedIssue11381Model> ();
-			var veggieGroup = new GroupedIssue11381Model () { LongName = "vegetables", ShortName="v" };
-			var fruitGroup = new GroupedIssue11381Model () { LongName = "fruit", ShortName = "f" };
-			veggieGroup.Add (new Issue11381Model () { Name = "celery", IsReallyAVeggie = true, Comment = "try ants on a log" });
-			veggieGroup.Add (new Issue11381Model () { Name = "tomato", IsReallyAVeggie = false, Comment = "pairs well with basil" });
-			veggieGroup.Add (new Issue11381Model () { Name = "zucchini", IsReallyAVeggie = true, Comment = "zucchini bread > bannana bread" });
-			veggieGroup.Add (new Issue11381Model () { Name = "peas", IsReallyAVeggie = true, Comment = "like peas in a pod" });
-			fruitGroup.Add (new Issue11381Model () {Name = "banana", IsReallyAVeggie = false,Comment = "available in chip form factor"});
-			fruitGroup.Add (new Issue11381Model () {Name = "strawberry", IsReallyAVeggie = false,Comment = "spring plant"});
-			fruitGroup.Add (new Issue11381Model () {Name = "cherry", IsReallyAVeggie = false,Comment = "topper for icecream"});
-			grouped.Add (veggieGroup); grouped.Add (fruitGroup);
+
+			var g1Group = new GroupedIssue11381Model () { LongName = "Group1", ShortName="g1" };
+			var g2Group = new GroupedIssue11381Model () { LongName = "Group2", ShortName = "g2" };
+
+			g1Group.Add (new Issue11381Model () { Name = "G1I1", IsReallyAVeggie = true, Comment = "Lorem ipsum dolor sit amet" });
+			g1Group.Add (new Issue11381Model () { Name = "G1I2", IsReallyAVeggie = false, Comment = "Lorem ipsum dolor sit amet" });
+			g1Group.Add (new Issue11381Model () { Name = "G1I3", IsReallyAVeggie = true, Comment = "Lorem ipsum dolor sit amet" });
+			g1Group.Add (new Issue11381Model () { Name = "G1I4", IsReallyAVeggie = true, Comment = "Lorem ipsum dolor sit amet" });
+
+			g2Group.Add (new Issue11381Model () {Name = "G2I1", IsReallyAVeggie = false,Comment = "Lorem ipsum dolor sit amet" });
+			g2Group.Add (new Issue11381Model () {Name = "G2I2", IsReallyAVeggie = false,Comment = "Lorem ipsum dolor sit amet" });
+
+			grouped.Add (g1Group); grouped.Add (g2Group);
+
 			Issue11381ListView.ItemsSource = grouped;
 #endif
 		}
@@ -64,8 +68,28 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						grouped.Remove(group);
 					}
+
+					ItemsCount.Text = $"{grouped.Count} groups";
 				}
 			}
+		}
+#endif
+
+#if UITEST
+		[Test]
+		public void Issue11381RemoveListViewGroups()
+		{
+			RunningApp.WaitForElement("ListViewId", "Timed out waiting for the ListView.");
+
+			RunningApp.Tap(x => x.Marked("G1I1"));
+			RunningApp.Tap(x => x.Marked("G1I2"));
+			RunningApp.Tap(x => x.Marked("G1I3"));
+			RunningApp.Tap(x => x.Marked("G1I4"));
+			RunningApp.Tap(x => x.Marked("G2I1"));
+			RunningApp.Tap(x => x.Marked("G2I2"));
+
+			RunningApp.WaitForElement("ResultId");
+			Assert.AreEqual("0 groups", RunningApp.WaitForElement("ResultId")[0].ReadText());
 		}
 #endif
 	}
