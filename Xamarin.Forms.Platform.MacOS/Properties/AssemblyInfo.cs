@@ -10,6 +10,7 @@ using Rectangle = Xamarin.Forms.Shapes.Rectangle;
 [assembly: ExportImageSourceHandler(typeof(StreamImageSource), typeof(StreamImagesourceHandler))]
 [assembly: ExportImageSourceHandler(typeof(UriImageSource), typeof(ImageLoaderSourceHandler))]
 [assembly: ExportImageSourceHandler(typeof(FontImageSource), typeof(FontImageSourceHandler))]
+[assembly: ExportImageSourceHandler(typeof(LayeredFontImageSource), typeof(FontImageSourceHandler))]
 [assembly: ExportRenderer(typeof(Page), typeof(PageRenderer))]
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: ExportRenderer(typeof(CarouselPage), typeof(CarouselPageRenderer))][assembly: ExportRenderer(typeof(MasterDetailPage), typeof(MasterDetailPageRenderer))]
