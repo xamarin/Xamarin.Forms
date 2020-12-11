@@ -101,9 +101,6 @@ namespace Xamarin.Forms.Material.Android
 			{
 				element?.InvalidateMeasureNonVirtual(Internals.InvalidationTrigger.VerticalOptionsChanged);
 				Hint = hint;
-				// EditText.Hint => Hint
-				// It is impossible to reset it but you can make it invisible.
-				//EditText.SetHintTextColor(global::Android.Graphics.Color.Transparent);
 			}
 		}
 
