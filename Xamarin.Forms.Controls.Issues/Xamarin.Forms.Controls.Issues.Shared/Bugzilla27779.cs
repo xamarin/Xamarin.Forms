@@ -1,8 +1,7 @@
 ﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
 using System.Collections.Generic;
 using Xamarin.Forms.Controls.Issues;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 #if UITEST
 using Xamarin.UITest;
@@ -16,7 +15,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 27779, "Xamarin.Forms.ReadOnlyListAdapter.IndexOf throws NotImplementedExcpetion ")]
-	public class Bugzilla27779 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Bugzilla27779 : TestContentPage // or TestFlyoutPage, etc ...
 	{
 		ListView _listview;
 		IReadOnlyList<Person> _itemsSource;

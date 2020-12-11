@@ -23,10 +23,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			get
 			{
-#if __XCODE11__
 				if (Forms.IsiOS13OrNewer)
 					return UIColor.LabelColor;
-#endif
+
 				return UIColor.Black;
 			}
 		}
@@ -35,10 +34,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			get
 			{
-#if __XCODE11__
 				if (Forms.IsiOS13OrNewer)
 					return UIColor.PlaceholderTextColor;
-#endif
+
 				return SeventyPercentGrey;
 			}
 		}
@@ -47,10 +45,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			get
 			{
-#if __XCODE11__
 				if (Forms.IsiOS13OrNewer)
 					return UIColor.SecondaryLabelColor;
-#endif
+
 				return new Color(.32, .4, .57).ToUIColor();
 			}
 		}
@@ -59,10 +56,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			get
 			{
-#if __XCODE11__
 				if (Forms.IsiOS13OrNewer)
 					return UIColor.SystemBackgroundColor;
-#endif
+
 				return UIColor.White;
 			}
 		}
@@ -71,10 +67,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			get
 			{
-#if __XCODE11__
 				if (Forms.IsiOS13OrNewer)
 					return UIColor.SeparatorColor;
-#endif
+
 				return UIColor.Gray;
 			}
 		}
@@ -83,10 +78,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			get
 			{
-#if __XCODE11__
 				if (Forms.IsiOS13OrNewer)
 					return UIColor.OpaqueSeparatorColor;
-#endif
+
 				return UIColor.Black;
 			}
 		}
@@ -95,10 +89,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			get
 			{
-#if __XCODE11__
 				if (Forms.IsiOS13OrNewer)
 					return UIColor.SystemGroupedBackgroundColor;
-#endif
+
 				return new UIColor(247f / 255f, 247f / 255f, 247f / 255f, 1);
 			}
 		}
@@ -107,10 +100,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			get
 			{
-#if __XCODE11__
 				if (Forms.IsiOS13OrNewer)
 					return UIColor.SystemBlueColor;
-#endif
+
 				return Color.FromRgba(50, 79, 133, 255).ToUIColor();
 			}
 		}
@@ -119,10 +111,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			get
 			{
-#if __XCODE11__
 				if (Forms.IsiOS13OrNewer)
 					return UIColor.SystemRedColor;
-#endif
+
 				return UIColor.FromRGBA(255, 0, 0, 255);
 			}
 		}
@@ -131,10 +122,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			get
 			{
-#if __XCODE11__
 				if (Forms.IsiOS13OrNewer)
 					return UIColor.SystemGrayColor;
-#endif
+
 				return UIColor.Gray;
 			}
 		}
@@ -143,19 +133,94 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			get
 			{
-#if __XCODE11__
 				if (Forms.IsiOS13OrNewer)
 					return UIColor.SystemGray2Color;
-#endif
 				return UIColor.LightGray;
+
 			}
 		}
 
 #else
 		internal static readonly NSColor Black = NSColor.Black;
 		internal static readonly NSColor SeventyPercentGrey = NSColor.FromRgba(0.7f, 0.7f, 0.7f, 1);
-		internal static readonly NSColor LabelColor = NSColor.Black.UsingColorSpace("NSCalibratedRGBColorSpace");
 		internal static readonly NSColor AccentColor = Color.FromRgba(50, 79, 133, 255).ToNSColor();
+
+		internal static NSColor LabelColor
+		{
+			get
+			{
+				if (Forms.IsMojaveOrNewer)
+					return NSColor.LabelColor;
+
+				return NSColor.Black.UsingColorSpace("NSCalibratedRGBColorSpace");
+			}
+		}
+
+		internal static NSColor TextColor
+		{
+			get
+			{
+				if (Forms.IsMojaveOrNewer)
+					return NSColor.Text;
+
+				return NSColor.Black;
+			}
+		}
+
+		internal static NSColor ControlBackgroundColor
+		{
+			get
+			{
+				if (Forms.IsMojaveOrNewer)
+					return NSColor.ControlBackground;
+
+				return NSColor.Clear;
+			}
+		}
+
+		internal static NSColor WindowBackgroundColor
+		{
+			get
+			{
+				if (Forms.IsMojaveOrNewer)
+					return NSColor.WindowBackground;
+
+				return NSColor.White;
+			}
+		}
+
+		internal static NSColor PlaceholderColor
+		{
+			get
+			{
+				if (Forms.IsMojaveOrNewer)
+					return NSColor.PlaceholderTextColor;
+
+				return SeventyPercentGrey;
+			}
+		}
+
+		internal static NSColor SecondaryLabelColor
+		{
+			get
+			{
+				if (Forms.IsMojaveOrNewer)
+					return NSColor.SecondaryLabelColor;
+
+				return new Color(.32, .4, .57).ToNSColor();
+			}
+		}
+
+		internal static NSColor GroupedBackground
+		{
+			get
+			{
+				if (Forms.IsMojaveOrNewer)
+					return NSColor.SystemGrayColor;
+
+				return Color.LightGray.ToNSColor();
+			}
+		}
 #endif
 
 		public static CGColor ToCGColor(this Color color)

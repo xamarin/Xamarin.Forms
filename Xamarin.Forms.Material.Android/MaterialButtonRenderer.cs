@@ -1,30 +1,21 @@
 
 using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
-#if __ANDROID_29__
-using AndroidX.Core.View;
-using AndroidX.AppCompat.Widget;
-using MButton = Google.Android.Material.Button.MaterialButton;
-#else
-using Android.Support.V4.View;
-using Android.Support.V7.Widget;
-using MButton = Android.Support.Design.Button.MaterialButton;
-#endif
 using Android.Util;
 using Android.Views;
-using Xamarin.Forms;
+using AndroidX.AppCompat.Widget;
+using AndroidX.Core.View;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.Platform.Android.FastRenderers;
-using Xamarin.Forms.Material.Android;
 using Xamarin.Forms.Platform.Android;
+using Xamarin.Forms.Platform.Android.FastRenderers;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AColor = Android.Graphics.Color;
 using APath = Android.Graphics.Path;
 using AView = Android.Views.View;
+using MButton = Google.Android.Material.Button.MaterialButton;
 
 namespace Xamarin.Forms.Material.Android
 {
@@ -120,7 +111,7 @@ namespace Xamarin.Forms.Material.Android
 				return;
 			}
 
-			if(Element == null || Element.CornerRadius <= 0)
+			if (Element == null || Element.CornerRadius <= 0)
 			{
 				base.Draw(canvas);
 				return;

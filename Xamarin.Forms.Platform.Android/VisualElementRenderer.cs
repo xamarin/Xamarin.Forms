@@ -2,18 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
-using Android.Views;
-using Xamarin.Forms.Internals;
-using AView = Android.Views.View;
-using Xamarin.Forms.Platform.Android.FastRenderers;
-using Android.Runtime;
 using Android.Content.Res;
 using Android.Graphics;
-#if __ANDROID_29__
+using Android.Runtime;
+using Android.Views;
 using AndroidX.Core.View;
-#else
-using Android.Support.V4.View;
-#endif
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.Platform.Android.FastRenderers;
+using AView = Android.Views.View;
 
 
 namespace Xamarin.Forms.Platform.Android

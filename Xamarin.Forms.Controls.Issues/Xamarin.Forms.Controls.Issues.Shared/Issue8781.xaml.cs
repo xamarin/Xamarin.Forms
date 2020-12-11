@@ -1,9 +1,9 @@
-﻿using Xamarin.Forms.Internals;
-using Xamarin.Forms.Xaml;
-using Xamarin.Forms.CustomAttributes;
-using System;
-using System.Windows.Input;
+﻿using System;
 using System.Collections.Generic;
+using System.Windows.Input;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.Xaml;
 
 #if UITEST
 using NUnit.Framework;
@@ -26,7 +26,6 @@ namespace Xamarin.Forms.Controls.Issues
 		public Issue8781()
 		{
 #if APP
-			Device.SetFlags(new List<string> { ExperimentalFlags.SwipeViewExperimental });
 			InitializeComponent();
 			BindingContext = this;
 #endif

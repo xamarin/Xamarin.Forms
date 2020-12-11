@@ -1,20 +1,14 @@
 ﻿
 using System;
 using Android.Content;
+using Android.Content.Res;
 using Android.Runtime;
 using Android.Util;
-#if __ANDROID_29__
+using Android.Widget;
 using AndroidX.Core.View;
 using Google.Android.Material.TextField;
-#else
-using Android.Support.V4.View;
-using Android.Support.Design.Widget;
-using Xamarin.Forms.Platform.Android.AppCompat;
-#endif
-using Android.Content.Res;
-using AView = Android.Views.View;
 using Xamarin.Forms.Platform.Android;
-using Android.Widget;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Material.Android
 {
@@ -72,18 +66,18 @@ namespace Xamarin.Forms.Material.Android
 			if (_disposed)
 				return;
 
-			if(!_isSetup)
+			if (!_isSetup)
 			{
 				_isSetup = true;
 				EditText.FocusChange += OnFocusChange;
 				ResetTextColors(formsTextColor, formsPlaceHolderColor);
 			}
-			else if(formsTextColor != _formsTextColor || _formsPlaceholderColor != formsPlaceHolderColor)
+			else if (formsTextColor != _formsTextColor || _formsPlaceholderColor != formsPlaceHolderColor)
 			{
 				ResetTextColors(formsTextColor, formsPlaceHolderColor);
 			}
 
-			if(HasFocus)
+			if (HasFocus)
 				ViewCompat.SetBackgroundTintList(EditText, _focusedUnderlineColorsList);
 			else
 				ViewCompat.SetBackgroundTintList(EditText, _unfocusedUnderlineColorsList);

@@ -1,6 +1,5 @@
 ﻿using System;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.Markup;
 
 namespace Xamarin.Forms.Controls.GalleryPages.DragAndDropGalleries
 {
@@ -94,7 +93,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.DragAndDropGalleries
 				DraggingColor = Color.Purple;
 				OnPropertyChanged(nameof(DraggingColor));
 
-				if(view is StackDrag sd)
+				if (view is StackDrag sd)
 				{
 					args.Data.Image = "coffee.png";
 				}

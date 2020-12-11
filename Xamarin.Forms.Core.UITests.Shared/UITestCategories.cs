@@ -15,10 +15,10 @@
 		public const string CollectionView = "CollectionView";
 		public const string ContextActions = "ContextActions";
 		public const string DatePicker = "DatePicker";
+		public const string DragAndDrop = "DragAndDrop";
 		public const string DisplayAlert = "DisplayAlert";
 		public const string Editor = "Editor";
 		public const string Entry = "Entry";
-		public const string ExpanderView = "ExpanderView";
 		public const string Frame = "Frame";
 		public const string Image = "Image";
 		public const string ImageButton = "ImageButton";
@@ -28,8 +28,10 @@
 		public const string UwpIgnore = "UwpIgnore";
 		public const string LifeCycle = "Lifecycle";
 		public const string MasterDetailPage = "MasterDetailPage";
+		public const string FlyoutPage = "FlyoutPage";
 		public const string Picker = "Picker";
 		public const string ProgressBar = "ProgressBar";
+		public const string RequiresInternetConnection = "RequiresInternetConnection";
 		public const string RootGallery = "RootGallery";
 		public const string ScrollView = "ScrollView";
 		public const string SearchBar = "SearchBar";
@@ -64,8 +66,8 @@
 		public const string Github5000 = "Github5000";
 		public const string Github10000 = "Github10000";
 		public const string RadioButton = "RadioButton";
-		public const string Accessibility = "Accessibility";
 		public const string Shape = "Shape";
+		public const string Accessibility = "Accessibility";
 		public const string Brush = "Brush";
 	}
 }

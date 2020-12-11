@@ -1,10 +1,5 @@
 using System;
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
 using AndroidX.RecyclerView.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -41,7 +36,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			// Create a new snap helper
 			_snapHelper = CreateSnapHelper(snapPointsType, alignment);
-			
+
 			// And attach it to this RecyclerView
 			_snapHelper.AttachToRecyclerView(_recyclerView);
 		}

@@ -252,11 +252,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
-#if __XCODE11__
 			// Make sure the control adheres to changes in UI theme
 			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
 				Control?.SetNeedsDisplay();
-#endif
 		}
 
 		internal override void SendVisualElementInitialized(VisualElement element, NativeView nativeView)
@@ -305,8 +303,12 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (Control == null)
 				return;
-
+				
+#if __MOBILE__
 			focusRequestArgs.Result = focusRequestArgs.Focus ? Control.BecomeFirstResponder() : Control.ResignFirstResponder();
+#else
+			focusRequestArgs.Result = focusRequestArgs.Focus ? Control.Window.MakeFirstResponder(Control) : Control.Window.MakeFirstResponder(null);
+#endif
 		}
 	}
 }

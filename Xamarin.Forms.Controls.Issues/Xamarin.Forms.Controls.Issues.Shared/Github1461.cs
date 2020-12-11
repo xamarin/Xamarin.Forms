@@ -1,6 +1,6 @@
-﻿using Xamarin.Forms.CustomAttributes;
+﻿using System;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System;
 
 #if UITEST
 using Xamarin.UITest;
@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1461, "Cannot change TimePicker format", PlatformAffected.Android)]
-	public class Github1461 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Github1461 : TestContentPage // or TestFlyoutPage, etc ...
 	{
 		Button _button = new Button();
 		TimePicker _timePicker = new TimePicker();

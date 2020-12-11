@@ -1,20 +1,18 @@
-﻿using Android.Content;
+﻿using System;
+using Android.Content;
 using Android.Runtime;
 using Android.Util;
 using Android.Views;
-using System;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	public class ContainerView : ViewGroup
 	{
-		Context _context;
 		IVisualElementRenderer _renderer;
 		View _view;
 
 		public ContainerView(Context context, View view) : base(context)
 		{
-			_context = context;
 			View = view;
 		}
 
@@ -39,6 +37,9 @@ namespace Xamarin.Forms.Platform.Android
 			get { return _view; }
 			set
 			{
+				if (_view == value)
+					return;
+
 				_view = value;
 				OnViewSet(value);
 			}
@@ -53,7 +54,6 @@ namespace Xamarin.Forms.Platform.Android
 				_renderer?.Dispose();
 				_renderer = null;
 				_view = null;
-				_context = null;
 			}
 		}
 
@@ -62,8 +62,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (_renderer == null)
 				return;
 
-			var width = _context.FromPixels(r - l);
-			var height = _context.FromPixels(b - t);
+			var width = Context.FromPixels(r - l);
+			var height = Context.FromPixels(b - t);
 
 			LayoutView(0, 0, width, height);
 			_renderer.UpdateLayout();
@@ -88,19 +88,20 @@ namespace Xamarin.Forms.Platform.Android
 			var width = MeasureSpecFactory.GetSize(widthMeasureSpec);
 			var height = MeasureSpecFactory.GetSize(heightMeasureSpec);
 
-			var measureWidth = width > 0 ? _context.FromPixels(width) : double.PositiveInfinity;
-			var measureHeight = height > 0 ? _context.FromPixels(height) : double.PositiveInfinity;
+			var measureWidth = width > 0 ? Context.FromPixels(width) : double.PositiveInfinity;
+			var measureHeight = height > 0 ? Context.FromPixels(height) : double.PositiveInfinity;
 
 			var sizeReq = View.Measure(measureWidth, measureHeight);
 
-			SetMeasuredDimension((MatchWidth && width != 0) ? width : (int)_context.ToPixels(sizeReq.Request.Width),
-								 (MatchHeight && height != 0) ? height : (int)_context.ToPixels(sizeReq.Request.Height));
+			SetMeasuredDimension((MatchWidth && width != 0) ? width : (int)Context.ToPixels(sizeReq.Request.Width),
+								 (MatchHeight && height != 0) ? height : (int)Context.ToPixels(sizeReq.Request.Height));
 		}
 
 		protected virtual void OnViewSet(View view)
 		{
 			if (_renderer != null)
 			{
+				_renderer.Element.MeasureInvalidated -= ElementMeasureInvalidated;
 				_renderer.View.RemoveFromParent();
 				_renderer.Dispose();
 				_renderer = null;
@@ -110,8 +111,20 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_renderer = Platform.CreateRenderer(view, Context);
 				Platform.SetRenderer(view, _renderer);
-
 				AddView(_renderer.View);
+				view.MeasureInvalidated += ElementMeasureInvalidated;
+			}
+		}
+
+		void ElementMeasureInvalidated(object sender, EventArgs e)
+		{
+			if (this.IsAlive())
+			{
+				RequestLayout();
+			}
+			else if (sender is VisualElement ve)
+			{
+				ve.MeasureInvalidated -= ElementMeasureInvalidated;
 			}
 		}
 	}

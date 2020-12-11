@@ -178,10 +178,9 @@ namespace Xamarin.Forms.Platform.iOS
 				// While the above IsiOS13OrNewer will always be false if __XCODE11__ is true
 				// the UIModalPresentationStyle.Automatic is the only Xcode 11 API
 				// for readability I decided to only take this part out
-#if __XCODE11__
 				if (presentationStyle == UIKit.UIModalPresentationStyle.Automatic)
 					shouldFire = false;
-#endif
+
 				if (presentationStyle == UIKit.UIModalPresentationStyle.FullScreen)
 					shouldFire = false; // This is mainly for backwards compatibility
 			}
@@ -223,7 +222,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public static IVisualElementRenderer CreateRenderer(VisualElement element)
 		{
-			var renderer = Internals.Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element) ?? new DefaultRenderer();
+			IVisualElementRenderer renderer = null;
+
+			if (element is TemplatedView tv && tv.ResolveControlTemplate() != null)
+			{
+				renderer = new DefaultRenderer();
+			}
+
+			if (renderer == null)
+			{
+				renderer = Internals.Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element) ?? new DefaultRenderer();
+			}
+
 			renderer.SetElement(element);
 			return renderer;
 		}
@@ -571,6 +581,26 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				return result;
+			}
+
+			void ResolveLayoutChanges() 
+			{
+				if (Element is Layout layout)
+				{
+					layout.ResolveLayoutChanges();
+				}
+			}
+
+			public override void LayoutSubviews()
+			{
+				ResolveLayoutChanges();
+				base.LayoutSubviews();
+			}
+
+			public override CGSize SizeThatFits(CGSize size)
+			{
+				ResolveLayoutChanges();
+				return base.SizeThatFits(size);
 			}
 		}
 

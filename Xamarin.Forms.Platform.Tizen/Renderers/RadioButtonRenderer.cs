@@ -11,9 +11,11 @@ namespace Xamarin.Forms.Platform.Tizen
 		public RadioButtonRenderer()
 		{
 			RegisterPropertyHandler(RadioButton.IsCheckedProperty, UpdateIsChecked);
-			RegisterPropertyHandler(RadioButton.TextProperty, UpdateText);
+			RegisterPropertyHandler(RadioButton.ContentProperty, UpdateText);
 			RegisterPropertyHandler(RadioButton.TextColorProperty, UpdateTextColor);
-			RegisterPropertyHandler(RadioButton.FontProperty, UpdateFont);
+			RegisterPropertyHandler(RadioButton.FontFamilyProperty, UpdateFont);
+			RegisterPropertyHandler(RadioButton.FontAttributesProperty, UpdateFont);
+			RegisterPropertyHandler(RadioButton.FontSizeProperty, UpdateFont);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<RadioButton> e)
@@ -48,7 +50,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			var size = Control.Geometry;
 			Control.Resize(availableWidth, size.Height);
-			var formattedSize = Control.EdjeObject["elm.text"].TextBlockFormattedSize;
+			var formattedSize = Control.GetTextBlockFormattedSize();
 			Control.Resize(size.Width, size.Height);
 			return new ESize()
 			{
@@ -61,7 +63,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			Element.SetValueFromRenderer(RadioButton.IsCheckedProperty, Control.GroupValue == 1 ? true : false);
 		}
-		
+
 		void UpdateIsChecked()
 		{
 			Control.GroupValue = Element.IsChecked ? 1 : 0;
@@ -69,7 +71,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void UpdateText(bool isInitialized)
 		{
-			_span.Text = Element.Text;
+			_span.Text = Element.ContentAsString() ?? "";
 			if (!isInitialized)
 				ApplyTextAndStyle();
 		}
@@ -97,21 +99,16 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void SetInternalTextAndStyle(string formattedText, string textStyle)
 		{
-			string emission = "elm,state,text,visible";
+			bool isVisible = true;
 			if (string.IsNullOrEmpty(formattedText))
 			{
 				formattedText = null;
 				textStyle = null;
-				emission = "elm,state,text,hidden";
+				isVisible = false;
 			}
 			Control.Text = formattedText;
-
-			var textblock = Control.EdjeObject["elm.text"];
-			if (textblock != null)
-			{
-				textblock.TextStyle = textStyle;
-			}
-			Control.EdjeObject.EmitSignal(emission, "elm");
+			Control.SetTextBlockStyle(textStyle);
+			Control.SendTextVisibleSignal(isVisible);
 		}
 	}
 }

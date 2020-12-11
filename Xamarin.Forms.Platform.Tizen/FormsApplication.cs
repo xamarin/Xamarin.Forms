@@ -1,14 +1,16 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Reflection;
+using System.Threading.Tasks;
 using ElmSharp;
-using Tizen.Applications;
-using Xamarin.Forms.Internals;
-using ELayout = ElmSharp.Layout;
-using DeviceOrientation = Xamarin.Forms.Internals.DeviceOrientation;
 using ElmSharp.Wearable;
+using Tizen.Applications;
+using Tizen.Common;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.Platform.Tizen.Native;
+using DeviceOrientation = Xamarin.Forms.Internals.DeviceOrientation;
+using ELayout = ElmSharp.Layout;
 using Specific = Xamarin.Forms.PlatformConfiguration.TizenSpecific.Application;
 
 namespace Xamarin.Forms.Platform.Tizen
@@ -18,13 +20,11 @@ namespace Xamarin.Forms.Platform.Tizen
 	{
 		ITizenPlatform _platform;
 		Application _application;
-		bool _isInitialStart;
 		Window _window;
 		bool _useBezelInteration;
 
 		protected FormsApplication()
 		{
-			_isInitialStart = true;
 		}
 
 		/// <summary>
@@ -61,6 +61,12 @@ namespace Xamarin.Forms.Platform.Tizen
 			base.OnPreCreate();
 			Application.ClearCurrent();
 
+			if (DotnetUtil.TizenAPIVersion < 5)
+			{
+				// We should set the env variable to support IsolatedStorageFile on tizen 4.0 or lower version.
+				Environment.SetEnvironmentVariable("XDG_DATA_HOME", Current.DirectoryInfo.Data);
+			}
+
 			var type = typeof(Window);
 			// Use reflection to avoid breaking compatibility. ElmSharp.Window.CreateWindow() is has been added since API6.
 			var methodInfo = type.GetMethod("CreateWindow", BindingFlags.NonPublic | BindingFlags.Static);
@@ -90,17 +96,6 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				_platform.Dispose();
 			}
-		}
-
-		protected override void OnAppControlReceived(AppControlReceivedEventArgs e)
-		{
-			base.OnAppControlReceived(e);
-
-			if (!_isInitialStart && _application != null)
-			{
-				_application.SendResume();
-			}
-			_isInitialStart = false;
 		}
 
 		protected override void OnPause()
@@ -175,13 +170,13 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			EvasObject nativeView = null;
 			var content = Specific.GetOverlayContent(_application);
-			if(content != null)
+			if (content != null)
 			{
 				var renderer = Platform.GetOrCreateRenderer(content);
 				(renderer as LayoutRenderer)?.RegisterOnLayoutUpdated();
 				nativeView = renderer?.NativeView;
 			}
-			Forms.BaseLayout.SetPartContent("elm.swallow.overlay", nativeView);
+			Forms.BaseLayout.SetOverlayPart(nativeView);
 		}
 
 		void SetPage(Page page)
@@ -194,9 +189,9 @@ namespace Xamarin.Forms.Platform.Tizen
 #pragma warning disable CS0618 // Type or member is obsolete
 			// The Platform property is no longer necessary, but we have to set it because some third-party
 			// library might still be retrieving it and using it
-			if (_application != null)	
-			{	
-				_application.Platform = _platform;	
+			if (_application != null)
+			{
+				_application.Platform = _platform;
 			}
 #pragma warning restore CS0618 // Type or member is obsolete
 
@@ -217,8 +212,8 @@ namespace Xamarin.Forms.Platform.Tizen
 				var conformant = new Conformant(MainWindow);
 				conformant.Show();
 
-				var layout = new ELayout(conformant);
-				layout.SetTheme("layout", "application", "default");
+				var layout = new ApplicationLayout(conformant);
+
 				layout.Show();
 
 				BaseLayout = layout;
