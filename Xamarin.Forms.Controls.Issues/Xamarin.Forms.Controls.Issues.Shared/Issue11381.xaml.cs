@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 #endif
 
-#if UITEST
+#if UITEST && __IOS__
 		[Test]
 		public void Issue11381RemoveListViewGroups()
 		{
