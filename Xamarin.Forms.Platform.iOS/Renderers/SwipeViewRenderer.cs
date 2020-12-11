@@ -514,12 +514,12 @@ namespace Xamarin.Forms.Platform.iOS
 					switch (_swipeDirection)
 					{
 						case SwipeDirection.Left:
-							child.Frame = new CGRect(_contentView.Frame.Width - (swipeItemWidth + previousWidth), _originalBounds.Y, i + 1 * swipeItemWidth, swipeItemHeight);
+							child.Frame = new CGRect(_originalBounds.X + _contentView.Frame.Width - (swipeItemWidth + previousWidth), _originalBounds.Y, i + 1 * swipeItemWidth, swipeItemHeight);
 							break;
 						case SwipeDirection.Right:
 						case SwipeDirection.Up:
 						case SwipeDirection.Down:
-							child.Frame = new CGRect(previousWidth, _originalBounds.Y, i + 1 * swipeItemWidth, swipeItemHeight);
+							child.Frame = new CGRect(_originalBounds.X + previousWidth, _originalBounds.Y, i + 1 * swipeItemWidth, swipeItemHeight);
 							break;
 					}
 
@@ -838,9 +838,17 @@ namespace Xamarin.Forms.Platform.iOS
 
 		SwipeItems GetSwipeItemsByDirection()
 		{
+			if (_swipeDirection.HasValue)
+				return GetSwipeItemsByDirection(_swipeDirection.Value);
+
+			return null;
+		}
+
+		SwipeItems GetSwipeItemsByDirection(SwipeDirection swipeDirection)
+		{
 			SwipeItems swipeItems = null;
 
-			switch (_swipeDirection)
+			switch (swipeDirection)
 			{
 				case SwipeDirection.Left:
 					swipeItems = Element.RightItems;
@@ -1193,26 +1201,50 @@ namespace Xamarin.Forms.Platform.iOS
 					swipeThreshold = GetSwipeItemHeight();
 			}
 			else
-			{
-				if (isHorizontal)
-					swipeThreshold = CalculateSwipeThreshold();
-				else
-				{
-					var contentHeight = _contentView.Frame.Height;
-					swipeThreshold = (SwipeThreshold > contentHeight) ? contentHeight : SwipeThreshold;
-				}
-			}
+				swipeThreshold = GetRevealModeSwipeThreshold();
 
 			return ValidateSwipeThreshold(swipeThreshold);
 		}
 
-		double CalculateSwipeThreshold()
+		double GetRevealModeSwipeThreshold()
 		{
-			if (_contentView != null)
-			{
-				var swipeThreshold = _contentView.Frame.Width * 0.8;
+			var swipeItems = GetSwipeItemsByDirection();
+			bool isHorizontal = IsHorizontalSwipe();
 
-				return swipeThreshold;
+			float swipeItemsSize = 0;
+			bool hasSwipeItemView = false;
+
+			foreach (var swipeItem in swipeItems)
+			{
+				if (swipeItem is SwipeItemView)
+					hasSwipeItemView = true;
+
+				if (swipeItem.IsVisible)
+				{
+					var swipeItemSize = GetSwipeItemSize(swipeItem);
+
+					if (isHorizontal)
+						swipeItemsSize += (float)swipeItemSize.Width;
+					else
+						swipeItemsSize += (float)swipeItemSize.Height;
+				}
+			}
+
+			if (hasSwipeItemView)
+			{
+				var swipeItemsWidthSwipeThreshold = swipeItemsSize * 0.8f;
+
+				return swipeItemsWidthSwipeThreshold;
+			}
+			else
+			{
+				if (_contentView != null)
+				{
+					var contentSize = isHorizontal ? _contentView.Frame.Width : _contentView.Frame.Height;
+					var contentSizeSwipeThreshold = contentSize * 0.8f;
+
+					return contentSizeSwipeThreshold;
+				}
 			}
 
 			return SwipeThreshold;
