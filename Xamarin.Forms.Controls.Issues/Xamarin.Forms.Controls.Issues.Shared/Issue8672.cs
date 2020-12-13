@@ -69,7 +69,6 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void RepeatedAddsDoNoCrashCollectionView()
 		{
-			Task.Delay(3000).Wait();
 			RunningApp.WaitForElement(Success);
 		}
 #endif
