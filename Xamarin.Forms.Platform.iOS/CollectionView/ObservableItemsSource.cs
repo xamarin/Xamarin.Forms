@@ -108,6 +108,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CollectionChanged(NotifyCollectionChangedEventArgs args)
 		{
+			if (_collectionView.NumberOfSections() == 0)
+			{
+				// The CollectionView isn't fully initialized yet
+				return;
+			}
+
+			// Force UICollectionView to get the internal accounting straight 
+			_collectionView.NumberOfItemsInSection(_section);
+
 			switch (args.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
