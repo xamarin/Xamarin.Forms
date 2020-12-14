@@ -26,6 +26,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var instructions = new Label
 			{
+				AutomationId = "TestReady",
 				Padding = 12,
 				BackgroundColor = Color.Black,
 				TextColor = Color.White,
@@ -39,8 +40,18 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			
+
 		}
+
+#if UITEST
+		[Test]
+		[Category(UITestCategories.ManualReview)]
+		public void Issue13109ImageTest()
+		{
+			RunningApp.WaitForElement("TestReady");
+			RunningApp.Screenshot("Without exceptions, the test has passed");
+		}
+#endif
 	}
 
 	[Preserve(AllMembers = true)]
