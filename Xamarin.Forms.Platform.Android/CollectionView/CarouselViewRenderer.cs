@@ -349,8 +349,20 @@ namespace Xamarin.Forms.Platform.Android
 
 			SetCurrentItem(_oldPosition);
 
-			var index = Carousel.Loop ? itemCount * 5000 + _oldPosition : _oldPosition;
+			var index = Carousel.Loop ?  LoopedPosition(itemCount) + _oldPosition : _oldPosition;
 			ScrollHelper.JumpScrollToPosition(index, Xamarin.Forms.ScrollToPosition.Center);
+		}
+
+		int LoopedPosition(int itemCount) 
+		{
+			var loopScale = CarouselViewLoopManager.LoopScale;
+
+			if (itemCount == 0 || itemCount == 1)
+			{
+				return loopScale / 2;
+			}
+
+			return (loopScale / 2) / itemCount;
 		}
 
 		void UpdatePositionFromVisibilityChanges()
@@ -652,8 +664,10 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		class CarouselViewLoopManager
+		internal class CarouselViewLoopManager
 		{
+			public const int LoopScale = 16384;
+
 			IItemsViewSource _itemsSource;
 			readonly Queue<ScrollToRequestEventArgs> _pendingScrollTo = new Queue<ScrollToRequestEventArgs>();
 

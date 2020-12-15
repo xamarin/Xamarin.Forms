@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using NUnit.Framework;
 using Xamarin.UITest;
@@ -308,7 +309,7 @@ namespace Xamarin.Forms.Core.UITests
 		{
 			var positionAfter = App.QueryUntilPresent(() =>
 			{
-				var label = App.WaitForElement(x => x.Marked(marked));
+				var label = App.WaitForElement(x => x.Marked(marked), timeout: TimeSpan.FromSeconds(10));
 				if (label.First().Text == value)
 					return label;
 				return null;
