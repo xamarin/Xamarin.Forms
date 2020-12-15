@@ -316,6 +316,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)ScrollToGroup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NestedCollectionViews.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7339.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShellFlyoutItemIsVisible.xaml.cs">
+      <DependentUpon>ShellFlyoutItemIsVisible.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ShellFlyoutSizing.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellAppearanceChange.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue10234.cs" />
@@ -1640,8 +1644,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue11938.xaml.cs">
       <DependentUpon>Issue11938.xaml</DependentUpon>
     </Compile>
-	<Compile Include="$(MSBuildThisFileDirectory)Issue10623.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Issue11496.xaml.cs" >
+    <Compile Include="$(MSBuildThisFileDirectory)Issue10623.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue11496.xaml.cs">
       <DependentUpon>Issue11496.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue11209.xaml.cs">
@@ -2548,6 +2552,12 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue2448.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)ShellFlyoutItemIsVisible.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
 </Project>
