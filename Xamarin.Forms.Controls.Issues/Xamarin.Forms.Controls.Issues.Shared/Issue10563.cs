@@ -150,14 +150,17 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot("Left SwipeItems");
 			RunningApp.Tap(CloseId);
 
+			RunningApp.WaitForElement(OpenRightId);
 			RunningApp.Tap(OpenRightId);
 			RunningApp.Screenshot("Right SwipeItems");
 			RunningApp.Tap(CloseId);
 
+			RunningApp.WaitForElement(OpenTopId);
 			RunningApp.Tap(OpenTopId);
 			RunningApp.Screenshot("Top SwipeItems");
 			RunningApp.Tap(CloseId);
 
+			RunningApp.WaitForElement(OpenBottomId);
 			RunningApp.Tap(OpenBottomId);
 			RunningApp.Screenshot("Bottom SwipeItems");
 			RunningApp.Tap(CloseId);
