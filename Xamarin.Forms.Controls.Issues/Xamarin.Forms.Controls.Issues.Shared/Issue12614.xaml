@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue12614"
+    BackgroundColor="White"
+    Title="Issue 12614"
+    xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
+    xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core">
+    <StackLayout>
+        <Label
+            Text="Using Drag SwipeTransitionMode with Reveal Mode"/>
+        <CollectionView
+            HeightRequest="120">
+            <CollectionView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Hi</x:String>
+                    <x:String>This is just a test to validate an Issue</x:String>
+                    <x:String>Using SwipeView</x:String>
+                    <x:String>and Drag SwipeTransitionMode</x:String>
+                </x:Array>
+            </CollectionView.ItemsSource>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid
+                        BackgroundColor="White"
+                        VerticalOptions="Center">
+                        <SwipeView
+                            android:SwipeView.SwipeTransitionMode="Drag"
+                            ios:SwipeView.SwipeTransitionMode="Drag"
+                            Margin="6, 6, 6, 0">
+                            <Frame
+                                BackgroundColor="WhiteSmoke"
+                                CornerRadius="24"
+                                HasShadow="False"
+                                Padding="6">
+                                <Label
+                                    Text="{Binding .}"
+                                    HorizontalOptions="End"
+                                    Margin="6"
+                                    VerticalOptions="Center"/>
+                            </Frame>
+                            <SwipeView.RightItems>
+                                <SwipeItems
+                                    Mode="Reveal">
+                                    <SwipeItemView>
+                                        <Frame
+                                            HasShadow="False"
+                                            BackgroundColor="Red"
+                                            CornerRadius="24"
+                                            Padding="6">
+                                            <Label
+                                                Text="Delete"
+                                                TextColor="White"
+                                                FontAttributes="Bold"
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Center"/>
+                                        </Frame>
+                                    </SwipeItemView>
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                        </SwipeView>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <Label
+            Text="Using Drag SwipeTransitionMode with Execute Mode"/>
+        <CollectionView
+            HeightRequest="120">
+            <CollectionView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Hi</x:String>
+                    <x:String>This is just a test to validate an Issue</x:String>
+                    <x:String>Using SwipeView</x:String>
+                    <x:String>and Drag SwipeTransitionMode</x:String>
+                </x:Array>
+            </CollectionView.ItemsSource>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid
+                        BackgroundColor="White"
+                        VerticalOptions="Center">
+                        <SwipeView
+                            android:SwipeView.SwipeTransitionMode="Drag"
+                            ios:SwipeView.SwipeTransitionMode="Drag"
+                            Margin="6, 6, 6, 0">
+                            <Frame
+                                BackgroundColor="WhiteSmoke"
+                                CornerRadius="24"
+                                HasShadow="False"
+                                Padding="6">
+                                <Label
+                                    Text="{Binding .}"
+                                    HorizontalOptions="End"
+                                    Margin="6"
+                                    VerticalOptions="Center"/>
+                            </Frame>
+                            <SwipeView.RightItems>
+                                <SwipeItems
+                                    Mode="Execute">
+                                    <SwipeItemView
+                                        WidthRequest="100">
+                                        <Frame
+                                            HasShadow="False"
+                                            BackgroundColor="Red"
+                                            CornerRadius="24"
+                                            Padding="6">
+                                            <Label
+                                                Text="Delete"
+                                                TextColor="White"
+                                                FontAttributes="Bold"
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Center"/>
+                                        </Frame>
+                                    </SwipeItemView>
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                        </SwipeView>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</controls:TestContentPage>
