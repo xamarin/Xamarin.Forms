@@ -10,7 +10,6 @@ namespace Xamarin.Forms.Platform.iOS
 			TaskCompletionSource<bool> task = new TaskCompletionSource<bool>();
 			var oldView = oldRenderer.ViewController.View;
 			var newView = newRenderer.ViewController.View;
-			var keys = oldView.Layer.AnimationKeys;
 
 			oldView.Layer.RemoveAllAnimations();
 			newView.Alpha = 0;
