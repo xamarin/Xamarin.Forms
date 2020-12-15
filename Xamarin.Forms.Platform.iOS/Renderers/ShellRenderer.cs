@@ -63,6 +63,8 @@ namespace Xamarin.Forms.Platform.iOS
 		IShellItemRenderer _currentShellItemRenderer;
 		bool _disposed;
 		IShellFlyoutRenderer _flyoutRenderer;
+		Task _activeTransition = Task.CompletedTask;
+		IShellItemRenderer _incomingRenderer;
 
 		IShellFlyoutRenderer FlyoutRenderer
 		{
@@ -261,9 +263,6 @@ namespace Xamarin.Forms.Platform.iOS
 			element.PropertyChanged += OnElementPropertyChanged;
 		}
 
-		Task _activeTransition = Task.CompletedTask;
-		IShellItemRenderer _incomingRenderer;
-
 		protected async void SetCurrentShellItemController(IShellItemRenderer value)
 		{
 			try
@@ -298,6 +297,8 @@ namespace Xamarin.Forms.Platform.iOS
 			_currentShellItemRenderer = value;
 
 			AddChildViewController(newRenderer.ViewController);
+			View.AddSubview(newRenderer.ViewController.View);
+			View.SendSubviewToBack(newRenderer.ViewController.View);
 
 			newRenderer.ViewController.View.Frame = View.Bounds;
 			
