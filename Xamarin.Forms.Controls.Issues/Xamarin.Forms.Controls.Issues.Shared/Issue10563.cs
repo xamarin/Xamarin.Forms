@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 		}
 
-#if UITEST
+#if UITEST && (__ANDROID__ || __IOS__)
 		[Test]
 		public void Issue10563OpenSwipeViewTest ()
 		{
