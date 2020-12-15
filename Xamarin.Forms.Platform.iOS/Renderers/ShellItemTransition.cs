@@ -10,12 +10,17 @@ namespace Xamarin.Forms.Platform.iOS
 			TaskCompletionSource<bool> task = new TaskCompletionSource<bool>();
 			var oldView = oldRenderer.ViewController.View;
 			var newView = newRenderer.ViewController.View;
+			var keys = oldView.Layer.AnimationKeys;
+
 			oldView.Layer.RemoveAllAnimations();
 			newView.Alpha = 0;
 
-			newView.Superview.InsertSubviewAbove(newView, oldView);
+			oldView.Superview.InsertSubviewAbove(newView, oldView);
 
-			UIView.Animate(0.5, 0, UIViewAnimationOptions.BeginFromCurrentState, () => newView.Alpha = 1, () => task.TrySetResult(true));
+			UIView.Animate(0.5, 0, UIViewAnimationOptions.BeginFromCurrentState, () => newView.Alpha = 1, () =>
+			{
+				task.TrySetResult(true);
+			});
 
 			return task.Task;
 		}
