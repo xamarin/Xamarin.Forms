@@ -394,7 +394,7 @@ namespace Xamarin.Forms
 
 				if (Device.RuntimePlatform == Device.Android)
 					defaultGridClass.Setters.Add(new Setter { Property = Grid.HeightRequestProperty, Value = 50 });
-				else if (Device.RuntimePlatform == Device.iOS)
+				else
 					defaultGridClass.Setters.Add(new Setter { Property = Grid.HeightRequestProperty, Value = 44 });
 
 
