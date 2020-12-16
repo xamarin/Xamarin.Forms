@@ -8,8 +8,9 @@
     <FlyoutItem>
         <Shell.ItemTemplate>
             <DataTemplate>
-                <StackLayout Spacing="0" HeightRequest="5" BackgroundColor="LightBlue" >
-                    <Label Text="I'm set to a Height of 5" TextColor="White" />
+                <StackLayout Orientation="Horizontal" AutomationId="SmallFlyoutItem" Spacing="0" HeightRequest="{Binding BindingContext.SmallFlyoutItem}" BackgroundColor="LightBlue" >
+                    <Label Text="I'm set to specific height: " TextColor="White" />
+                    <Label Text="{Binding BindingContext.SmallFlyoutItem}" TextColor="White" />
                 </StackLayout>
             </DataTemplate>
         </Shell.ItemTemplate>
@@ -44,9 +45,9 @@
     <FlyoutItem>
         <Shell.ItemTemplate>
             <DataTemplate>
-                <StackLayout BackgroundColor="LightGray" HeightRequest="50">
-                    <Button Text="Grow Me" Clicked="ResizeFlyoutItem" />
-                    <Button Text="Shrink Me" Clicked="ResizeFlyoutItemDown" />
+                <StackLayout AutomationId="ResizeMe" BackgroundColor="LightGray" HeightRequest="90">
+                    <Button AutomationId="ResizeFlyoutItem" Text="Grow Me" Clicked="ResizeFlyoutItem" />
+                    <Button AutomationId="ResizeFlyoutItemDown" Text="Shrink Me" Clicked="ResizeFlyoutItemDown" />
                 </StackLayout>
             </DataTemplate>
         </Shell.ItemTemplate>
@@ -59,6 +60,4 @@
             <local:Issue12429Page />
         </ShellContent>
     </FlyoutItem>
-
-
 </controls:TestShell>
