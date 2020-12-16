@@ -44,6 +44,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void LayoutView(double width, double height)
 		{
+			if (width == -1)
+				width = double.PositiveInfinity;
+
+			if (height == -1)
+				height = double.PositiveInfinity;
+
 			_width = width;
 			_height = height;
 			Context context;
@@ -61,10 +67,10 @@ namespace Xamarin.Forms.Platform.Android
 			var request = View.Measure(width, height, MeasureFlags.None);
 
 			var layoutParams = NativeView.LayoutParameters;
-			if (height == -1 || double.IsInfinity(height))
+			if (double.IsInfinity(height))
 				height = request.Request.Height;
 
-			if (width == -1 || double.IsInfinity(width))
+			if (double.IsInfinity(width))
 				width = request.Request.Width;
 
 			if (layoutParams.Width != LP.MatchParent)

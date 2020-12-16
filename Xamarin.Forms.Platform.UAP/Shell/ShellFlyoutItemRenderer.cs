@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (_content != null)
 			{
-				if(_content.BindingContext is INotifyPropertyChanged inpc)
+				if (_content.BindingContext is INotifyPropertyChanged inpc)
 					inpc.PropertyChanged -= ShellElementPropertyChanged;
 
 				_content.Cleanup();
@@ -51,10 +51,10 @@ namespace Xamarin.Forms.Platform.UWP
 			var shell = element?.FindParent<Shell>();
 			DataTemplate dataTemplate = (shell as IShellController)?.GetFlyoutItemDataTemplate(bo);
 
-			if(bo != null)
+			if (bo != null)
 				bo.PropertyChanged += ShellElementPropertyChanged;
 
-			if(dataTemplate != null)
+			if (dataTemplate != null)
 			{
 				_content = (View)dataTemplate.CreateContent();
 				_content.BindingContext = bo;
@@ -80,17 +80,14 @@ namespace Xamarin.Forms.Platform.UWP
 
 				UpdateVisualState();
 				OnMeasureInvalidated();
-
-				//if (renderer.ContainerElement != null)
-				//	renderer.ContainerElement.SetAutomationPropertiesAutomationId(_content.AutomationId ?? element.AutomationId);
 			}
-		}		
+		}
 
 		void ShellElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (e.Is(BaseShellItem.IsCheckedProperty))
 				UpdateVisualState();
-			
+
 		}
 
 		void OnMeasureInvalidated(object sender, EventArgs e)
@@ -106,7 +103,7 @@ namespace Xamarin.Forms.Platform.UWP
 		double _previousWidth;
 		private void OnLayoutUpdated(object sender, object e)
 		{
-			if(this.ActualWidth > 0 && this.ActualWidth != _content.Width && _previousWidth != this.ActualWidth)
+			if (this.ActualWidth > 0 && this.ActualWidth != _content.Width && _previousWidth != this.ActualWidth)
 			{
 				_previousWidth = this.ActualWidth;
 				OnMeasureInvalidated();
@@ -117,7 +114,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (this.ActualWidth <= 0)
 				return;
-			
+
 			if (Parent is FrameworkElement fe)
 			{
 				if (!_content.IsVisible)
@@ -137,11 +134,11 @@ namespace Xamarin.Forms.Platform.UWP
 			Size request = _content.Measure(width, height, MeasureFlags.IncludeMargins).Request;
 
 			var minSize = (double)Windows.UI.Xaml.Application.Current.Resources["NavigationViewItemOnLeftMinHeight"];
-			
+
 			if (request.Height < minSize)
 			{
 				request.Height = minSize;
-			}			
+			}
 
 			if (this.ActualWidth > request.Width)
 				request.Width = this.ActualWidth;
