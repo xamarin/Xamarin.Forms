@@ -210,7 +210,7 @@ namespace Xamarin.Forms.Platform.Android
 				Gravity = (int)(GravityFlags.Bottom | GravityFlags.End)
 			};
 
-			_footerView.LayoutView(_shellContext.AndroidContext.FromPixels(_rootView.LayoutParameters.Width), -1);
+			_footerView.LayoutView(_shellContext.AndroidContext.FromPixels(_rootView.LayoutParameters.Width), double.PositiveInfinity);
 			_rootView.AddView(_footerView.NativeView);
 			if(_recycler?.LayoutParameters is CoordinatorLayout.LayoutParams cl)
 			{
