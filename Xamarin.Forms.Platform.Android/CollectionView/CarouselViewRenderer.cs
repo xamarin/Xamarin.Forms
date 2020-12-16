@@ -268,6 +268,9 @@ namespace Xamarin.Forms.Platform.Android
 			bool removingCurrentElement = currentItemPosition == -1;
 			bool removingLastElement = e.OldStartingIndex == count;
 			bool removingFirstElement = e.OldStartingIndex == 0;
+			bool removingAnyPrevious = 
+				e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove 
+				&& e.OldStartingIndex < carouselPosition;
 
 			_noNeedForScroll = true;
 			_gotoPosition = -1;
@@ -298,6 +301,11 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			// Queue the rest up for later after the Adapter has finished processing item change notifications
+
+			if (removingAnyPrevious)
+			{
+				return;
+			}
 
 			Device.BeginInvokeOnMainThread(() => {
 
@@ -355,14 +363,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		int LoopedPosition(int itemCount) 
 		{
-			var loopScale = CarouselViewLoopManager.LoopScale;
-
-			if (itemCount == 0 || itemCount == 1)
+			if (itemCount == 0)
 			{
-				return loopScale / 2;
+				return 0;
 			}
 
-			return (loopScale / 2) / itemCount;
+			var loopScale = CarouselViewLoopManager.LoopScale / 2;
+			return loopScale - (loopScale % itemCount);
 		}
 
 		void UpdatePositionFromVisibilityChanges()
