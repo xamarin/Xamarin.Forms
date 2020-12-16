@@ -98,16 +98,52 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public Issue12429Page()
 		{
+			Background = SolidColorBrush.White;
 			var label = new Label
 			{
 				Text = "Flyout Item 1: Explicit Height of 35, Flyout Item 2: will grow and shrink when you click the buttons, Flyout Item 3: doesn't exist, and Flyout Item 4: uses the default platform sizes.",
 				VerticalTextAlignment = TextAlignment.Center,
 				TextColor = Color.Black,
-				FontSize = 30,
 				AutomationId = "PageLoaded"
 			};
 
-			Content = label;
+			Content = new StackLayout()
+			{
+				Children =
+				{
+					new Label
+					{
+						Text = "Flyout Item 1: Explicit Height of 35.",
+						VerticalTextAlignment = TextAlignment.Center,
+						TextColor = Color.Black,
+						AutomationId = "PageLoaded"
+					},
+					new Label
+					{
+						Text = "Flyout Item 2: Height sizes to the content.",
+						VerticalTextAlignment = TextAlignment.Center,
+						TextColor = Color.Black
+					},
+					new Label
+					{
+						Text = "Flyout Item 3: will grow and shrink when you click the buttons.",
+						VerticalTextAlignment = TextAlignment.Center,
+						TextColor = Color.Black
+					},
+					new Label
+					{
+						Text = "Flyout Item 4: doesn't exist. You should only see 4 Flyout Items",
+						VerticalTextAlignment = TextAlignment.Center,
+						TextColor = Color.Black
+					},
+					new Label
+					{
+						Text = "Flyout Item 5: uses the default height if no templates are used.",
+						VerticalTextAlignment = TextAlignment.Center,
+						TextColor = Color.Black
+					}
+				}
+			};
 		}
 	}
 

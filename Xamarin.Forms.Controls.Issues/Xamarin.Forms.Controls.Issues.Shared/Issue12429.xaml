@@ -45,7 +45,7 @@
     <FlyoutItem>
         <Shell.ItemTemplate>
             <DataTemplate>
-                <StackLayout AutomationId="ResizeMe" BackgroundColor="LightGray" HeightRequest="90">
+                <StackLayout AutomationId="ResizeMe" BackgroundColor="LightGray" HeightRequest="120">
                     <Button AutomationId="ResizeFlyoutItem" Text="Grow Me" Clicked="ResizeFlyoutItem" />
                     <Button AutomationId="ResizeFlyoutItemDown" Text="Shrink Me" Clicked="ResizeFlyoutItemDown" />
                 </StackLayout>
@@ -55,7 +55,7 @@
             <local:Issue12429Page />
         </ShellContent>
     </FlyoutItem>
-    <FlyoutItem Title="Bottom Flyout Item (44 on iOS/50 on Android)">
+    <FlyoutItem Title="Default Flyout Item. Height is 44 on iOS and UWP. Height is 50 on Android)">
         <ShellContent>
             <local:Issue12429Page />
         </ShellContent>
