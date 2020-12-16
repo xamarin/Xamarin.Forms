@@ -81,10 +81,10 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateVisualState();
 				OnMeasureInvalidated();
 
-				if (renderer.ContainerElement != null)
-					renderer.ContainerElement.SetAutomationPropertiesAutomationId(_content.AutomationId ?? element.AutomationId);
+				//if (renderer.ContainerElement != null)
+				//	renderer.ContainerElement.SetAutomationPropertiesAutomationId(_content.AutomationId ?? element.AutomationId);
 			}
-		}
+		}		
 
 		void ShellElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
@@ -117,7 +117,6 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (this.ActualWidth <= 0)
 				return;
-
 			
 			if (Parent is FrameworkElement fe)
 			{
