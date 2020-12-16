@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using CoreGraphics;
 using Foundation;
 using UIKit;
-using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -16,7 +14,6 @@ namespace Xamarin.Forms.Platform.iOS
 		public TViewController ViewController { get; }
 
 		protected float PreviousHorizontalOffset, PreviousVerticalOffset;
-		readonly Dictionary<DataTemplate, CGSize> _templateSizeEstimates = new Dictionary<DataTemplate, CGSize>();
 
 		public ItemsViewDelegator(ItemsViewLayout itemsViewLayout, TViewController itemsViewController)
 		{
@@ -165,52 +162,9 @@ namespace Xamarin.Forms.Platform.iOS
 			return centerItemIndex;
 		}
 
-		// Note: we are deliberately avoiding calculating the exact size of every item that the UICollectionViewFlowLayout
-		// requests from us; instead, we use the exact ItemSize (when possible) or the EstimatedItemSize.
-		// UICollectionViewFlowLayout will request the size for _every single item_ in our datasource, even if it's not going
-		// to be on screen yet. For small datasources, realizing the Forms content and measuring it is no problem. 
-		// But for large datasets (hundreds or thousands of items), we'd be realizing a Forms datatemplate and binding it for 
-		// every single item, which defeats virtualization almost entirely. 
-		// So we only create a measurement cell and measure it in this method if we don't already have a cached estimate for 
-		// that item's data template. 
-
 		public override CGSize GetSizeForItem(UICollectionView collectionView, UICollectionViewLayout layout, NSIndexPath indexPath)
 		{
-			if (ItemsViewLayout.EstimatedItemSize.IsEmpty)
-			{
-				return ItemsViewLayout.ItemSize;
-			}
-
-			var itemTemplate = ViewController.ItemsView.ItemTemplate;
-
-			if (!(itemTemplate is DataTemplateSelector dataTemplateSelector))
-			{
-				// If the DataTemplate only maps to a single template, then our original size estimate will be fine
-				return ItemsViewLayout.EstimatedItemSize;
-			}
-
-			// Determine the template type for the current item 
-			var targetTemplate = dataTemplateSelector.SelectDataTemplate(ViewController.ItemsSource[indexPath], ViewController.ItemsView);
-
-			if (_templateSizeEstimates.TryGetValue(targetTemplate, out CGSize templateSizeEstimate))
-			{
-				// We've seen this template before; use the cached estimate
-				return templateSizeEstimate;
-			}
-		
-			var measurementCell = ViewController.CreateMeasurementCell(indexPath);
-
-			if (measurementCell == null)
-			{
-				// If we couldn't get a measurement cell for some reason, fall back to the old estimate
-				return ItemsViewLayout.EstimatedItemSize;
-			}
-
-			// Measure the cell and cache the result as our estimate for this template
-			var size = measurementCell.Measure();
-			_templateSizeEstimates[measurementCell.CurrentTemplate] = size;
-
-			return size;
+			return ViewController.GetSizeForItem(indexPath);
 		}
 	}
 }

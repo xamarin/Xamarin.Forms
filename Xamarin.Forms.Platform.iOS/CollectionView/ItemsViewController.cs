@@ -22,6 +22,7 @@ namespace Xamarin.Forms.Platform.iOS
 		UIView _emptyUIView;
 		VisualElement _emptyViewFormsElement;
 		Dictionary<NSIndexPath, TemplatedCell> _measurementCells = new Dictionary<NSIndexPath, TemplatedCell>();
+		Dictionary<object, CGSize> _cellSizeCache = new Dictionary<object, CGSize>();
 
 		protected UICollectionViewDelegateFlowLayout Delegator { get; set; }
 
@@ -110,11 +111,17 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_isEmpty = ItemsSource.ItemCount == 0;
 
+			if (_isEmpty)
+			{
+				_measurementCells.Clear();
+				_cellSizeCache.Clear();
+			}
+
 			if (wasEmpty != _isEmpty)
 			{
 				UpdateEmptyViewVisibility(_isEmpty);
 			}
-
+			
 			if (wasEmpty && !_isEmpty)
 			{
 				// If we're going from empty to having stuff, it's possible that we've never actually measured
@@ -203,6 +210,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public virtual void UpdateItemsSource()
 		{
 			_measurementCells.Clear();
+			_cellSizeCache.Clear();
 			ItemsSource = CreateItemsViewSource();
 			CollectionView.ReloadData();
 			CollectionView.CollectionViewLayout.InvalidateLayout();
@@ -214,7 +222,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (ItemsSource?.ItemCount == 0)
 				_emptyUIView?.UpdateFlowDirection(_emptyViewFormsElement);
-
+			
 			Layout.InvalidateLayout();
 		}
 
@@ -242,12 +250,14 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual void UpdateTemplatedCell(TemplatedCell cell, NSIndexPath indexPath)
 		{
 			cell.ContentSizeChanged -= CellContentSizeChanged;
+			cell.LayoutAttributesChanged -= CellLayoutAttributesChanged;
 
 			// If we've already created a cell for this index path (for measurement), re-use the content
 			if (_measurementCells.TryGetValue(indexPath, out TemplatedCell measurementCell))
 			{
 				_measurementCells.Remove(indexPath);
 				measurementCell.ContentSizeChanged -= CellContentSizeChanged;
+				measurementCell.LayoutAttributesChanged -= CellLayoutAttributesChanged;
 				cell.UseContent(measurementCell);
 			}
 			else
@@ -256,10 +266,11 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			cell.ContentSizeChanged += CellContentSizeChanged;
+			cell.LayoutAttributesChanged += CellLayoutAttributesChanged;
 
 			ItemsViewLayout.PrepareCellForLayout(cell);
 		}
-		
+
 		public virtual NSIndexPath GetIndexForItem(object item)
 		{
 			return ItemsSource.GetIndexForItem(item);
@@ -276,6 +287,15 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			Layout?.InvalidateLayout();
+		}
+
+		void CellLayoutAttributesChanged(object sender, LayoutAttributesChangedEventArgs args)
+		{
+			var item = ItemsSource[args.NewAttributes.IndexPath];
+			if (item != null)
+			{
+				_cellSizeCache[item] = args.NewAttributes.Size;
+			}
 		}
 
 		protected virtual string DetermineCellReuseId()
@@ -484,6 +504,26 @@ namespace Xamarin.Forms.Platform.iOS
 			_measurementCells[indexPath] = templatedCell;
 
 			return templatedCell;
+		}
+
+		internal CGSize GetSizeForItem(NSIndexPath indexPath) 
+		{
+			if (ItemsViewLayout.EstimatedItemSize.IsEmpty)
+			{
+				return ItemsViewLayout.ItemSize;
+			}
+
+			if (ItemsSource.IsIndexPathValid(indexPath))
+			{
+				var item = ItemsSource[indexPath];
+
+				if (item != null && _cellSizeCache.TryGetValue(item, out CGSize size))
+				{
+					return size;
+				}
+			}
+
+			return ItemsViewLayout.EstimatedItemSize;
 		}
 	}
 }

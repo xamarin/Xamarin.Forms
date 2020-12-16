@@ -9,6 +9,7 @@ namespace Xamarin.Forms.Platform.iOS
 	public abstract class TemplatedCell : ItemsViewCell
 	{
 		public event EventHandler<EventArgs> ContentSizeChanged;
+		public event EventHandler<LayoutAttributesChangedEventArgs> LayoutAttributesChanged;
 
 		protected CGSize ConstrainedSize;
 
@@ -26,9 +27,6 @@ namespace Xamarin.Forms.Platform.iOS
 		[Internals.Preserve(Conditional = true)]
 		protected TemplatedCell(CGRect frame) : base(frame)
 		{
-
-			System.Diagnostics.Debug.WriteLine($">>>>>> TemplatedCell constructor");
-
 		}
 
 		internal IVisualElementRenderer VisualElementRenderer { get; private set; }
@@ -79,6 +77,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// Adjust the preferred attributes to include space for the Forms element
 			preferredAttributes.Frame = new CGRect(preferredAttributes.Frame.Location, size);
+
+			OnLayoutAttributesChanged(preferredAttributes);
 
 			return preferredAttributes;
 		}
@@ -153,6 +153,9 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			VisualElementRenderer = renderer;
 			var nativeView = VisualElementRenderer.NativeView;
+
+			// Clear out any old views if this cell is being reused
+			ClearSubviews();
 
 			InitializeContentConstraints(nativeView);
 
@@ -260,6 +263,11 @@ namespace Xamarin.Forms.Platform.iOS
 		protected void OnContentSizeChanged()
 		{
 			ContentSizeChanged?.Invoke(this, EventArgs.Empty);
+		}
+
+		protected void OnLayoutAttributesChanged(UICollectionViewLayoutAttributes newAttributes)
+		{
+			LayoutAttributesChanged?.Invoke(this, new LayoutAttributesChangedEventArgs(newAttributes));
 		}
 
 		protected abstract bool AttributesConsistentWithConstrainedDimension(UICollectionViewLayoutAttributes attributes);
