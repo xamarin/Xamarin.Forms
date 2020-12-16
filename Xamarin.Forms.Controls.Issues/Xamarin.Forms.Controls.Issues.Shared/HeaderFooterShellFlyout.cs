@@ -159,7 +159,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 
-#if __iOS__
+#if __IOS__
 		[Test]
 		public void FlyoutHeaderWithZeroMarginShouldHaveNoY()
 		{
