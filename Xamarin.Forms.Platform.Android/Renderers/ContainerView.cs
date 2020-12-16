@@ -78,31 +78,18 @@ namespace Xamarin.Forms.Platform.Android
 				SetMeasuredDimension(0, 0);
 				return;
 			}
-
 			if (!View.IsVisible)
 			{
-				_shellViewRenderer.LayoutView(0, 0);
+				View.Measure(0, 0);
 				SetMeasuredDimension(0, 0);
-				Visibility = ViewStates.Invisible;
 				return;
 			}
 
-			Visibility = ViewStates.Visible;
 			var width = MeasureSpecFactory.GetSize(widthMeasureSpec);
 			var height = MeasureSpecFactory.GetSize(heightMeasureSpec);
 
 			var measureWidth = width > 0 ? Context.FromPixels(width) : double.PositiveInfinity;
 			var measureHeight = height > 0 ? Context.FromPixels(height) : double.PositiveInfinity;
-
-			if(!MatchHeight && heightMeasureSpec == 0 && View.HeightRequest >= 0)
-			{
-				measureHeight = View.HeightRequest;
-			}
-
-			if (!MatchWidth && widthMeasureSpec == 0 && View.WidthRequest >= 0)
-			{
-				measureWidth = View.WidthRequest;
-			}
 
 			_shellViewRenderer.LayoutView(measureWidth, measureHeight);
 
