@@ -108,7 +108,8 @@ namespace Xamarin.Forms.Controls.Issues
 				RightItems = swipeItems,
 				TopItems = swipeItems,
 				BottomItems = swipeItems,
-				Content = swipeContent
+				Content = swipeContent,
+				Margin = new Thickness(0, 48)
 			};
 
 			swipeLayout.Children.Add(swipeView);
@@ -148,12 +149,12 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(OpenLeftId);
 			RunningApp.Tap(OpenLeftId);
 			RunningApp.Screenshot("Left SwipeItems");
-			RunningApp.WaitForElement(CloseId);
 			RunningApp.Tap(CloseId);
 
 			RunningApp.WaitForElement(OpenRightId);
 			RunningApp.Tap(OpenRightId);
 			RunningApp.Screenshot("Right SwipeItems");
+
 			RunningApp.Tap(CloseId);
 
 			RunningApp.WaitForElement(OpenTopId);
