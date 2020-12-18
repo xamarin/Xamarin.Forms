@@ -307,6 +307,8 @@ namespace Xamarin.Forms.Platform.iOS
 				View.InsertSubview(_tableViewController.View, 0);
 				_shellFlyoutContentManager.ContentView = _tableViewController.TableView;
 				_shellFlyoutContentManager.Content = null;
+				_shellFlyoutContentManager.LayoutParallax();
+				_shellFlyoutContentManager.SetHeaderContentInset();
 				return;
 			}
 

@@ -96,7 +96,7 @@ namespace Xamarin.Forms.Platform.iOS
 			LayoutParallax();
 		}
 
-		void SetHeaderContentInset()
+		internal void SetHeaderContentInset()
 		{
 			if (ScrollView == null)
 				return;
