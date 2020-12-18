@@ -359,6 +359,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var index = Carousel.Loop ?  LoopedPosition(itemCount) + _oldPosition : _oldPosition;
 			ScrollHelper.JumpScrollToPosition(index, Xamarin.Forms.ScrollToPosition.Center);
+			_gotoPosition = -1;
 		}
 
 		int LoopedPosition(int itemCount) 
