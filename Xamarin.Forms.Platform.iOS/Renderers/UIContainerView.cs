@@ -67,10 +67,6 @@ namespace Xamarin.Forms.Platform.iOS
 		void ReMeasure()
 		{
 			var request = _view.Measure(Frame.Width, double.PositiveInfinity, MeasureFlags.None);
-			
-			//Layout.LayoutChildIntoBoundingRegion(_view, new Rectangle(0, 0, Frame.Width, request.Request.Height + Margin.Top));			
-
-			//_view.Measure(Frame.Width, request.Request.Height, MeasureFlags.None);
 			MeasuredHeight = request.Request.Height;
 			HeaderSizeChanged?.Invoke(this, EventArgs.Empty);
 		}
@@ -78,17 +74,18 @@ namespace Xamarin.Forms.Platform.iOS
 		void OnMeasureInvalidated(object sender, System.EventArgs e)
 		{
 			ReMeasure();
+			LayoutSubviews();
+		}
+
+		public override void WillMoveToSuperview(UIView newsuper)
+		{
+			base.WillMoveToSuperview(newsuper);
+			ReMeasure();
 		}
 
 		public override void LayoutSubviews()
 		{
-			MeasureIfNeeded();
-			//if (!MeasureIfNeeded())
-			{
-				var size = new Rectangle(0, Margin.Top, Frame.Width, MeasuredHeight);
-				//Layout.LayoutChildIntoBoundingRegion(_view, new Rectangle(0, 0, Frame.Width, MeasuredHeight + Margin.Top));
-				_view.Layout(size);
-			}
+			_view.Layout(new Rectangle(0, Margin.Top, Frame.Width, MeasuredHeight));
 		}
 
 		protected override void Dispose(bool disposing)
