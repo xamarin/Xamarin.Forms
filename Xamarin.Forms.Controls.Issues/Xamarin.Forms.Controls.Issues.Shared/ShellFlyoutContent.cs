@@ -57,10 +57,14 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						FlyoutContentTemplate = new DataTemplate(() =>
 						{
-							return new Label()
+							return new Button()
 							{
-								Background = SolidColorBrush.LightBlue,
-								Text = "Flyout Content Template" 
+								Text = "Content View",
+								AutomationId = "ContentView",
+								Command = new Command(() =>
+								{
+									FlyoutContentTemplate = null;
+								})
 							};
 						});
 					}
@@ -87,9 +91,16 @@ namespace Xamarin.Forms.Controls.Issues
 						{
 							Background = SolidColorBrush.Green,
 							Children = {
-								new Label() { Text = "Content View" }
-							},
-							AutomationId = "ContentView"
+								new Button() 
+								{ 
+									Text = "Content View",
+									AutomationId = "ContentView",
+									Command = new Command(() =>
+									{
+										FlyoutContent = null;
+									})
+								}
+							}
 						};
 					}
 				}),
@@ -135,8 +146,16 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 
 		[Test]
-		public void FlyoutTests()
+		public void FlyoutContentTests()
 		{
+			RunningApp.WaitForElement("PageLoaded");
+			TapInFlyout("Flyout Item");
+			RunningApp.Tap("ToggleContent");
+			TapInFlyout("ContentView");
+			TapInFlyout("Flyout Item");
+			RunningApp.Tap("ToggleFlyoutContentTemplate");
+			TapInFlyout("ContentView");
+			TapInFlyout("Flyout Item");
 		}
 #endif
 	}
