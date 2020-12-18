@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13184"
+    Title="Issue 13184">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="On a real device, simply scroll up/down while titling your finger to swipe at the same time, if the swipeitems maintain the position, the test has passed." />
+        <CollectionView
+            x:Name="collectionView"
+            ItemsSource="{Binding Items}"
+            VerticalOptions="Center">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <SwipeView>
+                        <SwipeView.LeftItems>
+                            <SwipeItems
+                                Mode="Reveal"
+                                SwipeBehaviorOnInvoked="RemainOpen" >
+                                <SwipeItemView>
+                                    <Grid>
+                                        <Button
+                                            BackgroundColor="#f09046"
+                                            WidthRequest="50"
+                                            TextColor="Black"
+                                            Grid.Column="1"
+                                            Text="+"
+                                            Command="{Binding Source={x:Reference collectionView}, Path=BindingContext.IncrementCommand}" CommandParameter="{Binding}" />
+                                        <Button
+                                            BackgroundColor="#d14756"
+                                            WidthRequest="50"
+                                            TextColor="Black"
+                                            Grid.Column="0"
+                                            Text="-"
+                                            Command="{Binding Source={x:Reference collectionView}, Path=BindingContext.DecrementCommand}" CommandParameter="{Binding}" />
+                                    </Grid>
+                                </SwipeItemView>
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                        <Frame
+                            Margin="4"
+                            Padding="2"
+                            CornerRadius="20"
+                            BackgroundColor="#466160">
+                            <Grid
+                                Margin="0,0,0,0"
+                                BackgroundColor="Transparent" >
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Label
+                                    Text="{Binding Title}"
+                                    TextColor="LightGray"
+                                    Grid.Column="0"
+                                    FontSize="Large"
+                                    Margin="10,0,10,0"
+                                    VerticalOptions="Center" />
+                                <Label
+                                    Text="{Binding Count}"
+                                    TextColor="LightGray"
+                                    Grid.Column="1"
+                                    FontSize="Large"
+                                    VerticalOptions="Center" />
+                            </Grid>
+                        </Frame>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</local:TestContentPage>
