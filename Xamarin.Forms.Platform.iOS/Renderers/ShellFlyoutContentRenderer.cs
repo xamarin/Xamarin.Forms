@@ -292,11 +292,13 @@ namespace Xamarin.Forms.Platform.iOS
 				var oldRenderer = Platform.GetRenderer(_flyoutContent);
 				var oldContentView = _footerView;
 
-				_flyoutContent = null;
+				_flyoutContent.ClearValue(Platform.RendererProperty);
 				oldContentView?.RemoveFromSuperview();
+
 				_shellFlyoutContentManager.Content = null;
 				_shellFlyoutContentManager.ContentView = null;
-				_flyoutContent.ClearValue(Platform.RendererProperty);
+				_flyoutContent = null;
+
 				oldRenderer?.Dispose();
 			}
 
@@ -309,8 +311,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_flyoutContent == view)
 				return;
 
+			_tableViewController.View.RemoveFromSuperview();
 
-			View.Subviews.Remove(_tableViewController.View);
 			_flyoutContent = view;
 
 			if (_flyoutContent != null)

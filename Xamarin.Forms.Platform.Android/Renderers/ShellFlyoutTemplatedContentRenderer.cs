@@ -242,7 +242,7 @@ namespace Xamarin.Forms.Platform.Android
 			_appBar.AddView(_headerView);
 			UpdateFlyoutHeaderBehavior();
 
-			UpdateFlyoutContent();
+			UpdateContentLayout();
 		}
 
 		protected virtual void UpdateFlyoutFooter()
