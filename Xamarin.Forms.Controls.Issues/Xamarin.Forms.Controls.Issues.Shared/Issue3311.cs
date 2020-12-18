@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Category(UITestCategories.ManualReview)]
 #endif
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 3311, "Issue Description", PlatformAffected.Default)]
+	[Issue(IssueTracker.Github, 3311, "RTL is not working for iOS Label with FormattedText", PlatformAffected.Default)]
 	public class Issue3311 : TestContentPage 
 	{
 		protected override void Init()
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Controls.Issues
 					new Label()
 					{
 						AutomationId = "Issue3311Label",
-						Text = "Issue 3311: RTL is not working for Label.FormattedText on iOS. This test passes if all proceeding labels are properly right-aligned.",
+						Text = "This test passes if all proceeding labels are properly right-aligned",
 						HorizontalTextAlignment = TextAlignment.Center,
 						FontSize = 20
 					},
@@ -45,7 +45,6 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						AutomationId = "Issue3311FormattedTextLabel",
 						FlowDirection = FlowDirection.RightToLeft,
-						BackgroundColor = Color.Red,
 						FormattedText = formattedString
 					},
 					new Label()
@@ -53,7 +52,6 @@ namespace Xamarin.Forms.Controls.Issues
 						AutomationId = "Issue3311FormattedTextWithLineHeightLabel",
 						FlowDirection = FlowDirection.RightToLeft,
 						LineHeight = 3,
-						BackgroundColor = Color.Red,
 						FormattedText = formattedString
 					}
 
