@@ -290,7 +290,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_flyoutContent != null && _flyoutContent != view)
 			{
 				var oldRenderer = Platform.GetRenderer(_flyoutContent);
-				var oldContentView = _footerView;
+				var oldContentView = _flyoutContentView;
 
 				_flyoutContent.ClearValue(Platform.RendererProperty);
 				oldContentView?.RemoveFromSuperview();
@@ -306,6 +306,8 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				View.InsertSubview(_tableViewController.View, 0);
 				_shellFlyoutContentManager.ContentView = _tableViewController.TableView;
+				_shellFlyoutContentManager.Content = null;
+				return;
 			}
 
 			if (_flyoutContent == view)
@@ -325,8 +327,6 @@ namespace Xamarin.Forms.Platform.iOS
 				View.InsertSubview(_flyoutContentView, 0);
 				_flyoutContentView.ClipsToBounds = true;
 			}
-
-			//_shellFlyoutContentManager.LayoutParallax();
 		}
 
 		public override void ViewWillAppear(bool animated)
