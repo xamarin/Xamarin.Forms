@@ -309,6 +309,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_flyoutContent == view)
 				return;
 
+
+			View.Subviews.Remove(_tableViewController.View);
 			_flyoutContent = view;
 
 			if (_flyoutContent != null)
