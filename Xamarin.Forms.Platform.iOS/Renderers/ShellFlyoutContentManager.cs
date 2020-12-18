@@ -117,7 +117,7 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 
-		void UpdateVerticalScrollMode()
+		public void UpdateVerticalScrollMode()
 		{
 			switch (_context.Shell.FlyoutVerticalScrollMode)
 			{
@@ -173,12 +173,12 @@ namespace Xamarin.Forms.Platform.iOS
 					Layout.LayoutChildIntoBoundingRegion(Content, new Rectangle(0, 0, ContentView.Frame.Width, ContentView.Frame.Height));
 			}
 
-			if (HeaderView != null)
+			if (HeaderView != null && !double.IsNaN(_headerSize))
 			{
 				var margin = HeaderView.Margin;
 				var leftMargin = margin.Left - margin.Right;
 
-				HeaderView.Frame = new CGRect(leftMargin, _headerOffset + HeaderTopMargin, parent.Frame.Width, _headerSize);
+				HeaderView.Frame = new CGRect(leftMargin, _headerOffset, parent.Frame.Width, _headerSize + HeaderTopMargin);
 
 				if (_context.Shell.FlyoutHeaderBehavior == FlyoutHeaderBehavior.Scroll && HeaderTopMargin > 0 && _headerOffset < 0)
 				{

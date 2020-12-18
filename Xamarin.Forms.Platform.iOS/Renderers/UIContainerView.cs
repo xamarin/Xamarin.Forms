@@ -22,6 +22,11 @@ namespace Xamarin.Forms.Platform.iOS
 			ClipsToBounds = true;
 			view.MeasureInvalidated += OnMeasureInvalidated;
 			MeasuredHeight = double.NaN;
+			_view.BatchCommitted += _view_BatchCommitted;
+		}
+
+		private void _view_BatchCommitted(object sender, Internals.EventArg<VisualElement> e)
+		{
 		}
 
 		internal View View => _view;
@@ -47,7 +52,12 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if(!_view.IsSet(View.MarginProperty))
 				{
-					_view.Margin = new Thickness(0, (float)Platform.SafeAreaInsetsForWindow.Top, 0, 0);
+					var newMargin = new Thickness(0, (float)Platform.SafeAreaInsetsForWindow.Top, 0, 0);
+
+					if (newMargin != _view.Margin)
+					{
+						_view.Margin = newMargin;
+					}
 				}
 
 				return _view.Margin;
@@ -57,7 +67,10 @@ namespace Xamarin.Forms.Platform.iOS
 		void ReMeasure()
 		{
 			var request = _view.Measure(Frame.Width, double.PositiveInfinity, MeasureFlags.None);
-			Layout.LayoutChildIntoBoundingRegion(_view, new Rectangle(0, 0, Frame.Width, request.Request.Height));
+			
+			//Layout.LayoutChildIntoBoundingRegion(_view, new Rectangle(0, 0, Frame.Width, request.Request.Height + Margin.Top));			
+
+			//_view.Measure(Frame.Width, request.Request.Height, MeasureFlags.None);
 			MeasuredHeight = request.Request.Height;
 			HeaderSizeChanged?.Invoke(this, EventArgs.Empty);
 		}
@@ -69,8 +82,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void LayoutSubviews()
 		{
-			if(!MeasureIfNeeded())
-				_view.Layout(Bounds.ToRectangle());
+			MeasureIfNeeded();
+			//if (!MeasureIfNeeded())
+			{
+				var size = new Rectangle(0, Margin.Top, Frame.Width, MeasuredHeight);
+				//Layout.LayoutChildIntoBoundingRegion(_view, new Rectangle(0, 0, Frame.Width, MeasuredHeight + Margin.Top));
+				_view.Layout(size);
+			}
 		}
 
 		protected override void Dispose(bool disposing)

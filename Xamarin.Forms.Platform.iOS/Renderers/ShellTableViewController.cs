@@ -64,6 +64,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_source.ClearCache();
 			TableView.ReloadData();
+			ShellFlyoutContentManager.UpdateVerticalScrollMode();
 		}
 
 		public void LayoutParallax() => 		
