@@ -626,8 +626,8 @@ namespace Xamarin.Forms
 			{
 				if (IsVisibleSection)
 					shell.SendStructureChanged();
-				else
-					shell.SendFlyoutItemsChanged();
+
+				shell.SendFlyoutItemsChanged();
 			}
 		}
 

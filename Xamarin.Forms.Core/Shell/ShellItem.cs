@@ -168,8 +168,8 @@ namespace Xamarin.Forms
 			{
 				if (IsVisibleItem)
 					shell.SendStructureChanged();
-				else
-					shell.SendFlyoutItemsChanged();
+
+				shell.SendFlyoutItemsChanged();
 			}
 		}
 
