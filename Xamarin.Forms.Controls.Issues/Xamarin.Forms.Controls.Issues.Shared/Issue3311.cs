@@ -39,18 +39,21 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						AutomationId = "Issue3311NormalTextLabel",
 						FlowDirection = FlowDirection.RightToLeft,
+						BackgroundColor = Color.Red,
 						Text = "RTL normal text"
 					},
 					new Label()
 					{
 						AutomationId = "Issue3311FormattedTextLabel",
 						FlowDirection = FlowDirection.RightToLeft,
+						BackgroundColor = Color.Yellow,
 						FormattedText = formattedString
 					},
 					new Label()
 					{
 						AutomationId = "Issue3311FormattedTextWithLineHeightLabel",
 						FlowDirection = FlowDirection.RightToLeft,
+						BackgroundColor = Color.Red,
 						LineHeight = 3,
 						FormattedText = formattedString
 					}
