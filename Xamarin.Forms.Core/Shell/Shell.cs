@@ -284,6 +284,7 @@ namespace Xamarin.Forms
 
 		View IShellController.FlyoutHeader => FlyoutHeaderView;
 		View IShellController.FlyoutFooter => FlyoutFooterView;
+		View IShellController.FlyoutContent => FlyoutContentView;
 
 		IShellController ShellController => this;
 
@@ -421,7 +422,7 @@ namespace Xamarin.Forms
 		bool IShellController.ProposeNavigation(ShellNavigationSource source, ShellItem shellItem, ShellSection shellSection, ShellContent shellContent, IReadOnlyList<Page> stack, bool canCancel)
 		{
 			var proposedState = GetNavigationState(shellItem, shellSection, shellContent, stack, shellSection.Navigation.ModalStack);
-			return ProposeNavigation(source, proposedState, canCancel, null);
+			return ProposeNavigation(source, proposedState, canCancel, null, true);
 		}
 
 		bool IShellController.RemoveAppearanceObserver(IAppearanceObserver observer)
@@ -511,7 +512,7 @@ namespace Xamarin.Forms
 
 			ShellNavigationSource source = CalculateNavigationSource(CurrentState, navigationRequest);
 
-			var accept = ProposeNavigation(source, state, this.CurrentState != null, deferredArgs);
+			var accept = ProposeNavigation(source, state, this.CurrentState != null, deferredArgs, animate ?? true);
 
 			if (deferredArgs == null && _deferredEventArgs != null)
 			{
@@ -1114,6 +1115,9 @@ namespace Xamarin.Forms
 
 			if (FlyoutFooterView != null)
 				SetInheritedBindingContext(FlyoutFooterView, BindingContext);
+
+			if (FlyoutFooterView != null)
+				SetInheritedBindingContext(FlyoutContentView, BindingContext);
 		}
 
 		List<List<Element>> IShellController.GenerateFlyoutGrouping()
@@ -1673,12 +1677,12 @@ namespace Xamarin.Forms
 			}
 		}
 
-		bool ProposeNavigation(ShellNavigationSource source, ShellNavigationState proposedState, bool canCancel, ShellNavigatingEventArgs deferredArgs)
+		bool ProposeNavigation(ShellNavigationSource source, ShellNavigationState proposedState, bool canCancel, ShellNavigatingEventArgs deferredArgs, bool isAnimated)
 		{
 			if (_accumulateNavigatedEvents)
 				return true;
 
-			var navArgs = deferredArgs ?? new ShellNavigatingEventArgs(CurrentState, proposedState, source, canCancel);
+			var navArgs = deferredArgs ?? new ShellNavigatingEventArgs(CurrentState, proposedState, source, canCancel) { Animate = isAnimated };
 			HandleNavigating(navArgs);
 			return !navArgs.Cancelled && navArgs.DeferralCount == 0;
 		}
@@ -1794,6 +1798,85 @@ namespace Xamarin.Forms
 				PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, new[] { FlyoutFooterView });
 		}
 
+
+		#region Shell Flyout Content
+
+
+		public static readonly BindableProperty FlyoutContentProperty = 
+			BindableProperty.Create(nameof(FlyoutContent), typeof(object), typeof(Shell), null, BindingMode.OneTime, propertyChanging: OnFlyoutContentChanging);
+
+		public static readonly BindableProperty FlyoutContentTemplateProperty =
+			BindableProperty.Create(nameof(FlyoutContentTemplate), typeof(DataTemplate), typeof(Shell), null, BindingMode.OneTime, propertyChanging: OnFlyoutContentTemplateChanging);
+
+		View _flyoutContentView;
+
+		public View FlyoutContent
+		{
+			get => (View)GetValue(FlyoutContentProperty);
+			set => SetValue(FlyoutContentProperty, value);
+		}
+
+		public DataTemplate FlyoutContentTemplate
+		{
+			get => (DataTemplate)GetValue(FlyoutContentTemplateProperty);
+			set => SetValue(FlyoutContentTemplateProperty, value);
+		}
+
+		View FlyoutContentView
+		{
+			get => _flyoutContentView;
+			set
+			{
+				if (_flyoutContentView == value)
+					return;
+
+				if (_flyoutContentView != null)
+					OnChildRemoved(_flyoutContentView, -1);
+				_flyoutContentView = value;
+				if (_flyoutContentView != null)
+					OnChildAdded(_flyoutContentView);
+			}
+		}
+
+		void OnFlyoutContentChanged(object oldVal, object newVal)
+		{
+			if (FlyoutContentTemplate == null)
+			{
+				if (newVal is View newFlyoutContent)
+					FlyoutContentView = newFlyoutContent;
+				else
+					FlyoutContentView = null;
+			}
+		}
+
+		void OnFlyoutContentTemplateChanged(DataTemplate oldValue, DataTemplate newValue)
+		{
+			if (newValue == null)
+			{
+				if (FlyoutContent is View flyoutContentView)
+					FlyoutContentView = flyoutContentView;
+				else
+					FlyoutContentView = null;
+			}
+			else
+			{
+				var newContentView = (View)newValue.CreateContent(FlyoutContent, this);
+				FlyoutContentView = newContentView;
+			}
+		}
+
+		static void OnFlyoutContentChanging(BindableObject bindable, object oldValue, object newValue)
+		{
+			var shell = (Shell)bindable;
+			shell.OnFlyoutContentChanged(oldValue, newValue);
+		}
+
+		static void OnFlyoutContentTemplateChanging(BindableObject bindable, object oldValue, object newValue)
+		{
+			var shell = (Shell)bindable;
+			shell.OnFlyoutContentTemplateChanged((DataTemplate)oldValue, (DataTemplate)newValue);
+		}
+		#endregion
 
 
 		[EditorBrowsable(EditorBrowsableState.Never)]

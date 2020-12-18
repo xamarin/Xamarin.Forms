@@ -12,8 +12,7 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly Action<Element> _onElementSelected;
 		List<List<Element>> _groups;
 		Dictionary<Element, View> _views;
-
-		IShellController ShellController => (IShellController)_context.Shell;
+		IShellController ShellController => _context.Shell;
 
 		public ShellTableViewSource(IShellContext context, Action<Element> onElementSelected)
 		{

@@ -30,7 +30,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal bool MeasureIfNeeded()
 		{
-			if (double.IsNaN(MeasuredHeight))
+			if (View == null)
+				return false;
+
+			if (double.IsNaN(MeasuredHeight) || Frame.Width != View.Width)
 			{
 				ReMeasure();
 				return true;

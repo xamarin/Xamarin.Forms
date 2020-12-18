@@ -14,6 +14,9 @@ namespace Xamarin.Forms.Platform.iOS
 		UIView _footerView;
 		View _footer;
 		ShellTableViewController _tableViewController;
+		ShellFlyoutContentManager _shellFlyoutContentManager;
+		private View _flyoutContent;
+		private UIView _flyoutContentView;
 
 		public event EventHandler WillAppear;
 		public event EventHandler WillDisappear;
@@ -22,10 +25,10 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_shellContext = context;
 			_tableViewController = CreateShellTableViewController();
+			_shellFlyoutContentManager = _tableViewController?.ShellFlyoutContentManager;
 			AddChildViewController(_tableViewController);
 
 			context.Shell.PropertyChanged += HandleShellPropertyChanged;
-
 		}
 
 		protected virtual ShellTableViewController CreateShellTableViewController()
@@ -54,6 +57,12 @@ namespace Xamarin.Forms.Platform.iOS
 				Shell.FlyoutFooterTemplateProperty))
 			{
 				UpdateFlyoutFooter();
+			}
+			else if (e.IsOneOf(
+				Shell.FlyoutContentProperty,
+				Shell.FlyoutContentTemplateProperty))
+			{
+				UpdateFlyoutContent();
 			}
 		}
 
@@ -123,7 +132,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				View.AddSubview(_footerView);
 				_footerView.ClipsToBounds = true;
-				_tableViewController.FooterView = _footerView;
+				//ReMeasureFooter();
 				_footer.MeasureInvalidated += OnFooterMeasureInvalidated;
 			}
 
@@ -170,6 +179,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewWillLayoutSubviews();
 			UpdateFooterPosition();
+			UpdateFlyoutContent();
 		}
 
 		protected virtual void UpdateBackground()
@@ -251,10 +261,10 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidLoad();
 
-			View.AddSubview(_tableViewController.View);
 
 			UpdateFlyoutHeader();
 			UpdateFlyoutFooter();
+		//	UpdateFlyoutContent();
 
 			_tableViewController.TableView.BackgroundView = null;
 			_tableViewController.TableView.BackgroundColor = UIColor.Clear;
@@ -271,6 +281,48 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateBackground();
 			UpdateFlowDirection();
+		}
+
+		void UpdateFlyoutContent()
+		{
+			var view = (_shellContext.Shell as IShellController).FlyoutContent;
+
+			if (_flyoutContent != null && _flyoutContent != view)
+			{
+				var oldRenderer = Platform.GetRenderer(_flyoutContent);
+				var oldContentView = _footerView;
+
+				_flyoutContent = null;
+				oldContentView?.RemoveFromSuperview();
+				_shellFlyoutContentManager.Content = null;
+				_shellFlyoutContentManager.ContentView = null;
+				_flyoutContent.ClearValue(Platform.RendererProperty);
+				oldRenderer?.Dispose();
+			}
+
+			if (view == null)
+			{
+				View.InsertSubview(_tableViewController.View, 0);
+				_shellFlyoutContentManager.ContentView = _tableViewController.TableView;
+			}
+
+			if (_flyoutContent == view)
+				return;
+
+			_flyoutContent = view;
+
+			if (_flyoutContent != null)
+			{
+				var renderer = Platform.CreateRenderer(_flyoutContent);
+				_flyoutContentView = renderer.NativeView;
+				_shellFlyoutContentManager.Content = _flyoutContent;
+				_shellFlyoutContentManager.ContentView = _flyoutContentView;
+				Platform.SetRenderer(_flyoutContent, renderer);
+				View.InsertSubview(_flyoutContentView, 0);
+				_flyoutContentView.ClipsToBounds = true;
+			}
+
+			//_shellFlyoutContentManager.LayoutParallax();
 		}
 
 		public override void ViewWillAppear(bool animated)
