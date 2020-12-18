@@ -295,6 +295,14 @@ namespace Xamarin.Forms
 
 		event EventHandler _structureChanged;
 
+		event EventHandler IShellController.FlyoutItemsChanged
+		{
+			add { _flyoutItemsChanged += value; }
+			remove { _flyoutItemsChanged -= value; }
+		}
+
+		event EventHandler _flyoutItemsChanged;
+
 		View IShellController.FlyoutHeader => FlyoutHeaderView;
 		View IShellController.FlyoutFooter => FlyoutFooterView;
 
@@ -884,6 +892,7 @@ namespace Xamarin.Forms
 			{
 				SetCurrentItem();
 				SendStructureChanged();
+				SendFlyoutItemsChanged();
 			};
 
 			async void SetCurrentItem()
@@ -1128,8 +1137,18 @@ namespace Xamarin.Forms
 			if (FlyoutFooterView != null)
 				SetInheritedBindingContext(FlyoutFooterView, BindingContext);
 		}
+		
 
-		List<List<Element>> IShellController.GenerateFlyoutGrouping()
+		internal void SendFlyoutItemsChanged()
+		{
+			if (UpdateFlyoutGroupings())
+				_flyoutItemsChanged?.Invoke(this, EventArgs.Empty);
+		}
+
+		List<List<Element>> IShellController.GenerateFlyoutGrouping() =>
+			_currentFlyoutViews;
+
+		bool UpdateFlyoutGroupings()
 		{
 			// The idea here is to create grouping such that the Flyout would
 			// render correctly if it renderered each item in the groups in order
@@ -1240,11 +1259,11 @@ namespace Xamarin.Forms
 				}
 
 				if (!hasChanged)
-					return _currentFlyoutViews;
+					return false;
 			}
 
 			_currentFlyoutViews = result;
-			return result;
+			return true;
 
 			bool ShowInFlyoutMenu(BindableObject bo)
 			{
