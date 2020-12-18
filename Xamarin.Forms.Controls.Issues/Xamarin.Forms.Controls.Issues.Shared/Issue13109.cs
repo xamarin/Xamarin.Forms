@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		}
 
-#if UITEST
+#if UITEST && __WINDOWS__
 		[Test]
 		[Category(UITestCategories.ManualReview)]
 		public void Issue13109ImageTest()
