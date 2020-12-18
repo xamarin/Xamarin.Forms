@@ -31,15 +31,42 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-
+			Title = "Issue 12484";
 		}
+
+#if UITEST && __ANDROID__
+		[Test]
+		public void Issue12484ControlTemplateRendererTest()
+		{
+			RunningApp.WaitForElement("Success");
+		}
+#endif
 	}
 
 	public class Issue12484CustomView : TemplatedView
 	{
+		public class Issue12484Template : ContentView
+		{
+			public Issue12484Template()
+			{
+				var label = new Label
+				{
+					AutomationId = "Success",
+					Text = "If this text appear, the test has passed.",
+					HorizontalOptions = LayoutOptions.Center,
+					VerticalOptions = LayoutOptions.Center
+				};
+
+				var content = new Grid();
+				content.Children.Add(label);
+
+				Content = content;
+			}
+		}
+
 		public Issue12484CustomView()
 		{
-			ControlTemplate = new ControlTemplate(typeof(Grid));
+			ControlTemplate = new ControlTemplate(typeof(Issue12484Template));
 		}
 	}
 }
