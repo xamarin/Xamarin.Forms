@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 
 			var formattedString = new FormattedString();
-			formattedString.Spans.Add(new Span { Text = "RTL formatted text" });
+			formattedString.Spans.Add(new Span { Text = "RTL \nformatted \ntext" });
 
 			Content = new StackLayout()
 			{
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Controls.Issues
 					new Label()
 					{
 						AutomationId = "Issue3311Label",
-						Text = "Issue 3311: RTL is not working for Label.FormattedText on iOS",
+						Text = "Issue 3311: RTL is not working for Label.FormattedText on iOS. This test passes if all proceeding labels are properly right-aligned.",
 						HorizontalTextAlignment = TextAlignment.Center,
 						FontSize = 20
 					},
@@ -45,8 +45,18 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						AutomationId = "Issue3311FormattedTextLabel",
 						FlowDirection = FlowDirection.RightToLeft,
+						BackgroundColor = Color.Red,
+						FormattedText = formattedString
+					},
+					new Label()
+					{
+						AutomationId = "Issue3311FormattedTextWithLineHeightLabel",
+						FlowDirection = FlowDirection.RightToLeft,
+						LineHeight = 3,
+						BackgroundColor = Color.Red,
 						FormattedText = formattedString
 					}
+
 				}
 			};
 		}
