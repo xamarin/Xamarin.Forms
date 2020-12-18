@@ -65,7 +65,7 @@ namespace Xamarin.Forms
 			if (bindable is Element element)
 				element
 					.FindParentOfType<Shell>()
-					?.SendStructureChanged();
+					?.SendFlyoutItemsChanged();
 		}
 
 		public static readonly BindableProperty TabBarIsVisibleProperty =
