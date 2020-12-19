@@ -299,7 +299,7 @@ namespace Xamarin.Forms
 				});
 			}
 
-			return navArgs.NavigationDelayedOrCancelled;
+			return !navArgs.NavigationDelayedOrCancelled;
 		}
 
 		ShellNavigatingEventArgs ProposeNavigation(ShellNavigationSource source, ShellNavigationState proposedState, bool canCancel)

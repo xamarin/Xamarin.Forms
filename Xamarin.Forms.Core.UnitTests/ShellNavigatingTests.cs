@@ -48,6 +48,38 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void CancelNavigationOccurringOutsideGotoAsyncWithoutDelay()
+		{
+			var flyoutItem = CreateShellItem<FlyoutItem>();
+			TestShell shell = new TestShell()
+			{
+				Items = { flyoutItem }
+			};
+
+			var navigatingToShellContent = CreateShellContent();
+			shell.Items[0].Items[0].Items.Add(navigatingToShellContent);
+
+			bool executed = false;
+			TaskCompletionSource<object> taskCompletionSource = new TaskCompletionSource<object>();
+
+			ShellContent contentActiveBeforeCompletingDeferral = null;
+			shell.Navigating += (_, args) =>
+			{
+				var deferral = args.GetDeferral();
+				contentActiveBeforeCompletingDeferral = flyoutItem.Items[0].Items[0];
+				args.Cancel();
+				deferral.Complete();
+				executed = true;
+			};
+
+			bool result = shell.Controller.ProposeNavigation(
+				ShellNavigationSource.ShellContentChanged, flyoutItem, flyoutItem.Items[0], navigatingToShellContent, flyoutItem.Items[0].Stack, true);
+
+			Assert.IsTrue(executed);
+			Assert.IsFalse(result);
+		}
+
+		[Test]
 		public async Task CancelNavigationOccurringOutsideGotoAsync()
 		{
 			var flyoutItem = CreateShellItem<FlyoutItem>();
@@ -63,6 +95,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			TaskCompletionSource<object> taskCompletionSource = new TaskCompletionSource<object>();
 
 			ShellContent contentActiveBeforeCompletingDeferral = null;
+
 			shell.Navigating += async (_, args) =>
 			{
 				var deferral = args.GetDeferral();
