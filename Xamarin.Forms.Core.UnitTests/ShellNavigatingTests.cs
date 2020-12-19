@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public async Task CancelNavigationShellItems()
+		public async Task CancelNavigationOccurringOutsideGotoAsync()
 		{
 			var flyoutItem = CreateShellItem<FlyoutItem>();
 			TestShell shell = new TestShell()
