@@ -155,9 +155,9 @@ namespace Xamarin.Forms.Core.UnitTests
 		[TestCase("Pop")]
 		[TestCase("GoToAsync")]
 		[TestCase("Push")]
-		public async Task NavigationTaskCompletesAfterDeferalHasFinished(string testCase)
+		public async Task NavigationTaskCompletesAfterDeferralHasFinished(string testCase)
 		{
-			Routing.RegisterRoute(nameof(NavigationTaskCompletesAfterDeferalHasFinished), typeof(ContentPage));
+			Routing.RegisterRoute(nameof(NavigationTaskCompletesAfterDeferralHasFinished), typeof(ContentPage));
 			var shell = new TestShell()
 			{
 				Items = { CreateShellItem<FlyoutItem>() }
@@ -180,7 +180,7 @@ namespace Xamarin.Forms.Core.UnitTests
 					await shell.Navigation.PopAsync();
 					break;
 				case "GoToAsync":
-					await shell.GoToAsync(nameof(NavigationTaskCompletesAfterDeferalHasFinished));
+					await shell.GoToAsync(nameof(NavigationTaskCompletesAfterDeferralHasFinished));
 					break;
 				case "Push":
 					await shell.Navigation.PushAsync(new ContentPage());
@@ -191,7 +191,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public void CompletingTheSameDeferalTokenTwiceDoesntDoAnything()
+		public void CompletingTheSameDeferralTokenTwiceDoesntDoAnything()
 		{
 			var args = CreateShellNavigatedEventArgs();
 			var token = args.GetDeferral();

@@ -6,7 +6,7 @@ namespace Xamarin.Forms
 {
 	public class ShellNavigatingEventArgs : EventArgs
 	{
-		int _deferalCount;
+		int _deferralCount;
 		Func<Task> _deferralFinishedTask;
 		TaskCompletionSource<bool> _deferredTaskCompletionSource;
 		bool _deferralCompleted = false;
@@ -54,7 +54,7 @@ namespace Xamarin.Forms
 				return null;
 
 			DeferredEventArgs = true;
-			var currentCount = Interlocked.Increment(ref _deferalCount);
+			var currentCount = Interlocked.Increment(ref _deferralCount);
 			if (currentCount == 1)
 			{
 				_deferredTaskCompletionSource = new TaskCompletionSource<bool>();
@@ -65,7 +65,7 @@ namespace Xamarin.Forms
 
 		async void DecrementDeferral()
 		{
-			if (Interlocked.Decrement(ref _deferalCount) == 0)
+			if (Interlocked.Decrement(ref _deferralCount) == 0)
 			{
 				_deferralCompleted = true;
 
@@ -93,7 +93,7 @@ namespace Xamarin.Forms
 		internal bool Animate { get; set; }
 		internal bool DeferredEventArgs { get; set; }
 
-		internal int DeferralCount => _deferalCount;
+		internal int DeferralCount => _deferralCount;
 
 		internal bool NavigationDelayedOrCancelled =>
 			Cancelled || DeferralCount > 0;
