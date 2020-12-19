@@ -25,23 +25,28 @@ namespace Xamarin.Forms
 				throw new XamlParseException("Property not set", serviceProvider);
 			var valueconverter = serviceProvider.GetService(typeof(IValueConverterProvider)) as IValueConverterProvider;
 
-			Func<MemberInfo> minforetriever =
-				() =>
+			MemberInfo minforetriever()
+			{
+				MemberInfo minfo = null;
+				try
 				{
-					MemberInfo minfo = null;
-					try {
-						minfo = Property.DeclaringType.GetRuntimeProperty(Property.PropertyName);
-					} catch (AmbiguousMatchException e) {
-						throw new XamlParseException($"Multiple properties with name '{Property.DeclaringType}.{Property.PropertyName}' found.", serviceProvider, innerException: e);
-					}
-					if (minfo != null)
-						return minfo;
-					try {
-						return Property.DeclaringType.GetRuntimeMethod("Get" + Property.PropertyName, new[] { typeof(BindableObject) });
-					} catch (AmbiguousMatchException e) {
-						throw new XamlParseException($"Multiple methods with name '{Property.DeclaringType}.Get{Property.PropertyName}' found.", serviceProvider, innerException: e);
-					}
-				};
+					minfo = Property.DeclaringType.GetRuntimeProperty(Property.PropertyName);
+				}
+				catch (AmbiguousMatchException e)
+				{
+					throw new XamlParseException($"Multiple properties with name '{Property.DeclaringType}.{Property.PropertyName}' found.", serviceProvider, innerException: e);
+				}
+				if (minfo != null)
+					return minfo;
+				try
+				{
+					return Property.DeclaringType.GetRuntimeMethod("Get" + Property.PropertyName, new[] { typeof(BindableObject) });
+				}
+				catch (AmbiguousMatchException e)
+				{
+					throw new XamlParseException($"Multiple methods with name '{Property.DeclaringType}.Get{Property.PropertyName}' found.", serviceProvider, innerException: e);
+				}
+			}
 
 			object value = valueconverter.Convert(Value, Property.ReturnType, minforetriever, serviceProvider);
 			Value = value;
@@ -50,7 +55,8 @@ namespace Xamarin.Forms
 
 		internal void Apply(BindableObject target, bool fromStyle = false)
 		{
-			if (target == null) throw new ArgumentNullException(nameof(target));
+			if (target == null)
+				throw new ArgumentNullException(nameof(target));
 
 			var targetObject = target;
 
@@ -67,10 +73,9 @@ namespace Xamarin.Forms
 				_originalValues.Add(targetObject, originalValue);
 			}
 
-			var dynamicResource = Value as DynamicResource;
 			if (Value is BindingBase binding)
 				targetObject.SetBinding(Property, binding.Clone(), fromStyle);
-			else if (dynamicResource != null)
+			else if (Value is DynamicResource dynamicResource)
 				targetObject.SetDynamicResource(Property, dynamicResource.Key, fromStyle);
 			else
 			{
@@ -83,7 +88,8 @@ namespace Xamarin.Forms
 
 		internal void UnApply(BindableObject target, bool fromStyle = false)
 		{
-			if (target == null) throw new ArgumentNullException(nameof(target));
+			if (target == null)
+				throw new ArgumentNullException(nameof(target));
 
 			var targetObject = target;
 
@@ -108,7 +114,7 @@ namespace Xamarin.Forms
 				_originalValues.Remove(targetObject);
 			}
 			else
-				targetObject.ClearValue(Property);
+				targetObject.ClearValue(Property, fromStyle);
 		}
 	}
 }

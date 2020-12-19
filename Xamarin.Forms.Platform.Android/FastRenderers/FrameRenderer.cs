@@ -3,15 +3,9 @@ using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
-#if __ANDROID_29__
-using AndroidX.Core.View;
-using AndroidX.CardView.Widget;
-using AndroidX.AppCompat.Widget;
-#else
-using Android.Support.V4.View;
-using Android.Support.V7.Widget;
-#endif
 using Android.Views;
+using AndroidX.CardView.Widget;
+using AndroidX.Core.View;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
 
@@ -23,6 +17,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		float _defaultCornerRadius = -1f;
 		int? _defaultLabelFor;
 
+		int _height;
+		int _width;
 		bool _hasLayoutOccurred;
 		bool _disposed;
 		Frame _element;
@@ -194,7 +190,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				e.NewElement.PropertyChanged += OnElementPropertyChanged;
 				UpdateShadow();
 				UpdateBackgroundColor();
-				UpdateBackground();
 				UpdateCornerRadius();
 				UpdateBorderColor();
 				UpdateClippedToBounds();
@@ -238,6 +233,14 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			return _motionEventHelper.HandleMotionEvent(Parent, e);
 		}
 
+		protected override void OnSizeChanged(int w, int h, int oldw, int oldh)
+		{
+			base.OnSizeChanged(w, h, oldw, oldh);
+
+			if (w != _width || h != _height)
+				UpdateBackground();
+		}
+
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (this.IsDisposed())
@@ -251,7 +254,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				return;
 			}
-
 
 			if (e.PropertyName == Frame.HasShadowProperty.PropertyName)
 				UpdateShadow();
@@ -269,7 +271,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void UpdateClippedToBounds()
 		{
-			this.SetClipToOutline(Element.IsClippedToBounds, Element);
+			var shouldClip = Element.IsSet(Xamarin.Forms.Layout.IsClippedToBoundsProperty)
+					? Element.IsClippedToBounds : Element.CornerRadius > 0f;
+
+			this.SetClipToOutline(shouldClip);
 		}
 
 		void UpdateBackgroundColor()
@@ -304,7 +309,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateBackgroundColor();
 			}
 			else
-				_backgroundDrawable.UpdateBackground(background, Control.Height, Control.Width);
+			{
+				_height = Control.Height;
+				_width = Control.Width;
+				_backgroundDrawable.UpdateBackground(background, _height, _width);
+			}
 		}
 
 		void UpdateBorderColor()

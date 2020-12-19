@@ -190,11 +190,9 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
-#if __XCODE11__
 			// Make sure the control adheres to changes in UI theme
 			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
 				UpdateTextColor();
-#endif
 		}
 
 		void OnCancelClicked(object sender, EventArgs args)
@@ -215,8 +213,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnSearchButtonClicked(object sender, EventArgs e)
 		{
-			Element.OnSearchButtonPressed();
-			Control.ResignFirstResponder();
+			Element?.OnSearchButtonPressed();
+			Control?.ResignFirstResponder();
 		}
 
 		void OnTextChanged(object sender, UISearchBarTextChangedEventArgs a)

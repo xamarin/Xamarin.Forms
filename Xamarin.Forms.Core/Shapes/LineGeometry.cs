@@ -1,23 +1,34 @@
 ﻿namespace Xamarin.Forms.Shapes
 {
-    public class LineGeometry : Geometry
-    {
-        public static readonly BindableProperty StartPointProperty =
-            BindableProperty.Create(nameof(StartPoint), typeof(Point), typeof(LineGeometry), new Point());
+	public class LineGeometry : Geometry
+	{
+		public LineGeometry()
+		{
 
-        public static readonly BindableProperty EndPointProperty =
-            BindableProperty.Create(nameof(EndPoint), typeof(Point), typeof(LineGeometry), new Point());
+		}
 
-        public Point StartPoint
-        {
-            set { SetValue(StartPointProperty, value); }
-            get { return (Point)GetValue(StartPointProperty); }
-        }
+		public LineGeometry(Point startPoint, Point endPoint)
+		{
+			StartPoint = startPoint;
+			EndPoint = endPoint;
+		}
 
-        public Point EndPoint
-        {
-            set { SetValue(EndPointProperty, value); }
-            get { return (Point)GetValue(EndPointProperty); }
-        }
-    }
+		public static readonly BindableProperty StartPointProperty =
+			BindableProperty.Create(nameof(StartPoint), typeof(Point), typeof(LineGeometry), new Point());
+
+		public static readonly BindableProperty EndPointProperty =
+			BindableProperty.Create(nameof(EndPoint), typeof(Point), typeof(LineGeometry), new Point());
+
+		public Point StartPoint
+		{
+			set { SetValue(StartPointProperty, value); }
+			get { return (Point)GetValue(StartPointProperty); }
+		}
+
+		public Point EndPoint
+		{
+			set { SetValue(EndPointProperty, value); }
+			get { return (Point)GetValue(EndPointProperty); }
+		}
+	}
 }

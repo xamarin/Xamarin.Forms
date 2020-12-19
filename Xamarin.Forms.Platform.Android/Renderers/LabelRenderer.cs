@@ -1,3 +1,5 @@
+using System;
+using System.ComponentModel;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
@@ -5,8 +7,6 @@ using Android.Text;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using System;
-using System.ComponentModel;
 using Xamarin.Forms.PlatformConfiguration.TizenSpecific;
 
 namespace Xamarin.Forms.Platform.Android
@@ -122,9 +122,10 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateLineHeight();
 				UpdateGravity();
 				UpdateMaxLines();
+				UpdateFlowDirection();
 			}
 			else
-			{	
+			{
 				UpdateText();
 				if (e.OldElement.LineBreakMode != e.NewElement.LineBreakMode)
 					UpdateLineBreakMode();
@@ -134,6 +135,8 @@ namespace Xamarin.Forms.Platform.Android
 					UpdateMaxLines();
 				if (e.OldElement.CharacterSpacing != e.NewElement.CharacterSpacing)
 					UpdateCharacterSpacing();
+				if (e.OldElement.FlowDirection != e.NewElement.FlowDirection)
+					UpdateFlowDirection();
 			}
 			UpdateTextDecorations();
 			UpdatePadding();
@@ -169,6 +172,13 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateMaxLines();
 			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+				UpdateFlowDirection();
+		}
+
+		void UpdateFlowDirection()
+		{
+			Control.UpdateFlowDirection(Element);
 		}
 
 		void UpdateColor()

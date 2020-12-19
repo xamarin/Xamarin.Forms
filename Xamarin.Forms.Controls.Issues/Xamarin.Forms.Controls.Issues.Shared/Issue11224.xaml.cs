@@ -14,6 +14,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.CarouselView)]
+	[Category(UITestCategories.UwpIgnore)]
 #endif
 #if APP
 	[XamlCompilation(XamlCompilationOptions.Compile)]
@@ -34,6 +35,17 @@ namespace Xamarin.Forms.Controls.Issues
 					ResultLabel.Text = "The test has passed";
 				else
 					ResultLabel.Text = "The test has failed";
+			};
+
+			carousel.PropertyChanged += (sender, args) =>
+			{
+				if (args.PropertyName == CarouselView.IsVisibleProperty.PropertyName)
+				{
+					if (carousel.IsVisible && carousel.Position == 3)
+					{
+						ResultLabel.Text = "The test has passed";
+					}
+				}
 			};
 #endif
 		}
@@ -57,7 +69,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement(q => q.Marked("AppearButton"));
 			RunningApp.Tap(q => q.Marked("AppearButton"));
-			RunningApp.WaitForElement("The test has passed");
+			RunningApp.WaitForElement("Item 4");
 			RunningApp.Screenshot("Success");
 		}
 #endif

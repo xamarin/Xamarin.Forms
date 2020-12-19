@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
-using System.ComponentModel;
-using System.Linq;
 using Xamarin.Forms.StyleSheets;
 
 namespace Xamarin.Forms
@@ -124,6 +124,12 @@ namespace Xamarin.Forms
 		{
 			get => (bool)GetValue(IsVisibleProperty);
 			set => SetValue(IsVisibleProperty, value);
+		}
+
+		public bool FlyoutItemIsVisible
+		{
+			get => (bool)GetValue(Shell.FlyoutItemIsVisibleProperty);
+			set => SetValue(Shell.FlyoutItemIsVisibleProperty, value);
 		}
 
 		internal bool IsPartOfVisibleTree()
@@ -308,7 +314,23 @@ namespace Xamarin.Forms
 				.StyleClass = bindableObjectStyle;
 		}
 
-		internal static DataTemplate CreateDefaultFlyoutItemCell(IStyleSelectable styleSelectable, string textBinding, string iconBinding)
+		BindableObject NonImplicitParent
+		{
+			get
+			{
+				if (Parent is Shell)
+					return Parent;
+
+				var parent = (BaseShellItem)Parent;
+
+				if (!Routing.IsImplicit(parent))
+					return parent;
+
+				return parent.NonImplicitParent;
+			}
+		}
+
+		internal static DataTemplate CreateDefaultFlyoutItemCell(string textBinding, string iconBinding)
 		{
 			return new DataTemplate(() =>
 			{
@@ -359,6 +381,16 @@ namespace Xamarin.Forms
 					{
 						Property = VisualElement.BackgroundColorProperty,
 						Value = new Color(0.95)
+
+					});
+				}
+
+				if (Device.RuntimePlatform == Device.UWP)
+				{
+					normalState.Setters.Add(new Setter
+					{
+						Property = VisualElement.BackgroundColorProperty,
+						Value = Color.Transparent
 					});
 				}
 
@@ -368,6 +400,9 @@ namespace Xamarin.Forms
 
 				if (Device.RuntimePlatform == Device.Android)
 					defaultGridClass.Setters.Add(new Setter { Property = Grid.HeightRequestProperty, Value = 50 });
+				else
+					defaultGridClass.Setters.Add(new Setter { Property = Grid.HeightRequestProperty, Value = 44 });
+
 
 				ColumnDefinitionCollection columnDefinitions = new ColumnDefinitionCollection();
 
@@ -438,7 +473,16 @@ namespace Xamarin.Forms
 				nameScope.RegisterName("FlyoutItemImage", image);
 				nameScope.RegisterName("FlyoutItemLabel", label);
 
-				UpdateFlyoutItemStyles(grid, styleSelectable);
+				grid.BindingContextChanged += (sender, __) =>
+				{
+					if (sender is Grid g)
+					{
+						var bo = g.BindingContext as BindableObject;
+						var styleClassSource = Shell.GetBindableObjectWithFlyoutItemTemplate(bo) as IStyleSelectable;
+						UpdateFlyoutItemStyles(g, styleClassSource);
+					}
+				};
+
 				grid.Resources = new ResourceDictionary() { defaultGridClass, defaultLabelClass, defaultImageClass };
 				return grid;
 			});

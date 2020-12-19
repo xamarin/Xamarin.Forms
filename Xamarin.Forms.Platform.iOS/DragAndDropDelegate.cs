@@ -10,18 +10,8 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	internal class DragAndDropDelegate : NSObject, IUIDragInteractionDelegate, IUIDropInteractionDelegate 
+	internal class DragAndDropDelegate : NSObject, IUIDragInteractionDelegate, IUIDropInteractionDelegate
 	{
-		public class CustomDragItem : UIDragItem
-		{
-			public CustomDragItem(NSItemProvider itemProvider, DataPackage dataPackage) : base(itemProvider)
-			{
-				DataPackage = dataPackage;
-			}
-
-			public DataPackage DataPackage { get; }
-		}
-
 		#region UIDragInteractionDelegate
 
 
@@ -31,12 +21,13 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if ((operation == UIDropOperation.Cancel || operation == UIDropOperation.Forbidden) &&
 				session.Items.Length > 0 &&
-				session.Items[0].LocalObject is IVisualElementRenderer ver)
+				session.Items[0].LocalObject is CustomLocalStateData cdi)
 			{
-				this.HandleDropCompleted(ver.Element as View);
+				this.HandleDropCompleted(cdi.View);
 			}
 		}
 
+		[Preserve(Conditional = true)]
 		public UIDragItem[] GetItemsForBeginningSession(UIDragInteraction interaction, IUIDragSession session)
 		{
 			if (interaction.View is IVisualElementRenderer renderer && renderer.Element is View view)
@@ -54,12 +45,32 @@ namespace Xamarin.Forms.Platform.iOS
 				return false;
 
 			if (session.LocalDragSession.Items.Length > 0 &&
-				session.LocalDragSession.Items[0].LocalObject is IVisualElementRenderer)
+				session.LocalDragSession.Items[0].LocalObject is CustomLocalStateData)
 			{
 				return true;
 			}
 			
 			return false;
+		}
+
+		[Export("dropInteraction:sessionDidExit:")]
+		[Preserve(Conditional = true)]
+		public void SessionDidExit(UIDropInteraction interaction, IUIDropSession session)
+		{
+			if (interaction.View is IVisualElementRenderer renderer)
+			{
+				DataPackage package = null;
+
+				if (session.LocalDragSession.Items.Length > 0 &&
+					session.LocalDragSession.Items[0].LocalObject is CustomLocalStateData cdi)
+				{
+					package = cdi.DataPackage;
+				}
+
+				if (HandleDragLeave((View)renderer.Element, package))
+				{
+				}
+			}
 		}
 
 		[Export("dropInteraction:sessionDidUpdate:")]
@@ -76,7 +87,7 @@ namespace Xamarin.Forms.Platform.iOS
 				DataPackage package = null;
 					
 				if(session.LocalDragSession.Items.Length > 0 &&
-					session.LocalDragSession.Items[0] is CustomDragItem cdi)
+					session.LocalDragSession.Items[0].LocalObject is CustomLocalStateData cdi)
 				{
 					package = cdi.DataPackage;
 				}
@@ -98,11 +109,12 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			if(session.LocalDragSession.Items.Length > 0 && 
-				session.LocalDragSession.Items[0] is CustomDragItem cdi)
+				session.LocalDragSession.Items[0].LocalObject is CustomLocalStateData cdi &&
+				interaction.View is IVisualElementRenderer renderer && 
+				renderer.Element is View view)
 			{
-				HandleDrop(interaction.View, cdi.DataPackage);
-				if (cdi.LocalObject is IVisualElementRenderer renderer)
-					HandleDropCompleted(renderer.Element as View);
+				HandleDrop(view, cdi.DataPackage);
+				HandleDropCompleted(cdi.View);
 			}
 		}
 
@@ -125,14 +137,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public UIDragItem[] HandleDragStarting(View element, IVisualElementRenderer renderer)
 		{
-			var args = new DragStartingEventArgs();
 			UIDragItem[] returnValue = null;
 			SendEventArgs<DragGestureRecognizer>(rec =>
 			{
 				if (!rec.CanDrag)
 					return;
 
-				rec.SendDragStarting(args, element);
+				var args = rec.SendDragStarting(element);
 
 				if (args.Cancel)
 					return;
@@ -151,37 +162,31 @@ namespace Xamarin.Forms.Platform.iOS
 						else
 							itemProvider = new NSItemProvider(new NSString(""));
 
-						if (renderer.Element is IImageElement imageElement)
+						if (args.Data.Image == null && renderer.Element is IImageElement imageElement)
 							args.Data.Image = imageElement.Source;
 					}
 					else
 					{
-						string text = clipDescription;
+						string text = args.Data.Text ?? clipDescription;
 
-						if (element is Label label)
-							text = label.Text;
-						else if (element is Entry entry)
-							text = entry.Text;
-						else if (element is Editor editor)
-							text = editor.Text;
-						else if (element is TimePicker tp)
-							text = tp.Time.ToString();
-						else if (element is DatePicker dp)
-							text = dp.Date.ToString();
-
-						if(String.IsNullOrWhiteSpace(text))
+						if (String.IsNullOrWhiteSpace(text))
 						{
 							itemProvider = new NSItemProvider(renderer.NativeView.ConvertToImage());
 						}
 						else
 						{
 							itemProvider = new NSItemProvider(new NSString(text));
-							args.Data.Text = text;
 						}
 					}
 
-					var dragItem = new CustomDragItem(itemProvider, args.Data);
-					dragItem.LocalObject = renderer.NativeView;
+					var dragItem = new UIDragItem(itemProvider);
+					dragItem.LocalObject = new CustomLocalStateData()
+					{
+						Renderer = renderer,
+						View = renderer.Element as View,
+						DataPackage = args.Data
+					};
+
 					returnValue = new UIDragItem[] { dragItem };
 				}
 			}, 
@@ -194,6 +199,23 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var args = new DropCompletedEventArgs();
 			SendEventArgs<DragGestureRecognizer>(rec => rec.SendDropCompleted(args), element);
+		}
+
+		bool HandleDragLeave(View element, DataPackage dataPackage)
+		{
+			var dragEventArgs = new DragEventArgs(dataPackage);
+
+			bool validTarget = false;
+			SendEventArgs<DropGestureRecognizer>(rec =>
+			{
+				if (!rec.AllowDrop)
+					return;
+
+				rec.SendDragLeave(dragEventArgs);
+				validTarget = validTarget || dragEventArgs.AcceptedOperation != DataPackageOperation.None;
+			}, element);
+
+			return validTarget;
 		}
 
 		bool HandleDragOver(View element, DataPackage dataPackage)
@@ -213,23 +235,30 @@ namespace Xamarin.Forms.Platform.iOS
 			return validTarget;
 		}
 
-		void HandleDrop(object sender, DataPackage datapackage)
+		void HandleDrop(View element, DataPackage datapackage)
 		{
-			VisualElement element = null;
-
-			if (sender is IVisualElementRenderer renderer)
-			{
-				element = renderer.Element;
-			}
-
 			var args = new DropEventArgs(datapackage?.View);
-			SendEventArgs<DropGestureRecognizer>(rec =>
+			SendEventArgs<DropGestureRecognizer>(async rec =>
 			{
 				if (!rec.AllowDrop)
 					return;
 
-				rec.SendDrop(args, element);
+				try
+				{
+					await rec.SendDrop(args);
+				}
+				catch (Exception e)
+				{
+					Internals.Log.Warning(nameof(DropGestureRecognizer), $"{e}");
+				}
 			}, (View)element);
+		}
+
+		class CustomLocalStateData : NSObject
+		{
+			public View View { get; set; }
+			public IVisualElementRenderer Renderer { get; set; }
+			public DataPackage DataPackage { get; set; }
 		}
 	}
 

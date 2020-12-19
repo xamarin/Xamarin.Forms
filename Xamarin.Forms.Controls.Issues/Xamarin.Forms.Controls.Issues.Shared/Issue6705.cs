@@ -1,6 +1,6 @@
-﻿using Xamarin.Forms.CustomAttributes;
+﻿using System.Threading.Tasks;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Threading.Tasks;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 6705, "InvokeOnMainThreadAsync throws NullReferenceException", PlatformAffected.All)]
-	public class Issue6705 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Issue6705 : TestContentPage // or TestFlyoutPage, etc ...
 	{
 		protected override void Init()
 		{

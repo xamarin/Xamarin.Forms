@@ -7,10 +7,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
-using Xamarin.Forms.Platform.WPF.Helpers;
 using Xamarin.Forms.Platform.WPF.Extensions;
-using WList = System.Windows.Controls.ListView;
+using Xamarin.Forms.Platform.WPF.Helpers;
 using WGrid = System.Windows.Controls.Grid;
+using WList = System.Windows.Controls.ListView;
 using WpfScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility;
 
 namespace Xamarin.Forms.Platform.WPF
@@ -330,10 +330,10 @@ namespace Xamarin.Forms.Platform.WPF
 		}
 
 		void OnNativeKeyUp(object sender, KeyEventArgs e)
-			=> Element.NotifyRowTapped(_listview.SelectedIndex, cell: null);
+			=> Element.NotifyRowTapped(_listview.SelectedIndex, cell: null, isContextmenuRequested: e.Key != Key.Enter);
 
 		void OnNativeMouseUp(object sender, MouseButtonEventArgs e)
-			=> Element.NotifyRowTapped(_listview.SelectedIndex, cell: null);
+			=> Element.NotifyRowTapped(_listview.SelectedIndex, cell: null, isContextmenuRequested: e.ChangedButton == MouseButton.Right);
 
 		void OnNativeTouchUp(object sender, TouchEventArgs e)
 			=> Element.NotifyRowTapped(_listview.SelectedIndex, cell: null);
@@ -394,7 +394,8 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 
 			var templatedItems = TemplatedItemsView.TemplatedItems;
-			int selectedItemIndex = templatedItems.GetGlobalIndexOfItem(e.SelectedItem);;
+			int selectedItemIndex = templatedItems.GetGlobalIndexOfItem(e.SelectedItem);
+			;
 
 			if (Element.IsGroupingEnabled)
 			{

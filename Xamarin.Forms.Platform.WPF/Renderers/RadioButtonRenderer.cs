@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using WBrush = System.Windows.Media.Brush;
 using WThickness = System.Windows.Thickness;
@@ -21,8 +22,6 @@ namespace Xamarin.Forms.Platform.WPF
 				{
 					_button = new FormsRadioButton();
 
-					_button.Click += OnButtonClick;
-					_button.AddHandler(System.Windows.Controls.Button.ClickEvent, (RoutedEventHandler)OnPointerPressed, true);
 					_button.Checked += OnRadioButtonCheckedOrUnchecked;
 					_button.Unchecked += OnRadioButtonCheckedOrUnchecked;
 
@@ -59,7 +58,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == RadioButton.TextProperty.PropertyName || e.PropertyName == Button.ImageSourceProperty.PropertyName)
+			if (e.PropertyName == RadioButton.ContentProperty.PropertyName || e.PropertyName == Button.ImageSourceProperty.PropertyName)
 			{
 				UpdateContent();
 			}
@@ -71,7 +70,9 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				UpdateTextColor();
 			}
-			else if (e.PropertyName == RadioButton.FontProperty.PropertyName)
+			else if (e.PropertyName == RadioButton.FontFamilyProperty.PropertyName
+				|| e.PropertyName == RadioButton.FontSizeProperty.PropertyName
+				|| e.PropertyName == RadioButton.FontAttributesProperty.PropertyName)
 			{
 				UpdateFont();
 			}
@@ -95,19 +96,6 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				UpdateCheck();
 			}
-		}
-
-
-
-		void OnButtonClick(object sender, RoutedEventArgs e)
-		{
-			((IButtonController)Element)?.SendReleased();
-			((IButtonController)Element)?.SendClicked();
-		}
-
-		void OnPointerPressed(object sender, RoutedEventArgs e)
-		{
-			((IButtonController)Element)?.SendPressed();
 		}
 
 		void OnRadioButtonCheckedOrUnchecked(object sender, RoutedEventArgs e)
@@ -142,7 +130,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void UpdateContent()
 		{
-			Control.Content = Element.Text;
+			Control.Content = Element?.ContentAsString();
 		}
 
 		void UpdateFont()
@@ -150,10 +138,12 @@ namespace Xamarin.Forms.Platform.WPF
 			if (Control == null || Element == null)
 				return;
 
-			if (Element.Font == Font.Default && !_fontApplied)
+			Font font = Font.OfSize(Element.FontFamily, Element.FontSize).WithAttributes(Element.FontAttributes);
+
+			if (font == Font.Default && !_fontApplied)
 				return;
 
-			Font fontToApply = Element.Font == Font.Default ? Font.SystemFontOfSize(NamedSize.Medium) : Element.Font;
+			Font fontToApply = font == Font.Default ? Font.SystemFontOfSize(NamedSize.Medium) : font;
 
 			Control.ApplyFont(fontToApply);
 			_fontApplied = true;
@@ -188,10 +178,9 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			if (_isDisposed)
 				return;
+
 			if (_button != null)
 			{
-				_button.Click -= OnButtonClick;
-				_button.RemoveHandler(System.Windows.Controls.Button.ClickEvent, (RoutedEventHandler)OnPointerPressed);
 				_button.Checked -= OnRadioButtonCheckedOrUnchecked;
 				_button.Unchecked -= OnRadioButtonCheckedOrUnchecked;
 			}

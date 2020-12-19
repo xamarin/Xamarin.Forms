@@ -1,11 +1,11 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.ComponentModel;
-using System;
 
 #if UITEST
 using Xamarin.UITest;
@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.CollectionView)]
+	[NUnit.Framework.Category(UITestCategories.UwpIgnore)]
 #endif
 #if APP
 	[XamlCompilation(XamlCompilationOptions.Compile)]

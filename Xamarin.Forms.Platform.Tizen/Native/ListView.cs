@@ -2,10 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Xamarin.Forms.Internals;
 using ElmSharp;
+using Xamarin.Forms.Internals;
 using ERect = ElmSharp.Rect;
 using EScroller = ElmSharp.Scroller;
+using EColor = ElmSharp.Color;
 
 namespace Xamarin.Forms.Platform.Tizen.Native
 {
@@ -146,6 +147,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 					Scroller.HorizontalScrollBarVisiblePolicy = value;
 			}
 		}
+
+		public EColor BottomLineColor { get; set; }
 
 		/// <summary>
 		/// Occurs when the ListView has scrolled.
@@ -463,6 +466,15 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 			if (itemContext != null && itemContext.Cell != null)
 			{
+				itemContext.Cell.SendSignalToItem(evt.Item);
+				if (BottomLineColor.IsDefault)
+				{
+					evt.Item.DeleteBottomlineColor();
+				}
+				else
+				{
+					evt.Item.SetBottomlineColor(BottomLineColor);
+				}
 				(itemContext.Cell as ICellController).SendAppearing();
 			}
 		}
@@ -658,7 +670,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 			if (_headerFooterItemClass == null)
 			{
-				_headerFooterItemClass = new GenItemClass("full")
+				_headerFooterItemClass = new GenItemClass(ThemeConstants.GenItemClass.Styles.Full)
 				{
 					GetContentHandler = (data, part) =>
 					{
