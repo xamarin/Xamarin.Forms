@@ -1145,8 +1145,13 @@ namespace Xamarin.Forms
 				_flyoutItemsChanged?.Invoke(this, EventArgs.Empty);
 		}
 
-		List<List<Element>> IShellController.GenerateFlyoutGrouping() =>
-			_currentFlyoutViews;
+		List<List<Element>> IShellController.GenerateFlyoutGrouping()
+		{
+			if(_currentFlyoutViews == null)
+				UpdateFlyoutGroupings();
+
+			return _currentFlyoutViews;
+		}
 
 		bool UpdateFlyoutGroupings()
 		{
