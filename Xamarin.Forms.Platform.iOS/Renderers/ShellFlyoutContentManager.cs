@@ -119,6 +119,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public void UpdateVerticalScrollMode()
 		{
+			if (ScrollView == null)
+				return;
+
 			switch (_context.Shell.FlyoutVerticalScrollMode)
 			{
 				case ScrollMode.Auto:
@@ -215,7 +218,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public void OnScrolled()
 		{
-			if (HeaderView == null)
+			if (HeaderView == null || ScrollView == null)
 				return;
 
 			var headerBehavior = _context.Shell.FlyoutHeaderBehavior;
