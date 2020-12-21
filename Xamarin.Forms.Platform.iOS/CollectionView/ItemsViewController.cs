@@ -291,10 +291,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CellLayoutAttributesChanged(object sender, LayoutAttributesChangedEventArgs args)
 		{
-			var item = ItemsSource[args.NewAttributes.IndexPath];
+			CacheCellAttributes(args.NewAttributes.IndexPath, args.NewAttributes.Size);
+		}
+
+		protected virtual void CacheCellAttributes(NSIndexPath indexPath, CGSize size) 
+		{
+			var item = ItemsSource[indexPath];
 			if (item != null)
 			{
-				_cellSizeCache[item] = args.NewAttributes.Size;
+				_cellSizeCache[item] = size;
 			}
 		}
 
