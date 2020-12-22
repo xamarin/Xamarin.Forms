@@ -35,8 +35,6 @@ namespace Xamarin.Forms.Platform.iOS
 			if (content == Content)
 				return;
 
-			Content = null;
-			ContentView = null;
 			removeScolledEvent?.Invoke();
 			removeScolledEvent = null;
 
@@ -44,11 +42,20 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				var oldRenderer = Platform.GetRenderer(Content);
 				var oldContentView = ContentView;
+				var oldContent = Content;
 
-				Content.ClearValue(Platform.RendererProperty);
+				Content = null;
+				ContentView = null;
+				oldContent.ClearValue(Platform.RendererProperty);
 				oldContentView?.RemoveFromSuperview();
-
 				oldRenderer?.Dispose();
+			}
+			// If the user hasn't defined custom content then only the ContentView is set
+			else if(ContentView != null)
+			{
+				var oldContentView = ContentView;
+				ContentView = null;
+				oldContentView.RemoveFromSuperview();
 			}
 
 			Content = content;
@@ -82,7 +89,7 @@ namespace Xamarin.Forms.Platform.iOS
 					removeScolledEvent = () => lv.Scrolled -= ListViewScrolled;
 					void ListViewScrolled(object sender, ScrolledEventArgs e) =>
 						OnScrolled((nfloat)e.ScrollY);
-				}
+				}				
 			}
 		}
 
@@ -113,14 +120,17 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (ContentView is UIScrollView sv1)
 					ScrollView = sv1;
-				else if (ContentView is IVisualElementRenderer ver && ver.NativeView is UIScrollView sv)
-					sv.ContentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentBehavior.Never;
+				else if (ContentView is IVisualElementRenderer ver && ver.NativeView is UIScrollView uIScroll)
+					ScrollView = uIScroll;
 
 				if (ScrollView != null && Forms.IsiOS11OrNewer)
 					ScrollView.ContentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentBehavior.Never;
 
-				LayoutParallax();
-				SetHeaderContentInset();
+				if (ScrollView != null)
+				{
+					LayoutParallax();
+					SetHeaderContentInset();
+				}
 			}
 		}
 

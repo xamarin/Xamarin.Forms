@@ -32,7 +32,11 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var page = new ContentPage();
 
-			AddFlyoutItem(page, "Flyout Item");
+
+			AddFlyoutItem(page, "Flyout Item Top");
+			for (int i = 0; i < 50; i++)
+				AddFlyoutItem("Flyout Item");
+			AddFlyoutItem("Flyout Item Bottom");
 
 			var layout = new StackLayout()
 			{
@@ -87,21 +91,38 @@ namespace Xamarin.Forms.Controls.Issues
 					}
 					else
 					{
-						FlyoutContent = new StackLayout()
+						var stackLayout = new StackLayout()
 						{
-							Background = SolidColorBrush.Green,
-							Children = {
-								new Button() 
-								{ 
-									Text = "Content View",
-									AutomationId = "ContentView",
-									Command = new Command(() =>
-									{
-										FlyoutContent = null;
-									})
-								}
-							}
+							Background = SolidColorBrush.Green
 						};
+
+						FlyoutContent = new ScrollView()
+						{
+							Content = stackLayout
+						};
+
+						AddButton("Top Button");
+
+						for (int i = 0; i < 50; i++)
+						{
+							AddButton("Content View");
+						}
+
+						AddButton("Bottom Button");
+
+						void AddButton(string text)
+						{
+							stackLayout.Children.Add(new Button()
+							{
+								Text = text,
+								AutomationId = "ContentView",
+								Command = new Command(() =>
+								{
+									FlyoutContent = null;
+								}),
+								TextColor = Color.White
+							});
+						}
 					}
 				}),
 				AutomationId = "ToggleContent"
@@ -124,7 +145,8 @@ namespace Xamarin.Forms.Controls.Issues
 							Children = {
 								new Label() { Text = "Header" }
 							},
-							AutomationId = "Header View"
+							AutomationId = "Header View",
+							Background = SolidColorBrush.Yellow
 						};
 
 						FlyoutFooter = new StackLayout()
