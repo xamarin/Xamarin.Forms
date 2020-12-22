@@ -291,49 +291,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if(_shellFlyoutContentManager.ContentView != null)
 				View.InsertSubview(_shellFlyoutContentManager.ContentView, 0);
-
-			//if (_flyoutContent != null && _flyoutContent != view)
-			//{
-			//	var oldRenderer = Platform.GetRenderer(_flyoutContent);
-			//	var oldContentView = _flyoutContentView;
-
-			//	_flyoutContent.ClearValue(Platform.RendererProperty);
-			//	oldContentView?.RemoveFromSuperview();
-
-			//	_shellFlyoutContentManager.Content = null;
-			//	_shellFlyoutContentManager.ContentView = null;
-			//	_flyoutContent = null;
-
-			//	oldRenderer?.Dispose();
-			//}
-
-			//if (view == null)
-			//{
-			//	View.InsertSubview(_tableViewController.View, 0);
-			//	_shellFlyoutContentManager.ContentView = _tableViewController.TableView;
-			//	_shellFlyoutContentManager.Content = null;
-			//	_shellFlyoutContentManager.LayoutParallax();
-			//	_shellFlyoutContentManager.SetHeaderContentInset();
-			//	return;
-			//}
-
-			//if (_flyoutContent == view)
-			//	return;
-
-			//_tableViewController.View.RemoveFromSuperview();
-
-			//_flyoutContent = view;
-
-			//if (_flyoutContent != null)
-			//{
-			//	var renderer = Platform.CreateRenderer(_flyoutContent);
-			//	_flyoutContentView = renderer.NativeView;
-			//	_shellFlyoutContentManager.Content = _flyoutContent;
-			//	_shellFlyoutContentManager.ContentView = _flyoutContentView;
-			//	Platform.SetRenderer(_flyoutContent, renderer);
-			//	View.InsertSubview(_flyoutContentView, 0);
-			//	_flyoutContentView.ClipsToBounds = true;
-			//}
 		}
 
 		public override void ViewWillAppear(bool animated)
