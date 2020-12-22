@@ -14,9 +14,7 @@ namespace Xamarin.Forms.Platform.iOS
 		UIView _footerView;
 		View _footer;
 		ShellTableViewController _tableViewController;
-		ShellFlyoutContentManager _shellFlyoutContentManager;
-		private View _flyoutContent;
-		private UIView _flyoutContentView;
+		ShellFlyoutLayoutManager _shellFlyoutContentManager;
 
 		public event EventHandler WillAppear;
 		public event EventHandler WillDisappear;
@@ -132,7 +130,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 				View.AddSubview(_footerView);
 				_footerView.ClipsToBounds = true;
-				//ReMeasureFooter();
 				_footer.MeasureInvalidated += OnFooterMeasureInvalidated;
 			}
 
@@ -287,48 +284,56 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var view = (_shellContext.Shell as IShellController).FlyoutContent;
 
-			if (_flyoutContent != null && _flyoutContent != view)
-			{
-				var oldRenderer = Platform.GetRenderer(_flyoutContent);
-				var oldContentView = _flyoutContentView;
+			if (view != null)
+				_shellFlyoutContentManager.SetCustomContent(view);
+			else
+				_shellFlyoutContentManager.SetDefaultContent(_tableViewController.TableView);
 
-				_flyoutContent.ClearValue(Platform.RendererProperty);
-				oldContentView?.RemoveFromSuperview();
+			if(_shellFlyoutContentManager.ContentView != null)
+				View.InsertSubview(_shellFlyoutContentManager.ContentView, 0);
 
-				_shellFlyoutContentManager.Content = null;
-				_shellFlyoutContentManager.ContentView = null;
-				_flyoutContent = null;
+			//if (_flyoutContent != null && _flyoutContent != view)
+			//{
+			//	var oldRenderer = Platform.GetRenderer(_flyoutContent);
+			//	var oldContentView = _flyoutContentView;
 
-				oldRenderer?.Dispose();
-			}
+			//	_flyoutContent.ClearValue(Platform.RendererProperty);
+			//	oldContentView?.RemoveFromSuperview();
 
-			if (view == null)
-			{
-				View.InsertSubview(_tableViewController.View, 0);
-				_shellFlyoutContentManager.ContentView = _tableViewController.TableView;
-				_shellFlyoutContentManager.Content = null;
-				_shellFlyoutContentManager.LayoutParallax();
-				_shellFlyoutContentManager.SetHeaderContentInset();
-				return;
-			}
+			//	_shellFlyoutContentManager.Content = null;
+			//	_shellFlyoutContentManager.ContentView = null;
+			//	_flyoutContent = null;
 
-			if (_flyoutContent == view)
-				return;
+			//	oldRenderer?.Dispose();
+			//}
 
-			_tableViewController.View.RemoveFromSuperview();
+			//if (view == null)
+			//{
+			//	View.InsertSubview(_tableViewController.View, 0);
+			//	_shellFlyoutContentManager.ContentView = _tableViewController.TableView;
+			//	_shellFlyoutContentManager.Content = null;
+			//	_shellFlyoutContentManager.LayoutParallax();
+			//	_shellFlyoutContentManager.SetHeaderContentInset();
+			//	return;
+			//}
 
-			_flyoutContent = view;
+			//if (_flyoutContent == view)
+			//	return;
 
-			if (_flyoutContent != null)
-			{
-				var renderer = Platform.CreateRenderer(_flyoutContent);
-				_flyoutContentView = renderer.NativeView;
-				_shellFlyoutContentManager.Content = _flyoutContent;
-				_shellFlyoutContentManager.ContentView = _flyoutContentView;
-				Platform.SetRenderer(_flyoutContent, renderer);
-				View.InsertSubview(_flyoutContentView, 0);
-				_flyoutContentView.ClipsToBounds = true;
-			}
+			//_tableViewController.View.RemoveFromSuperview();
+
+			//_flyoutContent = view;
+
+			//if (_flyoutContent != null)
+			//{
+			//	var renderer = Platform.CreateRenderer(_flyoutContent);
+			//	_flyoutContentView = renderer.NativeView;
+			//	_shellFlyoutContentManager.Content = _flyoutContent;
+			//	_shellFlyoutContentManager.ContentView = _flyoutContentView;
+			//	Platform.SetRenderer(_flyoutContent, renderer);
+			//	View.InsertSubview(_flyoutContentView, 0);
+			//	_flyoutContentView.ClipsToBounds = true;
+			//}
 		}
 
 		public override void ViewWillAppear(bool animated)

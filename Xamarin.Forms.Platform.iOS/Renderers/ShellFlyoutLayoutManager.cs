@@ -10,29 +10,95 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	class ShellFlyoutContentManager
+	class ShellFlyoutLayoutManager
 	{
 		double _headerMin = 56;
 		double _headerOffset = 0;
 		UIView _contentView;
-		UIScrollView ScrollView => _contentView as UIScrollView;
+		UIScrollView ScrollView { get; set; }
 		UIContainerView _headerView;
 		UIView _footerView;
 		double _headerSize;
 		readonly IShellContext _context;
+		Action removeScolledEvent;
 
 		IShellController ShellController => _context.Shell;
-		public ShellFlyoutContentManager(IShellContext context)
+		public ShellFlyoutLayoutManager(IShellContext context)
 		{
 			_context = context;
 			_context.Shell.PropertyChanged += OnShellPropertyChanged;
 			ShellController.StructureChanged += OnStructureChanged;
 		}
 
+		public void SetCustomContent(View content)
+		{
+			if (content == Content)
+				return;
+
+			Content = null;
+			ContentView = null;
+			removeScolledEvent?.Invoke();
+			removeScolledEvent = null;
+
+			if (Content != null)
+			{
+				var oldRenderer = Platform.GetRenderer(Content);
+				var oldContentView = ContentView;
+
+				Content.ClearValue(Platform.RendererProperty);
+				oldContentView?.RemoveFromSuperview();
+
+				oldRenderer?.Dispose();
+			}
+
+			Content = content;
+			if (Content != null)
+			{
+				var renderer = Platform.CreateRenderer(Content);
+				ContentView = renderer.NativeView;
+				Platform.SetRenderer(Content, renderer);
+				ContentView.ClipsToBounds = true;
+
+				// not sure if there's a more efficient way to do this
+				// I can test the native control to see if it inherits from UIScrollView
+				// But the CollectionViewRenderer doesn't inherit from UIScrollView
+				if (Content is ScrollView sv)
+				{
+					sv.Scrolled += ScrollViewScrolled;
+					removeScolledEvent = () => sv.Scrolled -= ScrollViewScrolled;
+					void ScrollViewScrolled(object sender, ScrolledEventArgs e) =>
+						OnScrolled((nfloat)sv.ScrollY);
+				}
+				else if(Content is CollectionView cv)
+				{
+					cv.Scrolled += CollectionViewScrolled;
+					removeScolledEvent = () => cv.Scrolled -= CollectionViewScrolled;
+					void CollectionViewScrolled(object sender, ItemsViewScrolledEventArgs e) =>
+						OnScrolled((nfloat)e.VerticalOffset);
+				}
+				else if (Content is ListView lv)
+				{
+					lv.Scrolled += ListViewScrolled;
+					removeScolledEvent = () => lv.Scrolled -= ListViewScrolled;
+					void ListViewScrolled(object sender, ScrolledEventArgs e) =>
+						OnScrolled((nfloat)e.ScrollY);
+				}
+			}
+		}
+
+		public void SetDefaultContent(UIView view)
+		{
+			if (ContentView == view)
+				return;
+
+			SetCustomContent(null);
+			ContentView = view;
+		}
+
 		public View Content
 		{
 			get;
-			set;
+			private set;
 		}
 
 		public UIView ContentView
@@ -41,23 +107,22 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				return _contentView;
 			}
-			set
+			private set
 			{
-				if (ScrollView != null && !(ScrollView is UITableView))
-					ScrollView.Scrolled -= ScrollViewScrolled;
-
 				_contentView = value;
 
-				if (ScrollView != null && !(ScrollView is UITableView))
-					ScrollView.Scrolled += ScrollViewScrolled;
+				if (ContentView is UIScrollView sv1)
+					ScrollView = sv1;
+				else if (ContentView is IVisualElementRenderer ver && ver.NativeView is UIScrollView sv)
+					sv.ContentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentBehavior.Never;
 
 				if (ScrollView != null && Forms.IsiOS11OrNewer)
 					ScrollView.ContentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentBehavior.Never;
+
+				LayoutParallax();
+				SetHeaderContentInset();
 			}
 		}
-
-		void ScrollViewScrolled(object sender, EventArgs e) =>
-			OnScrolled();
 
 		public virtual UIContainerView HeaderView
 		{
@@ -107,7 +172,7 @@ namespace Xamarin.Forms.Platform.iOS
 				ScrollView.ContentInset = new UIEdgeInsets((nfloat)HeaderMax, 0, 0, 0);
 			else
 				ScrollView.ContentInset = new UIEdgeInsets(Platform.SafeAreaInsetsForWindow.Top, 0, 0, 0);
-			
+
 			offset -= ScrollView.ContentInset.Top;
 
 			ScrollView.ContentOffset =
@@ -115,7 +180,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateVerticalScrollMode();
 		}
-
 
 		public void UpdateVerticalScrollMode()
 		{
@@ -216,11 +280,8 @@ namespace Xamarin.Forms.Platform.iOS
 			SetHeaderContentInset();
 		}
 
-		public void OnScrolled()
+		public void OnScrolled(nfloat contentOffsetY)
 		{
-			if (HeaderView == null || ScrollView == null)
-				return;
-
 			var headerBehavior = _context.Shell.FlyoutHeaderBehavior;
 
 			switch (headerBehavior)
@@ -233,11 +294,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 				case FlyoutHeaderBehavior.Scroll:
 					_headerSize = HeaderMax;
-					_headerOffset = Math.Min(0, -(HeaderMax + ScrollView.ContentOffset.Y));
+					_headerOffset = Math.Min(0, -(HeaderMax + contentOffsetY));
 					break;
 
 				case FlyoutHeaderBehavior.CollapseOnScroll:
-					_headerSize = Math.Max(_headerMin, -ScrollView.ContentOffset.Y);
+					_headerSize = Math.Max(_headerMin, -contentOffsetY);
 					_headerOffset = 0;
 					break;
 			}
@@ -250,12 +311,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public void TearDown()
 		{
-			if (HeaderView != null)
-				HeaderView.HeaderSizeChanged -= OnHeaderFooterSizeChanged;
-
 			_context.Shell.PropertyChanged -= OnShellPropertyChanged;
 			ShellController.StructureChanged -= OnStructureChanged;
+			SetCustomContent(null);
 			ContentView = null;
+			HeaderView = null;
+			FooterView = null;
 		}
 	}
 }

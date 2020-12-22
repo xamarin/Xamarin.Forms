@@ -17,13 +17,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public ShellTableViewController(IShellContext context, UIContainerView headerView, Action<Element> onElementSelected) : this(context, onElementSelected)
 		{
-			ShellFlyoutContentManager = new ShellFlyoutContentManager(context);
+			ShellFlyoutContentManager = new ShellFlyoutLayoutManager(context);
 			HeaderView = headerView;
 		}
 
 		public ShellTableViewController(IShellContext context, Action<Element> onElementSelected)
 		{
-			ShellFlyoutContentManager = ShellFlyoutContentManager ?? new ShellFlyoutContentManager(context);
+			ShellFlyoutContentManager = ShellFlyoutContentManager ?? new ShellFlyoutLayoutManager(context);
 			_context = context;
 			_onElementSelected = onElementSelected;
 			_source = CreateShellTableViewSource();
@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_source.ScrolledEvent += OnScrolled;
 		}
 
-		internal ShellFlyoutContentManager ShellFlyoutContentManager
+		internal ShellFlyoutLayoutManager ShellFlyoutContentManager
 		{
 			get;
 			set;
@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnScrolled(object sender, UIScrollView e)
 		{
-			ShellFlyoutContentManager.OnScrolled();
+			ShellFlyoutContentManager.OnScrolled(e.ContentOffset.Y);
 		}
 
 		public virtual UIContainerView HeaderView
