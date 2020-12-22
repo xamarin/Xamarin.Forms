@@ -25,6 +25,7 @@ namespace Xamarin.Forms.Controls.Issues
 		PlatformAffected.All)]
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.Shell)]
+	[NUnit.Framework.Category(UITestCategories.UwpIgnore)]
 #endif
 	public class ShellFlyoutContent : TestShell
 	{
