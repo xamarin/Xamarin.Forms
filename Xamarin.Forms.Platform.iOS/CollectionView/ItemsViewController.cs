@@ -119,7 +119,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (wasEmpty != _isEmpty)
 			{
-				UpdateEmptyViewVisibility(_isEmpty);
+				 UpdateEmptyViewVisibility(_isEmpty);
 			}
 			
 			if (wasEmpty && !_isEmpty)
@@ -286,7 +286,21 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_disposed)
 				return;
 
-			Layout?.InvalidateLayout();
+			if (!(sender is TemplatedCell cell))
+			{
+				return;
+			}
+
+			var visibleCells = CollectionView.VisibleCells;
+
+			for (int n = 0; n < visibleCells.Length; n++)
+			{
+				if (cell == visibleCells[n])
+				{
+					Layout?.InvalidateLayout();
+					return;
+				}
+			}
 		}
 
 		void CellLayoutAttributesChanged(object sender, LayoutAttributesChangedEventArgs args)
@@ -296,6 +310,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void CacheCellAttributes(NSIndexPath indexPath, CGSize size) 
 		{
+			if (!ItemsSource.IsIndexPathValid(indexPath))
+			{
+				// The upate might be coming from a cell that's being removed; don't cache it.
+				return;
+			}
+
 			var item = ItemsSource[indexPath];
 			if (item != null)
 			{
@@ -437,7 +457,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (isEmpty && _emptyUIView != null)
 			{
-				var emptyView = CollectionView.ViewWithTag(EmptyTag);
+				var emptyView = CollectionView.Superview.ViewWithTag(EmptyTag);
 
 				if(emptyView != null)
 				{
@@ -449,7 +469,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				var collectionViewContainer = CollectionView.Superview;
 				collectionViewContainer.AddSubview(_emptyUIView);
-
+				
 				LayoutEmptyView();
 
 				if (_emptyViewFormsElement != null)
