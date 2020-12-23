@@ -42,16 +42,6 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 
 		}
-
-#if UITEST && __WINDOWS__
-		[Test]
-		[Category(UITestCategories.ManualReview)]
-		public void Issue13109ImageTest()
-		{
-			RunningApp.WaitForElement("TestReady");
-			RunningApp.Screenshot("Without exceptions, the test has passed");
-		}
-#endif
 	}
 
 	[Preserve(AllMembers = true)]
