@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_onElementSelected = onElementSelected;
 			_source = CreateShellTableViewSource();
 
-			ShellController.StructureChanged += OnStructureChanged;
+			ShellController.FlyoutItemsChanged += OnFlyoutItemsChanged;
 			_source.ScrolledEvent += OnScrolled;
 		}
 
@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return new ShellTableViewSource(_context, _onElementSelected);
 		}
 
-		void OnStructureChanged(object sender, EventArgs e)
+		void OnFlyoutItemsChanged(object sender, EventArgs e)
 		{
 			_source.ClearCache();
 			TableView.ReloadData();
@@ -89,8 +89,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
-				if ((_context?.Shell as IShellController) != null)
-					((IShellController)_context.Shell).StructureChanged -= OnStructureChanged;
+				if (ShellController != null)
+					ShellController.FlyoutItemsChanged -= OnFlyoutItemsChanged;
 
 				if (_source != null)
 					_source.ScrolledEvent -= OnScrolled;

@@ -324,7 +324,7 @@ namespace Xamarin.Forms
 			};
 
 			HandleNavigating(navArgs);
-			
+
 			return navArgs;
 		}
 

@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (_groups == null)
 				{
-					_groups = ((IShellController)_context.Shell).GenerateFlyoutGrouping();
+					_groups = ShellController.GenerateFlyoutGrouping();
 
 					if (_cells != null)
 					{
