@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		global::Android.Widget.Button NativeButton => Control;
 
 		protected override void SetContentDescription()
-			=> AutomationPropertiesProvider.SetBasicContentDescription(this, Element, ref _defaultContentDescription);
+			=> AutomationPropertiesProvider.SetBasicContentDescription(this.ControlUsedForAutomation, Element, ref _defaultContentDescription);
 
 		public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
 		{

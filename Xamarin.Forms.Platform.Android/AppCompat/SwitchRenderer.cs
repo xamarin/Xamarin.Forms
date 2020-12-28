@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		}
 
 		protected override void SetContentDescription()
-			=> AutomationPropertiesProvider.SetBasicContentDescription(this, Element, ref _defaultContentDescription);
+			=> AutomationPropertiesProvider.SetBasicContentDescription(this.ControlUsedForAutomation, Element, ref _defaultContentDescription);
 
 		void CompoundButton.IOnCheckedChangeListener.OnCheckedChanged(CompoundButton buttonView, bool isChecked)
 		{
