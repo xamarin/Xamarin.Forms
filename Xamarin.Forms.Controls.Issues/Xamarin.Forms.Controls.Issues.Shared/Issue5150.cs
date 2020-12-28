@@ -102,8 +102,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Text = "On the Android platform, the 'Name + Help Text' " +
 					"labels below each button should match the text read by " +
-					"TalkBack without interferring with the AutomationId and " +
-					"ContentDescription."
+					"TalkBack."
 			});
 
 			AddButton(layout, "button1prop", "button1", "Button 1", "Name 1");
@@ -120,7 +119,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = scrollView;
 		}
 
-#if UITEST
+#if UITEST && __ANDROID__
 		void Verify(string labelPrefix, string automationId, string expectedNameAndHelpText)
 		{
 			RunningApp.ScrollTo(automationId);
@@ -131,9 +130,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 		[Test]
 		[Category(UITestCategories.Button)]
-#if !__ANDROID__
-		[Ignore("This test verifies ContentDescription is set on the Android platform.")]
-#endif
+		[Category(UITestCategories.Accessibility)]
+		[Ignore("Automated Test not relevant until https://github.com/xamarin/Xamarin.Forms/issues/1529 is fixed")]
 		public void Issue5150Test() 
 		{
 			Verify("button1prop", "button1", "Name 1");
