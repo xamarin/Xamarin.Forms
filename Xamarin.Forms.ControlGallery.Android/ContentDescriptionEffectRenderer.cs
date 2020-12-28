@@ -1,13 +1,11 @@
 ﻿using System.ComponentModel;
 using AViews = Android.Views;
-using AWidget = Android.Widget;
 using Xamarin.Forms;
 using Xamarin.Forms.ControlGallery.Android;
 using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Platform.Android;
-using Android.Support.V4.View;
-using Android.Support.V4.View.Accessibility;
-using Android.AccessibilityServices;
+using AndroidX.Core.View.Accessibiity;
+using AndroidX.Core.View;
 
 [assembly: ExportEffect(typeof(ContentDescriptionEffectRenderer), ContentDescriptionEffect.EffectName)]
 namespace Xamarin.Forms.ControlGallery.Android
