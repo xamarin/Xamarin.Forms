@@ -21,7 +21,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public SwipeViewRenderer()
 		{
-			Xamarin.Forms.SwipeView.VerifySwipeViewFlagEnabled(nameof(SwipeViewRenderer));
 			AutoPackage = false;
 		}
 
@@ -329,7 +328,7 @@ namespace Xamarin.Forms.Platform.UWP
 						Background = formsSwipeItem.BackgroundColor.IsDefault ? null : formsSwipeItem.BackgroundColor.ToBrush(),
 						Foreground = textColor.ToBrush(),
 						IconSource = formsSwipeItem.IconImageSource.ToWindowsIconSource(),
-						Text = formsSwipeItem.Text,
+						Text = !string.IsNullOrEmpty(formsSwipeItem.Text) ? formsSwipeItem.Text : string.Empty,
 						BehaviorOnInvoked = GetSwipeBehaviorOnInvoked(items.SwipeBehaviorOnInvoked)
 					};
 

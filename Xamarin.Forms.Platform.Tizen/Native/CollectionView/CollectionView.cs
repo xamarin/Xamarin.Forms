@@ -1,14 +1,14 @@
 using System;
-using System.Linq;
-using System.Collections.Specialized;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
 using ElmSharp;
+using ElmSharp.Wearable;
 using EBox = ElmSharp.Box;
+using EPoint = ElmSharp.Point;
 using ERect = ElmSharp.Rect;
 using EScroller = ElmSharp.Scroller;
 using ESize = ElmSharp.Size;
-using EPoint = ElmSharp.Point;
-using ElmSharp.Wearable;
 
 namespace Xamarin.Forms.Platform.Tizen.Native
 {
@@ -122,6 +122,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			get => Scroller.HorizontalScrollBarVisiblePolicy;
 			set => Scroller.HorizontalScrollBarVisiblePolicy = value;
 		}
+
+		public ScrollToPosition FocusedItemScrollPosition { get; set; }
 
 		int ICollectionViewController.Count
 		{
@@ -287,6 +289,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				var content = Adaptor.CreateNativeView(index, this);
 				holder = CreateViewHolder();
 				holder.RequestSelected += OnRequestItemSelection;
+				holder.StateUpdated += OnItemStateChanged;
 				holder.Content = content;
 				holder.ViewCategory = Adaptor.GetViewCategory(index);
 				_innerLayout.PackEnd(holder);
@@ -301,15 +304,34 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			return holder;
 		}
 
+		void OnItemStateChanged(object sender, EventArgs e)
+		{
+			ViewHolder holder = (ViewHolder)sender;
+			if (holder.Content != null)
+			{
+				Adaptor?.UpdateViewState(holder.Content, holder.State);
+			}
+
+			if (holder.State == ViewHolderState.Focused && FocusedItemScrollPosition != ScrollToPosition.MakeVisible)
+			{
+				Device.BeginInvokeOnMainThread(() =>
+				{
+					if (holder.State == ViewHolderState.Focused && _viewHolderIndexTable.TryGetValue(holder, out int itemIndex))
+					{
+						ScrollTo(itemIndex, FocusedItemScrollPosition, true);
+					}
+				});
+			}
+		}
+
 		void OnRequestItemSelection(object sender, EventArgs e)
 		{
 			if (SelectionMode == CollectionViewSelectionMode.None)
 				return;
 
-
 			if (_lastSelectedViewHolder != null)
 			{
-				_lastSelectedViewHolder.State = ViewHolderState.Normal;
+				_lastSelectedViewHolder.ResetState();
 			}
 
 			_lastSelectedViewHolder = sender as ViewHolder;
@@ -377,7 +399,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			{
 				if (_lastSelectedViewHolder != null)
 				{
-					_lastSelectedViewHolder.State = ViewHolderState.Normal;
+					_lastSelectedViewHolder.ResetState();
 					_lastSelectedViewHolder = null;
 				}
 				_selectedItemIndex = -1;
@@ -564,10 +586,13 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			if (_adaptor != null && _layoutManager != null)
 			{
 				_layoutManager?.SizeAllocated(Geometry.Size);
+
 				_layoutManager?.LayoutItems(ViewPort);
 				_layoutManager?.SetHeader(_headerView, Adaptor.MeasureHeader(AllocatedSize.Width, AllocatedSize.Height));
 				_layoutManager?.SetFooter(_footerView, Adaptor.MeasureFooter(AllocatedSize.Width, AllocatedSize.Height));
-
+				Scroller.ScrollBlock = LayoutManager.IsHorizontal ? ScrollBlock.Vertical : ScrollBlock.Horizontal;
+				Scroller.HorizontalStepSize = _layoutManager.GetScrollBlockSize();
+				Scroller.VerticalStepSize = _layoutManager.GetScrollBlockSize();
 				UpdateSnapPointsType(SnapPointsType);
 			}
 		}
@@ -653,7 +678,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 			if (LayoutManager.IsHorizontal)
 			{
-				Scroller.SetPageSize(itemSize , 0);
+				Scroller.SetPageSize(itemSize, 0);
 			}
 			else
 			{

@@ -1,30 +1,32 @@
 using System;
+using System.Threading.Tasks;
 using ElmSharp;
 using EBox = ElmSharp.Box;
+using EGestureType = ElmSharp.GestureLayer.GestureType;
+using ERect = ElmSharp.Rect;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
-	public class NavigationDrawer : Native.Box, INavigationDrawer
+	public class NavigationDrawer : EBox, INavigationDrawer, IAnimatable
 	{
 		EvasObject _navigationView;
-		Box _mainContainer;
-		Box _dimArea;
+		EBox _mainContainer;
+		EBox _dimArea;
 		EvasObject _main;
-		Panel _drawer;
+		EBox _drawerBox;
 
-		bool _isLock = false;
-		double _navigationViewRatio = 0.85;
+		GestureLayer _gestureOnDimArea;
+
+		bool _isOpen;
 
 		public NavigationDrawer(EvasObject parent) : base(parent)
 		{
 			Initialize(parent);
-			LayoutUpdated += (s, e) =>
-			{
-				UpdateChildGeometry();
-			};
 		}
 
 		public event EventHandler Toggled;
+
+		public EvasObject TargetView => this;
 
 		public EvasObject NavigationView
 		{
@@ -48,91 +50,57 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			get
 			{
-				return _drawer.IsOpen;
+				return _isOpen;
 			}
 			set
 			{
-				_drawer.IsOpen = value;
-			}
-		}
-
-		public bool IsLock
-		{
-			get
-			{
-				return _isLock;
-			}
-			set
-			{
-				_isLock = value;
-				_drawer.SetScrollable(!_isLock);
+				if (_isOpen != value)
+				{
+					if (value)
+					{
+						ShowDrawer();
+					}
+					else
+					{
+						HideDrawer();
+					}
+				}
 			}
 		}
 
 		void Initialize(EvasObject parent)
 		{
-			_mainContainer = new Box(parent)
-			{
-				AlignmentX = -1,
-				AlignmentY = -1,
-				WeightX = 1,
-				WeightY = 1,
-			};
+			SetLayoutCallback(OnLayout);
+			_mainContainer = new EBox(parent);
 			_mainContainer.Show();
 			PackEnd(_mainContainer);
 
-			_dimArea = new Box(parent)
+			_dimArea = new EBox(parent)
 			{
-				AlignmentX = -1,
-				AlignmentY = -1,
-				WeightX = 1,
-				WeightY = 1,
 				BackgroundColor = ThemeConstants.Shell.ColorClass.DefaultDrawerDimBackgroundColor
 			};
-
 			PackEnd(_dimArea);
 
-			_drawer = new Panel(parent);
+			_gestureOnDimArea = new GestureLayer(_dimArea);
+			_gestureOnDimArea.SetTapCallback(EGestureType.Tap, GestureLayer.GestureState.Start, OnTapped);
+			_gestureOnDimArea.Attach(_dimArea);
 
-			_drawer.SetScrollable(!_isLock);
-			_drawer.SetScrollableArea(_navigationViewRatio);
-			_drawer.Direction = PanelDirection.Left;
-			_drawer.Toggled += (s, e) =>
-			{
-				UpdateDimArea();
-
-				Toggled?.Invoke(this, e);
-			};
-
-			_drawer.Show();
-			PackEnd(_drawer);
+			_drawerBox = new EBox(parent);
+			PackEnd(_drawerBox);
 		}
 
 		void UpdateNavigationView(EvasObject navigationView)
 		{
-			if (_navigationView != null)
-			{
-				_navigationView.Hide();
-			}
-
+			_navigationView?.Hide();
 			_navigationView = navigationView;
 
 			if (_navigationView != null)
 			{
 				_navigationView.SetAlignment(-1, -1);
 				_navigationView.SetWeight(1, 1);
-				if (!_navigationView.IsVisible)
-				{
-					_navigationView.Show();
-				}
-				_drawer.SetContent(_navigationView, true);
-				UpdateDimArea();
-				UpdateNavigationViewGeometry();
+				_navigationView.Show();
 			}
-			else
-			{
-				_drawer.SetContent(null, true);
-			}
+			_drawerBox.PackEnd(_navigationView);
 		}
 
 		void UpdateMain(EvasObject main)
@@ -147,43 +115,96 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			if (_main != null)
 			{
-				if (!_main.IsVisible)
-				{
-					_main.Show();
-				}
+				_main.SetAlignment(-1, -1);
+				_main.SetWeight(1, 1);
+				_main.Show();
 				_mainContainer.PackEnd(_main);
 			}
 		}
 
-		void UpdateDimArea()
+		void OnLayout()
 		{
-			if (_drawer.IsOpen)
+			if (Geometry.Width == 0 || Geometry.Height == 0)
+				return;
+
+			_mainContainer.Geometry = Geometry;
+			_dimArea.Geometry = Geometry;
+			var drawerWidth = (int)(Geometry.Width * this.GetFlyoutRatio(Geometry.Width, Geometry.Height));
+			var bound = Geometry;
+			bound.Width = drawerWidth;
+			bound.X = _isOpen ? bound.X : bound.X - drawerWidth;
+			_drawerBox.Geometry = bound;
+		}
+
+		async void HideDrawer()
+		{
+			var dest = _drawerBox.Geometry;
+			dest.X = Geometry.X - dest.Width;
+
+			await MoveDrawerAsync(_drawerBox, dest);
+
+			_drawerBox.Hide();
+			_dimArea.Hide();
+			_mainContainer.IsEnabled = true;
+			if (_isOpen)
 			{
-				_dimArea.Show();
-			}
-			else
-			{
-				_dimArea.Hide();
+				_isOpen = false;
+				Toggled?.Invoke(this, EventArgs.Empty);
 			}
 		}
 
-		void UpdateChildGeometry()
+		async void ShowDrawer()
 		{
-			if (_main != null)
-			{
-				_mainContainer.Geometry = Geometry;
-			}
+			_dimArea.Show();
+			_mainContainer.IsEnabled = false;
+			_drawerBox.Show();
 
-			UpdateNavigationViewGeometry();
+			var dest = _drawerBox.Geometry;
+			dest.X = Geometry.X;
+
+			await MoveDrawerAsync(_drawerBox, dest);
+
+			if (!_isOpen)
+			{
+				_isOpen = true;
+				Toggled?.Invoke(this, EventArgs.Empty);
+			}
 		}
 
-		void UpdateNavigationViewGeometry()
+		Task MoveDrawerAsync(EvasObject target, ERect dest, uint length = 200)
 		{
-			if (_navigationView != null)
+			var tcs = new TaskCompletionSource<bool>();
+
+			var dx = target.Geometry.X - dest.X;
+
+			new Animation((progress) =>
 			{
-				_drawer.Geometry = Geometry;
-				_dimArea.Geometry = Geometry;
+				var toMove = dest;
+				toMove.X += (int)(dx * (1 - progress));
+				target.Geometry = toMove;
+
+			}, easing: Easing.Linear).Commit(this, "Move", length: length, finished: (s, e) =>
+			 {
+				 target.Geometry = dest;
+				 tcs.SetResult(true);
+			 });
+			return tcs.Task;
+		}
+
+		void OnTapped(GestureLayer.TapData data)
+		{
+			if (_isOpen)
+			{
+				HideDrawer();
 			}
+		}
+
+		void IAnimatable.BatchBegin()
+		{
+		}
+
+		void IAnimatable.BatchCommit()
+		{
 		}
 	}
 }

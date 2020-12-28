@@ -12,7 +12,6 @@ namespace Xamarin.Forms.Platform.iOS
 		[Preserve(Conditional = true)]
 		public CarouselViewRenderer()
 		{
-			CarouselView.VerifyCarouselViewFlagEnabled(nameof(CarouselViewRenderer));
 		}
 
 		protected override CarouselViewController CreateController(CarouselView newElement, ItemsViewLayout layout)
@@ -25,6 +24,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Carousel?.Loop == true)
 			{
 				var goToIndexPath = Controller.GetScrollToIndexPath(args.Index);
+
+				if (!IsIndexPathValid(goToIndexPath))
+				{
+					return;
+				}
+
 				Controller.CollectionView.ScrollToItem(goToIndexPath,
 					args.ScrollToPosition.ToCollectionViewScrollPosition(_layout.ScrollDirection),
 					args.IsAnimated);

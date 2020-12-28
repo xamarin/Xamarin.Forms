@@ -1,11 +1,10 @@
 #define DO_NOT_CHECK_FOR_BINDING_REUSE
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Collections.Generic;
-using Xamarin.Forms.Internals;
-using System.Reflection;
+using Xamarin.Forms.Xaml.Diagnostics;
 
 namespace Xamarin.Forms.Internals
 {
@@ -18,33 +17,41 @@ namespace Xamarin.Forms.Internals
 		object _source;
 		string _updateSourceEventName;
 
-		public IValueConverter Converter {
+		public IValueConverter Converter
+		{
 			get { return _converter; }
-			set {
+			set
+			{
 				ThrowIfApplied();
 				_converter = value;
 			}
 		}
 
-		public object ConverterParameter {
+		public object ConverterParameter
+		{
 			get { return _converterParameter; }
-			set {
+			set
+			{
 				ThrowIfApplied();
 				_converterParameter = value;
 			}
 		}
 
-		public object Source {
+		public object Source
+		{
 			get { return _source; }
-			set {
+			set
+			{
 				ThrowIfApplied();
 				_source = value;
 			}
 		}
 
-		internal string UpdateSourceEventName {
+		internal string UpdateSourceEventName
+		{
 			get { return _updateSourceEventName; }
-			set {
+			set
+			{
 				ThrowIfApplied();
 				_updateSourceEventName = value;
 			}
@@ -60,12 +67,12 @@ namespace Xamarin.Forms.Internals
 	{
 		readonly Func<TSource, (TProperty value, bool success)> _getter;
 		readonly Action<TSource, TProperty> _setter;
-		readonly PropertyChangedProxy [] _handlers;
+		readonly PropertyChangedProxy[] _handlers;
 
 		[Obsolete("deprecated one. kept for backcompat")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public TypedBinding(Func<TSource, TProperty> getter, Action<TSource, TProperty> setter, Tuple<Func<TSource, object>, string> [] handlers)
-				: this (s=>(getter(s), true), setter, handlers)
+		public TypedBinding(Func<TSource, TProperty> getter, Action<TSource, TProperty> setter, Tuple<Func<TSource, object>, string>[] handlers)
+				: this(s => (getter(s), true), setter, handlers)
 		{
 			if (getter == null)
 				throw new ArgumentNullException(nameof(getter));
@@ -119,15 +126,15 @@ namespace Xamarin.Forms.Internals
 				return;
 
 			base.Apply(source, bindObj, targetProperty, fromBindingContextChanged);
-			
+
 #if (!DO_NOT_CHECK_FOR_BINDING_REUSE)
 			BindableObject prevTarget;
 			if (_weakTarget.TryGetTarget(out prevTarget) && !ReferenceEquals(prevTarget, bindObj))
-				throw new InvalidOperationException("Binding instances can not be reused");
+				throw new InvalidOperationException("Binding instances cannot be reused");
 
 			object previousSource;
 			if (_weakSource.TryGetTarget(out previousSource) && !ReferenceEquals(previousSource, source))
-				throw new InvalidOperationException("Binding instances can not be reused");
+				throw new InvalidOperationException("Binding instances cannot be reused");
 #endif
 			_weakSource.SetTarget(source);
 			_weakTarget.SetTarget(bindObj);
@@ -137,12 +144,14 @@ namespace Xamarin.Forms.Internals
 
 		internal override BindingBase Clone()
 		{
-			Tuple<Func<TSource, object>, string> [] handlers = _handlers == null ? null : new Tuple<Func<TSource, object>, string> [_handlers.Length];
-			if (handlers != null) {
+			Tuple<Func<TSource, object>, string>[] handlers = _handlers == null ? null : new Tuple<Func<TSource, object>, string>[_handlers.Length];
+			if (handlers != null)
+			{
 				for (var i = 0; i < _handlers.Length; i++)
-					handlers [i] = new Tuple<Func<TSource, object>, string>(_handlers [i].PartGetter, _handlers [i].PropertyName);
+					handlers[i] = new Tuple<Func<TSource, object>, string>(_handlers[i].PartGetter, _handlers[i].PropertyName);
 			}
-			return new TypedBinding<TSource, TProperty>(_getter, _setter, handlers) {
+			return new TypedBinding<TSource, TProperty>(_getter, _setter, handlers)
+			{
 				Mode = Mode,
 				Converter = Converter,
 				ConverterParameter = ConverterParameter,
@@ -179,7 +188,7 @@ namespace Xamarin.Forms.Internals
 #endif
 			if (_handlers != null)
 				Unsubscribe();
-			
+
 #if (!DO_NOT_CHECK_FOR_BINDING_REUSE)
 			_weakSource.SetTarget(null);
 			_weakTarget.SetTarget(null);
@@ -201,18 +210,24 @@ namespace Xamarin.Forms.Internals
 			if (isTSource && (mode == BindingMode.OneWay || mode == BindingMode.TwoWay) && _handlers != null)
 				Subscribe((TSource)sourceObject);
 
-			if (needsGetter) {
+			if (needsGetter)
+			{
 				var value = FallbackValue ?? property.GetDefaultValue(target);
-				if (isTSource) {
-					try {
+				if (isTSource)
+				{
+					try
+					{
 						(var retval, bool success) = _getter((TSource)sourceObject);
 						if (success) //if the getter failed, return the FallbackValue
 							value = GetSourceValue(retval, property.ReturnType);
-					} catch (Exception ex) when (ex is NullReferenceException || ex is KeyNotFoundException || ex is IndexOutOfRangeException || ex is ArgumentOutOfRangeException) {
+					}
+					catch (Exception ex) when (ex is NullReferenceException || ex is KeyNotFoundException || ex is IndexOutOfRangeException || ex is ArgumentOutOfRangeException)
+					{
 					}
 				}
-				if (!BindingExpression.TryConvert(ref value, property, property.ReturnType, true)) {
-					Log.Warning("Binding", "'{0}' can not be converted to type '{1}'.", value, property.ReturnType);
+				if (!BindingExpression.TryConvert(ref value, property, property.ReturnType, true))
+				{
+					BindingDiagnostics.SendBindingFailure(this, sourceObject, target, property, "Binding", BindingExpression.CannotConvertTypeErrorMessage, value, property.ReturnType);
 					return;
 				}
 				target.SetValueCore(property, value, SetValueFlags.ClearDynamicResource, BindableObject.SetValuePrivateFlags.Default | BindableObject.SetValuePrivateFlags.Converted);
@@ -220,10 +235,12 @@ namespace Xamarin.Forms.Internals
 			}
 
 			var needsSetter = (mode == BindingMode.TwoWay && fromTarget) || mode == BindingMode.OneWayToSource;
-			if (needsSetter && _setter != null && isTSource) {
+			if (needsSetter && _setter != null && isTSource)
+			{
 				var value = GetTargetValue(target.GetValue(property), typeof(TProperty));
-				if (!BindingExpression.TryConvert(ref value, property, typeof(TProperty), false)) {
-					Log.Warning("Binding", "'{0}' can not be converted to type '{1}'.", value, typeof(TProperty));
+				if (!BindingExpression.TryConvert(ref value, property, typeof(TProperty), false))
+				{
+					BindingDiagnostics.SendBindingFailure(this, sourceObject, target, property, "Binding", BindingExpression.CannotConvertTypeErrorMessage, value, typeof(TProperty));
 					return;
 				}
 				_setter((TSource)sourceObject, (TProperty)value);
@@ -238,14 +255,17 @@ namespace Xamarin.Forms.Internals
 			WeakReference<INotifyPropertyChanged> _weakPart = new WeakReference<INotifyPropertyChanged>(null);
 			readonly BindingBase _binding;
 			PropertyChangedEventHandler handler;
-			public INotifyPropertyChanged Part {
-				get {
+			public INotifyPropertyChanged Part
+			{
+				get
+				{
 					INotifyPropertyChanged target;
 					if (_weakPart.TryGetTarget(out target))
 						return target;
 					return null;
-				} 
-				set {
+				}
+				set
+				{
 					if (Listener != null && Listener.Source.TryGetTarget(out var source) && ReferenceEquals(value, source))
 						//Already subscribed
 						return;
@@ -280,21 +300,22 @@ namespace Xamarin.Forms.Internals
 
 		void Subscribe(TSource sourceObject)
 		{
-			for (var i = 0; i < _handlers.Length; i++) {
-				var part = _handlers [i].PartGetter(sourceObject);
+			for (var i = 0; i < _handlers.Length; i++)
+			{
+				var part = _handlers[i].PartGetter(sourceObject);
 				if (part == null)
 					break;
 				var inpc = part as INotifyPropertyChanged;
 				if (inpc == null)
 					continue;
-				_handlers [i].Part = (inpc);
+				_handlers[i].Part = (inpc);
 			}
 		}
 
 		void Unsubscribe()
 		{
 			for (var i = 0; i < _handlers.Length; i++)
-				_handlers [i].Listener.Unsubscribe();
+				_handlers[i].Listener.Unsubscribe();
 		}
 	}
 }

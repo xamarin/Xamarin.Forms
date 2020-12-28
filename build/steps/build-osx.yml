@@ -100,9 +100,8 @@ steps:
         Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Plugin.*
         Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Xamarin.*
       TargetFolder: '$(build.artifactstagingdirectory)/ios'
-      CleanTargetFolder: true
       flattenFolders: true
-      
+
   - task: CopyFiles@2
     displayName: 'Copy iOS dSYM'
     inputs:
@@ -110,7 +109,7 @@ steps:
       TargetFolder: '$(build.artifactstagingdirectory)/ios/iPhone/XamarinFormsControlGalleryiOS.app.dSYM/'
       CleanTargetFolder: false
       flattenFolders: false
-      
+
   - task: CopyFiles@2
     displayName: 'Copy iOS App'
     inputs:
@@ -119,37 +118,20 @@ steps:
       CleanTargetFolder: false
       flattenFolders: false
 
+  - task: MSBuild@1
+    displayName: 'Build Android Tests'
+    inputs:
+      solution: 'Xamarin.Forms.Core.Android.UITests/Xamarin.Forms.Core.Android.UITests.csproj'
+      configuration: $(buildConfiguration)
+      msbuildArguments: /bl:$(Build.ArtifactStagingDirectory)/android-uitests.binlog
+
   - task: CopyFiles@2
     displayName: 'Copy test-cloud.exe'
     inputs:
       Contents: '**/Xamarin.UITest.*/tools/test-cloud.exe'
       TargetFolder: '$(build.artifactstagingdirectory)/testcloud'
-      CleanTargetFolder: true
       OverWrite: true
       flattenFolders: true
-
-  - task: CopyFiles@2
-    displayName: 'Copy iOS Files for UITest'
-    inputs:
-      Contents: |
-        **/XamarinFormsControlGalleryiOS.ipa
-        Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Newtonsoft.Json.*
-        Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/nunit.*
-        Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/NUnit3.*
-        Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Plugin.*
-        Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/Xamarin.*
-      TargetFolder: '$(build.artifactstagingdirectory)/ios'
-      CleanTargetFolder: true
-      flattenFolders: true
-
-  - task: CopyFiles@2
-    displayName: 'Copy iOS dSYM'
-    inputs:
-      Contents: |
-        **/*.dSYM/**/*.*
-      TargetFolder: '$(build.artifactstagingdirectory)/ios'
-      CleanTargetFolder: false
-      flattenFolders: false
 
   - task: CopyFiles@2
     displayName: 'Copy Android Files for UITest'

@@ -135,22 +135,22 @@
 	{
 	}
 
+	internal class _FlyoutPageRenderer
+	{
+	}
+
 	internal class _MasterDetailPageRenderer
 	{
 	}
 
-	internal class _MediaElementRenderer
-  {
-	}
-   
-  internal class _SwipeViewRenderer
+	internal class _SwipeViewRenderer
 	{
 	}
 
-	internal class _PathRenderer	
+	internal class _PathRenderer
 	{
 	}
-	
+
 	internal class _EllipseRenderer
 	{
 	}

@@ -41,6 +41,13 @@ namespace Xamarin.Forms
 			try
 			{
 				Windows.UI.Xaml.Application.Current.Resources.MergedDictionaries.Add(new Microsoft.UI.Xaml.Controls.XamlControlsResources());
+#if UWP_16299
+				Windows.UI.Xaml.Application.Current.Resources.MergedDictionaries.Add(
+					new Windows.UI.Xaml.ResourceDictionary
+					{
+						Source = new Uri("ms-appx:///Xamarin.Forms.Platform.UAP/Shell/ShellStyles.xbf")
+					});
+#endif
 			}
 			catch
 			{
@@ -49,7 +56,12 @@ namespace Xamarin.Forms
 
 			Device.SetIdiom(TargetIdiom.Tablet);
 			Device.SetFlowDirection(GetFlowDirection());
-			Device.PlatformServices = new WindowsPlatformServices(Window.Current.Dispatcher);
+
+			var platformServices = new WindowsPlatformServices(Window.Current.Dispatcher);
+
+			Device.PlatformServices = platformServices;
+			Device.PlatformInvalidator = platformServices;
+			
 			Device.SetFlags(s_flags);
 			Device.Info = new WindowsDeviceInfo();
 

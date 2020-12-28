@@ -7,8 +7,8 @@ using Android.Text;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Internals;
-using AppCompatAlertDialog = AndroidX.AppCompat.App.AlertDialog;
 using AppCompatActivity = AndroidX.AppCompat.App.AppCompatActivity;
+using AppCompatAlertDialog = AndroidX.AppCompat.App.AlertDialog;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					return;
 				}
-				
+
 				_busyCount = Math.Max(0, enabled ? _busyCount + 1 : _busyCount - 1);
 
 				UpdateProgressBarVisibility(_busyCount > 0);
@@ -107,9 +107,23 @@ namespace Xamarin.Forms.Platform.Android
 				builder.Dispose();
 				//to match current functionality of renderer we set cancelable on outside
 				//and return null
+				if (arguments.FlowDirection == FlowDirection.MatchParent && sender is IVisualElementController ve)
+					dialog.Window.DecorView.UpdateFlowDirection(ve);
+				else if (arguments.FlowDirection == FlowDirection.LeftToRight)
+					dialog.Window.DecorView.LayoutDirection = LayoutDirection.Ltr;
+				else if (arguments.FlowDirection == FlowDirection.RightToLeft)
+					dialog.Window.DecorView.LayoutDirection = LayoutDirection.Rtl;
+
 				dialog.SetCanceledOnTouchOutside(true);
 				dialog.SetCancelEvent((o, e) => arguments.SetResult(null));
 				dialog.Show();
+
+				dialog.GetListView().TextDirection = GetTextDirection(sender, arguments.FlowDirection);
+				LayoutDirection layoutDirection = GetLayoutDirection(sender, arguments.FlowDirection);
+				if (arguments.Cancel != null)
+					((dialog.GetButton((int)DialogButtonType.Positive).Parent) as global::Android.Views.View).LayoutDirection = layoutDirection;
+				if (arguments.Destruction != null)
+					((dialog.GetButton((int)DialogButtonType.Negative).Parent) as global::Android.Views.View).LayoutDirection = layoutDirection;
 			}
 
 			void OnAlertRequested(Page sender, AlertArguments arguments)
@@ -120,14 +134,58 @@ namespace Xamarin.Forms.Platform.Android
 					return;
 				}
 
+				int messageID = 16908299;
 				var alert = new DialogBuilder(Activity).Create();
+				if (arguments.FlowDirection == FlowDirection.MatchParent && sender is IVisualElementController ve)
+					alert.Window.DecorView.UpdateFlowDirection(ve);
+				else if (arguments.FlowDirection == FlowDirection.LeftToRight)
+					alert.Window.DecorView.LayoutDirection = LayoutDirection.Ltr;
+				else if (arguments.FlowDirection == FlowDirection.RightToLeft)
+					alert.Window.DecorView.LayoutDirection = LayoutDirection.Rtl;
+
 				alert.SetTitle(arguments.Title);
 				alert.SetMessage(arguments.Message);
 				if (arguments.Accept != null)
 					alert.SetButton((int)DialogButtonType.Positive, arguments.Accept, (o, args) => arguments.SetResult(true));
 				alert.SetButton((int)DialogButtonType.Negative, arguments.Cancel, (o, args) => arguments.SetResult(false));
-				alert.SetCancelEvent((o, args) => { arguments.SetResult(false); }); 
+				alert.SetCancelEvent((o, args) => { arguments.SetResult(false); });
 				alert.Show();
+
+				TextView textView = (TextView)alert.findViewByID(messageID);
+				textView.TextDirection = GetTextDirection(sender, arguments.FlowDirection);
+				((alert.GetButton((int)DialogButtonType.Negative).Parent) as global::Android.Views.View).LayoutDirection = GetLayoutDirection(sender, arguments.FlowDirection);
+			}
+
+			private LayoutDirection GetLayoutDirection(Page sender, FlowDirection flowDirection)
+			{
+				if (flowDirection == FlowDirection.LeftToRight)
+					return LayoutDirection.Ltr;
+				else if (flowDirection == FlowDirection.RightToLeft)
+					return LayoutDirection.Rtl;
+				else
+				{
+					if ((sender as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
+						return LayoutDirection.Rtl;
+					else if ((sender as IVisualElementController).EffectiveFlowDirection.IsLeftToRight())
+						return LayoutDirection.Ltr;
+				}
+				return LayoutDirection.Ltr;
+			}
+
+			private TextDirection GetTextDirection(Page sender, FlowDirection flowDirection)
+			{
+				if (flowDirection == FlowDirection.LeftToRight)
+					return TextDirection.Ltr;
+				else if (flowDirection == FlowDirection.RightToLeft)
+					return TextDirection.Rtl;
+				else
+				{
+					if ((sender as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
+						return TextDirection.Rtl;
+					else if ((sender as IVisualElementController).EffectiveFlowDirection.IsLeftToRight())
+						return TextDirection.Ltr;
+				}
+				return TextDirection.Ltr;
 			}
 
 			void OnPromptRequested(Page sender, PromptArguments arguments)
@@ -156,7 +214,7 @@ namespace Xamarin.Forms.Platform.Android
 					editText.KeyListener = LocalizedDigitsKeyListener.Create(editText.InputType);
 
 				if (arguments.MaxLength > -1)
-					editText.SetFilters(new IInputFilter[]{ new InputFilterLengthFilter(arguments.MaxLength)});
+					editText.SetFilters(new IInputFilter[] { new InputFilterLengthFilter(arguments.MaxLength) });
 
 				frameLayout.AddView(editText);
 				alertDialog.SetView(frameLayout);
@@ -222,7 +280,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				public DialogBuilder(Activity activity)
 				{
-					if (activity is AppCompatActivity)				
+					if (activity is AppCompatActivity)
 					{
 						_appcompatBuilder = new AppCompatAlertDialog.Builder(activity);
 						_useAppCompat = true;
@@ -357,6 +415,30 @@ namespace Xamarin.Forms.Platform.Android
 					}
 				}
 
+				public global::Android.Widget.Button GetButton(int whichButton)
+				{
+					if (_useAppCompat)
+					{
+						return _appcompatAlertDialog.GetButton(whichButton);
+					}
+					else
+					{
+						return _legacyAlertDialog.GetButton(whichButton);
+					}
+				}
+
+				public global::Android.Views.View GetListView()
+				{
+					if (_useAppCompat)
+					{
+						return _appcompatAlertDialog.ListView;
+					}
+					else
+					{
+						return _legacyAlertDialog.ListView;
+					}
+				}
+
 				public void SetCancelEvent(EventHandler cancel)
 				{
 					if (_useAppCompat)
@@ -390,6 +472,18 @@ namespace Xamarin.Forms.Platform.Android
 					else
 					{
 						_legacyAlertDialog.SetView(view);
+					}
+				}
+
+				public global::Android.Views.View findViewByID(int id)
+				{
+					if (_useAppCompat)
+					{
+						return _appcompatAlertDialog.FindViewById(id);
+					}
+					else
+					{
+						return _legacyAlertDialog.FindViewById(id);
 					}
 				}
 

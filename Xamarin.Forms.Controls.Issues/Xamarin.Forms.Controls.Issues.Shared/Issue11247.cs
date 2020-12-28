@@ -1,8 +1,8 @@
-﻿using Xamarin.Forms.Internals;
-using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Shapes;
+﻿using System;
 using System.Collections.Generic;
-using System;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.Shapes;
 
 #if UITEST
 using Xamarin.UITest;
@@ -23,8 +23,8 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
-			var page = AddFlyoutItem("FlyoutItem 1");
-			AddFlyoutItem("FlyoutItem 2");
+			var page = CreateContentPage<FlyoutItem>("FlyoutItem 1");
+			CreateContentPage<FlyoutItem>("FlyoutItem 2");
 
 			Items.Add(new MenuItem()
 			{

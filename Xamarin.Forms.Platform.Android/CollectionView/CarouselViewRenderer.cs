@@ -2,13 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Android.Content;
-using AndroidX.RecyclerView.Widget;
-using Android.Views;
-using FormsCarouselView = Xamarin.Forms.CarouselView;
-using Xamarin.Forms.Platform.Android.CollectionView;
 using System.Threading.Tasks;
+using Android.Content;
 using Android.Runtime;
+using Android.Views;
+using AndroidX.RecyclerView.Widget;
+using Xamarin.Forms.Platform.Android.CollectionView;
+using FormsCarouselView = Xamarin.Forms.CarouselView;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -30,7 +30,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		public CarouselViewRenderer(Context context) : base(context)
 		{
-			FormsCarouselView.VerifyCarouselViewFlagEnabled(nameof(CarouselViewRenderer));
 			_oldViews = new List<View>();
 			_carouselViewLoopManager = new CarouselViewLoopManager();
 		}
@@ -269,6 +268,9 @@ namespace Xamarin.Forms.Platform.Android
 			bool removingCurrentElement = currentItemPosition == -1;
 			bool removingLastElement = e.OldStartingIndex == count;
 			bool removingFirstElement = e.OldStartingIndex == 0;
+			bool removingAnyPrevious =
+				e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove
+				&& e.OldStartingIndex < carouselPosition;
 
 			_noNeedForScroll = true;
 			_gotoPosition = -1;
@@ -298,20 +300,28 @@ namespace Xamarin.Forms.Platform.Android
 				carouselPosition = currentItemPosition;
 			}
 
-			if (!Carousel.Loop)
+			// Queue the rest up for later after the Adapter has finished processing item change notifications
+
+			if (removingAnyPrevious)
 			{
+				return;
+			}
+
+			Device.BeginInvokeOnMainThread(() =>
+			{
+
 				SetCurrentItem(carouselPosition);
 				UpdatePosition(carouselPosition);
-			}
 
-			//If we are adding or removing the last item we need to update
-			//the inset that we give to items so they are centered
-			if (e.NewStartingIndex == count - 1 || removingLastElement)
-			{
-				UpdateItemDecoration();
-			}
+				//If we are adding or removing the last item we need to update
+				//the inset that we give to items so they are centered
+				if (e.NewStartingIndex == count - 1 || removingLastElement)
+				{
+					UpdateItemDecoration();
+				}
 
-			UpdateVisualStates();
+				UpdateVisualStates();
+			});
 		}
 
 		void UpdateItemDecoration()
@@ -348,8 +358,20 @@ namespace Xamarin.Forms.Platform.Android
 
 			SetCurrentItem(_oldPosition);
 
-			var index = Carousel.Loop ? itemCount * 5000 + _oldPosition : _oldPosition;
+			var index = Carousel.Loop ? LoopedPosition(itemCount) + _oldPosition : _oldPosition;
 			ScrollHelper.JumpScrollToPosition(index, Xamarin.Forms.ScrollToPosition.Center);
+			_gotoPosition = -1;
+		}
+
+		int LoopedPosition(int itemCount)
+		{
+			if (itemCount == 0)
+			{
+				return 0;
+			}
+
+			var loopScale = CarouselViewLoopManager.LoopScale / 2;
+			return loopScale - (loopScale % itemCount);
 		}
 
 		void UpdatePositionFromVisibilityChanges()
@@ -620,8 +642,8 @@ namespace Xamarin.Forms.Platform.Android
 					var firstView = recyclerView.FindViewHolderForAdapterPosition(linearLayoutManager.FindFirstVisibleItemPosition());
 					var lastView = recyclerView.FindViewHolderForAdapterPosition(linearLayoutManager.FindLastVisibleItemPosition());
 					var centerView = recyclerView.GetCenteredView();
-					firstVisibleItemIndex = GetIndexFromTemplatedCell(firstView.ItemView);
-					lastVisibleItemIndex = GetIndexFromTemplatedCell(lastView.ItemView);
+					firstVisibleItemIndex = GetIndexFromTemplatedCell(firstView?.ItemView);
+					lastVisibleItemIndex = GetIndexFromTemplatedCell(lastView?.ItemView);
 					centerItemIndex = GetIndexFromTemplatedCell(centerView);
 				}
 
@@ -651,8 +673,10 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		class CarouselViewLoopManager
+		internal class CarouselViewLoopManager
 		{
+			public const int LoopScale = 16384;
+
 			IItemsViewSource _itemsSource;
 			readonly Queue<ScrollToRequestEventArgs> _pendingScrollTo = new Queue<ScrollToRequestEventArgs>();
 

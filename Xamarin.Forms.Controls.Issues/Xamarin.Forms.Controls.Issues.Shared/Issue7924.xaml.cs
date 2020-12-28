@@ -1,9 +1,9 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using System.Linq;
+using System.Windows.Input;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
 #if UITEST
@@ -28,7 +28,6 @@ namespace Xamarin.Forms.Controls.Issues
 		public Issue7924()
 		{
 #if APP
-			Device.SetFlags(new List<string> { ExperimentalFlags.CarouselViewExperimental });
 			Title = "Issue 7924";
 			InitializeComponent();
 #endif

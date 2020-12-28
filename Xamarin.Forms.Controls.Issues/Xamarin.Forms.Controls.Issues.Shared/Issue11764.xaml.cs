@@ -1,12 +1,12 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
-using Xamarin.Forms.Xaml;
+﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Collections.ObjectModel;
 using System.Windows.Input;
-using System;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.Xaml;
 
 #if UITEST
 using Xamarin.UITest;
@@ -31,7 +31,6 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 #if APP
 			Title = "Issue 11764";
-			Device.SetFlags(new List<string> { ExperimentalFlags.SwipeViewExperimental });
 			InitializeComponent();
 
 			var random = new Random();
@@ -44,14 +43,14 @@ namespace Xamarin.Forms.Controls.Issues
 
 			BindingContext = this;
 #endif
-        }
+		}
 
-        public ObservableCollection<string> Data { get; } = new ObservableCollection<string>();
-        public ICommand TapCommand { get; }
-        public ICommand PinCommand { get; }
-        public ICommand DeleteCommand { get; }
+		public ObservableCollection<string> Data { get; } = new ObservableCollection<string>();
+		public ICommand TapCommand { get; }
+		public ICommand PinCommand { get; }
+		public ICommand DeleteCommand { get; }
 
-        protected override void Init()
+		protected override void Init()
 		{
 
 		}

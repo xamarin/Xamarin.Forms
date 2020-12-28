@@ -15,7 +15,8 @@ namespace Xamarin.Forms
 	{
 		public override object ConvertFromInvariantString(string value)
 		{
-			if (value != null) {
+			if (value != null)
+			{
 				if (Enum.TryParse(value, out FlowDirection direction))
 					return direction;
 
@@ -27,6 +28,13 @@ namespace Xamarin.Forms
 					return FlowDirection.MatchParent;
 			}
 			throw new InvalidOperationException(string.Format("Cannot convert \"{0}\" into {1}", value, typeof(FlowDirection)));
+		}
+
+		public override string ConvertToInvariantString(object value)
+		{
+			if (!(value is FlowDirection direction))
+				throw new NotSupportedException();
+			return direction.ToString();
 		}
 	}
 }

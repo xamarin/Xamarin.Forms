@@ -23,7 +23,7 @@ using Android.Text.Method;
 using Xamarin.Forms.Controls.Issues;
 using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
 using NestedScrollView = global::AndroidX.Core.Widget.NestedScrollView;
-using AMenuItemCompat = global::Android.Support.V4.View.MenuItemCompat;
+using AMenuItemCompat = global::AndroidX.Core.View.MenuItemCompat;
 using IOPath = System.IO.Path;
 
 [assembly: ExportRenderer(typeof(Issue5461.ScrollbarFadingEnabledFalseScrollView), typeof(ScrollbarFadingEnabledFalseScrollViewRenderer))]
@@ -55,7 +55,7 @@ using IOPath = System.IO.Path;
 #if PRE_APPLICATION_CLASS
 #elif FORMS_APPLICATION_ACTIVITY
 #else
-[assembly: ExportRenderer(typeof(MasterDetailPage), typeof(NativeDroidMasterDetail))]
+[assembly: ExportRenderer(typeof(FlyoutPage), typeof(NativeDroidFlyoutPage))]
 #endif
 namespace Xamarin.Forms.ControlGallery.Android
 {
@@ -148,7 +148,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 	}
 
 	public class AttachedStateEffectLabelRenderer :
-#if TEST_EXPERIMENTAL_RENDERERS
+#if !LEGACY_RENDERERS
 		Platform.Android.FastRenderers.LabelRenderer
 #else
 		LabelRenderer
@@ -159,13 +159,13 @@ namespace Xamarin.Forms.ControlGallery.Android
 		}
 	}
 
-	public class NativeDroidMasterDetail : Xamarin.Forms.Platform.Android.AppCompat.MasterDetailPageRenderer
+	public class NativeDroidFlyoutPage : Xamarin.Forms.Platform.Android.AppCompat.MasterDetailPageRenderer
 	{
-		MasterDetailPage _page;
+		FlyoutPage _page;
 		bool _disposed;
 
 #pragma warning disable 618
-		public NativeDroidMasterDetail()
+		public NativeDroidFlyoutPage()
 #pragma warning restore 618
 		{
 			System.Diagnostics.Debug.WriteLine($">>>>> NativeDroidMasterDetail NativeDroidMasterDetail 53: This is the obsolete constructor being selected");
@@ -180,7 +180,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 				return;
 			}
 
-			_page = newElement as MasterDetailPage;
+			_page = newElement as FlyoutPage;
 			_page.PropertyChanged += Page_PropertyChanged;
 			_page.LayoutChanged += Page_LayoutChanged;
 		}

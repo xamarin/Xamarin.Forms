@@ -38,6 +38,10 @@
     <ProjectReference Include="..\Xamarin.Forms.CustomAttributes\Xamarin.Forms.CustomAttributes.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Remove="GalleryPages\DateTimePickerGalleries\DatesPage.xaml" />
+    <EmbeddedResource Remove="GalleryPages\DateTimePickerGalleries\MainTabbedPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="BuildNumber.txt" />
     <EmbeddedResource Include="GalleryPages\crimson.jpg" />
     <EmbeddedResource Include="coffee.png" />
@@ -69,17 +73,38 @@
     <EmbeddedResource Update="GalleryPages\DragAndDropGalleries\DragPaths.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="GalleryPages\RadioButtonGalleries\ContentProperties.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="GalleryPages\RadioButtonGalleries\RadioButtonGroupBindingGallery.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="GalleryPages\RadioButtonGalleries\RadioButtonGroupGallery.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="GalleryPages\RadioButtonGalleries\RadioButtonGroupGalleryPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <Compile Update="GalleryPages\RadioButtonGalleries\RadioButtonGroupGallery.xaml.cs">
+      <DependentUpon>RadioButtonGroupGallery.xaml</DependentUpon>
+    </Compile>
     <Compile Update="TabIndexTest\DaysOfWeekView.xaml.cs">
       <DependentUpon>DaysOfWeekView.xaml</DependentUpon>
     </Compile>
     <Compile Update="GalleryPages\IndicatorViewGalleries\IndicatorGalleries.cs">
       <SubType></SubType>
     </Compile>
+    <Compile Update="XamStore\Controls\FlyoutFooter.xaml.cs">
+      <DependentUpon>FlyoutFooter.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Update="GalleryPages\RadioButtonGalleries\ScatteredRadioButtonGallery.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="GalleryPages\RadioButtonGalleries\TemplateFromStyle.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="TabIndexTest\DayView.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
@@ -94,6 +119,7 @@
   <ItemGroup>
     <Folder Include="Fonts\" />
     <Folder Include="GalleryPages\AppThemeGalleries\" />
+    <Folder Include="GalleryPages\DateTimePickerGalleries\" />
   </ItemGroup>
 
   <ItemGroup>

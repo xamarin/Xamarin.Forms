@@ -222,8 +222,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public static IVisualElementRenderer CreateRenderer(VisualElement element)
 		{
-			var renderer = Internals.Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element) ?? new DefaultRenderer();
+			IVisualElementRenderer renderer = Internals.Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element)
+				?? new DefaultRenderer();
+						
 			renderer.SetElement(element);
+
 			return renderer;
 		}
 
@@ -570,6 +573,26 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				return result;
+			}
+
+			void ResolveLayoutChanges() 
+			{
+				if (Element is Layout layout)
+				{
+					layout.ResolveLayoutChanges();
+				}
+			}
+
+			public override void LayoutSubviews()
+			{
+				ResolveLayoutChanges();
+				base.LayoutSubviews();
+			}
+
+			public override CGSize SizeThatFits(CGSize size)
+			{
+				ResolveLayoutChanges();
+				return base.SizeThatFits(size);
 			}
 		}
 

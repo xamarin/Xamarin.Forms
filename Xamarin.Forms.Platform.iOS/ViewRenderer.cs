@@ -277,7 +277,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (IsElementOrControlEmpty)
 				return;
 
-			SetBackground(Element.Background);
+			Brush brush = Element.Background;
+
+			if (!Brush.IsNullOrEmpty(brush))
+				SetBackground(brush);
 		}
 
 		void UpdateIsEnabled()
@@ -303,8 +306,12 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (Control == null)
 				return;
-
+				
+#if __MOBILE__
 			focusRequestArgs.Result = focusRequestArgs.Focus ? Control.BecomeFirstResponder() : Control.ResignFirstResponder();
+#else
+			focusRequestArgs.Result = focusRequestArgs.Focus ? Control.Window.MakeFirstResponder(Control) : Control.Window.MakeFirstResponder(null);
+#endif
 		}
 	}
 }

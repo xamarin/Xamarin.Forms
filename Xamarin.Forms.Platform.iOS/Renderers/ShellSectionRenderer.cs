@@ -68,7 +68,15 @@ namespace Xamarin.Forms.Platform.iOS
 		ShellSection _shellSection;
 		bool _ignorePopCall;
 
-		public ShellSectionRenderer(IShellContext context)
+		public ShellSectionRenderer(IShellContext context) : base()
+		{
+			Delegate = new NavDelegate(this);
+			_context = context;
+			_context.Shell.PropertyChanged += HandleShellPropertyChanged;
+		}
+
+		public ShellSectionRenderer(IShellContext context, Type navigationBarType, Type toolbarType) 
+			: base(navigationBarType, toolbarType)
 		{
 			Delegate = new NavDelegate(this);
 			_context = context;
@@ -77,8 +85,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		[Export("navigationBar:shouldPopItem:")]
 		[Internals.Preserve(Conditional = true)]
-		public bool ShouldPopItem(UINavigationBar navigationBar, UINavigationItem item)
-		{	
+		public bool ShouldPopItem(UINavigationBar navigationBar, UINavigationItem item) =>
+			SendPop();
+
+		internal bool SendPop()
+		{ 
 			// this means the pop is already done, nothing we can do
 			if (ViewControllers.Length < NavigationBar.Items.Length)
 				return true;
@@ -421,7 +432,9 @@ namespace Xamarin.Forms.Platform.iOS
 					OnPopRequested(e);
 				}
 
-				ViewControllers = ViewControllers.Remove(viewController);
+				if(ViewControllers.Contains(viewController))
+					ViewControllers = ViewControllers.Remove(viewController);
+
 				DisposePage(page);
 			}
 		}

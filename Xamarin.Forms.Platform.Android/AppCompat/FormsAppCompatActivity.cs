@@ -7,15 +7,15 @@ using Android.Content;
 using Android.Content.Res;
 using Android.OS;
 using Android.Runtime;
-using AndroidX.AppCompat.App;
-using AToolbar = AndroidX.AppCompat.Widget.Toolbar;
 using Android.Views;
+using AndroidX.AppCompat.App;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat;
 using AColor = Android.Graphics.Color;
 using ARelativeLayout = Android.Widget.RelativeLayout;
-using Xamarin.Forms.Internals;
+using AToolbar = AndroidX.AppCompat.Widget.Toolbar;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			RegisterHandler(typeof(NavigationPage), typeof(NavigationPageRenderer), typeof(NavigationRenderer));
 			RegisterHandler(typeof(TabbedPage), typeof(TabbedPageRenderer), typeof(TabbedRenderer));
-			RegisterHandler(typeof(MasterDetailPage), typeof(MasterDetailPageRenderer), typeof(MasterDetailRenderer));
+			RegisterHandler(typeof(FlyoutPage), typeof(FlyoutPageRenderer), typeof(FlyoutPageRenderer));
 			RegisterHandler(typeof(Switch), typeof(AppCompat.SwitchRenderer), typeof(SwitchRenderer));
 			RegisterHandler(typeof(Picker), typeof(AppCompat.PickerRenderer), typeof(PickerRenderer));
 			RegisterHandler(typeof(CarouselPage), typeof(AppCompat.CarouselPageRenderer), typeof(CarouselPageRenderer));
@@ -139,6 +139,8 @@ namespace Xamarin.Forms.Platform.Android
 				RegisterHandler(typeof(Image), typeof(FastRenderers.ImageRenderer), typeof(ImageRenderer));
 				RegisterHandler(typeof(Frame), typeof(FastRenderers.FrameRenderer), typeof(FrameRenderer));
 			}
+
+			Registrar.Registered.Register(typeof(RadioButton), typeof(RadioButtonRenderer));
 		}
 
 		protected void LoadApplication(Application application)
@@ -206,7 +208,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		void OnCreate(
-			Bundle savedInstanceState, 
+			Bundle savedInstanceState,
 			ActivationFlags flags)
 		{
 			Profile.FrameBegin();
@@ -244,8 +246,7 @@ namespace Xamarin.Forms.Platform.Android
 				catch (global::Android.Views.InflateException ie)
 				{
 					if ((ie.Cause is Java.Lang.ClassNotFoundException || ie.Cause.Cause is Java.Lang.ClassNotFoundException) &&
-						ie.Message.Contains("Error inflating class android.support.v7.widget.Toolbar") &&
-						this.TargetSdkVersion() >= 29)
+						ie.Message.Contains("Error inflating class android.support.v7.widget.Toolbar"))
 					{
 						Internals.Log.Warning(nameof(FormsAppCompatActivity),
 							"Toolbar layout needs to be updated from android.support.v7.widget.Toolbar to androidx.appcompat.widget.Toolbar. " +
@@ -264,7 +265,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (bar == null)
 					throw new InvalidOperationException("ToolbarResource must be set to a androidx.appcompat.widget.Toolbar");
 			}
-			else 
+			else
 			{
 				bar = new AToolbar(this);
 			}
@@ -309,7 +310,10 @@ namespace Xamarin.Forms.Platform.Android
 			PreviousActivityDestroying.Reset();
 
 			if (_application != null)
+			{
+				_application.PropertyChanging -= AppOnPropertyChanging;
 				_application.PropertyChanged -= AppOnPropertyChanged;
+			}
 
 			PopupManager.Unsubscribe(this);
 
@@ -337,9 +341,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_powerSaveReceiverRegistered && Forms.IsLollipopOrNewer)
 			{
-					// Don't listen for power save mode changes while we're paused
-					UnregisterReceiver(_powerSaveModeBroadcastReceiver);
-					_powerSaveReceiverRegistered = false;
+				// Don't listen for power save mode changes while we're paused
+				UnregisterReceiver(_powerSaveModeBroadcastReceiver);
+				_powerSaveReceiverRegistered = false;
 			}
 
 			// Stop animations or other ongoing actions that could consume CPU
@@ -470,7 +474,7 @@ namespace Xamarin.Forms.Platform.Android
 				SettingMainPage();
 			}
 		}
-		
+
 		void CheckForAppLink(Intent intent)
 		{
 			string action = intent.Action;
@@ -508,7 +512,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_previousState == AndroidApplicationLifecycleState.OnCreate && _currentState == AndroidApplicationLifecycleState.OnStart)
 				_application.SendStart();
-			else if (_previousState == AndroidApplicationLifecycleState.OnRestart && _currentState == AndroidApplicationLifecycleState.OnStart)	
+			else if (_previousState == AndroidApplicationLifecycleState.OnRestart && _currentState == AndroidApplicationLifecycleState.OnStart)
 				_application.SendResume();
 			else if (_previousState == AndroidApplicationLifecycleState.OnPause && _currentState == AndroidApplicationLifecycleState.OnStop)
 				_application.SendSleep();
@@ -524,7 +528,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			InternalSetPage(_application.MainPage);
 		}
-				
+
 		void SettingMainPage()
 		{
 			Platform.SettingNewPage();
@@ -558,7 +562,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
-#region Statics
+		#region Statics
 
 		public static event BackButtonPressedEventHandler BackPressed;
 
@@ -566,6 +570,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static int ToolbarResource { get; set; }
 
-#endregion
+		#endregion
 	}
 }

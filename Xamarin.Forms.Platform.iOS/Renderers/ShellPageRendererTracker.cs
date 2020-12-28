@@ -150,10 +150,14 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTitleView();
 				UpdateTitle();
 				UpdateTabBarVisible();
-			}
 
-			if (oldPage == null)
-				((IShellController)_context.Shell).AddFlyoutBehaviorObserver(this);
+				if (oldPage == null)
+					((IShellController)_context.Shell).AddFlyoutBehaviorObserver(this);
+			}
+			else if(newPage == null && _context?.Shell is IShellController shellController)
+			{
+				shellController.RemoveFlyoutBehaviorObserver(this);
+			}
 
 			if (newPage != null)
 			{
@@ -208,6 +212,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual async Task UpdateToolbarItems()
 		{
+			if (NavigationItem == null)
+				return;
+
 			if (NavigationItem.RightBarButtonItems != null)
 			{
 				for (var i = 0; i < NavigationItem.RightBarButtonItems.Length; i++)
@@ -245,16 +252,7 @@ namespace Xamarin.Forms.Platform.iOS
 			
 			if (String.IsNullOrWhiteSpace(text) && image == null)
 			{
-				Element item = Page;
-				while (!Application.IsApplicationOrNull(item))
-				{
-					if (item is IShellController shell)
-					{
-						image = shell.FlyoutIcon;
-						item = null;
-					}
-					item = item?.Parent;
-				}
+				image = _context.Shell.FlyoutIcon;
 			}
 
 			if (image != null)
@@ -284,9 +282,16 @@ namespace Xamarin.Forms.Platform.iOS
 			if (NavigationItem.LeftBarButtonItem != null)
 			{
 				if (String.IsNullOrWhiteSpace(image?.AutomationId))
-					NavigationItem.LeftBarButtonItem.AccessibilityIdentifier = "OK";
+				{
+					if (IsRootPage)
+						NavigationItem.LeftBarButtonItem.AccessibilityIdentifier = "OK";
+					else
+						NavigationItem.LeftBarButtonItem.AccessibilityIdentifier = "Back";
+				}
 				else
+				{
 					NavigationItem.LeftBarButtonItem.AccessibilityIdentifier = image.AutomationId;
+				}
 
 				if (image != null)
 				{
@@ -309,7 +314,9 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (!isRootPage)
 			{
-				if (controller?.ParentViewController is UINavigationController navigationController)
+				if (controller?.ParentViewController is ShellSectionRenderer ssr)
+					ssr.SendPop();
+				else if (controller?.ParentViewController is UINavigationController navigationController)
 					navigationController.PopViewController(true);
 			}
 			else if(_flyoutBehavior == FlyoutBehavior.Flyout)

@@ -1,16 +1,23 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
+using Xamarin.Forms.Xaml.Diagnostics;
 
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_ListViewRenderer))]
 	public class ListView : ItemsView<Cell>, IListViewController, IElementConfiguration<ListView>
 	{
+		readonly List<Element> _logicalChildren = new List<Element>();
+
+		internal override IEnumerable<Element> ChildrenNotDrawnByThisElement => _logicalChildren;
+
 		public static readonly BindableProperty IsPullToRefreshEnabledProperty = BindableProperty.Create("IsPullToRefreshEnabled", typeof(bool), typeof(ListView), false);
 
 		public static readonly BindableProperty IsRefreshingProperty = BindableProperty.Create("IsRefreshing", typeof(bool), typeof(ListView), false, BindingMode.TwoWay);
@@ -46,7 +53,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty SeparatorColorProperty = BindableProperty.Create("SeparatorColor", typeof(Color), typeof(ListView), Color.Default);
 
 		public static readonly BindableProperty RefreshControlColorProperty = BindableProperty.Create(nameof(RefreshControlColor), typeof(Color), typeof(ListView), Color.Default);
-	
+
 		public static readonly BindableProperty HorizontalScrollBarVisibilityProperty = BindableProperty.Create(nameof(HorizontalScrollBarVisibility), typeof(ScrollBarVisibility), typeof(ListView), ScrollBarVisibility.Default);
 
 		public static readonly BindableProperty VerticalScrollBarVisibilityProperty = BindableProperty.Create(nameof(VerticalScrollBarVisibility), typeof(ScrollBarVisibility), typeof(ListView), ScrollBarVisibility.Default);
@@ -107,17 +114,11 @@ namespace Xamarin.Forms
 
 			object bc = BindingContext;
 
-			var header = Header as Element;
-			if (header != null)
-			{
+			if (Header is Element header)
 				SetChildInheritedBindingContext(header, bc);
-			}
 
-			var footer = Footer as Element;
-			if (footer != null)
-			{
+			if (Footer is Element footer)
 				SetChildInheritedBindingContext(footer, bc);
-			}
 		}
 
 		public BindingBase GroupDisplayBinding
@@ -383,17 +384,27 @@ namespace Xamarin.Forms
 		protected override void SetupContent(Cell content, int index)
 		{
 			base.SetupContent(content, index);
-			var viewCell = content as ViewCell;
-			if (viewCell != null && viewCell.View != null && HasUnevenRows)
+			if (content is ViewCell viewCell && viewCell.View != null && HasUnevenRows)
 				viewCell.View.ComputedConstraint = LayoutConstraint.None;
-			content.Parent = this;
 
+			if (content != null)
+				_logicalChildren.Add(content);
+
+			content.Parent = this;
+			VisualDiagnostics.OnChildAdded(this, content);
 		}
 
 		protected override void UnhookContent(Cell content)
 		{
 			base.UnhookContent(content);
+
+			if (content == null || !_logicalChildren.Contains(content))
+				return;
+			var index = _logicalChildren.IndexOf(content);
+			_logicalChildren.Remove(content);
 			content.Parent = null;
+			VisualDiagnostics.OnChildRemoved(this, content, index);
+
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -554,7 +565,7 @@ namespace Xamarin.Forms
 			if (newValue != null && lv.GroupHeaderTemplate != null)
 			{
 				lv.GroupHeaderTemplate = null;
-				Log.Warning("ListView", "GroupHeaderTemplate and GroupDisplayBinding can not be set at the same time, setting GroupHeaderTemplate to null");
+				Log.Warning("ListView", "GroupHeaderTemplate and GroupDisplayBinding cannot be set at the same time, setting GroupHeaderTemplate to null");
 			}
 		}
 
@@ -564,7 +575,7 @@ namespace Xamarin.Forms
 			if (newValue != null && lv.GroupDisplayBinding != null)
 			{
 				lv.GroupDisplayBinding = null;
-				Log.Warning("ListView", "GroupHeaderTemplate and GroupDisplayBinding can not be set at the same time, setting GroupDisplayBinding to null");
+				Log.Warning("ListView", "GroupHeaderTemplate and GroupDisplayBinding cannot be set at the same time, setting GroupDisplayBinding to null");
 			}
 		}
 

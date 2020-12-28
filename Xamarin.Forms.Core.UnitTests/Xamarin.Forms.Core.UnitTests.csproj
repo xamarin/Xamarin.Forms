@@ -80,34 +80,21 @@
     <Compile Include="DropGestureRecognizerTests.cs" />
     <Compile Include="DragGestureRecognizerTests.cs" />
     <Compile Include="ItemsLayoutTypeConverterTests.cs" />
+    <Compile Include="FlyoutPageUnitTests.cs" />
     <Compile Include="MultiBindingTests.cs" />
-    <Compile Include="Markup\DefaultBindablePropertiesTests.cs" />
-    <Compile Include="Markup\BindableObjectExtensionsTests.cs" />
-    <Compile Include="Markup\ElementExtensionsTests.cs" />
-    <Compile Include="Markup\GridRowsColumns.cs" />
-    <Compile Include="Markup\FuncConverter.cs" />
-    <Compile Include="Markup\LabelExtensionsRightToLeftTests.cs" />
-    <Compile Include="Markup\LabelExtensionsLeftToRightTests.cs" />
-    <Compile Include="Markup\LayoutExtensionsTests.cs" />
-    <Compile Include="Markup\StyleTests.cs" />
-    <Compile Include="Markup\ViewExtensionsRightToLeftTests.cs" />
-    <Compile Include="Markup\ViewExtensionsLeftToRightTests.cs" />
-    <Compile Include="Markup\ViewExtensionsTests.cs" />
-    <Compile Include="Markup\LabelExtensionsTests.cs" />
-    <Compile Include="Markup\MarkupBaseTestFixture.cs" />
-    <Compile Include="Markup\ElementGesturesExtensionsTests.cs" />
-    <Compile Include="Markup\ViewInFlexLayoutExtensionsTests.cs" />
-    <Compile Include="Markup\ViewInGridExtensionsTests.cs" />
-    <Compile Include="Markup\VisualElementExtensionsTests.cs" />
     <Compile Include="MarshalingObservableCollectionTests.cs" />
     <Compile Include="NumericExtensionsTests.cs" />
+    <Compile Include="RadioButtonTests.cs" />
     <Compile Include="RefreshViewTests.cs" />
     <Compile Include="MockDispatcherProvider.cs" />
     <Compile Include="MockDispatcher.cs" />
     <Compile Include="DeviceUnitTests.cs" />
     <Compile Include="EffectiveFlowDirectionExtensions.cs" />
     <Compile Include="ShellElementCollectionTests.cs" />
+    <Compile Include="ShellFlyoutItemGroupTests.cs" />
+    <Compile Include="ShellFlyoutItemTemplateTests.cs" />
     <Compile Include="ShellModalTests.cs" />
+    <Compile Include="ShellNavigatingTests.cs" />
     <Compile Include="ShellTestBase.cs" />
     <Compile Include="ShellLifeCycleTests.cs" />
     <Compile Include="ShellUriHandlerTests.cs" />
@@ -119,8 +106,6 @@
     <Compile Include="ImageButtonUnitTest.cs" />
     <Compile Include="ItemsViewTests.cs" />
     <Compile Include="LayoutChildIntoBoundingRegionTests.cs" />
-    <Compile Include="MediaElementTests.cs" />
-    <Compile Include="MediaSourceTests.cs" />
     <Compile Include="MenuUnitTests.cs" />
     <Compile Include="PreviewerReflectionTests.cs" />
     <Compile Include="RegionTests.cs" />
@@ -261,6 +246,8 @@
     <Compile Include="RadialGradientBrushTests.cs" />
     <Compile Include="SwipeViewTests.cs" />
     <Compile Include="PathSegmentTests.cs" />
+    <Compile Include="GeometryTests.cs" />
+    <Compile Include="ShellParameterPassingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">

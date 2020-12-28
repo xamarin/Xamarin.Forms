@@ -1,6 +1,6 @@
-using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -209,7 +209,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			var detailPage = new ContentPage { Content = stack2 };
 
-			var mdp = new MasterDetailPage { Master = masterPage, Detail = detailPage };
+			var fp = new FlyoutPage { Flyout = masterPage, Detail = detailPage };
 
 			var tabIndexes = stack.GetTabIndexesOnParentPage(out int _);
 
@@ -246,7 +246,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			var detailPage = new ContentPage { Content = stack };
 
-			var mdp = new MasterDetailPage { Master = masterPage, Detail = detailPage };
+			var fp = new FlyoutPage { Flyout = masterPage, Detail = detailPage };
 
 			var tabIndexes = stack.GetTabIndexesOnParentPage(out int _);
 

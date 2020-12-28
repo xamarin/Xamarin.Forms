@@ -37,7 +37,9 @@ namespace Xamarin.Forms
 		static bool? s_isiOS9OrNewer;
 		static bool? s_isiOS10OrNewer;
 		static bool? s_isiOS11OrNewer;
+		static bool? s_isiOS12OrNewer;
 		static bool? s_isiOS13OrNewer;
+		static bool? s_isiOS14OrNewer;
 		static bool? s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden;
 
 		internal static bool IsiOS9OrNewer
@@ -71,6 +73,16 @@ namespace Xamarin.Forms
 			}
 		}
 
+		internal static bool IsiOS12OrNewer
+		{
+			get
+			{
+				if (!s_isiOS12OrNewer.HasValue)
+					s_isiOS12OrNewer = UIDevice.CurrentDevice.CheckSystemVersion(12, 0);
+				return s_isiOS12OrNewer.Value;
+			}
+		}
+
 		internal static bool IsiOS13OrNewer
 		{
 			get
@@ -80,6 +92,17 @@ namespace Xamarin.Forms
 				return s_isiOS13OrNewer.Value;
 			}
 		}
+
+		internal static bool IsiOS14OrNewer
+		{
+			get
+			{
+				if (!s_isiOS14OrNewer.HasValue)
+					s_isiOS14OrNewer = UIDevice.CurrentDevice.CheckSystemVersion(14, 0);
+				return s_isiOS14OrNewer.Value;
+			}
+		}
+
 
 		internal static bool RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden
 		{
@@ -140,7 +163,7 @@ namespace Xamarin.Forms
 			}
 
 			s_flags = (string[])flags.Clone();
-			if (s_flags.Contains ("Profile"))
+			if (s_flags.Contains("Profile"))
 				Profile.Enable();
 		}
 
@@ -180,8 +203,12 @@ namespace Xamarin.Forms
 			}
 #endif
 			Device.SetFlags(s_flags);
-			Device.PlatformServices = new IOSPlatformServices();
+			var platformServices = new IOSPlatformServices();
+
+			Device.PlatformServices = platformServices;
+
 #if __MOBILE__
+			Device.PlatformInvalidator = platformServices;
 			Device.Info = new IOSDeviceInfo();
 #else
 			Device.Info = new Platform.macOS.MacDeviceInfo();
@@ -227,6 +254,9 @@ namespace Xamarin.Forms
 		}
 
 		class IOSPlatformServices : IPlatformServices
+#if __MOBILE__
+			, IPlatformInvalidate
+#endif
 		{
 			readonly double _fontScalingFactor = 1;
 			public IOSPlatformServices()
@@ -707,9 +737,9 @@ namespace Xamarin.Forms
 			}
 
 			public OSAppTheme RequestedTheme
-            {
-                get
-                {
+			{
+				get
+				{
 #if __IOS__ || __TVOS__
 					if (!IsiOS13OrNewer)
 						return OSAppTheme.Unspecified;
@@ -781,6 +811,18 @@ namespace Xamarin.Forms
 					throw new InvalidOperationException("Could not find current view controller.");
 
 				return viewController;
+			}
+
+			public void Invalidate(VisualElement visualElement)
+			{
+				var renderer = Platform.iOS.Platform.GetRenderer(visualElement);
+
+				if (renderer == null)
+				{
+					return;
+				}
+
+				renderer.NativeView.SetNeedsLayout();
 			}
 #endif
 		}

@@ -12,13 +12,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 			Title = "CarouselView Galleries";
 
-			var button = new Button
-			{
-				Text = "Enable IndicatorView",
-				AutomationId = "EnableIndicatorView"
-			};
-			button.Clicked += ButtonClicked;
-
 			Content = new ScrollView
 			{
 				Content = new StackLayout
@@ -26,7 +19,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 					Children =
 					{
 						descriptionLabel,
-						button,
 						GalleryBuilder.NavButton("CarouselView (Code, Horizontal)", () =>
 							new CarouselCodeGallery(ItemsLayoutOrientation.Horizontal), Navigation),
 						GalleryBuilder.NavButton("CarouselView (Code, Vertical)", () =>
@@ -55,20 +47,13 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 							new CarouselItemsGallery(useNativeIndicators: true, setPositionOnAppearing: true), Navigation),
 						GalleryBuilder.NavButton("CarouselView loop", () =>
 							new CarouselXamlGallery(true), Navigation),
+						GalleryBuilder.NavButton("CarouselView Set CurrentItem", () =>
+							new CarouselXamlGallery(false, 3), Navigation),
+						GalleryBuilder.NavButton("CarouselView Set CurrentItem Loop", () =>
+							new CarouselXamlGallery(true, 3), Navigation),
 					}
 				}
 			};
-		}
-
-		void ButtonClicked(object sender, System.EventArgs e)
-		{
-			var button = sender as Button;
-
-			button.Text = "IndicatorView Enabled!";
-			button.TextColor = Color.Black;
-			button.IsEnabled = false;
-
-			Device.SetFlags(new[] { ExperimentalFlags.CarouselViewExperimental });
 		}
 	}
 }

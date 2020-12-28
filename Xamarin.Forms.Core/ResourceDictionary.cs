@@ -25,14 +25,16 @@ namespace Xamarin.Forms
 		[TypeConverter(typeof(TypeTypeConverter))]
 		[Obsolete("Use Source")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public Type MergedWith {
+		public Type MergedWith
+		{
 			get { return _mergedWith; }
-			set {
+			set
+			{
 				if (_mergedWith == value)
 					return;
 
 				if (_source != null)
-					throw new ArgumentException("MergedWith can not be used with Source");
+					throw new ArgumentException("MergedWith cannot be used with Source");
 
 				if (!typeof(ResourceDictionary).GetTypeInfo().IsAssignableFrom(value.GetTypeInfo()))
 					throw new ArgumentException("MergedWith should inherit from ResourceDictionary");
@@ -47,9 +49,11 @@ namespace Xamarin.Forms
 		}
 
 		[TypeConverter(typeof(RDSourceTypeConverter))]
-		public Uri Source {
+		public Uri Source
+		{
 			get { return _source; }
-			set {
+			set
+			{
 				if (_source == value)
 					return;
 				throw new InvalidOperationException("Source can only be set from XAML."); //through the RDSourceTypeConverter
@@ -62,7 +66,7 @@ namespace Xamarin.Forms
 		{
 			_source = value;
 			if (_mergedWith != null)
-				throw new ArgumentException("Source can not be used with MergedWith");
+				throw new ArgumentException("Source cannot be used with MergedWith");
 
 			//this will return a type if the RD as an x:Class element, and codebehind
 			var type = XamlResourceIdAttribute.GetTypeForPath(assembly, resourcePath);
@@ -74,9 +78,12 @@ namespace Xamarin.Forms
 		}
 
 		ObservableCollection<ResourceDictionary> _mergedDictionaries;
-		public ICollection<ResourceDictionary> MergedDictionaries {
-			get {
-				if (_mergedDictionaries == null) {
+		public ICollection<ResourceDictionary> MergedDictionaries
+		{
+			get
+			{
+				if (_mergedDictionaries == null)
+				{
 					var col = new ObservableCollection<ResourceDictionary>();
 					col.CollectionChanged += MergedDictionaries_CollectionChanged;
 					_mergedDictionaries = col;
@@ -89,10 +96,11 @@ namespace Xamarin.Forms
 
 		void StyleSheetsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			switch (e.Action) {
-			case NotifyCollectionChangedAction.Add:
+			switch (e.Action)
+			{
+				case NotifyCollectionChangedAction.Add:
 					ValuesChanged?.Invoke(this, ResourcesChangedEventArgs.StyleSheets);
-				break;
+					break;
 			}
 		}
 		IList<ResourceDictionary> _collectionTrack;
@@ -105,7 +113,8 @@ namespace Xamarin.Forms
 
 			_collectionTrack = _collectionTrack ?? new List<ResourceDictionary>();
 			// Collection has been cleared
-			if (e.Action == NotifyCollectionChangedAction.Reset) {
+			if (e.Action == NotifyCollectionChangedAction.Reset)
+			{
 				foreach (var dictionary in _collectionTrack)
 					dictionary.ValuesChanged -= Item_ValuesChanged;
 
@@ -239,8 +248,10 @@ namespace Xamarin.Forms
 			return _innerDictionary.GetEnumerator();
 		}
 
-		internal IEnumerable<KeyValuePair<string, object>> MergedResources {
-			get {
+		internal IEnumerable<KeyValuePair<string, object>> MergedResources
+		{
+			get
+			{
 				if (_mergedDictionaries != null)
 				{
 					for (int i = _mergedDictionaries.Count - 1; i >= 0; i--)
@@ -273,12 +284,14 @@ namespace Xamarin.Forms
 		bool TryGetMergedDictionaryValue(string key, out object value, out ResourceDictionary source)
 		{
 			foreach (var dictionary in MergedDictionaries.Reverse())
-				if (dictionary.TryGetValue(key, out value)) {
+				if (dictionary.TryGetValue(key, out value))
+				{
 					source = dictionary;
 					return true;
 				}
 
-			value = null; source = null;
+			value = null;
+			source = null;
 			return false;
 		}
 
@@ -339,6 +352,7 @@ namespace Xamarin.Forms
 		internal static void ClearCache() => s_instances = new ConditionalWeakTable<Type, ResourceDictionary>();
 
 		[Xaml.ProvideCompiled("Xamarin.Forms.Core.XamlC.RDSourceTypeConverter")]
+		[TypeConversion(typeof(Uri))]
 		public class RDSourceTypeConverter : TypeConverter, IExtendedTypeConverter
 		{
 			object IExtendedTypeConverter.ConvertFromInvariantString(string value, IServiceProvider serviceProvider)
@@ -346,8 +360,7 @@ namespace Xamarin.Forms
 				if (serviceProvider == null)
 					throw new ArgumentNullException(nameof(serviceProvider));
 
-				var targetRD = (serviceProvider.GetService(typeof(Xaml.IProvideValueTarget)) as Xaml.IProvideValueTarget)?.TargetObject as ResourceDictionary;
-				if (targetRD == null)
+				if (!((serviceProvider.GetService(typeof(Xaml.IProvideValueTarget)) as Xaml.IProvideValueTarget)?.TargetObject is ResourceDictionary targetRD))
 					return null;
 
 				var rootObjectType = (serviceProvider.GetService(typeof(Xaml.IRootObjectProvider)) as Xaml.IRootObjectProvider)?.RootObject.GetType();
@@ -367,8 +380,8 @@ namespace Xamarin.Forms
 			{
 				//need a fake scheme so it's not seen as file:// uri, and the forward slashes are valid on all plats
 				var resourceUri = uri.OriginalString.StartsWith("/", StringComparison.Ordinal)
-				                     ? new Uri($"pack://{uri.OriginalString}", UriKind.Absolute)
-				                     : new Uri($"pack:///{rootTargetPath}/../{uri.OriginalString}", UriKind.Absolute);
+									 ? new Uri($"pack://{uri.OriginalString}", UriKind.Absolute)
+									 : new Uri($"pack:///{rootTargetPath}/../{uri.OriginalString}", UriKind.Absolute);
 
 				//drop the leading '/'
 				return resourceUri.AbsolutePath.Substring(1);
@@ -382,6 +395,13 @@ namespace Xamarin.Forms
 			public override object ConvertFromInvariantString(string value)
 			{
 				throw new NotImplementedException();
+			}
+
+			public override string ConvertToInvariantString(object value)
+			{
+				if (!(value is Uri uri))
+					throw new NotSupportedException();
+				return uri.ToString();
 			}
 		}
 	}

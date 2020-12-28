@@ -12,7 +12,6 @@ namespace Xamarin.Forms.Core.UnitTests
 		[SetUp]
 		public override void Setup()
 		{
-			Device.SetFlags(new List<string> { ExperimentalFlags.CarouselViewExperimental });
 			base.Setup();
 			var mockDeviceInfo = new TestDeviceInfo();
 			Device.Info = mockDeviceInfo;
@@ -112,6 +111,25 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame(source, carouselView.ItemsSource);
 			carouselView.CurrentItem = source[gotoPosition];
 			Assert.IsTrue(countFired == 1);
+		}
+
+		[Test]
+		public void TestAddRemoveItems()
+		{
+			var source = new List<string>();
+
+			var carouselView = new CarouselView
+			{
+				ItemsSource = source
+			};
+
+			source.Add("1");
+			source.Add("2");
+
+			carouselView.ScrollTo(1, position: ScrollToPosition.Center, animate: false);
+			source.Remove("2");
+
+			Assert.AreEqual(0, carouselView.Position);
 		}
 	}
 }

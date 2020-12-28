@@ -11,11 +11,11 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class PageRenderer : UIViewController, IVisualElementRenderer, IEffectControlProvider, IAccessibilityElementsController, IShellContentInsetObserver, IDisconnectable
 	{
+		bool _appeared;
 		bool _disposed;
 		EventTracker _events;
 		VisualElementPackager _packager;
 		VisualElementTracker _tracker;
-		PageLifecycleManager _pageLifecycleManager;
 
 		// storing this into a local variable causes it to not get collected. Do not delete this please		
 		PageContainer _pageContainer;
@@ -111,8 +111,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 
-			_pageLifecycleManager = new PageLifecycleManager(Element as IPageController);
-
 			if (element != null)
 			{
 				if (!string.IsNullOrEmpty(element.AutomationId))
@@ -144,14 +142,25 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public void SetElementSize(Size size)
 		{
+			// In Split Mode the Frame will occasionally get set to the wrong value
+			var rect = new CoreGraphics.CGRect(Element.X, Element.Y, size.Width, size.Height);
+			if (rect != _pageContainer.Frame)
+				_pageContainer.Frame = rect;
+
 			Element.Layout(new Rectangle(Element.X, Element.Y, size.Width, size.Height));
 		}
 
 		public override void LoadView()
 		{
+
 			//by default use the MainScreen Bounds so Effects can access the Container size
 			if (_pageContainer == null)
-				_pageContainer = new PageContainer(this) { Frame = UIScreen.MainScreen.Bounds };
+			{
+				var bounds = UIApplication.SharedApplication?.GetKeyWindow()?.Bounds ??
+					UIScreen.MainScreen.Bounds;
+
+				_pageContainer = new PageContainer(this) { Frame = bounds };
+			}
 
 			View = _pageContainer;
 		}
@@ -174,6 +183,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (_safeAreasSet || !Forms.IsiOS11OrNewer)
 				UpdateUseSafeArea();
+
+			if (Element.Background != null && !Element.Background.IsEmpty)
+				NativeView?.UpdateBackgroundLayer();
 		}
 
 		public override void ViewSafeAreaInsetsDidChange()
@@ -189,31 +201,33 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidAppear(animated);
 
-			if (_disposed || Element == null)
+			if (_appeared || _disposed || Element == null)
 				return;
 
+			_appeared = true;
 			UpdateStatusBarPrefersHidden();
-
 			if (Forms.RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden)
 				SetNeedsUpdateOfHomeIndicatorAutoHidden();
 
 			if (Element.Parent is CarouselPage)
 				return;
 
-			_pageLifecycleManager?.HandlePageAppearing();
+			Page.SendAppearing();
 		}
 
 		public override void ViewDidDisappear(bool animated)
 		{
 			base.ViewDidDisappear(animated);
 
-			if (_disposed || Element == null)
+			if (!_appeared || _disposed || Element == null)
 				return;
+
+			_appeared = false;
 
 			if (Element.Parent is CarouselPage)
 				return;
 
-			_pageLifecycleManager?.HandlePageDisappearing();
+			Page.SendDisappearing();
 		}
 
 		public override void ViewDidLoad()
@@ -264,10 +278,13 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				Element.PropertyChanged -= OnHandlePropertyChanged;
 				Platform.SetRenderer(Element, null);
+
+				if (_appeared)
+					Page.SendDisappearing();
+				
 				Element = null;
 			}
-
-			(_pageLifecycleManager as IDisconnectable)?.Disconnect();
+				
 			_events?.Disconnect();
 			_packager?.Disconnect();
 			_tracker?.Disconnect();
@@ -282,14 +299,12 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				(this as IDisconnectable).Disconnect();
 
-				_pageLifecycleManager?.Dispose();
 				_events?.Dispose();
 				_packager?.Dispose();
 				_tracker?.Dispose();
 				_events = null;
 				_packager = null;
 				_tracker = null;
-				_pageLifecycleManager = null;
 
 				Element = null;
 				Container?.Dispose();
@@ -360,7 +375,9 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
 
-			if (Forms.IsiOS13OrNewer && previousTraitCollection.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+			if (Forms.IsiOS13OrNewer &&
+				previousTraitCollection.UserInterfaceStyle != TraitCollection.UserInterfaceStyle &&
+				UIApplication.SharedApplication.ApplicationState != UIApplicationState.Background)
 				Application.Current?.TriggerThemeChanged(new AppThemeChangedEventArgs(Application.Current.RequestedTheme));
 		}
 
@@ -377,7 +394,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateUseSafeArea()
 		{
-			if (Element == null || _pageLifecycleManager == null)
+			if (Element == null)
 				return;
 
 			if (_userOverriddenSafeArea)
@@ -473,7 +490,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			foreach (UIView v in ViewAndSuperviewsOfView(touch.View))
 			{
-				if (v is UITableView || v is UITableViewCell || v.CanBecomeFirstResponder)
+				if (v != null && (v is UITableView || v is UITableViewCell || v.CanBecomeFirstResponder))
 					return false;
 			}
 			return true;
