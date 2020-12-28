@@ -1,13 +1,8 @@
 ﻿using System;
 using Android.Runtime;
 
-#if __ANDROID_29__
 using AndroidX.Core.View;
 using AndroidX.Core.View.Accessibiity;
-#else
-using Android.Support.V4.View;
-using Android.Support.V4.View.Accessibility;
-#endif
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
