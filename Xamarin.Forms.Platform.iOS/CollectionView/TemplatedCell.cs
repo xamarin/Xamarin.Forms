@@ -55,14 +55,27 @@ namespace Xamarin.Forms.Platform.iOS
 			var preferredAttributes = base.PreferredLayoutAttributesFittingAttributes(layoutAttributes);
 
 			var preferredSize = preferredAttributes.Frame.Size;
-			var elementSize = VisualElementRenderer.Element.Bounds.Size;
 
-			if (SizesAreSame(preferredSize, elementSize) 
+			if (SizesAreSame(preferredSize, _size)
 				&& AttributesConsistentWithConstrainedDimension(preferredAttributes))
 			{
 				return preferredAttributes;
 			}
 
+			var size = UpdateCellSize();
+
+			// Adjust the preferred attributes to include space for the Forms element
+			preferredAttributes.Frame = new CGRect(preferredAttributes.Frame.Location, size);
+
+			OnLayoutAttributesChanged(preferredAttributes);
+
+			//_isMeasured = true;
+
+			return preferredAttributes;
+		}
+
+		CGSize UpdateCellSize() 
+		{
 			// Measure this cell (including the Forms element) if there is no constrained size
 			var size = ConstrainedSize == default ? Measure() : ConstrainedSize;
 
@@ -75,12 +88,7 @@ namespace Xamarin.Forms.Platform.iOS
 			VisualElementRenderer.Element.Layout(nativeBounds);
 			_size = nativeBounds.Size;
 
-			// Adjust the preferred attributes to include space for the Forms element
-			preferredAttributes.Frame = new CGRect(preferredAttributes.Frame.Location, size);
-
-			OnLayoutAttributesChanged(preferredAttributes);
-
-			return preferredAttributes;
+			return size;
 		}
 
 		public void Bind(DataTemplate template, object bindingContext, ItemsView itemsView)
@@ -142,6 +150,8 @@ namespace Xamarin.Forms.Platform.iOS
 						oldElement.MeasureInvalidated -= MeasureInvalidated;
 						oldElement.BindingContext = bindingContext;
 						oldElement.MeasureInvalidated += MeasureInvalidated;
+
+						UpdateCellSize();
 					}
 				}
 			}
