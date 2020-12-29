@@ -480,9 +480,8 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-			CollectionView.AddSubview(_emptyUIView);
-
 			_emptyUIView.Tag = EmptyTag;
+			CollectionView.AddSubview(_emptyUIView);
 
 			if (!ItemsView.LogicalChildren.Contains(_emptyViewFormsElement))
 			{
