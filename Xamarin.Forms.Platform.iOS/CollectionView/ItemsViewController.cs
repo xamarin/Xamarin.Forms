@@ -155,21 +155,13 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewWillLayoutSubviews();
 
-			if (!_initialized)
-			{
-				UpdateEmptyView();
-			}
-
 			// We can't set this constraint up on ViewDidLoad, because Forms does other stuff that resizes the view
 			// and we end up with massive layout errors. And View[Will/Did]Appear do not fire for this controller
 			// reliably. So until one of those options is cleared up, we set this flag so that the initial constraints
 			// are set up the first time this method is called.
 			EnsureLayoutInitialized();
 
-			if (_initialized)
-			{
-				LayoutEmptyView();
-			}
+			LayoutEmptyView();
 		}
 
 		void EnsureLayoutInitialized()
@@ -195,6 +187,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			ItemsViewLayout.SetInitialConstraints(CollectionView.Bounds.Size);
 			CollectionView.SetCollectionViewLayout(ItemsViewLayout, false);
+
+			UpdateEmptyView();
 		}
 
 		protected virtual UICollectionViewDelegateFlowLayout CreateDelegator()
@@ -220,9 +214,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			CollectionView.UpdateFlowDirection(ItemsView);
 
-			if (ItemsSource?.ItemCount == 0)
-				_emptyUIView?.UpdateFlowDirection(_emptyViewFormsElement);
-			
+			if (_emptyViewDisplayed)
+			{
+				FlipEmptyView();
+			}
+
 			Layout.InvalidateLayout();
 		}
 
@@ -375,34 +371,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected abstract bool IsHorizontal { get; }
 
-		internal void UpdateEmptyView()
-		{
-			UpdateView(ItemsView?.EmptyView, ItemsView?.EmptyViewTemplate, ref _emptyUIView, ref _emptyViewFormsElement);
-
-			// If the empty view is being displayed, we might need to update it
-			UpdateEmptyViewVisibility(ItemsSource?.ItemCount == 0);
-		}
-
 		protected virtual CGRect DetermineEmptyViewFrame() 
 		{
 			return new CGRect(CollectionView.Frame.X, CollectionView.Frame.Y,
 				CollectionView.Frame.Width, CollectionView.Frame.Height);
-		}
-
-		void LayoutEmptyView()
-		{
-			if (_emptyUIView == null)
-			{
-				UpdateEmptyView();
-				return;
-			}
-
-			var frame = DetermineEmptyViewFrame();
-
-			_emptyUIView.Frame = frame;
-
-			if (_emptyViewFormsElement != null && ItemsView.LogicalChildren.Contains(_emptyViewFormsElement))
-				_emptyViewFormsElement.Layout(frame.ToRectangle());
 		}
 
 		protected void RemeasureLayout(VisualElement formsElement)
@@ -453,53 +425,113 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		internal void UpdateEmptyView()
+		{
+			if (!_initialized)
+			{
+				return;
+			}
+
+			// Get rid of the old view
+			TearDownEmptyView();
+
+			// Set up the new empty view
+			(_emptyUIView, _emptyViewFormsElement) = TemplateHelpers.RealizeView(ItemsView?.EmptyView, ItemsView?.EmptyViewTemplate, ItemsView);
+
+			// We may need to show the updated empty view
+			UpdateEmptyViewVisibility(ItemsSource?.ItemCount == 0);
+		}
+
 		void UpdateEmptyViewVisibility(bool isEmpty)
 		{
-			if (isEmpty && _emptyUIView != null)
+			if (!_initialized)
 			{
-				var emptyView = CollectionView.Superview.ViewWithTag(EmptyTag);
+				return;
+			}
 
-				if(emptyView != null)
-				{
-					emptyView.RemoveFromSuperview();
-					ItemsView.RemoveLogicalChild(_emptyViewFormsElement);
-				}
-
-				_emptyUIView.Tag = EmptyTag;
-
-				var collectionViewContainer = CollectionView.Superview;
-				collectionViewContainer.AddSubview(_emptyUIView);
-				
-				LayoutEmptyView();
-
-				if (_emptyViewFormsElement != null)
-				{
-					if (ItemsView.EmptyViewTemplate == null)
-					{
-						ItemsView.AddLogicalChild(_emptyViewFormsElement);
-					}
-
-					// Now that the native empty view's frame is sized to the UICollectionView, we need to handle
-					// the Forms layout for its content
-					_emptyViewFormsElement.Layout(_emptyUIView.Frame.ToRectangle());
-				}
-
-				_emptyViewDisplayed = true;
+			if (isEmpty)
+			{
+				ShowEmptyView();
 			}
 			else
 			{
-				// Is the empty view currently in the background? Swap back to the default.
-				if (_emptyViewDisplayed)
-				{
-					_emptyUIView.RemoveFromSuperview();
-					_emptyUIView.Dispose();
-					_emptyUIView = null;
-
-					ItemsView.RemoveLogicalChild(_emptyViewFormsElement);
-				}
-
-				_emptyViewDisplayed = false;
+				HideEmptyView();
 			}
+		}
+
+		void FlipEmptyView() 
+		{
+			if (_emptyUIView == null)
+			{
+				return;
+			}
+
+			// Flip the empty view 180 degrees around the X axis 
+			_emptyUIView.Transform = CGAffineTransform.Scale(_emptyUIView.Transform, -1, 1);
+		}
+
+		void ShowEmptyView() 
+		{
+			if (_emptyViewDisplayed)
+			{
+				return;
+			}
+
+			CollectionView.AddSubview(_emptyUIView);
+
+			_emptyUIView.Tag = EmptyTag;
+
+			if (!ItemsView.LogicalChildren.Contains(_emptyViewFormsElement))
+			{
+				ItemsView.AddLogicalChild(_emptyViewFormsElement);
+			}
+
+			if (CollectionView.EffectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirection.RightToLeft)
+			{
+				// The UICollectionView's layout flip will also affect the empty view, so we'll have to flip it back around
+				FlipEmptyView();
+			}
+
+			LayoutEmptyView();
+			_emptyViewDisplayed = true;
+		}
+
+		void HideEmptyView() 
+		{
+			if (!_emptyViewDisplayed)
+			{
+				return;
+			}
+
+			_emptyUIView.RemoveFromSuperview();
+
+			_emptyViewDisplayed = false;
+		}
+
+		void TearDownEmptyView() 
+		{
+			HideEmptyView();
+
+			// RemoveLogicalChild will trigger a disposal of the native view and its content
+			ItemsView.RemoveLogicalChild(_emptyViewFormsElement);
+			
+			_emptyUIView = null;
+			_emptyViewFormsElement = null;
+		}
+
+		void LayoutEmptyView()
+		{
+			if (!_initialized || _emptyUIView == null || _emptyUIView.Superview == null)
+			{
+				return;
+			}
+
+			var frame = DetermineEmptyViewFrame();
+
+			_emptyUIView.Frame = frame;
+
+			if (_emptyViewFormsElement != null && ItemsView.LogicalChildren.Contains(_emptyViewFormsElement))
+				_emptyViewFormsElement.Layout(frame.ToRectangle());
 		}
 
 		TemplatedCell CreateAppropriateCellForLayout()
