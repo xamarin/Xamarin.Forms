@@ -216,7 +216,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (_emptyViewDisplayed)
 			{
-				FlipEmptyView();
+				AlignEmptyView();
 			}
 
 			Layout.InvalidateLayout();
@@ -462,13 +462,33 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void FlipEmptyView() 
+		void AlignEmptyView() 
 		{
 			if (_emptyUIView == null)
 			{
 				return;
 			}
 
+			if (CollectionView.EffectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirection.RightToLeft)
+			{
+				if (_emptyUIView.Transform.xx == -1)
+				{
+					return;
+				}
+
+				FlipEmptyView();
+			}
+			else
+			{
+				if (_emptyUIView.Transform.xx == -1)
+				{
+					FlipEmptyView();
+				}
+			}
+		}
+
+		void FlipEmptyView()
+		{
 			// Flip the empty view 180 degrees around the X axis 
 			_emptyUIView.Transform = CGAffineTransform.Scale(_emptyUIView.Transform, -1, 1);
 		}
@@ -488,13 +508,9 @@ namespace Xamarin.Forms.Platform.iOS
 				ItemsView.AddLogicalChild(_emptyViewFormsElement);
 			}
 
-			if (CollectionView.EffectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirection.RightToLeft)
-			{
-				// The UICollectionView's layout flip will also affect the empty view, so we'll have to flip it back around
-				FlipEmptyView();
-			}
-
 			LayoutEmptyView();
+
+			AlignEmptyView();
 			_emptyViewDisplayed = true;
 		}
 
