@@ -33,10 +33,15 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var page = new ContentPage();
 
-
+			this.BindingContext = this;
 			AddFlyoutItem(page, "Flyout Item Top");
 			for (int i = 0; i < 50; i++)
-				AddFlyoutItem("Flyout Item");
+			{
+				AddFlyoutItem($"Flyout Item :{i}");
+				Items[i].AutomationId = "Flyout Item";
+			}
+
+			Items.Add(new MenuItem() { Text = "Menu Item" });
 			AddFlyoutItem("Flyout Item Bottom");
 
 			var layout = new StackLayout()
@@ -62,15 +67,39 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						FlyoutContentTemplate = new DataTemplate(() =>
 						{
-							return new Button()
-							{
-								Text = "Content View",
-								AutomationId = "ContentView",
-								Command = new Command(() =>
+							var collectionView = new CollectionView();
+
+							collectionView.SetBinding(CollectionView.ItemsSourceProperty, "FlyoutItems");
+							collectionView.IsGrouped = true;
+
+							collectionView.ItemTemplate =
+								new DataTemplate(() =>
 								{
-									FlyoutContentTemplate = null;
-								})
-							};
+									var label = new Label();
+
+									label.SetBinding(Label.TextProperty, "Title");
+
+									var button = new Button()
+									{
+										Text = "Click to Reset",
+										AutomationId = "ContentView",
+										Command = new Command(() =>
+										{
+											FlyoutContentTemplate = null;
+										})
+									};
+
+									return new StackLayout()
+									{
+										Children =
+										{
+											label,
+											button
+										}
+									};
+								});
+
+							return collectionView;
 						});
 					}
 					else if (FlyoutContentTemplate != null)
