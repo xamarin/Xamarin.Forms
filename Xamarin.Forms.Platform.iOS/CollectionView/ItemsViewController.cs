@@ -436,7 +436,10 @@ namespace Xamarin.Forms.Platform.iOS
 			TearDownEmptyView();
 
 			// Set up the new empty view
-			(_emptyUIView, _emptyViewFormsElement) = TemplateHelpers.RealizeView(ItemsView?.EmptyView, ItemsView?.EmptyViewTemplate, ItemsView);
+			UpdateView(ItemsView?.EmptyView, ItemsView?.EmptyViewTemplate, ref _emptyUIView, ref _emptyViewFormsElement);
+
+//			(_emptyUIView, _emptyViewFormsElement) = TemplateHelpers.RealizeView(ItemsView?.EmptyView, ItemsView?.EmptyViewTemplate, ItemsView);
+
 
 			// We may need to show the updated empty view
 			UpdateEmptyViewVisibility(ItemsSource?.ItemCount == 0);
