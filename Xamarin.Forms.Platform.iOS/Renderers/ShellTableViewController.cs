@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_source = CreateShellTableViewSource();
 			_source.ScrolledEvent += OnScrolled;
 
-			ShellController.StructureChanged += OnStructureChanged;
+			ShellController.FlyoutItemsChanged += OnFlyoutItemsChanged;
 			_context.Shell.PropertyChanged += OnShellPropertyChanged;
 		}
 
@@ -90,7 +90,7 @@ namespace Xamarin.Forms.Platform.iOS
 			LayoutParallax();
 		}
 
-		void OnStructureChanged(object sender, EventArgs e)
+		void OnFlyoutItemsChanged(object sender, EventArgs e)
 		{
 			_source.ClearCache();
 			TableView.ReloadData();
@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Platform.iOS
 			TableView.Frame =
 					new CGRect(parent.Bounds.X, HeaderTopMargin, parent.Bounds.Width, parent.Bounds.Height - HeaderTopMargin - footerHeight);
 
-			if (HeaderView != null)
+			if (HeaderView != null && !double.IsNaN(_headerSize))
 			{
 				var margin = HeaderView.Margin;
 				var leftMargin = margin.Left - margin.Right;
@@ -181,8 +181,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
-				if ((_context?.Shell as IShellController) != null)
-					((IShellController)_context.Shell).StructureChanged -= OnStructureChanged;
+				if (ShellController != null)
+					ShellController.FlyoutItemsChanged -= OnFlyoutItemsChanged;
 
 				if (_source != null)
 					_source.ScrolledEvent -= OnScrolled;
