@@ -233,7 +233,13 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			SetupAutomationDefaults();
-			ContentDescription = id + "_Container";
+
+			if (this != ControlUsedForAutomation)
+			{
+				ContentDescription = id + "_Container";
+				ImportantForAccessibility = ImportantForAccessibility.No;
+			}
+
 			AutomationPropertiesProvider.SetAutomationId(ControlUsedForAutomation, Element, id);
 		}
 
