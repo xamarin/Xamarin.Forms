@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		View _content;
 		object _previousDataContext;
+		double _previousWidth;
 		FrameworkElement FrameworkElement { get; set; }
 
 		public ShellFlyoutItemRenderer()
@@ -38,6 +39,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (_previousDataContext == args.NewValue)
 				return;
 
+			_previousWidth = -1;
 			_previousDataContext = args.NewValue;
 			if (_content != null)
 			{
@@ -100,12 +102,6 @@ namespace Xamarin.Forms.Platform.UWP
 			OnMeasureInvalidated();
 		}
 
-		protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize)
-		{
-			return base.MeasureOverride(availableSize);
-		}
-
-		double _previousWidth;
 		private void OnLayoutUpdated(object sender, object e)
 		{
 			if (this.ActualWidth > 0 && this.ActualWidth != _content.Width && _previousWidth != this.ActualWidth)
