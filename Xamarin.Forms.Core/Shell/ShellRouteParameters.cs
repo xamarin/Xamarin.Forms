@@ -23,7 +23,7 @@ namespace Xamarin.Forms
 		{
 		}
 
-		internal void Merge(Dictionary<string, string> input)
+		internal void Merge(IDictionary<string, string> input)
 		{
 			if (input == null || input.Count == 0)
 				return;
