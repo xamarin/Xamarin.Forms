@@ -18,6 +18,7 @@ namespace Xamarin.Forms.Platform.UWP
 			new PropertyMetadata(default(bool), IsSelectedChanged));
 
 		View _content;
+		object _previousDataContext;
 		FrameworkElement FrameworkElement { get; set; }
 
 		public ShellFlyoutItemRenderer()
@@ -34,6 +35,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnDataContextChanged(Windows.UI.Xaml.FrameworkElement sender, Windows.UI.Xaml.DataContextChangedEventArgs args)
 		{
+			if (_previousDataContext == args.NewValue)
+				return;
+
+			_previousDataContext = args.NewValue;
 			if (_content != null)
 			{
 				if (_content.BindingContext is INotifyPropertyChanged inpc)
