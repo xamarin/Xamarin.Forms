@@ -438,9 +438,6 @@ namespace Xamarin.Forms.Platform.iOS
 			// Set up the new empty view
 			UpdateView(ItemsView?.EmptyView, ItemsView?.EmptyViewTemplate, ref _emptyUIView, ref _emptyViewFormsElement);
 
-//			(_emptyUIView, _emptyViewFormsElement) = TemplateHelpers.RealizeView(ItemsView?.EmptyView, ItemsView?.EmptyViewTemplate, ItemsView);
-
-
 			// We may need to show the updated empty view
 			UpdateEmptyViewVisibility(ItemsSource?.ItemCount == 0);
 		}
@@ -495,7 +492,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ShowEmptyView() 
 		{
-			if (_emptyViewDisplayed)
+			if (_emptyViewDisplayed || _emptyUIView == null)
 			{
 				return;
 			}
@@ -516,7 +513,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void HideEmptyView() 
 		{
-			if (!_emptyViewDisplayed)
+			if (!_emptyViewDisplayed || _emptyUIView == null)
 			{
 				return;
 			}
