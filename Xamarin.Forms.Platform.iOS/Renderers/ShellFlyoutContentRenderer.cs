@@ -261,7 +261,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateFlyoutHeader();
 			UpdateFlyoutFooter();
-		//	UpdateFlyoutContent();
 
 			_tableViewController.TableView.BackgroundView = null;
 			_tableViewController.TableView.BackgroundColor = UIColor.Clear;
