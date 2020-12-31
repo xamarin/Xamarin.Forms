@@ -126,6 +126,7 @@ namespace Xamarin.Forms.Platform.Android
 			RegisterHandler(typeof(Picker), typeof(AppCompat.PickerRenderer), typeof(PickerRenderer));
 			RegisterHandler(typeof(CarouselPage), typeof(AppCompat.CarouselPageRenderer), typeof(CarouselPageRenderer));
 			RegisterHandler(typeof(CheckBox), typeof(CheckBoxRenderer), typeof(CheckBoxDesignerRenderer));
+			RegisterHandler(typeof(FlyoutPage), typeof(FlyoutPageRenderer), typeof(FlyoutPageRendererNonAppCompat));
 
 			if (Forms.Flags.Contains(Flags.UseLegacyRenderers))
 			{
