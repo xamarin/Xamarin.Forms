@@ -13,8 +13,7 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
-	[Category(UITestCategories.CollectionView)]
-	[Category(UITestCategories.UwpIgnore)]
+	[Category(UITestCategories.RadioButton)]
 #endif
 
 	[Preserve(AllMembers = true)]
