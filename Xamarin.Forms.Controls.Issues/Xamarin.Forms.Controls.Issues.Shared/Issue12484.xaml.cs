@@ -49,17 +49,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			public Issue12484Template()
 			{
-				var label = new Label
-				{
-					AutomationId = "Success",
-					Text = "If this text appear, the test has passed.",
-					HorizontalOptions = LayoutOptions.Center,
-					VerticalOptions = LayoutOptions.Center
-				};
-
 				var content = new Grid();
-				content.Children.Add(label);
-
 				Content = content;
 			}
 		}
