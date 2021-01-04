@@ -13,6 +13,7 @@ using Android.OS;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using AndroidX.DrawerLayout.Widget;
 using AndroidX.Legacy.App;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.AppCompat;
@@ -338,18 +339,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal static IVisualElementRenderer CreateRenderer(VisualElement element, Context context)
 		{
-			IVisualElementRenderer renderer = null;
-
-			if (element is TemplatedView tv && tv.ResolveControlTemplate() != null)
-			{
-				renderer = new DefaultRenderer(context);
-			}
-
-			if (renderer == null)
-			{
-				renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element, context)
-					?? new DefaultRenderer(context);
-			}
+			IVisualElementRenderer renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element, context)
+				?? new DefaultRenderer(context);
 
 			renderer.SetElement(element);
 
@@ -793,7 +784,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void GetNewFlyoutPageToggle()
 		{
-			var drawer = GetRenderer(CurrentFlyoutPage) as FlyoutPageRenderer;
+			var drawer = GetRenderer(CurrentFlyoutPage) as DrawerLayout;
 			if (drawer == null)
 				return;
 
