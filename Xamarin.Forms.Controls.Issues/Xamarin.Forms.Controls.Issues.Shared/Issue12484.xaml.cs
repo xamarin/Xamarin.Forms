@@ -49,7 +49,16 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			public Issue12484Template()
 			{
-				var content = new Grid();
+				var content = new StackLayout()
+				{
+					Children =
+					{
+						new Label()
+						{
+							Text = "If a label with text `Success` does not show up this test has failed"
+						}
+					}
+				};
 				Content = content;
 			}
 		}

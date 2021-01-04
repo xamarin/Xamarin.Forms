@@ -19,12 +19,12 @@ namespace Xamarin.Forms.ControlGallery.Android
             base.OnElementChanged(e);
 
 			if(e.NewElement.Children[0] is Issue12484CustomView.Issue12484Template t &&
-				t.Content is Grid g)
+				t.Content is StackLayout g)
 			{
 				var label = new Label
 				{
 					AutomationId = "Success",
-					Text = "If this text appear, the test has passed.",
+					Text = "Success",
 					HorizontalOptions = LayoutOptions.Center,
 					VerticalOptions = LayoutOptions.Center
 				};
