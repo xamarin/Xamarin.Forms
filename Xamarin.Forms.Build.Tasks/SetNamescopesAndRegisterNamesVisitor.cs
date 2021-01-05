@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Build.Tasks
 		VariableDefinition GetOrCreateNameScope(ElementNode node)
 		{
 			var module = Context.Body.Method.Module;
-			var vardef = new VariableDefinition(module.ImportReference(("Xamarin.Forms.Core", "Xamarin.Forms.Internals", "NameScope")));
+			var vardef = new VariableDefinition(module.ImportReference(("Xamarin.Forms.Core", "Xamarin.Forms.Internals", "INameScope")));
 			Context.Body.Variables.Add(vardef);
 			var stloc = Instruction.Create(OpCodes.Stloc, vardef);
 
