@@ -14,6 +14,13 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 			return $"Expected {expectedColor} at point {x},{y} in renderered view. This is what it looked like:<img>{imageAsString}</img>";
 		}
 
+		public static string CreateColorError(this UIImage bitmap, string message)
+		{
+			var data = bitmap.AsPNG();
+			var imageAsString = data.GetBase64EncodedString(Foundation.NSDataBase64EncodingOptions.None);
+			return $"{message}. This is what it looked like:<img>{imageAsString}</img>";
+		}
+
 		public static UIImage ToBitmap(this UIView view)
 		{
 			var imageRect = new CGRect(0, 0, view.Frame.Width, view.Frame.Height);
@@ -150,6 +157,41 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 		{
 			var bitmap = view.ToBitmap();
 			return bitmap.AssertColorAtTopRight(expectedColor);
+		}
+
+		public static UIImage AssertContainsColor(this UIView view, UIColor expectedColor)
+		{
+			return view.ToBitmap().AssertContainsColor(expectedColor);
+		}
+
+		public static UIImage AssertContainsColor(this UIImage bitmap, UIColor expectedColor)
+		{
+			for (int x = 0; x < bitmap.Size.Width; x++)
+			{
+				for (int y = 0; y < bitmap.Size.Height; y++)
+				{
+					if (ColorComparison.ARGBEquivalent(bitmap.ColorAtPoint(x, y), expectedColor))
+					{
+						return bitmap;
+					}
+				}
+			}
+
+			Assert.Fail(CreateColorError(bitmap, $"Color {expectedColor} not found."));
+			return bitmap;
+		}
+
+		public static void AssertEquals(this UIImage bitmap, UIImage expectedBitmap)
+		{
+			for (int x = 0; x < bitmap.Size.Width; x++)
+			{
+				for (int y = 0; y < bitmap.Size.Height; y++)
+				{
+					var color = expectedBitmap.ColorAtPoint(x, y);
+					if (AssertColorAtPoint(bitmap, color, x, y) == null)
+						return;
+				}
+			}
 		}
 	}
 }
