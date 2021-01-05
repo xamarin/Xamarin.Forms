@@ -27,11 +27,11 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 				Stroke = SolidColorBrush.Purple
 			};
 
-			var screenshot1 = await GetRendererProperty(view, (ver) => ver.NativeView.ToBitmap(), requiresLayout: true);
+			var expected = await GetRendererProperty(view, (ver) => ver.NativeView.ToBitmap(), requiresLayout: true);
 
-			var screenshot2 = await GetRendererProperty(view, (ver) => ver.NativeView.ToBitmap(), requiresLayout: true);
+			var actual = await GetRendererProperty(view, (ver) => ver.NativeView.ToBitmap(), requiresLayout: true);
 
-			screenshot1.AssertEquals(screenshot2);
+			await expected.AssertEqualsAsync(actual);
 		}
 	}
 }

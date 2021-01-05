@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using CoreGraphics;
 using NUnit.Framework;
 using UIKit;
@@ -181,16 +182,29 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 			return bitmap;
 		}
 
-		public static void AssertEquals(this UIImage bitmap, UIImage expectedBitmap)
+		public static async Task AssertEqualsAsync(this UIImage expectedBitmap, UIImage actualBitmap)
 		{
-			for (int x = 0; x < bitmap.Size.Width; x++)
+			if(!actualBitmap.AsPNG().IsEqual(expectedBitmap.AsPNG()))
 			{
-				for (int y = 0; y < bitmap.Size.Height; y++)
+				string failureMessage = null;
+				await Device.InvokeOnMainThreadAsync(() =>
 				{
-					var color = expectedBitmap.ColorAtPoint(x, y);
-					if (AssertColorAtPoint(bitmap, color, x, y) == null)
-						return;
-				}
+					var view = new UIView();
+					UIImageView actualView = new UIImageView() { Image = actualBitmap };
+					UIImageView expectedView = new UIImageView() { Image = expectedBitmap };
+
+					actualView.Frame = new CGRect(0, 0, actualBitmap.Size.Width, actualBitmap.Size.Height);
+					expectedView.Frame = new CGRect(0, actualBitmap.Size.Height + 40, expectedBitmap.Size.Width, expectedBitmap.Size.Height);
+
+					view.Frame = new CGRect(0, 0,
+						actualView.Frame.Width + expectedView.Frame.Width,
+						actualView.Frame.Height + expectedView.Frame.Height);
+
+					view.AddSubviews(actualView, expectedView);
+					failureMessage = CreateColorError(view.ToBitmap(), "Actual (top) vs Expected (bottom)");
+				});
+
+				Assert.Fail(failureMessage);
 			}
 		}
 	}
