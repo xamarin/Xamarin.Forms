@@ -19,11 +19,11 @@ namespace Xamarin.Forms.Platform.iOS
 		public event EventHandler WillAppear;
 		public event EventHandler WillDisappear;
 
-		const short HeaderIndex = 0;
-		const short FooterIndex = 1;
+		const short BackgroundImageIndex = 0;
+		const short BlurIndex = 1;
 		const short ContentIndex = 2;
-		const short BlurIndex = 3;
-		const short BackgroundImageIndex = 4;
+		const short FooterIndex = 3;
+		const short HeaderIndex = 4;
 
 		public ShellFlyoutContentRenderer(IShellContext context)
 		{
@@ -98,8 +98,8 @@ namespace Xamarin.Forms.Platform.iOS
 				_headerView = null;
 
 			_uIViews[HeaderIndex] = _headerView;
-			AddViewInCorrectOrder(_headerView, previousIndex);
 			_tableViewController.HeaderView = _headerView;
+			AddViewInCorrectOrder(_headerView, previousIndex);
 		}
 
 		void UpdateFlyoutFooter()
@@ -157,9 +157,6 @@ namespace Xamarin.Forms.Platform.iOS
 		void AddViewInCorrectOrder(UIView newView, int previousIndex)
 		{
 			if (newView == null)
-				return;
-
-			if (Array.IndexOf(View.Subviews, newView) >= 0)
 				return;
 
 			if (previousIndex >= 0 && View.Subviews.Length <= previousIndex)
@@ -235,9 +232,10 @@ namespace Xamarin.Forms.Platform.iOS
 			var backgroundImage = View.GetBackgroundImage(brush);
 			View.BackgroundColor = backgroundImage != null ? UIColor.FromPatternImage(backgroundImage) : color.ToUIColor(ColorExtensions.BackgroundColor);
 
+			_uIViews[BlurIndex] = null;
 			if (View.BackgroundColor.CGColor.Alpha < 1)
 			{
-				AddViewInCorrectOrder(_blurView, previousIndex);
+				_uIViews[BlurIndex] = _blurView;
 			}
 			else
 			{
@@ -327,7 +325,6 @@ namespace Xamarin.Forms.Platform.iOS
 				ClipsToBounds = true
 			};
 
-			_uIViews[BlurIndex] = _blurView;
 			_uIViews[BackgroundImageIndex] = _bgImage;
 
 			UpdateBackground();
@@ -346,11 +343,11 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 			{
 				_shellFlyoutContentManager.SetDefaultContent(_tableViewController.TableView);
+				_uIViews[ContentIndex] = _tableViewController.TableView;
 			}
 
 			_uIViews[ContentIndex] = _shellFlyoutContentManager.ContentView;
 			AddViewInCorrectOrder(_uIViews[ContentIndex], previousIndex);
-			_shellFlyoutContentManager.LayoutParallax();
 		}
 
 		public override void ViewWillAppear(bool animated)
