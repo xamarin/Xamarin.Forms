@@ -191,6 +191,61 @@ stages:
         steps:
           - checkout: self
 
+          - template: security/policheck/v1.yml@xamarin-templates
+
+          - template: security/credscan/v2.yml@xamarin-templates
+            parameters:
+              suppressionsFile: $(System.DefaultWorkingDirectory)\build\automation\CredScanSuppressions.json
+
+          - task: securedevelopmentteam.vss-secure-development-tools.build-task-antimalware.AntiMalware@3
+            displayName: Run AntiMalware (Defender) Scan
+            inputs:
+              FileDirPath: $(System.DefaultWorkingDirectory)
+              EnableServices: true
+            condition: succeededOrFailed()
+
+          - task: securedevelopmentteam.vss-secure-development-tools.build-task-report.SdtReport@1
+            displayName: Create Security Analysis Report
+            inputs:
+              CredScan: true
+              PoliCheck: true
+            condition: succeededOrFailed()
+
+          - task: securedevelopmentteam.vss-secure-development-tools.build-task-publishsecurityanalysislogs.PublishSecurityAnalysisLogs@2
+            displayName: Publish Security Analysis Logs
+            inputs:
+              ArtifactName: CodeAnalysisLogs
+            condition: succeededOrFailed()
+
+          - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@1
+            displayName: Fail Job if Security Issues are Detected
+            inputs:
+              CredScan: true
+              PoliCheck: true
+            condition: succeededOrFailed()
+
+      # - job: api_scan
+      #   displayName: APIScan Compliance
+      #   pool:
+      #     name: $(corpVmImage)
+      #   steps:
+      #     - checkout: none
+      #       clean: true
+
+      #     - task: DownloadBuildArtifacts@0
+      #       displayName: 'Download build artifact win_build'
+      #       inputs:
+      #         artifactName: win_build
+      #         downloadPath: $(Build.StagingDirectory)
+
+      #     - task: securedevelopmentteam.vss-secure-development-tools.build-task-apiscan.APIScan@2
+      #       displayName: 'Run APIScan'
+      #       inputs:
+      #         softwareFolder: '$(Build.StagingDirectory)\win_build'
+      #         softwareName: Xamarin.Forms
+      #         softwareVersionNum: $(Build.BuildNumber)
+      #         isLargeApp: false
+
   # only sign using the private server and not sigining Maui for now
   - ${{ if and(eq(variables['System.TeamProject'], 'devdiv'), ne(variables['System.DefinitionId'], '13330')) }}:
     - stage: nuget_signing
@@ -205,5 +260,4 @@ stages:
             signedArtifactPath: signed
             displayName: Sign Phase
             condition: and(succeeded(), ne(variables['signVmImage'], ''), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
-
 
