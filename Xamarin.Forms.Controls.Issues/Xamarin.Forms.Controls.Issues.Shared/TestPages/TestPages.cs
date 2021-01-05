@@ -91,9 +91,9 @@ namespace Xamarin.Forms.Controls
 #if __IOS__
 		static IApp InitializeiOSApp()
 		{
-			string UDID = null;
+			string UDID = "3604EE81-824D-4538-AC41-9115CF793CC9";
 
-			if(TestContext.Parameters.Exists("UDID"))
+			if (TestContext.Parameters.Exists("UDID"))
 			{
 				UDID = TestContext.Parameters["UDID"];
 			}

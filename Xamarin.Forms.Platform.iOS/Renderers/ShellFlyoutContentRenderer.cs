@@ -15,12 +15,19 @@ namespace Xamarin.Forms.Platform.iOS
 		View _footer;
 		ShellTableViewController _tableViewController;
 		ShellFlyoutLayoutManager _shellFlyoutContentManager;
-
+		UIView[] _uIViews;
 		public event EventHandler WillAppear;
 		public event EventHandler WillDisappear;
 
+		const short BackgroundImageIndex = 0;
+		const short BlurIndex = 1;
+		const short ContentIndex = 2;
+		const short FooterIndex = 3;
+		const short HeaderIndex = 4;
+
 		public ShellFlyoutContentRenderer(IShellContext context)
 		{
+			_uIViews = new UIView[5];
 			_shellContext = context;
 			_tableViewController = CreateShellTableViewController();
 			_shellFlyoutContentManager = _tableViewController?.ShellFlyoutContentManager;
@@ -78,6 +85,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (header == _headerView?.View)
 				return;
 
+			int previousIndex = GetPreviousIndex(_headerView);
 			if(_headerView != null)
 			{
 				_tableViewController.HeaderView = null;
@@ -90,10 +98,9 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 				_headerView = null;
 
+			_uIViews[HeaderIndex] = _headerView;
 			_tableViewController.HeaderView = _headerView;
-
-			if(_headerView != null)
-				View.AddSubview(_headerView);
+			AddViewInCorrectOrder(_headerView, previousIndex);
 		}
 
 		void UpdateFlyoutFooter()
@@ -106,12 +113,14 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_footer == view)
 				return;
 
+			int previousIndex = GetPreviousIndex(_footerView);
 			if (_footer != null)
 			{
 				var oldRenderer = Platform.GetRenderer(_footer);
 				var oldFooterView = _footerView;
 				_tableViewController.FooterView = null;
 				_footerView = null;
+				_uIViews[FooterIndex] = null;
 				oldFooterView?.RemoveFromSuperview();
 				if (_footer != null)
 					_footer.MeasureInvalidated -= OnFooterMeasureInvalidated;
@@ -127,14 +136,51 @@ namespace Xamarin.Forms.Platform.iOS
 				var renderer = Platform.CreateRenderer(_footer);
 				_footerView = renderer.NativeView;
 				Platform.SetRenderer(_footer, renderer);
+				_uIViews[FooterIndex] = _footerView;
+				AddViewInCorrectOrder(_footerView, previousIndex);
 
-				View.AddSubview(_footerView);
 				_footerView.ClipsToBounds = true;
 				_footer.MeasureInvalidated += OnFooterMeasureInvalidated;
 			}
 
 			_tableViewController.FooterView = _footerView;
 
+		}
+
+		int GetPreviousIndex(UIView oldView)
+		{
+			if (oldView == null)
+				return -1;
+
+			return Array.IndexOf(View.Subviews, oldView);
+		}
+
+		void AddViewInCorrectOrder(UIView newView, int previousIndex)
+		{
+			if (newView == null)
+				return;
+
+			if (previousIndex >= 0 && View.Subviews.Length <= previousIndex)
+			{
+				View.InsertSubview(newView, previousIndex);
+				return;
+			}
+
+			int startingIndex = Array.IndexOf(_uIViews, newView);
+			for (int i = startingIndex - 1; i >= 0; i--)
+			{
+				var topView = _uIViews[i];
+				if (topView == null)
+					continue;
+
+				if (Array.IndexOf(View.Subviews, topView) >= 0)
+				{
+					View.InsertSubviewBelow(newView, topView);
+					return;
+				}
+			}
+
+			View.AddSubview(newView);
 		}
 
 		void OnFooterMeasureInvalidated(object sender, System.EventArgs e)
@@ -183,13 +229,14 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var color = _shellContext.Shell.FlyoutBackgroundColor;
 			var brush = _shellContext.Shell.FlyoutBackground;
-
+			int previousIndex = GetPreviousIndex(_blurView);
 			var backgroundImage = View.GetBackgroundImage(brush);
 			View.BackgroundColor = backgroundImage != null ? UIColor.FromPatternImage(backgroundImage) : color.ToUIColor(ColorExtensions.BackgroundColor);
 
+			_uIViews[BlurIndex] = null;
 			if (View.BackgroundColor.CGColor.Alpha < 1)
 			{
-				View.InsertSubview(_blurView, 0);
+				_uIViews[BlurIndex] = _blurView;
 			}
 			else
 			{
@@ -217,7 +264,9 @@ namespace Xamarin.Forms.Platform.iOS
 				if (View == null)
 					return;
 
-				if (nativeImage == null)
+				int previousIndex = GetPreviousIndex(_bgImage);
+				if (nativeImage == null ||
+					_shellContext.Shell.FlyoutBackgroundImage != imageSource)
 				{
 					_bgImage?.RemoveFromSuperview();
 					return;
@@ -239,7 +288,9 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				if (_bgImage.Superview != View)
-					View.InsertSubview(_bgImage, 0);
+				{
+					AddViewInCorrectOrder(_bgImage, previousIndex);
+				}
 			}
 		}
 
@@ -275,6 +326,8 @@ namespace Xamarin.Forms.Platform.iOS
 				ClipsToBounds = true
 			};
 
+			_uIViews[BackgroundImageIndex] = _bgImage;
+
 			UpdateBackground();
 			UpdateFlowDirection();
 		}
@@ -283,13 +336,19 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var view = (_shellContext.Shell as IShellController).FlyoutContent;
 
+			var previousIndex = GetPreviousIndex(_shellFlyoutContentManager.ContentView);
 			if (view != null)
+			{
 				_shellFlyoutContentManager.SetCustomContent(view);
+			}
 			else
+			{
 				_shellFlyoutContentManager.SetDefaultContent(_tableViewController.TableView);
+				_uIViews[ContentIndex] = _tableViewController.TableView;
+			}
 
-			if(_shellFlyoutContentManager.ContentView != null)
-				View.InsertSubview(_shellFlyoutContentManager.ContentView, 0);
+			_uIViews[ContentIndex] = _shellFlyoutContentManager.ContentView;
+			AddViewInCorrectOrder(_uIViews[ContentIndex], previousIndex);
 		}
 
 		public override void ViewWillAppear(bool animated)
