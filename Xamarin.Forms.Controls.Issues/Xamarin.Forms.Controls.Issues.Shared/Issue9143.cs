@@ -11,11 +11,11 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
-	[Category(UITestCategories.MasterDetailPage)]
+	[Category(UITestCategories.FlyoutPage)]
 #endif
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 9143, "[Android] Fix BottomNavigationItemView issue with MasterDetailPage", PlatformAffected.Android)]
-	public class Issue9143 : TestMasterDetailPage
+	[Issue(IssueTracker.Github, 9143, "[Android] Fix BottomNavigationItemView issue with FlyoutPage", PlatformAffected.Android)]
+	public class Issue9143 : TestFlyoutPage
 	{
 		protected override void Init()
 		{
@@ -54,8 +54,8 @@ namespace Xamarin.Forms.Controls.Issues
 			CreateAndPushPageForNavigationPage(tab3);
 			CreateAndPushPageForNavigationPage(tab4);
 			CreateAndPushPageForNavigationPage(tab5);
-			
-			Master = menuNavigationPage;
+
+			Flyout = menuNavigationPage;
 			Detail = tabbedPage;
 		}
 

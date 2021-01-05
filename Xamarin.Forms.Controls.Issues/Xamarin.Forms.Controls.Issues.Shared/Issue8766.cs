@@ -20,9 +20,9 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			Visual = VisualMarker.Material;
 
-			var layout = new StackLayout();
+			var layout = new StackLayout() { AutomationId = "TestReady" };
 
-			var instructions = new Label { Text = "If the Entry and Button above the CollectionView and the Entry and Button inside the CollectionView, should both be using the Material Visual. If so, this test has passed."};
+			var instructions = new Label { Text = "If the Entry and Button above the CollectionView and the Entry and Button inside the CollectionView, should both be using the Material Visual. If so, this test has passed." };
 			layout.Children.Add(instructions);
 
 			var entry = new Entry { Placeholder = "I am material" };
@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Controls.Issues
 			layout.Children.Add(entry);
 			layout.Children.Add(button);
 
-			var colv = new CollectionView() {  };
+			var colv = new CollectionView() { };
 
 			var emptyViewEntry = new Entry { Placeholder = "I should be material" };
 			var emptyViewButton = new Button { Text = "I should be material, too" };
@@ -47,6 +47,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Category(UITestCategories.ManualReview)]
 		public void VisualPropagatesToEmptyView()
 		{
+			RunningApp.WaitForElement("TestReady");
 			RunningApp.Screenshot("CollectionViewWithEmptyView");
 		}
 #endif

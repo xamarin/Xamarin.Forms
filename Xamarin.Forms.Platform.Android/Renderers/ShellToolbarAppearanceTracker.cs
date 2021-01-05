@@ -1,9 +1,5 @@
 ﻿using Android.Graphics.Drawables;
-#if __ANDROID_29__
 using AndroidX.AppCompat.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -52,7 +48,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var newTintColor = foreground.IsDefault ? ShellRenderer.DefaultForegroundColor : foreground;
 
-			if(toolbarTracker.TintColor != newTintColor)
+			if (toolbarTracker.TintColor != newTintColor)
 				toolbarTracker.TintColor = newTintColor;
 		}
 

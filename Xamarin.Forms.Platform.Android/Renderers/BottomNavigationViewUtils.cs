@@ -1,27 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Android.Content;
+using Android.Graphics.Drawables;
 using Android.Views;
 using Android.Widget;
+using Google.Android.Material.BottomNavigation;
+using Google.Android.Material.BottomSheet;
 using AColor = Android.Graphics.Color;
+using ALabelVisibilityMode = Google.Android.Material.BottomNavigation.LabelVisibilityMode;
 using ColorStateList = Android.Content.Res.ColorStateList;
 using IMenu = Android.Views.IMenu;
 using LP = Android.Views.ViewGroup.LayoutParams;
 using Orientation = Android.Widget.Orientation;
 using Typeface = Android.Graphics.Typeface;
 using TypefaceStyle = Android.Graphics.TypefaceStyle;
-using Android.Graphics.Drawables;
-using System.Threading.Tasks;
-
-#if __ANDROID_29__
-using Google.Android.Material.BottomNavigation;
-using Google.Android.Material.BottomSheet;
-using ALabelVisibilityMode = Google.Android.Material.BottomNavigation.LabelVisibilityMode;
-#else
-using ALabelVisibilityMode = Android.Support.Design.BottomNavigation.LabelVisibilityMode;
-using Android.Support.Design.Widget;
-using Android.Support.Design.Internal;
-#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -81,10 +74,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (showMore)
 			{
-				var moreString = new Java.Lang.String("More");
+				var moreString = context.Resources.GetText(Resource.String.overflow_tab_title);
 				var menuItem = menu.Add(0, MoreTabId, 0, moreString);
 				menuItems.Add(menuItem);
-				moreString.Dispose();
 
 				menuItem.SetIcon(Resource.Drawable.abc_ic_menu_overflow_material);
 				if (currentIndex >= maxBottomItems - 1)
@@ -138,7 +130,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				using (var innerLayout = new LinearLayout(context))
 				{
-					if(Forms.IsLollipopOrNewer)
+					if (Forms.IsLollipopOrNewer)
 					{
 						innerLayout.ClipToOutline = true;
 					}
@@ -169,7 +161,7 @@ namespace Xamarin.Forms.Platform.Android
 					};
 					image.LayoutParameters = lp;
 					lp.Dispose();
-					
+
 					if (Forms.IsLollipopOrNewer)
 					{
 						image.ImageTintList = ColorStateList.ValueOf(Color.Black.MultiplyAlpha(0.6).ToAndroid());

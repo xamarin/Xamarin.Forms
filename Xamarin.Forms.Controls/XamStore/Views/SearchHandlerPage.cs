@@ -22,8 +22,6 @@ namespace Xamarin.Forms.Controls.XamStore
 		{
 			On<iOS>().SetUseSafeArea(true);
 
-			var searchHandlerKey = nameof(SearchHandler);
-
 			TestedTypes.Add(SearchHandlerKey, (AddSearchHandler, new NamedAction[] { new NamedAction { Name = nameof(Focus), Action = FocusUnfocusSearchHandler } }));
 
 			_searchHandler = TestedTypes[SearchHandlerKey].ctor() as SearchHandler;
@@ -32,7 +30,7 @@ namespace Xamarin.Forms.Controls.XamStore
 			{
 				Spacing = 10,
 				Padding = 10,
-				Children = { new Button { Text = "Show/Hide SearchHandler", Command = new Command(()=> ShowHideSearchHandler()) }}
+				Children = { new Button { Text = "Show/Hide SearchHandler", Command = new Command(() => ShowHideSearchHandler()) } }
 			};
 			Content = new StackLayout
 			{

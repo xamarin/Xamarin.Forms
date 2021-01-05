@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Xamarin.Forms;
+﻿using System.Collections.Generic;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
@@ -14,9 +8,10 @@ namespace Xamarin.Forms.Controls.XamStore
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class StoreShell : TestShell
 	{
-		public StoreShell() 
+		public StoreShell()
 		{
 			InitializeComponent();
+
 			CurrentItem = _storeItem;
 		}
 
@@ -48,6 +43,34 @@ namespace Xamarin.Forms.Controls.XamStore
 			FlyoutIcon.SetAutomationPropertiesName("SHELLMAINFLYOUTICON");
 			Routing.RegisterRoute("demo", typeof(DemoShellPage));
 			Routing.RegisterRoute("demo/demo", typeof(DemoShellPage));
+		}
+
+		bool _defernavigationWithAlert;
+		private void OnToggleNavigatingDeferral(object sender, System.EventArgs e)
+		{
+			_defernavigationWithAlert = !_defernavigationWithAlert;
+			FlyoutIsPresented = false;
+		}
+
+		protected override async void OnNavigating(ShellNavigatingEventArgs args)
+		{
+			base.OnNavigating(args);
+
+			if (_defernavigationWithAlert)
+			{
+				var token = args.GetDeferral();
+
+				var result = await DisplayActionSheet(
+					"Are you sure?",
+					"cancel",
+					"destruction",
+					"Yes", "No");
+
+				if (result != "Yes")
+					args.Cancel();
+
+				token.Complete();
+			}
 		}
 
 

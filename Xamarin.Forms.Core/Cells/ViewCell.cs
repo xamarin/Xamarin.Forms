@@ -22,7 +22,7 @@ namespace Xamarin.Forms
 
 				if (_view != null)
 				{
-					OnChildRemoved(_view);
+					OnChildRemoved(_view, 0);
 					_view.ComputedConstraint = LayoutConstraint.None;
 				}
 
@@ -31,8 +31,8 @@ namespace Xamarin.Forms
 				if (_view != null)
 				{
 					_view.ComputedConstraint = LayoutConstraint.Fixed;
-					OnChildAdded(_view);
 					_logicalChildren = new ReadOnlyCollection<Element>(new List<Element>(new[] { View }));
+					OnChildAdded(_view);
 				}
 				else
 				{

@@ -69,6 +69,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				UpdateContentSize();
 				UpdateBackgroundColor();
+				UpdateBackground();
 				UpdateVerticalScrollBarVisibility();
 				UpdateHorizontalScrollBarVisibility();
 
@@ -156,6 +157,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateContentSize();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				UpdateBackground();
 			else if (e.PropertyName == ScrollView.VerticalScrollBarVisibilityProperty.PropertyName)
 				UpdateVerticalScrollBarVisibility();
 			else if (e.PropertyName == ScrollView.HorizontalScrollBarVisibilityProperty.PropertyName)
@@ -206,7 +209,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 
 			Point scrollPoint = (e.Mode == ScrollToMode.Position)
-				? new Point(e.ScrollX, Element.Height - e.ScrollY)
+				? new Point(e.ScrollX, e.ScrollY)
 				: ScrollView.GetScrollPositionForElement(e.Element as VisualElement, e.Position);
 
 			ContentView.ScrollToPoint(scrollPoint.ToPointF());
@@ -227,6 +230,16 @@ namespace Xamarin.Forms.Platform.MacOS
 				DrawsBackground = true;
 				BackgroundColor = Element.BackgroundColor.ToNSColor();
 			}
+		}
+
+		void UpdateBackground()
+		{
+			if (NativeView == null)
+				return;
+
+			Brush background = Element.Background;
+
+			NativeView.UpdateBackground(background);
 		}
 
 		void UpdateContentSize()

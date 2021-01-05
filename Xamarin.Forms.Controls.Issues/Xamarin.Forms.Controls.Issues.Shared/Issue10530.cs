@@ -101,9 +101,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-#if APP
-			Device.SetFlags(new List<string>(Device.Flags ?? new List<string>()) { "SwipeView_Experimental" });
-#endif
 		}
 	}
 
@@ -143,7 +140,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		void LoadItem()
 		{
-			Item = new Issue10530Item {  Text = "Item 1" };
+			Item = new Issue10530Item { Text = "Item 1" };
 		}
 
 		void MakeRetryVisible(Issue10530Item item)

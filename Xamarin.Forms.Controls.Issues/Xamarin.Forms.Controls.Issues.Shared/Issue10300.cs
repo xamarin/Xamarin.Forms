@@ -1,7 +1,7 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -13,10 +13,11 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.CarouselView)]
+	[Category(UITestCategories.UwpIgnore)]
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 10300, "ObservableCollection.RemoveAt(index) with a valid index raises ArgementOutOfRangeException", PlatformAffected.iOS)]
-	public class Issue10300 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Issue10300 : TestContentPage // or TestFlyoutPage, etc ...
 	{
 		CarouselView carousel;
 
@@ -102,7 +103,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Grid.SetRow(btn, 1);
 			Grid.SetColumn(btn, 0);
 
-			btnAdd.Clicked += OnAddlicked;
+			btnAdd.Clicked += OnAddClicked;
 			Grid.SetRow(btnAdd, 1);
 			Grid.SetColumn(btnAdd, 1);
 
@@ -128,6 +129,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var index = Items.IndexOf(carousel.CurrentItem as ModelIssue10300);
 			System.Diagnostics.Debug.WriteLine($"Delete {index}");
 			Items.RemoveAt(index);
+			MessagingCenter.Instance.Unsubscribe<Page>(this, "Delete");
 		}
 
 		public ObservableCollection<ModelIssue10300> Items { get; set; }
@@ -138,7 +140,7 @@ namespace Xamarin.Forms.Controls.Issues
 			await Navigation.PushModalAsync(new ModalPage());
 		}
 
-		void OnAddlicked(object sender, EventArgs e)
+		void OnAddClicked(object sender, EventArgs e)
 		{
 			Items.Insert(0, new ModelIssue10300("0", Color.PaleGreen));
 		}

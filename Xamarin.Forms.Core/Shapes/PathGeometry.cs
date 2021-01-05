@@ -1,32 +1,41 @@
-﻿using System;
-
-namespace Xamarin.Forms.Shapes
+﻿namespace Xamarin.Forms.Shapes
 {
-    [ContentProperty("Figures")]
-    public sealed class PathGeometry : Geometry
-    {
-        public PathGeometry()
-        {
-            Figures = new PathFigureCollection();
-        }
+	[ContentProperty("Figures")]
+	public sealed class PathGeometry : Geometry
+	{
+		public PathGeometry()
+		{
+			Figures = new PathFigureCollection();
+		}
 
-        public static readonly BindableProperty FiguresProperty =
-            BindableProperty.Create(nameof(Figures), typeof(PathFigureCollection), typeof(PathGeometry), null);
+		public PathGeometry(PathFigureCollection figures)
+		{
+			Figures = figures;
+		}
 
-        public static readonly BindableProperty FillRuleProperty =
-            BindableProperty.Create(nameof(FillRule), typeof(FillRule), typeof(PathGeometry), FillRule.EvenOdd);
+		public PathGeometry(PathFigureCollection figures, FillRule fillRule)
+		{
+			Figures = figures;
+			FillRule = fillRule;
+		}
 
-        [TypeConverter(typeof(PathFigureCollectionConverter))]
-        public PathFigureCollection Figures
-        {
-            set { SetValue(FiguresProperty, value); }
-            get { return (PathFigureCollection)GetValue(FiguresProperty); }
-        }
+		public static readonly BindableProperty FiguresProperty =
+			BindableProperty.Create(nameof(Figures), typeof(PathFigureCollection), typeof(PathGeometry), null);
 
-        public FillRule FillRule
-        {
-            set { SetValue(FillRuleProperty, value); }
-            get { return (FillRule)GetValue(FillRuleProperty); }
-        }
-    }
+		public static readonly BindableProperty FillRuleProperty =
+			BindableProperty.Create(nameof(FillRule), typeof(FillRule), typeof(PathGeometry), FillRule.EvenOdd);
+
+		[TypeConverter(typeof(PathFigureCollectionConverter))]
+		public PathFigureCollection Figures
+		{
+			set { SetValue(FiguresProperty, value); }
+			get { return (PathFigureCollection)GetValue(FiguresProperty); }
+		}
+
+		public FillRule FillRule
+		{
+			set { SetValue(FillRuleProperty, value); }
+			get { return (FillRule)GetValue(FillRuleProperty); }
+		}
+	}
 }

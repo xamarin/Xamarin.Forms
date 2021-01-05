@@ -1,11 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Xamarin.Forms
 {
 	public static class ViewExtensions
 	{
-		public static void CancelAnimations(VisualElement view)
+		public static void CancelAnimations(this VisualElement view)
 		{
 			if (view == null)
 				throw new ArgumentNullException(nameof(view));
@@ -20,7 +22,7 @@ namespace Xamarin.Forms
 			view.AbortAnimation(nameof(FadeTo));
 		}
 
-		static Task<bool> AnimateTo(this VisualElement view, double start, double end, string name, 
+		static Task<bool> AnimateTo(this VisualElement view, double start, double end, string name,
 			Action<VisualElement, double> updateAction, uint length = 250, Easing easing = null)
 		{
 			if (easing == null)
@@ -66,7 +68,7 @@ namespace Xamarin.Forms
 
 				return new Rectangle(x, y, w, h);
 			};
-		
+
 			return AnimateTo(view, 0, 1, nameof(LayoutTo), (v, value) => v.Layout(computeBounds(value)), length, easing);
 		}
 
@@ -154,10 +156,100 @@ namespace Xamarin.Forms
 				if (weakView.TryGetTarget(out v))
 					v.TranslationY = f;
 			};
-			new Animation { { 0, 1, new Animation(translateX, view.TranslationX, x, easing: easing) }, { 0, 1, new Animation(translateY, view.TranslationY, y, easing:easing) } }.Commit(view, nameof(TranslateTo), 16, length, null,
+			new Animation { { 0, 1, new Animation(translateX, view.TranslationX, x, easing: easing) }, { 0, 1, new Animation(translateY, view.TranslationY, y, easing: easing) } }.Commit(view, nameof(TranslateTo), 16, length, null,
 				(f, a) => tcs.SetResult(a));
 
 			return tcs.Task;
+		}
+
+		internal static T FindParentOfType<T>(this Element element)
+		{
+			var navPage = element
+				.GetParentsPath()
+				.OfType<T>()
+				.FirstOrDefault();
+
+			return navPage;
+		}
+
+		internal static IEnumerable<Element> GetParentsPath(this Element self)
+		{
+			Element current = self;
+
+			while (!Application.IsApplicationOrNull(current.RealParent))
+			{
+				current = current.RealParent;
+				yield return current;
+			}
+		}
+
+		internal static string GetStringValue(this Element element)
+		{
+			string text = null;
+			if (element is Label label)
+				text = label.Text;
+			else if (element is Entry entry)
+				text = entry.Text;
+			else if (element is Editor editor)
+				text = editor.Text;
+			else if (element is TimePicker tp)
+				text = tp.Time.ToString();
+			else if (element is DatePicker dp)
+				text = dp.Date.ToString();
+			else if (element is CheckBox cb)
+				text = cb.IsChecked.ToString();
+			else if (element is Switch sw)
+				text = sw.IsToggled.ToString();
+			else if (element is RadioButton rb)
+				text = rb.IsChecked.ToString();
+
+			return text;
+		}
+
+		internal static bool TrySetValue(this Element element, string text)
+		{
+			if (element is Label label)
+			{
+				label.Text = text;
+				return true;
+			}
+			else if (element is Entry entry)
+			{
+				entry.Text = text;
+				return true;
+			}
+			else if (element is Editor editor)
+			{
+				editor.Text = text;
+				return true;
+			}
+			else if (element is CheckBox cb && bool.TryParse(text, out bool result))
+			{
+				cb.IsChecked = result;
+				return true;
+			}
+			else if (element is Switch sw && bool.TryParse(text, out bool swResult))
+			{
+				sw.IsToggled = swResult;
+				return true;
+			}
+			else if (element is RadioButton rb && bool.TryParse(text, out bool rbResult))
+			{
+				rb.IsChecked = rbResult;
+				return true;
+			}
+			else if (element is TimePicker tp && TimeSpan.TryParse(text, out TimeSpan tpResult))
+			{
+				tp.Time = tpResult;
+				return true;
+			}
+			else if (element is DatePicker dp && DateTime.TryParse(text, out DateTime dpResult))
+			{
+				dp.Date = dpResult;
+				return true;
+			}
+
+			return false;
 		}
 	}
 }

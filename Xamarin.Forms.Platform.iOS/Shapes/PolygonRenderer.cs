@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Specialized;
+using System.ComponentModel;
 using CoreGraphics;
 using Xamarin.Forms.Shapes;
 
@@ -10,6 +11,8 @@ namespace Xamarin.Forms.Platform.MacOS
 {
     public class PolygonRenderer : ShapeRenderer<Polygon, PolygonView>
     {
+        PointCollection _points;
+
         [Internals.Preserve(Conditional = true)]
         public PolygonRenderer()
         {
@@ -27,6 +30,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
             if (args.NewElement != null)
             {
+                var points = args.NewElement.Points;
+                points.CollectionChanged += OnCollectionChanged;
+
                 UpdatePoints();
                 UpdateFillRule();
             }
@@ -42,14 +48,40 @@ namespace Xamarin.Forms.Platform.MacOS
                 UpdateFillRule();
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (_points != null)
+                {
+                    _points.CollectionChanged -= OnCollectionChanged;
+                    _points = null;
+                }
+            }
+        }
+
         void UpdatePoints()
         {
-            Control.UpdatePoints(Element.Points.ToCGPoints());
+            if (_points != null)
+                _points.CollectionChanged -= OnCollectionChanged;
+
+            _points = Element.Points;
+
+            _points.CollectionChanged += OnCollectionChanged;
+
+            Control.UpdatePoints(_points.ToCGPoints());
         }
 
         public void UpdateFillRule()
         {
             Control.UpdateFillMode(Element.FillRule == FillRule.Nonzero);
+        }
+
+        void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            UpdatePoints();
         }
     }
 

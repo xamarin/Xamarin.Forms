@@ -33,14 +33,13 @@ namespace Xamarin.Forms.Platform.Tizen
 				_border.Show();
 				_image = new Native.Image(Forms.NativeParent);
 				_image.Show();
-				_button = new EButton(Forms.NativeParent)
-				{
-					Style = "transparent"
-				};
+				_button = new EButton(Forms.NativeParent).SetTransparentStyle();
 				_button.Clicked += OnClicked;
 				_button.Pressed += OnPressed;
 				_button.Released += OnReleased;
 				_button.Show();
+				_button.Focused += OnFocused;
+				_button.Unfocused += OnUnfocused;
 				Control.PackEnd(_round);
 				Control.PackEnd(_image);
 				Control.PackEnd(_border);
@@ -77,6 +76,8 @@ namespace Xamarin.Forms.Platform.Tizen
 					_button.Clicked -= OnClicked;
 					_button.Pressed -= OnPressed;
 					_button.Released -= OnReleased;
+					_button.Focused -= OnFocused;
+					_button.Unfocused -= OnUnfocused;
 					_button = null;
 				}
 			}

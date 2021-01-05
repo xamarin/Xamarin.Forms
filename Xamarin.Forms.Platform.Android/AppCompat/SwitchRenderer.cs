@@ -1,14 +1,9 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
-using Android.Graphics;
 using Android.Graphics.Drawables;
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
 using Android.Widget;
+using AndroidX.AppCompat.Widget;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
@@ -17,7 +12,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 	{
 		bool _disposed;
 		Drawable _defaultTrackDrawable;
-		string _defaultContentDescription;
 		bool _changedThumbColor;
 
 		public SwitchRenderer(Context context) : base(context)
@@ -32,8 +26,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			AutoPackage = false;
 		}
 
-		protected override void SetContentDescription()
-			=> AutomationPropertiesProvider.SetBasicContentDescription(this, Element, ref _defaultContentDescription);
+		protected override void SetContentDescription() =>
+			base.SetContentDescription(false);
 
 		void CompoundButton.IOnCheckedChangeListener.OnCheckedChanged(CompoundButton buttonView, bool isChecked)
 		{

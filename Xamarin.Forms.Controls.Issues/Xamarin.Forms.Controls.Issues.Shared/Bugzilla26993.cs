@@ -1,7 +1,6 @@
 ﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
 using System.Collections.Generic;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 #if UITEST
 using Xamarin.UITest;
@@ -17,7 +16,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 26993, "https://bugzilla.xamarin.com/show_bug.cgi?id=26993")]
-	public class Bugzilla26993 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Bugzilla26993 : TestContentPage // or TestFlyoutPage, etc ...
 	{
 		[Preserve(AllMembers = true)]
 		public class Bz26993ViewCell : ViewCell

@@ -1,7 +1,6 @@
 ﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
 using System.Collections.Generic;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -66,6 +65,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Content = new StackLayout
 			{
+				AutomationId = "TestReady",
 				Children = {
 					list,
 					listTransparent,
@@ -121,6 +121,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Issue2775Test()
 		{
+			RunningApp.WaitForElement("TestReady");
 			RunningApp.Screenshot("I am at Issue 2775");
 			RunningApp.Screenshot("I see the Label");
 		}

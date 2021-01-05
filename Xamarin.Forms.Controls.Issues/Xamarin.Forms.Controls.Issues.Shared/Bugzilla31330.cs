@@ -1,8 +1,7 @@
 ﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -150,6 +149,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
+		[Category(UITestCategories.UwpIgnore)]
 		public void Bugzilla31330Test()
 		{
 			RunningApp.WaitForElement(c => c.Marked("Something 2"));

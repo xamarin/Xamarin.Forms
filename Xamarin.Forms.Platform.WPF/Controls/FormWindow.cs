@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
 using Xamarin.Forms.Platform.WPF.Extensions;
 using Xamarin.Forms.Platform.WPF.Helpers;
 using Xamarin.Forms.Platform.WPF.Interfaces;
+using WBrush = System.Windows.Media.Brush;
 
 namespace Xamarin.Forms.Platform.WPF.Controls
 {
@@ -31,20 +29,20 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 		public static readonly DependencyProperty HasNavigationBarProperty = DependencyProperty.Register("HasNavigationBar", typeof(bool), typeof(FormsWindow));
 		public static readonly DependencyProperty BackButtonTitleProperty = DependencyProperty.Register("BackButtonTitle", typeof(string), typeof(FormsWindow));
 		public static readonly DependencyProperty CurrentNavigationPageProperty = DependencyProperty.Register("CurrentNavigationPage", typeof(FormsNavigationPage), typeof(FormsWindow));
-		public static readonly DependencyProperty CurrentMasterDetailPageProperty = DependencyProperty.Register("CurrentMasterDetailPage", typeof(FormsMasterDetailPage), typeof(FormsWindow));
+		public static readonly DependencyProperty CurrentFlyoutPageProperty = DependencyProperty.Register("CurrentFlyoutPage", typeof(FormsFlyoutPage), typeof(FormsWindow));
 		public static readonly DependencyProperty CurrentContentDialogProperty = DependencyProperty.Register("CurrentContentDialog", typeof(FormsContentDialog), typeof(FormsWindow));
-		public static readonly DependencyProperty TitleBarBackgroundColorProperty = DependencyProperty.Register("TitleBarBackgroundColor", typeof(Brush), typeof(FormsWindow));
-		public static readonly DependencyProperty TitleBarTextColorProperty = DependencyProperty.Register("TitleBarTextColor", typeof(Brush), typeof(FormsWindow));
+		public static readonly DependencyProperty TitleBarBackgroundColorProperty = DependencyProperty.Register("TitleBarBackgroundColor", typeof(WBrush), typeof(FormsWindow));
+		public static readonly DependencyProperty TitleBarTextColorProperty = DependencyProperty.Register("TitleBarTextColor", typeof(WBrush), typeof(FormsWindow));
 
-		public Brush TitleBarBackgroundColor
+		public WBrush TitleBarBackgroundColor
 		{
-			get { return (Brush)GetValue(TitleBarBackgroundColorProperty); }
+			get { return (WBrush)GetValue(TitleBarBackgroundColorProperty); }
 			private set { SetValue(TitleBarBackgroundColorProperty, value); }
 		}
 
-		public Brush TitleBarTextColor
+		public WBrush TitleBarTextColor
 		{
-			get { return (Brush)GetValue(TitleBarTextColorProperty); }
+			get { return (WBrush)GetValue(TitleBarTextColorProperty); }
 			private set { SetValue(TitleBarTextColorProperty, value); }
 		}
 
@@ -72,10 +70,10 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 			private set { SetValue(CurrentNavigationPageProperty, value); }
 		}
 
-		public FormsMasterDetailPage CurrentMasterDetailPage
+		public FormsFlyoutPage CurrentFlyoutPage
 		{
-			get { return (FormsMasterDetailPage)GetValue(CurrentMasterDetailPageProperty); }
-			private set { SetValue(CurrentMasterDetailPageProperty, value); }
+			get { return (FormsFlyoutPage)GetValue(CurrentFlyoutPageProperty); }
+			private set { SetValue(CurrentFlyoutPageProperty, value); }
 		}
 
 		public bool HasBackButton
@@ -161,9 +159,9 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 
 		private void HamburgerButton_Click(object sender, RoutedEventArgs e)
 		{
-			if (CurrentMasterDetailPage != null)
+			if (CurrentFlyoutPage != null)
 			{
-				CurrentMasterDetailPage.IsPresented = !CurrentMasterDetailPage.IsPresented;
+				CurrentFlyoutPage.IsPresented = !CurrentFlyoutPage.IsPresented;
 			}
 		}
 
@@ -188,7 +186,7 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 			CurrentTitle = childrens.FirstOrDefault()?.GetTitle();
 			HasNavigationBar = childrens.FirstOrDefault()?.GetHasNavigationBar() ?? false;
 			CurrentNavigationPage = childrens.OfType<FormsNavigationPage>()?.FirstOrDefault();
-			CurrentMasterDetailPage = childrens.OfType<FormsMasterDetailPage>()?.FirstOrDefault();
+			CurrentFlyoutPage = childrens.OfType<FormsFlyoutPage>()?.FirstOrDefault();
 			var page = childrens.FirstOrDefault();
 			if (page != null)
 			{
@@ -201,7 +199,8 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 				ClearValue(TitleBarTextColorProperty);
 			}
 
-			hamburgerButton.Visibility = CurrentMasterDetailPage != null ? Visibility.Visible : Visibility.Collapsed;
+			if (hamburgerButton != null)
+				hamburgerButton.Visibility = CurrentFlyoutPage != null ? Visibility.Visible : Visibility.Collapsed;
 
 			if (CurrentNavigationPage != null)
 			{
@@ -221,7 +220,8 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 			IEnumerable<FormsPage> childrens = this.FindVisualChildren<FormsPage>();
 
 			var page = childrens.FirstOrDefault();
-			if (page == null) return;
+			if (page == null)
+				return;
 
 			topAppBar.PrimaryCommands = page.GetPrimaryTopBarCommands().OrderBy(ti => ti.GetValue(FrameworkElementAttached.PriorityProperty));
 			topAppBar.SecondaryCommands = page.GetSecondaryTopBarCommands().OrderBy(ti => ti.GetValue(FrameworkElementAttached.PriorityProperty));

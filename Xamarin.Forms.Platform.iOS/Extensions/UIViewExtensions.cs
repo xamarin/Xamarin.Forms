@@ -9,12 +9,50 @@ using UIKit;
 namespace Xamarin.Forms.Platform.iOS
 #else
 using UIView = AppKit.NSView;
-
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
 	public static class UIViewExtensions
 	{
+#if __MOBILE__
+		public static UIImage ConvertToImage(this UIView view)
+		{
+			if (!Forms.IsiOS10OrNewer)
+			{
+				UIGraphics.BeginImageContext(view.Frame.Size);
+				view.Layer.RenderInContext(UIGraphics.GetCurrentContext());
+				var image = UIGraphics.GetImageFromCurrentImageContext();
+				UIGraphics.EndImageContext();
+				return new UIImage(image.CGImage);
+			}
+
+			var imageRenderer = new UIGraphicsImageRenderer(view.Bounds.Size);
+
+			return imageRenderer.CreateImage((a) =>
+			{
+				view.Layer.RenderInContext(a.CGContext);
+			});
+		}
+#endif
+
+		internal static T GetParentOfType<T>(this UIView view)
+			where T : class
+		{
+			if (view is T t)
+				return t;
+
+			while (view != null)
+			{
+				T parent = view.Superview as T;
+				if (parent != null)
+					return parent;
+
+				view = view.Superview;
+			}
+
+			return default(T);
+		}
+
 		public static IEnumerable<UIView> Descendants(this UIView self)
 		{
 			if (self.Subviews == null)

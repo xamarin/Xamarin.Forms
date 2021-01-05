@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 using System.Text;
+using System.Threading;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Linq;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
-using System.Threading;
-using System.ComponentModel;
 
 
 #if UITEST
@@ -94,7 +94,7 @@ namespace Xamarin.Forms.Controls.Issues
 			TableRoot tableRoot = new TableRoot();
 			tableView.Root = tableRoot;
 
-			for(int i = 0; i < 100; i++)
+			for (int i = 0; i < 100; i++)
 			{
 				TableSection tableSection = new TableSection()
 				{
@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Controls.Issues
 			listView.ItemsSource = Enumerable.Range(0, 100).Select(x => $"{x} Entry").ToList();
 			listViewPage.Content = listView;
 
-			if(Device.RuntimePlatform == Device.Android)
+			if (Device.RuntimePlatform == Device.Android)
 			{
 				var touchListenter = CreateContentPage(shellItemTitle: TouchListenerTitle);
 				touchListenter.Content = new TouchTestView();
@@ -158,7 +158,8 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			TapInFlyout(TableViewTitle);
 			RunningApp.WaitForElement(TableViewId);
-			RunningApp.ScrollDownTo("entry30", TableViewId, ScrollStrategy.Gesture);
+
+			RunningApp.ScrollDownTo("entry30", TableViewId, ScrollStrategy.Gesture, swipePercentage: 0.20, timeout: TimeSpan.FromMinutes(1));
 		}
 
 		[NUnit.Framework.Category(UITestCategories.ListView)]
@@ -167,7 +168,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			TapInFlyout(ListViewTitle);
 			RunningApp.WaitForElement(ListViewId);
-			RunningApp.ScrollDownTo("30 Entry", ListViewId, ScrollStrategy.Gesture);
+			RunningApp.ScrollDownTo("30 Entry", ListViewId, ScrollStrategy.Gesture, swipePercentage: 0.20, timeout: TimeSpan.FromMinutes(1));
 		}
 
 #if __ANDROID__

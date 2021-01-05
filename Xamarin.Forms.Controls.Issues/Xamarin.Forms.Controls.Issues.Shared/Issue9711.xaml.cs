@@ -1,11 +1,11 @@
-﻿﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Threading.Tasks;
 using CategoryAttribute = NUnit.Framework.CategoryAttribute;
 
 // Thanks to GitHub user [@Matmork](https://github.com/Matmork) for this reproducible test case.
@@ -65,8 +65,9 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 
-#if UITEST		
+#if UITEST
 		[Category(UITestCategories.ListView)]
+		[Category(UITestCategories.UwpIgnore)]
 		[Test]
 		public void TestTappingHeaderDoesNotCrash()
 		{

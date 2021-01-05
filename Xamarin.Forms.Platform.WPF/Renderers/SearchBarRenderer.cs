@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows.Input;
-using System.Windows.Media;
+using WBrush = System.Windows.Media.Brush;
 using WControl = System.Windows.Controls.Control;
 
 namespace Xamarin.Forms.Platform.WPF
@@ -8,8 +8,8 @@ namespace Xamarin.Forms.Platform.WPF
 	public class SearchBarRenderer : ViewRenderer<SearchBar, FormsTextBox>
 	{
 		const string DefaultPlaceholder = "Search";
-		Brush _defaultPlaceholderColorBrush;
-		Brush _defaultTextColorBrush;
+		WBrush _defaultPlaceholderColorBrush;
+		WBrush _defaultTextColorBrush;
 		bool _fontApplied;
 		string _transformedText;
 
@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platform.WPF
 					var name = new InputScopeName();
 					//name.NameValue = InputScopeNameValue.;
 					scope.Names.Add(name);
-					
+
 					SetNativeControl(new FormsTextBox { InputScope = scope });
 					Control.KeyUp += PhoneTextBoxOnKeyUp;
 					Control.TextChanged += PhoneTextBoxOnTextChanged;
@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Platform.WPF
 			else if (e.PropertyName == SearchBar.TextColorProperty.PropertyName)
 				UpdateTextColor();
 		}
-		
+
 		void PhoneTextBoxOnKeyUp(object sender, KeyEventArgs keyEventArgs)
 		{
 			if (keyEventArgs.Key == Key.Enter)
@@ -133,7 +133,7 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				if (_defaultPlaceholderColorBrush == null)
 				{
-					_defaultPlaceholderColorBrush = (Brush)WControl.ForegroundProperty.GetMetadata(typeof(FormsTextBox)).DefaultValue;
+					_defaultPlaceholderColorBrush = (WBrush)WControl.ForegroundProperty.GetMetadata(typeof(FormsTextBox)).DefaultValue;
 				}
 				Control.PlaceholderForegroundBrush = _defaultPlaceholderColorBrush;
 				return;

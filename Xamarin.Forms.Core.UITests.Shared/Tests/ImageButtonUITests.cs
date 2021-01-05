@@ -84,6 +84,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		[Test]
 		[UiTest(typeof(ImageButton), "Clicked")]
+		[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
 		public void Clicked()
 		{
 			var remote = new EventViewContainerRemote(App, Test.ImageButton.Clicked, PlatformViewType);
@@ -101,6 +102,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		[Test]
 		[UiTest(typeof(ImageButton), "Pressed")]
+		[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
 		public void Pressed()
 		{
 			var remote = new EventViewContainerRemote(App, Test.ImageButton.Pressed, PlatformViewType);
@@ -138,8 +140,8 @@ namespace Xamarin.Forms.Core.UITests
 			remote.GoTo();
 
 #if __IOS__
-            var cornerRadius = remote.GetProperty<float>(ImageButton.CornerRadiusProperty);
-            Assert.AreEqual(20.0f, cornerRadius);
+			var cornerRadius = remote.GetProperty<float>(ImageButton.CornerRadiusProperty);
+			Assert.AreEqual(20.0f, cornerRadius);
 #endif
 		}
 

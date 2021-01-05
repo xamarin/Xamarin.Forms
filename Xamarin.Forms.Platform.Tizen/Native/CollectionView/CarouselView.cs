@@ -10,23 +10,10 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 			SelectionMode = CollectionViewSelectionMode.Single;
 			Scroll.ScrollBlock = ScrollBlock.None;
-			Scroll.HorizontalPageScrollLimit = 1;
-			Scroll.VerticalPageScrollLimit = 1;
-			Scroll.SetPageSize(1.0, 1.0);
-			Scroll.HorizontalScrollBarVisiblePolicy = ScrollBarVisiblePolicy.Invisible;
-			Scroll.VerticalScrollBarVisiblePolicy = ScrollBarVisiblePolicy.Invisible;
+			SnapPointsType = SnapPointsType.MandatorySingle;
 		}
 
 		public EScroller Scroll => base.Scroller;
-
-		protected override ViewHolder CreateViewHolder()
-		{
-			return new ViewHolder(this)
-			{
-				FocusedColor = ElmSharp.Color.Transparent,
-				SelectedColor = ElmSharp.Color.Transparent,
-			};
-		}
 
 		ESize ICollectionViewController.GetItemSize(int widthConstraint, int heightConstraint)
 		{

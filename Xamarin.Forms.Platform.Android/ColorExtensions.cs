@@ -2,12 +2,7 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Content.Res;
-#if __ANDROID_29__
 using AndroidX.Core.Content;
-#else
-using Android.Support.V4.Content;
-#endif
-
 using AColor = Android.Graphics.Color;
 
 namespace Xamarin.Forms.Platform.Android
@@ -60,6 +55,27 @@ namespace Xamarin.Forms.Platform.Android
 		public static Color ToColor(this AColor color)
 		{
 			return Color.FromUint((uint)color.ToArgb());
+		}
+
+		internal static ColorStateList ToDefaultColorStateList(this Color color)
+		{
+			return ToDefaultColorStateList(color.ToAndroid());
+		}
+
+		internal static ColorStateList ToDefaultColorStateList(int aColor)
+		{
+			int[][] States =
+			{
+				new int[0] { }
+			};
+
+			var colors = new int[] { aColor };
+			return new ColorStateList(States, colors);
+		}
+
+		internal static ColorStateList ToDefaultOnlyColorStateList(this ColorStateList stateList)
+		{
+			return ToDefaultColorStateList(stateList.DefaultColor);
 		}
 	}
 }

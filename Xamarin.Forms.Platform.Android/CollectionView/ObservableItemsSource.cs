@@ -45,7 +45,10 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			for (int n = 0; n < ItemsCount(); n++)
 			{
-				if (ElementAt(n) == item)
+				var elementByIndex = ElementAt(n);
+				var isEqual = elementByIndex == item || (elementByIndex != null && item != null && elementByIndex.Equals(item));
+
+				if (isEqual)
 				{
 					return AdjustPositionForHeader(n);
 				}
@@ -94,7 +97,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				CollectionChanged(args);
 			}
-			
+
 		}
 
 		void CollectionChanged(NotifyCollectionChangedEventArgs args)

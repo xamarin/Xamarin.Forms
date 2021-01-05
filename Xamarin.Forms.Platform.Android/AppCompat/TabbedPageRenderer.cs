@@ -1,39 +1,32 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
-using Android.OS;
 using Android.Runtime;
-#if __ANDROID_29__
+using Android.Views;
 using AndroidX.Fragment.App;
-using AndroidX.Core.View;
 using AndroidX.ViewPager.Widget;
 using Google.Android.Material.BottomNavigation;
 using Google.Android.Material.BottomSheet;
 using Google.Android.Material.Tabs;
-using ADrawableCompat = AndroidX.Core.Graphics.Drawable.DrawableCompat;
-#else
-using Android.Support.V4.App;
-using Android.Support.Design.Widget;
-using Android.Support.V4.View;
-using ADrawableCompat = Android.Support.V4.Graphics.Drawable.DrawableCompat;
-#endif
-using AWidget = Android.Widget;
-using Android.Views;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using AView = Android.Views.View;
-using AMenu = Android.Views.Menu;
 using AColor = Android.Graphics.Color;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+using ADrawableCompat = AndroidX.Core.Graphics.Drawable.DrawableCompat;
+using AView = Android.Views.View;
+using AWidget = Android.Widget;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
-	public class TabbedPageRenderer : VisualElementRenderer<TabbedPage>, TabLayout.IOnTabSelectedListener, ViewPager.IOnPageChangeListener, IManageFragments, BottomNavigationView.IOnNavigationItemSelectedListener
+	public class TabbedPageRenderer : VisualElementRenderer<TabbedPage>,
+#pragma warning disable CS0618 // Type or member is obsolete
+		TabLayout.IOnTabSelectedListener,
+#pragma warning restore CS0618 // Type or member is obsolete
+		ViewPager.IOnPageChangeListener, IManageFragments, BottomNavigationView.IOnNavigationItemSelectedListener
 	{
 		Drawable _backgroundDrawable;
 		Drawable _wrappedBackgroundDrawable;
@@ -334,6 +327,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				((IPageController)tabbedPage).InternalChildren.CollectionChanged += OnChildrenCollectionChanged;
 				UpdateBarBackgroundColor();
+				UpdateBarBackground();
 				UpdateBarTextColor();
 				UpdateItemIconColor();
 				if (!isDesigner)
@@ -355,6 +349,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 			else if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
 				UpdateBarBackgroundColor();
+			else if (e.PropertyName == NavigationPage.BarBackgroundProperty.PropertyName)
+				UpdateBarBackground();
 			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName ||
 				e.PropertyName == TabbedPage.UnselectedTabColorProperty.PropertyName ||
 				e.PropertyName == TabbedPage.SelectedTabColorProperty.PropertyName)
@@ -495,7 +491,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					tabs.SetupWithViewPager(pager);
 					UpdateTabIcons();
+#pragma warning disable CS0618 // Type or member is obsolete
 					tabs.AddOnTabSelectedListener(this);
+#pragma warning restore CS0618 // Type or member is obsolete
 				}
 
 				UpdateIgnoreContainerAreas();
@@ -776,6 +774,19 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 
+		void UpdateBarBackground()
+		{
+			if (IsDisposed)
+				return;
+
+			var barBackground = Element.BarBackground;
+
+			if (IsBottomTabPlacement)
+				_bottomNavigationView.UpdateBackground(barBackground);
+			else
+				_tabLayout.UpdateBackground(barBackground);
+		}
+
 		protected virtual ColorStateList GetItemTextColorStates()
 		{
 			if (IsDisposed)
@@ -889,7 +900,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					menuItem.SetChecked(true);
 			}
 
-			if(sender is BottomSheetDialog bsd)
+			if (sender is BottomSheetDialog bsd)
 				bsd.DismissEvent -= OnMoreSheetDismissed;
 		}
 
