@@ -148,6 +148,34 @@ namespace Xamarin.Forms.Controls.Issues
 							}
 						}),
 						AutomationId = "ToggleHeaderFooter"
+					},
+					new Button()
+					{
+						Text = "Toggle Header/Footer Transparent",
+						Command = new Command(() =>
+						{
+							if (FlyoutHeader == null)
+							{
+								FlyoutFooter =
+									new Label()
+									{
+										Text = "The FOOTER",
+										TextColor = Color.Blue
+									};
+
+								FlyoutHeader =
+									new Label()
+									{
+										Text = "The HEADER",
+										TextColor = Color.Blue
+									};
+							}
+							else
+							{
+								FlyoutHeader = FlyoutFooter = null;
+							}
+						}),
+						AutomationId = "ToggleHeaderFooterTransparent"
 					}
 				}
 			};
