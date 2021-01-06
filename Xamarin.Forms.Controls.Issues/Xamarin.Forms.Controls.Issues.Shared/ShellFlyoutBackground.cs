@@ -1,15 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.PlatformConfiguration;
-using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 
 #if UITEST
@@ -25,6 +16,7 @@ namespace Xamarin.Forms.Controls.Issues
 		   PlatformAffected.All)]
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.Shell)]
+	[NUnit.Framework.Category(UITestCategories.ManualReview)]
 #endif
 	public class ShellFlyoutBackground : TestShell
 	{
@@ -34,8 +26,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			AddFlyoutItem(CreateContentPage(), "Hello");
-			AddFlyoutItem(CreateContentPage(), "Hello2");
+			AddFlyoutItem(CreateContentPage(), "Item 1");
+			AddFlyoutItem(CreateContentPage(), "Item 2");
+
 			FlyoutBackgroundImage = "photo.jpg";
 			FlyoutBackgroundImageAspect = Aspect.AspectFill;
 		}
@@ -46,6 +39,11 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Children =
 				{
+					new Label()
+					{
+						AutomationId = "PageLoaded",
+						Text = "Toggle Different Options to Verify Flyout Behaves as Expected"
+					},
 					new Button()
 					{
 						Text = "Toggle Image",
@@ -59,7 +57,7 @@ namespace Xamarin.Forms.Controls.Issues
 					},
 					new Button()
 					{
-						Text = "Toggle Color",
+						Text = "Toggle Red Color",
 						Command = new Command(() =>
 						{
 							FlyoutBackground = null;
@@ -71,7 +69,8 @@ namespace Xamarin.Forms.Controls.Issues
 					},
 					new Button()
 					{
-						Text = "Toggle Color With Alpha (doesn't work correctly)",
+						// Broken on iOS 14
+						Text = "Toggle Red Color With Alpha",
 						Command = new Command(() =>
 						{
 							FlyoutBackground = null;
@@ -105,11 +104,50 @@ namespace Xamarin.Forms.Controls.Issues
 						Text = "Toggle Flyout Content",
 						Command = new Command(() =>
 						{
-							if(FlyoutContent == null)
-								FlyoutContent = new Label() { Text = "hello" };
-							else
+							if (FlyoutContent is ScrollView)
 								FlyoutContent = null;
-						})
+							else if (FlyoutContent == null)
+								FlyoutContent = new Label()
+								{
+									AutomationId = "LabelContent",
+									Text = "Only Label"
+								};
+							else
+								FlyoutContent = new ScrollView()
+								{
+									AutomationId = "ScrollViewContent",
+									Content = new Label() { Text = "Label inside ScrollView" }
+								};
+						}),
+						AutomationId = "ToggleFlyoutContent"
+					},
+					new Button()
+					{
+						Text = "Toggle Header/Footer",
+						Command = new Command(() =>
+						{
+							if (FlyoutHeader == null)
+							{
+								FlyoutFooter =
+									new BoxView()
+									{
+										BackgroundColor = Color.Purple,
+										HeightRequest = 50
+									};
+
+								FlyoutHeader =
+									new BoxView()
+									{
+										BackgroundColor = Color.Blue,
+										HeightRequest = 50
+									};
+							}
+							else
+							{
+								FlyoutHeader = FlyoutFooter = null;
+							}
+						}),
+						AutomationId = "ToggleHeaderFooter"
 					}
 				}
 			};
@@ -123,7 +161,7 @@ namespace Xamarin.Forms.Controls.Issues
 					int inc = (int)FlyoutBackgroundImageAspect;
 					inc++;
 
-					if(inc >= Enum.GetNames(typeof(Aspect)).Length)
+					if (inc >= Enum.GetNames(typeof(Aspect)).Length)
 					{
 						inc = 0;
 					}
@@ -140,14 +178,5 @@ namespace Xamarin.Forms.Controls.Issues
 				Content = layout
 			};
 		}
-
-
-#if UITEST
-		[Test]
-		public void FlyoutBackgroundTest()
-		{
-			TapInFlyout("Hello2");
-		}
-#endif
 	}
 }
