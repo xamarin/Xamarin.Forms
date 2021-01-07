@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var titleViewBottom = titleView.Y + titleView.Height;
 			var topTabTop = topTab.Y;
 
-			Assert.Greater(topTabTop, titleViewBottom, "Title View is incorrectly positioned behind tabs");
+			Assert.GreaterOrEqual(topTabTop, titleViewBottom, "Title View is incorrectly positioned behind tabs");
 		}
 
 		[Test]
