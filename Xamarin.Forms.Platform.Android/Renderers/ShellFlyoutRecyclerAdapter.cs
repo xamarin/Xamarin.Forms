@@ -59,7 +59,10 @@ namespace Xamarin.Forms.Platform.Android
 			var template = dataTemplate.SelectDataTemplate(item.Element, Shell);
 			var id = ((IDataTemplateController)template).Id;
 
-			_templateMap[id] = template;
+			if (_templateMap.ContainsKey(id))
+				_templateMap[id] = template;
+                        Else
+                                _templateMap.Add(id) = template;
 
 			return id;
 		}
