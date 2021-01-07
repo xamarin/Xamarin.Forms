@@ -79,6 +79,27 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("//rootlevelcontent1/details", shell.CurrentState.Location.ToString());
 		}
 
+		[Test]
+		public async Task GlobalRoutesRegisteredHierarchicallyNavigateCorrectly()
+		{
+			Routing.RegisterRoute("first", typeof(TestPage1));
+			Routing.RegisterRoute("first/second", typeof(TestPage2));
+			Routing.RegisterRoute("first/second/third", typeof(TestPage3));
+			var shell = new TestShell(
+				CreateShellItem(shellContentRoute: "MainPage")
+			);
+
+			await shell.GoToAsync("//MainPage/first/second");
+
+			Assert.AreEqual(typeof(TestPage1), shell.Navigation.NavigationStack[1].GetType());
+			Assert.AreEqual(typeof(TestPage2), shell.Navigation.NavigationStack[2].GetType());
+
+			await shell.GoToAsync("//MainPage/first/second/third");
+
+			Assert.AreEqual(typeof(TestPage1), shell.Navigation.NavigationStack[1].GetType());
+			Assert.AreEqual(typeof(TestPage2), shell.Navigation.NavigationStack[2].GetType());
+			Assert.AreEqual(typeof(TestPage3), shell.Navigation.NavigationStack[3].GetType());
+		}
 
 		[Test]
 		public async Task GlobalRegisterAbsoluteMatching()
@@ -355,6 +376,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.That(async () => await shell.GoToAsync($"domestic"), Throws.Exception);
 		}
+
 
 		[Test]
 		public async Task RelativeNavigationWithRoute()

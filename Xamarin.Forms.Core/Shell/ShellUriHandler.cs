@@ -320,17 +320,87 @@ namespace Xamarin.Forms
 			return possibleRoutePaths;
 		}
 
+		// The purpose of this method is to give an accurate representation of what a target URI means based
+		// on the current location in the Shell. 
+		// If a user is registering full route paths Route.Register("path1/path2/path3")
+		// and Shell is currently at "path1/path2" this will just return "path3". 
+		// This way if the user navigates with GotoAsync("path3") then that navigation will succeed
+		// This also removes implicit routes that might be in the middle of a global route and the shell elements
+		// "//MyShellSection/ShellContent_IMPL/Page1" 
+		internal static List<string> CollapsePath(
+				string myRoute,
+				IEnumerable<string> currentRouteStack,
+				bool userDefinedRoute)
+		{
+			var localRouteStack = currentRouteStack.ToList();
+			for (var i = localRouteStack.Count - 1; i >= 0; i--)
+			{
+				var route = localRouteStack[i];
+				if (Routing.IsImplicit(route) ||
+					(Routing.IsDefault(route) && userDefinedRoute))
+				{
+					localRouteStack.RemoveAt(i);
+				}
+			}
+
+			var paths = myRoute.Split('/').ToList();
+
+			// collapse similar leaves
+			int walkBackCurrentStackIndex = localRouteStack.Count - (paths.Count - 1);
+
+			while (paths.Count > 1 && walkBackCurrentStackIndex >= 0)
+			{
+				if (paths[0] == localRouteStack[walkBackCurrentStackIndex])
+				{
+					paths.RemoveAt(0);
+				}
+				else
+				{
+					break;
+				}
+
+				walkBackCurrentStackIndex++;
+			}
+
+			return paths;
+		}
+
+		static bool FindAndAddSegmentMatch(RouteRequestBuilder possibleRoutePath, string[] routeKeys)
+		{
+			// First search by collapsing global routes if user is registering routes like "route1/route2/route3"
+			foreach (var routeKey in routeKeys)
+			{
+				var collapsedRoute = String.Join(_pathSeparator, CollapsePath(routeKey, possibleRoutePath.SegmentsMatched, true));
+
+				if(collapsedRoute == possibleRoutePath.NextSegment)
+				{
+					possibleRoutePath.AddGlobalRoute(routeKey, possibleRoutePath.NextSegment);
+					return true;
+				}
+			}
+
+			// check for exact matches
+			if(routeKeys.Contains(possibleRoutePath.NextSegment))
+			{
+				possibleRoutePath.AddGlobalRoute(possibleRoutePath.RemainingPath, possibleRoutePath.RemainingPath);
+				return true;
+			}
+
+			// See if they registered in a way that just matches the whole path
+			if (routeKeys.Contains(possibleRoutePath.RemainingPath))
+			{
+				possibleRoutePath.AddGlobalRoute(possibleRoutePath.RemainingPath, possibleRoutePath.RemainingPath);
+				return true;
+			}
+
+			return false;
+		}
+
 		internal static void ExpandOutGlobalRoutes(List<RouteRequestBuilder> possibleRoutePaths, string[] routeKeys)
 		{
 			foreach (var possibleRoutePath in possibleRoutePaths)
 			{
-				while (routeKeys.Contains(possibleRoutePath.NextSegment) || routeKeys.Contains(possibleRoutePath.RemainingPath))
-				{
-					if (routeKeys.Contains(possibleRoutePath.NextSegment))
-						possibleRoutePath.AddGlobalRoute(possibleRoutePath.NextSegment, possibleRoutePath.NextSegment);
-					else
-						possibleRoutePath.AddGlobalRoute(possibleRoutePath.RemainingPath, possibleRoutePath.RemainingPath);
-				}
+				while (FindAndAddSegmentMatch(possibleRoutePath, routeKeys));
 
 				while (!possibleRoutePath.IsFullMatch)
 				{
