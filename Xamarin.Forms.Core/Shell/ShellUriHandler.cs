@@ -382,7 +382,7 @@ namespace Xamarin.Forms
 			// check for exact matches
 			if(routeKeys.Contains(possibleRoutePath.NextSegment))
 			{
-				possibleRoutePath.AddGlobalRoute(possibleRoutePath.RemainingPath, possibleRoutePath.RemainingPath);
+				possibleRoutePath.AddGlobalRoute(possibleRoutePath.NextSegment, possibleRoutePath.NextSegment);
 				return true;
 			}
 
