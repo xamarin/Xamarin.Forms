@@ -10,6 +10,11 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 		[Description("TimePicker should be using wheels-style picker")]
 		public async Task UsingWheelPicker()
 		{
+			if (!Forms.IsiOS14OrNewer)
+			{
+				return;
+			}
+
 			var timePicker = new TimePicker();
 			var expected = UIKit.UIDatePickerStyle.Wheels;
 			var actual = await GetControlProperty(timePicker, uiTimePicker => uiTimePicker.PreferredDatePickerStyle);
