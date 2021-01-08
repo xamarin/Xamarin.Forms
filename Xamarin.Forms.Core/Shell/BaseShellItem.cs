@@ -488,41 +488,6 @@ namespace Xamarin.Forms
 				return grid;
 			});
 		}
-
-		internal BaseShellItem WalkToNextElement()
-		{
-			var parentItems = GetItems(Parent);
-			var myIndex = parentItems.IndexOf(this);
-			myIndex++;
-			if(parentItems.Count >= myIndex)
-			{
-				if(Parent is BaseShellItem bsi)
-				{
-					var nextValidElement = bsi.WalkToNextElement();
-				}
-			}
-
-			return parentItems[myIndex];
-		}
-
-		static ShellElementCollection GetItems(object node)
-		{
-			object results = null;
-			switch (node)
-			{
-				case Shell shell:
-					results = shell.Items;
-					break;
-				case ShellItem item:
-					results = item.Items;
-					break;
-				case ShellSection section:
-					results = section.Items;
-					break;
-			}
-
-			return (ShellElementCollection)results;
-		}
 	}
 
 	public interface IQueryAttributable
