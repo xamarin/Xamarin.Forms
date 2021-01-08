@@ -455,13 +455,6 @@ namespace Xamarin.Forms
 				return true;
 			}
 
-			//// See if they registered in a way that just matches the whole path
-			//if (routeKeys.Contains(possibleRoutePath.RemainingPath))
-			//{
-			//	possibleRoutePath.AddGlobalRoute(possibleRoutePath.RemainingPath, possibleRoutePath.RemainingPath);
-			//	return true;
-			//}
-
 			return false;
 		}
 
