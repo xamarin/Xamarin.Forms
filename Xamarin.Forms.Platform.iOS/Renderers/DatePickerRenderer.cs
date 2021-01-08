@@ -22,9 +22,10 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			return new RectangleF();
 		}
+
 	}
 
-	public class DatePickerRenderer : DatePickerRendererBase<UITextField>
+	public class DatePickerRenderer : DatePickerRendererBase<UIControl>
 	{
 		[Internals.Preserve(Conditional = true)]
 		public DatePickerRenderer()
@@ -32,16 +33,21 @@ namespace Xamarin.Forms.Platform.iOS
 
 		}
 
-		protected override UITextField CreateNativeControl()
+		protected override UIControl CreateNativeControl()
 		{
-			return new NoCaretField { BorderStyle = UITextBorderStyle.RoundedRect };
+			var datePickerStyle = Element.OnThisPlatform().UIDatePickerStyle();
+			if (datePickerStyle != PlatformConfiguration.iOSSpecific.UIDatePickerStyle.Automatic && Forms.IsiOS13OrNewer)
+				return new UIDatePicker { Mode = UIDatePickerMode.Date, TimeZone = new NSTimeZone("UTC") };
+			else
+				return new NoCaretField { BorderStyle = UITextBorderStyle.RoundedRect };
 		}
 	}
 
 	public abstract class DatePickerRendererBase<TControl> : ViewRenderer<DatePicker, TControl>
-		where TControl : UITextField
+		where TControl : UIControl
 	{
 		UIDatePicker _picker;
+		protected UITextField TextField => Control as UITextField;
 		UIColor _defaultTextColor;
 		bool _disposed;
 		bool _useLegacyColorManagement;
@@ -61,53 +67,40 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementChanged(e);
 
-			if (e.NewElement == null)
-				return;
-
-			if (Control == null)
+			if (e.NewElement != null)
 			{
-				var entry = CreateNativeControl();
 
-				entry.EditingDidBegin += OnStarted;
-				entry.EditingDidEnd += OnEnded;
-
-				_picker = new UIDatePicker { Mode = UIDatePickerMode.Date, TimeZone = new NSTimeZone("UTC") };
-
-#if __XCODE11__
-				if (Forms.IsiOS14OrNewer)
+				if (Control == null)
 				{
-					_picker.PreferredDatePickerStyle = UIKit.UIDatePickerStyle.Wheels;
+					var control = CreateNativeControl();
+
+					//iOS14 uses UIDatePicker compact
+					if ((Control is UIDatePicker))
+					{
+						_picker = control as UIDatePicker;
+					}
+					else
+					{
+						_picker = new UIDatePicker { Mode = UIDatePickerMode.Time, TimeZone = new NSTimeZone("UTC") };
+
+						if (Forms.IsiOS13OrNewer)
+						{
+							_picker.PreferredDatePickerStyle = UIKit.UIDatePickerStyle.Wheels;
+						}
+
+						//Not using iOS14 or using the MaterialTimePicker
+						var entry = control as UITextField;
+
+						InitTextField(entry);
+					}
+
+					_useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
+
+					UpdateDatePickerStyle();
+					_picker.ValueChanged += HandleValueChanged;
+
+					SetNativeControl(control);
 				}
-#endif
-				_picker.ValueChanged += HandleValueChanged;
-
-				var width = UIScreen.MainScreen.Bounds.Width;
-				var toolbar = new UIToolbar(new RectangleF(0, 0, width, 44)) { BarStyle = UIBarStyle.Default, Translucent = true };
-				var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace);
-				var doneButton = new UIBarButtonItem(UIBarButtonSystemItem.Done, (o, a) =>
-				{
-					UpdateElementDate();
-					entry.ResignFirstResponder();
-				});
-
-				toolbar.SetItems(new[] { spacer, doneButton }, false);
-
-				entry.InputView = _picker;
-				entry.InputAccessoryView = toolbar;
-
-				entry.InputView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
-				entry.InputAccessoryView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
-
-				entry.InputAssistantItem.LeadingBarButtonGroups = null;
-				entry.InputAssistantItem.TrailingBarButtonGroups = null;
-
-				_defaultTextColor = entry.TextColor;
-
-				_useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
-
-				entry.AccessibilityTraits = UIAccessibilityTrait.Button;
-
-				SetNativeControl(entry);
 			}
 
 			UpdateDateFromModel(false);
@@ -168,30 +161,33 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_picker.Date.ToDateTime().Date != Element.Date.Date)
 				_picker.SetDate(Element.Date.ToNSDate(), animate);
 
+			if (TextField == null)
+			  return;
+
 			//can't use Element.Format because it won't display the correct format if the region and language are set differently
-			if (String.IsNullOrWhiteSpace(Element.Format) || Element.Format.Equals("d") || Element.Format.Equals("D"))
+			if (string.IsNullOrWhiteSpace(Element.Format) || Element.Format.Equals("d") || Element.Format.Equals("D"))
 			{
 				NSDateFormatter dateFormatter = new NSDateFormatter();
 				if (Element.Format?.Equals("D") == true)
 				{
 					dateFormatter.DateStyle = NSDateFormatterStyle.Long;
 					var strDate = dateFormatter.StringFor(_picker.Date);
-					Control.Text = strDate;
+					TextField.Text = strDate;
 				}
 				else
 				{
 					dateFormatter.DateStyle = NSDateFormatterStyle.Short;
 					var strDate = dateFormatter.StringFor(_picker.Date);
-					Control.Text = strDate;
+					TextField.Text = strDate;
 				}
 			}
 			else if (Element.Format.Contains("/"))
 			{
-				Control.Text = Element.Date.ToString(Element.Format, CultureInfo.InvariantCulture);
+				TextField.Text = Element.Date.ToString(Element.Format, CultureInfo.InvariantCulture);
 			}
 			else
 			{
-				Control.Text = Element.Date.ToString(Element.Format);
+				TextField.Text = Element.Date.ToString(Element.Format);
 			}
 		}
 
@@ -207,15 +203,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected internal virtual void UpdateFont()
 		{
-			Control.Font = Element.ToUIFont();
+			if (TextField != null)
+				TextField.Font = Element.ToUIFont();
 		}
 
 		void UpdateCharacterSpacing()
 		{
-			var textAttr = Control.AttributedText.AddCharacterSpacing(Control.Text, Element.CharacterSpacing);
+			if (TextField == null)
+				return;
+
+			var textAttr = TextField.AttributedText.AddCharacterSpacing(TextField.Text, Element.CharacterSpacing);
 
 			if (textAttr != null)
-				Control.AttributedText = textAttr;
+				TextField.AttributedText = textAttr;
 		}
 		void UpdateMaximumDate()
 		{
@@ -229,15 +229,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected internal virtual void UpdateTextColor()
 		{
+			if (TextField == null)
+				return;
+
 			var textColor = Element.TextColor;
 
 			if (textColor.IsDefault || (!Element.IsEnabled && _useLegacyColorManagement))
-				Control.TextColor = _defaultTextColor;
+				TextField.TextColor = _defaultTextColor;
 			else
-				Control.TextColor = textColor.ToUIColor();
+				TextField.TextColor = textColor.ToUIColor();
 
 			// HACK This forces the color to update; there's probably a more elegant way to make this happen
-			Control.Text = Control.Text;
+			TextField.Text = TextField.Text;
 		}
 
 		protected override void Dispose(bool disposing)
@@ -267,6 +270,63 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			base.Dispose(disposing);
+		}
+
+		void InitTextField(UITextField textField)
+		{
+			if (textField == null)
+				return;
+
+			textField.EditingDidBegin += OnStarted;
+			textField.EditingDidEnd += OnEnded;
+
+			var width = UIScreen.MainScreen.Bounds.Width;
+			var toolbar = new UIToolbar(new RectangleF(0, 0, width, 44)) { BarStyle = UIBarStyle.Default, Translucent = true };
+			var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace);
+
+			var doneButton = new UIBarButtonItem(UIBarButtonSystemItem.Done, (o, a) =>
+			{
+				UpdateElementDate();
+				textField.ResignFirstResponder();
+			});
+
+			toolbar.SetItems(new[] { spacer, doneButton }, false);
+
+			textField.InputView = _picker;
+			textField.InputAccessoryView = toolbar;
+
+			textField.InputView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
+			textField.InputAccessoryView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
+
+			textField.InputAssistantItem.LeadingBarButtonGroups = null;
+			textField.InputAssistantItem.TrailingBarButtonGroups = null;
+
+			_defaultTextColor = textField.TextColor;
+
+			textField.AccessibilityTraits = UIAccessibilityTrait.Button;
+		}
+
+		void UpdateDatePickerStyle()
+		{
+			if (!Forms.IsiOS13OrNewer)
+				return;
+
+			var datePickerStyle = Element.OnThisPlatform().UIDatePickerStyle();
+
+			switch (datePickerStyle)
+			{
+				case PlatformConfiguration.iOSSpecific.UIDatePickerStyle.Compact:
+					_picker.PreferredDatePickerStyle = UIKit.UIDatePickerStyle.Compact;
+					break;
+				case PlatformConfiguration.iOSSpecific.UIDatePickerStyle.Inline:
+					_picker.PreferredDatePickerStyle = UIKit.UIDatePickerStyle.Inline;
+					break;
+				case PlatformConfiguration.iOSSpecific.UIDatePickerStyle.Wheels:
+					_picker.PreferredDatePickerStyle = UIKit.UIDatePickerStyle.Wheels;
+					break;
+				default:
+					break;
+			}
 		}
 	}
 }

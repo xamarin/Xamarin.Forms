@@ -1,29 +1,31 @@
-﻿using Xamarin.Forms.Platform.iOS;
+﻿using UIKit;
+using Xamarin.Forms.Platform.iOS;
 
 namespace Xamarin.Forms.Material.iOS
 {
-	public class MaterialTimePickerRenderer : TimePickerRendererBase<MaterialTextField>, IMaterialEntryRenderer
+	public class MaterialTimePickerRenderer : TimePickerRendererBase<UIControl>, IMaterialEntryRenderer
 	{
-		internal void UpdatePlaceholder() => Control?.UpdatePlaceholder(this);
+		MaterialTextField MaterialTextField => Control as MaterialTextField;
+		internal void UpdatePlaceholder() => MaterialTextField?.UpdatePlaceholder(this);
 
 		protected internal override void UpdateFont()
 		{
 			base.UpdateFont();
-			Control?.ApplyTypographyScheme(Element);
+			MaterialTextField?.ApplyTypographyScheme(Element);
 		}
 
-		protected override MaterialTextField CreateNativeControl() => new NoCaretMaterialTextField(this, Element);
+		protected override UIControl CreateNativeControl() => new NoCaretMaterialTextField(this, Element);
 		protected override void SetBackgroundColor(Color color) => ApplyTheme();
 		protected override void SetBackground(Brush brush) => ApplyTheme();
-		protected internal override void UpdateTextColor() => Control?.UpdateTextColor(this);
-		protected virtual void ApplyTheme() => Control?.ApplyTheme(this);
-		protected virtual void ApplyThemeIfNeeded() => Control?.ApplyThemeIfNeeded(this);
+		protected internal override void UpdateTextColor() => MaterialTextField?.UpdateTextColor(this);
+		protected virtual void ApplyTheme() => MaterialTextField?.ApplyTheme(this);
+		protected virtual void ApplyThemeIfNeeded() => MaterialTextField?.ApplyThemeIfNeeded(this);
 
 		protected override void OnElementChanged(ElementChangedEventArgs<TimePicker> e)
 		{
 			base.OnElementChanged(e);
 
-			if(e.NewElement != null)
+			if (e.NewElement != null)
 				UpdatePlaceholder();
 		}
 
@@ -39,5 +41,6 @@ namespace Xamarin.Forms.Material.iOS
 		Color IMaterialEntryRenderer.TextColor => Element?.TextColor ?? Color.Default;
 		Color IMaterialEntryRenderer.BackgroundColor => Element?.BackgroundColor ?? Color.Default;
 		Brush IMaterialEntryRenderer.Background => Element?.Background ?? Brush.Default;
+		
 	}
 }

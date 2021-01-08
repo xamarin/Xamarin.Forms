@@ -30,5 +30,32 @@
 			SetUpdateMode(config.Element, value);
 			return config;
 		}
+
+		public static readonly BindableProperty DatePickerStyleProperty = BindableProperty.Create(
+		nameof(UIDatePickerStyle),
+		typeof(UIDatePickerStyle),
+		typeof(DatePicker),
+		default(UIDatePickerStyle));
+
+		public static UIDatePickerStyle GetUIPickerStyle(BindableObject element)
+		{
+			return (UIDatePickerStyle)element.GetValue(DatePickerStyleProperty);
+		}
+
+		public static void SetUIPickerStyle(BindableObject element, UIDatePickerStyle value)
+		{
+			element.SetValue(DatePickerStyleProperty, value);
+		}
+
+		public static UIDatePickerStyle UIDatePickerStyle(this IPlatformElementConfiguration<iOS, FormsElement> config)
+		{
+			return GetUIPickerStyle(config.Element);
+		}
+
+		public static IPlatformElementConfiguration<iOS, FormsElement> SetUIPickerStyle(this IPlatformElementConfiguration<iOS, FormsElement> config, UIDatePickerStyle value)
+		{
+			SetUIPickerStyle(config.Element, value);
+			return config;
+		}
 	}
 }
