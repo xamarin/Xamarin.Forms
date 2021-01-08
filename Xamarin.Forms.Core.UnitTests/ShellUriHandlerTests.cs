@@ -102,6 +102,71 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public async Task GlobalRoutesRegisteredHierarchicallyNavigateCorrectlyVariation()
+		{
+			Routing.RegisterRoute("monkeys/monkeyDetails", typeof(TestPage1));
+			Routing.RegisterRoute("monkeyDetails/monkeygenome", typeof(TestPage2));
+			var shell = new TestShell(
+				CreateShellItem(shellContentRoute: "monkeys", shellItemRoute: "animals2"),
+				CreateShellItem(shellContentRoute: "monkeys", shellItemRoute: "animals")
+			);
+
+			await shell.GoToAsync("//animals/monkeys/monkeyDetails?id=123");
+			await shell.GoToAsync("monkeygenome");
+			Assert.AreEqual("//animals/monkeys/monkeyDetails/monkeygenome", shell.CurrentState.Location.ToString());
+		}
+
+
+		[Test]
+		public void NodeWalkingBasic()
+		{
+			var shell = new TestShell(
+				CreateShellItem(shellContentRoute: "monkeys", shellItemRoute: "animals2"),
+				CreateShellItem(shellContentRoute: "monkeys", shellItemRoute: "animals")
+			);
+
+			ShellUriHandler.NodeLocation nodeLocation = new ShellUriHandler.NodeLocation();
+			nodeLocation.SetNode(shell);
+
+			nodeLocation = nodeLocation.WalkToNextNode();
+			Assert.AreEqual(nodeLocation.Content, shell.Items[0].Items[0].Items[0]);
+
+			nodeLocation = nodeLocation.WalkToNextNode();
+			Assert.AreEqual(nodeLocation.Content, shell.Items[1].Items[0].Items[0]);
+		}
+
+
+		[Test]
+		public void NodeWalkingMultipleContent()
+		{
+			var shell = new TestShell(
+				CreateShellItem(shellContentRoute: "monkeys", shellItemRoute: "animals1"),
+				CreateShellItem(shellContentRoute: "monkeys", shellItemRoute: "animals2"),
+				CreateShellItem(shellContentRoute: "monkeys", shellItemRoute: "animals3"),
+				CreateShellItem(shellContentRoute: "monkeys", shellItemRoute: "animals4")
+			);
+
+			var content = CreateShellContent();
+			shell.Items[1].Items[0].Items.Add(content);
+			shell.Items[2].Items[0].Items.Add(CreateShellContent());
+
+			// add a section with now content
+			shell.Items[0].Items.Add(new ShellSection());
+
+			ShellUriHandler.NodeLocation nodeLocation = new ShellUriHandler.NodeLocation();
+			nodeLocation.SetNode(content);
+
+			nodeLocation = nodeLocation.WalkToNextNode();
+			Assert.AreEqual(shell.Items[2].Items[0].Items[0], nodeLocation.Content);
+
+			nodeLocation = nodeLocation.WalkToNextNode();
+			Assert.AreEqual(shell.Items[2].Items[0].Items[1], nodeLocation.Content);
+
+			nodeLocation = nodeLocation.WalkToNextNode();
+			Assert.AreEqual(shell.Items[3].Items[0].Items[0], nodeLocation.Content);
+		}
+
+		[Test]
 		public async Task GlobalRegisterAbsoluteMatching()
 		{
 			var shell = new Shell();
