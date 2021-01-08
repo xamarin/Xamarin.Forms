@@ -109,9 +109,6 @@ namespace Xamarin.Forms
 					if (Item == item)
 						return;
 
-					if (item.Parent is Shell s)
-						Shell = s;
-
 					Item = item;
 					break;
 				case ShellSection section:
@@ -146,6 +143,9 @@ namespace Xamarin.Forms
 
 					break;
 			}
+
+			if (Item?.Parent is Shell s)
+				Shell = s;
 
 			// if shellSegment == userSegment it means the implicit route is part of the request
 			if (Routing.IsUserDefined(shellSegment) || shellSegment == userSegment || shellSegment == NextSegment)
