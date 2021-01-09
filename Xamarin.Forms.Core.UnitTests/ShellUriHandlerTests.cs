@@ -116,6 +116,22 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("//animals/monkeys/monkeyDetails/monkeygenome", shell.CurrentState.Location.ToString());
 		}
 
+
+		[Test]
+		public async Task RemovePageWithNestedRoutes()
+		{
+			Routing.RegisterRoute("monkeys/monkeyDetails", typeof(TestPage1));
+			Routing.RegisterRoute("monkeyDetails/monkeygenome", typeof(TestPage2));
+			var shell = new TestShell(
+				CreateShellItem(shellContentRoute: "monkeys", shellItemRoute: "animals")
+			);
+
+			await shell.GoToAsync("//animals/monkeys/monkeyDetails");
+			await shell.GoToAsync("monkeygenome");
+			shell.Navigation.RemovePage(shell.Navigation.NavigationStack[1]);
+			await shell.Navigation.PopAsync();
+		}
+
 		[Test]
 		public async Task GlobalRoutesRegisteredHierarchicallyNavigateCorrectlyWithAdditionalItems()
 		{
@@ -145,9 +161,27 @@ namespace Xamarin.Forms.Core.UnitTests
 			);
 
 			await shell.GoToAsync("monkeys/monkeyDetails");
+			await shell.GoToAsync("monkeys/monkeyDetails");
+			await shell.Navigation.PopAsync();
 			await shell.Navigation.PopAsync();
 		}
 
+
+		[Test]
+		public async Task GoBackFromRouteWithMultiplePathsHierarchical()
+		{
+			Routing.RegisterRoute("monkeys/monkeyDetails", typeof(TestPage1));
+			Routing.RegisterRoute("monkeyDetails/monkeygenome", typeof(TestPage2));
+
+			var shell = new TestShell(
+				CreateShellItem()
+			);
+
+			await shell.GoToAsync("monkeys/monkeyDetails");
+			await shell.GoToAsync("monkeygenome");
+			await shell.Navigation.PopAsync();
+			await shell.Navigation.PopAsync();
+		}
 
 		[Test]
 		public void NodeWalkingBasic()

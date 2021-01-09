@@ -50,8 +50,12 @@ namespace Xamarin.Forms
 		public void AddGlobalRoute(string routeName, string segment)
 		{
 			_globalRouteMatches.Add(routeName);
-			_fullSegments.Add(segment);
-			_matchedSegments.Add(segment);
+
+			foreach (string path in ShellUriHandler.RetrievePaths(segment))
+			{
+				_fullSegments.Add(path);
+				_matchedSegments.Add(path);
+			}
 		}
 
 
@@ -154,16 +158,50 @@ namespace Xamarin.Forms
 			_fullSegments.Add(shellSegment);
 		}
 
+		public string GetNextSegmentMatch(string matchMe)
+		{
+			// if matchMe is an absolute route then we only match 
+			// if there are no routes already present
+			if (matchMe.StartsWith("//", StringComparison.Ordinal) || 
+				matchMe.StartsWith("\\\\", StringComparison.Ordinal))
+			{
+				if (MatchedParts > 0)
+					return String.Empty;
+			}
+
+			List<string> matches = new List<string>();
+			List<string> currentSet = new List<string>(_matchedSegments);
+
+			foreach(var split in ShellUriHandler.RetrievePaths(matchMe))
+			{
+				string next = GetNextSegment(currentSet);
+				if(next == split)
+				{
+					currentSet.Add(split);
+					matches.Add(split);
+				}
+				else
+				{
+					return String.Empty;
+				}
+			}
+
+			return String.Join(_uriSeparator, matches);
+		}
+
+		string GetNextSegment(IReadOnlyList<string> matchedSegments)
+		{
+			var nextMatch = matchedSegments.Count;
+			if (nextMatch >= _allSegments.Length)
+				return null;
+
+			return _allSegments[nextMatch];
+
+		}
+
 		public string NextSegment
 		{
-			get
-			{
-				var nextMatch = _matchedSegments.Count;
-				if (nextMatch >= _allSegments.Length)
-					return null;
-
-				return _allSegments[nextMatch];
-			}
+			get => GetNextSegment(_matchedSegments);
 		}
 
 		public string RemainingPath
@@ -196,6 +234,23 @@ namespace Xamarin.Forms
 				return String.Join(_uriSeparator, segments);
 
 			return $"//{String.Join(_uriSeparator, segments)}";
+		}
+
+		public int MatchedParts
+		{
+			get
+			{
+				int count = GlobalRouteMatches.Count;
+
+				if (Item != null)
+					count++;
+				if (Content != null)
+					count++;
+				if (Section != null)
+					count++;
+
+				return count;
+			}
 		}
 
 		public string PathNoImplicit => MakeUriString(_matchedSegments);

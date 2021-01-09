@@ -34,13 +34,30 @@ namespace Xamarin.Forms
 						break;
 					
 					pages.Remove(lastPage);
-					var route = Routing.GetRoute(lastPage);
+					/*var route = Routing.GetRoute(lastPage);
 					var lastIndex = currentState.LastIndexOf(route);
-					currentState = currentState.Remove(lastIndex);
+					currentState = currentState.Remove(lastIndex);*/
+
+					List<string> routes = new List<string>();
+					List<string> buildUpPages = new List<string>();
+
+					foreach(var page in pages)
+					{
+						if (page == null)
+							continue;
+
+						var route = Routing.GetRoute(page);
+						buildUpPages.AddRange(CollapsePath(route, buildUpPages, false));
+					}
+
+					restOfPath = buildUpPages;
 				}
 
-				var destination = String.Join(_pathSeparator, restOfPath);
-				var result = IOPath.Combine(currentState, destination);
+				restOfPath.Insert(0, shell.CurrentItem.CurrentItem.CurrentItem.Route);
+				restOfPath.Insert(0, shell.CurrentItem.CurrentItem.Route);
+				restOfPath.Insert(0, shell.CurrentItem.Route);
+				var result = String.Join(_pathSeparator, restOfPath);
+				//var result = IOPath.Combine(currentState, destination);
 				var returnValue = ConvertToStandardFormat("scheme", "host", null, new Uri(result, UriKind.Relative));
 				return new Uri(FormatUri(returnValue.PathAndQuery), UriKind.Relative);
 			}
@@ -429,9 +446,10 @@ namespace Xamarin.Forms
 			{
 				var collapsedRoute = String.Join(_pathSeparator, CollapsePath(routeKey, possibleRoutePath.SegmentsMatched, true));
 
-				if (collapsedRoute == possibleRoutePath.NextSegment)
+				string collapsedMatch = possibleRoutePath.GetNextSegmentMatch(collapsedRoute);
+				if (!String.IsNullOrWhiteSpace(collapsedMatch))
 				{
-					possibleRoutePath.AddGlobalRoute(routeKey, possibleRoutePath.NextSegment);
+					possibleRoutePath.AddGlobalRoute(routeKey, collapsedMatch);
 					return true;
 				}
 
@@ -462,11 +480,11 @@ namespace Xamarin.Forms
 
 						var collapsedLeafRoute = String.Join(_pathSeparator, CollapsePath(routeKey, leafSearch.SegmentsMatched, true));
 
-
-						if (collapsedLeafRoute == leafSearch.NextSegment)
+						string segmentMatch = leafSearch.GetNextSegmentMatch(collapsedLeafRoute);
+						if (!String.IsNullOrWhiteSpace(segmentMatch))
 						{
 							possibleRoutePath.AddMatch(nextNode);
-							possibleRoutePath.AddGlobalRoute(routeKey, possibleRoutePath.NextSegment);
+							possibleRoutePath.AddGlobalRoute(routeKey, segmentMatch);
 							return true;
 						}
 
@@ -525,6 +543,8 @@ namespace Xamarin.Forms
 				if (match.IsFullMatch)
 				{
 					bool matchFound = false;
+
+					// remove duplicates
 					foreach (var bestMatch in bestMatches)
 					{ 
 						if(bestMatch.Item == match.Item && 
@@ -549,6 +569,41 @@ namespace Xamarin.Forms
 					if(!matchFound)
 						bestMatches.Add(match);
 				}
+			}
+
+			while(bestMatches.Count > 1)
+			{
+				List<RouteRequestBuilder> betterMatches = new List<RouteRequestBuilder>();
+				for(int i = bestMatches.Count - 1; i >= 0; i--)
+				{
+					for (int j = i - 1; j >= 0; j--)
+					{
+						RouteRequestBuilder betterMatch = null;
+
+						if (bestMatches[j].MatchedParts > bestMatches[i].MatchedParts)
+							betterMatch = bestMatches[j];
+						else if (bestMatches[j].MatchedParts < bestMatches[i].MatchedParts)
+							betterMatch = bestMatches[i];
+
+						// nobody wins
+						if(betterMatch == null)
+						{
+							if (!betterMatches.Contains(bestMatches[i]))
+								betterMatches.Add(bestMatches[i]);
+
+							if (!betterMatches.Contains(bestMatches[j]))
+								betterMatches.Add(bestMatches[j]);
+						}
+						else if (betterMatch != null && !betterMatches.Contains(betterMatch))
+							betterMatches.Add(betterMatch);
+					}
+				}
+
+				// Nothing was trimmed on last pass
+				if (bestMatches.Count == betterMatches.Count)
+					return betterMatches;
+
+				bestMatches = betterMatches;
 			}
 
 			return bestMatches;
