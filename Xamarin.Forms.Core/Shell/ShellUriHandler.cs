@@ -21,10 +21,12 @@ namespace Xamarin.Forms
 				var currentState = shell.CurrentState.FullLocation.OriginalString;
 
 				List<string> restOfPath = new List<string>();
+				bool dotsAllParsed = false;
 				foreach(var p in path.OriginalString.Split(_pathSeparators))
 				{
-					if (p != ".." || restOfPath.Count > 0)
+					if (p != ".." || dotsAllParsed)
 					{
+						dotsAllParsed = true;
 						restOfPath.Add(p);
 						continue;
 					}
