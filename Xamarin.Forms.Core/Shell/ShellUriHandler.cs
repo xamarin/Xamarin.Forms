@@ -17,7 +17,30 @@ namespace Xamarin.Forms
 		{
 			if (path.OriginalString.StartsWith("..") && shell?.CurrentState != null)
 			{
-				var result = IOPath.Combine(shell.CurrentState.FullLocation.OriginalString, path.OriginalString);
+				var pages = ShellNavigationManager.BuildFlattenedNavigationStack(shell);
+				var currentState = shell.CurrentState.FullLocation.OriginalString;
+
+				List<string> restOfPath = new List<string>();
+				foreach(var p in path.OriginalString.Split(_pathSeparators))
+				{
+					if (p != ".." || restOfPath.Count > 0)
+					{
+						restOfPath.Add(p);
+						continue;
+					}
+
+					var lastPage = pages[pages.Count - 1];
+					if (lastPage == null)
+						break;
+					
+					pages.Remove(lastPage);
+					var route = Routing.GetRoute(lastPage);
+					var lastIndex = currentState.LastIndexOf(route);
+					currentState = currentState.Remove(lastIndex);
+				}
+
+				var destination = String.Join(_pathSeparator, restOfPath);
+				var result = IOPath.Combine(currentState, destination);
 				var returnValue = ConvertToStandardFormat("scheme", "host", null, new Uri(result, UriKind.Relative));
 				return new Uri(FormatUri(returnValue.PathAndQuery), UriKind.Relative);
 			}

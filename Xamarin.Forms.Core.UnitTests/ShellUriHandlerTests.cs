@@ -135,6 +135,19 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("//animals/monkeys/monkeyDetails/monkeygenome", shell.CurrentState.Location.ToString());
 		}
 
+		[Test]
+		public async Task GoBackFromRouteWithMultiplePaths()
+		{
+			Routing.RegisterRoute("monkeys/monkeyDetails", typeof(TestPage1));
+
+			var shell = new TestShell(
+				CreateShellItem()
+			);
+
+			await shell.GoToAsync("monkeys/monkeyDetails");
+			await shell.Navigation.PopAsync();
+		}
+
 
 		[Test]
 		public void NodeWalkingBasic()

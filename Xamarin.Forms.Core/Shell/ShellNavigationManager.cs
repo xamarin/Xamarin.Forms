@@ -493,5 +493,28 @@ namespace Xamarin.Forms
 			
 		}
 
+		public static List<Page> BuildFlattenedNavigationStack(Shell shell)
+		{
+			var section = shell.CurrentItem.CurrentItem;
+			return BuildFlattenedNavigationStack(section.Stack, section.Navigation.ModalStack);
+		}
+		
+		public static List<Page> BuildFlattenedNavigationStack(IReadOnlyList<Page> startingList, IReadOnlyList<Page> modalStack)
+		{
+			var returnValue = startingList.ToList();
+			if (modalStack == null)
+				return returnValue;
+
+			for (int i = 0; i < modalStack.Count; i++)
+			{
+				returnValue.Add(modalStack[i]);
+				for (int j = 1; j < modalStack[i].Navigation.NavigationStack.Count; j++)
+				{
+					returnValue.Add(modalStack[i].Navigation.NavigationStack[j]);
+				}
+			}
+
+			return returnValue;
+		}
 	}
 }
