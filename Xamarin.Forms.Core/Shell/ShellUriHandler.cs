@@ -34,11 +34,7 @@ namespace Xamarin.Forms
 						break;
 					
 					pages.Remove(lastPage);
-					/*var route = Routing.GetRoute(lastPage);
-					var lastIndex = currentState.LastIndexOf(route);
-					currentState = currentState.Remove(lastIndex);*/
 
-					List<string> routes = new List<string>();
 					List<string> buildUpPages = new List<string>();
 
 					foreach(var page in pages)
@@ -57,7 +53,6 @@ namespace Xamarin.Forms
 				restOfPath.Insert(0, shell.CurrentItem.CurrentItem.Route);
 				restOfPath.Insert(0, shell.CurrentItem.Route);
 				var result = String.Join(_pathSeparator, restOfPath);
-				//var result = IOPath.Combine(currentState, destination);
 				var returnValue = ConvertToStandardFormat("scheme", "host", null, new Uri(result, UriKind.Relative));
 				return new Uri(FormatUri(returnValue.PathAndQuery), UriKind.Relative);
 			}
