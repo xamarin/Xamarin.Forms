@@ -116,6 +116,25 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("//animals/monkeys/monkeyDetails/monkeygenome", shell.CurrentState.Location.ToString());
 		}
 
+		[Test]
+		public async Task GlobalRoutesRegisteredHierarchicallyNavigateCorrectlyWithAdditionalItems()
+		{
+			Routing.RegisterRoute("monkeys/monkeyDetails", typeof(TestPage1));
+			Routing.RegisterRoute("monkeyDetails/monkeygenome", typeof(TestPage2));
+			var shell = new TestShell(
+				CreateShellItem(shellContentRoute: "cats", shellSectionRoute:"domestic", shellItemRoute: "animals")
+			);
+
+			shell.Items[0].Items.Add(CreateShellContent(shellContentRoute: "monkeys"));
+			shell.Items[0].Items.Add(CreateShellContent(shellContentRoute: "elephants"));
+			shell.Items[0].Items.Add(CreateShellContent(shellContentRoute: "bears"));
+			shell.Items[0].Items[0].Items.Add(CreateShellContent(shellContentRoute: "dogs"));
+			shell.Items.Add(CreateShellContent(shellContentRoute: "about"));
+			await shell.GoToAsync("//animals/monkeys/monkeyDetails?id=123");
+			await shell.GoToAsync("monkeygenome");
+			Assert.AreEqual("//animals/monkeys/monkeyDetails/monkeygenome", shell.CurrentState.Location.ToString());
+		}
+
 
 		[Test]
 		public void NodeWalkingBasic()

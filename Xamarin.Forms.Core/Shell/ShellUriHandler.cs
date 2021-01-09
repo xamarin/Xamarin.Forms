@@ -426,12 +426,16 @@ namespace Xamarin.Forms
 							(possibleRoutePath.Section != null && nextNode.Section != possibleRoutePath.Section) ||
 							(possibleRoutePath.Content != null && nextNode.Content != possibleRoutePath.Content))
 						{
-							break;
+							nextNode = nextNode.WalkToNextNode();
+							continue;
 						}
 
 						var leafSearch = new RouteRequestBuilder(possibleRoutePath);
 						if (!leafSearch.AddMatch(nextNode))
-							break;
+						{
+							nextNode = nextNode.WalkToNextNode();
+							continue;
+						}
 
 						var collapsedLeafRoute = String.Join(_pathSeparator, CollapsePath(routeKey, leafSearch.SegmentsMatched, true));
 
