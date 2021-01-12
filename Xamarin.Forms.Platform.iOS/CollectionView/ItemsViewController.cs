@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -27,6 +28,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			ItemsView = itemsView;
 			ItemsViewLayout = layout;
+
+			ItemsView.PropertyChanged += ItemsViewPropertyChanged;
 		}
 
 		public void UpdateLayout(ItemsViewLayout newLayout)
@@ -456,6 +459,17 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateTemplatedCell(templatedCell, indexPath);
 
 			return templatedCell;
+		}
+
+		void ItemsViewPropertyChanged(object sender, PropertyChangedEventArgs changedProperty) 
+		{
+			if (changedProperty.Is(VisualElement.IsVisibleProperty))
+			{
+				if (ItemsView.IsVisible)
+				{
+					Layout.InvalidateLayout();
+				}
+			}
 		}
 	}
 }

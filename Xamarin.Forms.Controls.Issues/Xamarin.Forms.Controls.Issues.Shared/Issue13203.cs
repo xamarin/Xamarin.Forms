@@ -5,13 +5,11 @@ using System.Text;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
-
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
 using Xamarin.Forms.Core.UITests;
 #endif
-
 
 namespace Xamarin.Forms.Controls.Issues
 {
@@ -21,7 +19,6 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	public class Issue13203 : TestContentPage
 	{
-		const string RunTest = "RunTest";
 		const string Success = "Success";
 
 		protected override void Init()
@@ -40,19 +37,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var source = new List<Item> { new Item { Text = Success } };
 			cv.ItemsSource = source;
-
-			var button = new Button { Text = "Set IsVisible to True", AutomationId = RunTest };
-
-			var layout = new StackLayout
-			{
-				Children = { button, cv }
-			};
-
-			button.Clicked += (sender, args) => {
-				cv.IsVisible = true;
-			};
-
-			Content = layout;
+			Content = cv;
 
 			Appearing += (sender, args) => { cv.IsVisible = true; };
 		}
