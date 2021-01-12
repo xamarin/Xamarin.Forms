@@ -443,6 +443,9 @@ namespace Xamarin.Forms
 			{
 				var collapsedRoute = String.Join(_pathSeparator, CollapsePath(routeKey, possibleRoutePath.SegmentsMatched, true));
 
+				if (routeKey.StartsWith("//"))
+					collapsedRoute = "//" + collapsedRoute;
+
 				string collapsedMatch = possibleRoutePath.GetNextSegmentMatch(collapsedRoute);
 				if (!String.IsNullOrWhiteSpace(collapsedMatch))
 				{
@@ -477,6 +480,9 @@ namespace Xamarin.Forms
 
 						var collapsedLeafRoute = String.Join(_pathSeparator, CollapsePath(routeKey, leafSearch.SegmentsMatched, true));
 
+						if (routeKey.StartsWith("//"))
+							collapsedLeafRoute = "//" + collapsedLeafRoute;
+						
 						string segmentMatch = leafSearch.GetNextSegmentMatch(collapsedLeafRoute);
 						if (!String.IsNullOrWhiteSpace(segmentMatch))
 						{
