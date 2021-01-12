@@ -51,8 +51,6 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void SettingGroupedCollectionViewItemSourceNullShouldNotCrash()
 		{
-			RunningApp.WaitForElement(RunTest);
-			RunningApp.Tap(RunTest);
 			RunningApp.WaitForElement(Success);
 		}
 #endif
