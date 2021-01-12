@@ -414,7 +414,7 @@ namespace Xamarin.Forms
 				}
 			}
 
-			var paths = myRoute.Split('/').ToList();
+			var paths = RetrievePaths(myRoute).ToList();
 
 			// collapse similar leaves
 			int walkBackCurrentStackIndex = localRouteStack.Count - (paths.Count - 1);

@@ -132,6 +132,18 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("//animals/monkeys", shell.CurrentState.Location.ToString());
 		}
 
+		[Test]
+		public async Task GlobalRoutesRegisteredHierarchicallyWithDoubleSplash()
+		{
+			Routing.RegisterRoute("//animals/monkeys/monkeyDetails", typeof(TestPage1));
+			var shell = new TestShell(
+				CreateShellItem(shellContentRoute: "monkeys", shellItemRoute: "animals")
+			);
+
+			await shell.GoToAsync("//animals/monkeys/monkeyDetails?id=123");
+			Assert.AreEqual("//animals/monkeys/monkeyDetails", shell.CurrentState.Location.ToString());
+		}
+
 
 		[Test]
 		public async Task RemovePageWithNestedRoutes()

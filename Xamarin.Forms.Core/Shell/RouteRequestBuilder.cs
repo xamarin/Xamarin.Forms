@@ -160,19 +160,26 @@ namespace Xamarin.Forms
 
 		public string GetNextSegmentMatch(string matchMe)
 		{
+			var segmentsToMatch = ShellUriHandler.RetrievePaths(matchMe).ToList();
 			// if matchMe is an absolute route then we only match 
 			// if there are no routes already present
-			if (matchMe.StartsWith("//", StringComparison.Ordinal) || 
-				matchMe.StartsWith("\\\\", StringComparison.Ordinal))
+			if (matchMe.StartsWith("/", StringComparison.Ordinal) || 
+				matchMe.StartsWith("\\", StringComparison.Ordinal))
 			{
-				if (MatchedParts > 0)
-					return String.Empty;
+				for (var i = 0; i < _matchedSegments.Count; i++)
+				{
+					var seg = _matchedSegments[i];
+					if (segmentsToMatch.Count <= i || segmentsToMatch[i] != seg)
+						return String.Empty;
+
+					segmentsToMatch.Remove(seg);
+				}
 			}
 
 			List<string> matches = new List<string>();
 			List<string> currentSet = new List<string>(_matchedSegments);
 
-			foreach(var split in ShellUriHandler.RetrievePaths(matchMe))
+			foreach(var split in segmentsToMatch)
 			{
 				string next = GetNextSegment(currentSet);
 				if(next == split)
