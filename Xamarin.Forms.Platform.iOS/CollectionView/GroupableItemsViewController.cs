@@ -226,15 +226,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (itemsLayout is GridItemsLayout)
 			{
-				nfloat itemSpacing = itemsViewLayout.GetMinimumInteritemSpacingForSection(collectionView, itemsViewLayout, section);
-
 				if (scrollDirection == UICollectionViewScrollDirection.Horizontal)
 				{
-					return new UIEdgeInsets(itemSpacing + uIEdgeInsets.Top, lineSpacing + uIEdgeInsets.Left,
+					nfloat itemSpacing = itemsViewLayout.GetMinimumInteritemSpacingForSection(collectionView, itemsViewLayout, section);
+
+					return new UIEdgeInsets(uIEdgeInsets.Top, itemSpacing + uIEdgeInsets.Left,
 						uIEdgeInsets.Bottom, uIEdgeInsets.Right);
 				}
 
-				return new UIEdgeInsets(lineSpacing + uIEdgeInsets.Top, itemSpacing + uIEdgeInsets.Left,
+				return new UIEdgeInsets(lineSpacing + uIEdgeInsets.Top, uIEdgeInsets.Left,
 					uIEdgeInsets.Bottom, uIEdgeInsets.Right);
 			}
 
