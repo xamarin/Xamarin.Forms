@@ -59,6 +59,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
+				ItemsView.PropertyChanged -= ItemsViewPropertyChanged;
+
 				ItemsSource?.Dispose();
 				CollectionView.Delegate = null;
 				Delegator?.Dispose();
