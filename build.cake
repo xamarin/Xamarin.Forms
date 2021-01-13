@@ -134,9 +134,6 @@ Information ("Agent.Name: {0}", agentName);
 Information ("isCIBuild: {0}", isCIBuild);
 Information ("artifactStagingDirectory: {0}", artifactStagingDirectory);
 Information("workingDirectory: {0}", workingDirectory);
-
-
-PrintEnvironmentVariables();
 Information("NUNIT_TEST_WHERE: {0}", NUNIT_TEST_WHERE);
 
 var releaseChannel = ReleaseChannel.Stable;
@@ -1079,7 +1076,10 @@ RunTarget(target);
 
 T GetBuildVariable<T>(string key, T defaultValue)
 {
-    return Argument(key, EnvironmentVariable(key, defaultValue));
+    // on MAC all environment variables are upper case regardless of how you specify them in devops
+    // And then Environment Variable check is case sensitive
+    T upperCaseReturnValue = Argument(key.ToUpper(), EnvironmentVariable(key.ToUpper(), defaultValue));
+    return Argument(key, EnvironmentVariable(key, upperCaseReturnValue));
 }
 
 void StartVisualStudio(string sln = "Xamarin.Forms.sln")
@@ -1213,9 +1213,9 @@ public void SetEnvironmentVariable(string key, string value, ICakeContext contex
 
 public string ParseDevOpsInputs(string nunitWhere)
 {
-    var ExcludeCategory = GetBuildVariable("ExcludeCategory", GetBuildVariable("EXCLUDECATEGORY", ""))?.Replace("\"", "");
-    var ExcludeCategory2 = GetBuildVariable("ExcludeCategory2", GetBuildVariable("EXCLUDECATEGORY2", ""))?.Replace("\"", "");
-    var IncludeCategory = GetBuildVariable("IncludeCategory", GetBuildVariable("INCLUDECATEGORY", ""))?.Replace("\"", "");
+    var ExcludeCategory = GetBuildVariable("ExcludeCategory", "")?.Replace("\"", "");
+    var ExcludeCategory2 = GetBuildVariable("ExcludeCategory2", "")?.Replace("\"", "");
+    var IncludeCategory = GetBuildVariable("IncludeCategory", "")?.Replace("\"", "");
 
     Information("ExcludeCategory: {0}", ExcludeCategory);
     Information("IncludeCategory: {0}", IncludeCategory);
