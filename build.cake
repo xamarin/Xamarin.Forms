@@ -77,33 +77,8 @@ var ExcludeCategory = GetBuildVariable("ExcludeCategory", "")?.Replace("\"", "")
 var ExcludeCategory2 = GetBuildVariable("ExcludeCategory2", "")?.Replace("\"", "");
 var IncludeCategory = GetBuildVariable("IncludeCategory", "")?.Replace("\"", "");
 
-// Replace Azure devops syntax for unit tests to Nunit3 filters
-if(!String.IsNullOrWhiteSpace(ExcludeCategory))
-{
-    ExcludeCategory = String.Join(" && cat != ", ExcludeCategory.Split(new string[] { "--exclude-category" }, StringSplitOptions.None));
-    if(!ExcludeCategory.StartsWith("cat"))
-        ExcludeCategory = $" cat !=  {ExcludeCategory}";
 
-    NUNIT_TEST_WHERE = $"{NUNIT_TEST_WHERE} && {ExcludeCategory}";
-}
-
-if(!String.IsNullOrWhiteSpace(ExcludeCategory2))
-{
-    ExcludeCategory2 = String.Join(" && cat != ", ExcludeCategory2.Split(new string[] { "--exclude-category" }, StringSplitOptions.None));
-    if(!ExcludeCategory2.StartsWith("cat"))
-        ExcludeCategory2 = $" cat !=  {ExcludeCategory2}";
-
-    NUNIT_TEST_WHERE = $"{NUNIT_TEST_WHERE} && {ExcludeCategory2}";
-}
-
-if(!String.IsNullOrWhiteSpace(IncludeCategory))
-{
-    IncludeCategory = String.Join(" || cat == ", IncludeCategory.Split(new string[] { "--include-category" }, StringSplitOptions.None));
-    if(!IncludeCategory.StartsWith("cat"))
-        IncludeCategory = $" cat ==  {IncludeCategory}";
-
-    NUNIT_TEST_WHERE = $"({NUNIT_TEST_WHERE}) && ({IncludeCategory})";
-}
+NUNIT_TEST_WHERE = ParseDevOpsInputs(NUNIT_TEST_WHERE);
 
 var ANDROID_HOME = EnvironmentVariable("ANDROID_HOME") ??
     (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
@@ -1236,4 +1211,55 @@ public void SetEnvironmentVariable(string key, string value, ICakeContext contex
     {
         System.Environment.SetEnvironmentVariable(key, value);
     }
+}
+
+public string ParseDevOpsInputs(string nunitWhere)
+{
+    string excludeString = String.Empty;
+    string includeString = String.Empty;
+    string returnValue = String.Empty;
+
+    List<string> azureDevopsFilters = new List<string>();
+
+    // Replace Azure devops syntax for unit tests to Nunit3 filters
+    if(!String.IsNullOrWhiteSpace(ExcludeCategory))
+    {
+        azureDevopsFilters.AddRange(ExcludeCategory.Split(new string[] { "--exclude-category" }, StringSplitOptions.None));
+    }
+
+    if(!String.IsNullOrWhiteSpace(ExcludeCategory2))
+    {
+        azureDevopsFilters.AddRange(ExcludeCategory2.Split(new string[] { "--exclude-category" }, StringSplitOptions.None));
+    }
+
+    for(int i = 0; i < azureDevopsFilters.Count; i++)
+    {
+        if(!String.IsNullOrWhiteSpace(excludeString))
+            excludeString += " && ";
+
+        excludeString += $" cat != {azureDevopsFilters[i]} ";
+    }
+
+    String.Join(" cat != ", azureDevopsFilters);
+
+    if(!String.IsNullOrWhiteSpace(IncludeCategory))
+    { 
+        foreach (var item in IncludeCategory.Split(new string[] { "--include-category" }, StringSplitOptions.None))
+        {
+            if(!String.IsNullOrWhiteSpace(includeString))
+                includeString += " || ";
+
+            includeString += $" cat == {item} ";
+        }
+    }
+
+    foreach(var filter in new []{nunitWhere,includeString,excludeString}.Where(x=> !String.IsNullOrWhiteSpace(x)))
+    {
+        if(!String.IsNullOrWhiteSpace(returnValue))
+            returnValue += " && ";
+
+        returnValue += $"({filter})";
+    }
+
+    return returnValue;
 }
