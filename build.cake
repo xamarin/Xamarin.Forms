@@ -73,11 +73,6 @@ if(target.ToLower().Contains("uwp"))
     defaultUnitTestWhere = "cat != UwpIgnore";
 
 var NUNIT_TEST_WHERE = Argument("NUNIT_TEST_WHERE", defaultUnitTestWhere);
-var ExcludeCategory = GetBuildVariable("ExcludeCategory", "")?.Replace("\"", "");
-var ExcludeCategory2 = GetBuildVariable("ExcludeCategory2", "")?.Replace("\"", "");
-var IncludeCategory = GetBuildVariable("IncludeCategory", "")?.Replace("\"", "");
-
-
 NUNIT_TEST_WHERE = ParseDevOpsInputs(NUNIT_TEST_WHERE);
 
 var ANDROID_HOME = EnvironmentVariable("ANDROID_HOME") ??
@@ -140,14 +135,8 @@ Information ("isCIBuild: {0}", isCIBuild);
 Information ("artifactStagingDirectory: {0}", artifactStagingDirectory);
 Information("workingDirectory: {0}", workingDirectory);
 
-var ExcludeCategory = GetBuildVariable("ExcludeCategory", "")?.Replace("\"", "");
-var ExcludeCategory2 = GetBuildVariable("ExcludeCategory2", "")?.Replace("\"", "");
-var IncludeCategory = GetBuildVariable("IncludeCategory", "")?.Replace("\"", "");
 
 PrintEnvironmentVariables();
-Information("ExcludeCategory: {0}", ExcludeCategory);
-Information("IncludeCategory: {0}", IncludeCategory);
-Information("ExcludeCategory2: {0}", ExcludeCategory2);
 Information("NUNIT_TEST_WHERE: {0}", NUNIT_TEST_WHERE);
 
 var releaseChannel = ReleaseChannel.Stable;
@@ -1224,6 +1213,13 @@ public void SetEnvironmentVariable(string key, string value, ICakeContext contex
 
 public string ParseDevOpsInputs(string nunitWhere)
 {
+    var ExcludeCategory = GetBuildVariable("ExcludeCategory", GetBuildVariable("EXCLUDECATEGORY", ""))?.Replace("\"", "");
+    var ExcludeCategory2 = GetBuildVariable("ExcludeCategory2", GetBuildVariable("EXCLUDECATEGORY2", ""))?.Replace("\"", "");
+    var IncludeCategory = GetBuildVariable("IncludeCategory", GetBuildVariable("INCLUDECATEGORY", ""))?.Replace("\"", "");
+
+    Information("ExcludeCategory: {0}", ExcludeCategory);
+    Information("IncludeCategory: {0}", IncludeCategory);
+    Information("ExcludeCategory2: {0}", ExcludeCategory2);
     string excludeString = String.Empty;
     string includeString = String.Empty;
     string returnValue = String.Empty;
