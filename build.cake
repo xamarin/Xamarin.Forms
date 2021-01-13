@@ -139,6 +139,15 @@ Information ("Agent.Name: {0}", agentName);
 Information ("isCIBuild: {0}", isCIBuild);
 Information ("artifactStagingDirectory: {0}", artifactStagingDirectory);
 Information("workingDirectory: {0}", workingDirectory);
+
+var ExcludeCategory = GetBuildVariable("ExcludeCategory", "")?.Replace("\"", "");
+var ExcludeCategory2 = GetBuildVariable("ExcludeCategory2", "")?.Replace("\"", "");
+var IncludeCategory = GetBuildVariable("IncludeCategory", "")?.Replace("\"", "");
+
+PrintEnvironmentVariables();
+Information("ExcludeCategory: {0}", ExcludeCategory);
+Information("IncludeCategory: {0}", IncludeCategory);
+Information("ExcludeCategory2: {0}", ExcludeCategory2);
 Information("NUNIT_TEST_WHERE: {0}", NUNIT_TEST_WHERE);
 
 var releaseChannel = ReleaseChannel.Stable;
