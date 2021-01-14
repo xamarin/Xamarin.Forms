@@ -21,7 +21,7 @@ namespace Sample
 
 			verticalStack.Add(label);
 
-			var button = new Button() { Text = "A Button", Width = 200 };
+			var button = new Xamarin.Forms.Button() { Text = "A Button", WidthRequest = 200 };
 			var button2 = new Button()
 			{
 				Color = Color.Green,
