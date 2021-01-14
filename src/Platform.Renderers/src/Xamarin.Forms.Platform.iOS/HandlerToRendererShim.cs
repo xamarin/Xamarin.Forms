@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Element.PropertyChanged += OnElementPropertyChanged;
 
 			Element = element;
-			ViewHandler.SetVirtualView(element);
+			ViewHandler.SetVirtualView((IView)element);
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(oldElement, Element));
 		}
 
