@@ -978,6 +978,25 @@ Task("_cg-ios-run-tests")
                 }
             };
 
+        if(isCIBuild)
+        {
+            Information("defaults write com.apple.CrashReporter DialogType none");
+            IEnumerable<string> redirectedStandardOutput;
+            StartProcess("defaults", 
+                new ProcessSettings {
+                    Arguments = new ProcessArgumentBuilder().Append(@"write com.apple.CrashReporter DialogType none"),
+                    RedirectStandardOutput = true
+                },
+                out redirectedStandardOutput
+            );
+
+
+            foreach (var item in redirectedStandardOutput)
+            {
+                Information(item);
+            }
+        }
+
         RunTests(IOS_TEST_LIBRARY, settings, ctx);
     });
 
