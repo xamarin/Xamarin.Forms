@@ -32,7 +32,6 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 				label.LineHeight = 3;
 				label.TextColor = Color.Blue;
 				label.TextTransform = TextTransform.Uppercase;
-				label.TextType = TextType.Html;
 				label.HorizontalTextAlignment = TextAlignment.Start;
 				label.VerticalTextAlignment = TextAlignment.Center;
 
@@ -71,8 +70,6 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 
 				return uiLabel.TextAlignment;
 			});
-			Assert.That(actual, Is.EqualTo(expected));
-		}
 			Assert.That(actual, Is.EqualTo(expected));
 		}
 	}

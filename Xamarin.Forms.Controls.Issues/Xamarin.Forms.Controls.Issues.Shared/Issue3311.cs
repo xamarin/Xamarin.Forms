@@ -77,7 +77,6 @@ namespace Xamarin.Forms.Controls.Issues
 						LineHeight = 3,
 						TextColor = Color.Blue,
 						TextTransform = TextTransform.Uppercase,
-						TextType = TextType.Html,
 						HorizontalTextAlignment = TextAlignment.Start
 					}
 				}
