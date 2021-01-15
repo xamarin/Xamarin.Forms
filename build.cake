@@ -1047,13 +1047,6 @@ Task("Default")
 
 RunTarget(target);
 
-
-
-void SetNunitEnvironmentVariables()
-{
-
-}
-
 void RunTests(string unitTestLibrary, NUnit3Settings settings, ICakeContext ctx)
 {
     try
