@@ -51,8 +51,8 @@ var IOS_TEST_PROJ = "./Xamarin.Forms.Core.iOS.UITests/Xamarin.Forms.Core.iOS.UIT
 var IOS_TEST_LIBRARY = Argument("IOS_TEST_LIBRARY", $"./Xamarin.Forms.Core.iOS.UITests/bin/{configuration}/Xamarin.Forms.Core.iOS.UITests.dll");
 var IOS_IPA_PATH = Argument("IOS_IPA_PATH", $"./Xamarin.Forms.ControlGallery.iOS/bin/iPhoneSimulator/{configuration}/XamarinFormsControlGalleryiOS.app");
 var IOS_BUNDLE_ID = "com.xamarin.quickui.controlgallery";
-var IOS_BUILD_IPA = Argument("IOS_BUILD_IPA", (target == "cg-ios-deploy") ? true : (false || isCIBuild) );
-Guid IOS_SIM_UDID = Argument("IOS_SIM_UDID", Guid.Empty);
+var IOS_BUILD_IPA = GetBuildVariable("IOS_BUILD_IPA", (target == "cg-ios-deploy") ? true : (false || isCIBuild) );
+Guid IOS_SIM_UDID = GetBuildVariable("IOS_SIM_UDID", Guid.Empty);
 
 var UWP_PACKAGE_ID = "0d4424f6-1e29-4476-ac00-ba22c3789cb6";
 var UWP_TEST_LIBRARY = GetBuildVariable("UWP_TEST_LIBRARY", $"./Xamarin.Forms.Core.Windows.UITests/bin/{configuration}/Xamarin.Forms.Core.Windows.UITests.dll");
@@ -490,49 +490,27 @@ Task("_cg-uwp-run-tests")
             }
         }
 
+        var settings = new NUnit3Settings {
+            Params = new Dictionary<string, string>()
+            {
+                {"IncludeScreenShots", "true"}
+            }
+        };
+
+
         try
         {
-            var settings = new NUnit3Settings {
-                Params = new Dictionary<string, string>()
-                {
-                    {"IncludeScreenShots", "true"}
-                }
-            };
-
-            if(!String.IsNullOrWhiteSpace(NUNIT_TEST_WHERE))
-            {
-                settings.Where = NUNIT_TEST_WHERE;
-            }
-
-            NUnit3(new [] { UWP_TEST_LIBRARY }, settings);
-        }
-        catch
-        {
-            SetEnvironmentVariables();
-            throw;
+            RunTests(UWP_TEST_LIBRARY, settings, ctx);
         }
         finally
-        { 
+        {
             try
             {
                 process?.Kill();
             }
             catch{}
         }
-
-        SetEnvironmentVariables();
-
-        void SetEnvironmentVariables()
-        {
-            var doc = new System.Xml.XmlDocument();
-            doc.Load("TestResult.xml");
-            var root = doc.DocumentElement;
-
-            foreach(System.Xml.XmlAttribute attr in root.Attributes)
-            {
-                SetEnvironmentVariable($"NUNIT_{attr.Name}", attr.Value, ctx);
-            }
-        }
+        
     });
 
 Task("cg-uwp-run-tests-ci")
@@ -988,7 +966,7 @@ Task("cg-ios-run-tests")
     .IsDependentOn("_cg-ios-run-tests");
 
 Task("_cg-ios-run-tests")
-    .Does(() =>
+    .Does((ctx) =>
     {
         var sim = GetIosSimulator();
 
@@ -1000,12 +978,7 @@ Task("_cg-ios-run-tests")
                 }
             };
 
-        if(!String.IsNullOrWhiteSpace(NUNIT_TEST_WHERE))
-        {
-            settings.Where = NUNIT_TEST_WHERE;
-        }
-
-        NUnit3(new [] { IOS_TEST_LIBRARY }, settings);
+        RunTests(IOS_TEST_LIBRARY, settings, ctx);
     });
 
 Task("cg-ios-run-tests-ci")
@@ -1073,6 +1046,45 @@ Task("Default")
 //////////////////////////////////////////////////////////////////////
 
 RunTarget(target);
+
+
+
+void SetNunitEnvironmentVariables()
+{
+
+}
+
+void RunTests(string unitTestLibrary, NUnit3Settings settings, ICakeContext ctx)
+{
+    try
+    {
+        if(!String.IsNullOrWhiteSpace(NUNIT_TEST_WHERE))
+        {
+            settings.Where = NUNIT_TEST_WHERE;
+        }
+
+        NUnit3(new [] { unitTestLibrary }, settings);
+    }
+    catch
+    {
+        SetTestResultsEnvironmentVariables();
+        throw;
+    }
+
+    SetTestResultsEnvironmentVariables();
+
+    void SetTestResultsEnvironmentVariables()
+    {
+        var doc = new System.Xml.XmlDocument();
+        doc.Load("TestResult.xml");
+        var root = doc.DocumentElement;
+
+        foreach(System.Xml.XmlAttribute attr in root.Attributes)
+        {
+            SetEnvironmentVariable($"NUNIT_{attr.Name}", attr.Value, ctx);
+        }
+    }
+}
 
 T GetBuildVariable<T>(string key, T defaultValue)
 {
