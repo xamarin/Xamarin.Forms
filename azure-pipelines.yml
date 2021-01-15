@@ -168,7 +168,6 @@ stages:
           vmImage: $(macOSXVmImage)
           demands:
             - sh
-            - Xamarin.iOS
         variables:
           provisionator.osxPath : 'build/provisioning/provisioning.csx'
           buildConfiguration: $(DefaultBuildConfiguration)
