@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;net5.0-android;net5.0-ios</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;net6.0-android;net6.0-ios</TargetFrameworks>
   </PropertyGroup>  
   <Import Project="..\..\..\..\.nuspec\Xamarin.Forms.MultiTargeting.targets" />
   <ItemGroup Condition="$(TargetFramework.StartsWith('Xamarin.iOS')) == true ">
