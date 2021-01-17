@@ -228,6 +228,24 @@ Task("Clean")
     CleanDirectories("./**/bin", (fsi)=> !fsi.Path.FullPath.StartsWith("tools"));
 });
 
+Task("provision-net6sdk")
+    .Description("Install NET 6")
+    .Does(async () =>
+    {
+        if(IsRunningOnWindows())
+        {
+            InstallMsiOrExe("https://dotnetcli.azureedge.net/dotnet/Sdk/6.0.100-alpha.1.20562.2/dotnet-sdk-6.0.100-alpha.1.20562.2-win-x64.exe", null);
+            InstallMsiOrExe("https://dl.internalx.com/vsts-devdiv/Xamarin.Android/public/net6/4264138/master/8e097b44df981bb4259845cfe2db9ca2aaaedc91/Microsoft.NET.Workload.Android.11.0.100.255.msi", null);
+            InstallMsiOrExe("https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/main/3174e94a178c41cae0a51fa296e52f711957c14a/543/package/Microsoft.NET.Workload.iOS.14.2.100-ci.main.30.msi", null);
+        }
+        else
+        {
+            await Boots("https://dotnetcli.azureedge.net/dotnet/Sdk/6.0.100-alpha.1.20562.2/dotnet-sdk-6.0.100-alpha.1.20562.2-osx-x64.pkg");
+            await Boots("https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/main/3174e94a178c41cae0a51fa296e52f711957c14a/543/package/Microsoft.iOS.Bundle.14.2.100-ci.main.30.pkg");
+            await Boots("https://dl.internalx.com/vsts-devdiv/Xamarin.Android/public/net6/4264138/master/8e097b44df981bb4259845cfe2db9ca2aaaedc91/Microsoft.NET.Workload.Android-11.0.100-ci.master.255.pkg");
+        }
+    });
+
 Task("provision-macsdk")
     .Description("Install Xamarin.Mac SDK")
     .Does(async () =>
@@ -388,7 +406,7 @@ Task("provision-netsdk-local")
 
                 Information("Downloading: {0} to {1}", cabUrl, cabPath);
                 DownloadFile(cabUrl, cabPath);
-                InstallMsi(msiUrl, null, msiName);
+                InstallMsiOrExe(msiUrl, null, msiName);
             }
 
             int i = 0;
@@ -541,7 +559,7 @@ Task("provision-uitests-uwp")
         if(!DirectoryExists(driverPath))
         {
             try{
-                InstallMsi(UWP_APP_DRIVER_INSTALL_PATH, installPath);
+                InstallMsiOrExe(UWP_APP_DRIVER_INSTALL_PATH, installPath);
             }
             catch(Exception e)
             {
@@ -550,7 +568,7 @@ Task("provision-uitests-uwp")
         }
     });
 
-void InstallMsi(string msiFile, string installTo, string fileName = "InstallFile.msi")
+void InstallMsiOrExe(string msiFile, string installTo, string fileName = "InstallFile.msi")
 {
     string installerPath = $"{System.IO.Path.GetTempPath()}{fileName}";
         
@@ -559,22 +577,36 @@ void InstallMsi(string msiFile, string installTo, string fileName = "InstallFile
         Information ("Installing: {0}", msiFile);
         DownloadFile(msiFile, installerPath);
         Information("File Downloaded To: {0}", installerPath);
+        int result = -1;
 
-        var argumentBuilder = 
-            new ProcessArgumentBuilder()
-                .Append("/a")
-                .Append(installerPath)
-                .Append("/qn");
-
-        if(!String.IsNullOrWhiteSpace(installTo))
+        if(msiFile.EndsWith(".exe"))
         {
-            Information("Installing into: {0}", installTo);
-            argumentBuilder = argumentBuilder.Append("TARGETDIR=\"" + installTo + "\"");
-        }
+            if(fileName == "InstallFile.msi")
+                fileName = "InstallFile.exe";
 
-        var result = StartProcess("msiexec", new ProcessSettings {
-            Arguments = argumentBuilder
-        });
+            result = StartProcess(installerPath, new ProcessSettings {
+                    Arguments = new ProcessArgumentBuilder()
+                        .Append(@" /q")
+                    }
+                );
+        }
+        else{
+            var argumentBuilder = 
+                new ProcessArgumentBuilder()
+                    .Append("/a")
+                    .Append(installerPath)
+                    .Append("/qn");
+
+            if(!String.IsNullOrWhiteSpace(installTo))
+            {
+                Information("Installing into: {0}", installTo);
+                argumentBuilder = argumentBuilder.Append("TARGETDIR=\"" + installTo + "\"");
+            }
+
+            result = StartProcess("msiexec", new ProcessSettings {
+                Arguments = argumentBuilder
+            });
+        }
 
         if(result != 0)
             throw new Exception("Failed to install: " + msiFile);
@@ -599,6 +631,7 @@ Task("provision")
     .IsDependentOn("provision-androidsdk")
     .IsDependentOn("provision-netsdk-local")
     .IsDependentOn("provision-windowssdk")
+    .IsDependentOn("provision-net6sdk")
     .IsDependentOn("provision-monosdk"); // always provision monosdk last otherwise CI might fail
 
 Task("NuGetPack")
