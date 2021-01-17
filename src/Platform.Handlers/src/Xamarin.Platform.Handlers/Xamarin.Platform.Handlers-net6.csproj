@@ -55,7 +55,7 @@
   
   
   <PropertyGroup>
-    <_DotNetPackageVersion>5.0.0-rc.2.20475.5</_DotNetPackageVersion>
+    <_DotNetPackageVersion>5.0.0</_DotNetPackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.CodeDom"                        Version="$(_DotNetPackageVersion)" />
