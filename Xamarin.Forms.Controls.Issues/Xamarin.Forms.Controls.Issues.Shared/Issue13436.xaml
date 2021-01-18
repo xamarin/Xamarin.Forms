@@ -13,10 +13,10 @@
             BackgroundColor="Black"
             TextColor="White"
             Text="Without exceptions, the test has passed."/>
-       <CarouselView
-            x:Name="carouselView"
+        <CarouselView
+            x:Name="Carousel"
+            AutomationId="CarouselId"
             HorizontalScrollBarVisibility="Never"
-            IndicatorView="Indicator"
             Loop="False"
             VerticalOptions="Center">
             <CarouselView.ItemsLayout>
@@ -48,12 +48,5 @@
                 </DataTemplate>
             </CarouselView.ItemTemplate>
         </CarouselView>
-        <IndicatorView
-            x:Name="Indicator"
-			Padding="10"
-			IndicatorColor="LightGray"
-			SelectedIndicatorColor="Black"
-			IndicatorSize="10"
-			HorizontalOptions="Center" />
     </StackLayout>
 </local:TestContentPage>

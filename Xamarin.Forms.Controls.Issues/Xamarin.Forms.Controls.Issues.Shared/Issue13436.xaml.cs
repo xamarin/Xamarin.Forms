@@ -1,6 +1,7 @@
 ﻿using Xamarin.Forms.CustomAttributes;
 using System;
 using System.Collections.Generic;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.UITest;
@@ -10,7 +11,8 @@ using Xamarin.Forms.Core.UITests;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Issue(IssueTracker.Github, 13436,
+    [Preserve(AllMembers = true)]
+    [Issue(IssueTracker.Github, 13436,
         "[Bug] Java.Lang.IllegalArgumentException in CarouselView adjusting PeekAreaInsets in OnSizeAllocated using XF 5.0",
 		PlatformAffected.Android)]
 	public partial class Issue13436 : TestContentPage
@@ -62,17 +64,23 @@ namespace Xamarin.Forms.Controls.Issues
             }
 
             _prevWidth = width;
-
-            //Exception arises here
-            //especially with Loop = false
             Carousel.PeekAreaInsets = width * .15;
         }
 #endif
         protected override void Init()
 		{
-		}
-	}
+        }
 
+#if UITEST && __ANDROID__
+		[Test]
+		public void ChangePeekAreaInsetsInOnSizeAllocatedTest()
+        {
+            RunningApp.WaitForElement("CarouselId");
+        }
+#endif
+    }
+
+    [Preserve(AllMembers = true)]
     public class Issue13436Model
     {
         public string Name { get; set; }
