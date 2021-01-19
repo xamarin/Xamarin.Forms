@@ -14,12 +14,16 @@ namespace Xamarin.Platform
 				nativeView.Enabled = view.IsEnabled;
 		}
 
-
 		public static void UpdateBackgroundColor(this AView nativeView, IView view)
 		{
 			var backgroundColor = view.BackgroundColor;
 			if (!backgroundColor.IsDefault)
 				nativeView?.SetBackgroundColor(backgroundColor.ToNative());
+		}
+
+		public static void Invalidate(this AView nativeView) 
+		{
+			nativeView.Invalidate();
 		}
 	}
 }

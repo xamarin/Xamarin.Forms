@@ -19,7 +19,7 @@ namespace Xamarin.Platform.Handlers
 		{
 			[nameof(IView.BackgroundColor)] = MapBackgroundColor,
 			[nameof(IView.Frame)] = MapFrame,
-			[nameof(IView.IsEnabled)] = MapIsEnabled
+			[nameof(IView.IsEnabled)] = MapIsEnabled,
 		};
 
 		public static void MapFrame(IViewHandler handler, IView view)
@@ -39,7 +39,6 @@ namespace Xamarin.Platform.Handlers
 			CheckParameters(handler, view);
 			(handler.NativeView as NativeView)?.UpdateBackgroundColor(view);
 		}
-
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static void CheckParameters(IViewHandler handler, IView view)
