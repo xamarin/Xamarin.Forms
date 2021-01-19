@@ -547,6 +547,11 @@ namespace Xamarin.Forms
 		ShellNavigationManager _navigationManager;
 		ShellFlyoutItemsManager _flyoutManager;
 
+		ObservableCollection<Element> _allTheChildren = new ObservableCollection<Element>();
+
+		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => 
+			new ReadOnlyCollection<Element>(_allTheChildren);
+
 		public Shell()
 		{
 			_navigationManager = new ShellNavigationManager(this);
@@ -566,6 +571,19 @@ namespace Xamarin.Forms
 			Navigation = new NavigationImpl(this);
 			Route = Routing.GenerateImplicitRoute("shell");
 			Initialize();
+
+			InternalChildren.CollectionChanged += OnInternalChildrenCollectionChanged;
+		}
+
+		void OnInternalChildrenCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.NewItems != null)
+				foreach (Element element in e.NewItems)
+					_allTheChildren.Add(element);
+
+			if (e.OldItems != null)
+				foreach (Element element in e.OldItems)
+					_allTheChildren.Add(element);
 		}
 
 		void Initialize()
@@ -781,6 +799,21 @@ namespace Xamarin.Forms
 
 		internal string RouteScheme { get; set; } = "app";
 
+
+		protected override void OnChildRemoved(Element child, int oldLogicalIndex)
+		{
+			if (_allTheChildren.Contains(child))
+				_allTheChildren.Remove(child);
+			base.OnChildRemoved(child, oldLogicalIndex);
+		}
+
+		protected override void OnChildAdded(Element child)
+		{
+			if (!_allTheChildren.Contains(child))
+				_allTheChildren.Add(child);
+			base.OnChildAdded(child);
+		}
+
 		View FlyoutHeaderView
 		{
 			get => _flyoutHeaderView;
@@ -850,17 +883,17 @@ namespace Xamarin.Forms
 
 		bool ValidDefaultShellItem(Element child) => !(child is MenuShellItem);
 
-		internal override IEnumerable<Element> ChildrenNotDrawnByThisElement
-		{
-			get
-			{
-				if (FlyoutHeaderView != null)
-					yield return FlyoutHeaderView;
+		//internal override IEnumerable<Element> ChildrenNotDrawnByThisElement
+		//{
+		//	get
+		//	{
+		//		if (FlyoutHeaderView != null)
+		//			yield return FlyoutHeaderView;
 
-				if (FlyoutFooterView != null)
-					yield return FlyoutFooterView;
-			}
-		}
+		//		if (FlyoutFooterView != null)
+		//			yield return FlyoutFooterView;
+		//	}
+		//}
 
 		protected virtual void OnNavigated(ShellNavigatedEventArgs args)
 		{
@@ -1165,6 +1198,11 @@ namespace Xamarin.Forms
 				PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, new[] { FlyoutContentView });
 		}
 
+		protected override void LayoutChildren(double x, double y, double width, double height)
+		{
+			// Page by default tries to layout all logical children
+			// we don't want this behavior with shell
+		}
 
 		#region Shell Flyout Content
 
