@@ -22,7 +22,7 @@ PowerShell:
 #addin "nuget:?package=Cake.Android.Adb&version=3.2.0"
 #addin "nuget:?package=Cake.Git&version=0.21.0"
 #addin "nuget:?package=Cake.Android.SdkManager&version=3.0.2"
-#addin "nuget:?package=Cake.Boots&version=1.0.2.437"
+#addin "nuget:?package=Cake.Boots&version=1.0.3.556"
 #addin "nuget:?package=Cake.AppleSimulator&version=0.2.0"
 #addin "nuget:?package=Cake.FileHelpers&version=3.2.1"
 
@@ -234,9 +234,9 @@ Task("provision-net6sdk")
     {
         if(IsRunningOnWindows())
         {
-            InstallMsiOrExe("https://dotnetcli.azureedge.net/dotnet/Sdk/6.0.100-alpha.1.20562.2/dotnet-sdk-6.0.100-alpha.1.20562.2-win-x64.exe", null);
-            InstallMsiOrExe("https://dl.internalx.com/vsts-devdiv/Xamarin.Android/public/net6/4264138/master/8e097b44df981bb4259845cfe2db9ca2aaaedc91/Microsoft.NET.Workload.Android.11.0.100.255.msi", null);
-            InstallMsiOrExe("https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/main/3174e94a178c41cae0a51fa296e52f711957c14a/543/package/Microsoft.NET.Workload.iOS.14.2.100-ci.main.30.msi", null);
+            await InstallMsiWithBoots("https://dl.internalx.com/vsts-devdiv/Xamarin.Android/public/net6/4264138/master/8e097b44df981bb4259845cfe2db9ca2aaaedc91/Microsoft.NET.Workload.Android.11.0.100.255.msi");
+            await InstallMsiWithBoots("https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/main/3174e94a178c41cae0a51fa296e52f711957c14a/543/package/Microsoft.NET.Workload.iOS.14.2.100-ci.main.30.msi");
+            InstallMsiOrExe("https://dotnetcli.azureedge.net/dotnet/Sdk/6.0.100-alpha.1.20562.2/dotnet-sdk-6.0.100-alpha.1.20562.2-win-x64.exe");
         }
         else
         {
@@ -568,8 +568,41 @@ Task("provision-uitests-uwp")
         }
     });
 
-void InstallMsiOrExe(string msiFile, string installTo, string fileName = "InstallFile.msi")
+
+async Task InstallMsiWithBoots(string msiFile, string installTo = null, string fileName = "InstallFile.msi")
 {
+    bool success = false;
+
+    try
+    {
+        await Boots(msiFile);
+        success = true;
+    }
+    catch (System.Exception e)
+    {
+        Information("Boots failed: {0}", e);
+    }
+
+
+    if(success)
+        return;
+
+    try
+    {
+        InstallMsiOrExe(msiFile, installTo, fileName, !isCIBuild);
+        success = true;
+    }
+    catch (System.Exception e)
+    {
+        Information("Our attempt failed: {0}", e);
+    }
+}
+
+void InstallMsiOrExe(string msiFile, string installTo = null, string fileName = "InstallFile.msi", bool interactive = false)
+{
+     if(msiFile.EndsWith(".exe") && fileName == "InstallFile.msi")
+        fileName = "InstallFile.exe";
+
     string installerPath = $"{System.IO.Path.GetTempPath()}{fileName}";
         
     try
@@ -581,9 +614,6 @@ void InstallMsiOrExe(string msiFile, string installTo, string fileName = "Instal
 
         if(msiFile.EndsWith(".exe"))
         {
-            if(fileName == "InstallFile.msi")
-                fileName = "InstallFile.exe";
-
             result = StartProcess(installerPath, new ProcessSettings {
                     Arguments = new ProcessArgumentBuilder()
                         .Append(@" /q")
@@ -594,8 +624,10 @@ void InstallMsiOrExe(string msiFile, string installTo, string fileName = "Instal
             var argumentBuilder = 
                 new ProcessArgumentBuilder()
                     .Append("/a")
-                    .Append(installerPath)
-                    .Append("/qn");
+                    .Append(installerPath);
+
+            if(!interactive)
+                argumentBuilder = argumentBuilder.Append("/qn");
 
             if(!String.IsNullOrWhiteSpace(installTo))
             {
