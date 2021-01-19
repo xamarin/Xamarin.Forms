@@ -12,16 +12,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 	{
 		bool _disposed;
 		Drawable _defaultTrackDrawable;
-		string _defaultContentDescription;
 		bool _changedThumbColor;
 
 		public SwitchRenderer(Context context) : base(context)
 		{
 			AutoPackage = false;
 		}
-
-		protected override void SetContentDescription()
-			=> AutomationPropertiesProvider.SetBasicContentDescription(this, Element, ref _defaultContentDescription);
+    
+		protected override void SetContentDescription() =>
+			base.SetContentDescription(false);
 
 		void CompoundButton.IOnCheckedChangeListener.OnCheckedChanged(CompoundButton buttonView, bool isChecked)
 		{

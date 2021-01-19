@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -300,8 +301,24 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			public IShellController Controller => this;
 
+			public List<List<Element>> GenerateTestFlyoutItems()
+			{
+				List<List<Element>> returnValue = new List<List<Element>>();
+
+
+				FlyoutItems
+					.OfType<IEnumerable>()
+					.ForEach(l => returnValue.Add(l.OfType<Element>().ToList()));
+
+				return returnValue;
+			}
+
 			public TestShell()
 			{
+				Routing.RegisterRoute(nameof(TestPage1), typeof(TestPage1));
+				Routing.RegisterRoute(nameof(TestPage2), typeof(TestPage2));
+				Routing.RegisterRoute(nameof(TestPage3), typeof(TestPage3));
+
 				this.Navigated += (_, __) => NavigatedCount++;
 				this.Navigating += (_, __) => NavigatingCount++;
 			}
@@ -445,5 +462,9 @@ namespace Xamarin.Forms.Core.UnitTests
 				}
 			}
 		}
+
+		public class TestPage1 : ContentPage { }
+		public class TestPage2 : ContentPage { }
+		public class TestPage3 : ContentPage { }
 	}
 }

@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		public override void LayoutSubviews()
 		{
 			base.LayoutSubviews();
-			if (Control != null)
+			if (Control != null && Element != null)
 				Control.Frame = new RectangleF(0, 0, (nfloat)Element.Width, (nfloat)Element.Height);
 		}
 
@@ -277,7 +277,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (IsElementOrControlEmpty)
 				return;
 
-			SetBackground(Element.Background);
+			Brush brush = Element.Background;
+
+			if (!Brush.IsNullOrEmpty(brush))
+				SetBackground(brush);
 		}
 
 		void UpdateIsEnabled()
