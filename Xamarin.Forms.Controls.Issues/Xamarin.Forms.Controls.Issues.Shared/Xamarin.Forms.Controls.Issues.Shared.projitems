@@ -1878,6 +1878,7 @@
       <DependentUpon>Issue15100.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue13790.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue10366.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla22229.xaml">
