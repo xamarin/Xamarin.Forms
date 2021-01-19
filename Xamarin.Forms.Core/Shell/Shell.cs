@@ -784,38 +784,17 @@ namespace Xamarin.Forms
 		View FlyoutHeaderView
 		{
 			get => _flyoutHeaderView;
-			set
-			{
-				if (_flyoutHeaderView == value)
-					return;
-
-				if (_flyoutHeaderView != null)
-					OnChildRemoved(_flyoutHeaderView, -1);
-				_flyoutHeaderView = value;
-				if (_flyoutHeaderView != null)
-					OnChildAdded(_flyoutHeaderView);
-			}
 		}
 
 		View FlyoutFooterView
 		{
 			get => _flyoutFooterView;
-			set
-			{
-				if (_flyoutFooterView == value)
-					return;
-
-				if (_flyoutFooterView != null)
-					OnChildRemoved(_flyoutFooterView, -1);
-				_flyoutFooterView = value;
-				if (_flyoutFooterView != null)
-					OnChildAdded(_flyoutFooterView);
-			}
 		}
 
 		protected override void OnBindingContextChanged()
 		{
 			base.OnBindingContextChanged();
+
 			if (FlyoutHeaderView != null)
 				SetInheritedBindingContext(FlyoutHeaderView, BindingContext);
 
@@ -1106,56 +1085,44 @@ namespace Xamarin.Forms
 
 		void OnFlyoutHeaderChanged(object oldVal, object newVal)
 		{
-			if (FlyoutHeaderTemplate == null)
-			{
-				if (newVal is View newFlyoutHeader)
-					FlyoutHeaderView = newFlyoutHeader;
-				else
-					FlyoutHeaderView = null;
-			}
+			ShellTemplatedViewManager.OnViewDataChanged(
+				FlyoutHeaderTemplate,
+				ref _flyoutHeaderView,
+				newVal,
+				OnChildRemoved,
+				OnChildAdded);
 		}
 
 		void OnFlyoutHeaderTemplateChanged(DataTemplate oldValue, DataTemplate newValue)
 		{
-			if (newValue == null)
-			{
-				if (FlyoutHeader is View flyoutHeaderView)
-					FlyoutHeaderView = flyoutHeaderView;
-				else
-					FlyoutHeaderView = null;
-			}
-			else
-			{
-				var newHeaderView = (View)newValue.CreateContent(FlyoutHeader, this);
-				FlyoutHeaderView = newHeaderView;
-			}
+			ShellTemplatedViewManager.OnViewTemplateChanged(
+				FlyoutHeaderTemplate,
+				ref _flyoutHeaderView,
+				newValue,
+				OnChildRemoved,
+				OnChildAdded,
+				this);
 		}
 
 		void OnFlyoutFooterChanged(object oldVal, object newVal)
 		{
-			if (FlyoutFooterTemplate == null)
-			{
-				if (newVal is View newFlyoutFooter)
-					FlyoutFooterView = newFlyoutFooter;
-				else
-					FlyoutFooterView = null;
-			}
+			ShellTemplatedViewManager.OnViewDataChanged(
+				FlyoutFooterTemplate,
+				ref _flyoutFooterView,
+				newVal,
+				OnChildRemoved,
+				OnChildAdded);
 		}
 
 		void OnFlyoutFooterTemplateChanged(DataTemplate oldValue, DataTemplate newValue)
 		{
-			if (newValue == null)
-			{
-				if (FlyoutFooter is View flyoutFooterView)
-					FlyoutFooterView = flyoutFooterView;
-				else
-					FlyoutFooterView = null;
-			}
-			else
-			{
-				var newFooterView = (View)newValue.CreateContent(FlyoutFooter, this);
-				FlyoutFooterView = newFooterView;
-			}
+			ShellTemplatedViewManager.OnViewTemplateChanged(
+				FlyoutFooterTemplate,
+				ref _flyoutFooterView,
+				newValue,
+				OnChildRemoved,
+				OnChildAdded,
+				this);
 		}
 
 		internal Element GetVisiblePage()
@@ -1194,6 +1161,8 @@ namespace Xamarin.Forms
 				PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, new[] { FlyoutHeaderView });
 			if (FlyoutFooterView != null)
 				PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, new[] { FlyoutFooterView });
+			if (FlyoutContentView != null)
+				PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, new[] { FlyoutContentView });
 		}
 
 
@@ -1223,44 +1192,27 @@ namespace Xamarin.Forms
 		View FlyoutContentView
 		{
 			get => _flyoutContentView;
-			set
-			{
-				if (_flyoutContentView == value)
-					return;
-
-				if (_flyoutContentView != null)
-					OnChildRemoved(_flyoutContentView, -1);
-				_flyoutContentView = value;
-				if (_flyoutContentView != null)
-					OnChildAdded(_flyoutContentView);
-			}
 		}
 
 		void OnFlyoutContentChanged(object oldVal, object newVal)
 		{
-			if (FlyoutContentTemplate == null)
-			{
-				if (newVal is View newFlyoutContent)
-					FlyoutContentView = newFlyoutContent;
-				else
-					FlyoutContentView = null;
-			}
+			ShellTemplatedViewManager.OnViewDataChanged(
+				FlyoutContentTemplate,
+				ref _flyoutContentView,
+				newVal,
+				OnChildRemoved,
+				OnChildAdded);
 		}
 
 		void OnFlyoutContentTemplateChanged(DataTemplate oldValue, DataTemplate newValue)
 		{
-			if (newValue == null)
-			{
-				if (FlyoutContent is View flyoutContentView)
-					FlyoutContentView = flyoutContentView;
-				else
-					FlyoutContentView = null;
-			}
-			else
-			{
-				var newContentView = (View)newValue.CreateContent(FlyoutContent, this);
-				FlyoutContentView = newContentView;
-			}
+			ShellTemplatedViewManager.OnViewTemplateChanged(
+				FlyoutContentTemplate,
+				ref _flyoutContentView,
+				newValue,
+				OnChildRemoved,
+				OnChildAdded,
+				this);
 		}
 
 		static void OnFlyoutContentChanging(BindableObject bindable, object oldValue, object newValue)
