@@ -1129,9 +1129,9 @@ namespace Xamarin.Forms
 		void OnFlyoutHeaderTemplateChanged(DataTemplate oldValue, DataTemplate newValue)
 		{
 			ShellTemplatedViewManager.OnViewTemplateChanged(
-				FlyoutHeaderTemplate,
-				ref _flyoutHeaderView,
 				newValue,
+				ref _flyoutHeaderView,
+				FlyoutHeader,
 				OnChildRemoved,
 				OnChildAdded,
 				this);
@@ -1150,9 +1150,9 @@ namespace Xamarin.Forms
 		void OnFlyoutFooterTemplateChanged(DataTemplate oldValue, DataTemplate newValue)
 		{
 			ShellTemplatedViewManager.OnViewTemplateChanged(
-				FlyoutFooterTemplate,
-				ref _flyoutFooterView,
 				newValue,
+				ref _flyoutFooterView,
+				FlyoutFooter,
 				OnChildRemoved,
 				OnChildAdded,
 				this);
@@ -1245,9 +1245,9 @@ namespace Xamarin.Forms
 		void OnFlyoutContentTemplateChanged(DataTemplate oldValue, DataTemplate newValue)
 		{
 			ShellTemplatedViewManager.OnViewTemplateChanged(
-				FlyoutContentTemplate,
-				ref _flyoutContentView,
 				newValue,
+				ref _flyoutContentView,
+				FlyoutContent,
 				OnChildRemoved,
 				OnChildAdded,
 				this);

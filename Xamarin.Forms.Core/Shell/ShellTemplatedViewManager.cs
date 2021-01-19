@@ -21,13 +21,13 @@ namespace Xamarin.Forms
 
 
 		public static void OnViewDataChanged(
-			DataTemplate viewTemplate,
+			DataTemplate currentViewTemplate,
 			ref View localViewRef,
 			object newViewData,
 			Action<Element, int> OnChildRemoved,
 			Action<Element> OnChildAdded)
 		{
-			if (viewTemplate == null)
+			if (currentViewTemplate == null)
 			{
 				SetView(ref localViewRef,
 					newViewData as View,
@@ -37,22 +37,20 @@ namespace Xamarin.Forms
 		}
 
 		public static void OnViewTemplateChanged(
-			DataTemplate viewTemplate,
+			DataTemplate newViewTemplate,
 			ref View localViewRef,
-			object newViewData,
+			object currentViewData,
 			Action<Element, int> OnChildRemoved,
 			Action<Element> OnChildAdded,
 			Shell shell)
 		{
-			View newContentView = newViewData as View;
-			if (viewTemplate != null)
+			View newContentView = currentViewData as View;
+			if (newViewTemplate != null)
 			{ 
-				newContentView = (View)viewTemplate.CreateContent(viewTemplate, shell);
+				newContentView = (View)newViewTemplate.CreateContent(newViewTemplate, shell);
 			}
 
-			OnViewDataChanged(
-				viewTemplate,
-				ref localViewRef,
+			SetView(ref localViewRef,
 				newContentView,
 				OnChildRemoved,
 				OnChildAdded);
