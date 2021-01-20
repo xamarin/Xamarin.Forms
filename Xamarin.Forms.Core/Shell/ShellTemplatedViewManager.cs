@@ -7,13 +7,17 @@ namespace Xamarin.Forms
 {
 	public static class ShellTemplatedViewManager
 	{
-		public static void SetView(ref View localView, View newView, Action<Element, int> OnChildRemoved, Action<Element> OnChildAdded)
+		public static void SetView(
+			ref View localView, 
+			View newView, 
+			Action<Element> OnChildRemoved, 
+			Action<Element> OnChildAdded)
 		{
 			if (localView == newView)
 				return;
 
 			if (localView != null)
-				OnChildRemoved(localView, -1);
+				OnChildRemoved(localView);
 			localView = newView;
 			if (localView != null)
 				OnChildAdded(localView);
@@ -24,7 +28,7 @@ namespace Xamarin.Forms
 			DataTemplate currentViewTemplate,
 			ref View localViewRef,
 			object newViewData,
-			Action<Element, int> OnChildRemoved,
+			Action<Element> OnChildRemoved,
 			Action<Element> OnChildAdded)
 		{
 			if (currentViewTemplate == null)
@@ -40,7 +44,7 @@ namespace Xamarin.Forms
 			DataTemplate newViewTemplate,
 			ref View localViewRef,
 			object currentViewData,
-			Action<Element, int> OnChildRemoved,
+			Action<Element> OnChildRemoved,
 			Action<Element> OnChildAdded,
 			Shell shell)
 		{

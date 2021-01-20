@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Platform.iOS
 			TableView.ReloadRows(new[] { IndexPath }, UITableViewRowAnimation.Automatic);
 		}
 
-		internal void Disconnect()
+		internal void Disconnect(Shell shell)
 		{
 			ViewMeasureInvalidated = null;
 			View.MeasureInvalidated -= MeasureInvalidated;
@@ -48,6 +48,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_bindingContext = null;
 			Platform.SetRenderer(View, null);
+			shell.RemoveLogicalChild(View);
 			View = null;
 			TableView = null;
 		}

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Xaml.Diagnostics;
 
 namespace Xamarin.Forms
 {
@@ -493,6 +494,40 @@ namespace Xamarin.Forms
 			return _navigationManager.GoToAsync(state, animate, false);
 		}
 
+		public void AddLogicalChild(Element element)
+		{
+			if (element == null)
+			{
+				return;
+			}
+
+			if (_logicalChildren.Contains(element))
+				return;
+
+			_logicalChildren.Add(element);
+			element.Parent = this;
+			OnChildAdded(element);
+			VisualDiagnostics.OnChildAdded(this, element);
+		}
+
+		public void RemoveLogicalChild(Element element)
+		{
+			if (element == null)
+			{
+				return;
+			}
+
+			element.Parent = null;
+
+			if (!_logicalChildren.Contains(element))
+				return;
+
+			var oldLogicalIndex = _logicalChildren.IndexOf(element);
+			_logicalChildren.Remove(element);
+			OnChildRemoved(element, oldLogicalIndex);
+			VisualDiagnostics.OnChildRemoved(this, element, oldLogicalIndex);
+		}
+
 		public static readonly BindableProperty CurrentItemProperty =
 			BindableProperty.Create(nameof(CurrentItem), typeof(ShellItem), typeof(Shell), null, BindingMode.TwoWay,
 				propertyChanging: OnCurrentItemChanging,
@@ -547,10 +582,10 @@ namespace Xamarin.Forms
 		ShellNavigationManager _navigationManager;
 		ShellFlyoutItemsManager _flyoutManager;
 
-		ObservableCollection<Element> _allTheChildren = new ObservableCollection<Element>();
+		ObservableCollection<Element> _logicalChildren = new ObservableCollection<Element>();
 
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => 
-			new ReadOnlyCollection<Element>(_allTheChildren);
+			new ReadOnlyCollection<Element>(_logicalChildren);
 
 		public Shell()
 		{
@@ -571,19 +606,7 @@ namespace Xamarin.Forms
 			Navigation = new NavigationImpl(this);
 			Route = Routing.GenerateImplicitRoute("shell");
 			Initialize();
-
 			InternalChildren.CollectionChanged += OnInternalChildrenCollectionChanged;
-		}
-
-		void OnInternalChildrenCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			if (e.NewItems != null)
-				foreach (Element element in e.NewItems)
-					_allTheChildren.Add(element);
-
-			if (e.OldItems != null)
-				foreach (Element element in e.OldItems)
-					_allTheChildren.Add(element);
 		}
 
 		void Initialize()
@@ -799,21 +822,6 @@ namespace Xamarin.Forms
 
 		internal string RouteScheme { get; set; } = "app";
 
-
-		protected override void OnChildRemoved(Element child, int oldLogicalIndex)
-		{
-			if (_allTheChildren.Contains(child))
-				_allTheChildren.Remove(child);
-			base.OnChildRemoved(child, oldLogicalIndex);
-		}
-
-		protected override void OnChildAdded(Element child)
-		{
-			if (!_allTheChildren.Contains(child))
-				_allTheChildren.Add(child);
-			base.OnChildAdded(child);
-		}
-
 		View FlyoutHeaderView
 		{
 			get => _flyoutHeaderView;
@@ -882,18 +890,6 @@ namespace Xamarin.Forms
 		}
 
 		bool ValidDefaultShellItem(Element child) => !(child is MenuShellItem);
-
-		//internal override IEnumerable<Element> ChildrenNotDrawnByThisElement
-		//{
-		//	get
-		//	{
-		//		if (FlyoutHeaderView != null)
-		//			yield return FlyoutHeaderView;
-
-		//		if (FlyoutFooterView != null)
-		//			yield return FlyoutFooterView;
-		//	}
-		//}
 
 		protected virtual void OnNavigated(ShellNavigatedEventArgs args)
 		{
@@ -1106,6 +1102,18 @@ namespace Xamarin.Forms
 			return null;
 		}
 
+
+		void OnInternalChildrenCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.NewItems != null)
+				foreach (Element element in e.NewItems)
+					_logicalChildren.Add(element);
+
+			if (e.OldItems != null)
+				foreach (Element element in e.OldItems)
+					_logicalChildren.Add(element);
+		}
+
 		void NotifyFlyoutBehaviorObservers()
 		{
 			if (CurrentItem == null || GetVisiblePage() == null)
@@ -1122,8 +1130,8 @@ namespace Xamarin.Forms
 				FlyoutHeaderTemplate,
 				ref _flyoutHeaderView,
 				newVal,
-				OnChildRemoved,
-				OnChildAdded);
+				RemoveLogicalChild,
+				AddLogicalChild);
 		}
 
 		void OnFlyoutHeaderTemplateChanged(DataTemplate oldValue, DataTemplate newValue)
@@ -1132,8 +1140,8 @@ namespace Xamarin.Forms
 				newValue,
 				ref _flyoutHeaderView,
 				FlyoutHeader,
-				OnChildRemoved,
-				OnChildAdded,
+				RemoveLogicalChild,
+				AddLogicalChild,
 				this);
 		}
 
@@ -1143,8 +1151,8 @@ namespace Xamarin.Forms
 				FlyoutFooterTemplate,
 				ref _flyoutFooterView,
 				newVal,
-				OnChildRemoved,
-				OnChildAdded);
+				RemoveLogicalChild,
+				AddLogicalChild);
 		}
 
 		void OnFlyoutFooterTemplateChanged(DataTemplate oldValue, DataTemplate newValue)
@@ -1153,8 +1161,8 @@ namespace Xamarin.Forms
 				newValue,
 				ref _flyoutFooterView,
 				FlyoutFooter,
-				OnChildRemoved,
-				OnChildAdded,
+				RemoveLogicalChild,
+				AddLogicalChild,
 				this);
 		}
 
@@ -1238,8 +1246,8 @@ namespace Xamarin.Forms
 				FlyoutContentTemplate,
 				ref _flyoutContentView,
 				newVal,
-				OnChildRemoved,
-				OnChildAdded);
+				RemoveLogicalChild,
+				AddLogicalChild);
 		}
 
 		void OnFlyoutContentTemplateChanged(DataTemplate oldValue, DataTemplate newValue)
@@ -1248,8 +1256,8 @@ namespace Xamarin.Forms
 				newValue,
 				ref _flyoutContentView,
 				FlyoutContent,
-				OnChildRemoved,
-				OnChildAdded,
+				RemoveLogicalChild,
+				AddLogicalChild,
 				this);
 		}
 

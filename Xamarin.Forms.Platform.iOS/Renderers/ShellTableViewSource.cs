@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Platform.iOS
 					if (_cells != null)
 					{
 						foreach (var cell in _cells.Values)
-							cell.Disconnect();
+							cell.Disconnect(_context.Shell);
 					}
 
 					_cells = new Dictionary<Element, UIContainerCell>();
@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_cells != null)
 				{
 					foreach (var cell in _cells.Values)
-						cell.Disconnect();
+						cell.Disconnect(_context.Shell);
 				}
 				_cells = new Dictionary<Element, UIContainerCell>();
 			}
@@ -124,12 +124,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 				// Set Parent after binding context so parent binding context doesn't propagate to view
 				cell.BindingContext = context;
-				view.Parent = _context.Shell;
+				_context.Shell.AddLogicalChild(view);
 			}
 			else
 			{
 				var view = _cells[context].View;
-				cell.Disconnect();
+				cell.Disconnect(_context.Shell);
 				cell = new UIContainerCell(cellId, view);
 				cell.BindingContext = context;
 			}
