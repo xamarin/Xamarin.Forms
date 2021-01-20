@@ -1107,11 +1107,11 @@ namespace Xamarin.Forms
 		{
 			if (e.NewItems != null)
 				foreach (Element element in e.NewItems)
-					_logicalChildren.Add(element);
+					AddLogicalChild(element);
 
 			if (e.OldItems != null)
 				foreach (Element element in e.OldItems)
-					_logicalChildren.Add(element);
+					RemoveLogicalChild(element);
 		}
 
 		void NotifyFlyoutBehaviorObservers()
