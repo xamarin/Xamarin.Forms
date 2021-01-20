@@ -122,7 +122,15 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateStrokeDashArray()
 		{
-			Control.UpdateStrokeDashArray(Element.StrokeDashArray.ToArray());
+			var array = Element.StrokeDashArray.ToArray();
+
+			double thickness = Element.StrokeThickness;
+			var dashArray = new float[array.Length];
+
+			for (int i = 0; i < array.Length; i++)
+				dashArray[i] = (float)(thickness * array[i]);
+
+			Control.UpdateStrokeDashArray(dashArray);
 		}
 
 		void UpdateStrokeDashOffset()

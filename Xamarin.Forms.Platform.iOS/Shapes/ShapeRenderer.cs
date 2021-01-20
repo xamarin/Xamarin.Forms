@@ -118,34 +118,15 @@ namespace Xamarin.Forms.Platform.MacOS
 
         void UpdateStrokeDashArray()
         {
-            if (Element.StrokeDashArray == null || Element.StrokeDashArray.Count == 0)
-                Control.ShapeLayer.UpdateStrokeDash(new nfloat[0]);
-            else
-            {
-				nfloat[] dashArray;
-				double[] array;
+            var array = Element.StrokeDashArray.ToArray();
 
-				if (Element.StrokeDashArray.Count % 2 == 0)
-				{
-					array = new double[Element.StrokeDashArray.Count];
-                    dashArray = new nfloat[Element.StrokeDashArray.Count];
-					Element.StrokeDashArray.CopyTo(array, 0);
-				}
-				else
-				{
-					array = new double[2 * Element.StrokeDashArray.Count];
-                    dashArray = new nfloat[2 * Element.StrokeDashArray.Count];
-					Element.StrokeDashArray.CopyTo(array, 0);
-					Element.StrokeDashArray.CopyTo(array, Element.StrokeDashArray.Count);
-				}
+            double thickness = Element.StrokeThickness;
+            var dashArray = new nfloat[array.Length];
 
-				double thickness = Element.StrokeThickness;
+            for (int i = 0; i < array.Length; i++)
+                dashArray[i] = new nfloat(thickness * array[i]);
 
-                for (int i = 0; i < array.Length; i++)
-                    dashArray[i] = new nfloat(thickness * array[i]);
-                
-                Control.ShapeLayer.UpdateStrokeDash(dashArray);
-            }
+            Control.ShapeLayer.UpdateStrokeDash(dashArray);
         }
 
         void UpdateStrokeDashOffset()
