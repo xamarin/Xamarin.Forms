@@ -20,10 +20,5 @@ namespace Xamarin.Platform
 			if (!backgroundColor.IsDefault)
 				nativeView?.SetBackgroundColor(backgroundColor.ToNative());
 		}
-
-		public static void Invalidate(this AView nativeView) 
-		{
-			nativeView.Invalidate();
-		}
 	}
 }

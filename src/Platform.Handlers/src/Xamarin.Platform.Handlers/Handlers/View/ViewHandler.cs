@@ -19,7 +19,7 @@ namespace Xamarin.Platform.Handlers
 		{
 			[nameof(IView.BackgroundColor)] = MapBackgroundColor,
 			[nameof(IView.Frame)] = MapFrame,
-			[nameof(IView.IsEnabled)] = MapIsEnabled,
+			[nameof(IView.IsEnabled)] = MapIsEnabled
 		};
 
 		public static void MapFrame(IViewHandler handler, IView view)
