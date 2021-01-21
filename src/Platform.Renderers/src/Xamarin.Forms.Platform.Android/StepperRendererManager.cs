@@ -18,10 +18,10 @@ namespace Xamarin.Forms.Platform.Android
 			upButton.Focusable = true;
 
 			downButton.Gravity = GravityFlags.Center;
-			downButton.Tag = renderer as Java.Lang.Object;
+			downButton.SetTag(Resource.Id.maui_internal_tag, renderer as Java.Lang.Object);
 			downButton.SetOnClickListener(StepperListener.Instance);
 			upButton.Gravity = GravityFlags.Center;
-			upButton.Tag = renderer as Java.Lang.Object;
+			upButton.SetTag(Resource.Id.maui_internal_tag, renderer as Java.Lang.Object);
 			upButton.SetOnClickListener(StepperListener.Instance);
 
 			// IMPORTANT:
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			public void OnClick(AView v)
 			{
-				if (!(v?.Tag is IStepperRenderer renderer))
+				if (!(v?.GetTag(Resource.Id.maui_internal_tag) is IStepperRenderer renderer))
 					return;
 
 				if (!(renderer?.Element is Stepper stepper))

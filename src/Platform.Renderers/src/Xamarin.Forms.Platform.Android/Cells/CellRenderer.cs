@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (convertView != null)
 			{
-				Object tag = convertView.Tag;
+				Object tag = convertView.GetTag(Resource.Id.maui_internal_tag);
 				CellRenderer renderer = (tag as RendererHolder)?.Renderer;
 
 				Cell oldCell = renderer?.Cell;
@@ -52,9 +52,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			WireUpForceUpdateSizeRequested(item, view);
 
-			var holder = view.Tag as RendererHolder;
+			var holder = view.GetTag(Resource.Id.maui_internal_tag) as RendererHolder;
 			if (holder == null)
-				view.Tag = new RendererHolder(this);
+				view.SetTag(Resource.Id.maui_internal_tag, new RendererHolder(this));
 			else
 				holder.Renderer = this;
 

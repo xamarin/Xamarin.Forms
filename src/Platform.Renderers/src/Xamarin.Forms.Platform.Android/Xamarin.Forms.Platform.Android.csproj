@@ -31,6 +31,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Resources\values\attrs.xml" />
+    <None Remove="Resources\values\ids.xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\Forms\src\Xamarin.Forms.Core\Crc64.cs" Link="Crc64.cs" />

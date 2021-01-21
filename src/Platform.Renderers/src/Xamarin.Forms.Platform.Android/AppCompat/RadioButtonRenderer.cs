@@ -240,7 +240,7 @@ namespace Xamarin.Forms.Platform.Android
 			OnFocusChangeListener = this;
 			SetOnCheckedChangeListener(this);
 
-			Tag = this;
+			SetTag(Resource.Id.maui_internal_tag, this);
 		}
 
 		void UpdateFont()

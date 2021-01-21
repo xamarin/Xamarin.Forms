@@ -308,7 +308,7 @@ namespace Xamarin.Forms.Platform.Android
 		AImageButton CreateImageButton(Context context, BindableObject bindable, BindableProperty property, int defaultImage, int leftMargin, int rightMargin, string tag)
 		{
 			var result = new AImageButton(context);
-			result.Tag = tag;
+			result.SetTag(Resource.Id.maui_internal_tag, tag);
 			result.SetPadding(0, 0, 0, 0);
 			result.Focusable = false;
 			result.SetScaleType(ImageView.ScaleType.FitCenter);

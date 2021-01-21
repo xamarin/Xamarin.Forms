@@ -69,7 +69,7 @@ namespace Xamarin.Forms.Platform.Android
 			OnFocusChangeListener = this;
 
 			// Setting the tag will break Glide
-			// Tag = this;
+			// SetTag(Resource.Id.maui_internal_tag, this);
 
 			_backgroundTracker = new BorderBackgroundManager(this, false);
 		}

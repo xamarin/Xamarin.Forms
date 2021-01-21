@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			SoundEffectsEnabled = false;
 			SetOnCheckedChangeListener(this);
-			Tag = this;
+			SetTag(Resource.Id.maui_internal_tag, this);
 			OnFocusChangeListener = this;
 
 			this.SetClipToOutline(true);

@@ -312,7 +312,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			AddOnAttachStateChangeListener(this);
 			OnFocusChangeListener = this;
 
-			Tag = this;
+			SetTag(Resource.Id.maui_internal_tag, this);
 		}
 
 		void UpdateFont()
