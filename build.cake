@@ -981,7 +981,7 @@ Task ("cg-ios-deploy")
     // Look for a matching simulator on the system
     var sim = GetIosSimulator();
 
-    ShutdownAndResetiOSSimulator(sim);
+    //ShutdownAndResetiOSSimulator(sim);
 
     // Boot the simulator
     Information("Booting: {0} ({1} - {2})", sim.Name, sim.Runtime, sim.UDID);
