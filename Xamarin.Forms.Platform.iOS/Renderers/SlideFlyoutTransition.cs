@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.iOS
 		internal double Height { get; private set; } = -1d;
 		internal double Width { get; private set; } = -1d;
 
-		internal bool SetFlyoutSizes(double height, double width)
+		public virtual bool UpdateFlyoutSize(double height, double width)
 		{
 			if (Height != height ||
 				Width != width)
@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return false;
 		}
 
-		public void LayoutViews(CGRect bounds, nfloat openPercent, UIView flyout, UIView shell, FlyoutBehavior behavior)
+		public virtual void LayoutViews(CGRect bounds, nfloat openPercent, UIView flyout, UIView shell, FlyoutBehavior behavior)
 		{
 			if (behavior == FlyoutBehavior.Locked)
 				openPercent = 1;
