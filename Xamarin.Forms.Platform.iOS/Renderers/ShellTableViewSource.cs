@@ -120,18 +120,13 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!_cells.TryGetValue(context, out cell))
 			{
 				var view = (View)template.CreateContent(context, _context.Shell);
-				cell = new UIContainerCell(cellId, view);
-
-				// Set Parent after binding context so parent binding context doesn't propagate to view
-				cell.BindingContext = context;
-				_context.Shell.AddLogicalChild(view);
+				cell = new UIContainerCell(cellId, view, _context.Shell, context);
 			}
 			else
 			{
 				var view = _cells[context].View;
-				cell.Disconnect(_context.Shell);
-				cell = new UIContainerCell(cellId, view);
-				cell.BindingContext = context;
+				cell.Disconnect();
+				cell = new UIContainerCell(cellId, view, _context.Shell, context);
 			}
 
 			cell.SetAccessibilityProperties(context);
