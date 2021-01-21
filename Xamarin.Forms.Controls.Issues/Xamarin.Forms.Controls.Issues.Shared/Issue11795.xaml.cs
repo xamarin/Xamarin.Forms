@@ -66,7 +66,8 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			};
 
-			GradientView.Background = linearGradient;
+			GradientBoxView.Background = linearGradient;
+			GradientFrame.Background = linearGradient;
 		}
 #endif
 	}

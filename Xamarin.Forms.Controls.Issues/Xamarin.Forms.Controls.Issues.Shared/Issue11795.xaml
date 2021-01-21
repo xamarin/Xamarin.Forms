@@ -6,6 +6,7 @@
     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
+    Title="Issue 11795"
     x:Class="Xamarin.Forms.Controls.Issues.Issue11795">
     <controls:TestContentPage.Resources>
         <ResourceDictionary>
@@ -37,12 +38,22 @@
                       <RowDefinition Height="Auto" />
                       <RowDefinition Height="*" />
                   </Grid.RowDefinitions>
-                  <Grid
+                  <StackLayout
                       Grid.Row="0"
                       Margin="12, 0"
                       Padding="12">
+                      <Label
+                          Text="BoxView"/>
+                      <BoxView
+                          x:Name="GradientBoxView"
+                          HeightRequest="120"
+                          WidthRequest="120"
+                          CornerRadius="12"
+                          Background="{StaticResource LinearBrush}"/>
+                      <Label
+                          Text="Frame"/>
                       <Frame
-                          x:Name="GradientView"
+                          x:Name="GradientFrame"
                           HasShadow="True"
                           HeightRequest="120"
                           WidthRequest="120"
@@ -55,7 +66,7 @@
                                   Text="LinearGradientBrush"/>
                           </Grid>
                       </Frame>
-                  </Grid>
+                  </StackLayout>
                   <ScrollView
                       Grid.Row="1"
                       Margin="12, 0"
