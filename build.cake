@@ -80,37 +80,7 @@ if(target.ToLower().Contains("uwp"))
     defaultUnitTestWhere = "cat != UwpIgnore";
 
 var NUNIT_TEST_WHERE = Argument("NUNIT_TEST_WHERE", defaultUnitTestWhere);
-var ExcludeCategory = GetBuildVariable("ExcludeCategory", "")?.Replace("\"", "");
-var ExcludeCategory2 = GetBuildVariable("ExcludeCategory2", "")?.Replace("\"", "");
-var IncludeCategory = GetBuildVariable("IncludeCategory", "")?.Replace("\"", "");
-
-// Replace Azure devops syntax for unit tests to Nunit3 filters
-if(!String.IsNullOrWhiteSpace(ExcludeCategory))
-{
-    ExcludeCategory = String.Join(" && cat != ", ExcludeCategory.Split(new string[] { "--exclude-category" }, StringSplitOptions.None));
-    if(!ExcludeCategory.StartsWith("cat"))
-        ExcludeCategory = $" cat !=  {ExcludeCategory}";
-
-    NUNIT_TEST_WHERE = $"{NUNIT_TEST_WHERE} && {ExcludeCategory}";
-}
-
-if(!String.IsNullOrWhiteSpace(ExcludeCategory2))
-{
-    ExcludeCategory2 = String.Join(" && cat != ", ExcludeCategory2.Split(new string[] { "--exclude-category" }, StringSplitOptions.None));
-    if(!ExcludeCategory2.StartsWith("cat"))
-        ExcludeCategory2 = $" cat !=  {ExcludeCategory2}";
-
-    NUNIT_TEST_WHERE = $"{NUNIT_TEST_WHERE} && {ExcludeCategory2}";
-}
-
-if(!String.IsNullOrWhiteSpace(IncludeCategory))
-{
-    IncludeCategory = String.Join(" || cat == ", IncludeCategory.Split(new string[] { "--include-category" }, StringSplitOptions.None));
-    if(!IncludeCategory.StartsWith("cat"))
-        IncludeCategory = $" cat ==  {IncludeCategory}";
-
-    NUNIT_TEST_WHERE = $"({NUNIT_TEST_WHERE}) && ({IncludeCategory})";
-}
+NUNIT_TEST_WHERE = ParseDevOpsInputs(NUNIT_TEST_WHERE);
 
 var ANDROID_HOME = EnvironmentVariable("ANDROID_HOME") ??
     (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
@@ -527,49 +497,27 @@ Task("_cg-uwp-run-tests")
             }
         }
 
+        var settings = new NUnit3Settings {
+            Params = new Dictionary<string, string>()
+            {
+                {"IncludeScreenShots", "true"}
+            }
+        };
+
+
         try
         {
-            var settings = new NUnit3Settings {
-                Params = new Dictionary<string, string>()
-                {
-                    {"IncludeScreenShots", "true"}
-                }
-            };
-
-            if(!String.IsNullOrWhiteSpace(NUNIT_TEST_WHERE))
-            {
-                settings.Where = NUNIT_TEST_WHERE;
-            }
-
-            NUnit3(new [] { UWP_TEST_LIBRARY }, settings);
-        }
-        catch
-        {
-            SetEnvironmentVariables();
-            throw;
+            RunTests(UWP_TEST_LIBRARY, settings, ctx);
         }
         finally
-        { 
+        {
             try
             {
                 process?.Kill();
             }
             catch{}
         }
-
-        SetEnvironmentVariables();
-
-        void SetEnvironmentVariables()
-        {
-            var doc = new System.Xml.XmlDocument();
-            doc.Load("TestResult.xml");
-            var root = doc.DocumentElement;
-
-            foreach(System.Xml.XmlAttribute attr in root.Attributes)
-            {
-                SetEnvironmentVariable($"NUNIT_{attr.Name}", attr.Value, ctx);
-            }
-        }
+        
     });
 
 Task("cg-uwp-run-tests-ci")
@@ -734,32 +682,124 @@ Task("BuildForNuget")
         msbuildSettings.BinaryLogger = binaryLogger;
         binaryLogger.FileName = $"{artifactStagingDirectory}/Xamarin.Forms-{configuration}.binlog";
         MSBuild("./Xamarin.Forms.sln", msbuildSettings.WithRestore());
+        
+        // // This currently fails on CI will revisit later
+        // if(isCIBuild)
+        // {        
+        //     MSBuild("./Xamarin.Forms.Xaml.UnitTests/Xamarin.Forms.Xaml.UnitTests.csproj", GetMSBuildSettings().WithTarget("Restore"));
+        //     MSBuild("./Xamarin.Forms.Xaml.UnitTests/Xamarin.Forms.Xaml.UnitTests.csproj", GetMSBuildSettings());
+        // }
 
-        /*msbuildSettings = GetMSBuildSettings();
-        msbuildSettings.BinaryLogger = binaryLogger;
-        binaryLogger.FileName = $"{artifactStagingDirectory}/Xamarin.Forms.DualScreen-{configuration}-csproj.binlog";
-        MSBuild("./Xamarin.Forms.DualScreen/Xamarin.Forms.DualScreen.csproj",
-                    msbuildSettings.WithRestore());*/
+        // MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings().WithTarget("Restore"));
+        // MSBuild("./Xamarin.Forms.DualScreen.sln", GetMSBuildSettings().WithTarget("Restore"));
 
+        // if(isCIBuild)
+        // {       
+        //     foreach(var platformProject in GetFiles("./Xamarin.*.UnitTests/*.csproj").Select(x=> x.FullPath))
+        //     {
+        //         if(platformProject.Contains("Xamarin.Forms.Xaml.UnitTests"))
+        //             continue;
 
-        // msbuildSettings = GetMSBuildSettings();
+        //         Information("Building: {0}", platformProject);
+        //         MSBuild(platformProject,
+        //                 GetMSBuildSettings().WithRestore());
+        //     }
+        // }
+
+        // MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings().WithTarget("Restore"));
+        // MSBuild("./Xamarin.Forms.DualScreen.sln", GetMSBuildSettings().WithTarget("Restore"));
+        
         // msbuildSettings.BinaryLogger = binaryLogger;
-        // binaryLogger.FileName = $"{artifactStagingDirectory}/win-{configuration}-csproj.binlog";
-        // MSBuild("./Xamarin.Forms.Platform.UAP/Xamarin.Forms.Platform.UAP.csproj",
-        //             msbuildSettings
-        //                 .WithTarget("rebuild")
-        //                 .WithProperty("DisableEmbeddedXbf", "false")
-        //                 .WithProperty("EnableTypeInfoReflection", "false"));
+        
+        // var platformProjects = 
+        //     GetFiles("./Xamarin.Forms.Platform.*/*.csproj")
+        //         .Union(GetFiles("./Stubs/*/*.csproj"))
+        //         .Union(GetFiles("./Xamarin.Forms.Maps.*/*.csproj"))
+        //         .Union(GetFiles("./Xamarin.Forms.Pages.*/*.csproj"))
+        //         .Union(GetFiles("./Xamarin.Forms.Material.*/*.csproj"))
+        //         .Union(GetFiles("./Xamarin.Forms.Core.Design/*.csproj"))
+        //         .Union(GetFiles("./Xamarin.Forms.Xaml.Design/*.csproj"))
+        //         .Select(x=> x.FullPath).Distinct()
+        //         .ToList();
 
-       /*msbuildSettings = GetMSBuildSettings();
-        msbuildSettings.BinaryLogger = binaryLogger;
-        binaryLogger.FileName = $"{artifactStagingDirectory}/ios-{configuration}-csproj.binlog";
-        MSBuild("./Xamarin.Forms.Platform.iOS/Xamarin.Forms.Platform.iOS.csproj",
-                    msbuildSettings
-                        .WithTarget("rebuild"));*/
+        // foreach(var platformProject in platformProjects)
+        // {
+        //     if(platformProject.Contains("UnitTests"))
+        //         continue;
+                
+        //     msbuildSettings = GetMSBuildSettings();
+        //     string projectName = platformProject
+        //         .Replace(' ', '_')
+        //         .Split('/')
+        //         .Last();
+
+        //     binaryLogger.FileName = $"{artifactStagingDirectory}/{projectName}-{configuration}.binlog";
+        //     msbuildSettings.BinaryLogger = binaryLogger;
+
+        //     Information("Building: {0}", platformProject);
+        //     MSBuild(platformProject,
+        //             msbuildSettings);
+        // }
+
+        // dual screen
+
+        // if(IsRunningOnWindows())
+        // {
+        //     msbuildSettings = GetMSBuildSettings();
+        //     msbuildSettings.BinaryLogger = binaryLogger;
+        //     binaryLogger.FileName = $"{artifactStagingDirectory}/dualscreen-{configuration}-csproj.binlog";
+        //     MSBuild("./Xamarin.Forms.DualScreen/Xamarin.Forms.DualScreen.csproj",
+        //                 msbuildSettings
+        //                     .WithRestore()
+        //                     .WithTarget("rebuild"));
 
 
-        // XAML Tests are currently having issues compiling in Release Mode
+	    //     msbuildSettings = GetMSBuildSettings();
+	    //     msbuildSettings.BinaryLogger = binaryLogger;
+	    //     binaryLogger.FileName = $"{artifactStagingDirectory}/win-maps-{configuration}-csproj.binlog";
+	    //     MSBuild("./Xamarin.Forms.Maps.UWP/Xamarin.Forms.Maps.UWP.csproj",
+	    //                 msbuildSettings
+	    //                     .WithProperty("UwpMinTargetFrameworks", "uap10.0.14393")
+	    //                     .WithRestore());
+	
+	    //     msbuildSettings = GetMSBuildSettings();
+	    //     msbuildSettings.BinaryLogger = binaryLogger;
+	    //     binaryLogger.FileName = $"{artifactStagingDirectory}/win-16299-{configuration}-csproj.binlog";
+	    //     MSBuild("./Xamarin.Forms.Platform.UAP/Xamarin.Forms.Platform.UAP.csproj",
+	    //                 msbuildSettings
+	    //                     .WithRestore()
+	    //                     .WithTarget("rebuild")
+	    //                     .WithProperty("DisableEmbeddedXbf", "false")
+	    //                     .WithProperty("EnableTypeInfoReflection", "false")
+	    //                     .WithProperty("UwpMinTargetFrameworks", "uap10.0.16299"));
+	
+	    //     msbuildSettings = GetMSBuildSettings();
+	    //     msbuildSettings.BinaryLogger = binaryLogger;
+	    //     binaryLogger.FileName = $"{artifactStagingDirectory}/win-14393-{configuration}-csproj.binlog";
+	    //     MSBuild("./Xamarin.Forms.Platform.UAP/Xamarin.Forms.Platform.UAP.csproj",
+	    //                 msbuildSettings
+	    //                     .WithRestore()
+	    //                     .WithTarget("rebuild")
+	    //                     .WithProperty("DisableEmbeddedXbf", "false")
+	    //                     .WithProperty("EnableTypeInfoReflection", "false")
+	    //                     .WithProperty("UwpMinTargetFrameworks", "uap10.0.14393"));
+
+        //     msbuildSettings = GetMSBuildSettings();
+        //     msbuildSettings.BinaryLogger = binaryLogger;
+        //     binaryLogger.FileName = $"{artifactStagingDirectory}/ios-{configuration}-csproj.binlog";
+        //     MSBuild("./Xamarin.Forms.Platform.iOS/Xamarin.Forms.Platform.iOS.csproj",
+        //                 msbuildSettings
+        //                     .WithTarget("rebuild"));
+
+        //     msbuildSettings = GetMSBuildSettings();
+        //     msbuildSettings.BinaryLogger = binaryLogger;
+        //     binaryLogger.FileName = $"{artifactStagingDirectory}/macos-{configuration}-csproj.binlog";
+        //     MSBuild("./Xamarin.Forms.Platform.MacOS/Xamarin.Forms.Platform.MacOS.csproj",
+        //                 msbuildSettings
+        //                     .WithTarget("rebuild"));
+        // }
+
+         // XAML Tests are currently having issues compiling in Release Mode
         if(configuration == "Debug")
         {
             msbuildSettings = GetMSBuildSettings();
@@ -767,13 +807,6 @@ Task("BuildForNuget")
             binaryLogger.FileName = $"{artifactStagingDirectory}/Xamarin.Forms.ControlGallery-{configuration}.binlog";
             MSBuild("./Xamarin.Forms.ControlGallery.sln", msbuildSettings.WithRestore());
         }
-
-        // msbuildSettings = GetMSBuildSettings();
-        // msbuildSettings.BinaryLogger = binaryLogger;
-        // binaryLogger.FileName = $"{artifactStagingDirectory}/macos-{configuration}-csproj.binlog";
-        // MSBuild("./Xamarin.Forms.Platform.MacOS/Xamarin.Forms.Platform.MacOS.csproj",
-        //             msbuildSettings
-        //                 .WithTarget("rebuild"));
 
     }
     catch(Exception)
@@ -948,7 +981,7 @@ Task("cg-ios-run-tests")
     .IsDependentOn("_cg-ios-run-tests");
 
 Task("_cg-ios-run-tests")
-    .Does(() =>
+    .Does((ctx) =>
     {
         var sim = GetIosSimulator();
 
@@ -960,12 +993,26 @@ Task("_cg-ios-run-tests")
                 }
             };
 
-        if(!String.IsNullOrWhiteSpace(NUNIT_TEST_WHERE))
+        if(isCIBuild)
         {
-            settings.Where = NUNIT_TEST_WHERE;
+            Information("defaults write com.apple.CrashReporter DialogType none");
+            IEnumerable<string> redirectedStandardOutput;
+            StartProcess("defaults", 
+                new ProcessSettings {
+                    Arguments = new ProcessArgumentBuilder().Append(@"write com.apple.CrashReporter DialogType none"),
+                    RedirectStandardOutput = true
+                },
+                out redirectedStandardOutput
+            );
+
+
+            foreach (var item in redirectedStandardOutput)
+            {
+                Information(item);
+            }
         }
 
-        NUnit3(new [] { IOS_TEST_LIBRARY }, settings);
+        RunTests(IOS_TEST_LIBRARY, settings, ctx);
     });
 
 Task("cg-ios-run-tests-ci")
@@ -1035,9 +1082,44 @@ Task("Default")
 
 RunTarget(target);
 
+void RunTests(string unitTestLibrary, NUnit3Settings settings, ICakeContext ctx)
+{
+    try
+    {
+        if(!String.IsNullOrWhiteSpace(NUNIT_TEST_WHERE))
+        {
+            settings.Where = NUNIT_TEST_WHERE;
+        }
+
+        NUnit3(new [] { unitTestLibrary }, settings);
+    }
+    catch
+    {
+        SetTestResultsEnvironmentVariables();
+        throw;
+    }
+
+    SetTestResultsEnvironmentVariables();
+
+    void SetTestResultsEnvironmentVariables()
+    {
+        var doc = new System.Xml.XmlDocument();
+        doc.Load("TestResult.xml");
+        var root = doc.DocumentElement;
+
+        foreach(System.Xml.XmlAttribute attr in root.Attributes)
+        {
+            SetEnvironmentVariable($"NUNIT_{attr.Name}", attr.Value, ctx);
+        }
+    }
+}
+
 T GetBuildVariable<T>(string key, T defaultValue)
 {
-    return Argument(key, EnvironmentVariable(key, defaultValue));
+    // on MAC all environment variables are upper case regardless of how you specify them in devops
+    // And then Environment Variable check is case sensitive
+    T upperCaseReturnValue = Argument(key.ToUpper(), EnvironmentVariable(key.ToUpper(), defaultValue));
+    return Argument(key, EnvironmentVariable(key, upperCaseReturnValue));
 }
 
 void StartVisualStudio(string sln = "Xamarin.Forms.sln")
@@ -1188,4 +1270,62 @@ public void SetEnvironmentVariable(string key, string value, ICakeContext contex
     {
         System.Environment.SetEnvironmentVariable(key, value);
     }
+}
+
+public string ParseDevOpsInputs(string nunitWhere)
+{
+    var ExcludeCategory = GetBuildVariable("ExcludeCategory", "")?.Replace("\"", "");
+    var ExcludeCategory2 = GetBuildVariable("ExcludeCategory2", "")?.Replace("\"", "");
+    var IncludeCategory = GetBuildVariable("IncludeCategory", "")?.Replace("\"", "");
+
+    Information("ExcludeCategory: {0}", ExcludeCategory);
+    Information("IncludeCategory: {0}", IncludeCategory);
+    Information("ExcludeCategory2: {0}", ExcludeCategory2);
+    string excludeString = String.Empty;
+    string includeString = String.Empty;
+    string returnValue = String.Empty;
+
+    List<string> azureDevopsFilters = new List<string>();
+
+    // Replace Azure devops syntax for unit tests to Nunit3 filters
+    if(!String.IsNullOrWhiteSpace(ExcludeCategory))
+    {
+        azureDevopsFilters.AddRange(ExcludeCategory.Split(new string[] { "--exclude-category" }, StringSplitOptions.None));
+    }
+
+    if(!String.IsNullOrWhiteSpace(ExcludeCategory2))
+    {
+        azureDevopsFilters.AddRange(ExcludeCategory2.Split(new string[] { "--exclude-category" }, StringSplitOptions.None));
+    }
+
+    for(int i = 0; i < azureDevopsFilters.Count; i++)
+    {
+        if(!String.IsNullOrWhiteSpace(excludeString))
+            excludeString += " && ";
+
+        excludeString += $" cat != {azureDevopsFilters[i]} ";
+    }
+
+    String.Join(" cat != ", azureDevopsFilters);
+
+    if(!String.IsNullOrWhiteSpace(IncludeCategory))
+    { 
+        foreach (var item in IncludeCategory.Split(new string[] { "--include-category" }, StringSplitOptions.None))
+        {
+            if(!String.IsNullOrWhiteSpace(includeString))
+                includeString += " || ";
+
+            includeString += $" cat == {item} ";
+        }
+    }
+
+    foreach(var filter in new []{nunitWhere,includeString,excludeString}.Where(x=> !String.IsNullOrWhiteSpace(x)))
+    {
+        if(!String.IsNullOrWhiteSpace(returnValue))
+            returnValue += " && ";
+
+        returnValue += $"({filter})";
+    }
+
+    return returnValue;
 }
