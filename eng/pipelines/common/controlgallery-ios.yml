@@ -36,22 +36,6 @@ steps:
       version: $(DOTNET_VERSION)
       packageType: 'sdk'
 
-  - task: NuGetCommand@2
-    displayName: 'NuGet restore Xamarin.Forms'
-    inputs:
-      command: restore
-      restoreSolution: $(SolutionFile)
-      feedsToUse: config
-      nugetConfigPath: 'eng/DevopsNuget.config'
-
-  - task: NuGetCommand@2
-    displayName: 'NuGet restore ControlGallery'
-    inputs:
-      command: restore 
-      restoreSolution: $(ControlGallerySolutionFile)
-      feedsToUse: config
-      nugetConfigPath: 'eng/DevopsNuget.config'
-
   - task: InstallAppleCertificate@2
     displayName: 'Install an Apple certificate'
     inputs:
