@@ -64,6 +64,7 @@ var UWP_APP_DRIVER_INSTALL_PATH = Argument("UWP_APP_DRIVER_INSTALL_PATH", "https
 var ANDROID_BUNDLE_ID = "com.xamarin.xamarin_forms_controlgallery";
 var ANDROID_CONTROLGALLERY_PROJ = "src/ControlGallery/src/Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj";
 var ANDROID_RENDERERS = Argument("ANDROID_RENDERERS", "FAST");
+var ANDROID_TEST_PROJ = "./src/ControlGallery/test/Xamarin.Forms.Core.Android.UITests/Xamarin.Forms.Core.Android.UITests.csproj";
 
 var BUILD_TASKS_PROJ ="src/Forms/src/Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj";
 
@@ -902,6 +903,27 @@ Task("cg-android")
         }
 
         MSBuild(ANDROID_CONTROLGALLERY_PROJ, buildSettings);
+    });
+
+Task("cg-android-build-tests")
+    .IsDependentOn("BuildTasks")
+    .Does(() =>
+    {
+        var buildSettings =  GetMSBuildSettings();
+
+        buildSettings = buildSettings.WithRestore();
+
+        if(isCIBuild)
+        {
+            var binaryLogger = new MSBuildBinaryLogSettings {
+                Enabled  = true,
+                FileName = $"{artifactStagingDirectory}/android-uitests.binlog"
+            };
+
+            buildSettings.BinaryLogger = binaryLogger;
+        }
+
+        MSBuild(ANDROID_TEST_PROJ, buildSettings);
     });
 
 Task("cg-android-vs")

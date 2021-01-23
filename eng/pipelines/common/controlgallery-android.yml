@@ -33,13 +33,13 @@ steps:
       targetType: 'filePath'
       filePath: 'build.sh'
       arguments: --target cg-android --ANDROID_RENDERERS="$(renderers)" --GoogleMapsAPIKey="$(GoogleMapsAPIKey)" --BUILD_CONFIGURATION=$(BuildConfiguration)
-  
-  - task: MSBuild@1
-    displayName: 'Build Android Tests'
+
+  - task: Bash@3
+    displayName: 'Build Android UITests'
     inputs:
-      solution: 'src/ControlGallery/test/Xamarin.Forms.Core.Android.UITests/Xamarin.Forms.Core.Android.UITests.csproj'
-      configuration: $(BuildConfiguration)
-      msbuildArguments: /bl:$(Build.ArtifactStagingDirectory)/android-uitests.binlog
+      targetType: 'filePath'
+      filePath: 'build.sh'
+      arguments: --target cg-android-build-tests -BUILD_CONFIGURATION=$(BuildConfiguration)
 
   - task: CopyFiles@2
     displayName: 'Copy Android Files for UITest'

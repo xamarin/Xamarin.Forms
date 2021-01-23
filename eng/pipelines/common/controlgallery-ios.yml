@@ -55,7 +55,7 @@ steps:
       arguments: --target cg-ios --BUILD_CONFIGURATION=$(BuildConfiguration)
 
   - task: Bash@3
-    displayName: 'Build iOS Tests'
+    displayName: 'Build iOS UITests Tests'
     inputs:
       targetType: 'filePath'
       filePath: 'build.sh'
