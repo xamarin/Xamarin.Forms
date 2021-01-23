@@ -888,6 +888,8 @@ Task("cg-android")
     {
         var buildSettings = GetMSBuildSettings();
 
+        buildSettings = buildSettings.WithRestore();
+
         if(isCIBuild)
         {
             buildSettings = buildSettings.WithTarget("Rebuild").WithTarget("SignAndroidPackage");
@@ -897,10 +899,6 @@ Task("cg-android")
 
             buildSettings.BinaryLogger = binaryLogger;
             binaryLogger.FileName = $"{artifactStagingDirectory}/android-{ANDROID_RENDERERS}.binlog";
-        }
-        else
-        {
-            buildSettings = buildSettings.WithRestore();
         }
 
         MSBuild(ANDROID_CONTROLGALLERY_PROJ, buildSettings);
@@ -923,18 +921,16 @@ Task("cg-ios")
             GetMSBuildSettings(null)
                 .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
 
+        buildSettings = buildSettings.WithRestore();
+
         if(isCIBuild)
         {
             var binaryLogger = new MSBuildBinaryLogSettings {
                 Enabled  = true
             };
-
+            
             buildSettings.BinaryLogger = binaryLogger;
             binaryLogger.FileName = $"{artifactStagingDirectory}/ios-cg.binlog";
-        }
-        else
-        {
-            buildSettings = buildSettings.WithRestore();
         }
 
         MSBuild(IOS_CONTROLGALLERY_PROJ, buildSettings);
