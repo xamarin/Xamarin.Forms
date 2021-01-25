@@ -82,5 +82,21 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 
 			Assert.That(actualFont.PointSize, Is.EqualTo(expectedFontSize));
 		}
+
+		[Test, Category("Label"), Category("FormattedText")]
+		[Description("If Label has FormattedText, HTML, and Padding, app should not crash")]
+		public async Task LabelWithFormattedTextHTMLAndPaddingDoesNotCrashApp()
+		{
+			var formattedString = new FormattedString();
+			formattedString.Spans.Add(new Span { Text = "Label with FormattedText, HTML, and Padding" });
+			var label = new Label {
+				FormattedText = formattedString,
+				TextType = TextType.Html,
+				Padding = 5
+			};
+			var expected = TextType.Html;
+			var actual = await GetRendererProperty(label, renderer => (renderer.Element as Label).TextType, true);
+			Assert.That(actual, Is.EqualTo(expected));
+		}
 	}
 }
