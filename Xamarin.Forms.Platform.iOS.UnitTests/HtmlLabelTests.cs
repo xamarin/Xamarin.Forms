@@ -89,32 +89,20 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 		{
 			var formattedString = new FormattedString();
 			formattedString.Spans.Add(new Span { Text = "Label with FormattedText, HTML, and Padding" });
-			var label = new Label {
+			var label = new Label
+			{
 				FormattedText = formattedString,
 				TextType = TextType.Html,
 				Padding = 5
 			};
 
-			var content = new StackLayout()
-			{
-				Margin = 20,
-
-				Children =
-				{
-					new Label()
-					{
-						AutomationId = "LabelFormattedTextHtmlPaddingTest",
-						Text = "If you can see this text, this test has passed"
-					},
-					label
-				}
-			};
-
-
 			var expected = TextType.Html;
-			var actual = await GetRendererProperty(content, renderer =>
+			var actual = await GetRendererProperty(label, renderer =>
 			{
-				return (Platform.GetRenderer(label).Element as Label).TextType;
+				var uiLabel = (UILabel)(renderer as LabelRenderer).Control;
+				uiLabel.Frame = new CoreGraphics.CGRect(0, 0, 200, 200);
+				uiLabel.RecalculateSpanPositions(label);
+				return label.TextType;
 			}, true);
 
 			Assert.That(actual, Is.EqualTo(expected));
