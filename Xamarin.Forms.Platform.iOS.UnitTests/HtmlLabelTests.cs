@@ -94,8 +94,29 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 				TextType = TextType.Html,
 				Padding = 5
 			};
+
+			var content = new StackLayout()
+			{
+				Margin = 20,
+
+				Children =
+				{
+					new Label()
+					{
+						AutomationId = "LabelFormattedTextHtmlPaddingTest",
+						Text = "If you can see this text, this test has passed"
+					},
+					label
+				}
+			};
+
+
 			var expected = TextType.Html;
-			var actual = await GetRendererProperty(label, renderer => (renderer.Element as Label).TextType, true);
+			var actual = await GetRendererProperty(content, renderer =>
+			{
+				return (Platform.GetRenderer(label).Element as Label).TextType;
+			}, true);
+
 			Assert.That(actual, Is.EqualTo(expected));
 		}
 	}
