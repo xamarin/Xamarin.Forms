@@ -31,6 +31,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests.Stubs
 		public void Arrange(Rectangle bounds)
 		{
 			Frame = bounds;
+			DesiredSize = bounds.Size;
 		}
 
 		public void InvalidateArrange()

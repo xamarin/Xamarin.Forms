@@ -8,7 +8,6 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 	public partial class Platform
 	{
 		public static Context DefaultContext { get; set; }
-			= new global::AndroidX.AppCompat.App.AppCompatActivity();
 
 		public static void Init(Context context)
 		{
