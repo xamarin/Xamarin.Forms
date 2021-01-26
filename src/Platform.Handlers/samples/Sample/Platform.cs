@@ -1,5 +1,4 @@
 ﻿using Xamarin.Forms;
-using Xamarin.Platform;
 using Xamarin.Platform.Handlers;
 using RegistrarHandlers = Xamarin.Platform.Registrar;
 
@@ -24,7 +23,6 @@ namespace Sample
 			RegistrarHandlers.Handlers.Register<FlexLayout, LayoutHandler>();
 			RegistrarHandlers.Handlers.Register<Xamarin.Forms.StackLayout, LayoutHandler>();
 		}
-
 
 		void RegisterLegacyRendererAgainstFormsControl()
 		{
