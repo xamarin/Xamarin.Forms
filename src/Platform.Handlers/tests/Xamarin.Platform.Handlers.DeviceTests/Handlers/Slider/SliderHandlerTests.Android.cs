@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using Xamarin.Forms;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Xamarin.Platform.Handlers.DeviceTests
@@ -10,5 +11,14 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 
 		double GetNativeMaximum(SliderHandler sliderHandler) =>
 			sliderHandler.TypedNativeView.Max;
+
+
+		Task ValidateNativeThumbColor(ISlider slider, Color color)
+		{
+			return InvokeOnMainThreadAsync(() =>
+			{
+				CreateHandler(slider).TypedNativeView.AssertContainsColor(color);
+			});
+		}
 	}
 }

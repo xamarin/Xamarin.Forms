@@ -46,10 +46,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 				ThumbColor = Color.Purple
 			};
 
-			await InvokeOnMainThreadAsync(() =>
-			{
-				CreateHandler(slider).TypedNativeView.AssertContainsColor(Color.Purple);
-			});
+			await ValidateNativeThumbColor(slider, Color.Purple);
 		}
 	}
 }
