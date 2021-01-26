@@ -35,7 +35,7 @@ namespace Xamarin.Platform.Handlers
 
 		protected abstract TNativeView CreateNativeView();
 
-		protected TNativeView? TypedNativeView { get; private set; }
+		public TNativeView? TypedNativeView { get; private set; }
 
 		protected TVirtualView? VirtualView { get; private set; }
 
