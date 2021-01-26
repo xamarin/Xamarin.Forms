@@ -42,14 +42,5 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			};
 		}
-
-#if UITEST
-		[Test]
-		public void LabelFormattedTextHtmlPaddingTest()
-		{
-			RunningApp.WaitForElement("LabelWithFormattedTextHtmlAndPadding");
-			RunningApp.Screenshot("I am at LabelWithFormattedTextHtmlAndPadding");
-		}
-#endif
 	}
 }
