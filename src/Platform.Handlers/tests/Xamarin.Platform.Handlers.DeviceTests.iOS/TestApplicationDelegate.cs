@@ -63,7 +63,6 @@ namespace Xamarin.Platform.Handlers.DeviceTests
             protected override TestRunner GetTestRunner(LogWriter logWriter)
             {
                 var testRunner = base.GetTestRunner(logWriter);
-                testRunner.SkipCategories(Traits.GetSkipTraits());
                 return testRunner;
             }
         }
