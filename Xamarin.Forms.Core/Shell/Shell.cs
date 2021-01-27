@@ -375,6 +375,9 @@ namespace Xamarin.Forms
 
 		async void IShellController.OnFlyoutItemSelected(Element element)
 		{
+			if (element == CurrentItem)
+				return;
+
 			await (this as IShellController).OnFlyoutItemSelectedAsync(element);
 		}
 
