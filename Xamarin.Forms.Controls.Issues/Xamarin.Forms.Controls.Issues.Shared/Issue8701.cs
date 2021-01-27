@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Title = "Issue 8701 second page";
 
-				Label label = new Label() { Text = "Tap on the back button. TalkBack should read: Back button title is set" };
+				Label label = new Label() { Text = "Enable TalkBack and tap on the back button. Test passes if TalkBack reads: 'Back button title is set'" };
 
 				Content = new StackLayout()
 				{
