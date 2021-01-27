@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13058"
+    Title="Issue 13058">
+	<StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If the button with a gradient as background is rendered, the test has passed." />
+        <Button
+            Visual="Material"
+            TextColor="White"
+            BackgroundColor="Red"
+            Text="Color Button"
+            CornerRadius="{Binding Source={x:Reference CornerRadiusSlider}, Path=Value}" />
+        <Button
+            Visual="Material"
+            TextColor="White"
+            Text="Gradient Button"
+            CornerRadius="{Binding Source={x:Reference CornerRadiusSlider}, Path=Value}">
+            <Button.Background>
+                <LinearGradientBrush>
+                    <GradientStop Color="#F72000" Offset="0.1"/>
+                    <GradientStop Color="#CE795C" Offset="0.4"/>
+                    <GradientStop Color="#71BCEC" Offset="0.6"/>
+                    <GradientStop Color="#93F700" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+        </Button>
+        <Slider
+            x:Name="CornerRadiusSlider"
+            Minimum="0"
+            Maximum="24"
+            Value="12"/>
+    </StackLayout>
+</ContentPage>

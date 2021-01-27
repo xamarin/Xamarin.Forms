@@ -13,6 +13,7 @@ using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AColor = Android.Graphics.Color;
+using APaint = Android.Graphics.Paint;
 using APath = Android.Graphics.Path;
 using AView = Android.Views.View;
 using MButton = Google.Android.Material.Button.MaterialButton;
@@ -111,7 +112,7 @@ namespace Xamarin.Forms.Material.Android
 				return;
 			}
 
-			if (Element == null || Element.CornerRadius <= 0)
+			if (Element == null || Element.CornerRadius < 0 || Brush.IsNullOrEmpty(Element.Background))
 			{
 				base.Draw(canvas);
 				return;
@@ -121,11 +122,26 @@ namespace Xamarin.Forms.Material.Android
 			{
 				var radiusToPixels = (float)Context.ToPixels(Element.CornerRadius);
 
+				using (var paint = new APaint { AntiAlias = true })
 				using (var path = new APath())
+				using (APath.Direction direction = APath.Direction.Cw)
+				using (APaint.Style style = APaint.Style.Fill)
+				using (var rect = new RectF(0, 0, canvas.Width, canvas.Height))
 				{
-					RectF rect = new RectF(0, 0, canvas.Width, canvas.Height);
 					path.AddRoundRect(rect, radiusToPixels, radiusToPixels, APath.Direction.Ccw);
+
+					paint.SetStyle(style);
+
+					if (!Brush.IsNullOrEmpty(Element.Background))
+						paint.UpdateBackground(Element.Background, canvas.Height, canvas.Width);
+					else
+					{
+						AColor color = Element.BackgroundColor.ToAndroid();
+						paint.Color = color;
+					}
+
 					canvas.Save();
+					canvas.DrawPath(path, paint);
 					canvas.ClipPath(path);
 					base.Draw(canvas);
 				}
@@ -139,8 +155,6 @@ namespace Xamarin.Forms.Material.Android
 			}
 
 			base.Draw(canvas);
-
-
 		}
 
 		protected override void Dispose(bool disposing)
@@ -310,11 +324,22 @@ namespace Xamarin.Forms.Material.Android
 
 			// background
 			Color backgroundColor = Element.BackgroundColor;
+			Brush backgroundBrush = Element.Background;
+
 			AColor background;
-			if (backgroundColor.IsDefault)
-				background = MaterialColors.Light.PrimaryColor;
+
+			if (Brush.IsNullOrEmpty(backgroundBrush))
+			{
+				if (backgroundColor.IsDefault)
+					background = MaterialColors.Light.PrimaryColor;
+				else
+					background = backgroundColor.ToAndroid();
+			}
 			else
-				background = backgroundColor.ToAndroid();
+			{
+				// The brush is drawn in the Draw method
+				background = Color.Transparent.ToAndroid();
+			}
 
 			// text
 			Color textColor = Element.TextColor;
