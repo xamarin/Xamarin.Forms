@@ -35,6 +35,7 @@ namespace Sample
 			horizontalStack.Add(new Label { Text = "And these buttons are in a HorizontalStackLayout" });
 
 			verticalStack.Add(horizontalStack);
+			verticalStack.Add(new BoxView { Color = Color.Red, CornerRadius = 12, HeightRequest = 50 });
 			verticalStack.Add(new Slider());
 
 			return verticalStack;

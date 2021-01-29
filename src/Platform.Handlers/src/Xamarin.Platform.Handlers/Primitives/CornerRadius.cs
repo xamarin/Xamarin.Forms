@@ -3,7 +3,6 @@
 namespace Xamarin.Forms
 {
 	[DebuggerDisplay("TopLeft={TopLeft}, TopRight={TopRight}, BottomLeft={BottomLeft}, BottomRight={BottomRight}")]
-	[TypeConverter(typeof(CornerRadiusTypeConverter))]
 	public struct CornerRadius
 	{
 		bool _isParameterized;

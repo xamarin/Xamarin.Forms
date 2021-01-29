@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using UIKit;
+using Xamarin.Platform;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 
@@ -8,6 +9,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class BoxRenderer : VisualElementRenderer<BoxView>
 	{
+		[PortHandler]
 		UIColor _colorToRenderer;
 		SizeF _previousSize;
 		nfloat _topLeft;
@@ -15,6 +17,7 @@ namespace Xamarin.Forms.Platform.iOS
 		nfloat _bottomLeft;
 		nfloat _bottomRight;
 
+		[PortHandler]
 		const float PI = (float)Math.PI;
 		const float PIAndAHalf = PI * 1.5f;
 		const float HalfPI = PI * .5f;
@@ -26,6 +29,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		}
 
+		[PortHandler]
 		public override void Draw(RectangleF rect)
 		{
 			UIBezierPath bezierPath = new UIBezierPath();
@@ -76,6 +80,7 @@ namespace Xamarin.Forms.Platform.iOS
 				SetNeedsDisplay();
 		}
 
+		[PortHandler]
 		protected override void SetBackgroundColor(Color color)
 		{
 			if (Element == null)
@@ -112,6 +117,7 @@ namespace Xamarin.Forms.Platform.iOS
 			SetNeedsDisplay();
 		}
 
+		[PortHandler]
 		void SetCornerRadius()
 		{
 			if (Element == null)
