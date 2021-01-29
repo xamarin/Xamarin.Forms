@@ -2,9 +2,11 @@ using CoreGraphics;
 using System.ComponentModel;
 using System.Drawing;
 using UIKit;
+using Xamarin.Platform;
 
 namespace Xamarin.Forms.Platform.iOS
 {
+	[PortHandler]
 	public sealed class UIActivityIndicatorViewDelegate : UIActivityIndicatorView
     {
         ActivityIndicator _element;
@@ -40,6 +42,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		}
 
+		[PortHandler]
 		protected override void OnElementChanged(ElementChangedEventArgs<ActivityIndicator> e)
 		{
 			if (e.NewElement != null)
@@ -69,11 +72,13 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateIsRunning();
 		}
 
+		[PortHandler]
 		void UpdateColor()
 		{
 			Control.Color = Element.Color == Color.Default ? null : Element.Color.ToUIColor();
 		}
 
+		[PortHandler]
 		void UpdateIsRunning()
 		{
 			if (Control?.Superview == null)
