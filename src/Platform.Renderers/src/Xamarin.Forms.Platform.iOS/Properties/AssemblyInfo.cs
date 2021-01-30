@@ -29,6 +29,7 @@ using UIKit;
 [assembly: ExportRenderer (typeof (CollectionView), typeof (CollectionViewRenderer))]
 [assembly: ExportRenderer(typeof(CarouselView), typeof(CarouselViewRenderer))]
 [assembly: ExportRenderer(typeof(IndicatorView), typeof(IndicatorViewRenderer))]
+[assembly: ExportRenderer(typeof(PathView), typeof(PathRenderer))]
 [assembly: ExportRenderer(typeof(OpenGLView), typeof(OpenGLViewRenderer))]
 [assembly: ExportRenderer (typeof (CheckBox), typeof (CheckBoxRenderer))]
 
