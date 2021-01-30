@@ -654,10 +654,10 @@ Task("provision-powershell").Does(()=> {
     var settings = new DotNetCoreToolSettings
     {
         DiagnosticOutput = true,
-        ArgumentCustomization = args=>args.Append("--global PowerShell")
+        ArgumentCustomization = args=>args.Append("install --global PowerShell")
     };
 
-    DotNetCoreTool("install", settings);
+    DotNetCoreTool("tool", settings);
 });
 
 Task("_NuGetPack")
