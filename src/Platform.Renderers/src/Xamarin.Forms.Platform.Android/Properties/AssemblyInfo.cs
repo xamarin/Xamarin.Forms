@@ -17,6 +17,7 @@ using Xamarin.Forms.Platform.Android.AppCompat;
 [assembly: ExportRenderer (typeof (CarouselView), typeof (CarouselViewRenderer))]
 [assembly: ExportRenderer (typeof (IndicatorView), typeof(IndicatorViewRenderer))]
 [assembly: ExportRenderer (typeof (PathView), typeof(PathRenderer))]
+[assembly: ExportRenderer (typeof (RadioButton), typeof(RadioButtonRenderer))]
 [assembly: ExportRenderer (typeof (Slider), typeof (SliderRenderer))]
 [assembly: ExportRenderer (typeof (WebView), typeof (WebViewRenderer))]
 [assembly: ExportRenderer (typeof (SearchBar), typeof (SearchBarRenderer))]
