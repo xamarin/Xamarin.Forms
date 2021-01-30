@@ -636,6 +636,7 @@ void InstallMsi(string msiFile, string installTo, string fileName = "InstallFile
 
 Task("provision")
     .Description("Install SDKs required to build project")
+    .IsDependentOn("provision-powershell")
     .IsDependentOn("provision-macsdk")
     .IsDependentOn("provision-iossdk")
     .IsDependentOn("provision-androidsdk")
@@ -649,6 +650,15 @@ Task("NuGetPack")
     .IsDependentOn("BuildForNuget")
     .IsDependentOn("_NuGetPack");
 
+Task("provision-powershell").Does(()=> {
+    var settings = new DotNetCoreToolSettings
+    {
+        DiagnosticOutput = true,
+        ArgumentCustomization = args=>args.Append("--global PowerShell")
+    };
+
+    DotNetCoreTool("install", settings);
+});
 
 Task("_NuGetPack")
     .WithCriteria(IsRunningOnWindows())
