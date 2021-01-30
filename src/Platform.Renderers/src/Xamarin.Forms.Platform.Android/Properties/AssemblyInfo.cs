@@ -3,6 +3,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Platform.Android.AppCompat;
+using Xamarin.Forms.Shapes;
 
 [assembly: ExportRenderer (typeof (BoxView), typeof (BoxRenderer))]
 [assembly: ExportRenderer (typeof (Entry), typeof (EntryRenderer))]
@@ -16,12 +17,12 @@ using Xamarin.Forms.Platform.Android.AppCompat;
 [assembly: ExportRenderer (typeof (CollectionView), typeof (CollectionViewRenderer))]
 [assembly: ExportRenderer (typeof (CarouselView), typeof (CarouselViewRenderer))]
 [assembly: ExportRenderer (typeof (IndicatorView), typeof(IndicatorViewRenderer))]
-[assembly: ExportRenderer (typeof (PathView), typeof(PathRenderer))]
-[assembly: ExportRenderer (typeof (EllipseView), typeof(EllipseRenderer))]
-[assembly: ExportRenderer (typeof (LineView), typeof(LineRenderer))]
-[assembly: ExportRenderer (typeof (PolylineView), typeof(PolylineRenderer))]
-[assembly: ExportRenderer (typeof (PolygonView), typeof(PolygonRenderer))]
-[assembly: ExportRenderer (typeof (RectView), typeof(RectangleRenderer))]
+[assembly: ExportRenderer (typeof (Path), typeof(PathRenderer))]
+[assembly: ExportRenderer (typeof (Ellipse), typeof(EllipseRenderer))]
+[assembly: ExportRenderer (typeof (Line), typeof(LineRenderer))]
+[assembly: ExportRenderer (typeof (Polyline), typeof(PolylineRenderer))]
+[assembly: ExportRenderer (typeof (Polygon), typeof(PolygonRenderer))]
+[assembly: ExportRenderer (typeof (Xamarin.Forms.Shapes.Rectangle), typeof(RectangleRenderer))]
 [assembly: ExportRenderer (typeof (RadioButton), typeof(RadioButtonRenderer))]
 [assembly: ExportRenderer (typeof (Slider), typeof (SliderRenderer))]
 [assembly: ExportRenderer (typeof (WebView), typeof (WebViewRenderer))]
