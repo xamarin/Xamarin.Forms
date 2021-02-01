@@ -11,8 +11,9 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Xamarin.Platform.Hosting;
 using Sample.Services;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace Sample.iOS
 {
@@ -37,6 +38,11 @@ namespace Sample.iOS
 		{
 			_window = new UIWindow();
 
+			IView content = null;
+#if __REGISTRAR__
+			Platform.Init();
+			var page = new Pages.MainPage();
+#else
 			var (host, app) = App.CreateDefaultBuilder()
 							//.RegisterHandler<IButton, CustomHandlers.CustomPinkTextButtonHandler>()
 							//.RegisterHandlers(new Dictionary<Type, Type>
@@ -50,10 +56,12 @@ namespace Sample.iOS
 							.Init<MyApp>();
 
 			var page = app.GetStartup() as Pages.MainPage;
+#endif
+			content = page.GetContentView();
 
 			_window.RootViewController = new UIViewController
 			{
-				View = page.GetContentView().ToNative()
+				View = content.ToNative()
 			};
 
 			_window.MakeKeyAndVisible();
