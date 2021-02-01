@@ -30,7 +30,7 @@ namespace Xamarin.Forms
 			Y = sz.Height;
 		}
 
-#if NET6
+#if NET6_0
 		public override bool Equals(object? o)
 #else
 		public override bool Equals(object o)

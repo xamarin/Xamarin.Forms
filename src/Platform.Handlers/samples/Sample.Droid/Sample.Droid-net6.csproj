@@ -6,6 +6,10 @@
     <AssemblyName>Sample.Droid</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Sample\Sample-net6.csproj" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
   </ItemGroup>
 </Project>

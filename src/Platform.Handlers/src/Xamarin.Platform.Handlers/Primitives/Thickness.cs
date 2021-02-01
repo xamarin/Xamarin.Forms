@@ -59,7 +59,7 @@ namespace Xamarin.Forms
 			return Left.Equals(other.Left) && Top.Equals(other.Top) && Right.Equals(other.Right) && Bottom.Equals(other.Bottom);
 		}
 
-#if NET6
+#if NET6_0
 		public override bool Equals(object? obj)
 #else
 		public override bool Equals(object obj)

@@ -43,12 +43,12 @@
 
   <!-- Android -->
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net6.0-android'))">
-    <DefineConstants>$(DefineConstants);MONOANDROID;NET6</DefineConstants>
+    <DefineConstants>$(DefineConstants);MONOANDROID</DefineConstants>
   </PropertyGroup>
 
   <!-- iOS -->
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net6.0-ios' ">
-    <DefineConstants>$(DefineConstants);IOS;NET6</DefineConstants>
+    <DefineConstants>$(DefineConstants);IOS</DefineConstants>
   </PropertyGroup>
   
   <PropertyGroup Condition="$(TargetFramework.StartsWith('netcoreapp')) == true ">

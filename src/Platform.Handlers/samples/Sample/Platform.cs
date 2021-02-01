@@ -33,7 +33,7 @@ namespace Sample
 
 		void RegisterLegacyRendererAgainstFormsControl()
 		{
-#if MONOANDROID && !NET6
+#if MONOANDROID && !NET6_0
 
 			// register renderer with old registrar so it can get shimmed
 			// This will move to some extension method

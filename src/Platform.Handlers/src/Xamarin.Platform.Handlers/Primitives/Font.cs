@@ -102,7 +102,7 @@ namespace Xamarin.Forms
 		{
 			return string.Equals(FontFamily, other.FontFamily) && FontSize.Equals(other.FontSize) && NamedSize == other.NamedSize && FontAttributes == other.FontAttributes;
 		}
-#if NET6
+#if NET6_0
 		public override bool Equals(object? obj)
 #else
 		public override bool Equals(object obj)
