@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample-net6", "src\Platform
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{449F6071-A74F-4309-8D7B-7038CFD1B17B}"
 	ProjectSection(SolutionItems) = preProject
-		Readme-net6.md = Readme-net6.md
+		README.md = README.md
 		.nuspec\Xamarin.Forms.MultiTargeting.targets = .nuspec\Xamarin.Forms.MultiTargeting.targets
 	EndProjectSection
 EndProject
