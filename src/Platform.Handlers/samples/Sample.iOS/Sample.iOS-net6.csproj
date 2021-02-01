@@ -6,4 +6,7 @@
     <RootNamespace>Sample.iOS</RootNamespace>
     <AssemblyName>Sample.iOS</AssemblyName>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sample\Sample-net6.csproj" />
+  </ItemGroup>
 </Project>

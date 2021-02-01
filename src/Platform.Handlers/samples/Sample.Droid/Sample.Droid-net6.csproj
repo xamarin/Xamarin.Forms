@@ -5,4 +5,7 @@
     <RootNamespace>Sample.Droid</RootNamespace>
     <AssemblyName>Sample.Droid</AssemblyName>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sample\Sample-net6.csproj" />
+  </ItemGroup>
 </Project>
