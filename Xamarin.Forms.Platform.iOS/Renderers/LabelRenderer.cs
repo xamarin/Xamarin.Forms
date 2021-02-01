@@ -109,11 +109,15 @@ namespace Xamarin.Forms.Platform.MacOS
 					fitSize = Control.SizeThatFits(Element.Bounds.Size.ToSizeF());
 					labelHeight = (nfloat)Math.Min(Bounds.Height, fitSize.Height);
 					Control.Frame = new RectangleF(0, 0, (nfloat)Element.Width, labelHeight);
+#if __MOBILE__
+					Control.BaselineAdjustment = UIBaselineAdjustment.None;
+#endif
 					break;
 				case TextAlignment.Center:
 
 #if __MOBILE__
 					Control.Frame = new RectangleF(0, 0, (nfloat)Element.Width, (nfloat)Element.Height);
+					Control.BaselineAdjustment = UIBaselineAdjustment.AlignCenters;
 #else
 					fitSize = Control.SizeThatFits(Element.Bounds.Size.ToSizeF());
 					labelHeight = (nfloat)Math.Min(Bounds.Height, fitSize.Height);
@@ -128,6 +132,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					nfloat yOffset = 0;
 					yOffset = (nfloat)(Element.Height - labelHeight);
 					Control.Frame = new RectangleF(0, yOffset, (nfloat)Element.Width, labelHeight);
+					Control.BaselineAdjustment = UIBaselineAdjustment.AlignBaselines;
 #else
 					Control.Frame = new RectangleF(0, 0, (nfloat)Element.Width, labelHeight);
 #endif
@@ -181,6 +186,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateMaxLines();
 				UpdateCharacterSpacing();
 				UpdatePadding();
+				UpdateAutoFitMode();
 			}
 
 			base.OnElementChanged(e);
@@ -227,6 +233,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateText();
 			else if (e.PropertyName == Label.TextTransformProperty.PropertyName)
 				UpdateText();
+			else if (e.PropertyName == Label.AutoFitProperty.PropertyName)
+				UpdateAutoFitMode();
 		}
 
 		protected override NativeLabel CreateNativeControl()
@@ -412,6 +420,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (textAttr != null)
 				Control.AttributedText = textAttr;
+
+			_perfectSizeValid = false;
 #else
    			var textAttr = Control.AttributedStringValue.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
 
@@ -424,10 +434,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateText()
 		{
-            if (IsElementOrControlEmpty)
-                return;
+			if (IsElementOrControlEmpty)
+				return;
 
-            switch (Element.TextType)
+			switch (Element.TextType)
 			{
 				case TextType.Html:
 					UpdateTextHtml();
@@ -669,7 +679,39 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 		}
 
+		void UpdateAutoFitMode()
+		{
 #if __MOBILE__
+
+			switch (Element.AutoFitText)
+			{
+				case AutoFitTextMode.FitToWidth:
+					Control.AdjustsFontSizeToFitWidth = true;
+
+					var uiFont = Element.ToUIFont();
+					var minScaleFactor = (float)Element.MinAutoFitFontSize / Element.MaxAutoFitFontSize;
+
+					Control.Font = uiFont.WithSize((float)Element.MaxAutoFitFontSize);
+					Control.MinimumScaleFactor = minScaleFactor;
+					Control.AdjustsFontSizeToFitWidth = true;
+					Control.Lines = 1;
+					Control.LineBreakMode = UILineBreakMode.Clip;
+					break;
+				case AutoFitTextMode.None:
+				default:
+					Control.AdjustsFontSizeToFitWidth = false;
+					UpdateLineBreakMode();
+					UpdateMaxLines();
+					UpdateFont();
+					break;
+			}
+
+			UpdateLayout();
+#endif
+		}
+
+#if __MOBILE__
+
 		class FormsLabel : NativeLabel
 		{
 			public UIEdgeInsets TextInsets { get; set; }

@@ -265,6 +265,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					UpdateMaxLines();
 
 				UpdatePadding();
+				UpdateAutoFitMode();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
 			}
@@ -303,6 +304,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateMaxLines();
 			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == Label.AutoFitTextProperty.PropertyName)
+				UpdateAutoFitMode();
 		}
 
 		void UpdateColor()
@@ -454,5 +457,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			_lastSizeRequest = null;
 		}
+
+		void UpdateAutoFitMode() =>
+			Control.SetAutoFitMode(Element);
 	}
 }

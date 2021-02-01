@@ -10,10 +10,11 @@ namespace Xamarin.Forms.ControlGallery.iOS
 {
 	public class ApiLabelRenderer : LabelRenderer
 	{
-
 		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
 		{
-			Element.Text = UIDevice.CurrentDevice.SystemVersion.ToString();
+			if (Element != null)
+				Element.Text = UIDevice.CurrentDevice.SystemVersion.ToString();
+
 			base.OnElementChanged(e);
 			
 		}

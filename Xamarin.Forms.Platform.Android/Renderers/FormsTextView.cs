@@ -4,9 +4,15 @@ using Android.Runtime;
 using Android.Util;
 using Android.Widget;
 
+#if __ANDROID_29__
+using AndroidX.AppCompat.Widget;
+#else
+using Android.Support.V7.Widget;
+#endif
+
 namespace Xamarin.Forms.Platform.Android
 {
-	public class FormsTextView : TextView
+	public class FormsTextView : AppCompatTextView
 	{
 		public FormsTextView(Context context) : base(context)
 		{

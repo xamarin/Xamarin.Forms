@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using Android.Text;
 using Android.Widget;
 using Xamarin.Forms.Internals;
+using Android.Util;
+
+#if __ANDROID_29__
+using AndroidX.Core.Widget;
+#else
+using Android.Support.V4.Widget;
+#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -148,6 +155,34 @@ namespace Xamarin.Forms.Platform.Android
 					yaxis += totalLineHeights[line];
 
 				((ISpatialElement)span).Region = Region.FromLines(lineHeights, labelWidth, startX, endX, yaxis).Inflate(10);
+			}
+		}
+
+		public static void SetAutoFitMode(this TextView textView, Label label)
+		{
+			if ((int)Forms.SdkInt < 14)
+				return;
+
+
+			switch (label.AutoFitText)
+			{
+				case AutoFitTextMode.FitToWidth:
+					label.SetValueFromRenderer(Label.MaxLinesProperty, 1);
+					TextViewCompat.SetAutoSizeTextTypeUniformWithConfiguration(
+						textView, label.MinAutoFitFontSize, label.MaxAutoFitFontSize, 1, (int)ComplexUnitType.Sp);
+					break;
+				case AutoFitTextMode.None:
+				default:
+					TextViewCompat.SetAutoSizeTextTypeWithDefaults(textView, (int)AutoSizeTextType.None);
+					label.SetValueFromRenderer(Label.LineBreakModeProperty, label.LineBreakMode);
+
+#pragma warning disable 618 // We will need to update this when .Font goes away
+					var f = label.Font;
+#pragma warning restore 618
+
+					var newTextSize = f.ToScaledPixel();
+					textView.SetTextSize(ComplexUnitType.Sp, newTextSize);
+					break;
 			}
 		}
 	}
