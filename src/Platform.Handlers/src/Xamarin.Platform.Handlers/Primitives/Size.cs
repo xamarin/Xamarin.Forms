@@ -87,11 +87,7 @@ namespace Xamarin.Forms
 			return _width.Equals(other._width) && _height.Equals(other._height);
 		}
 
-#if NET6_0
 		public override bool Equals(object? obj)
-#else
-		public override bool Equals(object obj)
-#endif
 		{
 			if (ReferenceEquals(null, obj))
 				return false;

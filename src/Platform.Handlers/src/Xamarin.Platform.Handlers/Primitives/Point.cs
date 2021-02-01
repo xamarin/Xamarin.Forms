@@ -30,11 +30,7 @@ namespace Xamarin.Forms
 			Y = sz.Height;
 		}
 
-#if NET6_0
 		public override bool Equals(object? o)
-#else
-		public override bool Equals(object o)
-#endif
 		{
 			if (!(o is Point))
 				return false;
