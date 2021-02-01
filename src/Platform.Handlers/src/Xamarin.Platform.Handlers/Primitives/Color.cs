@@ -294,7 +294,7 @@ namespace Xamarin.Forms
 				return hashcode;
 			}
 		}
-#if NET6
+#if NET6 || NETSTANDARD2_1
 		public override bool Equals(object? obj)
 #else
 		public override bool Equals(object obj)

@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0-android</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Sample.Droid</RootNamespace>
+    <AssemblyName>Sample.Droid</AssemblyName>
+  </PropertyGroup>
+</Project>
