@@ -8,25 +8,25 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 	public partial class BoxViewHandlerTests : HandlerTestBase<BoxViewHandler>
 	{
 		[Fact]
-		public async Task CoolorRadiusInitializesCorrectly()
+		public async Task ColorInitializesCorrectly()
 		{
-			var boxViewStub = new BoxViewStub()
+			var boxView = new BoxViewStub()
 			{
 				Color = Color.Red
 			};
 
-			await ValidatePropertyInitValue(boxViewStub, () => boxViewStub.Color, GetNativeColor, boxViewStub.Color);
+			await ValidatePropertyInitValue(boxView, () => boxView.Color, GetNativeColor, boxView.Color);
 		}
 
 		[Fact]
 		public async Task CornerRadiusInitializesCorrectly()
 		{
-			var boxViewStub = new BoxViewStub()
+			var boxView = new BoxViewStub()
 			{
-				CornerRadius = new Forms.CornerRadius(12, 0, 0, 24)
+				CornerRadius = new CornerRadius(12, 0, 0, 24)
 			};
 
-			await ValidatePropertyInitValue(boxViewStub, () => boxViewStub.CornerRadius, GetNativeCornerRadius, boxViewStub.CornerRadius);
+			await ValidatePropertyInitValue(boxView, () => boxView.CornerRadius, GetNativeCornerRadius, boxView.CornerRadius);
 		}
 	}
 }
