@@ -1,4 +1,4 @@
-﻿<Project Sdk="Xamarin.Legacy.Sdk/0.1.0-alpha1">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0-android;net6.0-ios;</TargetFrameworks>
     <RootNamespace>Sample</RootNamespace>
