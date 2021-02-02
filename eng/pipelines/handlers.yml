@@ -160,6 +160,13 @@ stages:
               & dotnet build Maui.sln -c Release -bl:$(LogDirectory)\Release.binlog
             displayName: build samples
             errorActionPreference: stop
+            
+          - task: PublishPipelineArtifact@1
+            displayName: publish artifacts
+            inputs:
+              artifactName: windows-artifacts
+              targetPath: $(Build.ArtifactStagingDirectory)
+            condition: always()
   
   - stage: build_net6_macOS
     displayName: NET6 macOS
@@ -214,3 +221,10 @@ stages:
               dotnet build Maui.sln -c Debug   -bl:$(LogDirectory)/Debug.binlog &&
               dotnet build Maui.sln -c Release -bl:$(LogDirectory)/Release.binlog
             displayName: build samples
+
+          - task: PublishPipelineArtifact@1
+            displayName: publish artifacts
+            inputs:
+              artifactName: mac-artifacts
+              targetPath: $(Build.ArtifactStagingDirectory)
+            condition: always()
