@@ -156,15 +156,15 @@ stages:
             errorActionPreference: stop
 
           - powershell: |
-              & dotnet build Maui.sln -c Debug   -bl:$(LogDirectory)\Debug.binlog
-              & dotnet build Maui.sln -c Release -bl:$(LogDirectory)\Release.binlog
+              & dotnet build Maui.sln -c Debug   -bl:$(LogDirectory)\NET6\Debug.binlog
+              & dotnet build Maui.sln -c Release -bl:$(LogDirectory)\NET6\Release.binlog
             displayName: build samples
             errorActionPreference: stop
-            
+
           - task: PublishPipelineArtifact@1
             displayName: publish artifacts
             inputs:
-              artifactName: windows-artifacts
+              artifactName: win_build
               targetPath: $(Build.ArtifactStagingDirectory)
             condition: always()
   
@@ -218,13 +218,13 @@ stages:
             displayName: configure vsmac xcode
 
           - bash: |
-              dotnet build Maui.sln -c Debug   -bl:$(LogDirectory)/Debug.binlog &&
-              dotnet build Maui.sln -c Release -bl:$(LogDirectory)/Release.binlog
+              dotnet build Maui.sln -c Debug   -bl:$(LogDirectory)/NET6/Debug.binlog &&
+              dotnet build Maui.sln -c Release -bl:$(LogDirectory)/NET6/Release.binlog
             displayName: build samples
 
           - task: PublishPipelineArtifact@1
             displayName: publish artifacts
             inputs:
-              artifactName: mac-artifacts
+              artifactName: OSXArtifacts
               targetPath: $(Build.ArtifactStagingDirectory)
             condition: always()
