@@ -132,7 +132,14 @@ stages:
         displayName: Build NET 6
         timeoutInMinutes: 120
         pool:
-          name:  $(macOSXVmPool)
-          vmImage: $(macOSXVmImage)
+          vmImage:  windows-latest
+        variables:
+          DotNetVersion: 6.0.100-alpha.1.20562.2
+          DotNet.Cli.Telemetry.OptOut: true
+          Android.Msi: https://dl.internalx.com/vsts-devdiv/Xamarin.Android/public/net6/4264138/master/8e097b44df981bb4259845cfe2db9ca2aaaedc91/Microsoft.NET.Workload.Android.11.0.100.255.msi
+          Android.Pkg: https://dl.internalx.com/vsts-devdiv/Xamarin.Android/public/net6/4264138/master/8e097b44df981bb4259845cfe2db9ca2aaaedc91/Microsoft.NET.Workload.Android-11.0.100-ci.master.255.pkg
+          iOS.Msi: https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/main/3174e94a178c41cae0a51fa296e52f711957c14a/543/package/Microsoft.NET.Workload.iOS.14.2.100-ci.main.30.msi
+          iOS.Pkg: https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/main/3174e94a178c41cae0a51fa296e52f711957c14a/543/package/Microsoft.iOS.Bundle.14.2.100-ci.main.30.pkg
+          LogDirectory: $(Build.ArtifactStagingDirectory)\logs
         steps:
           - template: common/net6.yml
