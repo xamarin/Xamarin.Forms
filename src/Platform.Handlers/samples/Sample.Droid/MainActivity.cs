@@ -51,9 +51,12 @@ namespace Sample.Droid
 #endif
 			var view = page.GetContentView();
 			Add(view);
+
+			// In 5 seconds, add and remove some controls so we can see that working
 			Task.Run(async () => {
 
 				await Task.Delay(5000).ConfigureAwait(false);
+
 				void addLabel()
 				{
 					(view as VerticalStackLayout).Add(new Label { Text = "I show up after 5 seconds" });
