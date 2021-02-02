@@ -13,12 +13,4 @@
     <ProjectReference Include="..\..\..\Forms\src\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj" />
     <ProjectReference Include="..\..\src\Xamarin.Platform.Handlers\Xamarin.Platform.Handlers.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Controls\Window.cs">
-      <SubType></SubType>
-    </Compile>
-    <Compile Update="MainWindow.cs">
-      <SubType></SubType>
-    </Compile>
-  </ItemGroup>
 </Project>
