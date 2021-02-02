@@ -39,73 +39,73 @@ steps:
     #     targetPath: $(Build.ArtifactStagingDirectory)
     #   condition: always()
 
-# - job: mac
-#   timeoutInMinutes: 120
-#   pool:
-#     vmImage: macOS-latest
-#   variables:
-#     - group: xamops-azdev-secrets
-#     - group: Xamarin-Secrets
-#     - name: LogDirectory
-#       value: $(Build.ArtifactStagingDirectory)/logs
-#     - name: DotNet.Root
-#       value: /usr/local/share/dotnet/
-#     - name: DotNet.Tools
-#       value: ~/.dotnet/tools
-#   steps:
-#     - task: UseDotNet@2
-#       displayName: install .NET Core 3.1
-#       inputs:
-#         version: 3.1.x
-#         installationPath: $(DotNet.Root)
+- job: mac
+  timeoutInMinutes: 120
+  pool:
+    vmImage: macOS-latest
+  variables:
+    - group: xamops-azdev-secrets
+    - group: Xamarin-Secrets
+    - name: LogDirectory
+      value: $(Build.ArtifactStagingDirectory)/logs
+    - name: DotNet.Root
+      value: /usr/local/share/dotnet/
+    - name: DotNet.Tools
+      value: ~/.dotnet/tools
+  steps:
+    - task: UseDotNet@2
+      displayName: install .NET Core 3.1
+      inputs:
+        version: 3.1.x
+        installationPath: $(DotNet.Root)
 
-#     - bash: >
-#         export PATH="$(DotNet.Root):$(DotNet.Tools):$PATH" &&
-#         curl -L https://dot.net/v1/dotnet-install.sh > dotnet-install.sh &&
-#         sh dotnet-install.sh --version $(DotNetVersion) --install-dir $DOTNET_ROOT --verbose &&
-#         dotnet --list-sdks &&
-#         echo "##vso[task.setvariable variable=PATH]$PATH"
-#       displayName: install .NET $(DotNetVersion)
+    - bash: >
+        export PATH="$(DotNet.Root):$(DotNet.Tools):$PATH" &&
+        curl -L https://dot.net/v1/dotnet-install.sh > dotnet-install.sh &&
+        sh dotnet-install.sh --version $(DotNetVersion) --install-dir $DOTNET_ROOT --verbose &&
+        dotnet --list-sdks &&
+        echo "##vso[task.setvariable variable=PATH]$PATH"
+      displayName: install .NET $(DotNetVersion)
 
-#     - bash: |
-#         dotnet tool install --global boots
-#         boots $(Android.Pkg)
-#         boots $(iOS.Pkg)
-#       displayName: install .NET workloads
+    - bash: |
+        dotnet tool install --global boots
+        boots $(Android.Pkg)
+        boots $(iOS.Pkg)
+      displayName: install .NET workloads
 
-#     - task: provisionator@2
-#       displayName: install Xcode
-#       inputs:
-#         github_token: $(github--pat--vs-mobiletools-engineering-service2)
-#         provisioning_script: $(System.DefaultWorkingDirectory)/scripts/provision.csx
-#         provisioning_extra_args: '-v -v -v -v'
+    - task: provisionator@2
+      displayName: install Xcode
+      inputs:
+        github_token: $(github--pat--vs-mobiletools-engineering-service2)
+        provisioning_script: $(System.DefaultWorkingDirectory)/scripts/provision.csx
+        provisioning_extra_args: '-v -v -v -v'
 
-#     - bash: |
-#         set -x
-#         mkdir -p ~/Library/Preferences/Xamarin
-#         rm -f ~/Library/Preferences/Xamarin/Settings.plist
-#         /usr/libexec/PlistBuddy -c "add :AppleSdkRoot string $(dirname $(dirname $(xcode-select -p)))" ~/Library/Preferences/Xamarin/Settings.plist || true
-#         cat ~/Library/Preferences/Xamarin/Settings.plist || true
-#       displayName: configure vsmac xcode
+    - bash: |
+        set -x
+        mkdir -p ~/Library/Preferences/Xamarin
+        rm -f ~/Library/Preferences/Xamarin/Settings.plist
+        /usr/libexec/PlistBuddy -c "add :AppleSdkRoot string $(dirname $(dirname $(xcode-select -p)))" ~/Library/Preferences/Xamarin/Settings.plist || true
+        cat ~/Library/Preferences/Xamarin/Settings.plist || true
+      displayName: configure vsmac xcode
 
-#     - bash: |
-#         dotnet build Maui.sln -c Debug   -bl:$(LogDirectory)/Debug.binlog &&
-#         dotnet build Maui.sln -c Release -bl:$(LogDirectory)/Release.binlog
-#       displayName: build samples
+    - bash: |
+        dotnet build Maui.sln -c Debug   -bl:$(LogDirectory)/Debug.binlog &&
+        dotnet build Maui.sln -c Release -bl:$(LogDirectory)/Release.binlog
+      displayName: build samples
 
-#     - task: CopyFiles@2
-#       displayName: copy artifacts
-#       inputs:
-#         contents: |
-#           *Android/**/*-Signed.apk
-#           *iOS/**/*.app/**
-#         targetFolder: $(Build.ArtifactStagingDirectory)
-#         overWrite: true
-#       condition: always()
+    - task: CopyFiles@2
+      displayName: copy artifacts
+      inputs:
+        contents: |
+          *Android/**/*-Signed.apk
+          *iOS/**/*.app/**
+        targetFolder: $(Build.ArtifactStagingDirectory)
+        overWrite: true
+      condition: always()
 
-#     - task: PublishPipelineArtifact@1
-#       displayName: publish artifacts
-#       inputs:
-#         artifactName: mac-artifacts
-#         targetPath: $(Build.ArtifactStagingDirectory)
-#       condition: always()
+    - task: PublishPipelineArtifact@1
+      displayName: publish artifacts
+      inputs:
+        artifactName: mac-artifacts
+        targetPath: $(Build.ArtifactStagingDirectory)
+      condition: always()
