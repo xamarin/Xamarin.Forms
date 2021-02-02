@@ -1,29 +1,123 @@
-parameters:
-  DotNetVersion: '6.0.100-alpha.1.20562.2'  
-  AndroidPkg: https://dl.internalx.com/vsts-devdiv/Xamarin.Android/public/net6/4264138/master/8e097b44df981bb4259845cfe2db9ca2aaaedc91/Microsoft.NET.Workload.Android-11.0.100-ci.master.255.pkg
-  iOSPkg: https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/main/3174e94a178c41cae0a51fa296e52f711957c14a/543/package/Microsoft.iOS.Bundle.14.2.100-ci.main.30.pkg
+# https://aka.ms/yaml
+# this is based on https://raw.githubusercontent.com/xamarin/net6-samples/e0259e3d94f12a9184623905d9e07c1df8567808/azure-pipelines.yml
+variables:
+  DotNetVersion: 6.0.100-alpha.1.20562.2
+  DotNet.Cli.Telemetry.OptOut: true
+  Android.Msi: https://dl.internalx.com/vsts-devdiv/Xamarin.Android/public/net6/4264138/master/8e097b44df981bb4259845cfe2db9ca2aaaedc91/Microsoft.NET.Workload.Android.11.0.100.255.msi
+  Android.Pkg: https://dl.internalx.com/vsts-devdiv/Xamarin.Android/public/net6/4264138/master/8e097b44df981bb4259845cfe2db9ca2aaaedc91/Microsoft.NET.Workload.Android-11.0.100-ci.master.255.pkg
+  iOS.Msi: https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/main/3174e94a178c41cae0a51fa296e52f711957c14a/543/package/Microsoft.NET.Workload.iOS.14.2.100-ci.main.30.msi
+  iOS.Pkg: https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/main/3174e94a178c41cae0a51fa296e52f711957c14a/543/package/Microsoft.iOS.Bundle.14.2.100-ci.main.30.pkg
 
-steps:
-  - checkout: self
-    clean: true
-  
-  - bash: >
-      export PATH="$(DotNet.Root):$(DotNet.Tools):$PATH" &&
-      curl -L https://dot.net/v1/dotnet-install.sh > dotnet-install.sh &&
-      sh dotnet-install.sh --version ${{ parameters.DotNetVersion }} --install-dir $DOTNET_ROOT --verbose &&
-      dotnet --list-sdks &&
-      echo "##vso[task.setvariable variable=PATH]$PATH"
-      displayName: install .NET ${{ parameters.DotNetVersion }}
+jobs:
+- job: windows
+  pool:
+    vmImage: windows-latest
+  variables:
+    LogDirectory: $(Build.ArtifactStagingDirectory)\logs
+  steps:
+    - powershell: |
+        $ProgressPreference = 'SilentlyContinue'
+        Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile dotnet-install.ps1
+        & .\dotnet-install.ps1 -Version $(DotNetVersion) -InstallDir "$env:ProgramFiles\dotnet\" -Verbose
+        & dotnet --list-sdks
+      displayName: install .NET $(DotNetVersion)
+      errorActionPreference: stop
 
-  - bash: |
-      dotnet tool install --global boots
-      boots ${{ parameters.AndroidPkg }}
-      boots ${{ parameters.iOSPkg }}
-    displayName: install .NET workloads
+    - powershell: |
+        & dotnet tool install --global boots
+        & boots $(Android.Msi)
+        & boots $(iOS.Msi)
+      displayName: install .NET workloads
+      errorActionPreference: stop
 
-  - task: Bash@3
-    displayName: 'Build NET6 Projects'
-    inputs:
-      targetType: 'filePath'
-      filePath: 'build.sh'
-      arguments: --target NET6 --TeamProject="$(System.TeamProject)"
+    - powershell: |
+        & dotnet build Maui.sln -c Debug   -bl:$(LogDirectory)\Debug.binlog
+        & dotnet build Maui.sln -c Release -bl:$(LogDirectory)\Release.binlog
+      displayName: build samples
+      errorActionPreference: stop
+
+    # - task: CopyFiles@2
+    #   displayName: copy artifacts
+    #   inputs:
+    #     contents: '*Android\**\*-Signed.apk'
+    #     targetFolder: $(Build.ArtifactStagingDirectory)
+    #     overWrite: true
+    #   condition: always()
+
+    # - task: PublishPipelineArtifact@1
+    #   displayName: publish artifacts
+    #   inputs:
+    #     artifactName: windows-artifacts
+    #     targetPath: $(Build.ArtifactStagingDirectory)
+    #   condition: always()
+
+- job: mac
+  timeoutInMinutes: 120
+  pool:
+    vmImage: macOS-latest
+  variables:
+    - group: xamops-azdev-secrets
+    - group: Xamarin-Secrets
+    - name: LogDirectory
+      value: $(Build.ArtifactStagingDirectory)/logs
+    - name: DotNet.Root
+      value: /usr/local/share/dotnet/
+    - name: DotNet.Tools
+      value: ~/.dotnet/tools
+  steps:
+    - task: UseDotNet@2
+      displayName: install .NET Core 3.1
+      inputs:
+        version: 3.1.x
+        installationPath: $(DotNet.Root)
+
+    - bash: >
+        export PATH="$(DotNet.Root):$(DotNet.Tools):$PATH" &&
+        curl -L https://dot.net/v1/dotnet-install.sh > dotnet-install.sh &&
+        sh dotnet-install.sh --version $(DotNetVersion) --install-dir $DOTNET_ROOT --verbose &&
+        dotnet --list-sdks &&
+        echo "##vso[task.setvariable variable=PATH]$PATH"
+      displayName: install .NET $(DotNetVersion)
+
+    - bash: |
+        dotnet tool install --global boots
+        boots $(Android.Pkg)
+        boots $(iOS.Pkg)
+      displayName: install .NET workloads
+
+    # - task: provisionator@2
+    #   displayName: install Xcode
+    #   inputs:
+    #     github_token: $(github--pat--vs-mobiletools-engineering-service2)
+    #     provisioning_script: $(System.DefaultWorkingDirectory)/scripts/provision.csx
+    #     provisioning_extra_args: '-v -v -v -v'
+
+    - bash: |
+        set -x
+        mkdir -p ~/Library/Preferences/Xamarin
+        rm -f ~/Library/Preferences/Xamarin/Settings.plist
+        /usr/libexec/PlistBuddy -c "add :AppleSdkRoot string $(dirname $(dirname $(xcode-select -p)))" ~/Library/Preferences/Xamarin/Settings.plist || true
+        cat ~/Library/Preferences/Xamarin/Settings.plist || true
+      displayName: configure vsmac xcode
+
+    - bash: |
+        dotnet build Maui.sln -c Debug   -bl:$(LogDirectory)/Debug.binlog &&
+        dotnet build Maui.sln -c Release -bl:$(LogDirectory)/Release.binlog
+      displayName: build samples
+
+    # - task: CopyFiles@2
+    #   displayName: copy artifacts
+    #   inputs:
+    #     contents: |
+    #       *Android/**/*-Signed.apk
+    #       *iOS/**/*.app/**
+    #     targetFolder: $(Build.ArtifactStagingDirectory)
+    #     overWrite: true
+    #   condition: always()
+
+    - task: PublishPipelineArtifact@1
+      displayName: publish artifacts
+      inputs:
+        artifactName: mac-artifacts
+        targetPath: $(Build.ArtifactStagingDirectory)
+      condition: always()
