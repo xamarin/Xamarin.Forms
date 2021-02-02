@@ -1,13 +1,9 @@
+parameters:
+  DotNetVersion: '6.0.100-alpha.1.20562.2'
+
 steps:
   - checkout: self
     clean: true
-
-  - task: xamops.azdevex.provisionator-task.provisionator@1
-    displayName: 'Provisionator'
-    condition: eq(variables['provisioning'], 'true')
-    inputs:
-      provisioning_script: $(provisionator.path)
-      provisioning_extra_args: $(provisionator.extraArguments)
   
   - task: Bash@3
     displayName: 'Cake Provision'
@@ -17,6 +13,14 @@ steps:
       filePath: 'build.sh'
       arguments: --target provision-net6sdk --TeamProject="$(System.TeamProject)"
   
+  - bash: >
+      export PATH="$(DotNet.Root):$(DotNet.Tools):$PATH" &&
+      curl -L https://dot.net/v1/dotnet-install.sh > dotnet-install.sh &&
+      sh dotnet-install.sh --version $(DotNetVersion) --install-dir $DOTNET_ROOT --verbose &&
+      dotnet --list-sdks &&
+      echo "##vso[task.setvariable variable=PATH]$PATH"
+      displayName: install .NET $(DotNetVersion)
+
   - task: Bash@3
     displayName: 'Build NET6 Projects'
     inputs:
