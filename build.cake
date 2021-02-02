@@ -897,6 +897,17 @@ Task("NET6")
     .Description("Build NET6 projects")
     .Does(() =>
 {
+    if(isCIBuild)
+    {
+        var settings = new DotNetCoreToolSettings
+        {
+            DiagnosticOutput = true,
+            ArgumentCustomization = args=>args.Append("globaljson --sdk-version 6.0.100-alpha.1.20562.2")
+        };
+
+        DotNetCoreTool("new", settings);
+    }
+
     DotNetCoreRestore("./Maui.sln");
     DotNetCoreBuild("./Maui.sln");
 });
