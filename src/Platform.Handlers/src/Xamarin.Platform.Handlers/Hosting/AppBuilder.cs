@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Hosting.Internal;
 using Xamarin.Platform.Hosting.Internal;
 
 namespace Xamarin.Platform.Hosting
@@ -20,10 +17,10 @@ namespace Xamarin.Platform.Hosting
 		List<IConfigureContainerAdapter> _configureContainerActions = new List<IConfigureContainerAdapter>();
 		IServiceFactoryAdapter _serviceProviderFactory = new ServiceFactoryAdapter<IServiceCollection>(new DefaultServiceProviderFactory());
 		bool _hostBuilt;
-		IConfiguration? _hostConfiguration;
-		IConfiguration? _appConfiguration;
+		//IConfiguration? _hostConfiguration;
+		//IConfiguration? _appConfiguration;
 		HostBuilderContext? _hostBuilderContext;
-		HostingEnvironment? _hostingEnvironment;
+		IHostEnvironment? _hostEnvironment;
 		IServiceProvider? _appServices;
 		IHandlerServiceProvider? _handlersServiceProvider;
 
@@ -39,16 +36,16 @@ namespace Xamarin.Platform.Hosting
 			return this;
 		}
 
-		public IHostBuilder RegisterHandler<TType, TTypeRender>()
+		public IAppHostBuilder RegisterHandler<TType, TTypeRender>()
 			where TType : IFrameworkElement
 			where TTypeRender : IViewHandler
 		{
 			ConfigureHandlers((context, handlersCollection) => handlersCollection.AddTransient(typeof(TType), typeof(TTypeRender)));
-		
+
 			return this;
 		}
 
-		public (IHost Host, TApplication App) Init<TApplication>() where TApplication : class, IApp
+		public TApplication Init<TApplication>() where TApplication : class, IApp
 		{
 			//User services so its almost empty and fast
 			ServiceCollection servicesCollection = new ServiceCollection();
@@ -67,7 +64,7 @@ namespace Xamarin.Platform.Hosting
 
 			(app as App)?.SetServiceProvider(services);
 
-			return (host, app);
+			return app;
 		}
 
 		public IHost Build()
@@ -89,6 +86,7 @@ namespace Xamarin.Platform.Hosting
 			{
 				throw new InvalidOperationException($"The (_appServices) cannot be null");
 			}
+
 			return _appServices.GetRequiredService<IHost>();
 		}
 
@@ -126,14 +124,13 @@ namespace Xamarin.Platform.Hosting
 #pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
 		public IHostBuilder UseServiceProviderFactory<TContainerBuilder>(IServiceProviderFactory<TContainerBuilder> factory)
 		{
-			if (factory != null)
-				_serviceProviderFactory = new ServiceFactoryAdapter<TContainerBuilder>(factory ?? throw new ArgumentNullException(nameof(factory)));
+			_serviceProviderFactory = new ServiceFactoryAdapter<TContainerBuilder>(factory ?? throw new ArgumentNullException(nameof(factory)));
 			return this;
 		}
 
 		public IHostBuilder UseServiceProviderFactory<TContainerBuilder>(Func<HostBuilderContext, IServiceProviderFactory<TContainerBuilder>> factory)
 		{
-			if (factory != null && _hostBuilderContext != null)
+			if (_hostBuilderContext != null)
 				_serviceProviderFactory = new ServiceFactoryAdapter<TContainerBuilder>(() => _hostBuilderContext, factory ?? throw new ArgumentNullException(nameof(factory)));
 			return this;
 		}
@@ -141,56 +138,54 @@ namespace Xamarin.Platform.Hosting
 
 		void BuildHostConfiguration()
 		{
-			IConfigurationBuilder configBuilder = new ConfigurationBuilder()
-				.AddInMemoryCollection(); // Make sure there's some default storage since there are no default providers
+			//IConfigurationBuilder configBuilder = new ConfigurationBuilder()
+			//	.AddInMemoryCollection(); // Make sure there's some default storage since there are no default providers
 
-			foreach (Action<IConfigurationBuilder> buildAction in _configureHostConfigActions)
-			{
-				buildAction(configBuilder);
-			}
-			_hostConfiguration = configBuilder.Build();
+			//foreach (Action<IConfigurationBuilder> buildAction in _configureHostConfigActions)
+			//{
+			//	buildAction(configBuilder);
+			//}
+			//_hostConfiguration = configurationBuilder.Build();
 		}
 
 		void CreateHostingEnvironment()
 		{
-			if (_hostConfiguration == null)
-				return;
-
-			_hostingEnvironment = new HostingEnvironment()
+		
+			_hostEnvironment = new AppHostEnvironment()
 			{
-				ApplicationName = _hostConfiguration[HostDefaults.ApplicationKey],
-				EnvironmentName = _hostConfiguration[HostDefaults.EnvironmentKey] ?? Environments.Production,
-				ContentRootPath = ResolveContentRootPath(_hostConfiguration[HostDefaults.ContentRootKey], AppContext.BaseDirectory),
+				//ApplicationName = _hostConfiguration[HostDefaults.ApplicationKey],
+				//EnvironmentName = _hostConfiguration[HostDefaults.EnvironmentKey] ?? Environments.Production,
+				//ContentRootPath = ResolveContentRootPath(_hostConfiguration[HostDefaults.ContentRootKey], AppContext.BaseDirectory),
 			};
 
-			if (string.IsNullOrEmpty(_hostingEnvironment.ApplicationName))
+			if (string.IsNullOrEmpty(_hostEnvironment.ApplicationName))
 			{
 				// Note GetEntryAssembly returns null for the net4x console test runner.
-				_hostingEnvironment.ApplicationName = Assembly.GetEntryAssembly()?.GetName().Name;
+				_hostEnvironment.ApplicationName = Assembly.GetEntryAssembly()?.GetName().Name;
 			}
 
-			_hostingEnvironment.ContentRootFileProvider = new PhysicalFileProvider(_hostingEnvironment.ContentRootPath);
+			//_hostEnvironment.ContentRootFileProvider = new PhysicalFileProvider(_hostEnvironment.ContentRootPath);
 		}
 
-		string ResolveContentRootPath(string contentRootPath, string basePath)
-		{
-			if (string.IsNullOrEmpty(contentRootPath))
-			{
-				return basePath;
-			}
-			if (Path.IsPathRooted(contentRootPath))
-			{
-				return contentRootPath;
-			}
-			return Path.Combine(Path.GetFullPath(basePath), contentRootPath);
-		}
+		//string ResolveContentRootPath(string contentRootPath, string basePath)
+		//{
+		//	if (string.IsNullOrEmpty(contentRootPath))
+		//	{
+		//		return basePath;
+		//	}
+		//	if (Path.IsPathRooted(contentRootPath))
+		//	{
+		//		return contentRootPath;
+		//	}
+		//	return Path.Combine(Path.GetFullPath(basePath), contentRootPath);
+		//}
 
 		void CreateHostBuilderContext()
 		{
 			_hostBuilderContext = new HostBuilderContext(Properties)
 			{
-				HostingEnvironment = _hostingEnvironment,
-				Configuration = _hostConfiguration
+				//HostingEnvironment = _hostEnvironment,
+				//Configuration = _hostConfiguration
 			};
 		}
 
@@ -199,29 +194,29 @@ namespace Xamarin.Platform.Hosting
 			if (_hostBuilderContext == null)
 				return;
 
-			IConfigurationBuilder configBuilder = new ConfigurationBuilder()
-				.SetBasePath(_hostingEnvironment?.ContentRootPath)
-				.AddConfiguration(_hostConfiguration, shouldDisposeConfiguration: true);
+			//IConfigurationBuilder configBuilder = new ConfigurationBuilder()
+			//	.SetBasePath(_hostEnvironment?.ContentRootPath)
+			//	.AddConfiguration(_hostConfiguration, shouldDisposeConfiguration: true);
 
-			foreach (Action<HostBuilderContext, IConfigurationBuilder> buildAction in _configureAppConfigActions)
-			{
-				buildAction(_hostBuilderContext, configBuilder);
-			}
-			_appConfiguration = configBuilder.Build();
-			_hostBuilderContext.Configuration = _appConfiguration;
+			//foreach (Action<HostBuilderContext, IConfigurationBuilder> buildAction in _configureAppConfigActions)
+			//{
+			//	buildAction(_hostBuilderContext, configBuilder);
+			//}
+			//_appConfiguration = configBuilder.Build();
+			//_hostBuilderContext.Configuration = _appConfiguration;
 		}
 
 		void CreateServiceProvider()
 		{
 			var services = new ServiceCollection();
-			if (_hostingEnvironment != null)
-				services.AddSingleton<IHostEnvironment>(_hostingEnvironment);
+			if (_hostEnvironment != null)
+				services.AddSingleton<IHostEnvironment>(_hostEnvironment);
 			if (_hostBuilderContext != null)
 				services.AddSingleton(_hostBuilderContext);
 			// register configuration as factory to make it dispose with the service provider
-			if (_appConfiguration != null)
-				services.AddSingleton(_ => _appConfiguration);
-			services.AddSingleton<IHostApplicationLifetime, ApplicationLifetime>();
+			//if (_appConfiguration != null)
+			//	services.AddSingleton(_ => _appConfiguration);
+			services.AddSingleton<IHostApplicationLifetime, AppLifetime>();
 			services.AddSingleton<IHostLifetime, AppHostLifetime>();
 			services.AddSingleton<IHost, AppHost>();
 			services.AddOptions();
@@ -251,10 +246,6 @@ namespace Xamarin.Platform.Hosting
 			{
 				throw new InvalidOperationException($"The IServiceProviderFactory returned a null IServiceProvider.");
 			}
-
-			// resolve configuration explicitly once to mark it as resolved within the
-			// service provider, ensuring it will be properly disposed with the provider
-			_ = _appServices.GetService<IConfiguration>();
 		}
 
 		void CreateHandlersServiceProvider()

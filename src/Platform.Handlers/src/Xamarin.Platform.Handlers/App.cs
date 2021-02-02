@@ -1,11 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Xamarin.Platform.Core;
 using Xamarin.Platform.Hosting;
 
 namespace Xamarin.Platform
 {
-	public abstract class App : IApp
+	public abstract class App : 
+#if __ANDROID__
+		global::Android.App.Application,
+#elif __IOS__
+		global::UIKit.UIApplicationDelegate,
+#endif
+		IApp
 	{
 		IServiceProvider? _serviceProvider;
 		IHandlerServiceProvider? _handlerServiceProvider;
@@ -20,7 +28,7 @@ namespace Xamarin.Platform
 
 		public IHandlerServiceProvider? Handlers => _handlerServiceProvider;
 
-		public virtual IStartup? GetStartup() => Services?.GetRequiredService<IStartup>();
+		public virtual IEnumerable<IWindow>? Windows => Services?.GetServices<IWindow>();
 
 		public void SetServiceProvider(IServiceProvider provider)
 		{
@@ -37,34 +45,34 @@ namespace Xamarin.Platform
 		{
 			var builder = new AppBuilder();
 
-			builder.UseContentRoot(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
-			builder.ConfigureHostConfiguration(config =>
-			{
-				//config.AddEnvironmentVariables(prefix: "DOTNET_");
-			});
+			//builder.UseContentRoot(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
+			//builder.ConfigureHostConfiguration(config =>
+			//{
+			//	config.AddEnvironmentVariables(prefix: "DOTNET_");
+			//});
 
-			builder.ConfigureAppConfiguration((hostingContext, config) =>
-			{
-				IHostEnvironment env = hostingContext.HostingEnvironment;
+			//builder.ConfigureAppConfiguration((hostingContext, config) =>
+			//{
+			//	IHostEnvironment env = hostingContext.HostingEnvironment;
 
-				//bool reloadOnChange = hostingContext.Configuration.GetValue("hostBuilder:reloadConfigOnChange", defaultValue: true);
+			//	//bool reloadOnChange = hostingContext.Configuration.GetValue("hostBuilder:reloadConfigOnChange", defaultValue: true);
 
-				//config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: reloadOnChange)
-				//	  .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: reloadOnChange);
+			//	//config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: reloadOnChange)
+			//	//	  .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: reloadOnChange);
 
-				//if (env.IsDevelopment() && !string.IsNullOrEmpty(env.ApplicationName))
-				//{
-				//	var appAssembly = Assembly.Load(new AssemblyName(env.ApplicationName));
-				//	if (appAssembly != null)
-				//	{
-				//		config.AddUserSecrets(appAssembly, optional: true);
-				//	}
-				//}
+			//	//if (env.IsDevelopment() && !string.IsNullOrEmpty(env.ApplicationName))
+			//	//{
+			//	//	var appAssembly = Assembly.Load(new AssemblyName(env.ApplicationName));
+			//	//	if (appAssembly != null)
+			//	//	{
+			//	//		config.AddUserSecrets(appAssembly, optional: true);
+			//	//	}
+			//	//}
 
-				//config.AddEnvironmentVariables();
-			})
-			.ConfigureLogging((hostingContext, logging) =>
-			{
+			//	//config.AddEnvironmentVariables();
+			//})
+			//builder.ConfigureLogging((hostingContext, logging) =>
+			//{
 				//logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
 				//logging.AddConsole();
 				//logging.AddDebug();
@@ -78,13 +86,13 @@ namespace Xamarin.Platform
 				//										| ActivityTrackingOptions.ParentId;
 				//});
 
-			})
-			.UseDefaultServiceProvider((context, options) =>
-			{
-				bool isDevelopment = context.HostingEnvironment.IsDevelopment();
-				options.ValidateScopes = isDevelopment;
-				options.ValidateOnBuild = isDevelopment;
-			});
+			//});
+			//.UseDefaultServiceProvider((context, options) =>
+			//{
+			//	bool isDevelopment = context.HostingEnvironment.IsDevelopment();
+			//	options.ValidateScopes = isDevelopment;
+			//	options.ValidateOnBuild = isDevelopment;
+			//});
 
 			builder.UseXamarinHandlers();
 

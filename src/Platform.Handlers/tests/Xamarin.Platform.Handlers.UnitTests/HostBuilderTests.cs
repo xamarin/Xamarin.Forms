@@ -26,7 +26,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		[Fact]
 		public void CanGetApp()
 		{
-			var (host, app) = App.CreateDefaultBuilder()
+			var app = App.CreateDefaultBuilder()
 							  .Init<MockApp>();
 			Assert.NotNull(app);
 			Assert.IsType<MockApp>(app);
@@ -35,7 +35,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		[Fact]
 		public void CanGetStaticApp()
 		{
-			var (host, app) = App.CreateDefaultBuilder()
+			var app = App.CreateDefaultBuilder()
 						  .Init<MockApp>();
 
 			Assert.NotNull(App.Current);
@@ -45,7 +45,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		[Fact]
 		public void CanGetServices()
 		{
-			var (host, app) = App.CreateDefaultBuilder()
+			var app = App.CreateDefaultBuilder()
 							  .Init<MockApp>();
 
 			Assert.NotNull(app.Services);
@@ -54,7 +54,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		[Fact]
 		public void CanGetStaticServices()
 		{
-			var (host, app) = App.CreateDefaultBuilder()
+			var app = App.CreateDefaultBuilder()
 							  .Init<MockApp>();
 
 			Assert.NotNull(App.Current.Services);
@@ -66,7 +66,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		{
 			var builder = App.CreateDefaultBuilder()
 							   .RegisterHandler<IMockView, MockViewHandler>();
-			var (host, app) = (builder as IAppHostBuilder).Init<MockApp>();
+			var app = (builder as IAppHostBuilder).Init<MockApp>();
 
 			var handler = App.Current.Handlers.GetHandler(typeof(IMockView));
 			Assert.NotNull(handler);
@@ -80,7 +80,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 							.RegisterHandlers(new Dictionary<Type, Type> {
 								{ typeof(IMockView), typeof(MockViewHandler) }
 							});
-			var (host, app) = (builder as IAppHostBuilder).Init<MockApp>();
+			var app = (builder as IAppHostBuilder).Init<MockApp>();
 
 			var handler = App.Current.Handlers.GetHandler(typeof(IMockView));
 			Assert.NotNull(handler);
@@ -93,7 +93,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 			var builder = App.CreateDefaultBuilder()
 							.RegisterHandler<IMockView, MockViewHandler>();
 
-			var (host, app) = (builder as IAppHostBuilder).Init<MockApp>();
+			var app = (builder as IAppHostBuilder).Init<MockApp>();
 
 			var handler = App.Current.Handlers.GetHandler(typeof(MockView));
 			Assert.NotNull(handler);
@@ -103,7 +103,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		[Fact]
 		public void DefaultHandlersAreRegistered()
 		{
-			var (host, app) = App.CreateDefaultBuilder()
+			var app = App.CreateDefaultBuilder()
 							.Init<MockApp>();
 
 			var handler = App.Current.Handlers.GetHandler(typeof(IButton));
@@ -117,7 +117,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 			var builder = App.CreateDefaultBuilder()
 							.RegisterHandler<MockButton, MockButtonHandler>();
 
-			var (host, app) = (builder as IAppHostBuilder).Init<MockApp>();
+			var app = (builder as IAppHostBuilder).Init<MockApp>();
 
 			var defaultHandler = App.Current.Handlers.GetHandler(typeof(IButton));
 			var specificHandler = App.Current.Handlers.GetHandler(typeof(MockButton));
@@ -131,7 +131,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		public void Get10000Handlers()
 		{
 			int iterations = 10000;
-			var (host, app) = App.CreateDefaultBuilder()
+			var app = App.CreateDefaultBuilder()
 						 .Init<MockApp>();
 
 			var handlerWarmup = app.Handlers.GetHandler<Button>();
@@ -170,16 +170,6 @@ namespace Xamarin.Platform.Handlers.UnitTests
 			}
 			var host = _builder.Build();
 
-		}
-
-		[Fact]
-		public async Task StartSTopHost()
-		{
-			var (host, app) = App.CreateDefaultBuilder().Init<MockApp>();
-
-			host.Start();
-
-			await host.StopAsync();
 		}
 	}
 }

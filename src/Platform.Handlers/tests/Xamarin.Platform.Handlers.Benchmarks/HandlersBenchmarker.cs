@@ -14,8 +14,7 @@ namespace Xamarin.Platform.Handlers.Benchmarks
 		public void GlobalSetupForDI()
 		{
 			_builder = App.CreateDefaultBuilder();
-			var (host, app) = _builder.Init<MockApp>();
-			_app = app;
+			_app = _builder.Init<MockApp>();
 		}
 
 		[GlobalSetup(Target = nameof(GetHandlerUsingRegistrar))]
