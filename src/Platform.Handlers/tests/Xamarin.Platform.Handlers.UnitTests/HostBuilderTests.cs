@@ -5,62 +5,63 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualBasic;
-using NUnit.Framework;
+using Xunit;
 using Xamarin.Forms;
 using Xamarin.Platform.Hosting;
+using Xamarin.Platform.Handlers.Tests;
 
-namespace Xamarin.Platform.Handlers.Tests
+namespace Xamarin.Platform.Handlers.UnitTests
 {
-	[TestFixture]
+	[Category(TestCategory.Core, TestCategory.Hosting)]
 	public partial class HostBuilderTests
 	{
 
-		[Test]
+		[Fact]
 		public void CanBuildAHost()
 		{
 			var host = App.CreateDefaultBuilder().Build();
-			Assert.IsNotNull(host);
+			Assert.NotNull(host);
 		}
 
-		[Test]
+		[Fact]
 		public void CanGetApp()
 		{
 			var (host, app) = App.CreateDefaultBuilder()
 							  .Init<MockApp>();
-			Assert.IsNotNull(app);
-			Assert.IsInstanceOf(typeof(MockApp), app);
+			Assert.NotNull(app);
+			Assert.IsType<MockApp>(app);
 		}
 
-		[Test]
+		[Fact]
 		public void CanGetStaticApp()
 		{
 			var (host, app) = App.CreateDefaultBuilder()
 						  .Init<MockApp>();
 
-			Assert.IsNotNull(App.Current);
-			Assert.AreEqual(App.Current, app);
+			Assert.NotNull(App.Current);
+			Assert.Equal(App.Current, app);
 		}
 
-		[Test]
+		[Fact]
 		public void CanGetServices()
 		{
 			var (host, app) = App.CreateDefaultBuilder()
 							  .Init<MockApp>();
 
-			Assert.IsNotNull(app.Services);
+			Assert.NotNull(app.Services);
 		}
 
-		[Test]
+		[Fact]
 		public void CanGetStaticServices()
 		{
 			var (host, app) = App.CreateDefaultBuilder()
 							  .Init<MockApp>();
 
-			Assert.IsNotNull(App.Current.Services);
-			Assert.AreEqual(app.Services, App.Current.Services);
+			Assert.NotNull(App.Current.Services);
+			Assert.Equal(app.Services, App.Current.Services);
 		}
 
-		[Test]
+		[Fact]
 		public void CanRegisterAndGetHandler()
 		{
 			var builder = App.CreateDefaultBuilder()
@@ -68,11 +69,11 @@ namespace Xamarin.Platform.Handlers.Tests
 			var (host, app) = (builder as IAppHostBuilder).Init<MockApp>();
 
 			var handler = App.Current.Handlers.GetHandler(typeof(IMockView));
-			Assert.IsNotNull(handler);
-			Assert.IsInstanceOf(typeof(MockViewHandler), handler);
+			Assert.NotNull(handler);
+			Assert.IsType<MockViewHandler>(handler);
 		}
 
-		[Test]
+		[Fact]
 		public void CanRegisterAndGetHandlerWithDictionary()
 		{
 			var builder = App.CreateDefaultBuilder()
@@ -82,11 +83,11 @@ namespace Xamarin.Platform.Handlers.Tests
 			var (host, app) = (builder as IAppHostBuilder).Init<MockApp>();
 
 			var handler = App.Current.Handlers.GetHandler(typeof(IMockView));
-			Assert.IsNotNull(handler);
-			Assert.IsInstanceOf(typeof(MockViewHandler), handler);
+			Assert.NotNull(handler);
+			Assert.IsType<MockViewHandler>(handler);
 		}
 
-		[Test]
+		[Fact]
 		public void CanRegisterAndGetHandlerForType()
 		{
 			var builder = App.CreateDefaultBuilder()
@@ -95,22 +96,22 @@ namespace Xamarin.Platform.Handlers.Tests
 			var (host, app) = (builder as IAppHostBuilder).Init<MockApp>();
 
 			var handler = App.Current.Handlers.GetHandler(typeof(MockView));
-			Assert.IsNotNull(handler);
-			Assert.IsInstanceOf(typeof(MockViewHandler), handler);
+			Assert.NotNull(handler);
+			Assert.IsType<MockViewHandler>(handler);
 		}
 
-		[Test]
+		[Fact]
 		public void DefaultHandlersAreRegistered()
 		{
 			var (host, app) = App.CreateDefaultBuilder()
 							.Init<MockApp>();
 
 			var handler = App.Current.Handlers.GetHandler(typeof(IButton));
-			Assert.IsNotNull(handler);
-			Assert.IsInstanceOf(typeof(ButtonHandler), handler);
+			Assert.NotNull(handler);
+			Assert.IsType<ButtonHandler>(handler);
 		}
 
-		[Test]
+		[Fact]
 		public void CanSpecifyHandler()
 		{
 			var builder = App.CreateDefaultBuilder()
@@ -120,13 +121,13 @@ namespace Xamarin.Platform.Handlers.Tests
 
 			var defaultHandler = App.Current.Handlers.GetHandler(typeof(IButton));
 			var specificHandler = App.Current.Handlers.GetHandler(typeof(MockButton));
-			Assert.IsNotNull(defaultHandler);
-			Assert.IsNotNull(specificHandler);
-			Assert.IsInstanceOf(typeof(ButtonHandler), defaultHandler);
-			Assert.IsInstanceOf(typeof(MockButtonHandler), specificHandler);
+			Assert.NotNull(defaultHandler);
+			Assert.NotNull(specificHandler);
+			Assert.IsType<ButtonHandler>(defaultHandler);
+			Assert.IsType<MockButtonHandler>( specificHandler);
 		}
 
-		[Test]
+		[Fact]
 		public void Get10000Handlers()
 		{
 			int iterations = 10000;
@@ -158,7 +159,7 @@ namespace Xamarin.Platform.Handlers.Tests
 
 		AppBuilder _builder;
 
-		[Test]
+		[Fact]
 		public void Register100Handlers()
 		{
 			int iterations = 10000;
@@ -171,7 +172,7 @@ namespace Xamarin.Platform.Handlers.Tests
 
 		}
 
-		[Test]
+		[Fact]
 		public async Task StartSTopHost()
 		{
 			var (host, app) = App.CreateDefaultBuilder().Init<MockApp>();
