@@ -900,28 +900,13 @@ Task("BuildForNuget")
     }
 });
 
-Task("BuildPages")
-    .IsDependentOn("BuildTasks")
-    .Description("Build Xamarin.Forms.Pages")
+Task("NET6")
+    .IsDependentOn("provision-net6sdk")
+    .Description("Build NET6 projects")
     .Does(() =>
 {
-    try
-    {
-        var msbuildSettings = GetMSBuildSettings();
-        var binaryLogger = new MSBuildBinaryLogSettings {
-            Enabled  = isCIBuild
-        };
-
-        msbuildSettings.BinaryLogger = binaryLogger;
-        binaryLogger.FileName = $"{artifactStagingDirectory}/win-pages-{configuration}.binlog";
-        MSBuild("./build/Xamarin.Forms.Pages.sln", msbuildSettings.WithRestore());
-
-    }
-    catch(Exception)
-    {
-        if(IsRunningOnWindows())
-            throw;
-    }
+    DotNetCoreRestore("./Maui.sln");
+    DotNetCoreBuild("./Maui.sln");
 });
 
 Task("BuildTasks")

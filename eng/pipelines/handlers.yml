@@ -121,3 +121,18 @@ stages:
           provisionator.extraArguments : '--v'
         steps:
           - template: common/controlgallery-android.yml
+  
+  - stage: build_net6
+    displayName: NET6
+    dependsOn: []
+    jobs:
+      - job: net6
+        workspace:
+          clean: all
+        displayName: Build NET 6
+        timeoutInMinutes: 120
+        pool:
+          name:  $(macOSXVmPool)
+          vmImage: $(macOSXVmImage)
+        steps:
+          - template: common/net6.yml
