@@ -1,17 +1,11 @@
 parameters:
-  DotNetVersion: '6.0.100-alpha.1.20562.2'
+  DotNetVersion: '6.0.100-alpha.1.20562.2'  
+  Android.Pkg: https://dl.internalx.com/vsts-devdiv/Xamarin.Android/public/net6/4264138/master/8e097b44df981bb4259845cfe2db9ca2aaaedc91/Microsoft.NET.Workload.Android-11.0.100-ci.master.255.pkg
+  iOS.Pkg: https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/main/3174e94a178c41cae0a51fa296e52f711957c14a/543/package/Microsoft.iOS.Bundle.14.2.100-ci.main.30.pkg
 
 steps:
   - checkout: self
     clean: true
-  
-  - task: Bash@3
-    displayName: 'Cake Provision'
-    condition: eq(variables['provisioningCake'], 'true')
-    inputs:
-      targetType: 'filePath'
-      filePath: 'build.sh'
-      arguments: --target provision-net6sdk --TeamProject="$(System.TeamProject)"
   
   - bash: >
       export PATH="$(DotNet.Root):$(DotNet.Tools):$PATH" &&
@@ -20,6 +14,12 @@ steps:
       dotnet --list-sdks &&
       echo "##vso[task.setvariable variable=PATH]$PATH"
       displayName: install .NET ${{ parameters.DotNetVersion }}
+
+  - bash: |
+      dotnet tool install --global boots
+      boots $(Android.Pkg)
+      boots $(iOS.Pkg)
+    displayName: install .NET workloads
 
   - task: Bash@3
     displayName: 'Build NET6 Projects'
