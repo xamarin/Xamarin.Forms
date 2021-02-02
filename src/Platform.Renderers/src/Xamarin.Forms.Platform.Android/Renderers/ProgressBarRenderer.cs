@@ -52,6 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateProgressColor();
 		}
 
+		[PortHandler]
 		internal virtual protected void UpdateProgressColor()
 		{
 			if (Element == null || Control == null)
@@ -82,6 +83,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		[PortHandler]
 		void UpdateProgress()
 		{
 			Control.Progress = (int)(Element.Progress * 10000);
