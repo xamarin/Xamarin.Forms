@@ -15,7 +15,7 @@ steps:
     inputs:
       targetType: 'filePath'
       filePath: 'build.sh'
-      arguments: --target provision --TeamProject="$(System.TeamProject)"
+      arguments: --target provision-net6sdk --TeamProject="$(System.TeamProject)"
   
   - task: Bash@3
     displayName: 'Build NET6 Projects'
