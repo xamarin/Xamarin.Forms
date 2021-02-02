@@ -32,11 +32,13 @@ namespace Sample.Droid
 
 			_page = FindViewById<ViewGroup>(Resource.Id.Page);
 
+			IView content;
 #if __REGISTRAR__
 			Platform.Init();
 			var page = new Pages.MainPage();
+			content = page.GetContentView();
 #else
-			var (host,app) = App.CreateDefaultBuilder()
+			var app = App.CreateDefaultBuilder()
 							//.RegisterHandlers(new Dictionary<Type, Type>
 							//{
 							//	{ typeof(Xamarin.Platform.VerticalStackLayout),typeof(LayoutHandler) },
@@ -47,10 +49,11 @@ namespace Sample.Droid
 							//.ConfigureServices(ConfigureExtraServices)
 							.Init<MyApp>();
 			
-			var page = app.GetStartup() as Pages.MainPage;
+			var page = app.Windows.FirstOrDefault()?.Page;
+			content = page.View;
 #endif
-			var view = page.GetContentView();
-			Add(view);
+			
+			Add(content);
 
 			// In 5 seconds, add and remove some controls so we can see that working
 			Task.Run(async () => {
@@ -59,9 +62,9 @@ namespace Sample.Droid
 
 				void addLabel()
 				{
-					(view as VerticalStackLayout).Add(new Label { Text = "I show up after 5 seconds" });
-					var first = (view as VerticalStackLayout).Children.First();
-					(view as VerticalStackLayout).Remove(first);
+					(content as VerticalStackLayout).Add(new Label { Text = "I show up after 5 seconds" });
+					var first = (content as VerticalStackLayout).Children.First();
+					(content as VerticalStackLayout).Remove(first);
 				};
 
 				new Handler(Looper.MainLooper).Post(addLabel);

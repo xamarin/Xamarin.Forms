@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace Xamarin.Platform.Hosting
 {
-
 	class HandlerServiceProvider : IHandlerServiceProvider
 	{
 		readonly Dictionary<Type, Type> _handler;

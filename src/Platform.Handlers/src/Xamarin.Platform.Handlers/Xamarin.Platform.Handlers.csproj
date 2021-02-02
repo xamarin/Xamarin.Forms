@@ -11,8 +11,25 @@
   </PropertyGroup>
   <Import Project="..\..\..\..\.nuspec\Xamarin.Forms.MultiTargeting.targets" />
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0-rc.1.20451.14" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0-rc.1.20451.14" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Hosting\Internal\AppHostEnvironment.cs">
+      <SubType></SubType>
+    </Compile>
+    <Compile Update="Hosting\Internal\HostingLoggerExtensions.cs">
+      <SubType></SubType>
+    </Compile>
+    <Compile Update="Hosting\Internal\AppLifetime.cs">
+      <SubType></SubType>
+    </Compile>
+    <Compile Update="Core\IWindow.cs">
+      <SubType></SubType>
+    </Compile>
+    <Compile Update="Core\IPage.cs">
+      <SubType></SubType>
+    </Compile>
   </ItemGroup>
   <PropertyGroup>
     <__REGISTRAR__ Condition="'$(__REGISTRAR__)' == ''">false</__REGISTRAR__>
