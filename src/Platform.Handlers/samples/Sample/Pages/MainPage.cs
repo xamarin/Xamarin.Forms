@@ -32,14 +32,6 @@ namespace Sample.Pages
 
 			var button = new Button() { Text = "A Button", Width = 200 };
 
-			var xfButton = new Xamarin.Forms.Button
-			{
-				FontSize = 16,
-				Padding = new Xamarin.Forms.Thickness(10)
-			};
-			xfButton.BindingContext = BindingContext;
-			xfButton.SetBinding(Xamarin.Forms.Button.TextProperty, new Binding("Text"));
-
 			var button2 = new Button()
 			{
 				Color = Color.Green,
@@ -48,7 +40,6 @@ namespace Sample.Pages
 				Margin = new Thickness(12)
 			};
 
-			horizontalStack.Add(xfButton);
 			horizontalStack.Add(button);
 			horizontalStack.Add(button2);
 			horizontalStack.Add(new Label { Text = "And these buttons are in a HorizontalStackLayout" });
