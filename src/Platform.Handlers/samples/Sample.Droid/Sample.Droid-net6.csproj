@@ -11,5 +11,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Sample\Sample-net6.csproj" />
     <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
+    <PackageReference Include="Xamarin.AndroidX.Browser" Version="1.3.0.4" />
   </ItemGroup>
 </Project>
