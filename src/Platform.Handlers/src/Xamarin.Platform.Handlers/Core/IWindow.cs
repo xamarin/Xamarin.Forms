@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Xamarin.Platform.Core
+namespace Xamarin.Platform
 {
 	public interface IWindow
 	{

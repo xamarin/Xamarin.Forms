@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Xamarin.Forms;
 using Xamarin.Platform;
-using Xamarin.Platform.Core;
 
 namespace Sample.Controls
 {

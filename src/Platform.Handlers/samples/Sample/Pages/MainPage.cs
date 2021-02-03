@@ -10,8 +10,10 @@ using Xamarin.Platform.Hosting;
 
 namespace Sample.Pages
 {
+
 	public class MainPage : Xamarin.Forms.ContentPage, IPage
 	{
+
 		public MainPage(MainPageViewModel viewModel)
 		{
 			BindingContext = viewModel;

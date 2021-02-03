@@ -35,8 +35,7 @@ namespace Sample.Droid
 			IView content;
 #if __REGISTRAR__
 			Platform.Init();
-			var page = new Pages.MainPage(null);
-			content = page.View;
+			content = Platform.GetWindow().Page.View;
 #else
 			var app = App.CreateDefaultBuilder()
 							//.RegisterHandlers(new Dictionary<Type, Type>
@@ -49,16 +48,14 @@ namespace Sample.Droid
 							//.ConfigureServices(ConfigureExtraServices)
 							.Init<MyApp>();
 
-			var page = app.Windows.FirstOrDefault()?.Page;
-			//var window = new Sample.MainWindow(new Pages.MainPage(null));
-			//content = window.Page.View;
-			content = page.View;
+			content = app.Windows.FirstOrDefault()?.Page.View;
 #endif
-			
+
 			Add(content);
 
 			// In 5 seconds, add and remove some controls so we can see that working
-			Task.Run(async () => {
+			Task.Run(async () =>
+			{
 
 				await Task.Delay(5000).ConfigureAwait(false);
 
@@ -83,7 +80,7 @@ namespace Sample.Droid
 		{
 			foreach (var view in views)
 			{
-				_page.AddView(view.ToNative(this), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent , ViewGroup.LayoutParams.MatchParent));
+				_page.AddView(view.ToNative(this), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
 			}
 		}
 
