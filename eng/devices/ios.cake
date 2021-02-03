@@ -64,7 +64,7 @@ Task("Test")
         $"--verbosity=\"Debug\" ");
 
     if (resultCode != 0)
-        throw new Exception("xharness had an error.");
+        throw new Exception("xharness had an error: " + resultCode);
 });
 
 RunTarget(TARGET);
