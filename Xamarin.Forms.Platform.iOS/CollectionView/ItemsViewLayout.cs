@@ -206,6 +206,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (prototype == null)
 			{
+				EstimatedItemSize = CGSize.Empty;
 				return;
 			}
 
