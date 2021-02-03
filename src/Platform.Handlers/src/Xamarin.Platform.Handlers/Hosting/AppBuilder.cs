@@ -23,7 +23,7 @@ namespace Xamarin.Platform.Hosting
 		IHostEnvironment? _hostEnvironment;
 		IServiceProvider? _appServices;
 		IHandlerServiceProvider? _handlersServiceProvider;
-
+		
 		public IDictionary<object, object> Properties => new Dictionary<object, object>();
 
 		public IHostBuilder RegisterHandlers(Dictionary<Type, Type> handlers)
@@ -87,7 +87,7 @@ namespace Xamarin.Platform.Hosting
 				throw new InvalidOperationException($"The (_appServices) cannot be null");
 			}
 
-			return _appServices.GetRequiredService<IHost>();
+			return new AppHost(_appServices, null);
 		}
 
 		public IHostBuilder ConfigureAppConfiguration(Action<HostBuilderContext, IConfigurationBuilder> configureDelegate)
@@ -184,7 +184,7 @@ namespace Xamarin.Platform.Hosting
 		{
 			_hostBuilderContext = new HostBuilderContext(Properties)
 			{
-				//HostingEnvironment = _hostEnvironment,
+				HostingEnvironment = _hostEnvironment,
 				//Configuration = _hostConfiguration
 			};
 		}
@@ -209,18 +209,19 @@ namespace Xamarin.Platform.Hosting
 		void CreateServiceProvider()
 		{
 			var services = new ServiceCollection();
-			if (_hostEnvironment != null)
-				services.AddSingleton<IHostEnvironment>(_hostEnvironment);
-			if (_hostBuilderContext != null)
-				services.AddSingleton(_hostBuilderContext);
+
+			//if (_hostEnvironment != null)
+			//	services.AddSingleton<IHostEnvironment>(_hostEnvironment);
+			//if (_hostBuilderContext != null)
+			//	services.AddSingleton(_hostBuilderContext);
 			// register configuration as factory to make it dispose with the service provider
 			//if (_appConfiguration != null)
 			//	services.AddSingleton(_ => _appConfiguration);
-			services.AddSingleton<IHostApplicationLifetime, AppLifetime>();
-			services.AddSingleton<IHostLifetime, AppHostLifetime>();
-			services.AddSingleton<IHost, AppHost>();
-			services.AddOptions();
-			services.AddLogging();
+			//services.AddSingleton<IHostApplicationLifetime, AppLifetime>();
+			//services.AddSingleton<IHostLifetime, AppHostLifetime>();
+			//services.AddSingleton<IHost, AppHost>();
+			//services.AddOptions();
+			//services.AddLogging();
 
 			foreach (Action<HostBuilderContext, IServiceCollection> configureServicesAction in _configureServicesActions)
 			{
@@ -228,7 +229,7 @@ namespace Xamarin.Platform.Hosting
 					configureServicesAction(_hostBuilderContext, services);
 			}
 
-			//TODO: Do we need a factory here
+			////TODO: Do we need a factory here
 			if (_handlersServiceProvider != null)
 				services.AddSingleton<IHandlerServiceProvider>(_handlersServiceProvider);
 
