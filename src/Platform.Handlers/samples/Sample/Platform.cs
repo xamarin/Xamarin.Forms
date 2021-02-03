@@ -1,4 +1,10 @@
-﻿using Xamarin.Forms;
+using System.Collections;
+using System.Collections.Generic;
+using Sample.Pages;
+using Sample.Services;
+using Sample.ViewModel;
+using Xamarin.Forms;
+using Xamarin.Platform;
 using Xamarin.Platform.Handlers;
 using RegistrarHandlers = Xamarin.Platform.Registrar;
 
@@ -7,6 +13,11 @@ namespace Sample
 	public class Platform
 	{
 		static bool HasInit;
+
+		public static IWindow GetWindow()
+		{
+			return new MainWindow(new MainPage(new MainPageViewModel(new List<ITextService> { new TextService() })));
+		}
 
 		public static void Init()
 		{
