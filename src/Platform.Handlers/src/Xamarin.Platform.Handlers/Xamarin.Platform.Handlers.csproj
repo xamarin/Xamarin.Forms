@@ -21,9 +21,6 @@
     <Compile Update="Hosting\Internal\HostingLoggerExtensions.cs">
       <SubType></SubType>
     </Compile>
-    <Compile Update="Hosting\Internal\AppLifetime.cs">
-      <SubType></SubType>
-    </Compile>
     <Compile Update="Core\IWindow.cs">
       <SubType></SubType>
     </Compile>

@@ -35,8 +35,8 @@ namespace Sample.Droid
 			IView content;
 #if __REGISTRAR__
 			Platform.Init();
-			var page = new Pages.MainPage();
-			content = page.GetContentView();
+			var page = new Pages.MainPage(null);
+			content = page.View;
 #else
 			var app = App.CreateDefaultBuilder()
 							//.RegisterHandlers(new Dictionary<Type, Type>
@@ -48,8 +48,10 @@ namespace Sample.Droid
 							//})
 							//.ConfigureServices(ConfigureExtraServices)
 							.Init<MyApp>();
-			
+
 			var page = app.Windows.FirstOrDefault()?.Page;
+			//var window = new Sample.MainWindow(new Pages.MainPage(null));
+			//content = window.Page.View;
 			content = page.View;
 #endif
 			

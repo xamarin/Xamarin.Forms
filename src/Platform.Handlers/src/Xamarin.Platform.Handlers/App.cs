@@ -41,58 +41,9 @@ namespace Xamarin.Platform
 			_handlerServiceProvider = provider;
 		}
 
-		public static AppBuilder CreateDefaultBuilder()
+		public static IAppHostBuilder CreateDefaultBuilder()
 		{
 			var builder = new AppBuilder();
-
-			//builder.UseContentRoot(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
-			//builder.ConfigureHostConfiguration(config =>
-			//{
-			//	config.AddEnvironmentVariables(prefix: "DOTNET_");
-			//});
-
-			//builder.ConfigureAppConfiguration((hostingContext, config) =>
-			//{
-			//	IHostEnvironment env = hostingContext.HostingEnvironment;
-
-			//	//bool reloadOnChange = hostingContext.Configuration.GetValue("hostBuilder:reloadConfigOnChange", defaultValue: true);
-
-			//	//config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: reloadOnChange)
-			//	//	  .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: reloadOnChange);
-
-			//	//if (env.IsDevelopment() && !string.IsNullOrEmpty(env.ApplicationName))
-			//	//{
-			//	//	var appAssembly = Assembly.Load(new AssemblyName(env.ApplicationName));
-			//	//	if (appAssembly != null)
-			//	//	{
-			//	//		config.AddUserSecrets(appAssembly, optional: true);
-			//	//	}
-			//	//}
-
-			//	//config.AddEnvironmentVariables();
-			//})
-			//builder.ConfigureLogging((hostingContext, logging) =>
-			//{
-				//logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-				//logging.AddConsole();
-				//logging.AddDebug();
-				//logging.AddEventSourceLogger();
-
-
-				//logging.Configure(options =>
-				//{
-				//	options.ActivityTrackingOptions = ActivityTrackingOptions.SpanId
-				//										| ActivityTrackingOptions.TraceId
-				//										| ActivityTrackingOptions.ParentId;
-				//});
-
-			//});
-			//.UseDefaultServiceProvider((context, options) =>
-			//{
-			//	bool isDevelopment = context.HostingEnvironment.IsDevelopment();
-			//	options.ValidateScopes = isDevelopment;
-			//	options.ValidateOnBuild = isDevelopment;
-			//});
 
 			builder.UseXamarinHandlers();
 
