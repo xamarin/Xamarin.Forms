@@ -228,24 +228,6 @@ Task("Clean")
     CleanDirectories("./**/bin", (fsi)=> !fsi.Path.FullPath.StartsWith("tools"));
 });
 
-Task("provision-net6sdk")
-    .Description("Install NET 6")
-    .Does(async () =>
-    {
-        if(IsRunningOnWindows())
-        {
-            await InstallMsiWithBoots("https://dl.internalx.com/vsts-devdiv/Xamarin.Android/public/net6/4264138/master/8e097b44df981bb4259845cfe2db9ca2aaaedc91/Microsoft.NET.Workload.Android.11.0.100.255.msi");
-            await InstallMsiWithBoots("https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/main/3174e94a178c41cae0a51fa296e52f711957c14a/543/package/Microsoft.NET.Workload.iOS.14.2.100-ci.main.30.msi");
-            InstallMsiOrExe("https://dotnetcli.azureedge.net/dotnet/Sdk/6.0.100-alpha.1.20562.2/dotnet-sdk-6.0.100-alpha.1.20562.2-win-x64.exe");
-        }
-        else
-        {
-            await Boots("https://dotnetcli.azureedge.net/dotnet/Sdk/6.0.100-alpha.1.20562.2/dotnet-sdk-6.0.100-alpha.1.20562.2-osx-x64.pkg");
-            await Boots("https://bosstoragemirror.blob.core.windows.net/wrench/jenkins/main/3174e94a178c41cae0a51fa296e52f711957c14a/543/package/Microsoft.iOS.Bundle.14.2.100-ci.main.30.pkg");
-            await Boots("https://dl.internalx.com/vsts-devdiv/Xamarin.Android/public/net6/4264138/master/8e097b44df981bb4259845cfe2db9ca2aaaedc91/Microsoft.NET.Workload.Android-11.0.100-ci.master.255.pkg");
-        }
-    });
-
 Task("provision-macsdk")
     .Description("Install Xamarin.Mac SDK")
     .Does(async () =>
@@ -663,7 +645,6 @@ Task("provision")
     .IsDependentOn("provision-androidsdk")
     .IsDependentOn("provision-netsdk-local")
     .IsDependentOn("provision-windowssdk")
-    .IsDependentOn("provision-net6sdk")
     .IsDependentOn("provision-monosdk"); // always provision monosdk last otherwise CI might fail
 
 Task("NuGetPack")
@@ -893,25 +874,6 @@ Task("BuildForNuget")
     }
 });
 
-Task("NET6")
-    .Description("Build NET6 projects")
-    .Does(() =>
-{
-    if(isCIBuild)
-    {
-        var settings = new DotNetCoreToolSettings
-        {
-            DiagnosticOutput = true,
-            ArgumentCustomization = args=>args.Append("globaljson --sdk-version 6.0.100-alpha.1.20562.2")
-        };
-
-        DotNetCoreTool("new", settings);
-    }
-
-    DotNetCoreRestore("./Maui.sln");
-    DotNetCoreBuild("./Maui.sln");
-});
-
 Task("BuildTasks")
     .Description($"Build {BUILD_TASKS_PROJ}")
     .Does(() =>
@@ -951,7 +913,7 @@ Task("VSMAC")
     {
         StartVisualStudio();
     });
-
+    
 Task("cg-android")
     .Description("Builds Android Control Gallery")
     .IsDependentOn("WriteGoogleMapsAPIKey")
