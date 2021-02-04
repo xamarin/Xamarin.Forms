@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using CoreGraphics;
 using Foundation;
 using UIKit;
 
@@ -238,6 +238,9 @@ namespace Xamarin.Forms.Platform.iOS
 		void HandleDrop(View element, DataPackage datapackage)
 		{
 			var args = new DropEventArgs(datapackage?.View);
+			args.DropX = element.X;
+			args.DropY = element.Y;
+
 			SendEventArgs<DropGestureRecognizer>(async rec =>
 			{
 				if (!rec.AllowDrop)
