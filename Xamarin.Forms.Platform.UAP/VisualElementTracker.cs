@@ -28,6 +28,8 @@ namespace Xamarin.Forms.Platform.UWP
 		TNativeElement _control;
 		TElement _element;
 
+		Point _point;
+
 		bool _invalidateArrangeNeeded;
 
 		bool _isDisposed;
@@ -143,6 +145,10 @@ namespace Xamarin.Forms.Platform.UWP
 			var package = e.DataView.Properties["_XFPropertes_DONTUSE"] as DataPackage;
 			var dragEventArgs = new DragEventArgs(package);
 
+			var point = e.GetPosition(_container);
+			_point.X = point.X;
+			_point.Y = point.Y;
+
 			SendEventArgs<DropGestureRecognizer>(rec =>
 			{
 				if(!rec.AllowDrop)
@@ -174,6 +180,10 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			var args = new DropEventArgs(datapackage?.View);
+
+			args.DropX = _point.X;
+			args.DropY = _point.Y;
+
 			SendEventArgs<DropGestureRecognizer>(async rec =>
 			{
 				if (!rec.AllowDrop)
@@ -518,6 +528,7 @@ namespace Xamarin.Forms.Platform.UWP
 			var view = Element as View;
 			if (view == null)
 				return;
+
 			HandleSwipe(e, view);
 			HandlePinch(e, view);
 			HandlePan(e, view);
