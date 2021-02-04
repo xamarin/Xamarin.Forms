@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 13619" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13619">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If all SwipeItems (2) are visible, using Threshold or not, the test has passed."/>
+        <StackLayout>
+            <Label Text="Reveal Mode" FontSize="Medium" />
+            <Label Text="Without use Threshold" />
+            <SwipeView>
+                <SwipeView.LeftItems>
+                    <SwipeItems Mode="Reveal">
+                        <SwipeItem Text="Favorite" BackgroundColor="LightGreen" />
+                        <SwipeItem Text="Delete" BackgroundColor="LightPink"/>
+                    </SwipeItems>
+                </SwipeView.LeftItems>
+                <Grid HeightRequest="60" WidthRequest="300" BackgroundColor="LightGray">
+                    <Label Text="Swipe right" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Grid>
+            </SwipeView>
+            <Label Text="Using use Threshold" />
+            <SwipeView Threshold="150">
+                <SwipeView.LeftItems>
+                    <SwipeItems Mode="Reveal">
+                        <SwipeItem Text="Favorite" BackgroundColor="LightGreen" />
+                        <SwipeItem Text="Delete" BackgroundColor="LightPink"/>
+                    </SwipeItems>
+                </SwipeView.LeftItems>
+                <Grid HeightRequest="60" WidthRequest="300" BackgroundColor="LightGray">
+                    <Label Text="Swipe right" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Grid>
+            </SwipeView>
+            <Label Text="Execute Mode" FontSize="Medium" />
+            <Label Text="Without use Threshold" />
+            <SwipeView>
+                <SwipeView.LeftItems>
+                    <SwipeItems Mode="Execute">
+                        <SwipeItem Text="Favorite" BackgroundColor="LightGreen" />
+                        <SwipeItem Text="Delete" BackgroundColor="LightPink"/>
+                    </SwipeItems>
+                </SwipeView.LeftItems>
+                <Grid HeightRequest="60" WidthRequest="300" BackgroundColor="LightGray">
+                    <Label Text="Swipe right" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Grid>
+            </SwipeView>
+            <Label Text="Using use Threshold" />
+            <SwipeView Threshold="150">
+                <SwipeView.LeftItems>
+                    <SwipeItems Mode="Execute">
+                        <SwipeItem Text="Favorite" BackgroundColor="LightGreen" />
+                        <SwipeItem Text="Delete" BackgroundColor="LightPink"/>
+                    </SwipeItems>
+                </SwipeView.LeftItems>
+                <Grid HeightRequest="60" WidthRequest="300" BackgroundColor="LightGray">
+                    <Label Text="Swipe right" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Grid>
+            </SwipeView>
+        </StackLayout>
+    </StackLayout>
+</local:TestContentPage>

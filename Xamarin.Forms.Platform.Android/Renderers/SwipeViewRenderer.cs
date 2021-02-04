@@ -1346,7 +1346,13 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (swipeItem is SwipeItem)
 				{
-					return new Size(items.Mode == SwipeMode.Execute ? (threshold > 0 ? threshold : contentWidth) / items.Count : (threshold < SwipeItemWidth ? SwipeItemWidth : threshold), contentHeight);
+					if (items.Mode == SwipeMode.Execute)
+						return new Size((threshold > 0 ? threshold : contentWidth) / items.Count, contentHeight);
+					else
+					{
+						var itemsCount = items.Count;
+						return new Size(threshold < SwipeItemWidth ? SwipeItemWidth : threshold / itemsCount, contentHeight);
+					}
 				}
 
 				if (swipeItem is SwipeItemView horizontalSwipeItemView)
