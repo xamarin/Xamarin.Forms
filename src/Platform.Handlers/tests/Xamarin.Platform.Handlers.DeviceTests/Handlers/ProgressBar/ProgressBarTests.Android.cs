@@ -11,5 +11,13 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 
 		double GetNativeProgress(ProgressBarHandler progressBarHandler) =>
 			GetNativeProgressBar(progressBarHandler).Progress;
+
+		Task ValidateNativeProgressColor(IProgress progressBar, Color color)
+		{
+			return InvokeOnMainThreadAsync(() =>
+			{
+				GetNativeProgressBar(CreateHandler(progressBar)).AssertContainsColor(color);
+			});
+		}
 	}
 }
