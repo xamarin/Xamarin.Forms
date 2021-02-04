@@ -158,7 +158,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				view.BindingContext = this[index];
 				_dataBindedViewTable[this[index]] = view;
 
-				view.SizeChanged += OnItemMeasureInvalidated;
+				view.MeasureInvalidated += OnItemMeasureInvalidated;
 				_itemsView.AddLogicalChild(view);
 			}
 		}
@@ -167,7 +167,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 			if (_nativeFormsTable.TryGetValue(native, out View view))
 			{
-				view.SizeChanged -= OnItemMeasureInvalidated;
+				view.MeasureInvalidated -= OnItemMeasureInvalidated;
 				ResetBindedView(view);
 			}
 		}

@@ -233,6 +233,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		public void ItemMeasureInvalidated(int index)
 		{
+			// If a first item size was updated, need to reset _itemSize
+			if (index == 0)
+			{
+				_itemSize = new ESize(-1, -1);
+			}
 			LayoutManager?.ItemMeasureInvalidated(index);
 		}
 
