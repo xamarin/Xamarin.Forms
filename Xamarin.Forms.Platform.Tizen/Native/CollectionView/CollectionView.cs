@@ -32,6 +32,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		EvasObject _headerView;
 		EvasObject _footerView;
 		SmartEvent _scrollAnimationStop;
+		SmartEvent _scrollAnimationStart;
+		bool _isScrollAnimationStarted;
 
 		public event EventHandler<ItemsViewScrolledEventArgs> Scrolled;
 
@@ -43,6 +45,10 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			Scroller.Show();
 			PackEnd(Scroller);
 			Scroller.Scrolled += OnScrolled;
+
+			_scrollAnimationStart = new SmartEvent(Scroller, ThemeConstants.Scroller.Signals.StartScrollAnimation);
+			_scrollAnimationStart.On += OnScrollStarted;
+
 			_scrollAnimationStop = new SmartEvent(Scroller, ThemeConstants.Scroller.Signals.StopScrollAnimation);
 			_scrollAnimationStop.On += OnScrollStopped;
 
@@ -629,7 +635,27 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		int _previousHorizontalOffset = 0;
 		int _previousVerticalOffset = 0;
 
+		void OnScrollStarted(object sender, EventArgs e)
+		{
+			_isScrollAnimationStarted = true;
+		}
+
 		void OnScrollStopped(object sender, EventArgs e)
+		{
+			SendScrolledEvent();
+			_isScrollAnimationStarted = false;
+		}
+
+		void OnScrolled(object sender, EventArgs e)
+		{
+			_layoutManager.LayoutItems(ViewPort);
+			if (!_isScrollAnimationStarted)
+			{
+				SendScrolledEvent();
+			}
+		}
+
+		void SendScrolledEvent()
 		{
 			var args = new ItemsViewScrolledEventArgs();
 			args.FirstVisibleItemIndex = _layoutManager.GetVisibleItemIndex(ViewPort.X, ViewPort.Y);
@@ -644,11 +670,6 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 			_previousHorizontalOffset = ViewPort.X;
 			_previousVerticalOffset = ViewPort.Y;
-		}
-
-		void OnScrolled(object sender, EventArgs e)
-		{
-			_layoutManager.LayoutItems(ViewPort);
 		}
 
 		void UpdateSnapPointsType(SnapPointsType snapPoints)
