@@ -1,12 +1,10 @@
 ﻿using UIKit;
-using Xamarin.Platform;
 
-namespace Xamarin.Forms.Platform.iOS
+namespace Xamarin.Platform
 {
-	[PortHandler]
-	internal static class UIApplicationExtensions
+	public static class UIApplicationExtensions
 	{
-		public static UIWindow GetKeyWindow(this UIApplication application)
+		public static UIWindow? GetKeyWindow(this UIApplication application)
 		{
 #if __MOBILE__
 			var windows = application.Windows;
@@ -22,7 +20,6 @@ namespace Xamarin.Forms.Platform.iOS
 #else
 			return application.KeyWindow;
 #endif
-
 		}
 	}
 }

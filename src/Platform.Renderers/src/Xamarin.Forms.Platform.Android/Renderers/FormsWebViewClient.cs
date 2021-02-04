@@ -1,13 +1,14 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Net;
 using Android.Graphics;
 using Android.Runtime;
 using Android.Webkit;
+using Xamarin.Platform;
 using WView = Android.Webkit.WebView;
 
 namespace Xamarin.Forms.Platform.Android
 {
+	[PortHandler]
 	public class FormsWebViewClient : WebViewClient
 	{
 		WebNavigationResult _navigationResult = WebNavigationResult.Success;

@@ -102,11 +102,13 @@ namespace Xamarin.Forms.Platform.Android
 			base.Dispose(disposing);
 		}
 
+		[PortHandler]
 		protected virtual WebViewClient GetWebViewClient()
 		{
 			return new FormsWebViewClient(this);
 		}
 
+		[PortHandler]
 		protected virtual FormsWebChromeClient GetFormsWebChromeClient()
 		{
 			return new FormsWebChromeClient();
@@ -207,8 +209,10 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		[PortHandler]
 		HashSet<string> _loadedCookies = new HashSet<string>();
 
+		[PortHandler]
 		Uri CreateUriForCookies(string url)
 		{
 			if (url == null)
@@ -230,6 +234,7 @@ namespace Xamarin.Forms.Platform.Android
 			return null;
 		}
 
+		[PortHandler]
 		CookieCollection GetCookiesFromNativeStore(string url)
 		{
 			CookieContainer existingCookies = new CookieContainer();
@@ -246,6 +251,7 @@ namespace Xamarin.Forms.Platform.Android
 			return existingCookies.GetCookies(uri);
 		}
 
+		[PortHandler]
 		void InitialCookiePreloadIfNecessary(string url)
 		{
 			var myCookieJar = Element.Cookies;
@@ -272,6 +278,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		[PortHandler]
 		internal void SyncNativeCookiesToElement(string url)
 		{
 			var myCookieJar = Element.Cookies;
@@ -297,6 +304,7 @@ namespace Xamarin.Forms.Platform.Android
 			SyncNativeCookies(url);
 		}
 
+		[PortHandler]
 		void SyncNativeCookies(string url)
 		{
 			var uri = CreateUriForCookies(url);
@@ -358,6 +366,7 @@ namespace Xamarin.Forms.Platform.Android
 			return jsr.JsResult;
 		}
 
+		[PortHandler]
 		void OnGoBackRequested(object sender, EventArgs eventArgs)
 		{
 			if (Control.CanGoBack())
@@ -369,6 +378,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateCanGoBackForward();
 		}
 
+		[PortHandler]
 		void OnGoForwardRequested(object sender, EventArgs eventArgs)
 		{
 			if (Control.CanGoForward())
@@ -380,6 +390,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateCanGoBackForward();
 		}
 
+		[PortHandler]
 		void OnReloadRequested(object sender, EventArgs eventArgs)
 		{
 			SyncNativeCookies(Control.Url?.ToString());
@@ -415,6 +426,7 @@ namespace Xamarin.Forms.Platform.Android
 			Control.Settings.DisplayZoomControls = Element.OnThisPlatform().ZoomControlsDisplayed();
 		}
 
+		[PortHandler]
 		class JavascriptResult : Java.Lang.Object, IValueCallback
 		{
 			TaskCompletionSource<string> source;

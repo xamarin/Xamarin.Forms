@@ -54,6 +54,7 @@ namespace Xamarin.Forms.Platform.iOS
 		// The main workaround I've found for ensuring that cookies synchronize 
 		// is to share the Process Pool between all WkWebView instances.
 		// It also has to be shared at the point you call init
+		[PortHandler]
 		static WKWebViewConfiguration CreateConfiguration()
 		{
 			var config = new WKWebViewConfiguration();
@@ -237,6 +238,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return false;
 		}
 
+		[PortHandler]
 		bool HasCookiesToLoad(string url)
 		{
 			var uri = CreateUriForCookies(url);
@@ -302,8 +304,10 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e) =>
 			ElementChanged?.Invoke(this, e);
 
+		[PortHandler]
 		HashSet<string> _loadedCookies = new HashSet<string>();
 
+		[PortHandler]
 		Uri CreateUriForCookies(string url)
 		{
 			if (url == null)
@@ -325,6 +329,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return null;
 		}
 
+		[PortHandler]
 		async Task<List<NSHttpCookie>> GetCookiesFromNativeStore(string url)
 		{
 			NSHttpCookie[] _initialCookiesLoaded = null;
@@ -371,6 +376,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return existingCookies;
 		}
 
+		[PortHandler]
 		async Task InitialCookiePreloadIfNecessary(string url)
 		{
 			var myCookieJar = WebView.Cookies;
@@ -401,6 +407,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		[PortHandler]
 		internal async Task SyncNativeCookiesToElement(string url)
 		{
 			if (String.IsNullOrWhiteSpace(url))
@@ -449,6 +456,7 @@ namespace Xamarin.Forms.Platform.iOS
 			await SyncNativeCookies(url);
 		}
 
+		[PortHandler]
 		async Task SyncNativeCookies(string url)
 		{
 			var uri = CreateUriForCookies(url);
@@ -511,6 +519,7 @@ namespace Xamarin.Forms.Platform.iOS
 			await DeleteCookies(deleteCookies);
 		}
 
+		[PortHandler]
 		async Task SetCookie(List<Cookie> cookies)
 		{
 			if (Forms.IsiOS11OrNewer)
@@ -531,6 +540,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		[PortHandler]
 		async Task DeleteCookies(List<NSHttpCookie> cookies)
 		{
 			if (Forms.IsiOS11OrNewer)
@@ -598,6 +608,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return result?.ToString();
 		}
 
+		[PortHandler]
 		void OnGoBackRequested(object sender, EventArgs eventArgs)
 		{
 			if (CanGoBack)
@@ -609,6 +620,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateCanGoBackForward();
 		}
 
+		[PortHandler]
 		void OnGoForwardRequested(object sender, EventArgs eventArgs)
 		{
 			if (CanGoForward)
@@ -620,6 +632,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateCanGoBackForward();
 		}
 
+		[PortHandler]
 		async void OnReloadRequested(object sender, EventArgs eventArgs)
 		{
 			try
@@ -642,6 +655,7 @@ namespace Xamarin.Forms.Platform.iOS
 			((IWebViewController)WebView).CanGoForward = CanGoForward;
 		}
 
+		[PortHandler]
 		string GetCookieString(List<Cookie> existingCookies)
 		{
 			StringBuilder cookieBuilder = new StringBuilder();
@@ -685,6 +699,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return cookieBuilder.ToString();
 		}
 
+		[PortHandler("Still pending to port WebNavigation events ")]
 		class CustomWebViewNavigationDelegate : WKNavigationDelegate
 		{
 			readonly WkWebViewRenderer _renderer;
@@ -803,6 +818,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		[PortHandler]
 		class CustomWebViewUIDelegate : WKUIDelegate
 		{
 			static string LocalOK = NSBundle.FromIdentifier("com.apple.UIKit").GetLocalizedString("OK");
