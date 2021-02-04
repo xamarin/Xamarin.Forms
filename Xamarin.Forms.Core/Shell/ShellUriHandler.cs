@@ -499,10 +499,10 @@ namespace Xamarin.Forms
 			var paths = myRoute.ToList();
 
 			// collapse similar leaves
-			int walkBackCurrentStackIndex = localRouteStack.Count - (paths.Count - 1);
+			int walkBackCurrentStackIndex = -1;
 
-			if (walkBackCurrentStackIndex < 0)
-				walkBackCurrentStackIndex = 0;
+			if (paths.Count > 0)
+				walkBackCurrentStackIndex = localRouteStack.IndexOf(paths[0]);
 
 			while (paths.Count > 1 && walkBackCurrentStackIndex >= 0)
 			{
