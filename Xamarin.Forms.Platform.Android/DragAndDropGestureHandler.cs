@@ -223,6 +223,10 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			var args = new DropEventArgs(datapackage?.View);
+
+			args.DropX = e.GetX();
+			args.DropY = e.GetY();
+
 			SendEventArgs<DropGestureRecognizer>(async rec =>
 			{
 				if (!rec.AllowDrop)
