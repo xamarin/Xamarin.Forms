@@ -53,10 +53,21 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Bugzilla51825Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked("Bugzilla51825SearchBar"));
-			RunningApp.EnterText(q => q.Marked("Bugzilla51825SearchBar"), "Hello");
-			RunningApp.WaitForElement(q => q.Text("Hello"));
+			RunningApp.EnterText("Bugzilla51825SearchBar", "Hello");
+			var label = RunningApp.WaitForFirstElement("Bugzilla51825Label");
+
+			Assert.IsNotEmpty(label.ReadText());
+
+			// Windows App Driver and the Search Bar are a bit buggy
+			// It randomly doesn't enter the first letter
+#if !__WINDOWS__
+			Assert.AreEqual("Hello", label.ReadText());
+#endif
+
 			RunningApp.Tap("Bugzilla51825Button");
-			RunningApp.WaitForElement(q => q.Text("Test"));
+
+			var labelChange2 = RunningApp.WaitForFirstElement("Bugzilla51825Label");
+			Assert.AreEqual("Test", labelChange2.ReadText());
 		}
 #endif
 	}

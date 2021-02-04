@@ -84,10 +84,8 @@ namespace Xamarin.Forms.Platform.iOS
 					return UIModalPresentationStyle.FormSheet;
 				case PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.FullScreen:
 					return UIModalPresentationStyle.FullScreen;
-#if __XCODE11__
 				case PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.Automatic:
 					return UIModalPresentationStyle.Automatic;
-#endif
 				case PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.OverFullScreen:
 					return UIModalPresentationStyle.OverFullScreen;
 				case PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.PageSheet:
@@ -163,6 +161,11 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 			{
 				mutableAttributedString = new NSMutableAttributedString(attributedString);
+
+				if (!mutableAttributedString.MutableString.ToString().Equals(text))
+				{
+					mutableAttributedString.MutableString.SetString(new NSString(text));
+				}
 			}
 
 			AddKerningAdjustment(mutableAttributedString, text, characterSpacing);

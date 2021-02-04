@@ -4,13 +4,9 @@ using System.Threading.Tasks;
 using Android.Animation;
 using Android.Content;
 using Android.Graphics;
-#if __ANDROID_29__
-using AndroidX.Core.Widget;
-#else
-using Android.Support.V4.Widget;
-#endif
 using Android.Views;
 using Android.Widget;
+using AndroidX.Core.Widget;
 using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 
@@ -32,7 +28,9 @@ namespace Xamarin.Forms.Platform.Android
 		LayoutDirection _prevLayoutDirection = LayoutDirection.Ltr;
 		bool _checkedForRtlScroll = false;
 
-		public ScrollViewRenderer(Context context) : base(context)
+		public ScrollViewRenderer(Context context) : base(
+			new ContextThemeWrapper(context, Resource.Style.scrollViewTheme), null,
+			Resource.Attribute.scrollViewStyle)
 		{
 		}
 
@@ -100,6 +98,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				LoadContent();
 				UpdateBackgroundColor();
+				UpdateBackground();
 				UpdateOrientation();
 				UpdateIsEnabled();
 				UpdateHorizontalScrollBarVisibility();
@@ -341,6 +340,8 @@ namespace Xamarin.Forms.Platform.Android
 				LoadContent();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				UpdateBackground();
 			else if (e.PropertyName == ScrollView.OrientationProperty.PropertyName)
 				UpdateOrientation();
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
@@ -385,10 +386,10 @@ namespace Xamarin.Forms.Platform.Android
 			while (IsLayoutRequested)
 			{
 				await Task.Delay(TimeSpan.FromMilliseconds(1));
-				
+
 				if (_disposed)
-                	return;
-				
+					return;
+
 				cycle++;
 
 				if (cycle >= 10)
@@ -476,6 +477,13 @@ namespace Xamarin.Forms.Platform.Android
 			SetBackgroundColor(Element.BackgroundColor.ToAndroid(Color.Transparent));
 		}
 
+		void UpdateBackground()
+		{
+			Brush background = Element.Background;
+
+			this.UpdateBackground(background);
+		}
+
 		void UpdateOrientation()
 		{
 			if (_view.Orientation == ScrollOrientation.Horizontal || _view.Orientation == ScrollOrientation.Both)
@@ -483,6 +491,8 @@ namespace Xamarin.Forms.Platform.Android
 				if (_hScrollView == null)
 				{
 					_hScrollView = new AHorizontalScrollView(Context, this);
+					_hScrollView.HorizontalFadingEdgeEnabled = HorizontalFadingEdgeEnabled;
+					_hScrollView.SetFadingEdgeLength(HorizontalFadingEdgeLength);
 					UpdateFlowDirection();
 				}
 
@@ -523,7 +533,7 @@ namespace Xamarin.Forms.Platform.Android
 					newHorizontalScrollVisiblility = _defaultHorizontalScrollVisibility;
 				}
 
-				_hScrollView.HorizontalScrollBarEnabled = newHorizontalScrollVisiblility == ScrollBarVisibility.Always;				
+				_hScrollView.HorizontalScrollBarEnabled = newHorizontalScrollVisiblility == ScrollBarVisibility.Always;
 			}
 		}
 

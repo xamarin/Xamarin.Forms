@@ -17,12 +17,9 @@
     <AndroidApplication>true</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <AndroidTargetFrameworkVersion Condition="'$(AndroidTargetFrameworkVersion)' == '' AND '$(Use2017)' == 'true'">v9.0</AndroidTargetFrameworkVersion>
-    <AndroidTargetFrameworkVersion Condition="'$(AndroidTargetFrameworkVersion)' == ''">v10.0</AndroidTargetFrameworkVersion>
+    <AndroidTargetFrameworkVersion Condition="'$(AndroidTargetFrameworkVersion)' == ''">v11.0</AndroidTargetFrameworkVersion>
     <TargetFrameworkVersion>$(AndroidTargetFrameworkVersion)</TargetFrameworkVersion>
-    <AndroidManifest Condition="$(AndroidTargetFrameworkVersion) == 'v10.0.99'">Properties\AndroidManifest30.xml</AndroidManifest>
-    <AndroidManifest Condition="$(AndroidTargetFrameworkVersion) == 'v10.0'">Properties\AndroidManifest.xml</AndroidManifest>
-    <AndroidManifest Condition="$(AndroidTargetFrameworkVersion) == 'v9.0'">Properties\AndroidManifest28.xml</AndroidManifest>
+    <AndroidManifest Condition="$(AndroidTargetFrameworkVersion) == 'v11.0'">Properties\AndroidManifest.xml</AndroidManifest>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <NuGetPackageImportStamp>
@@ -33,10 +30,9 @@
   <PropertyGroup>
     <!-- default locally to using fast renderers but if we're running on CI don't set a value for ANDROID_RENDERERS.
       This will let the old and new yaml configurations coexist -->
-    <ANDROID_RENDERERS Condition="'$(ANDROID_RENDERERS)' == '' AND '$(CI)' == 'false'">FAST</ANDROID_RENDERERS>
-    <DefineConstants Condition="'$(ANDROID_RENDERERS)' == 'FAST'">$(DefineConstants);TEST_EXPERIMENTAL_RENDERERS</DefineConstants>
-    <DefineConstants Condition="'$(ANDROID_RENDERERS)' == 'PREAPPCOMPAT'">$(DefineConstants);FORMS_APPLICATION_ACTIVITY</DefineConstants>
-    <DefineConstants Condition="'$(ANDROID_RENDERERS)' == 'LEGACY'">$(DefineConstants)</DefineConstants>
+    <ANDROID_RENDERERS Condition="'$(ANDROID_RENDERERS)' == ''">FAST</ANDROID_RENDERERS>
+    <DefineConstants Condition="'$(ANDROID_RENDERERS)' == 'FAST'">$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(ANDROID_RENDERERS)' == 'LEGACY'">$(DefineConstants);LEGACY_RENDERERS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <DefineConstants>$(DefineConstants);HAVE_OPENTK</DefineConstants>
@@ -69,10 +65,9 @@
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <AndroidDexTool Condition="'$(Use2017)' != 'true'">d8</AndroidDexTool>
-    <AndroidLinkTool Condition="'$(Use2017)' != 'true'">r8</AndroidLinkTool>
-    <AndroidEnableMultiDex Condition="'$(Use2017)' != 'true'">false</AndroidEnableMultiDex>
-    <AndroidEnableMultiDex Condition="'$(Use2017)' == 'true'">true</AndroidEnableMultiDex>
+    <AndroidDexTool>d8</AndroidDexTool>
+    <AndroidLinkTool>r8</AndroidLinkTool>
+    <AndroidEnableMultiDex>false</AndroidEnableMultiDex>
   </PropertyGroup>
   <PropertyGroup Condition="'$(CI)' == 'true'">
     <AndroidLinkMode>Full</AndroidLinkMode>
@@ -100,7 +95,6 @@
     <Compile Include="BrokenNativeControl.cs" />
     <Compile Include="CacheService.cs" />
     <Compile Include="DrawableExtensions.cs" />
-    <Compile Include="FormsApplicationActivity.cs" />
     <Compile Include="DisposeLabelRenderer.cs" />
     <Compile Include="DisposePageRenderer.cs" />
     <Compile Include="FormsAppCompatActivity.cs" />
@@ -130,6 +124,7 @@
     <Compile Include="_58406EffectRenderer.cs" />
     <Compile Include="_59457CustomRenderer.cs" />
     <Compile Include="_60122ImageRenderer.cs" />
+    <Compile Include="ContentDescriptionEffectRenderer.cs" />
     <Compile Include="..\Xamarin.Forms.Controls\GalleryPages\OpenGLGalleries\AdvancedOpenGLGallery.cs">
       <Link>GalleryPages\AdvancedOpenGLGallery.cs</Link>
     </Compile>
@@ -137,6 +132,8 @@
     <Compile Include="Issue7249SwitchRenderer.cs" />
     <Compile Include="_9087CustomRenderer.cs" />
     <Compile Include="_10940CustomRenderer.cs" />
+    <Compile Include="RippleEffect.cs" />
+    <Compile Include="_12484CustomRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\default.css" />
@@ -247,7 +244,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AndroidManifest.xml" />
-    <None Include="Properties\AndroidManifest28.xml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\error.xml" />
@@ -354,23 +350,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.Android.Support.Animated.Vector.Drawable" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.Android.Support.Annotations" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.Android.Support.Compat" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.Android.Support.Core.UI" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.Android.Support.Core.Utils" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.Android.Support.CustomTabs" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.Android.Support.Fragment" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.Android.Support.Transition" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.Android.Support.v4" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.Android.Support.v7.Palette" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.Android.Support.v7.RecyclerView" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.Android.Support.Vector.Drawable" Version="28.0.0.3" />
-  </ItemGroup>
-  <ItemGroup>
     <AndroidAsset Include="Assets\fonts\ionicons.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AndroidAsset>
@@ -414,4 +393,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties TriggeredFromHotReload="False" XamarinHotReloadUnhandledDeviceExceptionXamarinFormsControlGalleryAndroidHideInfoBar="True" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

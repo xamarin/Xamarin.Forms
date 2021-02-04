@@ -115,7 +115,6 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 				UpdatePicker();
 				UpdateTextColor();
-				UpdateCharacterSpacing();
 				UpdateHorizontalTextAlignment();
 				UpdateVerticalTextAlignment();
 
@@ -135,12 +134,10 @@ namespace Xamarin.Forms.Platform.iOS
 			if (e.PropertyName == Picker.TitleProperty.PropertyName || e.PropertyName == Picker.TitleColorProperty.PropertyName)
 			{
 				UpdatePicker();
-				UpdateCharacterSpacing();
 			}
 			else if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName)
 			{
 				UpdatePicker();
-				UpdateCharacterSpacing();
 			}
 			else if (e.PropertyName == Picker.CharacterSpacingProperty.PropertyName)
 				UpdateCharacterSpacing();
@@ -183,11 +180,13 @@ namespace Xamarin.Forms.Platform.iOS
 		void RowsCollectionChanged(object sender, EventArgs e)
 		{
 			UpdatePicker();
-			UpdateCharacterSpacing();
 		}
 
-        protected void UpdateCharacterSpacing()
-        {
+		protected void UpdateCharacterSpacing()
+		{
+			if (Control == null)
+				return;
+
 			var textAttr = Control.AttributedText.AddCharacterSpacing(Control.Text, Element.CharacterSpacing);
 
 			if (textAttr != null)

@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Xamarin.Forms.Core;
 using Xamarin.Forms.Internals;
 
@@ -15,7 +16,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (index != -1)
 			{
 				string font = cleansedFont.Substring(0, index);
-				string style = cleansedFont.Substring(index+1);
+				string style = cleansedFont.Substring(index + 1);
 				return $"{font}:style={style}";
 			}
 			else
@@ -50,5 +51,13 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 			return fontFile.PostScriptName;
 		}
+
+		public static void FontReinit()
+		{
+			evas_font_reinit();
+		}
+
+		[DllImport("libelementary.so.1")]
+		static extern void evas_font_reinit();
 	}
 }

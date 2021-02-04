@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal class ConditionalFocusLayout : LinearLayout, global::Android.Views.View.IOnTouchListener
 	{
-		public ConditionalFocusLayout(System.IntPtr p, global::Android.Runtime.JniHandleOwnership o): base(p,o)
+		public ConditionalFocusLayout(System.IntPtr p, global::Android.Runtime.JniHandleOwnership o) : base(p, o)
 		{
 			// Added default constructor to prevent crash when accessing selected row in ListViewAdapter.Dispose
 		}
@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (viewCell?.View == null)
 				return;
 
-			IVisualElementRenderer renderer = Platform.GetRenderer(viewCell.View);
+			IVisualElementRenderer renderer = AppCompat.Platform.GetRenderer(viewCell.View);
 			GetEditText(renderer)?.SetOnTouchListener(this);
 
 			foreach (Element descendant in viewCell.View.Descendants())
@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Platform.Android
 				var element = descendant as VisualElement;
 				if (element == null)
 					continue;
-				renderer = Platform.GetRenderer(element);
+				renderer = AppCompat.Platform.GetRenderer(element);
 				GetEditText(renderer)?.SetOnTouchListener(this);
 			}
 		}

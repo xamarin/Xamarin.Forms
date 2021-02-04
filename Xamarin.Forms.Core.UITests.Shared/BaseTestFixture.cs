@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using NUnit.Framework;
 using Xamarin.Forms.Controls;
+using Xamarin.Forms.Controls.Issues;
 using Xamarin.UITest;
 using Xamarin.UITest.Queries;
 
@@ -46,11 +47,13 @@ namespace Xamarin.Forms.Core.UITests
 		protected virtual void TestSetup()
 		{
 			//EnsureMemory();
+			UITestHelper.MarkTestInconclusiveIfNoInternetConnectionIsPresent(GetType(), App);
 		}
 
 		[TearDown]
 		protected virtual void TestTearDown()
 		{
+			App.AttachScreenshotIfOutcomeFailed();
 		}
 
 		protected abstract void NavigateToGallery();
@@ -77,6 +80,7 @@ namespace Xamarin.Forms.Core.UITests
 
 					Debug.WriteLine(debugMessage);
 					Console.WriteLine(debugMessage);
+					App.AttachScreenshotToTestContext(TestContext.CurrentContext?.Test?.FullName ?? "NavigateToGalleryFailed");
 
 					if (attempts < maxAttempts)
 					{

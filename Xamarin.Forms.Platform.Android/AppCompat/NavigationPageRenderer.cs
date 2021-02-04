@@ -10,35 +10,23 @@ using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Runtime;
-#if __ANDROID_29__
-using AndroidX.Core.Widget;
+using Android.Util;
+using Android.Views;
+using Android.Widget;
+using AndroidX.AppCompat.App;
+using AndroidX.AppCompat.Graphics.Drawable;
+using AndroidX.DrawerLayout.Widget;
+using Xamarin.Forms.Internals;
+using static Android.Views.View;
+using static Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat.NavigationPage;
+using ActionBarDrawerToggle = AndroidX.AppCompat.App.ActionBarDrawerToggle;
+using AToolbar = AndroidX.AppCompat.Widget.Toolbar;
+using AView = Android.Views.View;
 using Fragment = AndroidX.Fragment.App.Fragment;
 using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
-using AToolbar = AndroidX.AppCompat.Widget.Toolbar;
-using ActionBarDrawerToggle = AndroidX.AppCompat.App.ActionBarDrawerToggle;
-using AndroidX.AppCompat.Graphics.Drawable;
-using AndroidX.DrawerLayout.Widget;
-using AndroidX.AppCompat.App;
-#else
-using Android.Support.V4.Widget;
-using Fragment = Android.Support.V4.App.Fragment;
-using FragmentManager = Android.Support.V4.App.FragmentManager;
-using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
-using AToolbar = Android.Support.V7.Widget.Toolbar;
-using ActionBarDrawerToggle = Android.Support.V7.App.ActionBarDrawerToggle;
-using Android.Support.V7.Graphics.Drawable;
-using Android.Support.V7.App;
-#endif
-using Android.Util;
-using Android.Views;
-using Xamarin.Forms.Internals;
-using AView = Android.Views.View;
-
 using Object = Java.Lang.Object;
-using static Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat.NavigationPage;
-using static Android.Views.View;
-using Android.Widget;
+using APlatform = Xamarin.Forms.Platform.Android.AppCompat.Platform;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -58,7 +46,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		ToolbarTracker _toolbarTracker;
 		DrawerMultiplexedListener _drawerListener;
 		DrawerLayout _drawerLayout;
-		MasterDetailPage _masterDetailPage;
+		FlyoutPage _flyoutPage;
 		bool _toolbarVisible;
 		IVisualElementRenderer _titleViewRenderer;
 		Container _titleView;
@@ -210,14 +198,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					trans.CommitAllowingStateLossEx();
 					fm.ExecutePendingTransactionsEx();
 				}
-				
+
 				_toolbar.RemoveView(_titleView);
 				_titleView?.Dispose();
 				_titleView = null;
 
 				if (_titleViewRenderer != null)
 				{
-					Android.Platform.ClearRenderer(_titleViewRenderer.View);
+					Platform.ClearRenderer(_titleViewRenderer.View);
 					_titleViewRenderer.Dispose();
 					_titleViewRenderer = null;
 				}
@@ -256,7 +244,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					_toolbar.Menu.Clear();
 
 					RemoveView(_toolbar);
-				
+
 					_toolbar.Dispose();
 					_toolbar = null;
 				}
@@ -290,7 +278,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				Current = null;
 
 				// We dispose the child renderers after cleaning up everything related to DrawerLayout in case
-				// one of the children is a MasterDetailPage (which may dispose of the DrawerLayout).
+				// one of the children is a FlyoutPage (which may dispose of the DrawerLayout).
 				if (Element != null)
 				{
 					foreach (Element element in PageController.InternalChildren)
@@ -299,7 +287,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 						if (child == null)
 							continue;
 
-						IVisualElementRenderer renderer = Android.Platform.GetRenderer(child);
+						IVisualElementRenderer renderer = Platform.GetRenderer(child);
 						renderer?.Dispose();
 					}
 				}
@@ -395,6 +383,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
 				UpdateToolbar();
+			else if (e.PropertyName == NavigationPage.BarBackgroundProperty.PropertyName)
+				UpdateToolbar();
 			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName)
 				UpdateToolbar();
 			else if (e.PropertyName == BarHeightProperty.PropertyName)
@@ -410,7 +400,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			AToolbar bar = _toolbar;
 			// make sure bar stays on top of everything
 			bar.BringToFront();
-			
+
 			int barHeight = ActionBarHeight();
 
 			if (Element.IsSet(BarHeightProperty))
@@ -650,36 +640,36 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			AToolbar bar = _toolbar;
 			Element page = Element.RealParent;
 
-			_masterDetailPage = null;
+			_flyoutPage = null;
 			while (page != null)
 			{
-				if (page is MasterDetailPage)
+				if (page is FlyoutPage)
 				{
-					_masterDetailPage = page as MasterDetailPage;
+					_flyoutPage = page as FlyoutPage;
 					break;
 				}
 				page = page.RealParent;
 			}
 
-			if (_masterDetailPage == null)
+			if (_flyoutPage == null)
 			{
 				if (PageController.InternalChildren.Count > 0)
-					_masterDetailPage = PageController.InternalChildren[0] as MasterDetailPage;
+					_flyoutPage = PageController.InternalChildren[0] as FlyoutPage;
 
-				if (_masterDetailPage == null)
+				if (_flyoutPage == null)
 					return;
 			}
 
-			if (((IMasterDetailPageController)_masterDetailPage).ShouldShowSplitMode)
+			if (((IFlyoutPageController)_flyoutPage).ShouldShowSplitMode)
 				return;
 
-			var renderer = Android.Platform.GetRenderer(_masterDetailPage) as MasterDetailPageRenderer;
+			var renderer = APlatform.GetRenderer(_flyoutPage) as FlyoutPageRenderer;
 			if (renderer == null)
 				return;
 
 			_drawerLayout = renderer;
 
-			FastRenderers.AutomationPropertiesProvider.GetDrawerAccessibilityResources(context, _masterDetailPage, out int resourceIdOpen, out int resourceIdClose);
+			FastRenderers.AutomationPropertiesProvider.GetDrawerAccessibilityResources(context, _flyoutPage, out int resourceIdOpen, out int resourceIdClose);
 
 			if (_drawerToggle != null)
 			{
@@ -731,7 +721,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 #if DEBUG
 			// Enables logging of moveToState operations to logcat
+#pragma warning disable CS0618 // Type or member is obsolete
 			FragmentManager.EnableDebugLogging(true);
+#pragma warning restore CS0618 // Type or member is obsolete
 #endif
 
 			// Go ahead and take care of the fragment bookkeeping for the page being removed
@@ -761,7 +753,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (_titleViewRenderer != null)
 			{
-				Android.Platform.ClearRenderer(_titleViewRenderer.View);
+				Platform.ClearRenderer(_titleViewRenderer.View);
 				_titleViewRenderer.Dispose();
 				_titleViewRenderer = null;
 			}
@@ -815,7 +807,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 #if DEBUG
 			// Enables logging of moveToState operations to logcat
+#pragma warning disable CS0618 // Type or member is obsolete
 			FragmentManager.EnableDebugLogging(true);
+#pragma warning restore CS0618 // Type or member is obsolete
 #endif
 
 			Current?.SendDisappearing();
@@ -978,17 +972,17 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					var prevPage = Element.Peek(1);
 					_defaultNavigationContentDescription = bar.SetNavigationContentDescription(prevPage, _defaultNavigationContentDescription);
 				}
-				else if (toggle != null && _masterDetailPage != null)
+				else if (toggle != null && _flyoutPage != null)
 				{
-					toggle.DrawerIndicatorEnabled = _masterDetailPage.ShouldShowToolbarButton();
+					toggle.DrawerIndicatorEnabled = _flyoutPage.ShouldShowToolbarButton();
 					toggle.SyncState();
 				}
 			}
 			else
 			{
-				if (toggle != null && _masterDetailPage != null)
+				if (toggle != null && _flyoutPage != null)
 				{
-					toggle.DrawerIndicatorEnabled = _masterDetailPage.ShouldShowToolbarButton();
+					toggle.DrawerIndicatorEnabled = _flyoutPage.ShouldShowToolbarButton();
 					toggle.SyncState();
 				}
 			}
@@ -1016,6 +1010,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					bar.SetBackgroundColor(tintColor.ToAndroid());
 				}
 			}
+
+			Brush barBackground = Element.BarBackground;
+			bar.UpdateBackground(barBackground);
 
 			Color textColor = Element.BarTextColor;
 			if (!textColor.IsDefault)
@@ -1096,7 +1093,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					if (_titleView != null)
 						_titleView.Child = null;
-					Android.Platform.ClearRenderer(_titleViewRenderer.View);
+					Platform.ClearRenderer(_titleViewRenderer.View);
 					_titleViewRenderer.Dispose();
 					_titleViewRenderer = null;
 				}
@@ -1109,7 +1106,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				_titleViewRenderer.SetElement(titleView);
 			else
 			{
-				_titleViewRenderer = Android.Platform.CreateRenderer(titleView, Context);
+				_titleViewRenderer = Platform.CreateRenderer(titleView, Context);
 
 				if (_titleView == null)
 				{
@@ -1120,7 +1117,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				_titleView.Child = _titleViewRenderer;
 			}
 
-			Android.Platform.SetRenderer(titleView, _titleViewRenderer);
+			Platform.SetRenderer(titleView, _titleViewRenderer);
 		}
 
 		void AddTransitionTimer(TaskCompletionSource<bool> tcs, Fragment fragment, FragmentManager fragmentManager, IReadOnlyCollection<Fragment> fragmentsToRemove, int duration, bool shouldUpdateToolbar)

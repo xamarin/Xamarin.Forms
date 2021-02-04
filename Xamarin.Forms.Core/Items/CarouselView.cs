@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows.Input;
-using Xamarin.Forms.Platform;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Collections.ObjectModel;
+using System.Windows.Input;
+using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
@@ -18,6 +18,14 @@ namespace Xamarin.Forms
 		public const string PreviousItemVisualState = "PreviousItem";
 		public const string DefaultItemVisualState = "DefaultItem";
 
+		public static readonly BindableProperty LoopProperty = BindableProperty.Create(nameof(Loop), typeof(bool), typeof(CarouselView), true, BindingMode.OneTime);
+
+		public bool Loop
+		{
+			get { return (bool)GetValue(LoopProperty); }
+			set { SetValue(LoopProperty, value); }
+		}
+
 		public static readonly BindableProperty PeekAreaInsetsProperty = BindableProperty.Create(nameof(PeekAreaInsets), typeof(Thickness), typeof(CarouselView), default(Thickness));
 
 		public Thickness PeekAreaInsets
@@ -26,7 +34,7 @@ namespace Xamarin.Forms
 			set { SetValue(PeekAreaInsetsProperty, value); }
 		}
 
-		static readonly BindablePropertyKey VisibleViewsPropertyKey = BindableProperty.CreateReadOnly(nameof(VisibleViews), typeof(ObservableCollection<View>), typeof(CarouselView), new ObservableCollection<View>());
+		static readonly BindablePropertyKey VisibleViewsPropertyKey = BindableProperty.CreateReadOnly(nameof(VisibleViews), typeof(ObservableCollection<View>), typeof(CarouselView), null, defaultValueCreator: (b) => new ObservableCollection<View>());
 
 		public static readonly BindableProperty VisibleViewsProperty = VisibleViewsPropertyKey.BindableProperty;
 
@@ -188,28 +196,11 @@ namespace Xamarin.Forms
 
 		public CarouselView()
 		{
-			VerifyCarouselViewFlagEnabled(constructorHint: nameof(CarouselView));
 			ItemsLayout = new LinearItemsLayout(ItemsLayoutOrientation.Horizontal)
 			{
 				SnapPointsType = SnapPointsType.MandatorySingle,
 				SnapPointsAlignment = SnapPointsAlignment.Center
 			};
-		}
-
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static void VerifyCarouselViewFlagEnabled(
-			string constructorHint = null,
-			[CallerMemberName] string memberName = "")
-		{
-			try
-			{
-				ExperimentalFlags.VerifyFlagEnabled(nameof(CollectionView), ExperimentalFlags.CarouselViewExperimental,
-					constructorHint, memberName);
-			}
-			catch (InvalidOperationException)
-			{
-
-			}
 		}
 
 		protected virtual void OnPositionChanged(PositionChangedEventArgs args)

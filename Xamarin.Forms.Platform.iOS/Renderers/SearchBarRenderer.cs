@@ -160,6 +160,17 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateCancelButton();
 		}
 
+		protected override void SetBackground(Brush brush)
+		{
+			base.SetBackground(brush);
+
+			if (Control == null)
+				return;
+
+			if (brush is SolidColorBrush solidColorBrush)
+				Control.BarTintColor = solidColorBrush.Color.ToUIColor(_defaultTintColor);
+		}
+
 		public override CoreGraphics.CGSize SizeThatFits(CoreGraphics.CGSize size)
 		{
 			if (nfloat.IsInfinity(size.Width))
@@ -179,11 +190,9 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
-#if __XCODE11__
 			// Make sure the control adheres to changes in UI theme
 			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
 				UpdateTextColor();
-#endif
 		}
 
 		void OnCancelClicked(object sender, EventArgs args)
@@ -204,8 +213,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnSearchButtonClicked(object sender, EventArgs e)
 		{
-			Element.OnSearchButtonPressed();
-			Control.ResignFirstResponder();
+			Element?.OnSearchButtonPressed();
+			Control?.ResignFirstResponder();
 		}
 
 		void OnTextChanged(object sender, UISearchBarTextChangedEventArgs a)

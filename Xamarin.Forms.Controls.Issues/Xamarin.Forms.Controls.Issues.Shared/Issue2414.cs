@@ -13,6 +13,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 2414, "NullReferenceException when swiping over Context Actions", PlatformAffected.WinPhone)]
@@ -61,6 +62,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
+		[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
 		public void TestDoesntCrashShowingContextMenu()
 		{
 			RunningApp.ActivateContextMenu("Swipe ME");

@@ -1,9 +1,9 @@
 using System;
 using ElmSharp;
+using EButton = ElmSharp.Button;
 using EColor = ElmSharp.Color;
 using ESize = ElmSharp.Size;
 using TSButtonStyle = Xamarin.Forms.PlatformConfiguration.TizenSpecific.ButtonStyle;
-using EButton = ElmSharp.Button;
 
 #if __MATERIAL__
 using Tizen.NET.MaterialComponents;
@@ -202,8 +202,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				if (Image != null)
 					MinimumWidth += Image.Geometry.Width;
 
-				var rawSize = TextHelper.GetRawTextBlockSize(this);
-				return new ESize(rawSize.Width + MinimumWidth , Math.Max(MinimumHeight, rawSize.Height));
+				var rawSize = this.GetTextBlockNativeSize();
+				return new ESize(rawSize.Width + MinimumWidth, Math.Max(MinimumHeight, rawSize.Height));
 			}
 		}
 
@@ -230,25 +230,16 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		/// <param name="textStyle">Style applied to the formattedText.</param>
 		void SetInternalTextAndStyle(string formattedText, string textStyle)
 		{
-			string emission = "elm,state,text,visible";
-
+			bool isVisible = true;
 			if (string.IsNullOrEmpty(formattedText))
 			{
 				formattedText = null;
 				textStyle = null;
-				emission = "elm,state,text,hidden";
+				isVisible = false;
 			}
-
 			base.Text = formattedText;
-
-			var textblock = EdjeObject["elm.text"];
-
-			if (textblock != null)
-			{
-				textblock.TextStyle = textStyle;
-			}
-
-			EdjeObject.EmitSignal(emission, "elm");
+			this.SetTextBlockStyle(textStyle);
+			this.SendTextVisibleSignal(isVisible);
 		}
 
 		/// <summary>
@@ -268,14 +259,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		/// </summary>
 		void SetInternalImage()
 		{
-			if (_image == null)
-			{
-				SetPartContent("icon", null);
-			}
-			else
-			{
-				SetPartContent("icon", _image);
-			}
+			this.SetIconPart(_image);
 		}
 
 		/// <summary>

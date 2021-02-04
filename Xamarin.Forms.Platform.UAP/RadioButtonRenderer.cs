@@ -1,7 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using Windows.Devices.Radios;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
+using static Xamarin.Forms.Platform.UWP.ViewToRendererConverter;
+using WBrush = Windows.UI.Xaml.Media.Brush;
 using WThickness = Windows.UI.Xaml.Thickness;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -20,8 +23,6 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					var button = new FormsRadioButton();
 
-					button.Click += OnButtonClick;
-					button.AddHandler(PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
 					button.Loaded += ButtonOnLoaded;
 					button.Checked += OnRadioButtonCheckedOrUnchecked;
 					button.Unchecked += OnRadioButtonCheckedOrUnchecked;
@@ -37,7 +38,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 				//TODO: We may want to revisit this strategy later. If a user wants to reset any of these to the default, the UI won't update.
 				if (Element.IsSet(VisualElement.BackgroundColorProperty) && Element.BackgroundColor != (Color)VisualElement.BackgroundColorProperty.DefaultValue)
-					UpdateBackground();
+					UpdateBackgroundBrush();
+
+				if (Element.IsSet(VisualElement.BackgroundProperty) && !Element.Background.IsEmpty)
+					UpdateBackgroundBrush();
 
 				if (Element.IsSet(RadioButton.TextColorProperty) && Element.TextColor != (Color)RadioButton.TextColorProperty.DefaultValue)
 					UpdateTextColor();
@@ -76,19 +80,19 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == RadioButton.TextProperty.PropertyName || e.PropertyName == Button.ImageSourceProperty.PropertyName)
+			if (e.PropertyName == RadioButton.ContentProperty.PropertyName || e.PropertyName == Button.ImageSourceProperty.PropertyName)
 			{
 				UpdateContent();
 			}
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 			{
-				UpdateBackground();
+				UpdateBackgroundBrush();
 			}
 			else if (e.PropertyName == RadioButton.TextColorProperty.PropertyName)
 			{
 				UpdateTextColor();
 			}
-			else if (e.PropertyName == RadioButton.FontProperty.PropertyName)
+			else if (e.IsOneOf(RadioButton.FontFamilyProperty, RadioButton.FontSizeProperty, RadioButton.FontAttributesProperty))
 			{
 				UpdateFont();
 			}
@@ -122,18 +126,12 @@ namespace Xamarin.Forms.Platform.UWP
 			return;
 		}
 
+		protected override void UpdateBackground()
+		{
+			return;
+		}
+
 		protected override bool PreventGestureBubbling { get; set; } = true;
-
-		void OnButtonClick(object sender, RoutedEventArgs e)
-		{
-			((IButtonController)Element)?.SendReleased();
-			((IButtonController)Element)?.SendClicked();
-		}
-
-		void OnPointerPressed(object sender, RoutedEventArgs e)
-		{
-			((IButtonController)Element)?.SendPressed();
-		}
 
 		void OnRadioButtonCheckedOrUnchecked(object sender, RoutedEventArgs e)
 		{
@@ -145,14 +143,17 @@ namespace Xamarin.Forms.Platform.UWP
 			Element.IsChecked = Control.IsChecked == true;
 		}
 
-		void UpdateBackground()
+		void UpdateBackgroundBrush()
 		{
-			Control.BackgroundColor = Element.BackgroundColor != Color.Default ? Element.BackgroundColor.ToBrush() : (Brush)Windows.UI.Xaml.Application.Current.Resources["ButtonBackgroundThemeBrush"];
+			if (Brush.IsNullOrEmpty(Element.Background))
+				Control.BackgroundColor = Element.BackgroundColor != Color.Default ? Element.BackgroundColor.ToBrush() : (WBrush)Windows.UI.Xaml.Application.Current.Resources["ButtonBackgroundThemeBrush"];
+			else
+				Control.BackgroundColor = Element.Background.ToBrush();
 		}
 
 		void UpdateBorderColor()
 		{
-			Control.BorderBrush = Element.BorderColor != Color.Default ? Element.BorderColor.ToBrush() : (Brush)Windows.UI.Xaml.Application.Current.Resources["ButtonBorderThemeBrush"];
+			Control.BorderBrush = Element.BorderColor != Color.Default ? Element.BorderColor.ToBrush() : (WBrush)Windows.UI.Xaml.Application.Current.Resources["ButtonBorderThemeBrush"];
 		}
 
 		void UpdateBorderRadius()
@@ -167,8 +168,15 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateContent()
 		{
-			var text = Element.Text;
-			Control.Content = text;
+			var content = Element?.Content;
+
+			if (content is View view)
+			{
+				Control.Content = new WrapperControl(view);
+				return;
+			}
+
+			Control.Content = content?.ToString();
 		}
 
 		void UpdateFont()
@@ -176,10 +184,12 @@ namespace Xamarin.Forms.Platform.UWP
 			if (Control == null || Element == null)
 				return;
 
-			if (Element.Font == Font.Default && !_fontApplied)
+			Font font = Font.OfSize(Element.FontFamily, Element.FontSize).WithAttributes(Element.FontAttributes);
+
+			if (font == Font.Default && !_fontApplied)
 				return;
 
-			Font fontToApply = Element.Font == Font.Default ? Font.SystemFontOfSize(NamedSize.Medium) : Element.Font;
+			Font fontToApply = font == Font.Default ? Font.SystemFontOfSize(NamedSize.Medium) : font;
 
 			Control.ApplyFont(fontToApply);
 			_fontApplied = true;
@@ -187,7 +197,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateTextColor()
 		{
-			Control.Foreground = Element.TextColor != Color.Default ? Element.TextColor.ToBrush() : (Brush)Windows.UI.Xaml.Application.Current.Resources["DefaultTextForegroundThemeBrush"];
+			Control.Foreground = Element.TextColor != Color.Default ? Element.TextColor.ToBrush() : (WBrush)Windows.UI.Xaml.Application.Current.Resources["DefaultTextForegroundThemeBrush"];
 		}
 
 		void UpdatePadding()

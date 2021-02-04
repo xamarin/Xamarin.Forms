@@ -173,7 +173,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				}
 
 				UpdateLineBreakMode();
-				UpdateHorizontalTextAlignment();
 				UpdateText();
 				UpdateTextDecorations();
 				UpdateTextColor();
@@ -181,6 +180,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateMaxLines();
 				UpdateCharacterSpacing();
 				UpdatePadding();
+				UpdateHorizontalTextAlignment();
 			}
 
 			base.OnElementChanged(e);
@@ -322,7 +322,21 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 				Layer.BackgroundColor = color.ToCGColor();
 #endif
+		}
 
+		protected override void SetBackground(Brush brush)
+		{
+			var backgroundLayer = this.GetBackgroundLayer(brush);
+
+			if (backgroundLayer != null)
+			{
+#if __MOBILE__
+				Layer.BackgroundColor = UIColor.Clear.CGColor;
+#endif
+				Layer.InsertBackgroundLayer(backgroundLayer, 0);
+			}
+			else
+				Layer.RemoveBackgroundLayer();
 		}
 
 		void UpdateHorizontalTextAlignment()
@@ -390,6 +404,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (Element?.TextType != TextType.Text)
 				return;
+
+			if (string.IsNullOrEmpty(Element.Text))
+				return;
 #if __MOBILE__
 			var textAttr = Control.AttributedText.AddCharacterSpacing(Element.Text, Element.CharacterSpacing);
 
@@ -452,6 +469,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			Control.AttributedStringValue = _formatted.ToAttributed(Element, Element.TextColor, Element.HorizontalTextAlignment, Element.LineHeight);
 #endif
 			_perfectSizeValid = false;
+
+			UpdateHorizontalTextAlignment();
 		}
 
 		void UpdateTextHtml()
@@ -559,7 +578,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				Control.TextColor = textColor.ToUIColor(ColorExtensions.LabelColor);
 #else
 			var alignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
-			var textWithColor = new NSAttributedString(Element.Text ?? "", font: Element.ToNSFont(), foregroundColor: textColor.ToNSColor(ColorExtensions.Black), paragraphStyle: new NSMutableParagraphStyle() { Alignment = alignment });
+			var textWithColor = new NSAttributedString(Element.Text ?? "", font: Element.ToNSFont(), foregroundColor: textColor.ToNSColor(ColorExtensions.TextColor), paragraphStyle: new NSMutableParagraphStyle() { Alignment = alignment });
 			textWithColor = textWithColor.AddCharacterSpacing(Element.Text ?? string.Empty, Element.CharacterSpacing);
 			Control.AttributedStringValue = textWithColor;
 #endif

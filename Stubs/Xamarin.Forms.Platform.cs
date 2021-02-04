@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Xamarin.Forms;
 
 #if __ANDROID__
 using Xamarin.Forms.Platform.Android;
@@ -17,7 +11,7 @@ namespace Xamarin.Forms.Platform
 {
 	internal static class Loader
 	{
-		internal static void Load ()
+		internal static void Load()
 		{
 		}
 	}
@@ -32,47 +26,53 @@ namespace Xamarin.Forms.Platform
 	[RenderWith(typeof(EntryRenderer))]
 	internal class _EntryRenderer { }
 
-	[RenderWith (typeof (EditorRenderer))]
+	[RenderWith(typeof(EditorRenderer))]
 	internal class _EditorRenderer { }
 #if __ANDROID__
 	[RenderWith(typeof(Xamarin.Forms.Platform.Android.LabelRenderer))]
 #else
-	[RenderWith (typeof (LabelRenderer))]
+	[RenderWith(typeof(LabelRenderer))]
 #endif
 	internal class _LabelRenderer { }
 
 #if __ANDROID__
 	[RenderWith(typeof(Xamarin.Forms.Platform.Android.ImageRenderer))]
 #else
-	[RenderWith (typeof (ImageRenderer))]
+	[RenderWith(typeof(ImageRenderer))]
 #endif
 	internal class _ImageRenderer { }
 
-	[RenderWith (typeof (ButtonRenderer))]
+#if __ANDROID__
+	[RenderWith(typeof(Xamarin.Forms.Platform.Android.AppCompat.ButtonRenderer))]
+#else
+	[RenderWith(typeof(ButtonRenderer))]
+#endif
 	internal class _ButtonRenderer { }
 
 	[RenderWith(typeof(ImageButtonRenderer))]
 	internal class _ImageButtonRenderer { }
 
+#if !__IOS__
 	[RenderWith(typeof(RadioButtonRenderer))]
 	internal class _RadioButtonRenderer { }
+#endif
 
-	[RenderWith (typeof (TableViewRenderer))]
+	[RenderWith(typeof(TableViewRenderer))]
 	internal class _TableViewRenderer { }
 
-	[RenderWith (typeof (ListViewRenderer))]
+	[RenderWith(typeof(ListViewRenderer))]
 	internal class _ListViewRenderer { }
 #if !TIZEN4_0
-	[RenderWith (typeof (CollectionViewRenderer))]
+	[RenderWith(typeof(CollectionViewRenderer))]
 #else
 	[RenderWith (typeof (StructuredItemsViewRenderer))]
 #endif
 	internal class _CollectionViewRenderer { }
 
-	[RenderWith (typeof (CarouselViewRenderer))]
+	[RenderWith(typeof(CarouselViewRenderer))]
 	internal class _CarouselViewRenderer { }
 
-	[RenderWith (typeof (SliderRenderer))]
+	[RenderWith(typeof(SliderRenderer))]
 	internal class _SliderRenderer { }
 
 #if __IOS__
@@ -83,91 +83,122 @@ namespace Xamarin.Forms.Platform
 	internal class _WebViewRenderer { }
 #endif
 
-	[RenderWith (typeof (SearchBarRenderer))]
+	[RenderWith(typeof(SearchBarRenderer))]
 	internal class _SearchBarRenderer { }
 
-	[RenderWith (typeof (SwitchRenderer))]
+#if __ANDROID__
+	[RenderWith(typeof(Xamarin.Forms.Platform.Android.AppCompat.SwitchRenderer))]
+#else
+	[RenderWith(typeof(SwitchRenderer))]
+#endif
 	internal class _SwitchRenderer { }
 
-	[RenderWith (typeof (DatePickerRenderer))]
+	[RenderWith(typeof(DatePickerRenderer))]
 	internal class _DatePickerRenderer { }
 
-	[RenderWith (typeof (TimePickerRenderer))]
+	[RenderWith(typeof(TimePickerRenderer))]
 	internal class _TimePickerRenderer { }
 
-	[RenderWith (typeof (PickerRenderer))]
+#if __ANDROID__
+	[RenderWith(typeof(Xamarin.Forms.Platform.Android.AppCompat.PickerRenderer))]
+#else
+	[RenderWith(typeof(PickerRenderer))]
+#endif
 	internal class _PickerRenderer { }
 
-	[RenderWith (typeof (StepperRenderer))]
+	[RenderWith(typeof(StepperRenderer))]
 	internal class _StepperRenderer { }
 
-	[RenderWith (typeof (ProgressBarRenderer))]
+	[RenderWith(typeof(ProgressBarRenderer))]
 	internal class _ProgressBarRenderer { }
 
-	[RenderWith (typeof (ScrollViewRenderer))]
+	[RenderWith(typeof(ScrollViewRenderer))]
 	internal class _ScrollViewRenderer { }
 
-	[RenderWith (typeof (ActivityIndicatorRenderer))]
+	[RenderWith(typeof(ActivityIndicatorRenderer))]
 	internal class _ActivityIndicatorRenderer { }
 
-	[RenderWith (typeof (FrameRenderer))]
-	internal class _FrameRenderer { }
-
 #if __ANDROID__
-	// current previewer doesn't work with appcompat so this renderer is here for the previewer only
-	// once previewer switches to appcompat then we can remove this
-	[RenderWith(typeof(CheckBoxDesignerRenderer))]
-	internal class _CheckBoxRenderer { }
+	[RenderWith(typeof(Xamarin.Forms.Platform.Android.AppCompat.FrameRenderer))]
+#else
+	[RenderWith(typeof(FrameRenderer))]
 #endif
+	internal class _FrameRenderer { }
 
 	[RenderWith(typeof(IndicatorViewRenderer))]
 	internal class _IndicatorViewRenderer { }
 
-#if __IOS__
-	// current previewer doesn't work with appcompat so this renderer is here for the previewer only
-	// once previewer switches to appcompat then we can remove this
+#if __IOS__ || __ANDROID__
 	[RenderWith(typeof(CheckBoxRenderer))]
 	internal class _CheckBoxRenderer { }
 #endif
 
 #if !WINDOWS_PHONE && !WINDOWS_PHONE_APP && !TIZEN4_0
-	[RenderWith (typeof (OpenGLViewRenderer))]
+	[RenderWith(typeof(OpenGLViewRenderer))]
 #else
 	[RenderWith (null)]
 #endif
 	internal class _OpenGLViewRenderer { }
 
-#if !WINDOWS_PHONE && !WINDOWS_PHONE_APP && !TIZEN4_0
-	[RenderWith (typeof (TabbedRenderer))]
+#if __ANDROID__
+	[RenderWith(typeof(Xamarin.Forms.Platform.Android.AppCompat.TabbedPageRenderer))]
+#elif !WINDOWS_PHONE && !WINDOWS_PHONE_APP && !TIZEN4_0
+	[RenderWith(typeof(TabbedRenderer))]
 #else
-	[RenderWith (typeof (TabbedPageRenderer))]
+	[RenderWith (typeof (TabbedPageRenderer))]		
 #endif
 	internal class _TabbedPageRenderer { }
 
-#if !WINDOWS_PHONE && !WINDOWS_PHONE_APP && !TIZEN4_0
-	[RenderWith (typeof (NavigationRenderer))]
+#if __ANDROID__
+	[RenderWith(typeof(Xamarin.Forms.Platform.Android.AppCompat.NavigationPageRenderer))]
+#elif !WINDOWS_PHONE && !WINDOWS_PHONE_APP && !TIZEN4_0
+	[RenderWith(typeof(NavigationRenderer))]
 #else
-	[RenderWith (typeof (NavigationPageRenderer))]
+	[RenderWith(typeof(NavigationPageRenderer))]
 #endif
 	internal class _NavigationPageRenderer { }
 
-	[RenderWith (typeof (CarouselPageRenderer))]
+#if __ANDROID__
+	[RenderWith(typeof(Xamarin.Forms.Platform.Android.AppCompat.CarouselPageRenderer))]
+#else
+	[RenderWith(typeof(CarouselPageRenderer))]
+#endif
 	internal class _CarouselPageRenderer { }
 
-	[RenderWith (typeof (PageRenderer))]
+	[RenderWith(typeof(PageRenderer))]
 	internal class _PageRenderer { }
 
-#if !__IOS__ && !TIZEN4_0
-	[RenderWith (typeof (MasterDetailRenderer))]
+
+
+
+
+#if __ANDROID__
+	// current previewer doesn't work with appcompat so this renderer is here for the previewer only
+	// once previewer switches to appcompat then we can remove this
+	[RenderWith(typeof(FlyoutPageRendererNonAppCompat))]
+#elif !__IOS__
+	[RenderWith(typeof(FlyoutPageRenderer))]
+#else
+	[RenderWith (typeof (PhoneFlyoutPageRenderer))]
+#endif
+	internal class _FlyoutPageRenderer { }
+
+#if !__IOS__ && !TIZEN4_0 && !__ANDROID__
+#pragma warning disable CS0618 // Type or member is obsolete
+	[RenderWith(typeof(MasterDetailRenderer))]
+#pragma warning restore CS0618 // Type or member is obsolete
+#elif __ANDROID__
+#pragma warning disable CS0618 // Type or member is obsolete
+	[RenderWith(typeof(Xamarin.Forms.Platform.Android.AppCompat.MasterDetailPageRenderer))]
+#pragma warning restore CS0618 // Type or member is obsolete
 #elif TIZEN4_0
+#pragma warning disable CS0618 // Type or member is obsolete
 	[RenderWith (typeof(MasterDetailPageRenderer))]
+#pragma warning restore CS0618 // Type or member is obsolete
 #else
 	[RenderWith (typeof (PhoneMasterDetailRenderer))]
 #endif
 	internal class _MasterDetailPageRenderer { }
-
-	[RenderWith (typeof(MediaElementRenderer))]
-	internal class _MediaElementRenderer { }
 
 	[RenderWith(typeof(RefreshViewRenderer))]
 	internal class _RefreshViewRenderer { }
@@ -175,10 +206,9 @@ namespace Xamarin.Forms.Platform
 	[RenderWith(typeof(SwipeViewRenderer))]
 	internal class _SwipeViewRenderer { }
 
-#if !TIZEN4_0
 	[RenderWith(typeof(PathRenderer))]
 	internal class _PathRenderer { }
-	
+
 	[RenderWith(typeof(EllipseRenderer))]
 	internal class _EllipseRenderer { }
 
@@ -193,7 +223,6 @@ namespace Xamarin.Forms.Platform
 
 	[RenderWith(typeof(RectangleRenderer))]
 	internal class _RectangleRenderer { }
-#endif
 }
 
 

@@ -7,9 +7,9 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.XamStore
 {
-    public class BasePage : ContentPage
+	public class BasePage : ContentPage
 	{
-		private Button MakeButton (string title, Action callback)
+		private Button MakeButton(string title, Action callback)
 		{
 			var result = new Button();
 			result.Text = title;
@@ -170,7 +170,8 @@ namespace Xamarin.Forms.Controls.XamStore
 				0, 11);
 
 			grid.Children.Add(MakeButton("Add TitleView",
-					() => Shell.SetTitleView(this, new Label {
+					() => Shell.SetTitleView(this, new Label
+					{
 						BackgroundColor = Color.Purple,
 						Margin = new Thickness(5, 10),
 						Text = "TITLE VIEW"
@@ -209,16 +210,18 @@ namespace Xamarin.Forms.Controls.XamStore
 			grid.Children.Add(MakeSwitch("Tab Visible", out _tabBarVisibleSwitch), 1, 14);
 
 			grid.Children.Add(MakeButton("Push Special",
-					() => {
-					var page = (Page)Activator.CreateInstance(GetType());
-						Shell.SetNavBarIsVisible (page, _navBarVisibleSwitch.IsToggled);
+					() =>
+					{
+						var page = (Page)Activator.CreateInstance(GetType());
+						Shell.SetNavBarIsVisible(page, _navBarVisibleSwitch.IsToggled);
 						Shell.SetTabBarIsVisible(page, _tabBarVisibleSwitch.IsToggled);
 						Navigation.PushAsync(page);
 					}),
 				2, 14);
-			
+
 			grid.Children.Add(MakeButton("Show Alert",
-				async () => {
+				async () =>
+				{
 					var result = await DisplayAlert("Title", "Message", "Ok", "Cancel");
 					Console.WriteLine($"Alert result: {result}");
 				}), 0, 15);
@@ -228,19 +231,21 @@ namespace Xamarin.Forms.Controls.XamStore
 			1, 15);
 
 			grid.Children.Add(MakeButton("Go Back with Text",
-			async () => {
-					var page = (Page)Activator.CreateInstance(GetType());
-					Shell.SetForegroundColor(page, Color.Pink);
-					Shell.SetBackButtonBehavior(page, new BackButtonBehavior()
-					{
-						//IconOverride = "calculator.png",
-						
-						TextOverride = "back"
-					});
-					await Navigation.PushAsync(page);
-				}),2, 15);
+			async () =>
+			{
+				var page = (Page)Activator.CreateInstance(GetType());
+				Shell.SetForegroundColor(page, Color.Pink);
+				Shell.SetBackButtonBehavior(page, new BackButtonBehavior()
+				{
+					//IconOverride = "calculator.png",
 
-			grid.Children.Add(new Label {
+					TextOverride = "back"
+				});
+				await Navigation.PushAsync(page);
+			}), 2, 15);
+
+			grid.Children.Add(new Label
+			{
 				Text = "Navigate to",
 				VerticalOptions = LayoutOptions.CenterAndExpand
 			}, 0, 16);
@@ -274,8 +279,17 @@ namespace Xamarin.Forms.Controls.XamStore
 			grid.Children.Add(MakeButton("bg color",
 				() => Shell.Current.FlyoutBackgroundColor = Color.DarkGreen),
 			1, 18);
-			grid.Children.Add(MakeButton("bg aFit",
-				() => Shell.Current.FlyoutBackgroundImageAspect = Aspect.AspectFit),
+			grid.Children.Add(MakeButton("bg brush",
+				() => Shell.Current.FlyoutBackground = new LinearGradientBrush
+				{
+					StartPoint = new Point(0, 0),
+					EndPoint = new Point(1, 0),
+					GradientStops = new GradientStopCollection
+					{
+						new GradientStop { Color = Color.Orange, Offset = 0.2f },
+						new GradientStop { Color = Color.OrangeRed, Offset = 0.8f }
+					}
+				}),
 			2, 18);
 			grid.Children.Add(MakeButton("bg aFill",
 				() => Shell.Current.FlyoutBackgroundImageAspect = Aspect.AspectFill),
@@ -284,7 +298,8 @@ namespace Xamarin.Forms.Controls.XamStore
 				() => Shell.Current.FlyoutBackgroundImageAspect = Aspect.Fill),
 			1, 19);
 			grid.Children.Add(MakeButton("clear bg",
-				() => {
+				() =>
+				{
 					Shell.Current.ClearValue(Shell.FlyoutBackgroundColorProperty);
 					Shell.Current.ClearValue(Shell.FlyoutBackgroundImageProperty);
 				}),
@@ -307,29 +322,78 @@ namespace Xamarin.Forms.Controls.XamStore
 			Content = new ScrollView { Content = grid };
 
 
-			//grid.Children.Add(MakeButton("FlyoutBackdrop Color",
-			//		() =>
-			//		{
-			//			if (Shell.GetFlyoutBackdropColor(Shell.Current) == Color.Default)
-			//				Shell.SetFlyoutBackdropColor(Shell.Current, Color.Purple);
-			//			else
-			//				Shell.SetFlyoutBackdropColor(Shell.Current, Color.Default);
-			//		}),
-			//	0, 21);
+			Brush nextBrush = SolidColorBrush.Purple;
+			grid.Children.Add(MakeButton("FlyoutBackdrop Brush",
+					() =>
+					{
+						if (nextBrush == SolidColorBrush.Purple)
+						{
+							LinearGradientBrush linearGradientBrush = new LinearGradientBrush();
+							linearGradientBrush.StartPoint = new Point(0, 0);
+							linearGradientBrush.EndPoint = new Point(1, 1);
+
+							linearGradientBrush.GradientStops.Add(new GradientStop(Color.FromHex("#8A2387"), 0.1f));
+							linearGradientBrush.GradientStops.Add(new GradientStop(Color.FromHex("#E94057"), 0.6f));
+							linearGradientBrush.GradientStops.Add(new GradientStop(Color.FromHex("#F27121"), 1.0f));
+
+							nextBrush = linearGradientBrush;
+						}
+						else if (nextBrush is LinearGradientBrush)
+						{
+							nextBrush = Brush.Default;
+						}
+						else
+						{
+							nextBrush = SolidColorBrush.Purple;
+						}
+
+						Shell.SetFlyoutBackdrop(Shell.Current, nextBrush);
+					}),
+				0, 21);
 
 			grid.Children.Add(MakeButton("Hide Nav Shadow",
-                    () => Shell.SetNavBarHasShadow(this, false)),
-                1, 21);
+					() => Shell.SetNavBarHasShadow(this, false)),
+				1, 21);
 
-            grid.Children.Add(MakeButton("Show Nav Shadow",
-                    () => Shell.SetNavBarHasShadow(this, true)),
-                2, 21);
+			grid.Children.Add(MakeButton("Show Nav Shadow",
+					() => Shell.SetNavBarHasShadow(this, true)),
+				2, 21);
+
+			Entry flyoutWidth = new Entry();
+			Entry flyoutHeight = new Entry();
+
+			flyoutWidth.TextChanged += FlyoutSizeTextChanged;
+			flyoutHeight.TextChanged += FlyoutSizeTextChanged;
+
+			grid.Children.Add(new Label() { Text = "Flyout WxH:" },
+				0, 22);
+
+			grid.Children.Add(flyoutWidth,
+				1, 22);
+
+			grid.Children.Add(flyoutHeight,
+				2, 22);
+
+			void FlyoutSizeTextChanged(object sender, TextChangedEventArgs e)
+			{
+				double result;
+
+				if (double.TryParse(flyoutWidth.Text, out result))
+				{
+					Shell.Current.FlyoutWidth = result;
+				}
+
+				if (double.TryParse(flyoutHeight.Text, out result))
+				{
+					Shell.Current.FlyoutHeight = result;
+				}
+			}
 		}
 
 		Switch _navBarVisibleSwitch;
 		Switch _tabBarVisibleSwitch;
 
-		private View MakeSwitch (string label, out Switch control)
+		private View MakeSwitch(string label, out Switch control)
 		{
 			return new StackLayout
 			{
@@ -362,10 +426,10 @@ namespace Xamarin.Forms.Controls.XamStore
 			var shellSection = (ShellSection)Parent.Parent;
 			shellSection.Items.Add(
 				new Forms.ShellContent()
-					{
-						Title = "New Top Tab",
-						Content = new UpdatesPage()
-					}
+				{
+					Title = "New Top Tab",
+					Content = new UpdatesPage()
+				}
 				);
 		}
 
@@ -464,7 +528,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		}
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class UpdatesPage : BasePage
 	{
 		public UpdatesPage() : base("Available Updates", Color.Default)
@@ -473,7 +537,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		}
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class InstalledPage : BasePage
 	{
 		public InstalledPage() : base("Installed Items", Color.Default)
@@ -482,7 +546,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		}
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class LibraryPage : BasePage
 	{
 		public LibraryPage() : base("My Library", Color.Default)
@@ -491,19 +555,19 @@ namespace Xamarin.Forms.Controls.XamStore
 		}
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class NotificationsPage : BasePage
 	{
 		public NotificationsPage() : base("Notifications", Color.Default) { }
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class SubscriptionsPage : BasePage
 	{
 		public SubscriptionsPage() : base("My Subscriptions", Color.Default) { }
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class HomePage : BasePage
 	{
 		public HomePage() : base("Store Home", Color.Black)
@@ -512,7 +576,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		}
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class GamesPage : BasePage
 	{
 		public GamesPage() : base("Games", Color.Black)
@@ -521,7 +585,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		}
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class MoviesPage : BasePage
 	{
 		public MoviesPage() : base("Hot Movies", Color.Default)
@@ -530,7 +594,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		}
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class BooksPage : BasePage
 	{
 		public BooksPage() : base("Bookstore", Color.Default)
@@ -539,7 +603,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		}
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class MusicPage : BasePage
 	{
 		public MusicPage() : base("Music", Color.Default)
@@ -548,7 +612,7 @@ namespace Xamarin.Forms.Controls.XamStore
 		}
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class NewsPage : BasePage
 	{
 		public NewsPage() : base("Newspapers", Color.Default)
@@ -557,19 +621,19 @@ namespace Xamarin.Forms.Controls.XamStore
 		}
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class AccountsPage : BasePage
 	{
 		public AccountsPage() : base("Account Items", Color.Default) { }
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class WishlistPage : BasePage
 	{
 		public WishlistPage() : base("My Wishlist", Color.Default) { }
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class SettingsPage : BasePage
 	{
 		public SettingsPage() : base("Settings", Color.Default) { }

@@ -57,19 +57,15 @@ namespace Xamarin.Forms.Platform.Tizen
 
 				if (Device.Idiom == TargetIdiom.Phone)
 				{
-					_pageBusyDialog.SetPartColor("bg_title", EColor.Transparent);
-					_pageBusyDialog.SetPartColor("bg_content", EColor.Transparent);
+					_pageBusyDialog.SetTitleBackgroundColor(EColor.Transparent);
+					_pageBusyDialog.SetContentBackgroundColor(EColor.Transparent);
 				}
 				else if (Device.Idiom == TargetIdiom.Watch)
 				{
-					_pageBusyDialog.Style = "circle";
+					_pageBusyDialog.SetWatchCircleStyle();
 				}
 
-				var activity = new EProgressBar(_pageBusyDialog)
-				{
-					Style = "process_large",
-					IsPulseMode = true,
-				};
+				var activity = new EProgressBar(_pageBusyDialog) { IsPulseMode = true }.SetLargeStyle();
 				activity.PlayPulse();
 				activity.Show();
 
@@ -97,7 +93,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			var alert = Native.Dialog.CreateDialog(Forms.NativeParent, (arguments.Accept != null));
 
 			alert.Title = arguments.Title;
-			var message = arguments.Message.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace(Environment.NewLine, "<br>");
+			var message = arguments.Message?.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace(Environment.NewLine, "<br>");
 			alert.Message = message;
 
 			var cancel = new EButton(alert) { Text = arguments.Cancel };
@@ -146,10 +142,12 @@ namespace Xamarin.Forms.Platform.Tizen
 				var destruction = new Native.Button(alert)
 				{
 					Text = arguments.Destruction,
-					Style = ButtonStyle.Text,
-					TextColor = EColor.Red,
 					AlignmentX = -1
 				};
+				destruction.SetWatchTextStyle();
+				//TextColor should be set after applying style
+				destruction.TextColor = EColor.Red;
+
 				destruction.Clicked += (s, evt) =>
 				{
 					arguments.SetResult(arguments.Destruction);
@@ -164,9 +162,10 @@ namespace Xamarin.Forms.Platform.Tizen
 				var button = new Native.Button(alert)
 				{
 					Text = buttonName,
-					Style = ButtonStyle.Text,
 					AlignmentX = -1
 				};
+				button.SetWatchTextStyle();
+
 				button.Clicked += (s, evt) =>
 				{
 					arguments.SetResult(buttonName);
@@ -249,7 +248,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			var layoutrenderer = Platform.GetOrCreateRenderer(layout);
 
 			var request = layout.Measure(Device.Idiom == TargetIdiom.Watch ? sender.Width * 0.7 : sender.Width, sender.Height);
-			(layoutrenderer as LayoutRenderer).RegisterOnLayoutUpdated();
+			(layoutrenderer as ILayoutRenderer).RegisterOnLayoutUpdated();
 			layoutrenderer.NativeView.MinimumHeight = Forms.ConvertToScaledPixel(request.Request.Height);
 			layoutrenderer.NativeView.MinimumWidth = Forms.ConvertToScaledPixel(request.Request.Width);
 

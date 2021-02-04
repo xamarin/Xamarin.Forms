@@ -1,11 +1,11 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using NUnit.Framework;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -335,6 +335,53 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			itemsSource.Remove(0);
 			Assert.IsTrue(IsLayoutWithItemsSource(itemsSource, layout));
+		}
+
+
+		[Test]
+		public void ValidateBindableProperties()
+		{
+			var layout = new StackLayout
+			{
+				IsPlatformEnabled = true,
+			};
+
+			// EmptyView
+			object emptyView = new object();
+			BindableLayout.SetEmptyView(layout, emptyView);
+
+			Assert.AreEqual(emptyView, BindableLayout.GetEmptyView(layout));
+			Assert.AreEqual(emptyView, layout.GetValue(BindableLayout.EmptyViewProperty));
+
+			// EmptyViewTemplateProperty
+			DataTemplate emptyViewTemplate = new DataTemplate(typeof(Label));
+			BindableLayout.SetEmptyViewTemplate(layout, emptyViewTemplate);
+
+			Assert.AreEqual(emptyViewTemplate, BindableLayout.GetEmptyViewTemplate(layout));
+			Assert.AreEqual(emptyViewTemplate, layout.GetValue(BindableLayout.EmptyViewTemplateProperty));
+
+
+			// ItemsSourceProperty
+			IEnumerable itemsSource = new object[0];
+			BindableLayout.SetItemsSource(layout, itemsSource);
+
+			Assert.AreEqual(itemsSource, BindableLayout.GetItemsSource(layout));
+			Assert.AreEqual(itemsSource, layout.GetValue(BindableLayout.ItemsSourceProperty));
+
+			// ItemTemplateProperty
+			DataTemplate itemTemplate = new DataTemplate(typeof(Label));
+			BindableLayout.SetItemTemplate(layout, itemTemplate);
+
+			Assert.AreEqual(itemTemplate, BindableLayout.GetItemTemplate(layout));
+			Assert.AreEqual(itemTemplate, layout.GetValue(BindableLayout.ItemTemplateProperty));
+
+
+			// ItemTemplateSelectorProperty
+			var itemTemplateSelector = new DataTemplateSelectorFrame();
+			BindableLayout.SetItemTemplateSelector(layout, itemTemplateSelector);
+
+			Assert.AreEqual(itemTemplateSelector, BindableLayout.GetItemTemplateSelector(layout));
+			Assert.AreEqual(itemTemplateSelector, layout.GetValue(BindableLayout.ItemTemplateSelectorProperty));
 		}
 
 		// Checks if for every item in the items source there's a corresponding view

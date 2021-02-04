@@ -1,21 +1,14 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
-using Android.Graphics;
 using Android.Graphics.Drawables;
-#if __ANDROID_29__
+using Android.Text.Method;
 using AndroidX.Core.View;
 using AndroidX.Core.Widget;
-using AndroidX.AppCompat.Widget;
-#else
-using Android.Support.V4.View;
-using Android.Support.V4.Widget;
-using Android.Support.V7.Widget;
-#endif
 using Xamarin.Forms.Internals;
+using AButton = Android.Widget.Button;
 using ARect = Android.Graphics.Rect;
 using AView = Android.Views.View;
-using AButton = Android.Widget.Button;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -41,6 +34,8 @@ namespace Xamarin.Forms.Platform.Android
 		bool _borderAdjustsPadding;
 		bool _maintainLegacyMeasurements;
 		bool _hasLayoutOccurred;
+		ITransformationMethod _defaultTransformationMethod;
+		bool _elementAlreadyChanged = false;
 
 		public ButtonLayoutManager(IButtonLayoutRenderer renderer)
 			: this(renderer, false, false, false, true)
@@ -188,9 +183,17 @@ namespace Xamarin.Forms.Platform.Android
 			if (View?.LayoutParameters == null && _hasLayoutOccurred)
 				return;
 
+			if (View != null && !_elementAlreadyChanged)
+			{
+				_defaultTransformationMethod = View.TransformationMethod;
+				_elementAlreadyChanged = true;
+			}
+
 			if (!UpdateTextAndImage())
 				UpdateImage();
+
 			UpdatePadding();
+			UpdateLineBreakMode();
 		}
 
 		void OnElementChanged(object sender, VisualElementChangedEventArgs e)
@@ -223,6 +226,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateTextAndImage();
 			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName && _borderAdjustsPadding)
 				_element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+			else if (e.PropertyName == Button.LineBreakModeProperty.PropertyName)
+				UpdateLineBreakMode();
 		}
 
 		void UpdatePadding()
@@ -262,6 +267,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool UpdateTextAndImage()
 		{
+
 			if (_disposed || _renderer?.View == null || _element == null)
 				return false;
 
@@ -272,12 +278,10 @@ namespace Xamarin.Forms.Platform.Android
 			if (view == null)
 				return false;
 
-			var textTransform = _element.TextTransform;
-			
-			_renderer.View.SetAllCaps(textTransform == TextTransform.Default);
+			UpdateTransformationMethod(view);
 
 			string oldText = view.Text;
-			view.Text = _element.UpdateFormsText(_element.Text, textTransform);
+			view.Text = _element.UpdateFormsText(_element.Text, _element.TextTransform);
 
 			// If we went from or to having no text, we need to update the image position
 			if (string.IsNullOrEmpty(oldText) != string.IsNullOrEmpty(view.Text))
@@ -287,6 +291,15 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			return false;
+		}
+
+		void UpdateTransformationMethod(AButton view)
+		{
+			// Use defaults only when user hasn't specified alternative TextTransform settings
+			if (_element.TextTransform == TextTransform.Default)
+				view.TransformationMethod = _defaultTransformationMethod;
+			else
+				view.TransformationMethod = null;
 		}
 
 		void UpdateImage()
@@ -307,9 +320,9 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			// No text, so no need for relative position; just center the image
-			// There's no option for just plain-old centering, so we'll use Top 
+			// There's no option for just plain-old centering, so we'll use Top
 			// (which handles the horizontal centering) and some tricksy padding (in OnLayout)
-			// to handle the vertical centering 
+			// to handle the vertical centering
 			var layout = string.IsNullOrEmpty(_element.Text) ? _imageOnlyLayout : _element.ContentLayout;
 
 			if (_maintainLegacyMeasurements)
@@ -354,6 +367,17 @@ namespace Xamarin.Forms.Platform.Android
 						_element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
 				});
 			}
+		}
+
+		void UpdateLineBreakMode()
+		{
+			AButton view = View;
+
+			if (view == null || _element == null || _renderer?.View == null)
+				return;
+
+			view.SetLineBreakMode(_element);
+			UpdateTransformationMethod(view);
 		}
 	}
 }

@@ -1,11 +1,9 @@
 using System;
 using System.ComponentModel;
-using Android.App;
 using Android.Content;
-using Android.OS;
 using Android.Views;
-using AView = Android.Views.View;
 using Xamarin.Forms.Platform.Android.FastRenderers;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -36,9 +34,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use ViewRenderer(Context) instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		protected ViewRenderer() 
+		protected ViewRenderer()
 		{
-			
+
 		}
 
 		protected virtual TNativeView CreateNativeControl()
@@ -47,6 +45,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		ViewGroup _container;
+		bool _defaultAutomationSet;
 		string _defaultContentDescription;
 		bool? _defaultFocusable;
 		ImportantForAccessibility? _defaultImportantForAccessibility;
@@ -88,7 +87,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var widthMeasureSpec = MeasureSpecFactory.MakeMeasureSpec(realWidth, MeasureSpecMode.Exactly);
 			var heightMeasureSpec = MeasureSpecFactory.MakeMeasureSpec(realHeight, MeasureSpecMode.Exactly);
-			
+
 			control.Measure(widthMeasureSpec, heightMeasureSpec);
 		}
 
@@ -214,6 +213,15 @@ namespace Xamarin.Forms.Platform.Android
 			effect.SetControl(Control);
 		}
 
+		void SetupAutomationDefaults()
+		{
+			if (!_defaultAutomationSet)
+			{
+				_defaultAutomationSet = true;
+				AutomationPropertiesProvider.SetupDefaults(ControlUsedForAutomation, ref _defaultContentDescription, ref _defaultHint);
+			}
+		}
+
 		protected override void SetAutomationId(string id)
 		{
 			if (Control == null)
@@ -222,8 +230,27 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			ContentDescription = id + "_Container";
+			SetupAutomationDefaults();
+
+			if (this != ControlUsedForAutomation)
+			{
+				ContentDescription = id + "_Container";
+				ImportantForAccessibility = ImportantForAccessibility.No;
+			}
+
 			AutomationPropertiesProvider.SetAutomationId(ControlUsedForAutomation, Element, id);
+		}
+
+		private protected void SetContentDescription(bool includeHint)
+		{
+			SetupAutomationDefaults();
+
+			if (includeHint)
+				AutomationPropertiesProvider.SetContentDescription(
+					ControlUsedForAutomation, Element, _defaultContentDescription, _defaultHint);
+			else
+				AutomationPropertiesProvider.SetBasicContentDescription(
+					ControlUsedForAutomation, Element, _defaultContentDescription);
 		}
 
 		protected override void SetContentDescription()
@@ -234,8 +261,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			AutomationPropertiesProvider.SetContentDescription(
-				ControlUsedForAutomation, Element, ref _defaultContentDescription, ref _defaultHint);
+			SetContentDescription(true);
 		}
 
 		protected override void SetFocusable()
@@ -267,7 +293,8 @@ namespace Xamarin.Forms.Platform.Android
 				// So in case we're setting the focus in response to another control's un-focusing,
 				// we need to post the handling of it to the main looper so that it happens _after_ all the other focus
 				// work is done; otherwise, a call to ClearFocus on another control will kill the focus we set here
-				Device.BeginInvokeOnMainThread(() => {
+				Device.BeginInvokeOnMainThread(() =>
+				{
 					if (Control == null || Control.IsDisposed())
 						return;
 
@@ -305,7 +332,7 @@ namespace Xamarin.Forms.Platform.Android
 			Control = control;
 			if (Control.Id == NoId)
 			{
-				Control.Id = Platform.GenerateViewId();
+				Control.Id = AppCompat.Platform.GenerateViewId();
 			}
 
 			AView toAdd = container == this ? control : (AView)container;

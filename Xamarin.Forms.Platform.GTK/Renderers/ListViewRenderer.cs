@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using OpenTK.Input;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.GTK.Cells;
 using Xamarin.Forms.Platform.GTK.Extensions;
@@ -623,7 +624,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 			if (index > -1)
 			{
-				Element.NotifyRowTapped(index, cell: null);
+				Element.NotifyRowTapped(index, cell: null, isContextmenuRequested: args.MouseButton == MouseButton.Right);
 			}
 		}
 	}

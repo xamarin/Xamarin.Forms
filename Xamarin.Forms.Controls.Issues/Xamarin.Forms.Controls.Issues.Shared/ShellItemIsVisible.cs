@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Linq;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
-using System.Threading;
-using System.ComponentModel;
-using System.Threading.Tasks;
 
 
 #if UITEST
@@ -94,6 +94,15 @@ namespace Xamarin.Forms.Controls.Issues
 						},
 						new Button()
 						{
+							Text = "Toggle Flyout Item 3",
+							AutomationId = "ToggleFlyoutItem3",
+							Command = new Command(() =>
+							{
+								vm.Item3 = !vm.Item3;
+							})
+						},
+						new Button()
+						{
 							Text = "Clear and Recreate",
 							AutomationId = "ClearAndRecreate",
 							Command = new Command(async () =>
@@ -124,17 +133,21 @@ namespace Xamarin.Forms.Controls.Issues
 			var item1 = AddContentPage(pageItem1);
 			var pageItem2 = createPage("Item 2");
 			var item2 = AddContentPage(pageItem2);
+			var pageItem3 = createPage("Item 3");
+			var item3 = AddContentPage(pageItem3);
 
 			item1.Title = "Item1 Flyout";
 			item1.Route = "Item1";
 			item2.Title = "Item2 Flyout";
 			item2.Route = "Item2";
+			item3.Title = "Item3 Flyout";
+			item3.Route = "Item3";
 
 			AddTopTabs();
 
-
 			pageItem1.SetBinding(Page.IsVisibleProperty, "Item1");
 			pageItem2.SetBinding(Page.IsVisibleProperty, "Item2");
+			item3.SetBinding(Shell.FlyoutItemIsVisibleProperty, "Item3");
 
 			this.Items.Add(new MenuShellItem(new MenuItem()
 			{
@@ -157,12 +170,13 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			bool _item1 = true;
 			bool _item2 = true;
+			bool _item3 = true;
 
 			public event PropertyChangedEventHandler PropertyChanged;
 
 			public bool Item1
 			{
-				get => _item1; 
+				get => _item1;
 				set
 				{
 					_item1 = value;
@@ -172,11 +186,21 @@ namespace Xamarin.Forms.Controls.Issues
 
 			public bool Item2
 			{
-				get => _item2; 
+				get => _item2;
 				set
 				{
 					_item2 = value;
 					OnPropertyChanged(nameof(Item2));
+				}
+			}
+
+			public bool Item3
+			{
+				get => _item3;
+				set
+				{
+					_item3 = value;
+					OnPropertyChanged(nameof(Item3));
 				}
 			}
 
@@ -185,6 +209,15 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST && (__SHELL__)
+
+		[Test]
+		public void FlyoutItemVisible()
+		{
+			RunningApp.Tap("ToggleFlyoutItem3");
+			ShowFlyout();
+			RunningApp.WaitForElement("Item2 Flyout");
+			RunningApp.WaitForNoElement("Item3 Flyout");
+		}
 
 		[Test]
 		public void HideActiveShellContent()
