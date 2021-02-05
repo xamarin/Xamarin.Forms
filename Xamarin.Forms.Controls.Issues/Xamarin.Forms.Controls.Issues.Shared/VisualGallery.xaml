@@ -28,9 +28,6 @@
     </ContentPage.Resources>
     <ScrollView>
         <StackLayout Spacing="20" Padding="10">
-            <Button x:Name="pushPage"
-                    ImageSource="coffee.png"
-                    Text="Push this page and see if everything still looks right"></Button>
             <Label Text="Activity Indicators" FontSize="Large" />
 
             <Label Text="Default" Margin="0,0,0,-10" />
@@ -358,6 +355,9 @@
             <Label Text="Background GradientColor" Margin="0,0,0,-10" />
             <CheckBox Background="{StaticResource GreenGradient}" IsChecked="True" />
             <CheckBox Background="{StaticResource BlueGradient}" IsChecked="True" />
+            <Button x:Name="pushPage"
+                    ImageSource="coffee.png"
+                    Text="Push this page and see if everything still looks right"></Button>
         </StackLayout>
     </ScrollView>
 </ContentPage>
