@@ -562,11 +562,22 @@ namespace Xamarin.Forms.Platform.iOS
 			return new VerticalCell(frame);
 		}
 
-		public TemplatedCell CreateMeasurementCell(NSIndexPath indexPath) 
+		public UICollectionViewCell CreateMeasurementCell(NSIndexPath indexPath) 
 		{
 			if (ItemsView.ItemTemplate == null)
 			{
-				return null;
+				var frame = new CGRect(0, 0, ItemsViewLayout.EstimatedItemSize.Width, ItemsViewLayout.EstimatedItemSize.Height);
+
+				if (ItemsViewLayout.ScrollDirection == UICollectionViewScrollDirection.Horizontal)
+				{
+					var cell1 = new HorizontalDefaultCell(frame);
+					UpdateDefaultCell(cell1, indexPath);
+					return cell1;
+				}
+
+				var cell = new VerticalDefaultCell(frame);
+				UpdateDefaultCell(cell, indexPath);
+				return cell;
 			}
 
 			TemplatedCell templatedCell = CreateAppropriateCellForLayout(); 
@@ -607,6 +618,7 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					Layout.InvalidateLayout();
 					CollectionView.LayoutIfNeeded();
+					//(ItemsView as IViewController).InvalidateMeasure(Internals.InvalidationTrigger.MeasureChanged);
 				}
 			}
 		}
