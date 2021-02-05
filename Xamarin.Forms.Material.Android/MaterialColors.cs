@@ -56,10 +56,6 @@ internal static class MaterialColors
 	const float kFilledTextFieldIndicatorLineAlpha = 0.42f;
 	const float kFilledTextFieldIconAlpha = 0.54f;
 
-	// the idea of this value is that I want Active to be the exact color the user specified
-	// and then all the other colors decrease according to the Material theme setup
-	//static float kFilledPlaceHolderOffset = 1f - kFilledTextFieldActiveAlpha;
-
 	// State list from material-components-android
 	// https://github.com/material-components/material-components-android/blob/71694616056012fe1162adb9144be903d1e510d5/lib/java/com/google/android/material/textfield/res/values/colors.xml#L28
 	public static PlatformColor CreateEntryFilledInputBackgroundColor(Color backgroundColor, Color textColor)
