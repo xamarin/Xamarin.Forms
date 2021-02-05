@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 #if APP
 			InitializeComponent();
+			Device.BeginInvokeOnMainThread(OnAppearing);
 #endif
 		}
 
