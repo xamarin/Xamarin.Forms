@@ -234,12 +234,12 @@ namespace Xamarin.Forms.Internals
 			ListProxy.CollectionChanged -= OnProxyCollectionChanged;
 
 			TItem header = HeaderContent;
-			if (header != null)
+			if (header != null && header.BindingContext != null)
 			{
 				UnhookItem(header);
-				HeaderContent = null;
 			}
-
+			
+			HeaderContent = null;
 			UnhookAndClear();
 
 			_disposed = true;
