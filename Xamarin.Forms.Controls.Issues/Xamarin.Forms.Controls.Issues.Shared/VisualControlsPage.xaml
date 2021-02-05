@@ -29,6 +29,34 @@
         </ResourceDictionary>
     </Shell.Resources>
 
+    <FlyoutItem Title="Entry Variations">
+        <ContentPage>
+            <ScrollView HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                <StackLayout>
+                    <Label Text="Default" Margin="0,0,0,-10" />
+                    <StackLayout Orientation="Horizontal">
+                        <Entry Placeholder="Default Entry" Text="With Text" HorizontalOptions="FillAndExpand"  />
+                        <Entry Placeholder="Default Entry" HorizontalOptions="FillAndExpand"  />
+                    </StackLayout>
+                    <Label Text="Default Disabled" Margin="0,0,0,-10" />
+                    <StackLayout Orientation="Horizontal">
+                        <Entry IsEnabled="False"  Placeholder="Default Entry" Text="With Text" HorizontalOptions="FillAndExpand"  />
+                        <Entry IsEnabled="False" Placeholder="Default Entry" HorizontalOptions="FillAndExpand"  />
+                    </StackLayout>
+                    <Label Text="Placeholder Color" Margin="0,0,0,-10" />
+                    <StackLayout Orientation="Horizontal">
+                        <Entry Placeholder="Default Entry" PlaceholderColor="Green" Text="With Text" HorizontalOptions="FillAndExpand"  />
+                        <Entry Placeholder="Default Entry" PlaceholderColor="Green" HorizontalOptions="FillAndExpand"  />
+                    </StackLayout>
+                    <Label Text="Placeholder Color Disabled" Margin="0,0,0,-10" />
+                    <StackLayout Orientation="Horizontal">
+                        <Entry IsEnabled="False" PlaceholderColor="Green" Placeholder="Default Entry" Text="With Text" HorizontalOptions="FillAndExpand"  />
+                        <Entry IsEnabled="False" PlaceholderColor="Green" Placeholder="Default Entry" HorizontalOptions="FillAndExpand"  />
+                    </StackLayout>
+                </StackLayout>
+            </ScrollView>
+        </ContentPage>
+    </FlyoutItem>
     <FlyoutItem Title="Visual Gallery">
         <ContentPage>
             <ScrollView>
@@ -213,7 +241,7 @@
                             <Button Text="more" HorizontalOptions="End" BackgroundColor="{StaticResource PrimaryColor}" />
                         </StackLayout>
                     </Frame>
-                    
+
                     <Frame
                         CornerRadius="20"
                         Background="{StaticResource GreenGradient}">
@@ -224,7 +252,7 @@
                            TextColor="{StaticResource SecondaryTextColor}" FontSize="14" />
                             <Button Text="more" HorizontalOptions="End" BackgroundColor="{StaticResource PrimaryColor}" />
                         </StackLayout>
-                     </Frame>
+                    </Frame>
 
                     <Frame
                         CornerRadius="20"
@@ -236,7 +264,7 @@
                            TextColor="{StaticResource SecondaryTextColor}" FontSize="14" />
                             <Button Text="more" HorizontalOptions="End" BackgroundColor="{StaticResource PrimaryColor}" />
                         </StackLayout>
-                     </Frame>
+                    </Frame>
 
                     <Label Text="Entries" FontSize="Large" />
                     <Label Text="Default" Margin="0,0,0,-10" />
@@ -272,7 +300,7 @@
                         <Entry BackgroundColor="Yellow" Text="Yellow Background Color" HorizontalOptions="FillAndExpand"  />
                         <Entry BackgroundColor="Cyan" Text="Cyan Background Color"  HorizontalOptions="FillAndExpand"  />
                     </StackLayout>
-                    
+
                     <Label Text="Background Color Gradient" Margin="0,0,0,-10" />
 
                     <StackLayout Orientation="Horizontal">
@@ -305,7 +333,7 @@
                     <Label Text="Custom (Disabled)" Margin="0,0,0,-10" />
                     <Slider Minimum="-100" Maximum="100" IsEnabled="false"
                     ThumbColor="{StaticResource DarkRedColor}" MaximumTrackColor="{StaticResource SecondaryColor}" MinimumTrackColor="{StaticResource PrimaryColor}" />
-                    
+
                     <Label Text="Gradient Background Color" Margin="0,0,0,-10" />
                     <Slider Minimum="-100" Maximum="100" Background="{StaticResource GreenGradient}" />
                     <Slider Minimum="-100" Maximum="100" Background="{StaticResource BlueGradient}" />
