@@ -53,6 +53,14 @@
                         <Entry IsEnabled="False" PlaceholderColor="Green" Placeholder="Default Entry" Text="With Text" HorizontalOptions="FillAndExpand"  />
                         <Entry IsEnabled="False" PlaceholderColor="Green" Placeholder="Default Entry" HorizontalOptions="FillAndExpand"  />
                     </StackLayout>
+                    <Label Text="Placeholder and Text Color" Margin="0,0,0,-10" />
+                    <StackLayout Orientation="Horizontal">
+                        <Entry Placeholder="Default Entry" TextColor="Purple" PlaceholderColor="Green" Text="With Text" HorizontalOptions="FillAndExpand"  />
+                    </StackLayout>
+                    <Label Text="Placeholder and Text Color Disabled" Margin="0,0,0,-10" />
+                    <StackLayout Orientation="Horizontal">
+                        <Entry IsEnabled="False" TextColor="Purple" PlaceholderColor="Green" Placeholder="Default Entry" Text="With Text" HorizontalOptions="FillAndExpand"  />
+                    </StackLayout>
                 </StackLayout>
             </ScrollView>
         </ContentPage>
