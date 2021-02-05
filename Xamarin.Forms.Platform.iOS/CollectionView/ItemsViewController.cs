@@ -618,7 +618,6 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					Layout.InvalidateLayout();
 					CollectionView.LayoutIfNeeded();
-					//(ItemsView as IViewController).InvalidateMeasure(Internals.InvalidationTrigger.MeasureChanged);
 				}
 			}
 		}
