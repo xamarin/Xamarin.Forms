@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT'">
     <TargetFramework>net5.0-windows10.0.18362.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17134.0</TargetPlatformMinVersion>
     <RootNamespace>Xamarin.Forms.Platform.UAP.UnitTests</RootNamespace>
@@ -7,8 +7,16 @@
     <DefineConstants>$(DefineConstants);DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP;UWP_16299</DefineConstants>
     <NoWarn>1701;1702;CS8305;8305</NoWarn>
   </PropertyGroup>
-
-  <ItemGroup>
+  
+  
+  <PropertyGroup Condition=" '$(OS)' != 'Windows_NT'">
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+    <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
+  </PropertyGroup>
+  
+  <ItemGroup Condition=" '$(OS)' == 'Windows_NT'">
     <PackageReference Include="Microsoft.VCRTForwarders.140" Version="1.0.6" />
     <PackageReference Include="Microsoft.WinUI" Version="3.0.0-preview3.201113.0" />
     <PackageReference Include="NUnit">
