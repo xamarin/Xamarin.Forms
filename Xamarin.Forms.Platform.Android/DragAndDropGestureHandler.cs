@@ -222,7 +222,12 @@ namespace Xamarin.Forms.Platform.Android
 					datapackage.Image = text;
 			}
 
-			var args = new DropEventArgs(datapackage?.View);
+			var args = new DropEventArgs(datapackage?.View)
+			{
+				DropX = e.GetX(),
+				DropY = e.GetY()
+			};
+
 			SendEventArgs<DropGestureRecognizer>(async rec =>
 			{
 				if (!rec.AllowDrop)
