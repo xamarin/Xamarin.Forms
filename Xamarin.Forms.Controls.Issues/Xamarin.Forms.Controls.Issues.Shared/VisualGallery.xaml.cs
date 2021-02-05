@@ -9,7 +9,6 @@ using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-    [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class VisualGallery : ContentPage
 	{
 		bool isVisible = false;
