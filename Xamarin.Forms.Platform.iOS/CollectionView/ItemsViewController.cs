@@ -31,8 +31,6 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			ItemsView = itemsView;
 			ItemsViewLayout = layout;
-
-			ItemsView.PropertyChanged += ItemsViewPropertyChanged;
 		}
 
 		public void UpdateLayout(ItemsViewLayout newLayout)
@@ -62,8 +60,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
-				ItemsView.PropertyChanged -= ItemsViewPropertyChanged;
-
 				ItemsSource?.Dispose();
 
 				CollectionView.Delegate = null;
@@ -100,11 +96,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override nint GetItemsCount(UICollectionView collectionView, nint section)
 		{
-			if (!_initialized)
-			{
-				return 0;
-			}
-
 			CheckForEmptySource();
 
 			return ItemsSource.ItemCountInGroup(section);
@@ -172,13 +163,6 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-			if (!ItemsView.IsVisible)
-			{
-				// If the CollectionView starts out invisible, we'll get a layout pass with a size of 1,1 and everything will
-				// go pear-shaped. So until the first time this CollectionView is visible, we do nothing.
-				return;
-			}
-
 			_initialized = true;
 
 			ItemsViewLayout.GetPrototype = GetPrototype;
@@ -225,11 +209,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override nint NumberOfSections(UICollectionView collectionView)
 		{
-			if(!_initialized)
-			{
-				return 0;
-			}
-
 			CheckForEmptySource();
 			return ItemsSource.GroupCount;
 		}
@@ -610,15 +589,17 @@ namespace Xamarin.Forms.Platform.iOS
 			return ItemsViewLayout.EstimatedItemSize;
 		}
 		
-		void ItemsViewPropertyChanged(object sender, PropertyChangedEventArgs changedProperty) 
+		internal protected virtual void UpdateVisibility() 
 		{
-			if (changedProperty.Is(VisualElement.IsVisibleProperty))
+			if (ItemsView.IsVisible)
 			{
-				if (ItemsView.IsVisible)
-				{
-					Layout.InvalidateLayout();
-					CollectionView.LayoutIfNeeded();
-				}
+				CollectionView.Hidden = false;
+				Layout.InvalidateLayout();
+				CollectionView.LayoutIfNeeded();
+			}
+			else
+			{
+				CollectionView.Hidden = true;
 			}
 		}
 	}
