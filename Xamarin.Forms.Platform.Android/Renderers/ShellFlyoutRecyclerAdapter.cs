@@ -16,7 +16,6 @@ namespace Xamarin.Forms.Platform.Android
 		readonly IShellContext _shellContext;
 		List<AdapterListItem> _listItems;
 		List<List<Element>> _flyoutGroupings;
-		Dictionary<int, DataTemplate> _templateMap = new Dictionary<int, DataTemplate>();
 		Action<Element> _selectedCallback;
 		bool _disposed;
 		ElementViewHolder _elementViewHolder;
@@ -43,6 +42,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override int GetItemViewType(int position)
 		{
+			return position;
+		}
+
+		DataTemplate GetDataTemplate(int position)
+		{
 			var item = _listItems[position];
 			DataTemplate dataTemplate = ShellController.GetFlyoutItemDataTemplate(item.Element);
 			if (item.Element is IMenuItemController)
@@ -57,11 +61,8 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			var template = dataTemplate.SelectDataTemplate(item.Element, Shell);
-			var id = ((IDataTemplateController)template).Id;
 
-			_templateMap[id] = template;
-
-			return id;
+			return template;
 		}
 
 		public override void OnViewRecycled(Java.Lang.Object holder)
@@ -154,7 +155,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
 		{
-			var template = _templateMap[viewType];
+			var template = GetDataTemplate(viewType);
 
 			var content = (View)template.CreateContent();
 
