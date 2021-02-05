@@ -396,7 +396,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			else if (index == 0) // MeasureFirstItem
 			{
 				// Reset item size to measure updated size
-				_baseItemSize = 0;
+				InitializeMeasureCache();
 				CollectionView.RequestLayoutItems();
 			}
 		}
