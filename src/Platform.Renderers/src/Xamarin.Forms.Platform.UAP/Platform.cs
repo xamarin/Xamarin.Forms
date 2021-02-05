@@ -443,6 +443,7 @@ namespace Xamarin.Forms.Platform.UWP
 
             if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
             {
+				// TODO WINUI
 				//StatusBar statusBar = StatusBar.GetForCurrentView();
 				//if (statusBar != null)
 				//{

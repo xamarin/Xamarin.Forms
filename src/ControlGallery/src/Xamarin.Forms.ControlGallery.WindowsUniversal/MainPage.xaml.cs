@@ -29,6 +29,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 		{
 			InitializeComponent();
 
+			// TODO WINUI3
 			// some tests need to window to be large enough to click on things
 			// can we make this only open to window size for UI Tests?
 			//var bounds = ApplicationView.GetForCurrentView().VisibleBounds;

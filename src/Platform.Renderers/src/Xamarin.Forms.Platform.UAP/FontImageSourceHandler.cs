@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Platform.UWP
 		public Task<Microsoft.UI.Xaml.Media.ImageSource> LoadImageAsync(ImageSource imagesource,
 			CancellationToken cancelationToken = default(CancellationToken))
 		{
-			throw new NotImplementedException("WIN2D");
+			throw new Win2DNotImplementedException();
 			//if (!(imagesource is FontImageSource fontsource))
 			//	return null;
 

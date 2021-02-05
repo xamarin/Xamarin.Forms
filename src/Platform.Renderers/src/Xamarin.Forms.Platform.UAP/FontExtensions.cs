@@ -112,7 +112,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		static string FindFontFamilyName(string fontFile)
 		{
-			throw new NotImplementedException("Needs WIN2d to work");
+			throw new Win2DNotImplementedException();
 			//try
 			//{
 			//	var fontUri = new Uri(fontFile, UriKind.RelativeOrAbsolute);

@@ -678,7 +678,6 @@ namespace Xamarin.Forms.Platform.UWP
 				// in hit testing. 
 				if (Element is Layout && Background == null)
 				{
-					// TODO WINUI
 					Background = new WSolidColorBrush(Microsoft.UI.Colors.Transparent);
 				}
 			}
