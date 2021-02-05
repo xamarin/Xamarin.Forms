@@ -60,10 +60,6 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Bugzilla43161Test()
 		{
-			// Avoid launch the test (temporarily) in iOS 14 due to a bug sometimes not rendering some cell. 
-			if (RunningApp.IsVersionOrNewer(14))
-				return;
-
 			RunningApp.WaitForElement(q => q.Marked("0"));
 			RunningApp.WaitForElement(q => q.Marked("10"));
 			RunningApp.WaitForElement(q => q.Marked("20"));

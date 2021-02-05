@@ -78,16 +78,6 @@ namespace Xamarin.UITest
 			return true;
 		}
 
-#if __IOS__
-		public static bool IsVersionOrNewer(this IApp app, int version)
-		{
-			if (app is iOSApp iOSApp)
-				return iOSApp.Device.OSVersion.Major >= version;
-
-			return true;
-		}
-#endif
-
 		public static void TapOverflowMenuButton(this IApp app)
 		{
 #if __ANDROID__
