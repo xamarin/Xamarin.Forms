@@ -18,10 +18,10 @@ namespace Xamarin.Forms.Platform.Android
 		List<List<Element>> _flyoutGroupings;
 		Action<Element> _selectedCallback;
 		bool _disposed;
-		ElementViewHolder _elementViewHolder;
 
 		public ShellFlyoutRecyclerAdapter(IShellContext shellContext, Action<Element> selectedCallback)
 		{
+			HasStableIds = true;
 			_shellContext = shellContext;
 
 			ShellController.FlyoutItemsChanged += OnFlyoutItemsChanged;
@@ -42,12 +42,22 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override int GetItemViewType(int position)
 		{
-			return position;
+			return _listItems[position].Index;
 		}
 
-		DataTemplate GetDataTemplate(int position)
+		DataTemplate GetDataTemplate(int viewTypeId)
 		{
-			var item = _listItems[position];
+			AdapterListItem item = null;
+
+			foreach(var ali in _listItems)
+			{
+				if(viewTypeId == ali.Index)
+				{
+					item = ali;
+					break;
+				}
+			}
+
 			DataTemplate dataTemplate = ShellController.GetFlyoutItemDataTemplate(item.Element);
 			if (item.Element is IMenuItemController)
 			{
@@ -61,7 +71,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			var template = dataTemplate.SelectDataTemplate(item.Element, Shell);
-
 			return template;
 		}
 
@@ -69,7 +78,19 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (holder is ElementViewHolder evh)
 			{
-				evh.Element = null;
+				// only clear out the Element if the item has been removed
+				bool found = false;
+				foreach(var item in _listItems)
+				{
+					if(item.Element == evh.Element)
+					{
+						found = true;
+						break;
+					}
+				}
+
+				if(!found)
+					evh.Element = null;
 			}
 
 			base.OnViewRecycled(holder);
@@ -176,14 +197,13 @@ namespace Xamarin.Forms.Platform.Android
 			container.LayoutParameters = new LP(LP.MatchParent, LP.WrapContent);
 			linearLayout.AddView(container);
 
-			_elementViewHolder = new ElementViewHolder(content, linearLayout, bar, _selectedCallback, _shellContext.Shell);
-
-			return _elementViewHolder;
+			return new ElementViewHolder(content, linearLayout, bar, _selectedCallback, _shellContext.Shell);
 		}
 
 		protected virtual List<AdapterListItem> GenerateItemList()
 		{
 			var result = new List<AdapterListItem>();
+			_listItems = _listItems ?? result;
 
 			List<List<Element>> grouping = ((IShellController)_shellContext.Shell).GenerateFlyoutGrouping();
 
@@ -199,7 +219,18 @@ namespace Xamarin.Forms.Platform.Android
 				bool first = !skip;
 				foreach (var element in sublist)
 				{
-					result.Add(new AdapterListItem(element, first));
+					AdapterListItem toAdd = null;
+					foreach (var existingItem in _listItems)
+					{
+						if(existingItem.Element == element)
+						{
+							existingItem.DrawTopLine = first;
+							toAdd = existingItem;
+						}
+					}
+
+					toAdd = toAdd ?? new AdapterListItem(element, first);
+					result.Add(toAdd);
 					first = false;
 				}
 				skip = false;
@@ -230,11 +261,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				((IShellController)Shell).FlyoutItemsChanged -= OnFlyoutItemsChanged;
 
-				_elementViewHolder?.Dispose();
-
 				_listItems = null;
 				_selectedCallback = null;
-				_elementViewHolder = null;
 			}
 
 			base.Dispose(disposing);
@@ -242,12 +270,18 @@ namespace Xamarin.Forms.Platform.Android
 
 		public class AdapterListItem
 		{
+			// This ensures that we have a stable id for each element
+			// if the elements change position
+			static int IndexCounter = 0;
+
 			public AdapterListItem(Element element, bool drawTopLine = false)
 			{
 				DrawTopLine = drawTopLine;
 				Element = element;
+				Index = IndexCounter++;
 			}
 
+			public int Index { get; }
 			public bool DrawTopLine { get; set; }
 			public Element Element { get; set; }
 		}
