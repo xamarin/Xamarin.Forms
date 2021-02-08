@@ -129,6 +129,7 @@ Teardown(context =>
 });
 
 Task("Build")
+    .WithCriteria(!string.IsNullOrEmpty(PROJECT.FullPath))
     .Does(() =>
 {
     MSBuild(PROJECT.FullPath, c => {
@@ -150,6 +151,8 @@ Task("Test")
     .Does(() =>
 {
     if (string.IsNullOrEmpty(TEST_APP)) {
+        if (string.IsNullOrEmpty(PROJECT.FullPath))
+            throw new Exception("If no app was specified, an app must be provided.");
         var binDir = PROJECT.GetDirectory().Combine("bin").Combine(CONFIGURATION).FullPath;
         var apps = GetFiles(binDir + "/*-Signed.apk");
         if (apps.Any()) {
