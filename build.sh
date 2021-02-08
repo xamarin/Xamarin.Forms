@@ -13,6 +13,7 @@ for i in "$@"; do
         --) shift; CAKE_ARGUMENTS+=("$@"); break ;;
         *) CAKE_ARGUMENTS+=("$1") ;;
     esac
+    shift
 done
 
 # Restore Cake tool
