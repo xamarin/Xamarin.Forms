@@ -1,3 +1,5 @@
+# script inspired by https://andrewlock.net/simplifying-the-cake-global-tool-bootstrapper-scripts-in-netcore3-with-local-tools/
+
 [CmdletBinding()]
 Param(
     [string]$Script = "build.cake",
