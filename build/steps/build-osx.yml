@@ -80,14 +80,14 @@ steps:
     inputs:
       targetType: 'filePath'
       filePath: 'build.sh'
-      arguments: --target cg-ios --buildForVS2017=$(buildForVS2017) --BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments='${{ variables.MSBuildArguments_cg_ios }}'
+      arguments: --target cg-ios --buildForVS2017=$(buildForVS2017) --BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments="'${{ variables.MSBuildArguments_cg_ios }}'"
 
   - task: Bash@3
     displayName: 'Build iOS Tests'
     inputs:
       targetType: 'filePath'
       filePath: 'build.sh'
-      arguments: --target cg-ios-build-tests --buildForVS2017=$(buildForVS2017) --BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments='${{ variables.MSBuildArguments_cg_ios }}'
+      arguments: --target cg-ios-build-tests --buildForVS2017=$(buildForVS2017) --BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments="'${{ variables.MSBuildArguments_cg_ios }}'"
 
   - task: CopyFiles@2
     displayName: 'Copy iOS Files for UITest'
