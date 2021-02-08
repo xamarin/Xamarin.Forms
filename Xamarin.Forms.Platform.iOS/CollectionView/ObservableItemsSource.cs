@@ -138,11 +138,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void Reload()
 		{
-			if (CollectionView.Hidden)
-			{
-				return;
-			}
-
 			var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
 
 			Count = ItemsCount();

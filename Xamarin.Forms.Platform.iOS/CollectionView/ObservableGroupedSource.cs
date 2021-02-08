@@ -167,11 +167,6 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			ResetGroupTracking();
 
-			if (_collectionView.Hidden)
-			{
-				return;
-			}
-
 			_collectionView.ReloadData();
 			_collectionView.CollectionViewLayout.InvalidateLayout();
 		}
