@@ -21,6 +21,13 @@ steps:
     displayName: 'Setup SDK Paths'
     condition: and(ne(variables['osx2019VmPool'], 'Azure Pipelines'), eq(variables['buildForVS2017'], 'false'))
 
+  - task: UseDotNet@2
+    displayName: 'Install .net core $(DOTNET_VERSION)'
+    condition: ne(variables['DOTNET_VERSION'], '')
+    inputs:
+      version: $(DOTNET_VERSION)
+      packageType: 'sdk'
+
   - task: Bash@3
     displayName: 'Cake Provision'
     condition: or(eq(variables['provisioningCake'], 'true'), eq(variables['buildForVS2017'], 'true'))
@@ -28,13 +35,6 @@ steps:
       targetType: 'filePath'
       filePath: 'build.sh'
       arguments: --target provision --TeamProject="$(System.TeamProject)" --buildForVS2017=$(buildForVS2017)
-
-  - task: UseDotNet@2
-    displayName: 'Install .net core $(DOTNET_VERSION)'
-    condition: ne(variables['DOTNET_VERSION'], '')
-    inputs:
-      version: $(DOTNET_VERSION)
-      packageType: 'sdk'
 
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet'
