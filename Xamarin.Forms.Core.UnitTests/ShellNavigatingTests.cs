@@ -12,6 +12,12 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class ShellNavigatingTests : ShellTestBase
 	{
+		[TearDown]
+		public override void TearDown()
+		{
+			base.TearDown();
+			Routing.Clear();
+		}
 
 		[Test]
 		public void CancelNavigation()
