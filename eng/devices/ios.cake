@@ -57,7 +57,7 @@ Task("Test")
 
     CleanDirectories(TEST_RESULTS);
 
-    var resultCode = StartProcess("xharness", "ios test " +
+    var resultCode = StartProcess("xharness", "apple test " +
         $"--app=\"{TEST_APP}\" " +
         $"--targets=\"{TEST_DEVICE}\" " +
         $"--output-directory=\"{TEST_RESULTS}\" " +
