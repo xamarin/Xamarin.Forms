@@ -6,11 +6,13 @@ CAKE_ARGUMENTS=()
 
 # Parse arguments.
 for i in "$@"; do
-    case $1 in
-        -s|--script) SCRIPT="$2"; shift ;;
-        --) shift; CAKE_ARGUMENTS+=("$@"); break ;;
-        *) CAKE_ARGUMENTS+=("$1") ;;
-    esac
+    if [ -n "$2" ]; then
+        case $1 in
+            -s|--script) SCRIPT="$2"; shift ;;
+            --) shift; CAKE_ARGUMENTS+=("$@"); break ;;
+            *) CAKE_ARGUMENTS+=("$1") ;;
+        esac
+    fi
     shift
 done
 

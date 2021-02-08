@@ -8,11 +8,11 @@
 
 Windows CMD:
 build.cmd -Target NugetPack
-build.cmd -Target NugetPack -ScriptArgs '-packageVersion="9.9.9-custom"','-configuration="Release"'
+build.cmd -Target NugetPack -ScriptArgs '--packageVersion="9.9.9-custom"','--configuration="Release"'
 
 PowerShell:
 ./build.ps1 -Target NugetPack
-./build.ps1 -Target NugetPack -ScriptArgs '-packageVersion="9.9.9-custom"'
+./build.ps1 -Target NugetPack -ScriptArgs '--packageVersion="9.9.9-custom"'
 
  */
 //////////////////////////////////////////////////////////////////////
