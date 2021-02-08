@@ -83,9 +83,9 @@ namespace Xamarin.Forms.Platform.iOS
 			LayoutSubviews();
 		}
 
-		public override void WillMoveToSuperview(UIView newsuper)
+		public override void WillMoveToSuperview(UIView newSuper)
 		{
-			base.WillMoveToSuperview(newsuper);
+			base.WillMoveToSuperview(newSuper);
 			ReMeasure();
 		}
 

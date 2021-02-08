@@ -52,6 +52,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void LayoutView(double x, double y, double width, double height, double? maxWidth = null, double? maxHeight = null)
 		{
+			LayoutView(0, 0, width, height, maxWidth, maxHeight);
+		}
+
+		public void LayoutView(double x, double y, double width, double height, double? maxWidth = null, double? maxHeight = null)
+		{
 			if (width == -1)
 				width = double.PositiveInfinity;
 

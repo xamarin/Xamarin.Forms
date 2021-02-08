@@ -416,18 +416,18 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 
-			public override void WillMoveToSuperview(UIView newsuper)
+			public override void WillMoveToSuperview(UIView newSuper)
 			{
-				if (newsuper != null)
+				if (newSuper != null)
 				{
 					if (!Forms.IsiOS11OrNewer)
-						Frame = new CGRect(Frame.X, newsuper.Bounds.Y, Frame.Width, newsuper.Bounds.Height);
+						Frame = new CGRect(Frame.X, newSuper.Bounds.Y, Frame.Width, newSuper.Bounds.Height);
 
-					Height = newsuper.Bounds.Height;
-					Width = newsuper.Bounds.Width;
+					Height = newSuper.Bounds.Height;
+					Width = newSuper.Bounds.Width;
 				}
 
-				base.WillMoveToSuperview(newsuper);
+				base.WillMoveToSuperview(newSuper);
 			}
 
 			public override CGSize IntrinsicContentSize => UILayoutFittingExpandedSize;
