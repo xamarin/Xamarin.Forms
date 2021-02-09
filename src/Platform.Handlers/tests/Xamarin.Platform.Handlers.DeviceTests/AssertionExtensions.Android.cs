@@ -1,6 +1,7 @@
 ﻿using Android.Graphics;
 using System;
 using System.IO;
+using Android.Graphics;
 using Xunit;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
@@ -62,7 +63,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 			return bitmap;
 		}
 
-		public static Bitmap AssertColorAtCenter(this Bitmap bitmap, AColor expectedColor) 
+		public static Bitmap AssertColorAtCenter(this Bitmap bitmap, AColor expectedColor)
 		{
 			return bitmap.AssertColorAtPoint(expectedColor, bitmap.Width / 2, bitmap.Height / 2);
 		}
@@ -89,14 +90,14 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 
 		public static Bitmap AssertContainsColor(this AView view, Forms.Color expectedColor) =>
 			AssertContainsColor(view, expectedColor.ToNative());
-	
+
 		public static Bitmap AssertContainsColor(this AView view, AColor expectedColor)
 		{
 			var bitmap = view.ToBitmap();
 
-			for(int x = 1; x < view.Width; x++)
+			for (int x = 1; x < view.Width; x++)
 			{
-				for(int y = 1; y < view.Height; y++)
+				for (int y = 1; y < view.Height; y++)
 				{
 					if (bitmap.ColorAtPoint(x, y, true) == expectedColor)
 					{
