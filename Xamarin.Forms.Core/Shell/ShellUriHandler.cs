@@ -278,14 +278,14 @@ namespace Xamarin.Forms
 			bestMatches.Clear();
 			ExpandOutGlobalRoutes(possibleRoutePaths, routeKeys);
 
-			foreach(var possibleRoutePath in possibleRoutePaths)
+			foreach (var possibleRoutePath in possibleRoutePaths)
 			{
 				if (possibleRoutePath.IsFullMatch)
 					continue;
-				
+
 				var url = possibleRoutePath.PathFull;
-				
-				var globalRouteMatches = 
+
+				var globalRouteMatches =
 					SearchForGlobalRoutes(
 						possibleRoutePath.RemainingSegments,
 						new ShellNavigationState(url, false).FullLocation,
@@ -297,7 +297,7 @@ namespace Xamarin.Forms
 
 				var globalRouteMatch = globalRouteMatches[0];
 
-				while(possibleRoutePath.NextSegment != null)
+				while (possibleRoutePath.NextSegment != null)
 				{
 					var matchIndex = globalRouteMatch.SegmentsMatched.IndexOf(possibleRoutePath.NextSegment);
 					if (matchIndex < 0)
@@ -311,7 +311,7 @@ namespace Xamarin.Forms
 
 			possibleRoutePaths = GetBestMatches(possibleRoutePaths);
 
-			if(possibleRoutePaths.Count == 0)
+			if (possibleRoutePaths.Count == 0)
 			{
 				foreach (var routeKey in routeKeys)
 				{
@@ -339,9 +339,9 @@ namespace Xamarin.Forms
 		}
 
 		static List<RouteRequestBuilder> ProcessRelativeRoute(
-			Shell shell, 
-			string[] routeKeys, 
-			string[] segments, 
+			Shell shell,
+			string[] routeKeys,
+			string[] segments,
 			bool enableRelativeShellRoutes,
 			Uri originalRequest)
 		{
@@ -422,7 +422,7 @@ namespace Xamarin.Forms
 		}
 
 		static List<RouteRequestBuilder> SearchForGlobalRoutes(
-			string[] segments, 
+			string[] segments,
 			Uri startingFrom,
 			NodeLocation currentLocation,
 			string[] routeKeys)
@@ -479,7 +479,6 @@ namespace Xamarin.Forms
 				bool userDefinedRoute) =>
 			CollapsePath(RetrievePaths(myRoute), currentRouteStack, userDefinedRoute);
 
-
 		internal static List<string> CollapsePath(
 				string[] myRoute,
 				IEnumerable<string> currentRouteStack,
@@ -534,10 +533,10 @@ namespace Xamarin.Forms
 
 				if (routeKey.StartsWith("//"))
 				{
-					var routeKeyPaths = 
+					var routeKeyPaths =
 						routeKey.Split(_pathSeparators, StringSplitOptions.RemoveEmptyEntries);
 
-					if(routeKeyPaths[0] == collapsedRoutes[0])
+					if (routeKeyPaths[0] == collapsedRoutes[0])
 						collapsedRoute = "//" + collapsedRoute;
 				}
 

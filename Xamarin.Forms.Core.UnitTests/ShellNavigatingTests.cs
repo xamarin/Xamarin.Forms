@@ -991,9 +991,9 @@ namespace Xamarin.Forms.Core.UnitTests
 			await shell.GoToAsync($"page1/page2/page3");
 			Assert.IsTrue(shell.CurrentPage is TestPage1);
 			await shell.GoToAsync($"..");
-			Assert.IsTrue(shell.Navigation.NavigationStack[1] is ShellTestPage);
+			Assert.IsTrue(shell.CurrentPage is ShellTestPage);
 			await shell.GoToAsync($"..");
-
+			Assert.IsTrue(shell.CurrentPage is ContentPage);
 		}
 
 		public class NavigationMonitoringTab : Tab
