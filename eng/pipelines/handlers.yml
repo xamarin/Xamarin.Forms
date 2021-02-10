@@ -137,7 +137,7 @@ stages:
           DotNetVersion: 6.0.100-preview.1.21081.5
           DotNet.Cli.Telemetry.OptOut: true
           Android.Msi: https://dl.internalx.com/vsts-devdiv/Xamarin.Android/public/net6/4435786/master/abea285994fb4366de7c6c5e1ae9cc9ee22145dd/Microsoft.NET.Workload.Android.11.0.200.72.msi
-          iOS.Msi: https://bosstoragemirror.azureedge.net/wrench/main/783faabb73719f874d33976119c678a04f907041/4435855/package/Microsoft.NET.Workload.iOS.14.3.100-ci.main.1045.msi
+          iOS.Msi: https://bosstoragemirror.azureedge.net/wrench/main/f01fde5cd9a7ffffcdc8d241200c35988700fa00/4449408/package/Microsoft.NET.Workload.iOS.14.3.100-ci.main.1079.msi
           LogDirectory: $(Build.ArtifactStagingDirectory)\logs
         steps:
           - powershell: |
@@ -183,7 +183,7 @@ stages:
           DotNetVersion: 6.0.100-preview.1.21081.5
           DotNet.Cli.Telemetry.OptOut: true
           Android.Pkg: https://dl.internalx.com/vsts-devdiv/Xamarin.Android/public/net6/4435786/master/abea285994fb4366de7c6c5e1ae9cc9ee22145dd/Microsoft.NET.Workload.Android-11.0.200-ci.master.72.pkg
-          iOS.Pkg: https://bosstoragemirror.azureedge.net/wrench/main/783faabb73719f874d33976119c678a04f907041/4435855/package/Microsoft.iOS.Bundle.14.3.100-ci.main.1045.pkg
+          iOS.Pkg: https://bosstoragemirror.azureedge.net/wrench/main/f01fde5cd9a7ffffcdc8d241200c35988700fa00/4449408/package/notarized/Microsoft.iOS.Bundle.14.3.100-ci.main.1079.pkg
           LogDirectory: $(Build.ArtifactStagingDirectory)\logs
           DotNet.Root: /usr/local/share/dotnet/
           DotNet.Tools: ~/.dotnet/tools
