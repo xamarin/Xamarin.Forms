@@ -52,6 +52,7 @@ namespace Xamarin.Forms
 			{ typeof(Thickness), typeof(ThicknessTypeConverter) },
 			{ typeof(Rect), typeof(RectTypeConverter) },
 			{ typeof(Point), typeof(PointTypeConverter) },
+			{ typeof(CornerRadius), typeof(CornerRadiusTypeConverter) },
 		};
 
 		public static readonly TypeConverterAttribute Default = new TypeConverterAttribute();
