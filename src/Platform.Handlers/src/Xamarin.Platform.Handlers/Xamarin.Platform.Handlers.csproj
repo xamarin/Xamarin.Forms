@@ -9,10 +9,5 @@
     <PackageId>Xamarin.Platform</PackageId>
     <Product>Xamarin</Product>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Update="Core\ISwitch.cs">
-      <SubType></SubType>
-    </Compile>
-  </ItemGroup>
   <Import Project="..\..\..\..\.nuspec\Xamarin.Forms.MultiTargeting.targets" />
 </Project>
