@@ -1,7 +1,6 @@
 ﻿using Android.Graphics;
 using System;
 using System.IO;
-using Android.Graphics;
 using Xunit;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
