@@ -181,16 +181,19 @@ Task("Test")
 
     CleanDirectories(TEST_RESULTS);
 
-    var resultCode = StartProcess("xharness", "android test " +
+    var settings = new DotNetCoreToolSettings
+    {
+        DiagnosticOutput = true,
+        ArgumentCustomization = args=>args.Append("run xharness android test " +
         $"--app=\"{TEST_APP}\" " +
         $"--package-name=\"{TEST_APP_PACKAGE_NAME}\" " +
         $"--instrumentation=\"{TEST_APP_INSTRUMENTATION}\" " +
         $"--device-arch=\"x86\" " +
         $"--output-directory=\"{TEST_RESULTS}\" " +
-        $"--verbosity=\"Debug\" ");
+        $"--verbosity=\"Debug\" ")
+    };
 
-    if (resultCode != 0)
-        throw new Exception("xharness had an error: " + resultCode);
+    DotNetCoreTool("tool", settings);
 });
 
 RunTarget(TARGET);

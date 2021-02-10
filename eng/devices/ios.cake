@@ -4,7 +4,7 @@ string TARGET = Argument("target", "Test");
 
 // required
 FilePath PROJECT = Argument("project", EnvironmentVariable("IOS_TEST_PROJECT") ?? "");
-string TEST_DEVICE = Argument("device", EnvironmentVariable("IOS_TEST_DEVICE") ?? "ios-simulator-64"); // comma separated in the form <platform>-<device|simulator>[-<32|64>][_<version>] (eg: ios-simulator-64_13.4,[...])
+    string TEST_DEVICE = Argument("device", EnvironmentVariable("IOS_TEST_DEVICE") ?? "ios-simulator-64_14.4"); // comma separated in the form <platform>-<device|simulator>[-<32|64>][_<version>] (eg: ios-simulator-64_13.4,[...])
 
 // optional
 var BINLOG = Argument("binlog", EnvironmentVariable("IOS_TEST_BINLOG") ?? PROJECT + ".binlog");
@@ -60,14 +60,17 @@ Task("Test")
 
     CleanDirectories(TEST_RESULTS);
 
-    var resultCode = StartProcess("xharness", "apple test " +
+    var settings = new DotNetCoreToolSettings
+    {
+        DiagnosticOutput = true,
+        ArgumentCustomization = args=>args.Append("run xharness apple test " +
         $"--app=\"{TEST_APP}\" " +
         $"--targets=\"{TEST_DEVICE}\" " +
         $"--output-directory=\"{TEST_RESULTS}\" " +
-        $"--verbosity=\"Debug\" ");
+        $"--verbosity=\"Debug\" ")
+    };
 
-    if (resultCode != 0)
-        throw new Exception("xharness had an error: " + resultCode);
+    DotNetCoreTool("tool", settings);
 });
 
 RunTarget(TARGET);
