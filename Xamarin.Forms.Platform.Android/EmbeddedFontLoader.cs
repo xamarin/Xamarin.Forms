@@ -14,7 +14,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var tmpdir = IOPath.GetTempPath();
 			var filePath = IOPath.Combine(tmpdir, font.FontName);
-			if (File.Exists(filePath))
+			var fileInfo = new FileInfo(filePath);
+			if (fileInfo.Exists && fileInfo.Length == font.ResourceStream.Length)
 				return (true, filePath);
 			try
 			{
