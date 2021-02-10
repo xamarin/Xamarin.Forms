@@ -7,7 +7,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 {
 	public partial class SwitchHandlerTests : HandlerTestBase<SwitchHandler>
 	{
-		[Fact]
+		[Fact(DisplayName= "Is Toggled Initializes Correctly")]
 		public async Task IsToggledInitializesCorrectly()
 		{
 			var switchStub = new SwitchStub()
@@ -34,11 +34,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 			await ValidateOnColor(switchStub, Color.Red);
 		}
 
-#if __ANDROID__
-		[Fact(Skip = "Currently Fails on Android")]
-#else
-		[Fact()]
-#endif
+		[Fact(DisplayName = "ThumbColor Initializes Correctly")]
 		public async Task ThumbColorInitializesCorrectly()
 		{
 			var switchStub = new SwitchStub()

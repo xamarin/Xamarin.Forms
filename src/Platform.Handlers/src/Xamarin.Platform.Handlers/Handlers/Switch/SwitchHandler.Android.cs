@@ -1,7 +1,7 @@
 ﻿using Android.Graphics.Drawables;
 using Android.Widget;
 using Xamarin.Forms;
-using ASwitch = Android.Widget.Switch;
+using ASwitch = AndroidX.AppCompat.Widget.SwitchCompat;
 
 namespace Xamarin.Platform.Handlers
 {
@@ -71,7 +71,7 @@ namespace Xamarin.Platform.Handlers
 			handler.TypedNativeView?.UpdateThumbColor(view);
 		}
 
-		internal void OnCheckedChanged(bool isToggled)
+		void OnCheckedChanged(bool isToggled)
 		{
 			if (VirtualView == null)
 				return;
@@ -81,23 +81,23 @@ namespace Xamarin.Platform.Handlers
 			TypedNativeView?.UpdateOnColor(VirtualView);
 		}
 
-		internal void UpdateOnColor()
+		void UpdateOnColor()
 		{
 			if (VirtualView == null || TypedNativeView == null)
 				return;
 
 			TypedNativeView?.UpdateThumbColor(VirtualView);
 		}
-	}
 
-	class CheckedChangeListener : Java.Lang.Object, CompoundButton.IOnCheckedChangeListener
-	{
-		public SwitchHandler? Handler { get; set; }
-
-		void CompoundButton.IOnCheckedChangeListener.OnCheckedChanged(CompoundButton? buttonView, bool isToggled)
+		class CheckedChangeListener : Java.Lang.Object, CompoundButton.IOnCheckedChangeListener
 		{
-			Handler?.OnCheckedChanged(isToggled);
-			Handler?.UpdateOnColor();
+			public SwitchHandler? Handler { get; set; }
+
+			void CompoundButton.IOnCheckedChangeListener.OnCheckedChanged(CompoundButton? buttonView, bool isToggled)
+			{
+				Handler?.OnCheckedChanged(isToggled);
+				Handler?.UpdateOnColor();
+			}
 		}
 	}
 }

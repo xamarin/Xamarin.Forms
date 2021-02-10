@@ -1,6 +1,6 @@
 ﻿using Android.Graphics.Drawables;
 using Xamarin.Forms;
-using ASwitch = Android.Widget.Switch;
+using ASwitch = AndroidX.AppCompat.Widget.SwitchCompat;
 
 namespace Xamarin.Platform
 {
