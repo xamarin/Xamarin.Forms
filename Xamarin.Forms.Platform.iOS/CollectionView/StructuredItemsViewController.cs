@@ -96,6 +96,8 @@ namespace Xamarin.Forms.Platform.iOS
 						UpdateHeaderFooterPosition();
 				}
 			}
+
+			AdjustRefreshControls();
 		}
 
 		internal void UpdateFooterView()
@@ -232,6 +234,34 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (_footerViewFormsElement != null)
 				HandleFormsElementMeasureInvalidated(_footerViewFormsElement);
+		}
+
+		void AdjustRefreshControls()
+		{
+			if (_headerUIView == null)
+			{
+				return;
+			}
+
+			for (int cvIndex = 0; cvIndex < CollectionView.Subviews.Length; cvIndex++)
+			{
+				if (!(CollectionView.Subviews[cvIndex] is UIRefreshControl refreshControl))
+				{
+					continue;
+				}
+
+				for (int rcIndex = 0; rcIndex < refreshControl.Subviews.Length; rcIndex++)
+				{
+					var sv = refreshControl.Subviews[rcIndex];
+					var bounds = sv.Bounds;
+
+					if (sv.Bounds.Y != _headerUIView.Bounds.Height)
+					{
+						sv.Bounds = new CGRect(bounds.X, bounds.Y + _headerUIView.Bounds.Height,
+							bounds.Width, bounds.Height);
+					}
+				}
+			}
 		}
 	}
 }

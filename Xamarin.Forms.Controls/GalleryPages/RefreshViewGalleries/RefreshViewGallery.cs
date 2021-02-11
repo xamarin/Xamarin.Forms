@@ -80,7 +80,13 @@ namespace Xamarin.Forms.Controls.GalleryPages.RefreshViewGalleries
 
 		void LoadItems()
 		{
-			for (int i = 0; i < 50; i++)
+			Items.Insert(0, new RefreshItem
+			{
+				Color = Color.FromRgb(_random.Next(0, 255), _random.Next(0, 255), _random.Next(0, 255)),
+				Name = "First"
+			});
+
+			for (int i = 1; i < 50; i++)
 			{
 				Items.Insert(i, new RefreshItem
 				{

@@ -13,6 +13,13 @@
             VerticalOptions="FillAndExpand">
             <CollectionView
                 ItemsSource="{Binding Items}">
+
+                <CollectionView.Header>
+                    <Frame CornerRadius="5" BackgroundColor="CornflowerBlue">
+                        <Label HeightRequest="80" Text="Header" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"></Label>
+                    </Frame>
+                </CollectionView.Header>
+                
                 <CollectionView.ItemTemplate>
                      <DataTemplate>
                          <ScrollView>
