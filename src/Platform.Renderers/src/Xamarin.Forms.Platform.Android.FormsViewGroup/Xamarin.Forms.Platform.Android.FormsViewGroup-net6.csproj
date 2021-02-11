@@ -1,0 +1,75 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net6.0-android</TargetFrameworks>
+    <RootNamespace>Xamarin.Forms.Platform.Android.FormsViewGroup</RootNamespace>
+    <AssemblyName>Xamarin.Forms.Platform.Android.FormsViewGroup</AssemblyName>
+    <Nullable>disable</Nullable>
+    <AndroidCodeGenTarget>XAJavaInterop1</AndroidCodeGenTarget>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3B72465B-ACAE-43AE-9327-10F372FE5F80}</ProjectGuid>
+    <ProjectTypeGuids>{10368E6C-D01B-4462-8E8B-01FC667A7035};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FormsViewGroup</RootNamespace>
+    <AssemblyName>FormsViewGroup</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkVersion>v10.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>portable</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>CS0109</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>portable</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>CS0109</NoWarn>
+  </PropertyGroup>
+
+
+
+
+
+  <PropertyGroup>
+    <!-- TODO: disable Fast Deployment temporarily -->
+    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+  </PropertyGroup>
+
+
+  <PropertyGroup>
+    <_DotNetPackageVersion>5.0.0</_DotNetPackageVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <InputJar Include="Jars\formsviewgroup.jar" />
+  </ItemGroup>
+  <ItemGroup>
+    <TransformFile Include="Transforms\Metadata.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.Bindings.targets" />
+
+
+  <ItemGroup>
+    <PackageReference Include="System.CodeDom" Version="$(_DotNetPackageVersion)" />
+    <PackageReference Include="System.Diagnostics.EventLog" Version="$(_DotNetPackageVersion)" />
+    <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="$(_DotNetPackageVersion)" />
+    <PackageReference Include="System.IO.Ports" Version="$(_DotNetPackageVersion)" />
+    <PackageReference Include="System.Security.Permissions" Version="$(_DotNetPackageVersion)" />
+    <PackageReference Include="System.Threading.AccessControl" Version="$(_DotNetPackageVersion)" />
+  </ItemGroup>
+</Project>
+

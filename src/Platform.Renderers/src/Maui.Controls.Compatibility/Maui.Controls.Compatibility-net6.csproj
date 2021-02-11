@@ -4,16 +4,22 @@
     <TargetFrameworks>net6.0-android</TargetFrameworks>
     <RootNamespace>Maui.Controls.Compatibility</RootNamespace>
     <AssemblyName>Maui.Controls.Compatibility</AssemblyName>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <RuntimeIdentifier Condition=" '$(TargetFramework)' == 'net6.0-ios' ">ios-x64</RuntimeIdentifier>
   </PropertyGroup>
   <PropertyGroup>
-    <PackageId>Xamarin.Platform</PackageId>
-    <Product>Xamarin</Product>
+    <PackageId>Maui.Controls.Compatibility</PackageId>
+    <Product>Maui</Product>
   </PropertyGroup>
 
   <ItemGroup Condition="$(TargetFramework.Contains('-android'))">
     <Compile LinkBase="Android" Include="..\Xamarin.Forms.Platform.Android\**\*.cs"></Compile>
+    <None Include="**\bin\**\*.cs" />
+    <None Include="**\obj\**\*.cs" />
+    <None Include="obj\**\*.cs" />
+    <Compile Remove="**\bin\**\*.cs" />
+    <Compile Remove="**\obj\**\*.cs" />
+    <Compile Remove="obj\**\*.cs" />
     <AndroidResource Include="..\Xamarin.Forms.Platform.Android\Resources\Layout\BottomTabLayout.axml" Link="Android\Resources\Layout\BottomTabLayout.axml" />
     <AndroidResource Include="..\Xamarin.Forms.Platform.Android\Resources\Layout\FlyoutContent.axml" Link="Android\Resources\Layout\FlyoutContent.axml" />
     <AndroidResource Include="..\Xamarin.Forms.Platform.Android\Resources\Layout\RootLayout.axml" Link="Android\Resources\Layout\RootLayout.axml" />
@@ -63,6 +69,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Forms\src\Xamarin.Forms.Core\Xamarin.Forms.Core-net6.csproj" />
+    <ProjectReference Include="..\Xamarin.Forms.Platform.Android.FormsViewGroup\Xamarin.Forms.Platform.Android.FormsViewGroup.csproj" />
   </ItemGroup>
 </Project>
 
