@@ -1,11 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <!--<TargetFrameworks>net6.0-android;net6.0-ios;</TargetFrameworks>-->
-    <TargetFrameworks>net6.0-android</TargetFrameworks>
+    <!--<TargetFrameworks>net6.0-android</TargetFrameworks>-->
+    <TargetFrameworks>net6.0-ios;net6.0-android</TargetFrameworks>
     <RootNamespace>Maui.Controls.Compatibility</RootNamespace>
     <AssemblyName>Maui.Controls.Compatibility</AssemblyName>
     <Nullable>disable</Nullable>
     <RuntimeIdentifier Condition=" '$(TargetFramework)' == 'net6.0-ios' ">ios-x64</RuntimeIdentifier>
+    <EnableDefaultItems>false</EnableDefaultItems>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>Maui.Controls.Compatibility</PackageId>
@@ -14,12 +16,6 @@
 
   <ItemGroup Condition="$(TargetFramework.Contains('-android'))">
     <Compile LinkBase="Android" Include="..\Xamarin.Forms.Platform.Android\**\*.cs"></Compile>
-    <None Include="**\bin\**\*.cs" />
-    <None Include="**\obj\**\*.cs" />
-    <None Include="obj\**\*.cs" />
-    <Compile Remove="**\bin\**\*.cs" />
-    <Compile Remove="**\obj\**\*.cs" />
-    <Compile Remove="obj\**\*.cs" />
     <AndroidResource Include="..\Xamarin.Forms.Platform.Android\Resources\Layout\BottomTabLayout.axml" Link="Android\Resources\Layout\BottomTabLayout.axml" />
     <AndroidResource Include="..\Xamarin.Forms.Platform.Android\Resources\Layout\FlyoutContent.axml" Link="Android\Resources\Layout\FlyoutContent.axml" />
     <AndroidResource Include="..\Xamarin.Forms.Platform.Android\Resources\Layout\RootLayout.axml" Link="Android\Resources\Layout\RootLayout.axml" />
@@ -43,8 +39,25 @@
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.Contains('-ios'))">
     <Compile LinkBase="iOS" Include="..\Xamarin.Forms.Platform.iOS\**\*.cs"></Compile>
+    <EmbeddedResource Include="..\Xamarin.Forms.Platform.iOS\Resources\*.resx" LinkBase="iOS\Resources" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="**\bin\**\*.cs" />
+    <None Include="**\obj\**\*.cs" />
+    <None Include="obj\**\*.cs" />
+    <Compile Remove="**\bin\**\*.cs" />
+    <Compile Remove="**\obj\**\*.cs" />
+    <Compile Remove="obj\**\*.cs" />
+
+    <Compile Include="..\..\..\Forms\src\Xamarin.Forms.Core\Crc64.cs">
+      <Link>Crc64.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Forms\src\Xamarin.Forms.Core\StreamWrapper.cs">
+      <Link>StreamWrapper.cs</Link>
+    </Compile>
+    
+  </ItemGroup>
   <Import Project="..\..\..\..\.nuspec\Xamarin.Forms.MultiTargeting.targets" />
 
   <PropertyGroup>
