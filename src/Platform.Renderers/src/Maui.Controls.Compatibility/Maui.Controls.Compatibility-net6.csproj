@@ -39,6 +39,7 @@
     <AndroidResource Include="..\Xamarin.Forms.Platform.Android\Resources\values\styles.xml" Link="Android\Resources\values\styles.xml" />
     <AndroidResource Include="..\Xamarin.Forms.Platform.Android\Resources\values\strings.xml" Link="Android\Resources\values\strings.xml" />
     <AndroidResource Include="..\Xamarin.Forms.Platform.Android\Resources\values\attrs.xml" Link="Android\Resources\values\attrs.xml" />
+    <ProjectReference Include="..\Xamarin.Forms.Platform.Android.FormsViewGroup\Xamarin.Forms.Platform.Android.FormsViewGroup-net6.csproj" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.Contains('-ios'))">
     <Compile LinkBase="iOS" Include="..\Xamarin.Forms.Platform.iOS\**\*.cs"></Compile>
@@ -69,7 +70,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Forms\src\Xamarin.Forms.Core\Xamarin.Forms.Core-net6.csproj" />
-    <ProjectReference Include="..\Xamarin.Forms.Platform.Android.FormsViewGroup\Xamarin.Forms.Platform.Android.FormsViewGroup.csproj" />
   </ItemGroup>
 </Project>
 
