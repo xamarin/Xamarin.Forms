@@ -17,17 +17,17 @@ using AndroidX.AppCompat.App;
 using AndroidX.AppCompat.Graphics.Drawable;
 using AndroidX.DrawerLayout.Widget;
 using Xamarin.Forms.Internals;
+using Xamarin.Platform;
 using static Android.Views.View;
 using static Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat.NavigationPage;
 using ActionBarDrawerToggle = AndroidX.AppCompat.App.ActionBarDrawerToggle;
+using APlatform = Xamarin.Forms.Platform.Android.AppCompat.Platform;
 using AToolbar = AndroidX.AppCompat.Widget.Toolbar;
 using AView = Android.Views.View;
 using Fragment = AndroidX.Fragment.App.Fragment;
 using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
 using Object = Java.Lang.Object;
-using APlatform = Xamarin.Forms.Platform.Android.AppCompat.Platform;
-using Xamarin.Platform;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -971,7 +971,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					bar.NavigationIcon = icon;
 
 					var prevPage = Element.Peek(1);
-					_defaultNavigationContentDescription = bar.SetNavigationContentDescription(prevPage, _defaultNavigationContentDescription);
+					var backButtonTitle = NavigationPage.GetBackButtonTitle(prevPage);
+					_defaultNavigationContentDescription = backButtonTitle != null
+						? bar.SetNavigationContentDescription(prevPage, backButtonTitle)
+						: bar.SetNavigationContentDescription(prevPage, _defaultNavigationContentDescription);
 				}
 				else if (toggle != null && _flyoutPage != null)
 				{

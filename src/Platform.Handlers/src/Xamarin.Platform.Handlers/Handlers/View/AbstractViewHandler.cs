@@ -5,8 +5,6 @@ using NativeView = UIKit.UIView;
 using NativeView = AppKit.NSView;
 #elif MONOANDROID
 using NativeView = Android.Views.View;
-#elif NETCOREAPP
-using NativeView = System.Windows.FrameworkElement;
 #elif NETSTANDARD
 using NativeView = System.Object;
 #endif
@@ -55,7 +53,7 @@ namespace Xamarin.Platform.Handlers
 			VirtualView = view as TVirtualView;
 			TypedNativeView ??= CreateNativeView();
 
-			if(setupNativeView && TypedNativeView != null)
+			if (setupNativeView && TypedNativeView != null)
 			{
 				ConnectHandler(TypedNativeView);
 			}

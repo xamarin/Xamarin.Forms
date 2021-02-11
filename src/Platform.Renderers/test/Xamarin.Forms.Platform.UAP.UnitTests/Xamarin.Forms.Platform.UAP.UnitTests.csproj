@@ -173,7 +173,7 @@
       <Version>6.2.10</Version>
     </PackageReference>
     <PackageReference Include="NUnit">
-      <Version>3.13.0</Version>
+      <Version>3.13.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.WinUI">
       <Version>3.0.0-preview2.200713.0</Version>

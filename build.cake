@@ -8,11 +8,11 @@
 
 Windows CMD:
 build.cmd -Target NugetPack
-build.cmd -Target NugetPack -ScriptArgs '-packageVersion="9.9.9-custom"','-configuration="Release"'
+build.cmd -Target NugetPack -ScriptArgs '--packageVersion="9.9.9-custom"','--configuration="Release"'
 
 PowerShell:
 ./build.ps1 -Target NugetPack
-./build.ps1 -Target NugetPack -ScriptArgs '-packageVersion="9.9.9-custom"'
+./build.ps1 -Target NugetPack -ScriptArgs '--packageVersion="9.9.9-custom"'
 
  */
 //////////////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ MSBuildArguments = $"{MSBuildArgumentsENV} {MSBuildArgumentsARGS}";
     
 Information("MSBuildArguments: {0}", MSBuildArguments);
 
-string androidSdks = EnvironmentVariable("ANDROID_API_SDKS", "platform-tools,platforms;android-28,platforms;android-29,build-tools;29.0.3,platforms;android-30,build-tools;30.0.2");
+string androidSdks = EnvironmentVariable("ANDROID_API_SDKS", "platform-tools,platforms;android-26,platforms;android-27,platforms;android-28,platforms;android-29,build-tools;29.0.3,platforms;android-30,build-tools;30.0.2");
 
 Information("ANDROID_API_SDKS: {0}", androidSdks);
 string[] androidSdkManagerInstalls = androidSdks.Split(',');
@@ -145,6 +145,7 @@ Information ("isCIBuild: {0}", isCIBuild);
 Information ("artifactStagingDirectory: {0}", artifactStagingDirectory);
 Information("workingDirectory: {0}", workingDirectory);
 Information("NUNIT_TEST_WHERE: {0}", NUNIT_TEST_WHERE);
+Information("TARGET: {0}", target);
 
 var releaseChannel = ReleaseChannel.Stable;
 if(releaseChannelArg == "Preview")
@@ -388,7 +389,7 @@ Task("provision-netsdk-local")
 
                 Information("Downloading: {0} to {1}", cabUrl, cabPath);
                 DownloadFile(cabUrl, cabPath);
-                InstallMsi(msiUrl, null, msiName);
+                InstallMsiOrExe(msiUrl, null, msiName);
             }
 
             int i = 0;
@@ -541,7 +542,7 @@ Task("provision-uitests-uwp")
         if(!DirectoryExists(driverPath))
         {
             try{
-                InstallMsi(UWP_APP_DRIVER_INSTALL_PATH, installPath);
+                InstallMsiOrExe(UWP_APP_DRIVER_INSTALL_PATH, installPath);
             }
             catch(Exception e)
             {
@@ -550,8 +551,41 @@ Task("provision-uitests-uwp")
         }
     });
 
-void InstallMsi(string msiFile, string installTo, string fileName = "InstallFile.msi")
+
+async Task InstallMsiWithBoots(string msiFile, string installTo = null, string fileName = "InstallFile.msi")
 {
+    bool success = false;
+
+    try
+    {
+        await Boots(msiFile);
+        success = true;
+    }
+    catch (System.Exception e)
+    {
+        Information("Boots failed: {0}", e);
+    }
+
+
+    if(success)
+        return;
+
+    try
+    {
+        InstallMsiOrExe(msiFile, installTo, fileName, !isCIBuild);
+        success = true;
+    }
+    catch (System.Exception e)
+    {
+        Information("Our attempt failed: {0}", e);
+    }
+}
+
+void InstallMsiOrExe(string msiFile, string installTo = null, string fileName = "InstallFile.msi", bool interactive = false)
+{
+     if(msiFile.EndsWith(".exe") && fileName == "InstallFile.msi")
+        fileName = "InstallFile.exe";
+
     string installerPath = $"{System.IO.Path.GetTempPath()}{fileName}";
         
     try
@@ -559,22 +593,35 @@ void InstallMsi(string msiFile, string installTo, string fileName = "InstallFile
         Information ("Installing: {0}", msiFile);
         DownloadFile(msiFile, installerPath);
         Information("File Downloaded To: {0}", installerPath);
+        int result = -1;
 
-        var argumentBuilder = 
-            new ProcessArgumentBuilder()
-                .Append("/a")
-                .Append(installerPath)
-                .Append("/qn");
-
-        if(!String.IsNullOrWhiteSpace(installTo))
+        if(msiFile.EndsWith(".exe"))
         {
-            Information("Installing into: {0}", installTo);
-            argumentBuilder = argumentBuilder.Append("TARGETDIR=\"" + installTo + "\"");
+            result = StartProcess(installerPath, new ProcessSettings {
+                    Arguments = new ProcessArgumentBuilder()
+                        .Append(@" /q")
+                    }
+                );
         }
+        else{
+            var argumentBuilder = 
+                new ProcessArgumentBuilder()
+                    .Append("/a")
+                    .Append(installerPath);
 
-        var result = StartProcess("msiexec", new ProcessSettings {
-            Arguments = argumentBuilder
-        });
+            if(!interactive)
+                argumentBuilder = argumentBuilder.Append("/qn");
+
+            if(!String.IsNullOrWhiteSpace(installTo))
+            {
+                Information("Installing into: {0}", installTo);
+                argumentBuilder = argumentBuilder.Append("TARGETDIR=\"" + installTo + "\"");
+            }
+
+            result = StartProcess("msiexec", new ProcessSettings {
+                Arguments = argumentBuilder
+            });
+        }
 
         if(result != 0)
             throw new Exception("Failed to install: " + msiFile);
@@ -823,30 +870,6 @@ Task("BuildForNuget")
     }
 });
 
-Task("BuildPages")
-    .IsDependentOn("BuildTasks")
-    .Description("Build Xamarin.Forms.Pages")
-    .Does(() =>
-{
-    try
-    {
-        var msbuildSettings = GetMSBuildSettings();
-        var binaryLogger = new MSBuildBinaryLogSettings {
-            Enabled  = isCIBuild
-        };
-
-        msbuildSettings.BinaryLogger = binaryLogger;
-        binaryLogger.FileName = $"{artifactStagingDirectory}/win-pages-{configuration}.binlog";
-        MSBuild("./build/Xamarin.Forms.Pages.sln", msbuildSettings.WithRestore());
-
-    }
-    catch(Exception)
-    {
-        if(IsRunningOnWindows())
-            throw;
-    }
-});
-
 Task("BuildTasks")
     .Description($"Build {BUILD_TASKS_PROJ}")
     .Does(() =>
@@ -886,7 +909,7 @@ Task("VSMAC")
     {
         StartVisualStudio();
     });
-
+    
 Task("cg-android")
     .Description("Builds Android Control Gallery")
     .IsDependentOn("WriteGoogleMapsAPIKey")
