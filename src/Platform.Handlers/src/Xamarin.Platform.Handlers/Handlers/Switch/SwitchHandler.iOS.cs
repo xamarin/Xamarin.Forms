@@ -48,7 +48,7 @@ namespace Xamarin.Platform.Handlers
 			handler.TypedNativeView?.UpdateThumbColor(view, DefaultThumbColor);
 		}
 
-		void OnControlValueChanged(object sender, EventArgs e)
+		void OnControlValueChanged(object? sender, EventArgs e)
 		{
 			if (VirtualView == null)
 				return;
