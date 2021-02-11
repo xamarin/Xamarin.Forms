@@ -6,14 +6,20 @@ namespace Sample
 {
 	public abstract class FrameworkElement : IFrameworkElement
 	{
+		private Rectangle _frame;
+
 		public bool IsEnabled => true;
 
 		public Color BackgroundColor { get; set; } = Color.Transparent;
 
 		public Rectangle Frame
 		{
-			get;
-			protected set;
+			get => _frame;
+			protected set
+			{
+				_frame = value;
+				Handler?.UpdateValue(nameof(Frame));
+			}
 		}
 
 		public IViewHandler Handler { get; set; }

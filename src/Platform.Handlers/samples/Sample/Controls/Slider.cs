@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Windows.Input;
 using Xamarin.Forms;
-using Xamarin.Forms.Internals;
 using Xamarin.Platform;
 
 namespace Sample
 {
-	public class Slider : Xamarin.Forms.View, ISlider
+	public class Slider : View, ISlider
 	{
 		double _value;
 
@@ -31,7 +30,7 @@ namespace Sample
 				Maximum = max;
 			}
 
-			Value = val.Clamp(min, max);
+			Value = Clamp(val, min, max);
 		}
 
 		public double Minimum { get; set; }
@@ -80,6 +79,42 @@ namespace Sample
 				DragCompletedCommand?.Execute(null);
 				DragCompleted?.Invoke();
 			}
+		}
+
+		public static double Clamp(double self, double min, double max)
+		{
+			if (max < min)
+			{
+				return max;
+			}
+			else if (self < min)
+			{
+				return min;
+			}
+			else if (self > max)
+			{
+				return max;
+			}
+
+			return self;
+		}
+
+		public static int Clamp(int self, int min, int max)
+		{
+			if (max < min)
+			{
+				return max;
+			}
+			else if (self < min)
+			{
+				return min;
+			}
+			else if (self > max)
+			{
+				return max;
+			}
+
+			return self;
 		}
 	}
 }

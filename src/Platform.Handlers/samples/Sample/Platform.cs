@@ -24,29 +24,10 @@ namespace Sample
 			RegistrarHandlers.Handlers.Register<Slider, SliderHandler>();
 			RegistrarHandlers.Handlers.Register<Sample.VerticalStackLayout, LayoutHandler>();
 			RegistrarHandlers.Handlers.Register<Sample.HorizontalStackLayout, LayoutHandler>();
-			RegistrarHandlers.Handlers.Register<Xamarin.Forms.FlexLayout, LayoutHandler>();
-			RegistrarHandlers.Handlers.Register<Xamarin.Forms.StackLayout, LayoutHandler>();
+			//RegistrarHandlers.Handlers.Register<Xamarin.Forms.FlexLayout, LayoutHandler>();
+			//RegistrarHandlers.Handlers.Register<Xamarin.Forms.StackLayout, LayoutHandler>();
 			//RegistrarHandlers.Handlers.Register<Entry, EntryHandler>();
 			RegistrarHandlers.Handlers.Register<Label, LabelHandler>();
-		}
-
-
-		void RegisterLegacyRendererAgainstFormsControl()
-		{
-#if MONOANDROID && !NET6_0
-
-			// register renderer with old registrar so it can get shimmed
-			// This will move to some extension method
-			Xamarin.Forms.Internals.Registrar.Registered.Register(
-				typeof(Xamarin.Forms.Button),
-				typeof(Xamarin.Forms.Platform.Android.FastRenderers.ButtonRenderer));
-
-			// This registers the shim against the handler registrar
-			// So when the handler.registrar returns the RendererToHandlerShim
-			// Which will then forward the request to the old registrar
-			Registrar.Handlers.Register<Xamarin.Forms.Button, RendererToHandlerShim>();
-
-#endif
 		}
 	}
 }

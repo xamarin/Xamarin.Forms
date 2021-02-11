@@ -26,12 +26,21 @@ namespace Xamarin.Platform.Handlers
 			if (Context == null)
 				return;
 
+
 			var left = Context.ToPixels(frame.Left);
 			var top = Context.ToPixels(frame.Top);
 			var bottom = Context.ToPixels(frame.Bottom);
 			var right = Context.ToPixels(frame.Right);
 			var width = Context.ToPixels(frame.Width);
 			var height = Context.ToPixels(frame.Height);
+
+			if (nativeView.Bottom == bottom &&
+				nativeView.Top == top &&
+				nativeView.Left == left &&
+				nativeView.Right == right)
+			{
+				return;
+			}
 
 			if (nativeView.LayoutParameters == null)
 			{
