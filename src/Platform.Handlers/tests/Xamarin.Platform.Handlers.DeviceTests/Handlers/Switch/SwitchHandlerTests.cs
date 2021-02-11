@@ -18,11 +18,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 			await ValidatePropertyInitValue(switchStub, () => switchStub.IsToggled, GetNativeIsChecked, switchStub.IsToggled);
 		}
 
-#if __ANDROID__
-		[Fact(Skip = "Currently Fails on Android")]
-#else
-		[Fact()]
-#endif
+		[Fact(DisplayName = "On Color Initializes Correctly")]
 		public async Task OnColorInitializesCorrectly()
 		{
 			var switchStub = new SwitchStub()

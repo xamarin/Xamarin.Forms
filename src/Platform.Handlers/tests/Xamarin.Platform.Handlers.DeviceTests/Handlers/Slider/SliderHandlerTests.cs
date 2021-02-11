@@ -10,7 +10,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 	public partial class SliderHandlerTests : HandlerTestBase<SliderHandler>
 	{
 #if __ANDROID__
-		[Fact(Skip = "Currently Fails on Android")]
+		[Fact(DisplayName = "Value Initializes Correctly", Skip = "Currently Fails on Android")]
 #else
 		[Fact(DisplayName = "Value Initializes Correctly")]
 #endif
