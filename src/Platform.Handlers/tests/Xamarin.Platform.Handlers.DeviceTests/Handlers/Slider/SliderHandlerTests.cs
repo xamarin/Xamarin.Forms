@@ -12,9 +12,8 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 #if __ANDROID__
 		[Fact(Skip = "Currently Fails on Android")]
 #else
-		[Fact()]
+		[Fact(DisplayName = "Value Initializes Correctly")]
 #endif
-
 		public async Task ValueInitializesCorrectly()
 		{
 			var slider = new SliderStub()
@@ -27,7 +26,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 			await ValidatePropertyInitValue(slider, () => slider.Value, GetNativeProgress, slider.Value);
 		}
 
-		[Fact]
+		[Fact(DisplayName = "Maximum Initializes Correctly")]
 		public async Task MaximumInitializesCorrectly()
 		{
 			var slider = new SliderStub()
@@ -38,7 +37,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 			await ValidatePropertyInitValue(slider, () => slider.Maximum, GetNativeMaximum, slider.Maximum);
 		}
 
-		[Fact]
+		[Fact(DisplayName = "Thumb Color Initializes Correctly")]
 		public async Task ThumbColorInitializesCorrectly()
 		{
 			var slider = new SliderStub()
