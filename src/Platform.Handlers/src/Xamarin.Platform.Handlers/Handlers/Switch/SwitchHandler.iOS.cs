@@ -55,8 +55,6 @@ namespace Xamarin.Platform.Handlers
 
 			if (TypedNativeView != null)
 				VirtualView.IsToggled = TypedNativeView.On;
-
-			VirtualView.Toggled();
 		}
 	}
 }

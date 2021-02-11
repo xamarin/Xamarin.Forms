@@ -77,7 +77,6 @@ namespace Xamarin.Platform.Handlers
 				return;
 
 			VirtualView.IsToggled = isToggled;
-			VirtualView.Toggled();
 			TypedNativeView?.UpdateOnColor(VirtualView);
 		}
 
