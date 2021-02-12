@@ -15,7 +15,10 @@
     <Compile Remove="AppCompat\Resource.cs" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\anim\**\*" />
+    <AndroidResource Include="Resources\anim\enterfromleft.xml" />
+    <AndroidResource Include="Resources\anim\enterfromright.xml" />
+    <AndroidResource Include="Resources\anim\exittoleft.xml" />
+    <AndroidResource Include="Resources\anim\exittoright.xml" />
     <AndroidResource Include="Resources\values\**\*" />
     <Compile Remove="Anticipator.cs" />
   </ItemGroup>
