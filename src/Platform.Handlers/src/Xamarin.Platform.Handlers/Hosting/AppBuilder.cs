@@ -36,7 +36,7 @@ namespace Xamarin.Platform.Hosting
 			return this;
 		}
 
-		public IAppHostBuilder RegisterHandler<TType, TTypeRender>()
+		public IHostBuilder RegisterHandler<TType, TTypeRender>()
 			where TType : IFrameworkElement
 			where TTypeRender : IViewHandler
 		{
