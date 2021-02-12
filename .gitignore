@@ -84,3 +84,4 @@ WriteDevopsVariables.csproj
 !**/Xamarin.Forms.Maps.GTK/Libs/**/*
 /tools
 *.svclog
+src/Essentials/samples/Sample.Server.WebAuthenticator/Properties/launchSettings.json
