@@ -12,8 +12,6 @@ using System.Linq;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Sample.Services;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace Sample.iOS
 {

@@ -8,7 +8,7 @@ namespace Xamarin.Platform.Handlers.Benchmarks
 	{
 		int _numberOfItems = 100000;
 		MockApp _app;
-		AppBuilder _builder;
+		IAppHostBuilder _builder;
 
 		[GlobalSetup(Target = nameof(GetHandlerUsingDI))]
 		public void GlobalSetupForDI()

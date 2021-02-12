@@ -9,5 +9,8 @@ namespace Xamarin.Platform.Hosting
 		IHostBuilder ConfigureHandlers(Action<HostBuilderContext, IHandlerServiceCollection> configureDelegate);
 		TApplication Init<TApplication>() where TApplication : class, IApp;
 		IHostBuilder RegisterHandlers(Dictionary<Type, Type> handlers);
+		IHostBuilder RegisterHandler<TType, TTypeRender>()
+			where TType : IFrameworkElement
+			where TTypeRender : IViewHandler;
 	}
 }
