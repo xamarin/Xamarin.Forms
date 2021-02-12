@@ -8,7 +8,7 @@ namespace Xamarin.Platform.Handlers.Tests
 	{
 		public void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
 		{
-			services.AddTransient<IStartup, MockButton>();
+			services.AddTransient<IButton, MockButton>();
 		}
 	}
 }
