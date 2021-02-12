@@ -1,13 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <!--<TargetFrameworks>net6.0-android</TargetFrameworks>-->
-    <TargetFrameworks>net6.0-ios</TargetFrameworks>
+    <TargetFrameworks>net6.0-ios;net6.0-android</TargetFrameworks>
     <RootNamespace>Xamarin.Forms.Platform.Android</RootNamespace>
     <AssemblyName>Xamarin.Forms.Platform.Android</AssemblyName>
     <Nullable>disable</Nullable>
     <RuntimeIdentifier Condition=" '$(TargetFramework)' == 'net6.0-ios' ">ios-x64</RuntimeIdentifier>
     <EnableDefaultItems>false</EnableDefaultItems>
     <AndroidRoot>..\Xamarin.Forms.Platform.Android\</AndroidRoot>
+    <iOSRoot>..\Xamarin.Forms.Platform.iOS\</iOSRoot>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>Maui.Controls.Compatibility</PackageId>
@@ -18,20 +19,18 @@
   
   <ItemGroup Condition=" '$(TargetPlatformIdentifier)' == 'android' ">
     <Compile LinkBase="Android" Include="$(AndroidRoot)**\*.cs"></Compile>
-    <AndroidResource Include="$(AndroidRoot)Resources\Layout\BottomTabLayout.axml" Link="Android\Resources\Layout\BottomTabLayout.axml" />
-    <AndroidResource Include="$(AndroidRoot)Resources\Layout\FlyoutContent.axml" Link="Android\Resources\Layout\FlyoutContent.axml" />
-    <AndroidResource Include="$(AndroidRoot)Resources\Layout\RootLayout.axml" Link="Android\Resources\Layout\RootLayout.axml" />
-    <AndroidResource Include="$(AndroidRoot)Resources\Layout\ShellContent.axml" Link="Android\Resources\Layout\ShellContent.axml" />
-    <AndroidResource Include="$(AndroidRoot)Resources\Layout\FallbackTabbarDoNotUse.axml" Link="Android\Resources\Layout\FallbackTabbarDoNotUse.axml" />
-    <AndroidResource Include="$(AndroidRoot)Resources\Layout\FallbackToolbarDoNotUse.axml" Link="Android\Resources\Layout\FallbackToolbarDoNotUse.axml" />
-    <AndroidResource Include="$(AndroidRoot)Resources\Layout\Tabbar.axml" Link="Android\Resources\Layout\Tabbar.axml" />
-    <AndroidResource Include="$(AndroidRoot)Resources\Layout\Toolbar.axml" Link="Android\Resources\Layout\Toolbar.axml" />
+    <AndroidResource Include="$(AndroidRoot)Resources\Layout\bottomtablayout.axml" Link="Android\Resources\Layout\bottomtablayout.axml" />
+    <AndroidResource Include="$(AndroidRoot)Resources\Layout\flyoutcontent.axml" Link="Android\Resources\Layout\flyoutcontent.axml" />
+    <AndroidResource Include="$(AndroidRoot)Resources\Layout\rootlayout.axml" Link="Android\Resources\Layout\rootlayout.axml" />
+    <AndroidResource Include="$(AndroidRoot)Resources\Layout\shellcontent.axml" Link="Android\Resources\Layout\shellcontent.axml" />
+    <AndroidResource Include="$(AndroidRoot)Resources\Layout\tabbar.axml" Link="Android\Resources\Layout\tabbar.axml" />
+    <AndroidResource Include="$(AndroidRoot)Resources\Layout\toolbar.axml" Link="Android\Resources\Layout\toolbar.axml" />
 
 
-    <AndroidResource Include="$(AndroidRoot)Resources\anim\EnterFromLeft.xml" Link="Android\Resources\anim\EnterFromLeft.xml" />
-    <AndroidResource Include="$(AndroidRoot)Resources\anim\EnterFromRight.xml" Link="Android\Resources\anim\EnterFromRight.xml" />
-    <AndroidResource Include="$(AndroidRoot)Resources\anim\ExitToLeft.xml" Link="Android\Resources\anim\ExitToLeft.xml" />
-    <AndroidResource Include="$(AndroidRoot)Resources\anim\ExitToRight.xml" Link="Android\Resources\anim\ExitToRight.xml" />
+    <AndroidResource Include="$(AndroidRoot)Resources\anim\enterfromleft.xml" Link="Android\Resources\anim\enterfromleft.xml" />
+    <AndroidResource Include="$(AndroidRoot)Resources\anim\enterfromright.xml" Link="Android\Resources\anim\enterfromright.xml" />
+    <AndroidResource Include="$(AndroidRoot)Resources\anim\exittoleft.xml" Link="Android\Resources\anim\exittoleft.xml" />
+    <AndroidResource Include="$(AndroidRoot)Resources\anim\exittoright.xml" Link="Android\Resources\anim\exittoright.xml" />
 
 
     <AndroidResource Include="$(AndroidRoot)Resources\values\styles.xml" Link="Android\Resources\values\styles.xml" />
@@ -40,10 +39,14 @@
     <ProjectReference Include="..\Xamarin.Forms.Platform.Android.FormsViewGroup\Xamarin.Forms.Platform.Android.FormsViewGroup-net6.csproj" />
 
     <Compile Remove="$(AndroidRoot)AppCompat\Resource.cs" />
+    <Compile Remove="$(AndroidRoot)bin\**\*.cs" />
+    <Compile Remove="$(AndroidRoot)obj\**\*.cs" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetPlatformIdentifier)' == 'ios' ">
-    <Compile LinkBase="iOS" Include="..\Xamarin.Forms.Platform.iOS\**\*.cs"></Compile>
-    <EmbeddedResource Include="..\Xamarin.Forms.Platform.iOS\Resources\*.resx" LinkBase="iOS\Resources" />
+    <Compile LinkBase="iOS" Include="$(iOSRoot)**\*.cs"></Compile>
+    <EmbeddedResource Include="$(iOSRoot)Resources\*.resx" LinkBase="iOS\Resources" />
+    <Compile Remove="$(iOSRoot)bin\**\*.cs" />
+    <Compile Remove="$(iOSRoot)obj\**\*.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,7 +56,6 @@
     <Compile Remove="**\bin\**\*.cs" />
     <Compile Remove="**\obj\**\*.cs" />
     <Compile Remove="obj\**\*.cs" />-->
-
     <Compile Include="..\..\..\Forms\src\Xamarin.Forms.Core\Crc64.cs">
       <Link>Crc64.cs</Link>
     </Compile>

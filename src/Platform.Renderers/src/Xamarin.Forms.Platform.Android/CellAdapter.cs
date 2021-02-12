@@ -190,7 +190,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				MenuItem action = ActionModeContext.ContextActions[i];
 
-				IMenuItem item = menu.Add(global::Android.Views.Menu.None, i, global::Android.Views.Menu.None, action.Text);
+				IMenuItem item = menu.Add(global::Android.Views.IMenu.None, i, global::Android.Views.IMenu.None, action.Text);
 
 				_ = _context.ApplyDrawableAsync(action, MenuItem.IconImageSourceProperty, iconDrawable =>
 				{
