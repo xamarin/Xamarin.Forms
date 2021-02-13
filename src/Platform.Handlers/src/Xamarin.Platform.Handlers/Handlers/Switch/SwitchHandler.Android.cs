@@ -7,8 +7,6 @@ namespace Xamarin.Platform.Handlers
 {
 	public partial class SwitchHandler : AbstractViewHandler<ISwitch, ASwitch>
 	{
-		static Drawable? DefaultTrackDrawable;
-
 		CheckedChangeListener ChangeListener { get; } = new CheckedChangeListener();
 
 		protected override ASwitch CreateNativeView()
@@ -26,14 +24,10 @@ namespace Xamarin.Platform.Handlers
 		{
 			ChangeListener.Handler = null;
 			nativeView.SetOnCheckedChangeListener(null);
-
-			DefaultTrackDrawable?.Dispose();
-			DefaultTrackDrawable = null;
 		}
 
 		protected override void SetupDefaults(ASwitch nativeView)
 		{
-			DefaultTrackDrawable = nativeView.TrackDrawable;
 		}
 
 		public override Size GetDesiredSize(double widthConstraint, double heightConstraint)
@@ -62,7 +56,7 @@ namespace Xamarin.Platform.Handlers
 		public static void MapOnColor(SwitchHandler handler, ISwitch view)
 		{
 			ViewHandler.CheckParameters(handler, view);
-			handler.TypedNativeView?.UpdateOnColor(view, DefaultTrackDrawable);
+			handler.TypedNativeView?.UpdateOnColor(view);
 		}
 
 		public static void MapThumbColor(SwitchHandler handler, ISwitch view)
