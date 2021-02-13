@@ -5,7 +5,7 @@ using Xamarin.Platform.Hosting;
 
 namespace Xamarin.Platform
 {
-	public abstract class App : 
+	public abstract class App :
 #if __ANDROID__
 		global::Android.App.Application,
 #elif __IOS__
@@ -15,6 +15,7 @@ namespace Xamarin.Platform
 	{
 		IServiceProvider? _serviceProvider;
 		IHandlerServiceProvider? _handlerServiceProvider;
+		
 		protected App()
 		{
 			Current = this;
@@ -24,11 +25,20 @@ namespace Xamarin.Platform
 
 		public IServiceProvider? Services => _serviceProvider;
 
-		public IHandlerServiceProvider? Handlers => _handlerServiceProvider;
+		public IServiceProvider? Handlers => _handlerServiceProvider;
 
-		public virtual IEnumerable<IWindow>? Windows => Services?.GetServices<IWindow>();
+		public virtual IEnumerable<IWindow>? Windows
+		{
+			get
+			{
+				var windows = Services?.GetService<IWindow>();
+				if(windows != null)
+					return new IWindow[] { windows };
+				return null;
+			}
+		}
 
-		public void SetServiceProvider(IServiceProvider provider)
+		internal void SetServiceProvider(IServiceProvider provider)
 		{
 			_serviceProvider = provider;
 			SetHandlerServiceProvider(provider.GetService<IHandlerServiceProvider>());

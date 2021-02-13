@@ -11,6 +11,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Sample.Services;
 using Xamarin.Platform.Handlers;
 using Xamarin.Forms;
+using Xamarin.Platform.Hosting;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Collections.Generic;
+using System;
+using System.Reflection;
 
 namespace Sample.Droid
 {
@@ -37,23 +42,24 @@ namespace Sample.Droid
 			Platform.Init();
 			content = Platform.GetWindow().Page.View;
 #else
-			var app = App.CreateDefaultBuilder()
+			var builder = App.CreateDefaultBuilder()
 							//.RegisterHandlers(new Dictionary<Type, Type>
-							//{
-							//	{ typeof(Xamarin.Platform.VerticalStackLayout),typeof(LayoutHandler) },
-							//	{ typeof(Xamarin.Platform.HorizontalStackLayout),typeof(LayoutHandler) },
-							//	{ typeof(Xamarin.Forms.FlexLayout),typeof(LayoutHandler) },
-							//	{ typeof(Xamarin.Forms.StackLayout),typeof(LayoutHandler) },
-							//})
+							//		{
+							//			{ typeof(VerticalStackLayout),typeof(LayoutHandler) },
+							//			{ typeof(HorizontalStackLayout),typeof(LayoutHandler) },
+							//		})
 							//.ConfigureServices(ConfigureExtraServices)
-							.Init<MyApp>();
+							.UseServiceProviderFactory(new DIExtensionsServiceProviderFactory());
+
+			//TODO: need to solve this
+			var app = (builder as AppBuilder).Init<MyApp>();
 
 			content = app.Windows.FirstOrDefault()?.Page.View;
 #endif
 
 			Add(content);
 
-			// In 5 seconds, add and remove some controls so we can see that working
+			//In 5 seconds, add and remove some controls so we can see that working
 			Task.Run(async () =>
 			{
 
@@ -90,5 +96,15 @@ namespace Sample.Droid
 
 			base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 		}
+	}
+
+	public class DIExtensionsServiceProviderFactory : IServiceProviderFactory<ServiceCollection>
+	{
+		public ServiceCollection CreateBuilder(IServiceCollection services)
+			=> new ServiceCollection { services };
+
+
+		public IServiceProvider CreateServiceProvider(ServiceCollection containerBuilder)
+			=> containerBuilder.BuildServiceProvider();
 	}
 }

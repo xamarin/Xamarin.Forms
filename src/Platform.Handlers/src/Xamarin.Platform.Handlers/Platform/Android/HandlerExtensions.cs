@@ -7,6 +7,7 @@ namespace Xamarin.Platform
 {
 	public static class HandlerExtensions
 	{
+		//IContext - > With a Context and IServiceProvider, Dispatcher
 		public static AView ToNative(this IView view, Context context)
 		{
 			_ = view ?? throw new ArgumentNullException(nameof(view));

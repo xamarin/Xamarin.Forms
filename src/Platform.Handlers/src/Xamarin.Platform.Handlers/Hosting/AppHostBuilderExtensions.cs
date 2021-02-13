@@ -1,11 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Xamarin.Platform.Handlers;
 
 namespace Xamarin.Platform.Hosting
 {
 	public static class AppHostBuilderExtensions
 	{
+		public static IAppHostBuilder RegisterHandlers(this IAppHostBuilder builder, Dictionary<Type, Type> handlers)
+		{
+			foreach (var handler in handlers)
+			{
+				builder.ConfigureHandlers((context, handlersCollection) => handlersCollection.AddTransient(handler.Key, handler.Value));
+			}
+
+			return builder;
+		}
+
+		public static IAppHostBuilder RegisterHandler<TType, TTypeRender>(this IAppHostBuilder builder)
+			where TType : IFrameworkElement
+			where TTypeRender : IViewHandler
+		{
+			builder.ConfigureHandlers((context, handlersCollection) => handlersCollection.AddTransient(typeof(TType), typeof(TTypeRender)));
+
+			return builder;
+		}
+
 		public static IAppHostBuilder UseXamarinHandlers(this IAppHostBuilder builder)
 		{
 			builder.RegisterHandlers(new Dictionary<Type, Type>
