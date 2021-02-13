@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Sample.Services;
-using Sample.ViewModel;
+﻿using Sample.ViewModel;
 using Xamarin.Forms;
 using Xamarin.Platform;
-using Xamarin.Platform.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Sample.Pages
 {
 
 	public class MainPage : Xamarin.Forms.ContentPage, IPage
 	{
+		MainPageViewModel _viewModel;
+		//public MainPage() : this(App.Current.Services.GetService<MainPageViewModel>())
+		//{
 
+		//}
 		public MainPage(MainPageViewModel viewModel)
 		{
-			BindingContext = viewModel;
+			BindingContext = _viewModel = viewModel;
 			View = GetContentView();
 		}
 
@@ -32,7 +31,7 @@ namespace Sample.Pages
 
 			verticalStack.Add(label);
 
-			var button = new Button() { Text = "A Button", Width = 200 };
+			var button = new Button() { Text = _viewModel.Text, Width = 200 };
 
 			var button2 = new Button()
 			{

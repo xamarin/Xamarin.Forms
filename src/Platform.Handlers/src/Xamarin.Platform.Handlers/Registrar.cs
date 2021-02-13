@@ -68,6 +68,9 @@ namespace Xamarin.Platform
 
 		public TTypeRender GetHandler(Type type)
 		{
+			if (type == null)
+				throw new ArgumentNullException(nameof(type));
+
 			List<Type> types = new List<Type> { type };
 
 			//allow to register handlers for Interfaces of a type
@@ -77,7 +80,8 @@ namespace Xamarin.Platform
 					types.Add(existingInterfaces);
 
 			}
-			Type baseType = type.BaseType;
+
+			Type? baseType = type.BaseType;
 
 			while (baseType != null)
 			{

@@ -10,84 +10,63 @@ namespace Xamarin.Platform.Hosting
 {
 	public class AppBuilder : IAppHostBuilder
 	{
-		List<Action<HostBuilderContext, IHandlerServiceCollection>> _configureHandlersActions = new List<Action<HostBuilderContext, IHandlerServiceCollection>>();
+		List<Action<HostBuilderContext, IServiceCollection>> _configureHandlersActions = new List<Action<HostBuilderContext, IServiceCollection>>();
 		List<Action<IConfigurationBuilder>> _configureHostConfigActions = new List<Action<IConfigurationBuilder>>();
 		List<Action<HostBuilderContext, IConfigurationBuilder>> _configureAppConfigActions = new List<Action<HostBuilderContext, IConfigurationBuilder>>();
 		List<Action<HostBuilderContext, IServiceCollection>> _configureServicesActions = new List<Action<HostBuilderContext, IServiceCollection>>();
 		List<IConfigureContainerAdapter> _configureContainerActions = new List<IConfigureContainerAdapter>();
 		IServiceFactoryAdapter _serviceProviderFactory = new ServiceFactoryAdapter<IServiceCollection>(new DefaultServiceProviderFactory());
+		Func<IServiceCollection> _serviceColectionFactory = new Func<IServiceCollection>(() => new MauiServiceCollection());
 		bool _hostBuilt;
-		//IConfiguration? _hostConfiguration;
-		//IConfiguration? _appConfiguration;
 		HostBuilderContext? _hostBuilderContext;
 		IHostEnvironment? _hostEnvironment;
-		IServiceProvider? _appServices;
-		IHandlerServiceProvider? _handlersServiceProvider;
-		
+		IServiceProvider? _serviceProvider;
+		IHost? _host;
+		IServiceCollection? _services;
+		IApp? _app;
+
 		public IDictionary<object, object> Properties => new Dictionary<object, object>();
-
-		public IHostBuilder RegisterHandlers(Dictionary<Type, Type> handlers)
-		{
-			foreach (var handler in handlers)
-			{
-				ConfigureHandlers((context, handlersCollection) => handlersCollection.AddTransient(handler.Key, handler.Value));
-			}
-
-			return this;
-		}
-
-		public IHostBuilder RegisterHandler<TType, TTypeRender>()
-			where TType : IFrameworkElement
-			where TTypeRender : IViewHandler
-		{
-			ConfigureHandlers((context, handlersCollection) => handlersCollection.AddTransient(typeof(TType), typeof(TTypeRender)));
-
-			return this;
-		}
 
 		public TApplication Init<TApplication>() where TApplication : class, IApp
 		{
-			//User services so its almost empty and fast
-			ServiceCollection servicesCollection = new ServiceCollection();
+			_services = _serviceColectionFactory();
 
-			var host = Build();
+			//we create the app here because users might need to register services
+			_app = Activator.CreateInstance(typeof(TApplication)) as TApplication;
+			if (_app == null)
+				throw new Exception("Couldn't create a new Application class");
 
-			if (_handlersServiceProvider != null)
-				servicesCollection.AddSingleton<IHandlerServiceProvider>(_handlersServiceProvider);
+			_host = Build();
 
-			var app = (TApplication)Activator.CreateInstance(typeof(TApplication));
-
-			if (_hostBuilderContext != null)
-				AppLoader.ConfigureAppServices<TApplication>(_hostBuilderContext, servicesCollection, app);
-
-			var services = servicesCollection.BuildServiceProvider();
-
-			(app as App)?.SetServiceProvider(services);
-
-			return app;
+			return (TApplication)_app;
 		}
 
 		public IHost Build()
 		{
 			if (_hostBuilt)
-			{
 				throw new InvalidOperationException("Build can only be called once.");
-			}
+		
 			_hostBuilt = true;
 
 			// the order is important here
-			BuildHostConfiguration();
 			CreateHostingEnvironment();
 			CreateHostBuilderContext();
-			BuildAppConfiguration();
-			CreateHandlersServiceProvider();
-			CreateServiceProvider();
-			if (_appServices == null)
-			{
-				throw new InvalidOperationException($"The (_appServices) cannot be null");
-			}
+		
+			if (_services == null)
+				throw new InvalidOperationException("The ServiceCollection cannot be null");
 
-			return new AppHost(_appServices, null);
+			ConfigureHandlers(_services);
+			ConfigureAppServices(_services);
+			CreateServiceProvider(_services);
+
+			if (_serviceProvider == null)
+				throw new InvalidOperationException($"The ServiceProvider cannot be null");
+
+			//we do this here because we can't inject the provider on the App ctor
+			//before we register the user ConfigureServices should this live in IApp ?
+			(_app as App)?.SetServiceProvider(_serviceProvider);
+
+			return new AppHost(_serviceProvider, null);
 		}
 
 		public IHostBuilder ConfigureAppConfiguration(Action<HostBuilderContext, IConfigurationBuilder> configureDelegate)
@@ -115,13 +94,14 @@ namespace Xamarin.Platform.Hosting
 			return this;
 		}
 
-		public IHostBuilder ConfigureHandlers(Action<HostBuilderContext, IHandlerServiceCollection> configureDelegate)
+		public IHostBuilder ConfigureHandlers(Action<HostBuilderContext, IServiceCollection> configureDelegate)
 		{
 			_configureHandlersActions.Add(configureDelegate ?? throw new ArgumentNullException(nameof(configureDelegate)));
 			return this;
 		}
 
 #pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
+#pragma warning disable CS8603 // Possible null reference return.
 		public IHostBuilder UseServiceProviderFactory<TContainerBuilder>(IServiceProviderFactory<TContainerBuilder> factory)
 		{
 			_serviceProviderFactory = new ServiceFactoryAdapter<TContainerBuilder>(factory ?? throw new ArgumentNullException(nameof(factory)));
@@ -130,27 +110,15 @@ namespace Xamarin.Platform.Hosting
 
 		public IHostBuilder UseServiceProviderFactory<TContainerBuilder>(Func<HostBuilderContext, IServiceProviderFactory<TContainerBuilder>> factory)
 		{
-			if (_hostBuilderContext != null)
-				_serviceProviderFactory = new ServiceFactoryAdapter<TContainerBuilder>(() => _hostBuilderContext, factory ?? throw new ArgumentNullException(nameof(factory)));
+			_serviceProviderFactory = new ServiceFactoryAdapter<TContainerBuilder>(() => _hostBuilderContext, factory ?? throw new ArgumentNullException(nameof(factory)));
+
 			return this;
 		}
-#pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
-
-		void BuildHostConfiguration()
-		{
-			//IConfigurationBuilder configBuilder = new ConfigurationBuilder()
-			//	.AddInMemoryCollection(); // Make sure there's some default storage since there are no default providers
-
-			//foreach (Action<IConfigurationBuilder> buildAction in _configureHostConfigActions)
-			//{
-			//	buildAction(configBuilder);
-			//}
-			//_hostConfiguration = configurationBuilder.Build();
-		}
+#pragma warning restore CS8603 // Possible null reference return.
+#pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint
 
 		void CreateHostingEnvironment()
 		{
-		
 			_hostEnvironment = new AppHostEnvironment()
 			{
 				//ApplicationName = _hostConfiguration[HostDefaults.ApplicationKey],
@@ -163,76 +131,34 @@ namespace Xamarin.Platform.Hosting
 				// Note GetEntryAssembly returns null for the net4x console test runner.
 				_hostEnvironment.ApplicationName = Assembly.GetEntryAssembly()?.GetName().Name;
 			}
-
-			//_hostEnvironment.ContentRootFileProvider = new PhysicalFileProvider(_hostEnvironment.ContentRootPath);
 		}
-
-		//string ResolveContentRootPath(string contentRootPath, string basePath)
-		//{
-		//	if (string.IsNullOrEmpty(contentRootPath))
-		//	{
-		//		return basePath;
-		//	}
-		//	if (Path.IsPathRooted(contentRootPath))
-		//	{
-		//		return contentRootPath;
-		//	}
-		//	return Path.Combine(Path.GetFullPath(basePath), contentRootPath);
-		//}
 
 		void CreateHostBuilderContext()
 		{
 			_hostBuilderContext = new HostBuilderContext(Properties)
 			{
 				HostingEnvironment = _hostEnvironment,
-				//Configuration = _hostConfiguration
 			};
 		}
 
-		void BuildAppConfiguration()
+		void CreateServiceProvider(IServiceCollection services)
 		{
-			if (_hostBuilderContext == null)
-				return;
-
-			//IConfigurationBuilder configBuilder = new ConfigurationBuilder()
-			//	.SetBasePath(_hostEnvironment?.ContentRootPath)
-			//	.AddConfiguration(_hostConfiguration, shouldDisposeConfiguration: true);
-
-			//foreach (Action<HostBuilderContext, IConfigurationBuilder> buildAction in _configureAppConfigActions)
-			//{
-			//	buildAction(_hostBuilderContext, configBuilder);
-			//}
-			//_appConfiguration = configBuilder.Build();
-			//_hostBuilderContext.Configuration = _appConfiguration;
-		}
-
-		void CreateServiceProvider()
-		{
-			var services = new ServiceCollection();
-
-			//if (_hostEnvironment != null)
-			//	services.AddSingleton<IHostEnvironment>(_hostEnvironment);
-			//if (_hostBuilderContext != null)
-			//	services.AddSingleton(_hostBuilderContext);
-			// register configuration as factory to make it dispose with the service provider
-			//if (_appConfiguration != null)
-			//	services.AddSingleton(_ => _appConfiguration);
-			//services.AddSingleton<IHostApplicationLifetime, AppLifetime>();
-			//services.AddSingleton<IHostLifetime, AppHostLifetime>();
-			//services.AddSingleton<IHost, AppHost>();
-			//services.AddOptions();
-			//services.AddLogging();
-
 			foreach (Action<HostBuilderContext, IServiceCollection> configureServicesAction in _configureServicesActions)
 			{
 				if (_hostBuilderContext != null)
 					configureServicesAction(_hostBuilderContext, services);
 			}
 
-			////TODO: Do we need a factory here
-			if (_handlersServiceProvider != null)
-				services.AddSingleton<IHandlerServiceProvider>(_handlersServiceProvider);
+			_serviceProvider = ConfigureContainerAndGetProvider(services);
 
+			if (_serviceProvider == null)
+			{
+				throw new InvalidOperationException($"The IServiceProviderFactory returned a null IServiceProvider.");
+			}
+		}
+
+		IServiceProvider ConfigureContainerAndGetProvider(IServiceCollection services)
+		{
 			object containerBuilder = _serviceProviderFactory.CreateBuilder(services);
 
 			foreach (IConfigureContainerAdapter containerAction in _configureContainerActions)
@@ -241,23 +167,34 @@ namespace Xamarin.Platform.Hosting
 					containerAction.ConfigureContainer(_hostBuilderContext, containerBuilder);
 			}
 
-			_appServices = _serviceProviderFactory.CreateServiceProvider(containerBuilder);
-
-			if (_appServices == null)
-			{
-				throw new InvalidOperationException($"The IServiceProviderFactory returned a null IServiceProvider.");
-			}
+			return _serviceProviderFactory.CreateServiceProvider(containerBuilder);
 		}
 
-		void CreateHandlersServiceProvider()
+		void ConfigureHandlers(IServiceCollection? services)
 		{
-			var handlersServices = new HandlerServiceCollection();
+			if (services == null)
+				throw new ArgumentNullException(nameof(services));
+
+			//we need to use our own ServiceCollction because the default ServiceCollection
+			//enforces the instance to implement the servicetype
+			var _handlersCollection = new MauiServiceCollection();
 			foreach (var configureHandlersAction in _configureHandlersActions)
 			{
 				if (_hostBuilderContext != null)
-					configureHandlersAction(_hostBuilderContext, handlersServices);
+					configureHandlersAction(_hostBuilderContext, _handlersCollection);
 			}
-			_handlersServiceProvider = handlersServices.BuildHandlerServiceProvider();
+			services.AddSingleton((IHandlerServiceProvider)_handlersCollection.BuildServiceProvider());
+		}
+
+		void ConfigureAppServices(IServiceCollection services)
+		{
+			if (_app == null)
+			{
+				throw new InvalidOperationException($"The App cannot be null");
+			}
+
+			//Call ConfigureServices methoda on the users App class
+			AppLoader.ConfigureAppServices(_hostBuilderContext, services, _app);
 		}
 	}
 }

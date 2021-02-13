@@ -10,22 +10,12 @@
     <Product>Xamarin</Product>
   </PropertyGroup>
   <Import Project="..\..\..\..\.nuspec\Xamarin.Forms.MultiTargeting.targets" />
+  <PropertyGroup>
+    <_DotNetPackageVersion>5.0.0</_DotNetPackageVersion>
+  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Hosting\Internal\AppHostEnvironment.cs">
-      <SubType></SubType>
-    </Compile>
-    <Compile Update="Hosting\Internal\HostingLoggerExtensions.cs">
-      <SubType></SubType>
-    </Compile>
-    <Compile Update="Core\IWindow.cs">
-      <SubType></SubType>
-    </Compile>
-    <Compile Update="Core\IPage.cs">
-      <SubType></SubType>
-    </Compile>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(_DotNetPackageVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(_DotNetPackageVersion)" />
   </ItemGroup>
   <PropertyGroup>
     <__REGISTRAR__ Condition="'$(__REGISTRAR__)' == ''">false</__REGISTRAR__>

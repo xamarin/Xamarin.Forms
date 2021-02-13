@@ -6,43 +6,73 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Xamarin.Platform.Hosting
 {
-	class HandlerServiceCollection : IHandlerServiceCollection
+	class MauiServiceCollection : IHandlerServiceCollection
 	{
 		static string s_error => "This Collection is based on a non ordered Dictionary";
 		internal Dictionary<Type, Type> _handler;
+		internal Dictionary<Type, object> _implementations;
+		internal Dictionary<Type, Func<IServiceProvider, object>> _factories;
+		internal List<ServiceDescriptor> _descriptors;
 
-		public HandlerServiceCollection()
+		public MauiServiceCollection()
 		{
 			_handler = new Dictionary<Type, Type>();
+			_implementations = new Dictionary<Type, object>();
+			_factories = new Dictionary<Type, Func<IServiceProvider, object>>();
+			_descriptors = new List<ServiceDescriptor>();
 		}
 
-		public int Count => _handler.Count;
+		public int Count => _descriptors.Count;
 
 		public bool IsReadOnly => false;
 
 		public void Add(ServiceDescriptor item)
 		{
-			if (item.ImplementationType == null)
-				throw new InvalidOperationException($"You need to provide an {item.ImplementationType}");
-
-			_handler[item.ServiceType] = item.ImplementationType;
+			if (!_descriptors.Contains(item))
+				_descriptors.Add(item);
+			if (item.ImplementationType != null)
+				_handler[item.ServiceType] = item.ImplementationType;
+			else if (item.ImplementationInstance != null)
+				_implementations[item.ServiceType] = item.ImplementationInstance;
+			else if (item.ImplementationFactory != null)
+				_factories[item.ServiceType] = item.ImplementationFactory;
+			else
+				throw new InvalidOperationException($"You need to provide an {nameof(item.ImplementationType)} or a {nameof(item.ImplementationInstance)} ");
 		}
 
-		public void Clear() => _handler.Clear();
+		public void Clear()
+		{
+			_descriptors.Clear();
+			_handler.Clear();
+			_implementations.Clear();
+			_factories.Clear();
+		}
 
-		public bool Contains(ServiceDescriptor item) => _handler.ContainsKey(item.ServiceType);
+		public bool Contains(ServiceDescriptor item) => _descriptors.Contains(item);
 
-		public IEnumerator<ServiceDescriptor> GetEnumerator() => _handler.Select(c => new ServiceDescriptor(c.Key, c.Value)).GetEnumerator();
+		public IEnumerator<ServiceDescriptor> GetEnumerator() => _descriptors.GetEnumerator();
 
-		IEnumerator IEnumerable.GetEnumerator() => _handler.GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator() => _descriptors.GetEnumerator();
 
 		public bool Remove(ServiceDescriptor item)
 		{
+			if (_descriptors.Contains(item))
+			{
+				_descriptors.Remove(item);
+			}
 			if (_handler.ContainsKey(item.ServiceType))
 			{
-				var element = _handler[item.ServiceType];
-				return _handler.Remove(element);
+				return _handler.Remove(item.ServiceType);
 			}
+			if (_implementations.ContainsKey(item.ServiceType))
+			{
+				return _implementations.Remove(item.ServiceType);
+			}
+			if (_factories.ContainsKey(item.ServiceType))
+			{
+				return _factories.Remove(item.ServiceType);
+			}
+
 			return false;
 		}
 

@@ -14,9 +14,15 @@ namespace Sample
 	{
 		static bool HasInit;
 
+		public class RegistrarTextService : ITextService
+		{
+			public string GetText() => "Hello From Forms Via Registrar";
+		}
 		public static IWindow GetWindow()
 		{
-			return new MainWindow(new MainPage(new MainPageViewModel(new List<ITextService> { new TextService() })));
+			var service = new RegistrarTextService();
+			
+			return new MainWindow(new MainPage(new MainPageViewModel(new List<ITextService> { service })));
 		}
 
 		public static void Init()

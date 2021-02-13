@@ -9,18 +9,18 @@ namespace Xamarin.Platform.Hosting.Internal
 {
 	internal static class AppLoader
 	{
-		public static void ConfigureAppServices<TApplication>(HostBuilderContext context, IServiceCollection services, object app) where TApplication : class, IApp
+		public static void ConfigureAppServices(HostBuilderContext? context, IServiceCollection services, object app) //where TApplication : class, IApp
 		{
-			services.AddSingleton<IApp, TApplication>((serviceProvider) => (TApplication)app);
+			//services.AddSingleton<IApp, TApplication>((serviceProvider) => (TApplication)app);
 
-			var startupType = typeof(TApplication);
+			var startupType = app.GetType();
 
-			var environmentName = context.HostingEnvironment?.EnvironmentName ?? "";
+			var environmentName = context?.HostingEnvironment?.EnvironmentName ?? "";
 
 			var servicesMethod = FindMethod(startupType, "Configure{0}Services", environmentName, typeof(IServiceProvider), required: false)
 			?? FindMethod(startupType, "Configure{0}Services", environmentName, typeof(void), required: false);
 
-			if (servicesMethod != null)
+			if (servicesMethod != null && context != null)
 				servicesMethod.Invoke(app, new object[2] { context, services });
 		}
 
