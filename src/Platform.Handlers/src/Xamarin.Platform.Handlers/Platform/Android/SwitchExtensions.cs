@@ -15,9 +15,9 @@ namespace Xamarin.Platform
 {
 	public static class SwitchExtensions
 	{
-		static ColorStateList? mSwitchTrackStateList;
+		static ColorTrackingColorStateList? mSwitchTrackStateList;
 		// taken from android sourcec ccode
-		static ColorStateList getSwitchTrackColorStateList(this Context context)
+		static ColorTrackingColorStateList getSwitchTrackColorStateList(this Context context)
 		{
 			if (mSwitchTrackStateList == null)
 			{
@@ -35,7 +35,7 @@ namespace Xamarin.Platform
 				states[i] = new int[0];
 				colors[i] = getThemeAttrColor(context, AAttribute.ColorForeground, 0.3f);
 				i++;
-				mSwitchTrackStateList = new ColorStateList(states, colors);
+				mSwitchTrackStateList = new ColorTrackingColorStateList(states, colors);
 			}
 			return mSwitchTrackStateList;
 		}
@@ -84,18 +84,45 @@ namespace Xamarin.Platform
 		{
 			var onColor = view.OnColor;
 
-			if (!onColor.IsDefault)
+			if (aSwitch.Context == null)
+				return;
+
+			if (aSwitch.TrackTintList == null)
+				aSwitch.TrackTintList = getSwitchTrackColorStateList(aSwitch.Context);
+
+			if(aSwitch.Checked && aSwitch.TrackTintList is ColorTrackingColorStateList csl)
+			{
+				int nativeOnColor = 0;
+				if(onColor.IsDefault)
+				{
+					nativeOnColor = getThemeAttrColor(aSwitch.Context, AAttribute.ColorControlActivated, 0.3f);
+				}
+				else
+				{
+					nativeOnColor = onColor.ToNative();
+				}
+
+				var newList = csl.CreateForState(
+					new int[] { AAttribute.StateChecked },
+					nativeOnColor);
+
+				if (newList != aSwitch.TrackTintList)
+					aSwitch.TrackTintList = newList;
+			}
+		}
+
+		public static void UpdateOnColorSimple(this ASwitch aSwitch, ISwitch view)
+		{
+			var onColor = view.OnColor;
+
+			if (!onColor.IsDefault && aSwitch.Checked)
 			{
 				aSwitch.TrackDrawable.SetTintMode(APorterDuff.Mode.SrcAtop);
-				aSwitch.TrackDrawable.SetTintList(new ColorTrackingColorStateList(_checkedStates, onColor));
+				aSwitch.TrackDrawable.SetColorFilter(onColor.ToNative(), FilterMode.SrcAtop);
 			}
 			else
 			{
-				if (aSwitch.Context == null)
-					return;
-
-				var list = getSwitchTrackColorStateList(aSwitch.Context);
-				aSwitch.TrackDrawable.SetTintList(list);
+				aSwitch.TrackDrawable.ClearColorFilter();
 			}
 		}
 
@@ -150,29 +177,35 @@ namespace Xamarin.Platform
 			{
 			}
 
+
 			public ColorTrackingColorStateList CreateForState(int[] states, Color expectedColor)
+			{
+				return CreateForState(states, expectedColor.ToNative());
+			}
+			public ColorTrackingColorStateList CreateForState(int[] states, int expectedColor)
 			{
 				if (_states == null || _colors == null)
 					return this;
 
 				var myColor = GetColorForState(states, new AColor());
-				var nativeColor = expectedColor.ToNative();
-				if (nativeColor != myColor)
+				
+				for (int i = 0; i < _states.Length; i++)
 				{
-					for (int i = 0; i < _states.Length; i++)
+					if (_states[i].Length == 0 && states.Length == 0 ||
+						_states[i][0] == states[0])
 					{
-						if (_states[i] == states)
+						if (_colors[i] != expectedColor)
 						{
-							_colors[i] = expectedColor.ToNative();
+							_colors[i] = expectedColor;
 							return new ColorTrackingColorStateList(_states, _colors);
 						}
+
+						return this;
 					}
 				}
 
 				return this;
 			}
-
-
 
 			internal static ColorStateList Create(ColorStateList thumbTintList, int[][] checkedStates, Color thumbColor, int[] currentState)
 			{
