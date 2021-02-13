@@ -13,7 +13,7 @@ namespace Xamarin.Platform
 			else
 				color = boxView.BackgroundColor;
 
-			nativeView.Color = color;
+			nativeView.Color = Color.Purple;
 		}
 
 		public static void UpdateCornerRadius(this NativeBoxView nativeView, IBox boxView)

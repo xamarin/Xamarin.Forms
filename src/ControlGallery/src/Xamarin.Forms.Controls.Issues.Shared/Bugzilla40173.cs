@@ -45,6 +45,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
+			BackgroundColor = Color.DeepPink;
 			var outputLabel = new Label();
 			var testButton = new Button
 			{
