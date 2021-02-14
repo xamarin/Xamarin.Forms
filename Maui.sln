@@ -23,6 +23,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Maui.Controls.Compatibility
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.Forms.Platform.Android.FormsViewGroup-net6", "src\Platform.Renderers\src\Xamarin.Forms.Platform.Android.FormsViewGroup\Xamarin.Forms.Platform.Android.FormsViewGroup-net6.csproj", "{EB956381-F3E6-437C-9069-36B8BF5C6E2F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{6330DD15-98A9-446E-9063-71BF5EF19BFE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Maui.DeviceTests", "src\Platform.Handlers\tests\Xamarin.Platform.Handlers.DeviceTests\Maui.DeviceTests.csproj", "{0E01EA07-00D2-4B73-9A0D-5D1F78540EB7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Maui.DeviceTests.Droid", "src\Platform.Handlers\tests\Xamarin.Platform.Handlers.DeviceTests.Android\Maui.DeviceTests.Droid.csproj", "{290466A3-FA26-4ED3-9D82-019809222F3D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Maui.DeviceTests.iOS", "src\Platform.Handlers\tests\Xamarin.Platform.Handlers.DeviceTests.iOS\Maui.DeviceTests.iOS.csproj", "{E0511D6C-E59C-44F9-8035-F2CDA98F37BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,9 +66,28 @@ Global
 		{EB956381-F3E6-437C-9069-36B8BF5C6E2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB956381-F3E6-437C-9069-36B8BF5C6E2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB956381-F3E6-437C-9069-36B8BF5C6E2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E01EA07-00D2-4B73-9A0D-5D1F78540EB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E01EA07-00D2-4B73-9A0D-5D1F78540EB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E01EA07-00D2-4B73-9A0D-5D1F78540EB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E01EA07-00D2-4B73-9A0D-5D1F78540EB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{290466A3-FA26-4ED3-9D82-019809222F3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{290466A3-FA26-4ED3-9D82-019809222F3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{290466A3-FA26-4ED3-9D82-019809222F3D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{290466A3-FA26-4ED3-9D82-019809222F3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{290466A3-FA26-4ED3-9D82-019809222F3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{290466A3-FA26-4ED3-9D82-019809222F3D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{E0511D6C-E59C-44F9-8035-F2CDA98F37BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0511D6C-E59C-44F9-8035-F2CDA98F37BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0511D6C-E59C-44F9-8035-F2CDA98F37BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0511D6C-E59C-44F9-8035-F2CDA98F37BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0E01EA07-00D2-4B73-9A0D-5D1F78540EB7} = {6330DD15-98A9-446E-9063-71BF5EF19BFE}
+		{290466A3-FA26-4ED3-9D82-019809222F3D} = {6330DD15-98A9-446E-9063-71BF5EF19BFE}
+		{E0511D6C-E59C-44F9-8035-F2CDA98F37BA} = {6330DD15-98A9-446E-9063-71BF5EF19BFE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0B8ABEAD-D2B5-4370-A187-62B5ABE4EE50}
