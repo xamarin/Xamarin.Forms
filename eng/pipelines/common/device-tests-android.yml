@@ -1,0 +1,32 @@
+steps:
+  - checkout: self
+    clean: true
+
+  - task: xamops.azdevex.provisionator-task.provisionator@1
+    displayName: 'Provisionator'
+    condition: eq(variables['provisioning'], 'true')
+    inputs:
+      provisioning_script: $(provisionator.path)
+      provisioning_extra_args: $(provisionator.extraArguments)
+  
+  - task: Bash@3
+    displayName: 'Cake Provision'
+    condition: eq(variables['provisioningCake'], 'true')
+    inputs:
+      targetType: 'filePath'
+      filePath: 'build.sh'
+      arguments: --target provision --TeamProject="$(System.TeamProject)"
+
+  - task: UseDotNet@2
+    displayName: 'Install .net core $(DOTNET_VERSION)'
+    condition: ne(variables['DOTNET_VERSION'], '')
+    inputs:
+      version: $(DOTNET_VERSION)
+      packageType: 'sdk'
+  
+  - task: Bash@3
+    displayName: 'Build Android $(renderers)'
+    inputs:
+      targetType: 'filePath'
+      filePath: 'build.sh'
+      arguments: --script=eng/devices/android.cake --project="$(project)"
