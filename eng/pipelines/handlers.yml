@@ -124,7 +124,7 @@ stages:
       - job: device_tests
         workspace:
           clean: all
-        displayName: Run Device Tests Essentials Android
+        displayName: Run Device Tests Android
         timeoutInMinutes: 120
         pool:
           name:  $(macOSXVmPool)
@@ -135,9 +135,9 @@ stages:
           provisionator.extraArguments : '--v'
         strategy:
           matrix:
-            essentials:
+            Essentials:
               project: '$(System.DefaultWorkingDirectory)/src/Essentials/test/DeviceTests.Android/Xamarin.Essentials.DeviceTests.Android.csproj'
-            handlers:
+            Handlers:
               project: '$(System.DefaultWorkingDirectory)/src/Platform.Handlers/tests/Xamarin.Platform.Handlers.DeviceTests.Android/Xamarin.Platform.Handlers.DeviceTests.Android.csproj'
         steps:
           - template: common/device-tests-android.yml
