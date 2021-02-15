@@ -434,7 +434,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				int elementSelectionLength = System.Math.Min(EditText.Text.Length - cursorPosition, Element.SelectionLength);
 
-				var controlSelectionLength = EditText.SelectionEnd - selectionStart;
+				var controlSelectionLength = System.Math.Abs(EditText.SelectionEnd - selectionStart);
+				
 				if (controlSelectionLength != elementSelectionLength)
 					SetSelectionLengthFromRenderer(controlSelectionLength);
 			}
