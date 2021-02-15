@@ -1,15 +1,9 @@
 ﻿using Xamarin.Forms;
-using Xamarin.Platform;
 
-namespace Sample
+namespace Xamarin.Platform.Handlers.DeviceTests.Stubs
 {
-	public class Label : View, ILabel
+	public partial class LabelStub : StubBase, ILabel
 	{
-		public Label()
-		{
-
-		}
-
 		public TextType TextType { get; set; }
 
 		public double LineHeight { get; set; }

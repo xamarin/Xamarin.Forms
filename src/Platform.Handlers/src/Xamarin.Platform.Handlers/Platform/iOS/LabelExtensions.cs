@@ -1,20 +1,74 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Foundation;
-using UIKit;
+﻿using UIKit;
+using Xamarin.Forms;
 
 namespace Xamarin.Platform
 {
 	public static class LabelExtensions
 	{
-		public static void UpdateText(this UILabel label, string text)
-			=> label.Text = text;
+		public static void UpdateText(this UILabel nativeLabel, ILabel label)
+		{
+			nativeLabel.Text = label.Text;
+		}
 
-		public static void UpdateText(this UILabel label, NSAttributedString text)
-			=> label.AttributedText = text;
+		public static void UpdateTextColor(this UILabel nativeLabel, ILabel label)
+		{
+			var textColor = label.TextColor;
 
-		public static void UpdateText(this UILabel label, ILabel text)
-			=> label.UpdateText(text.Text);
+			if (textColor.IsDefault && label.TextType == TextType.Html)
+			{
+				// If no explicit text color has been specified and we're displaying HTML, 
+				// let the HTML determine the colors
+				return;
+			}
+
+			// Default value of color documented to be black in iOS docs
+			nativeLabel.TextColor = textColor.ToNative(ColorExtensions.LabelColor);
+
+		}
+
+		public static void UpdateFont(this UILabel nativeLabel, ILabel label)
+		{
+			
+		}
+
+		public static void UpdateCharacterSpacing(this UILabel nativeLabel, ILabel label)
+		{
+
+		}
+
+		public static void UpdateLineHeight(this UILabel nativeLabel, ILabel label)
+		{
+			
+		}
+
+		public static void UpdateHorizontalTextAlignment(this UILabel nativeLabel, ILabel label)
+		{
+
+		}
+
+		public static void UpdateVerticalTextAlignment(this UILabel nativeLabel, ILabel label)
+		{
+	
+		}
+
+		public static void UpdateTextDecorations(this UILabel nativeLabel, ILabel label)
+		{
+	
+		}
+
+		public static void UpdateLineBreakMode(this UILabel nativeLabel, ILabel label)
+		{
+
+		}
+
+		public static void UpdateMaxLines(this UILabel nativeLabel, ILabel label)
+		{
+
+		}
+
+		public static void UpdatePadding(this UILabel nativeLabel, ILabel label)
+		{
+		
+		}
 	}
 }
