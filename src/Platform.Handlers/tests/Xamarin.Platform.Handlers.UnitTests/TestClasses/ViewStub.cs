@@ -3,7 +3,7 @@ using Xamarin.Forms;
 
 namespace Xamarin.Platform.Handlers.Tests
 {
-	class MockView : IMockView
+	class ViewStub : IViewStub
 	{
 		public bool IsEnabled => throw new NotImplementedException();
 

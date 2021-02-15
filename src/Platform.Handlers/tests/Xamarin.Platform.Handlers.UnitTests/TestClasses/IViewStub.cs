@@ -1,6 +1,6 @@
 ﻿namespace Xamarin.Platform.Handlers.Tests
 {
-	class NativeMockView
+	interface IViewStub : IView
 	{
 
 	}

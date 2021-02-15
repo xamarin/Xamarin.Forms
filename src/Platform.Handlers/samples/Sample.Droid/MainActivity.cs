@@ -13,7 +13,6 @@ using Xamarin.Platform.Handlers;
 using Xamarin.Forms;
 using Xamarin.Platform.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using System.Collections.Generic;
 using System;
 using System.Reflection;
 
@@ -42,17 +41,15 @@ namespace Sample.Droid
 			Platform.Init();
 			content = Platform.GetWindow().Page.View;
 #else
-			var builder = App.CreateDefaultBuilder()
+			var app = App.CreateDefaultBuilder()
 							//.RegisterHandlers(new Dictionary<Type, Type>
 							//		{
 							//			{ typeof(VerticalStackLayout),typeof(LayoutHandler) },
 							//			{ typeof(HorizontalStackLayout),typeof(LayoutHandler) },
 							//		})
 							//.ConfigureServices(ConfigureExtraServices)
-							.UseServiceProviderFactory(new DIExtensionsServiceProviderFactory());
-
-			//TODO: need to solve this
-			var app = (builder as AppBuilder).Init<MyApp>();
+							.UseServiceProviderFactory(new DIExtensionsServiceProviderFactory())
+							.Build<MyApp>();
 
 			content = app.Windows.FirstOrDefault()?.Page.View;
 #endif
