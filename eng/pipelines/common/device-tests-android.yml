@@ -25,7 +25,7 @@ steps:
       packageType: 'sdk'
   
   - task: Bash@3
-    displayName: 'Build Android $(renderers)'
+    displayName: 'Build Android Device Tests $(Agent.JobName)'
     inputs:
       targetType: 'filePath'
       filePath: 'build.sh'
