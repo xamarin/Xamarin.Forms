@@ -4,7 +4,7 @@ using Xamarin.Platform.Hosting;
 
 namespace Xamarin.Platform.Handlers.Tests
 {
-	class MockButton : View, IButton
+	class ButtonStub : View, IButton
 	{
 		public string Text => throw new NotImplementedException();
 

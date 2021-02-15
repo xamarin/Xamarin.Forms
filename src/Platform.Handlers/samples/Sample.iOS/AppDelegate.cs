@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Xamarin.Platform.Hosting;
 using Sample.Services;
 
 namespace Sample.iOS
@@ -42,16 +43,16 @@ namespace Sample.iOS
 			var page = new Pages.MainPage();
 #else
 			var app = App.CreateDefaultBuilder()
-							//.RegisterHandler<IButton, CustomHandlers.CustomPinkTextButtonHandler>()
-							//.RegisterHandlers(new Dictionary<Type, Type>
-							//{
-							//	{ typeof(Xamarin.Platform.VerticalStackLayout),typeof(LayoutHandler) },
-							//	{ typeof(Xamarin.Platform.HorizontalStackLayout),typeof(LayoutHandler) },
-							//	{ typeof(Xamarin.Forms.FlexLayout),typeof(LayoutHandler) },
-							//	{ typeof(Xamarin.Forms.StackLayout),typeof(LayoutHandler) },
-							//})
-							//.ConfigureServices(ConfigureExtraServices)
-							.Init<MyApp>();
+								//.RegisterHandler<IButton, CustomHandlers.CustomPinkTextButtonHandler>()
+								//.RegisterHandlers(new Dictionary<Type, Type>
+								//{
+								//	{ typeof(Xamarin.Platform.VerticalStackLayout),typeof(LayoutHandler) },
+								//	{ typeof(Xamarin.Platform.HorizontalStackLayout),typeof(LayoutHandler) },
+								//	{ typeof(Xamarin.Forms.FlexLayout),typeof(LayoutHandler) },
+								//	{ typeof(Xamarin.Forms.StackLayout),typeof(LayoutHandler) },
+								//})
+								//.ConfigureServices(ConfigureExtraServices)
+								.Build<MyApp>();
 
 			var page = app.Windows.FirstOrDefault()?.Page;
 #endif

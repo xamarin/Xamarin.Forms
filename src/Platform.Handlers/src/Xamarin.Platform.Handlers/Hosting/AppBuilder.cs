@@ -10,48 +10,46 @@ namespace Xamarin.Platform.Hosting
 {
 	public class AppBuilder : IAppHostBuilder
 	{
-		List<Action<HostBuilderContext, IServiceCollection>> _configureHandlersActions = new List<Action<HostBuilderContext, IServiceCollection>>();
-		List<Action<IConfigurationBuilder>> _configureHostConfigActions = new List<Action<IConfigurationBuilder>>();
-		List<Action<HostBuilderContext, IConfigurationBuilder>> _configureAppConfigActions = new List<Action<HostBuilderContext, IConfigurationBuilder>>();
-		List<Action<HostBuilderContext, IServiceCollection>> _configureServicesActions = new List<Action<HostBuilderContext, IServiceCollection>>();
-		List<IConfigureContainerAdapter> _configureContainerActions = new List<IConfigureContainerAdapter>();
+		readonly List<Action<HostBuilderContext, IServiceCollection>> _configureHandlersActions = new List<Action<HostBuilderContext, IServiceCollection>>();
+		readonly List<Action<IConfigurationBuilder>> _configureHostConfigActions = new List<Action<IConfigurationBuilder>>();
+		readonly List<Action<HostBuilderContext, IConfigurationBuilder>> _configureAppConfigActions = new List<Action<HostBuilderContext, IConfigurationBuilder>>();
+		readonly List<Action<HostBuilderContext, IServiceCollection>> _configureServicesActions = new List<Action<HostBuilderContext, IServiceCollection>>();
+		readonly List<IConfigureContainerAdapter> _configureContainerActions = new List<IConfigureContainerAdapter>();
+		readonly Func<IServiceCollection> _serviceColectionFactory = new Func<IServiceCollection>(() => new MauiServiceCollection());
 		IServiceFactoryAdapter _serviceProviderFactory = new ServiceFactoryAdapter<IServiceCollection>(new DefaultServiceProviderFactory());
-		Func<IServiceCollection> _serviceColectionFactory = new Func<IServiceCollection>(() => new MauiServiceCollection());
 		bool _hostBuilt;
 		HostBuilderContext? _hostBuilderContext;
 		IHostEnvironment? _hostEnvironment;
 		IServiceProvider? _serviceProvider;
-		IHost? _host;
 		IServiceCollection? _services;
 		IApp? _app;
 
+		public AppBuilder()
+		{
+
+		}
 		public IDictionary<object, object> Properties => new Dictionary<object, object>();
 
-		public TApplication Init<TApplication>() where TApplication : class, IApp
+		public IApp BuildApp(IApp app)
 		{
-			_services = _serviceColectionFactory();
-
-			//we create the app here because users might need to register services
-			_app = Activator.CreateInstance(typeof(TApplication)) as TApplication;
-			if (_app == null)
-				throw new Exception("Couldn't create a new Application class");
-
-			_host = Build();
-
-			return (TApplication)_app;
+			_app = app;
+			Build();
+			return _app;
 		}
 
 		public IHost Build()
 		{
+			_services = _serviceColectionFactory();
+
 			if (_hostBuilt)
 				throw new InvalidOperationException("Build can only be called once.");
-		
+
 			_hostBuilt = true;
 
 			// the order is important here
 			CreateHostingEnvironment();
 			CreateHostBuilderContext();
-		
+
 			if (_services == null)
 				throw new InvalidOperationException("The ServiceCollection cannot be null");
 
@@ -188,13 +186,9 @@ namespace Xamarin.Platform.Hosting
 
 		void ConfigureAppServices(IServiceCollection services)
 		{
-			if (_app == null)
-			{
-				throw new InvalidOperationException($"The App cannot be null");
-			}
-
 			//Call ConfigureServices methoda on the users App class
-			AppLoader.ConfigureAppServices(_hostBuilderContext, services, _app);
+			if (_app != null)
+				AppLoader.ConfigureAppServices(_hostBuilderContext, services, _app);
 		}
 	}
 }

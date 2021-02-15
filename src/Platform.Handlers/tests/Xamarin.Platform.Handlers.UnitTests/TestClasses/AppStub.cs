@@ -4,11 +4,11 @@ using Xamarin.Platform.Hosting;
 
 namespace Xamarin.Platform.Handlers.Tests
 {
-	class MockApp : App
+	class AppStub : App
 	{
 		public void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
 		{
-			services.AddTransient<IButton, MockButton>();
+			services.AddTransient<IButton, ButtonStub>();
 		}
 	}
 }

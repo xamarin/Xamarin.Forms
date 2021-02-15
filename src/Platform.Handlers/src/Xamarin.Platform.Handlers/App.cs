@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Xamarin.Platform.Hosting;
 
 namespace Xamarin.Platform
@@ -53,7 +54,7 @@ namespace Xamarin.Platform
 		{
 			var builder = new AppBuilder();
 
-			builder.UseXamarinHandlers();
+			builder.UseMauiHandlers();
 
 			return builder;
 		}
