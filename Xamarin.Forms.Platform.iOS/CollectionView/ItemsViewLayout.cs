@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using CoreGraphics;
 using Foundation;
@@ -15,6 +16,10 @@ namespace Xamarin.Forms.Platform.iOS
 		CGSize _adjustmentSize0;
 		CGSize _adjustmentSize1;
 		CGSize _currentSize;
+
+		const double ConstraintSizeTolerance = 0.00001;
+
+		Dictionary<object, CGSize> _cellSizeCache = new Dictionary<object, CGSize>();
 
 		public ItemsUpdatingScrollMode ItemsUpdatingScrollMode { get; set; }
 
@@ -85,10 +90,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal virtual void UpdateConstraints(CGSize size)
 		{
-			if (size == _currentSize)
+			if (!RequiresConstraintUpdate(size, _currentSize))
 			{
 				return;
 			}
+
+			ClearCellSizeCache();
 
 			_currentSize = size;
 
@@ -560,6 +567,43 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return true;
+		}
+
+		internal bool TryGetCachedCellSize(object item, out CGSize size) 
+		{
+			if (_cellSizeCache.TryGetValue(item, out CGSize internalSize))
+			{
+				size = internalSize;
+				return true;
+			}
+
+			size = CGSize.Empty;
+			return false;
+		}
+
+		internal void CacheCellSize(object item, CGSize size) 
+		{
+			_cellSizeCache[item] = size;
+		}
+
+		internal void ClearCellSizeCache() 
+		{
+			_cellSizeCache.Clear();
+		}
+
+		bool RequiresConstraintUpdate(CGSize newSize, CGSize current)
+		{
+			if (Math.Abs(newSize.Width - current.Width) > ConstraintSizeTolerance)
+			{
+				return true;
+			}
+
+			if (Math.Abs(newSize.Height - current.Height) > ConstraintSizeTolerance)
+			{
+				return true;
+			}
+
+			return false;
 		}
 	}
 }
