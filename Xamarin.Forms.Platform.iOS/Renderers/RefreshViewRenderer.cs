@@ -191,19 +191,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (scrollView is UICollectionView collectionView)
 				{
-					bool hasHeaderFooter = collectionView.ContentInset != UIEdgeInsets.Zero;
-
-					if (hasHeaderFooter)
+					if (HasCollectionViewHeader(collectionView))
 					{
-						if (collectionView.BackgroundView == null)
-						{
-							if (collectionView.BackgroundView == null)
-								collectionView.BackgroundView = _refreshControl;
-							else
-								collectionView.BackgroundView.InsertSubview(_refreshControl, index);
-
-							addedRefreshControl = true;
-						}
+						collectionView.BackgroundView = _refreshControl;
+						addedRefreshControl = true;	
 					}
 				}
 
@@ -280,6 +271,22 @@ namespace Xamarin.Forms.Platform.iOS
 		bool CanUseRefreshControlProperty()
 		{
 			return Forms.IsiOS10OrNewer && !_usingLargeTitles;
+		}
+
+		bool HasCollectionViewHeader(UICollectionView collectionView)
+		{
+			bool hasHeader = false;
+
+			foreach (var children in collectionView.Subviews)
+			{
+				if (children.Tag == ItemsViewTags.HeaderTag)
+				{
+					hasHeader = true;
+					break;
+				}
+			}
+
+			return hasHeader;
 		}
 
 		void OnRefresh(object sender, EventArgs e)
