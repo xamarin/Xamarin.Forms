@@ -30,6 +30,7 @@ Task("Build")
 		c.Properties["Platform"] = new List<string> { PLATFORM };
 		c.Properties["BuildIpa"] = new List<string> { "true" };
 		c.Properties["ContinuousIntegrationBuild"] = new List<string> { "false" };
+		c.Properties["RestoreConfigFile"] = new List<string> { "../../eng/DevopsNuget.config" };
 		c.Targets.Clear();
 		c.Targets.Add("Rebuild");
 		c.BinaryLogger = new MSBuildBinaryLogSettings {
