@@ -9,10 +9,10 @@ namespace Sample.Pages
 	public class MainPage : Xamarin.Forms.ContentPage, IPage
 	{
 		MainPageViewModel _viewModel;
-		//public MainPage() : this(App.Current.Services.GetService<MainPageViewModel>())
-		//{
+		public MainPage() : this(App.Current.Services.GetService<MainPageViewModel>())
+		{
 
-		//}
+		}
 		public MainPage(MainPageViewModel viewModel)
 		{
 			BindingContext = _viewModel = viewModel;

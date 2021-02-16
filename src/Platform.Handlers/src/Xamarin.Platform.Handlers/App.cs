@@ -15,7 +15,7 @@ namespace Xamarin.Platform
 		IApp
 	{
 		IServiceProvider? _serviceProvider;
-		IHandlerServiceProvider? _handlerServiceProvider;
+		IMauiServiceProvider? _handlerServiceProvider;
 		
 		protected App()
 		{
@@ -42,10 +42,10 @@ namespace Xamarin.Platform
 		internal void SetServiceProvider(IServiceProvider provider)
 		{
 			_serviceProvider = provider;
-			SetHandlerServiceProvider(provider.GetService<IHandlerServiceProvider>());
+			SetHandlerServiceProvider(provider.GetService<IMauiServiceProvider>());
 		}
 
-		internal void SetHandlerServiceProvider(IHandlerServiceProvider? provider)
+		internal void SetHandlerServiceProvider(IMauiServiceProvider? provider)
 		{
 			_handlerServiceProvider = provider;
 		}

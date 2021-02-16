@@ -48,7 +48,7 @@ namespace Sample.Droid
 							//			{ typeof(HorizontalStackLayout),typeof(LayoutHandler) },
 							//		})
 							//.ConfigureServices(ConfigureExtraServices)
-							.UseServiceProviderFactory(new DIExtensionsServiceProviderFactory())
+							//.UseServiceProviderFactory(new DIExtensionsServiceProviderFactory())
 							.Build<MyApp>();
 
 			content = app.Windows.FirstOrDefault()?.Page.View;
