@@ -398,6 +398,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			public TitleViewContainer(View view) : base(view)
 			{
+				MatchHeight = true;
 			}
 
 			public override CGRect Frame
@@ -413,6 +414,20 @@ namespace Xamarin.Forms.Platform.iOS
 
 					base.Frame = value;
 				}
+			}
+
+			public override void WillMoveToSuperview(UIView newSuper)
+			{
+				if (newSuper != null)
+				{
+					if (!Forms.IsiOS11OrNewer)
+						Frame = new CGRect(Frame.X, newSuper.Bounds.Y, Frame.Width, newSuper.Bounds.Height);
+
+					Height = newSuper.Bounds.Height;
+					Width = newSuper.Bounds.Width;
+				}
+
+				base.WillMoveToSuperview(newSuper);
 			}
 
 			public override CGSize IntrinsicContentSize => UILayoutFittingExpandedSize;
@@ -463,6 +478,16 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateSearchVisibility(_searchController);
 			else if (e.PropertyName == SearchHandler.IsSearchEnabledProperty.PropertyName)
 				UpdateSearchIsEnabled(_searchController);
+			else if (e.Is(SearchHandler.AutomationIdProperty))
+			{
+				UpdateAutomationId();
+			}
+		}
+
+		void UpdateAutomationId()
+		{
+			if (_searchHandler?.AutomationId != null && _searchController?.SearchBar != null)
+				_searchController.SearchBar.AccessibilityIdentifier = _searchHandler.AutomationId;
 		}
 
 		protected virtual void RemoveSearchController(UINavigationItem navigationItem)
@@ -587,6 +612,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_searchHandlerAppearanceTracker = new SearchHandlerAppearanceTracker(searchBar, SearchHandler);
 
 			UpdateFlowDirection();
+			UpdateAutomationId();
 		}
 
 		void BookmarkButtonClicked(object sender, EventArgs e)
