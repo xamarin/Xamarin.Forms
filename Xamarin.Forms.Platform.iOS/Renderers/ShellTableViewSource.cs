@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Platform.iOS
 					if (_cells != null)
 					{
 						foreach (var cell in _cells.Values)
-							cell.Disconnect();
+							cell.Disconnect(_context.Shell);
 					}
 
 					_cells = new Dictionary<Element, UIContainerCell>();
@@ -47,6 +47,41 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual DataTemplate DefaultMenuItemTemplate => null;
 
+		internal void ReSyncCache()
+		{
+			var newGroups = ((IShellController)_context.Shell).GenerateFlyoutGrouping();
+
+			if (newGroups == _groups)
+				return;
+
+			_groups = newGroups;
+			if (_cells == null)
+			{
+				_cells = new Dictionary<Element, UIContainerCell>();
+				return;
+			}
+
+			var oldList = _cells;
+			_cells = new Dictionary<Element, UIContainerCell>();
+
+			foreach (var group in newGroups)
+			{
+				foreach(var element in group)
+				{
+					UIContainerCell result;
+					if(oldList.TryGetValue(element, out result))
+					{
+						_cells.Add(element, result);
+						oldList.Remove(element);
+					}
+				}
+			}
+
+			foreach (var cell in oldList.Values)
+				cell.Disconnect(_context.Shell);
+		}
+
+
 		public void ClearCache()
 		{
 			var newGroups = ((IShellController)_context.Shell).GenerateFlyoutGrouping();
@@ -57,7 +92,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_cells != null)
 				{
 					foreach (var cell in _cells.Values)
-						cell.Disconnect();
+						cell.Disconnect(_context.Shell);
 				}
 				_cells = new Dictionary<Element, UIContainerCell>();
 			}
@@ -120,18 +155,13 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!_cells.TryGetValue(context, out cell))
 			{
 				var view = (View)template.CreateContent(context, _context.Shell);
-				cell = new UIContainerCell(cellId, view);
-
-				// Set Parent after binding context so parent binding context doesn't propagate to view
-				cell.BindingContext = context;
-				view.Parent = _context.Shell;
+				cell = new UIContainerCell(cellId, view, _context.Shell, context);
 			}
 			else
 			{
 				var view = _cells[context].View;
-				cell.Disconnect();
-				cell = new UIContainerCell(cellId, view);
-				cell.BindingContext = context;
+				cell.Disconnect(keepRenderer: true);
+				cell = new UIContainerCell(cellId, view, _context.Shell, context);
 			}
 
 			cell.SetAccessibilityProperties(context);
@@ -153,8 +183,10 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (section < Groups.Count - 1)
 				return 1;
+
 			return 0;
 		}
+
 		public override UIView GetViewForFooter(UITableView tableView, nint section)
 		{
 			return new SeparatorView();
