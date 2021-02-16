@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ItemGroup>
+    <AvailableItemName Include="SharedImage" />
+  </ItemGroup>
+
+  <UsingTask
+    AssemblyFile="Xamarin.Forms.Resizetizer.NT.dll"
+    TaskName="Resizetizer.ResizetizeSharedImages" />
+
+  <PropertyGroup>
+    <CleanDependsOn>
+      $(CleanDependsOn);
+      _CleanResizetizer;
+    </CleanDependsOn>
+
+    <_ResizetizerIsAndroid Condition="'$(AndroidApplication)' == 'True'">True</_ResizetizerIsAndroid>
+    <_ResizetizerIsiOS Condition="'$(TargetFrameworkIdentifier)'=='Xamarin.iOS' And ('$(OutputType)' != 'Library' OR '$(IsAppExtension)'=='True')">True</_ResizetizerIsiOS>
+    <_ResizetizerIsUWP Condition="'$(TargetPlatformIdentifier)'=='UAP' And '$(OutputType)' == 'AppContainerExe'">True</_ResizetizerIsUWP>
+    <_ResizetizerIsWPF Condition="'$(IsApplication)' == 'True' And '$(NuGetRuntimeIdentifier)' == 'win' And '$(TargetPlatformIdentifier)'=='Windows'">True</_ResizetizerIsWPF>
+
+    <_ResizetizerInputsFile>$(IntermediateOutputPath)resizetizer.inputs</_ResizetizerInputsFile>
+
+    <!-- <ResizetizerIncludeAllImages Condition="'$(ResizetizerIncludeAllImages)' == ''">False</ResizetizerIncludeAllImages> -->
+    <ResizetizerIncludeSelfProject Condition="'$(ResizetizerIncludeSelfProject)' == ''">False</ResizetizerIncludeSelfProject>
+  </PropertyGroup>
+
+  <!-- iOS -->
+  <PropertyGroup Condition="'$(_ResizetizerIsiOS)' == 'True' Or '$(ResizetizeriOS)' == 'True'">
+    <ResizetizerPlatformType>ios</ResizetizerPlatformType>
+
+    <ResizetizeCollectImagesBeforeTargets>
+      $(ResizetizeCollectImagesBeforeTargets);
+      _CollectBundleResources;_BeforeCoreCompileImageAssets;
+    </ResizetizeCollectImagesBeforeTargets>
+
+    <ResizetizeAfterTargets>
+      $(ResizetizeAfterTargets);
+      ResizetizeCollectImages;
+    </ResizetizeAfterTargets>
+  </PropertyGroup>
+
+  <!-- Android -->
+  <PropertyGroup Condition="'$(_ResizetizerIsAndroid)' == 'True' Or '$(ResizetizerAndroid)' == 'True'">
+    <ResizetizerPlatformType>android</ResizetizerPlatformType>
+
+    <ResizetizeCollectImagesAfterTargets>
+      $(ResizetizeCollectImagesBeforeTargets);
+      ResolveProjectReferences;
+    </ResizetizeCollectImagesAfterTargets>
+
+    <ResizetizeAfterTargets>
+      $(ResizetizeAfterTargets);
+      ResizetizeCollectImages;
+    </ResizetizeAfterTargets>
+  </PropertyGroup>
+
+  <!-- UWP -->
+  <PropertyGroup Condition="'$(_ResizetizerIsUWP)' == 'True' Or '$(ResizetizerUWP)' == 'True'">
+    <ResizetizerPlatformType>uwp</ResizetizerPlatformType>
+
+    <ResizetizeDependsOnTargets>
+      $(ResizetizeDependsOnTargets);
+      ResizetizeCollectImages;
+    </ResizetizeDependsOnTargets>
+
+    <ResizetizeBeforeTargets>
+      $(ResizetizeBeforeTargets);
+      AssignTargetPaths;
+    </ResizetizeBeforeTargets>
+  </PropertyGroup>
+
+  <!-- WPF -->
+  <PropertyGroup Condition="'$(_ResizetizerIsWPF)' == 'True' Or '$(ResizetizerWPF)' == 'True'">
+    <ResizetizerPlatformType>wpf</ResizetizerPlatformType>
+
+    <ResizetizeDependsOnTargets>
+      $(ResizetizeDependsOnTargets);
+      ResizetizeCollectImages;
+    </ResizetizeDependsOnTargets>
+
+    <ResizetizeBeforeTargets>
+      $(ResizetizeBeforeTargets);
+      FileClassification;
+    </ResizetizeBeforeTargets>
+  </PropertyGroup>
+
+  <!-- Finds absolute paths to any SharedImage in this project -->
+  <!-- App head projects will invoke this target on their project references to collect images -->
+  <Target Name="GetSharedImages" Outputs="@(ExportedSharedImage)">
+
+    <!-- Include None="" items which are .svg or .png if the property is set -->
+    <!-- <ItemGroup Condition="'$(ResizetizerIncludeAllImages)' == 'True'">
+      <SharedImage
+        Include="@(None)"
+        Condition="'%(Extension)' == '.svg' Or '%(Extension)' == '.png'" />
+    </ItemGroup> -->
+
+    <ConvertToAbsolutePath Paths="@(SharedImage)">
+      <Output TaskParameter="AbsolutePaths" ItemName="ExportedSharedImage"/>
+    </ConvertToAbsolutePath>
+
+  </Target>
+
+  <!-- Collect images from referenced projects -->
+  <Target Name="ResizetizeCollectImages"
+    Condition="'$(_ResizetizerIsAndroid)' == 'True' Or '$(_ResizetizerIsiOS)' == 'True' Or '$(_ResizetizerIsUWP)' == 'True' Or '$(_ResizetizerIsWPF)' == 'True'"
+    BeforeTargets="$(ResizetizeCollectImagesBeforeTargets)"
+    AfterTargets="$(ResizetizeCollectImagesAfterTargets)">
+
+    <CallTarget Targets="GetSharedImages" Condition="'$(ResizetizerIncludeSelfProject)' == 'True'">
+      <Output
+        TaskParameter="TargetOutputs"
+        ItemName="SharedImage" />
+    </CallTarget>
+
+    <!-- Invoke the GetSharedImages target on all project references -->
+    <!-- This will accumulate images into our SharedImage group -->
+    <!--<MSBuild Targets="GetSharedImages" Projects="@(_MSBuildProjectReferenceExistent)">-->
+    <MSBuild
+      Targets="GetSharedImages"
+      Projects="@(ProjectReference)"
+      SkipNonexistentProjects="true"
+      SkipNonexistentTargets="true">
+      <Output
+        TaskParameter="TargetOutputs"
+        ItemName="SharedImage" />
+    </MSBuild>
+
+    <!-- Write out item spec and metadata to a file we can use as an inputs for the resize target -->
+    <!-- This allows us to invalidate the build based on not just input image files changing but project item metadata as well -->
+    <WriteLinesToFile
+      File="$(_ResizetizerInputsFile)"
+      Lines="@(SharedImage->'File=%(Identity);BaseSize=%(BaseSize);TintColor=%(TintColor)')"
+      Overwrite="true"
+      WriteOnlyWhenDifferent="true" />
+
+  </Target>
+
+
+  <Target Name="ResizetizeImages"
+    Inputs="@(SharedImage);$(_ResizetizerInputsFile)"
+    Outputs="$(IntermediateOutputPath)resizetizer.stamp"
+    AfterTargets="$(ResizetizeAfterTargets)"
+    BeforeTargets="$(ResizetizeBeforeTargets)"
+    DependsOnTargets="$(ResizetizeDependsOnTargets)">
+
+    <!-- Where in obj/ to store these -->
+    <PropertyGroup>
+      <ResizetizerIntermediateOutputPath>$(IntermediateOutputPath)resizetize\r\</ResizetizerIntermediateOutputPath>
+    </PropertyGroup>
+
+    <!-- Resize the images -->
+    <ResizetizeSharedImages
+      PlatformType="$(ResizetizerPlatformType)"
+      IntermediateOutputPath="$(ResizetizerIntermediateOutputPath)"
+      InputsFile="$(_ResizetizerInputsFile)"
+      SharedImages="@(SharedImage)">
+    </ResizetizeSharedImages>
+
+    <ItemGroup>
+      <!-- Get Images that were generated -->
+      <!-- Either from the task, or if the task was skipped (up to date), use the wildcard lookup -->
+      <_ResizetizerCollectedImages Condition="'@(CopiedResources)' != ''" Include="@(CopiedResources)" />
+      <_ResizetizerCollectedImages Condition="'@(CopiedResources)' == ''" Include="$(ResizetizerIntermediateOutputPath)**\*" />
+    </ItemGroup>
+
+    <!-- iOS -->
+    <ItemGroup Condition="'$(_ResizetizerIsiOS)' == 'True'">
+      <!-- Batch the collectd items into BundleResource which iOS expects -->
+      <_ResizetizerCollectedBundleResourceImages Include="@(_ResizetizerCollectedImages->'%(FullPath)')">
+        <LogicalName>%(_ResizetizerCollectedImages.Filename)%(_ResizetizerCollectedImages.Extension)</LogicalName>
+        <TargetPath>%(_ResizetizerCollectedImages.Filename)%(_ResizetizerCollectedImages.Extension)</TargetPath>
+      </_ResizetizerCollectedBundleResourceImages>
+
+      <!-- iOS Expects images in this group -->
+      <BundleResource Include="@(_ResizetizerCollectedBundleResourceImages)" Condition="'@(_ResizetizerCollectedBundleResourceImages->Contains('Assets.xcassets'))' != 'True' and '%(_ResizetizerCollectedBundleResourceImages.Identity)' != ''" />
+
+      <ImageAsset
+        Include="@(_ResizetizerCollectedBundleResourceImages)"
+        Condition="'@(_ResizetizerCollectedBundleResourceImages->Contains('Assets.xcassets'))' == 'True' and '%(_ResizetizerCollectedBundleResourceImages.Identity)' != ''">
+        <LogicalName>Assets.xcassets\AppIcon.appiconset\%(_ResizetizerCollectedBundleResourceImages.Filename)%(_ResizetizerCollectedBundleResourceImages.Extension)</LogicalName>
+        <TargetPath>Assets.xcassets\AppIcon.appiconset\%(_ResizetizerCollectedBundleResourceImages.Filename)%(_ResizetizerCollectedBundleResourceImages.Extension)</TargetPath>
+        <Link>Assets.xcassets\AppIcon.appiconset\%(_ResizetizerCollectedBundleResourceImages.Filename)%(_ResizetizerCollectedBundleResourceImages.Extension)</Link>
+      </ImageAsset>
+
+      <FileWrites Include="@(_ResizetizerCollectedBundleResourceImages)" />
+    </ItemGroup>
+
+    <!-- iOS Only -->
+    <!-- If on Windows, using build host, copy the files over to build server host too -->
+    <CopyFilesToBuildServer
+      Condition="'$(BuildSessionId)' != '' And '$(_ResizetizerIsiOS)' == 'True' And '$(IsMacEnabled)'=='true'"
+      SessionId="$(BuildSessionId)"
+      Files="@(_ResizetizerCollectedBundleResourceImages)" />
+
+    <!-- Android -->
+    <ItemGroup Condition="'$(_ResizetizerIsAndroid)' == 'True'">
+      <!-- If we had any images, add that obj/ folder as a resource directory -->
+      <LibraryResourceDirectories Condition="Exists ('$(ResizetizerIntermediateOutputPath)')" Include="$(ResizetizerIntermediateOutputPath)">
+        <StampFile>$(IntermediateOutputPath)resizetizer.stamp</StampFile>
+      </LibraryResourceDirectories>
+
+      <FileWrites Include="@(_ResizetizerCollectedImages)" />
+    </ItemGroup>
+
+    <!-- UWP -->
+    <ItemGroup Condition="'$(_ResizetizerIsUWP)' == 'True'">
+      <ContentWithTargetPath Include="@(_ResizetizerCollectedImages)">
+        <TargetPath>%(_ResizetizerCollectedImages.Filename)%(_ResizetizerCollectedImages.Extension)</TargetPath>
+      </ContentWithTargetPath>
+
+      <FileWrites Include="@(_ResizetizerCollectedImages)" />
+    </ItemGroup>
+
+    <!-- WPF -->
+    <ItemGroup Condition="'$(_ResizetizerIsWPF)' == 'True'">
+      <Resource Include="@(_ResizetizerCollectedImages)">
+        <LogicalName>%(_ResizetizerCollectedImages.Filename)%(_ResizetizerCollectedImages.Extension)</LogicalName>
+        <Link>%(_ResizetizerCollectedImages.Filename)%(_ResizetizerCollectedImages.Extension)</Link>
+      </Resource>
+      <FileWrites Include="@(_ResizetizerCollectedImages)" />
+    </ItemGroup>
+
+    <!-- Touch/create our stamp file for outputs -->
+    <Touch Files="$(IntermediateOutputPath)resizetizer.stamp" AlwaysCreate="True" />
+
+    <!-- Include our images and stamp file as filewrites so they don't get rm'd -->
+    <ItemGroup>
+      <FileWrites Include="$(IntermediateOutputPath)resizetizer.stamp" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_CleanResizetizer">
+    <PropertyGroup>
+      <ResizetizerIntermediateOutputPath>$(IntermediateOutputPath)resizetize\r\</ResizetizerIntermediateOutputPath>
+    </PropertyGroup>
+
+    <RemoveDir Directories="$(ResizetizerIntermediateOutputPath)" Condition="Exists ('$(ResizetizerIntermediateOutputPath)' )" />
+  </Target>
+</Project>
