@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using Windows.System;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
@@ -110,6 +111,14 @@ namespace Xamarin.Forms.Platform.UWP
 			SetDefaultSwitchColor();
 
 			return result;
+		}
+
+		protected override void OnProcessKeyboardAccelerators(ProcessKeyboardAcceleratorEventArgs args)
+		{
+			base.OnProcessKeyboardAccelerators(args);
+
+			if (Cell.HasContextActions && args.Modifiers == VirtualKeyModifiers.Control && args.Key == VirtualKey.O)
+				OpenContextMenu();
 		}
 
 		ListView GetListView()
