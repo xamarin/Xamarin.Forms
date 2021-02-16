@@ -9,13 +9,10 @@ steps:
       provisioning_script: $(provisionator.path)
       provisioning_extra_args: $(provisionator.extraArguments)
   
-  - task: Bash@3
+  - pwsh: |
+      ./build.ps1 --target provision --TeamProject="$(System.TeamProject)"
     displayName: 'Cake Provision'
     condition: eq(variables['provisioningCake'], 'true')
-    inputs:
-      targetType: 'filePath'
-      filePath: 'build.sh'
-      arguments: --target provision --TeamProject="$(System.TeamProject)"
 
   - task: UseDotNet@2
     displayName: 'Install .net core $(DOTNET_VERSION)'
@@ -24,9 +21,6 @@ steps:
       version: $(DOTNET_VERSION)
       packageType: 'sdk'
   
-  - task: Bash@3
-    displayName: 'Build Android Device Tests $(Agent.JobName)'
-    inputs:
-      targetType: 'filePath'
-      filePath: 'build.sh'
-      arguments: --script=eng/devices/android.cake --project="$(project)"
+  - pwsh: |
+      ./build.ps1 -Script eng/devices/android.cake --project="$(project)"
+    displayName: $(Agent.JobName)
