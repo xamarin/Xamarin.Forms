@@ -14,7 +14,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 
 		Color GetNativeTextColor(ButtonHandler buttonHandler)
 		{
-			uint currentTextColorInt = (uint)GetNativeButton(buttonHandler).CurrentTextColor;
+			int currentTextColorInt = GetNativeButton(buttonHandler).CurrentTextColor;
 			AColor currentTextColor = new AColor(currentTextColorInt);
 
 			return currentTextColor.ToColor();
