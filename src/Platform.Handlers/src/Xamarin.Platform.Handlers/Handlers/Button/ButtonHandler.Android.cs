@@ -40,13 +40,6 @@ namespace Xamarin.Platform.Handlers
 			base.DisconnectHandler(nativeView);
 		}
 
-		public static void MapBackgroundColor(ButtonHandler handler, IButton button)
-		{
-			ViewHandler.CheckParameters(handler, button);
-
-			handler.TypedNativeView?.UpdateBackgroundColor(button);
-		}
-
 		public static void MapColor(ButtonHandler handler, IButton button)
 		{
 			ViewHandler.CheckParameters(handler, button);

@@ -1,5 +1,6 @@
 ﻿using AndroidX.AppCompat.Widget;
 using Xamarin.Forms;
+using AColor = global::Android.Graphics.Color;
 
 namespace Xamarin.Platform.Handlers.DeviceTests
 {
@@ -11,7 +12,12 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 		string GetNativeText(ButtonHandler buttonHandler) =>
 			GetNativeButton(buttonHandler).Text;
 
-		Color GetNativeTextColor(ButtonHandler buttonHandler) =>
-			((uint)GetNativeButton(buttonHandler).CurrentTextColor).ToColor();
+		Color GetNativeTextColor(ButtonHandler buttonHandler)
+		{
+			uint currentTextColorInt = (uint)GetNativeButton(buttonHandler).CurrentTextColor;
+			AColor currentTextColor = new AColor(currentTextColorInt);
+
+			return currentTextColor.ToColor();
+		}
 	}
 }

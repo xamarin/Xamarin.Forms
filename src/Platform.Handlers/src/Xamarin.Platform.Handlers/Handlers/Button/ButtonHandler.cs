@@ -4,9 +4,6 @@
 	{
 		public static PropertyMapper<IButton, ButtonHandler> ButtonMapper = new PropertyMapper<IButton, ButtonHandler>(ViewHandler.ViewMapper)
 		{
-#if MONOANDROID
-			[nameof(IButton.BackgroundColor)] = MapBackgroundColor,
-#endif
 			[nameof(IButton.Text)] = MapText,
 			[nameof(IButton.TextColor)] = MapColor,
 			[nameof(IButton.Font)] = MapFont,

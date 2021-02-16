@@ -6,11 +6,6 @@ namespace Xamarin.Platform
 {
 	public static class ButtonExtensions
 	{
-		public static void UpdateBackgroundColor(this AppCompatButton appCompatButton, IButton button)
-		{
-			
-		}
-
 		public static void UpdateText(this AppCompatButton appCompatButton, IButton button) =>
 			appCompatButton.Text = button.Text;
 
