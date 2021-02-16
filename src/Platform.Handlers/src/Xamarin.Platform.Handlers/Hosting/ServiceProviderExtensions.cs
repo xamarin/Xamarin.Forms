@@ -1,14 +1,12 @@
 ﻿using System;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Xamarin.Platform.Hosting
 {
 	public static class ServiceProviderExtensions
 	{
-		internal static IServiceProvider BuildServiceProvider(this IServiceCollection serviceCollection)
-		{
-			return new HandlerServiceProvider(serviceCollection);
-		}
+		internal static IServiceProvider BuildServiceProvider(this IMauiServiceCollection serviceCollection)
+			=> new MauiServiceProvider(serviceCollection);
+
 
 		public static IViewHandler? GetHandler(this IServiceProvider services, Type type)
 			=> services.GetService(type) as IViewHandler;

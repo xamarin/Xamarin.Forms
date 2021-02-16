@@ -2,7 +2,7 @@
 
 namespace Xamarin.Platform
 {
-	public interface IHandlerServiceProvider : IServiceProvider
+	public interface IMauiServiceProvider : IServiceProvider
 	{
 	}
 }

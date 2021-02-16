@@ -8,9 +8,10 @@ namespace Sample.ViewModel
 {
 	public class MainPageViewModel : ViewModelBase
 	{
-		//public MainPageViewModel() : this(new ITextService[] { App.Current.Services.GetService<ITextService>() })
-		//{
-		//}
+		public MainPageViewModel() : this(new ITextService[] { App.Current.Services.GetService<ITextService>() })
+		{
+		}
+
 		public MainPageViewModel(IEnumerable<ITextService> textServices)
 		{
 			//Last will be the native one, the first will be the cross platform

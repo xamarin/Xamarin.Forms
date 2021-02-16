@@ -16,7 +16,7 @@ namespace Xamarin.Platform.Hosting
 		readonly List<Action<HostBuilderContext, IServiceCollection>> _configureServicesActions = new List<Action<HostBuilderContext, IServiceCollection>>();
 		readonly List<IConfigureContainerAdapter> _configureContainerActions = new List<IConfigureContainerAdapter>();
 		readonly Func<IServiceCollection> _serviceColectionFactory = new Func<IServiceCollection>(() => new MauiServiceCollection());
-		IServiceFactoryAdapter _serviceProviderFactory = new ServiceFactoryAdapter<IServiceCollection>(new DefaultServiceProviderFactory());
+		IServiceFactoryAdapter _serviceProviderFactory = new ServiceFactoryAdapter<IServiceCollection>(new MauiServiceProviderFactory());
 		bool _hostBuilt;
 		HostBuilderContext? _hostBuilderContext;
 		IHostEnvironment? _hostEnvironment;
@@ -181,7 +181,7 @@ namespace Xamarin.Platform.Hosting
 				if (_hostBuilderContext != null)
 					configureHandlersAction(_hostBuilderContext, _handlersCollection);
 			}
-			services.AddSingleton((IHandlerServiceProvider)_handlersCollection.BuildServiceProvider());
+			services.AddSingleton((IMauiServiceProvider)_handlersCollection.BuildServiceProvider());
 		}
 
 		void ConfigureAppServices(IServiceCollection services)
