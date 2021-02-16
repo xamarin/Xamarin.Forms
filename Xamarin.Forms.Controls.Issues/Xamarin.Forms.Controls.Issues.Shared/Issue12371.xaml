@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"      
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    mc:Ignorable="d"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue12371"
+    Title="Issue 12371">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <Style x:Key="BackgroundMenu" TargetType="Button">
+                <Setter Property="Padding" Value="{OnPlatform UWP=2}" />
+            </Style>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Without exceptions the test has passed."/>
+        <Button
+            Text="Issue 12371"
+            Style="{StaticResource BackgroundMenu}"/>
+    </StackLayout>
+</controls:TestContentPage>

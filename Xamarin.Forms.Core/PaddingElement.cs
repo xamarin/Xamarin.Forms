@@ -4,22 +4,22 @@
 	{
 		public static readonly BindableProperty PaddingProperty =
 			BindableProperty.Create(nameof(IPaddingElement.Padding), typeof(Thickness), typeof(IPaddingElement), default(Thickness),
-									propertyChanged: OnPaddingPropertyChanged,
-									defaultValueCreator: PaddingDefaultValueCreator);
+				propertyChanged: OnPaddingPropertyChanged,
+				defaultValueCreator: PaddingDefaultValueCreator);
 
 		static void OnPaddingPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
-			((IPaddingElement)bindable).OnPaddingPropertyChanged((Thickness)oldValue, (Thickness)newValue);
+			(bindable as IPaddingElement)?.OnPaddingPropertyChanged((Thickness)oldValue, (Thickness)newValue);
 		}
 
 		static object PaddingDefaultValueCreator(BindableObject bindable)
 		{
-			return ((IPaddingElement)bindable).PaddingDefaultValueCreator();
+			return (bindable as IPaddingElement)?.PaddingDefaultValueCreator();
 		}
 
 		public static readonly BindableProperty PaddingLeftProperty =
 			BindableProperty.Create("PaddingLeft", typeof(double), typeof(IPaddingElement), default(double),
-									propertyChanged: OnPaddingLeftChanged);
+				propertyChanged: OnPaddingLeftChanged);
 
 		static void OnPaddingLeftChanged(BindableObject bindable, object oldValue, object newValue)
 		{
@@ -30,7 +30,7 @@
 
 		public static readonly BindableProperty PaddingTopProperty =
 			BindableProperty.Create("PaddingTop", typeof(double), typeof(IPaddingElement), default(double),
-									propertyChanged: OnPaddingTopChanged);
+				propertyChanged: OnPaddingTopChanged);
 
 		static void OnPaddingTopChanged(BindableObject bindable, object oldValue, object newValue)
 		{
@@ -41,7 +41,7 @@
 
 		public static readonly BindableProperty PaddingRightProperty =
 			BindableProperty.Create("PaddingRight", typeof(double), typeof(IPaddingElement), default(double),
-									propertyChanged: OnPaddingRightChanged);
+				propertyChanged: OnPaddingRightChanged);
 
 		static void OnPaddingRightChanged(BindableObject bindable, object oldValue, object newValue)
 		{
@@ -52,7 +52,7 @@
 
 		public static readonly BindableProperty PaddingBottomProperty =
 			BindableProperty.Create("PaddingBottom", typeof(double), typeof(IPaddingElement), default(double),
-									propertyChanged: OnPaddingBottomChanged);
+				propertyChanged: OnPaddingBottomChanged);
 
 		static void OnPaddingBottomChanged(BindableObject bindable, object oldValue, object newValue)
 		{
