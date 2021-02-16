@@ -187,10 +187,33 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (view is UIScrollView scrollView)
 			{
-				if (CanUseRefreshControlProperty())
-					scrollView.RefreshControl = _refreshControl;
-				else
-					scrollView.InsertSubview(_refreshControl, index);
+				bool addedRefreshControl = false;
+
+				if (scrollView is UICollectionView collectionView)
+				{
+					bool hasHeaderFooter = collectionView.ContentInset != UIEdgeInsets.Zero;
+
+					if (hasHeaderFooter)
+					{
+						if (collectionView.BackgroundView == null)
+						{
+							if (collectionView.BackgroundView == null)
+								collectionView.BackgroundView = _refreshControl;
+							else
+								collectionView.BackgroundView.InsertSubview(_refreshControl, index);
+
+							addedRefreshControl = true;
+						}
+					}
+				}
+
+				if (!addedRefreshControl)
+				{
+					if (CanUseRefreshControlProperty())
+						scrollView.RefreshControl = _refreshControl;
+					else
+						scrollView.InsertSubview(_refreshControl, index);
+				}
 
 				scrollView.AlwaysBounceVertical = true;
 
