@@ -387,7 +387,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				// move the images according to the layout
-				if (layout.Position == Button.ButtonContentLayout.ImagePosition.Left)
+				if (layout.Position == ButtonContentLayout.ImagePosition.Left)
 				{
 					// add a bit of spacing
 					imageInsets.Left -= halfSpacing;
@@ -395,7 +395,7 @@ namespace Xamarin.Forms.Platform.iOS
 					titleInsets.Left += halfSpacing;
 					titleInsets.Right -= halfSpacing;
 				}
-				else if (layout.Position == Button.ButtonContentLayout.ImagePosition.Right)
+				else if (layout.Position == ButtonContentLayout.ImagePosition.Right)
 				{
 					// swap the elements and add spacing
 					imageInsets.Left += titleWidth + halfSpacing;
@@ -422,7 +422,7 @@ namespace Xamarin.Forms.Platform.iOS
 					_paddingAdjustments.Bottom += verticalAdjustment;
 
 					// if the image is at the bottom, swap the direction
-					if (layout.Position == Button.ButtonContentLayout.ImagePosition.Bottom)
+					if (layout.Position == ButtonContentLayout.ImagePosition.Bottom)
 					{
 						imageVertical = -imageVertical;
 						titleVertical = -titleVertical;

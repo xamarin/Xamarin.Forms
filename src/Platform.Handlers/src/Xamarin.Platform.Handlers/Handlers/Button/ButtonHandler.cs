@@ -1,46 +1,25 @@
-﻿using System;
-using Xamarin.Forms;
-
-#if __IOS__
-using NativeView = UIKit.UIButton;
-#elif __MACOS__
-using NativeView = AppKit.NSButton;
-#elif MONOANDROID
-using NativeView = AndroidX.AppCompat.Widget.AppCompatButton;
-#elif NETSTANDARD
-using NativeView = System.Object;
-#elif WINDOWS
-using NativeView = Microsoft.UI.Xaml.Controls.Button;
-#endif
-
-namespace Xamarin.Platform.Handlers
+﻿namespace Xamarin.Platform.Handlers
 {
-	public class ButtonHandler : AbstractViewHandler<IButton, NativeView>
+	public partial class ButtonHandler
 	{
 		public static PropertyMapper<IButton, ButtonHandler> ButtonMapper = new PropertyMapper<IButton, ButtonHandler>(ViewHandler.ViewMapper)
 		{
-			[nameof(IButton.Text)] = MapText,
-			[nameof(IButton.Color)] = MapColor
-		};
-
-		public static void MapColor(ButtonHandler handler, IButton button)
-		{
-			ViewHandler.CheckParameters(handler, button);
-			handler.TypedNativeView?.UpdateColor(button);
-		}
-
-		public static void MapText(ButtonHandler handler, IButton button)
-		{
-			ViewHandler.CheckParameters(handler, button);
-			handler.TypedNativeView?.UpdateText(button);
-		}
-
 #if MONOANDROID
-		protected override NativeView CreateNativeView() => new NativeView(this.Context);
-#else
-		protected override NativeView CreateNativeView() => new NativeView();
+			[nameof(IButton.BackgroundColor)] = MapBackgroundColor,
 #endif
-
+			[nameof(IButton.Text)] = MapText,
+			[nameof(IButton.TextColor)] = MapColor,
+			[nameof(IButton.Font)] = MapFont,
+			[nameof(IButton.CharacterSpacing)] = MapCharacterSpacing,
+			[nameof(IButton.CornerRadius)] = MapCornerRadius,
+			[nameof(IButton.BorderColor)] = MapBorderColor,
+			[nameof(IButton.BorderWidth)] = MapBorderWidth,
+			[nameof(IButton.FontSize)] = MapFont,
+			[nameof(IButton.FontAttributes)] = MapFont,
+			[nameof(IButton.ContentLayout)] = MapContentLayout,
+			[nameof(IButton.Padding)] = MapPadding
+		};
+				
 		public ButtonHandler() : base(ButtonMapper)
 		{
 

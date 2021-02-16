@@ -10,7 +10,7 @@ namespace Sample
 
 		public string Text { get; set; }
 
-		public Color Color { get; set; }
+		public Color TextColor { get; set; }
 
 		public int CornerRadius { get; set; } = DefaultCornerRadius;
 
@@ -33,6 +33,12 @@ namespace Sample
 		public TextAlignment VerticalTextAlignment { get; set; }
 
 		public double CharacterSpacing { get; set; }
+
+		public LineBreakMode LineBreakMode { get; set; }
+
+		public ButtonContentLayout ContentLayout { get; set; }
+
+		public Thickness Padding { get; set; }
 
 		public Action Pressed { get; set; }
 		public Action Released { get; set; }

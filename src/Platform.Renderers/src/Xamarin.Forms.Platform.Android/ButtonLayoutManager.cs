@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Platform.Android
 	public class ButtonLayoutManager : IDisposable
 	{
 		// we use left/right as this does not resize the button when there is no text
-		Button.ButtonContentLayout _imageOnlyLayout = new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Left, 0);
+		ButtonContentLayout _imageOnlyLayout = new ButtonContentLayout(ButtonContentLayout.ImagePosition.Left, 0);
 
 		// reuse this instance to save on allocations
 		ARect _drawableBounds = new ARect();
@@ -155,7 +155,7 @@ namespace Xamarin.Forms.Platform.Android
 						var contentsWidth = ViewCompat.GetPaddingStart(view) + iconWidth + view.CompoundDrawablePadding + textWidth + ViewCompat.GetPaddingEnd(view);
 
 						var newLeft = (view.MeasuredWidth - contentsWidth) / 2;
-						if (_element.ContentLayout.Position == Button.ButtonContentLayout.ImagePosition.Right)
+						if (_element.ContentLayout.Position == ButtonContentLayout.ImagePosition.Right)
 							newLeft = -newLeft;
 						if (ViewCompat.GetLayoutDirection(view) == ViewCompat.LayoutDirectionRtl)
 							newLeft = -newLeft;
@@ -348,13 +348,13 @@ namespace Xamarin.Forms.Platform.Android
 
 					switch (layout.Position)
 					{
-						case Button.ButtonContentLayout.ImagePosition.Top:
+						case ButtonContentLayout.ImagePosition.Top:
 							TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, image, null, null);
 							break;
-						case Button.ButtonContentLayout.ImagePosition.Right:
+						case ButtonContentLayout.ImagePosition.Right:
 							TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, null, image, null);
 							break;
-						case Button.ButtonContentLayout.ImagePosition.Bottom:
+						case ButtonContentLayout.ImagePosition.Bottom:
 							TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, null, null, null, image);
 							break;
 						default:
