@@ -18,7 +18,7 @@
             Padding="12"
             BackgroundColor="Black"
             TextColor="White"
-            Text="Select am item from the list. If the selection background color is green, the test has passed."/>
+            Text="Pull to Refresh. If the loading indicator appears above the CollectionView header, the test has passed. "/>
         <Grid
             Grid.Row="1">
             <RefreshView
