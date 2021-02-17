@@ -23,22 +23,5 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 
 			await ValidatePropertyInitValue(webView, () => url, GetNativeSource, url);
 		}
-
-#if __IOS__
-		[Fact(Skip = "Currently Fails on iOS")]
-#else
-		[Fact()]
-#endif
-		public async Task HtmlSourceInitializesCorrectly()
-		{
-			var webView = new WebViewStub()
-			{
-				Source = "<html><body><h1>Xamarin.Forms</h1><p>This is a HtmlWebViewSource</p></body></html>"
-			};
-
-			var html = ((HtmlWebViewSource2)webView.Source).Html;
-
-			await ValidatePropertyInitValue(webView, () => html, GetNativeSource, html);
-		}
 	}
 }
