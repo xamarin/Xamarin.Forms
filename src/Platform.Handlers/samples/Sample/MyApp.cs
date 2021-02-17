@@ -37,13 +37,26 @@ namespace Sample
 			verticalStack.Add(horizontalStack);
 			verticalStack.Add(new Slider());
 
-			var webView = new WebView
+			var urlWebView = new WebView
 			{
 				Height = 150,
 				Source = "https://xamarin.com"
 			};
 
-			verticalStack.Add(webView);
+			verticalStack.Add(urlWebView);
+
+			var htmlSource = new HtmlWebViewSource2
+			{
+				Html = @"<html><body><h1>Xamarin.Forms</h1><p>This is a HtmlWebViewSource!</p></body></html>"
+			};
+
+			var htmlWebView = new WebView
+			{
+				Height = 150,
+				Source = htmlSource
+			};
+
+			verticalStack.Add(htmlWebView);
 
 			return verticalStack;
 		}
