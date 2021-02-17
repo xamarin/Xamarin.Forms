@@ -5,10 +5,12 @@ namespace Xamarin.Platform.Hosting
 {
 	class MauiServiceProvider : IMauiServiceProvider
 	{
-		IDictionary<Type, Func<IServiceProvider, object>>? _implementationsFactories;
+		IDictionary<Type, Func<IServiceProvider, object?>?> _implementationsFactories;
 
 		public MauiServiceProvider(IMauiServiceCollection collection)
 		{
+			if (collection == null)
+				throw new ArgumentNullException(nameof(collection));
 			_implementationsFactories = collection;
 		}
 
@@ -36,7 +38,7 @@ namespace Xamarin.Platform.Hosting
 			{
 				if (_implementationsFactories != null && _implementationsFactories.ContainsKey(type))
 				{
-					var typeInstance = _implementationsFactories[type].Invoke(this);
+					var typeInstance = _implementationsFactories[type]?.Invoke(this);
 					return typeInstance;
 				}
 			}
