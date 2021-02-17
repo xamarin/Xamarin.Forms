@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Xamarin.Platform
+﻿namespace Xamarin.Platform
 {
-	public interface ILabel : IText
+	public interface ILabel : IText, ITextAlignment
 	{
 	}
 }
