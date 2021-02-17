@@ -110,14 +110,17 @@ namespace Xamarin.Platform
 
 		TTypeRender? GetRenderer(Type type)
 		{
-			if (_handlerFactories.TryGetValue(type, out var handlerFactory))
+			if (!_handler.TryGetValue(type, out var handler))
 			{
-				var newObject = handlerFactory?.Invoke(type) as TTypeRender;
-				if (newObject != null)
-					return newObject;
+				if (_handlerFactories.TryGetValue(type, out var handlerFactory))
+				{
+					var newObject = handlerFactory?.Invoke(type) as TTypeRender;
+					if (newObject != null)
+						return newObject;
+				}
 			}
 
-			if (!_handler.TryGetValue(type, out var handler))
+			if (handler == null)
 			{
 				return default(TTypeRender);
 			}
