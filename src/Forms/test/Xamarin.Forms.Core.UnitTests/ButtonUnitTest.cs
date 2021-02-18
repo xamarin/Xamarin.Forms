@@ -228,11 +228,11 @@ namespace Xamarin.Forms.Core.UnitTests
 			var converter = new Button.ButtonContentTypeConverter();
 			Assert.True(converter.CanConvertFrom(typeof(string)));
 
-			AssertButtonContentLayoutsEqual(new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Left, 10), converter.ConvertFromInvariantString("left,10"));
-			AssertButtonContentLayoutsEqual(new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Right, 10), converter.ConvertFromInvariantString("right"));
-			AssertButtonContentLayoutsEqual(new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Top, 20), converter.ConvertFromInvariantString("top,20"));
-			AssertButtonContentLayoutsEqual(new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Left, 15), converter.ConvertFromInvariantString("15"));
-			AssertButtonContentLayoutsEqual(new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Bottom, 0), converter.ConvertFromInvariantString("Bottom, 0"));
+			AssertButtonContentLayoutsEqual(new ButtonContentLayout(ButtonContentLayout.ImagePosition.Left, 10), converter.ConvertFromInvariantString("left,10"));
+			AssertButtonContentLayoutsEqual(new ButtonContentLayout(ButtonContentLayout.ImagePosition.Right, 10), converter.ConvertFromInvariantString("right"));
+			AssertButtonContentLayoutsEqual(new ButtonContentLayout(ButtonContentLayout.ImagePosition.Top, 20), converter.ConvertFromInvariantString("top,20"));
+			AssertButtonContentLayoutsEqual(new ButtonContentLayout(ButtonContentLayout.ImagePosition.Left, 15), converter.ConvertFromInvariantString("15"));
+			AssertButtonContentLayoutsEqual(new ButtonContentLayout(ButtonContentLayout.ImagePosition.Bottom, 0), converter.ConvertFromInvariantString("Bottom, 0"));
 
 			Assert.Throws<InvalidOperationException>(() => converter.ConvertFromInvariantString(""));
 		}
@@ -318,9 +318,9 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(-1, button.BorderRadius);
 		}
 
-		private void AssertButtonContentLayoutsEqual(Button.ButtonContentLayout layout1, object layout2)
+		private void AssertButtonContentLayoutsEqual(ButtonContentLayout layout1, object layout2)
 		{
-			var bcl = (Button.ButtonContentLayout)layout2;
+			var bcl = (ButtonContentLayout)layout2;
 
 			Assert.AreEqual(layout1.Position, bcl.Position);
 			Assert.AreEqual(layout1.Spacing, bcl.Spacing);
