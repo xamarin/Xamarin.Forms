@@ -28,7 +28,7 @@ jobs:
     steps:
       - task: DownloadPipelineArtifact@2
         inputs:
-        artifact: drop  
+          artifact: drop  
       - task: ExtractFiles@1
         inputs:
           archiveFilePatterns: '$(PIPELINE.WORKSPACE)/myappbuild/drop/$(resources.pipeline.xamarinci.runID).zip'
