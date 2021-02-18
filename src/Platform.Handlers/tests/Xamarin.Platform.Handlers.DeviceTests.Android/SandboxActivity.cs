@@ -16,24 +16,34 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 		Name = "com.xamarin.handlers.devicetests.SandboxActivity",
 		Label = "@string/app_name",
 		Theme = "@style/MainTheme",
-		MainLauncher = false,
+		MainLauncher = true,
 		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
 	public class SandboxActivity : AppCompatActivity
 	{
 		FrameLayout _rootLayout;
 		protected override void OnCreate(Bundle bundle)
 		{
-			Essentials.Platform.Init(this, bundle);
+			//Essentials.Platform.Init(this, bundle);
 			Platform.Init(this);
 
 			base.OnCreate(bundle);
 
 			SetupRootLayout();
+
+			var stuub = new SwitchStub()
+			{
+				IsToggled = true,
+				TrackColor = Color.Red,
+				ThumbColor = Color.Red,
+				IsEnabled = true,
+			};
+
 			AddStubView<SwitchHandler, SwitchStub>(new SwitchStub()
 			{
 				IsToggled = true,
-				OnColor = Color.Red,
-				ThumbColor = Color.Red
+				TrackColor = Color.Red,
+				ThumbColor = Color.Red,
+				IsEnabled = true,
 			});
 		}
 

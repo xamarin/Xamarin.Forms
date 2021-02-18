@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using System;
+using Xamarin.Forms;
 
 namespace Xamarin.Platform.Handlers.DeviceTests.Stubs
 {
@@ -10,6 +11,8 @@ namespace Xamarin.Platform.Handlers.DeviceTests.Stubs
 
 		public Color ThumbColor { get; set; }
 
-		public void Toggled() { }
+		public void Toggled() => ToggledDelegate?.Invoke();
+
+		public Action ToggledDelegate; 
 	}
 }

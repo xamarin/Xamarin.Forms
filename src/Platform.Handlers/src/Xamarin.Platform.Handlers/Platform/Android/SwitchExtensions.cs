@@ -2,7 +2,6 @@
 using ASwitch = AndroidX.AppCompat.Widget.SwitchCompat;
 using AAttribute = Android.Resource.Attribute;
 using APorterDuff = Android.Graphics.PorterDuff;
-using Android.Content;
 using Android.Content.Res;
 
 namespace Xamarin.Platform
@@ -28,7 +27,11 @@ namespace Xamarin.Platform
 				aSwitch.TrackTintList ??
 				defaultTrackColor;
 
-			if(currentTrackTintList is ColorTrackingColorStateList csl)
+			if (aSwitch.TrackTintList == null)
+			{
+				aSwitch.TrackTintList = new ColorTrackingColorStateList(_checkedStates, trackColor);
+			}
+			else if(currentTrackTintList is ColorTrackingColorStateList csl)
 			{
 				// Option one we detect color changes based on state
 				var currentState = aSwitch.GetCurrentState();
@@ -36,9 +39,6 @@ namespace Xamarin.Platform
 				var newState  = csl.CreateForState(currentState, trackColor, defaultTrackColor);
 				if (newState != aSwitch.TrackTintList)
 					aSwitch.TrackTintList = newState;
-
-				// Option two we just blow away the entire CSL
-				aSwitch.TrackTintList = new ColorTrackingColorStateList(_checkedStates, trackColor);
 			}
 			else // user has define their own CSL
 			{
@@ -53,21 +53,6 @@ namespace Xamarin.Platform
 				}
 			}
 		}
-
-		//public static void UpdateOnColorSimple(this ASwitch aSwitch, ISwitch view)
-		//{
-		//	var onColor = view.OnColor;
-
-		//	if (!onColor.IsDefault && aSwitch.Checked)
-		//	{
-		//		aSwitch.TrackDrawable.SetTintMode(APorterDuff.Mode.SrcAtop);
-		//		aSwitch.TrackDrawable.SetColorFilter(onColor.ToNative(), FilterMode.SrcAtop);
-		//	}
-		//	else
-		//	{
-		//		aSwitch.TrackDrawable.ClearColorFilter();
-		//	}
-		//}
 
 		public static void UpdateThumbColor(this ASwitch aSwitch, ISwitch view)
 		{
@@ -98,7 +83,6 @@ namespace Xamarin.Platform
 			return _checkedStates[2];
 		}
 
-		// taken from android sourcec ccode
 		public static ColorStateList GetDefaultSwitchTrackColorStateList(this ASwitch aSwitch)
 		{
 			var context = aSwitch.Context;
@@ -107,27 +91,24 @@ namespace Xamarin.Platform
 
 			int[][] states = new int[3][];
 			int[] colors = new int[3];
-			int i = 0;
-			// Disabled state
-			states[i] = new int[] { -AAttribute.StateEnabled };
-			colors[i] = context.GetThemeAttrColor(AAttribute.ColorForeground, 0.1f);
-			i++;
-			states[i] = new int[] { AAttribute.StateChecked };
-			colors[i] = context.GetThemeAttrColor(AAttribute.ColorControlActivated, 0.3f);
-			i++;
-			// Default enabled state
-			states[i] = new int[0];
-			colors[i] = context.GetThemeAttrColor(AAttribute.ColorForeground, 0.3f);
-			i++;
+
+			states[0] = new int[] { -AAttribute.StateEnabled };
+			colors[0] = context.GetThemeAttrColor(AAttribute.ColorForeground, 0.1f);
+
+			states[1] = new int[] { AAttribute.StateChecked };
+			colors[1] = context.GetThemeAttrColor(AAttribute.ColorControlActivated, 0.3f);
+
+			states[2] = new int[0];
+			colors[2] = context.GetThemeAttrColor(AAttribute.ColorForeground, 0.3f);
 			return new ColorTrackingColorStateList(states, colors);
 		}
 
 		static int[][] _checkedStates = new int[][]
-					{
-						new int[] { -AAttribute.StateEnabled,  },
-						new int[] { AAttribute.StateChecked },
-						new int[0],
-					};
+		{
+			new int[] { -AAttribute.StateEnabled },
+			new int[] { AAttribute.StateChecked },
+			new int[0],
+		};
 
 	}
 }
