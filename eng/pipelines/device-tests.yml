@@ -26,8 +26,7 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     steps:
-      - task: DownloadPipelineArtifact@2
-        inputs:
+      - download: myappbuild
         artifact: drop  
       - task: ExtractFiles@1
         inputs:
