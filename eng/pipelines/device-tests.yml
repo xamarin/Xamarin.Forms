@@ -27,6 +27,8 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       - script: set
+      - script: |  
+          echo '$(resources.pipeline.xamarinci.runID)'
       - task: DownloadPipelineArtifact@2
         inputs:
           artifact: drop  
@@ -36,7 +38,6 @@ jobs:
           destinationFolder: '$(agent.builddirectory)'
           cleanDestinationFolder: false
       - script: |  
-          echo '$(resources.pipeline.xamarinci.runID)'
           cat $(agent.builddirectory)/greatcode.txt
 
 # stages:
