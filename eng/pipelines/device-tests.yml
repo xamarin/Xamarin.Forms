@@ -34,6 +34,7 @@ jobs:
           destinationFolder: '$(agent.builddirectory)'
           cleanDestinationFolder: false
       - script: |  
+          echo '$(resources.pipeline.xamarinci.runID)'
           cat $(agent.builddirectory)/greatcode.txt
 
 # stages:
