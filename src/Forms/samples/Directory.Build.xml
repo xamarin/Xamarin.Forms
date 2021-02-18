@@ -1,0 +1,75 @@
+<!--
+  A prototype of the setup for a Xamarin single project.
+  NOTE: this file will eventually go away to be part of Forms/MAUI itself
+-->
+<Project>
+
+  <!-- Properties -->
+  <PropertyGroup>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <!-- Android -->
+    <AndroidProjectFolder>Android\</AndroidProjectFolder>
+    <AndroidManifest>$(AndroidProjectFolder)AndroidManifest.xml</AndroidManifest>
+    <MonoAndroidResourcePrefix>$(AndroidProjectFolder)Resources</MonoAndroidResourcePrefix>
+    <MonoAndroidAssetsPrefix>$(AndroidProjectFolder)Assets</MonoAndroidAssetsPrefix>
+    <!-- iOS -->
+    <iOSProjectFolder>iOS\</iOSProjectFolder>
+    <IPhoneResourcePrefix>$(iOSProjectFolder)Resources</IPhoneResourcePrefix>
+    <!--NOTE: the System.IO.Ports @(PackageReference) triggers this-->
+    <NoWarn>XA4301</NoWarn>
+  </PropertyGroup>
+
+  <!-- Shared -->
+  <ItemGroup>
+    <Compile Include="Shared\**\*$(DefaultLanguageSourceExtension)" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+    <EmbeddedResource Include="Shared\**\*.xaml" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+  </ItemGroup>
+
+  <!-- Android -->
+  <ItemGroup Condition=" '$(TargetPlatformIdentifier)' == 'android' ">
+    <Compile Include="$(AndroidProjectFolder)**\*$(DefaultLanguageSourceExtension)" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+    <AndroidResource Include="$(MonoAndroidResourcePrefix)\*\*.xml" />
+    <AndroidResource Include="$(MonoAndroidResourcePrefix)\*\*.axml" />
+    <AndroidResource Include="$(MonoAndroidResourcePrefix)\*\*.png" />
+    <AndroidResource Include="$(MonoAndroidResourcePrefix)\*\*.jpg" />
+    <AndroidResource Include="$(MonoAndroidResourcePrefix)\*\*.gif" />
+    <AndroidResource Include="$(MonoAndroidResourcePrefix)\font\*.ttf" />
+    <AndroidResource Include="$(MonoAndroidResourcePrefix)\font\*.otf" />
+    <AndroidResource Include="$(MonoAndroidResourcePrefix)\font\*.ttc" />
+    <AndroidResource Include="$(MonoAndroidResourcePrefix)\raw\*" Exclude="$(MonoAndroidResourcePrefix)\raw\.*" />
+    <AndroidAsset Include="$(MonoAndroidAssetsPrefix)\**\*" Exclude="$(MonoAndroidAssetsPrefix)\**\.*\**" />
+  </ItemGroup>
+
+  <!-- iOS -->
+  <ItemGroup Condition=" '$(TargetPlatformIdentifier)' == 'ios' ">
+    <Compile Include="$(iOSProjectFolder)**\*$(DefaultLanguageSourceExtension)" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+    <None Include="$(iOSProjectFolder)Info.plist" LogicalName="Info.plist" />
+    <SceneKitAsset Include="$(iOSProjectFolder)**\*.scnassets\*">
+      <IsDefaultItem>true</IsDefaultItem>
+    </SceneKitAsset>
+    <InterfaceDefinition Include="$(iOSProjectFolder)**\*.storyboard;$(iOSProjectFolder)**\*.xib">
+      <Link>$([MSBuild]::MakeRelative ('$(MSBuildProjectDirectory)', '%(Identity)'))</Link>
+      <IsDefaultItem>true</IsDefaultItem>
+    </InterfaceDefinition>
+  </ItemGroup>
+
+
+  <!--
+    The linker resolves some assembly references too eagerly, and
+    fails when it can't find them, so work around this by referencing
+    the missing assemblies.
+    See: https://github.com/mono/linker/issues/1139
+  -->
+  <PropertyGroup>
+    <_DotNetPackageVersion>5.0.0</_DotNetPackageVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.CodeDom"                        Version="$(_DotNetPackageVersion)" />
+    <PackageReference Include="System.Diagnostics.EventLog"           Version="$(_DotNetPackageVersion)" />
+    <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="$(_DotNetPackageVersion)" />
+    <PackageReference Include="System.IO.Ports"                       Version="$(_DotNetPackageVersion)" />
+    <PackageReference Include="System.Security.Permissions"           Version="$(_DotNetPackageVersion)" />
+    <PackageReference Include="System.Threading.AccessControl"        Version="$(_DotNetPackageVersion)" />
+  </ItemGroup>
+
+</Project>

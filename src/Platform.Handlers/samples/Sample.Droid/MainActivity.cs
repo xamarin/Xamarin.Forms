@@ -41,17 +41,26 @@ namespace Sample.Droid
 			Platform.Init();
 			content = Platform.GetWindow().Page.View;
 #else
-			var app = App.CreateDefaultBuilder()
-							//.RegisterHandlers(new Dictionary<Type, Type>
-							//		{
-							//			{ typeof(VerticalStackLayout),typeof(LayoutHandler) },
-							//			{ typeof(HorizontalStackLayout),typeof(LayoutHandler) },
-							//		})
-							//.ConfigureServices(ConfigureExtraServices)
-							//.UseServiceProviderFactory(new DIExtensionsServiceProviderFactory())
-							.Build<MyApp>();
+			//var app = App.CreateDefaultBuilder()
+			//				//.RegisterHandlers(new Dictionary<Type, Type>
+			//				//		{
+			//				//			{ typeof(VerticalStackLayout),typeof(LayoutHandler) },
+			//				//			{ typeof(HorizontalStackLayout),typeof(LayoutHandler) },
+			//				//		})
+			//				//.ConfigureServices(ConfigureExtraServices)
+			//				//.UseServiceProviderFactory(new DIExtensionsServiceProviderFactory())
+			//				.Build<MyApp>();
 
-			content = app.Windows.FirstOrDefault()?.Page.View;
+			var builder1 = App.CreateDefaultBuilder();
+			var app = new MyApp();
+
+			var builder = app.Builder();
+
+			var host = builder.BuildApp(app);
+
+
+			content = Platform.GetWindow().Page.View;
+			
 #endif
 
 			Add(content);

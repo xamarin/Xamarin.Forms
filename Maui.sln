@@ -23,6 +23,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Maui.Controls.Compatibility
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.Forms.Platform.Android.FormsViewGroup-net6", "src\Platform.Renderers\src\Xamarin.Forms.Platform.Android.FormsViewGroup\Xamarin.Forms.Platform.Android.FormsViewGroup-net6.csproj", "{EB956381-F3E6-437C-9069-36B8BF5C6E2F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Maui.Controls", "Maui.Controls", "{C2E745A0-BC1F-404B-BCD9-84411FBCD4BC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{FD26DAAB-A065-45F1-B219-1DEBF04BF6E1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Maui.Controls.Sample", "src\Forms\samples\Maui.Controls.Sample\Maui.Controls.Sample.csproj", "{9B38C125-2D92-4851-8E93-5A508BFF8CDF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,9 +64,17 @@ Global
 		{EB956381-F3E6-437C-9069-36B8BF5C6E2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB956381-F3E6-437C-9069-36B8BF5C6E2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB956381-F3E6-437C-9069-36B8BF5C6E2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B38C125-2D92-4851-8E93-5A508BFF8CDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B38C125-2D92-4851-8E93-5A508BFF8CDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B38C125-2D92-4851-8E93-5A508BFF8CDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B38C125-2D92-4851-8E93-5A508BFF8CDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FD26DAAB-A065-45F1-B219-1DEBF04BF6E1} = {C2E745A0-BC1F-404B-BCD9-84411FBCD4BC}
+		{9B38C125-2D92-4851-8E93-5A508BFF8CDF} = {FD26DAAB-A065-45F1-B219-1DEBF04BF6E1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0B8ABEAD-D2B5-4370-A187-62B5ABE4EE50}
