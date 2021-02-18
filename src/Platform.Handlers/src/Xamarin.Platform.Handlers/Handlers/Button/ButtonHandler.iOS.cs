@@ -71,17 +71,17 @@ namespace Xamarin.Platform.Handlers
 			}
 		}
 
-		void OnButtonTouchUpInside(object sender, EventArgs e)
+		void OnButtonTouchUpInside(object? sender, EventArgs e)
 		{
 			ButtonManager.OnTouchUpInside(VirtualView);
 		}
 
-		void OnButtonTouchUpOutside(object sender, EventArgs e)
+		void OnButtonTouchUpOutside(object? sender, EventArgs e)
 		{
 			ButtonManager.OnTouchUpOutside(VirtualView);
 		}
 
-		void OnButtonTouchDown(object sender, EventArgs e)
+		void OnButtonTouchDown(object? sender, EventArgs e)
 		{
 			ButtonManager.OnTouchDown(VirtualView);
 		}
