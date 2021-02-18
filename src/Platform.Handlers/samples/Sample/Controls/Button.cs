@@ -6,40 +6,9 @@ namespace Sample
 {
 	public class Button : Xamarin.Forms.View, IButton
 	{
-		public const int DefaultCornerRadius = -1;
-
 		public string Text { get; set; }
-
 		public Color TextColor { get; set; }
-
-		public int CornerRadius { get; set; } = DefaultCornerRadius;
-
-		public Color BorderColor { get; set; }
-
-		public double BorderWidth { get; set; }
-
-		public Font Font { get; set; }
-
-		public string FontFamily { get; set; }
-
-		public double FontSize { get; set; }
-
-		public FontAttributes FontAttributes { get; set; }
-
-		public TextTransform TextTransform { get; set; }
-
-		public TextAlignment HorizontalTextAlignment { get; set; }
-
-		public TextAlignment VerticalTextAlignment { get; set; }
-
-		public double CharacterSpacing { get; set; }
-
-		public LineBreakMode LineBreakMode { get; set; }
-
-		public ButtonContentLayout ContentLayout { get; set; }
-
-		public Thickness Padding { get; set; }
-
+				
 		public Action Pressed { get; set; }
 		public Action Released { get; set; }
 		public Action Clicked { get; set; }

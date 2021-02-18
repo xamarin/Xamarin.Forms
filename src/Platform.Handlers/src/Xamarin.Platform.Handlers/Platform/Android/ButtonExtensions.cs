@@ -22,42 +22,7 @@ namespace Xamarin.Platform
 
 		public static void UpdateTextColor(this AppCompatButton appCompatButton, IButton button, XColor defaultColor) =>
 			appCompatButton.SetTextColor(button.TextColor.Cleanse(defaultColor).ToNative());
-
-		public static void UpdateFont(this AppCompatButton appCompatButton, IButton button)
-		{
-	
-		}
-
-		public static void UpdateCharacterSpacing(this AppCompatButton appCompatButton, IButton button)
-		{
-
-		}
-
-		public static void UpdateCornerRadius(this AppCompatButton appCompatButton, IButton button)
-		{
-		
-		}
-
-		public static void UpdateBorderColor(this AppCompatButton appCompatButton, IButton button)
-		{
-	
-		}
-
-		public static void UpdateBorderWidth(this AppCompatButton appCompatButton, IButton button)
-		{
-
-		}
-
-		public static void UpdateContentLayout(this AppCompatButton appCompatButton, IButton button)
-		{
-
-		}
-
-		public static void UpdatePadding(this AppCompatButton appCompatButton, IButton button)
-		{
-		
-		}
-
+				
 		static XColor Cleanse(this XColor color, XColor defaultColor) => color.IsDefault ? defaultColor : color;
 	}
 }

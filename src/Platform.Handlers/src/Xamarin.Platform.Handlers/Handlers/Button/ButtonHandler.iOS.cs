@@ -43,13 +43,6 @@ namespace Xamarin.Platform.Handlers
 
 			base.SetupDefaults(nativeView);
 		}
-				
-		public static void MapColor(ButtonHandler handler, IButton button)
-		{
-			ViewHandler.CheckParameters(handler, button);
-
-			handler.TypedNativeView?.UpdateTextColor(button, ButtonTextColorDefaultNormal, ButtonTextColorDefaultHighlighted, ButtonTextColorDefaultDisabled);
-		}
 
 		public static void MapText(ButtonHandler handler, IButton button)
 		{
@@ -58,53 +51,11 @@ namespace Xamarin.Platform.Handlers
 			handler.TypedNativeView?.UpdateText(button);
 		}
 
-		public static void MapFont(ButtonHandler handler, IButton button)
+		public static void MapTextColor(ButtonHandler handler, IButton button)
 		{
 			ViewHandler.CheckParameters(handler, button);
 
-			handler.TypedNativeView?.UpdateFont(button);
-		}
-
-		public static void MapCharacterSpacing(ButtonHandler handler, IButton button)
-		{
-			ViewHandler.CheckParameters(handler, button);
-
-			handler.TypedNativeView?.UpdateCharacterSpacing(button);
-		}
-
-		public static void MapCornerRadius(ButtonHandler handler, IButton button)
-		{
-			ViewHandler.CheckParameters(handler, button);
-
-			handler.TypedNativeView?.UpdateCornerRadius(button);
-		}
-
-		public static void MapBorderColor(ButtonHandler handler, IButton button)
-		{
-			ViewHandler.CheckParameters(handler, button);
-
-			handler.TypedNativeView?.UpdateBorderColor(button);
-		}
-
-		public static void MapBorderWidth(ButtonHandler handler, IButton button)
-		{
-			ViewHandler.CheckParameters(handler, button);
-
-			handler.TypedNativeView?.UpdateBorderWidth(button);
-		}
-
-		public static void MapContentLayout(ButtonHandler handler, IButton button)
-		{
-			ViewHandler.CheckParameters(handler, button);
-
-			handler.TypedNativeView?.UpdateContentLayout(button);
-		}
-
-		public static void MapPadding(ButtonHandler handler, IButton button)
-		{
-			ViewHandler.CheckParameters(handler, button);
-
-			handler.TypedNativeView?.UpdatePadding(button);
+			handler.TypedNativeView?.UpdateTextColor(button, ButtonTextColorDefaultNormal, ButtonTextColorDefaultHighlighted, ButtonTextColorDefaultDisabled);
 		}
 
 		void SetControlPropertiesFromProxy()

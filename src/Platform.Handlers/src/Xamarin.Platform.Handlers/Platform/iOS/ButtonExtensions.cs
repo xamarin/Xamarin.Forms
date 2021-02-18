@@ -30,40 +30,5 @@ namespace Xamarin.Platform
 				nativeButton.TintColor = color;
 			}
 		}
-
-		public static void UpdateFont(this UIButton nativeButton, IButton button)
-		{
-
-		}
-
-		public static void UpdateCharacterSpacing(this UIButton nativeButton, IButton button)
-		{
-
-		}
-
-		public static void UpdateCornerRadius(this UIButton nativeButton, IButton button)
-		{
-		
-		}
-
-		public static void UpdateBorderColor(this UIButton nativeButton, IButton button)
-		{
-			
-		}
-
-		public static void UpdateBorderWidth(this UIButton nativeButton, IButton button)
-		{
-
-		}
-
-		public static void UpdateContentLayout(this UIButton nativeButton, IButton button)
-		{
-
-		}
-
-		public static void UpdatePadding(this UIButton nativeButton, IButton button)
-		{
-	
-		}
 	}
 }

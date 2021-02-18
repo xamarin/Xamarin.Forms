@@ -2,10 +2,10 @@
 
 namespace Xamarin.Platform
 {
-	public interface IButton : IText, IBorder, IPadding
+	public interface IButton : IView
 	{
-		LineBreakMode LineBreakMode { get; }
-		ButtonContentLayout ContentLayout { get; }
+		string Text { get; }
+		Color TextColor { get; }
 
 		void Pressed();
 		void Released();
