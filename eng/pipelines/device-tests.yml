@@ -30,7 +30,9 @@ jobs:
       - script: |  
           echo '$(resources.pipeline.xamarinci.runID)'
       - download: xamarinci
-        artifact: drop  
+        artifact: drop
+      - script: |  
+          ls -l
       - task: ExtractFiles@1
         inputs:
           archiveFilePatterns: '$(PIPELINE.WORKSPACE)/myappbuild/drop/$(resources.pipeline.xamarinci.runID).zip'
