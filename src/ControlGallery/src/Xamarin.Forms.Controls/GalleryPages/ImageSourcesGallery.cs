@@ -353,7 +353,7 @@ namespace Xamarin.Forms.Controls
 							(_buttonWithPositionedImageAndText = new Button
 							{
 								Text = "Image Above & Text",
-								ContentLayout = new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Top, 5),
+								ContentLayout = new ButtonContentLayout(ButtonContentLayout.ImagePosition.Top, 5),
 								ImageSource = "bank.png"
 							}),
 							(_buttonWithImage = new Button

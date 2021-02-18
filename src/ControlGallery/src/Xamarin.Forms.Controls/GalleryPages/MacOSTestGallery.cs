@@ -119,10 +119,10 @@ namespace Xamarin.Forms.Controls
 								bigbUtton,
 								new Button { Text = "Click Me", BackgroundColor = Color.Gray },
 								new Button { ImageSource = "bank.png", BackgroundColor = Color.Gray },
-								CreateButton(new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Left, 10)),
-								CreateButton(new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Top, 10)),
-								CreateButton(new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Bottom, 10)),
-								CreateButton(new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Right, 10)),
+								CreateButton(new ButtonContentLayout(ButtonContentLayout.ImagePosition.Left, 10)),
+								CreateButton(new ButtonContentLayout(ButtonContentLayout.ImagePosition.Top, 10)),
+								CreateButton(new ButtonContentLayout(ButtonContentLayout.ImagePosition.Bottom, 10)),
+								CreateButton(new ButtonContentLayout(ButtonContentLayout.ImagePosition.Right, 10)),
 								mainDemoStack
 							}
 			};
@@ -318,7 +318,7 @@ namespace Xamarin.Forms.Controls
 
 
 
-		static Button CreateButton(Button.ButtonContentLayout layout)
+		static Button CreateButton(ButtonContentLayout layout)
 		{
 			return new Button
 			{

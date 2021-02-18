@@ -5,7 +5,7 @@ using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using Xamarin.Forms.Xaml;
 using AndroidSpecific = Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using ButtonImagePosition = Xamarin.Forms.Button.ButtonContentLayout.ImagePosition;
+using ButtonImagePosition = Xamarin.Forms.ButtonContentLayout.ImagePosition;
 using iOSSpecific = Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Controls
@@ -154,8 +154,8 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
-		public Button.ButtonContentLayout ButtonImageLayout =>
-			new Button.ButtonContentLayout(ButtonImagePosition, ButtonImageSpacing);
+		public ButtonContentLayout ButtonImageLayout =>
+			new ButtonContentLayout(ButtonImagePosition, ButtonImageSpacing);
 
 		public string[] ButtonFlags =>
 			new[] { "<none>", "True", "False" };
