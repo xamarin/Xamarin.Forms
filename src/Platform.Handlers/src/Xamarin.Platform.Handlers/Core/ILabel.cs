@@ -2,16 +2,9 @@
 
 namespace Xamarin.Platform
 {
-	public interface ILabel : IText, IPadding
+	public interface ILabel : IView
 	{
-		TextType TextType { get; }
-
-		double LineHeight { get; }
-
-		int MaxLines { get; }
-
-		TextDecorations TextDecorations { get; }
-
-		LineBreakMode LineBreakMode { get; }
+		string Text { get; }
+		Color TextColor { get; }
 	}
 }
