@@ -5,7 +5,7 @@
 		public static PropertyMapper<ISwitch, SwitchHandler> SwitchMapper = new PropertyMapper<ISwitch, SwitchHandler>(ViewHandler.ViewMapper)
 		{
 			[nameof(ISwitch.IsToggled)] = MapIsToggled,
-			[nameof(ISwitch.OnColor)] = MapOnColor,
+			[nameof(ISwitch.TrackColor)] = MapTrackColor,
 			[nameof(ISwitch.ThumbColor)] = MapThumbColor
 		};
 

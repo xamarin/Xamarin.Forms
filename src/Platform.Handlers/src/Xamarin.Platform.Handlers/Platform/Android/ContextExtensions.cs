@@ -10,6 +10,7 @@ using AActivity = Android.App.Activity;
 using AApplicationInfoFlags = Android.Content.PM.ApplicationInfoFlags;
 using AFragmentManager = AndroidX.Fragment.App.FragmentManager;
 using Size = Xamarin.Forms.Size;
+using AColor = Android.Graphics.Color;
 
 namespace Xamarin.Platform
 {
@@ -87,6 +88,32 @@ namespace Xamarin.Platform
 
 				return self.FromPixels(pixels);
 			}
+		}
+
+		internal static int GetThemeAttrColor(this Context context, int attr)
+		{
+			TypedValue mTypedValue = new TypedValue();
+			if (context.Theme?.ResolveAttribute(attr, mTypedValue, true) == true)
+			{
+				if (mTypedValue.Type >= DataType.FirstInt
+						&& mTypedValue.Type <= DataType.LastInt)
+				{
+					return mTypedValue.Data;
+				}
+				else if (mTypedValue.Type == DataType.String)
+				{
+					throw new NotImplementedException();
+				}
+			}
+			return 0;
+		}
+
+		internal static int GetThemeAttrColor(this Context context, int attr, float alpha)
+		{
+			int color = GetThemeAttrColor(context, attr);
+			int originalAlpha = AColor.GetAlphaComponent(color);
+			// Return the color, multiplying the original alpha by the disabled value
+			return (color & 0x00ffffff) | ((int)Math.Round(originalAlpha * alpha) << 24);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

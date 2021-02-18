@@ -8,6 +8,7 @@ namespace Xamarin.Platform.Handlers
 	public partial class SwitchHandler : AbstractViewHandler<ISwitch, ASwitch>
 	{
 		CheckedChangeListener ChangeListener { get; } = new CheckedChangeListener();
+		static ColorTrackingColorStateList? DefaultTrackColorStateList { get; set; }
 
 		protected override ASwitch CreateNativeView()
 		{
@@ -28,6 +29,7 @@ namespace Xamarin.Platform.Handlers
 
 		protected override void SetupDefaults(ASwitch nativeView)
 		{
+			DefaultTrackColorStateList = nativeView.GetDefaultSwitchTrackColorStateList();
 		}
 
 		public override Size GetDesiredSize(double widthConstraint, double heightConstraint)
@@ -53,10 +55,10 @@ namespace Xamarin.Platform.Handlers
 			handler.TypedNativeView?.UpdateIsToggled(view);
 		}
 
-		public static void MapOnColor(SwitchHandler handler, ISwitch view)
+		public static void MapTrackColor(SwitchHandler handler, ISwitch view)
 		{
 			ViewHandler.CheckParameters(handler, view);
-			handler.TypedNativeView?.UpdateOnColor(view);
+			handler.TypedNativeView?.UpdateTrackColor(view, DefaultTrackColorStateList);
 		}
 
 		public static void MapThumbColor(SwitchHandler handler, ISwitch view)
@@ -71,7 +73,6 @@ namespace Xamarin.Platform.Handlers
 				return;
 
 			VirtualView.IsToggled = isToggled;
-			TypedNativeView?.UpdateOnColor(VirtualView);
 		}
 
 		void UpdateOnColor()

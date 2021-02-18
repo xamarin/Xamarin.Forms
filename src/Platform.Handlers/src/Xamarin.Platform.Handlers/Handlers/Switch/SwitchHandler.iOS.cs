@@ -36,7 +36,7 @@ namespace Xamarin.Platform.Handlers
 			handler.TypedNativeView?.UpdateIsToggled(view);
 		}
 
-		public static void MapOnColor(SwitchHandler handler, ISwitch view)
+		public static void MapTrackColor(SwitchHandler handler, ISwitch view)
 		{
 			ViewHandler.CheckParameters(handler, view);
 			handler.TypedNativeView?.UpdateOnColor(view, DefaultOnColor);
