@@ -39,7 +39,7 @@ jobs:
           destinationFolder: '$(agent.builddirectory)'
           cleanDestinationFolder: false
       - script: |  
-          cat $(agent.builddirectory)/greatcode.txt
+          cat $(agent.builddirectory)/.config/dotnet-tools.json
 
 # stages:
 #   - stage: test_android
