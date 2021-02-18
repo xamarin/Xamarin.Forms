@@ -1,178 +1,132 @@
+# Introducing .NET Multi-platform App UI (MAUI)
 
-<img src="Assets/banner.png" alt="Xamarin.Forms banner" height="145" >
+.NET MAUI is:
 
-# Xamarin.Forms #
+* Multi-platform native UI
+* Deploy to multiple devices across mobile & desktop
+* Using a single project, single codebase
+* Evolution of [Xamarin.Forms](https://github.com/xamarin/xamarin.forms)
+* Targeting .NET 6, previews end of year
 
-Xamarin.Forms provides a way to quickly build native apps for iOS, Android, Windows and macOS, completely in C#.
+## Maui.sln
 
-Read more about the platform at https://www.xamarin.com/forms.
+### SDKS required
+- Install the SDKs listed here https://github.com/xamarin/net6-samples
 
-## Build Status ##
+- And/or run the following
 
-[![Build Status](https://devdiv.visualstudio.com/DevDiv/_apis/build/status/Xamarin%20Forms%20Yaml?repoName=xamarin%2FXamarin.Forms&branchName=main)](https://devdiv.visualstudio.com/DevDiv/_build/latest?definitionId=10386&repoName=xamarin%2FXamarin.Forms&branchName=main)
+```
+dotnet tool install Cake.Tool -g
+dotnet cake --target=provision
+```
 
-## Packages ##
+### Running
 
-Platform/Feature               | Package name                              | Stable      | Prerelease | Nightly Feed [Azure](https://aka.ms/xf-ci/index.json)  (main branch)
------------------------|-------------------------------------------|-----------------------------|------------------------- |-------------------------|
-Core             | `Xamarin.Forms` | [![NuGet](https://img.shields.io/nuget/v/Xamarin.Forms.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms/) | [![NuGet](https://img.shields.io/nuget/vpre/Xamarin.Forms.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms/) |
-AppLinks  | `Xamarin.Forms.AppLinks`  | [![NuGet](https://img.shields.io/nuget/v/Xamarin.Forms.AppLinks.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.AppLinks/) | [![NuGet](https://img.shields.io/nuget/vpre/Xamarin.Forms.AppLinks.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.AppLinks/) | 
-Maps                 | `Xamarin.Forms.Maps`    | [![NuGet](https://img.shields.io/nuget/v/Xamarin.Forms.Maps.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Maps/) | [![NuGet](https://img.shields.io/nuget/vpre/Xamarin.Forms.Maps.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Maps/) |
-Maps.GTK             | `Xamarin.Forms.Maps.GTK` | [![NuGet](https://img.shields.io/nuget/v/Xamarin.Forms.Maps.GTK.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Maps.GTK/) | [![NuGet](https://img.shields.io/nuget/vpre/Xamarin.Forms.Maps.GTK.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Maps.GTK/) |
-Maps.WPF             | `Xamarin.Forms.Maps.WPF` | [![NuGet](https://img.shields.io/nuget/v/Xamarin.Forms.Maps.WPF.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Maps.WPF/) | [![NuGet](https://img.shields.io/nuget/vpre/Xamarin.Forms.Maps.WPF.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Maps.WPF/) |
-Pages  | `Xamarin.Forms.Pages`  | [![NuGet](https://img.shields.io/nuget/v/Xamarin.Forms.Pages.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Pages/) | [![NuGet](https://img.shields.io/nuget/vpre/Xamarin.Forms.Pages.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Pages/) |
-Pages.Azure  | `Xamarin.Forms.Pages.Azure`  | [![NuGet](https://img.shields.io/nuget/v/Xamarin.Forms.Pages.Azure.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Pages.Azure/) |[![NuGet](https://img.shields.io/nuget/vpre/Xamarin.Forms.Pages.Azure.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Pages.Azure/) |
-Platform.GTK  | `Xamarin.Forms.Platform.GTK`  | [![NuGet](https://img.shields.io/nuget/v/Xamarin.Forms.Platform.GTK.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Platform.GTK/) |[![NuGet](https://img.shields.io/nuget/vpre/Xamarin.Forms.Platform.GTK.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Platform.GTK/) |
-Platform.WPF  | `Xamarin.Forms.Platform.WPF`  | [![NuGet](https://img.shields.io/nuget/v/Xamarin.Forms.Platform.WPF.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Platform.WPF/) |[![NuGet](https://img.shields.io/nuget/vpre/Xamarin.Forms.Platform.WPF.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Platform.WPF/) |
-Visual.Material  | `Xamarin.Forms.Visual.Material`  | [![NuGet](https://img.shields.io/nuget/v/Xamarin.Forms.Visual.Material.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Visual.Material/) | [![NuGet](https://img.shields.io/nuget/vpre/Xamarin.Forms.Visual.Material.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Visual.Material/) |
+#### IDE
+- If you have Visual Studio 16.9 P4 installed you can open `Maui.sln` and run it from there.
 
-If you want to use the latest dev build then you should read [this blog post](https://devblogs.microsoft.com/xamarin/try-the-latest-in-xamarin-forms-with-nightly-builds):
+#### Command Line
 
-- Add the nightly feed to your NuGet sources or add a NuGet.Config to your app (placing it in the same directory where your solution file is) with the following content:
+```
+dotnet build src\Platform.Handlers\samples\Sample.Droid\Sample.Droid-net6.csproj -t:Run
+dotnet build src\Platform.Handlers\samples\Sample.iOS\Sample.iOS-net6.csproj -t:Run
+```
 
-  ```xml
-  <?xml version="1.0" encoding="utf-8"?>
-  <configuration>
-    <packageSources>
-      <clear />
-      <add key="xamarin-ci" value="https://aka.ms/xf-ci/index.json" />
-      <add key="NuGet.org" value="https://api.nuget.org/v3/index.json" />
-    </packageSources>
-  </configuration>
-  ```
+## Current News
 
-  *NOTE: This NuGet.Config should be with your application unless you want nightly packages to potentially start being restored for other apps on the machine.*
+[![](Assets/poster-standup.png)](https://www.youtube.com/watch?v=5bK2ICHtMxo)
 
-- Change your application's dependencies to have a `*` to get the latest version.
+Watch our [December 2020 .NET Community Standup report](https://www.youtube.com/watch?v=5bK2ICHtMxo) for the latest information about our progress on .NET MAUI and .NET 6. 
 
-## Getting Started ##
+Additional live streams and presentations:
 
-### Windows ###
-##### Install Visual Studio 2019+ #####
+* September 19, 2020 - Shane Neuville at ReactiveUI Virtual Conference: [Dual Screen, .NET MAUI, and RxUI](https://www.youtube.com/watch?v=Rkz6Dkk1uWU)
+* October 3, 2020 - James Clancey at Xamarin Expert Day: [.NET MAUI MVU](https://www.youtube.com/watch?v=9kwrgm_-FCk)
+* October 3, 2020 - David Ortinau at Xamarin Expert Day: [Introducing .NET MAUI](https://youtu.be/qbHO8J3bId0)
+* December 2, 2020 - Javier Suarez Ruiz at MonkeyConf: [.NET MAUI Handlers](https://youtu.be/o99qbIOc9X4?t=26040) (Spanish)
 
-VS 2019+ is required for developing Xamarin.Forms. If you do not already have it installed, you can download it [here](https://www.visualstudio.com/downloads/download-visual-studio-vs). VS 2019+ Community is completely free. If you are installing VS 2019+ for the first time, select the "Custom" installation type and select the following from the features list to install:
+## Status: Active Development
 
-- .NET desktop development 
-  - `Individual Components > .NET > .NET Framework 4.6.1 SDK, .NET Framework 4.6.1 targeting pack, .NET Framework 4.7.2 SDK, .NET Framework 4.7.2 targeting pack`.
-- Universal Windows Platform Development  
-  - `Individual Components > SDKs, libraries, and frameworks > Windows 10 SDK (10.0.19041.0), Windows 10 SDK (10.0.18362.0), Windows 10 SDK (10.0.16299.0)`.
-  - Download and install 14393 from https://go.microsoft.com/fwlink/p/?LinkId=838916
-- Mobile Development with .NET 
-  - `Individual Components > Development Activities > Xamarin Remoted Simulator`
-  - If you're not using Hyper-V `Individual Components > Emulators > Hyper-V Intel Hardware Accelerated Execution Manager (HAXM)`
-- Most current SDK version of .NET Core
-  - Or install the most current .NET Core SDK from here https://dotnet.microsoft.com/download
+While [Xamarin.Forms](https://github.com/xamarin/xamarin.forms) continues to be actively supported through November 2022, we are making evolutionary changes based on customer research of what would be most beneficial. Current areas of focus are:
 
-The Android 10.0 API 29 SDK and Android 9.0 API 28 SDK are required for developing Xamarin.Forms. They can be installed by using the [Xamarin Android SDK Manager](https://docs.microsoft.com/xamarin/android/get-started/installation/android-sdk).
+* Porting renderers to handlers ([spec](https://github.com/dotnet/maui/issues/28))
+* Adapting layouts for handlers
+* WinUI 3 preview 3 early spike
+* Mac Catalyst early evaluation
 
-We also recommend installing [Xamarin Android Device Manager](https://developer.xamarin.com/guides/android/getting_started/installation/android-emulator/xamarin-device-manager/). This will use the HAXM tools installed above and allow you to configure Android Virtual Devices (AVDs) that emulate Android devices.
-If you already have VS 2019+ installed, you can verify that these features are installed by modifying the VS 2019+ installation via the Visual Studio Installer.
+Active development is happening today to build Android and iOS SDKs against .NET 6. [Samples may be found here](https://github.com/xamarin/net6-samples).
 
-##### Provisioning script
-If you are getting errors about missing SDKs, you can run our provisioning script. Note that it can take some time to run the whole script. To better understand how the script works, feel free to check out our [build.cake](https://github.com/xamarin/Xamarin.Forms/blob/5.0.0/build.cake) file.
+### Goals
 
-- On CMD
-    ```
-    build.cmd -Target provision
-    ```
+* Improve app performance
+* Improve simplicity of control extensibility
+* Improve simplicity of contributing
+* Enable developer options to use Model-View-Update (MVU) and Blazor
 
-- On Powershell
-    ```
-    ./build.ps1 -Target provision
-    ```
-    _NOTE: If you encounter an error saying build.ps1 is not digitally signed, open Powershell as an administrator and resolve by running `Set-ExecutionPolicy RemoteSigned` first._
+### Roadmap
+
+.NET MAUI and mobile SDK support will ship in concert with .NET 6. At present we do not have a shipping schedule for .NET 6.
+
+### Milestones
+
+* .NET MAUI previews Q4 2020 through Q3 2021
+  * [Renderer architecture revisions](https://github.com/dotnet/maui/issues/28)
+  * Source solution and project simplification
+  * Complete approved proposals
+  * Implement MVU
+* .NET MAUI release candidate September 2021
+* .NET MAUI general availability November 2021
+
+## Xamarin.Forms vs .NET MAUI
 
 
-- On CMD/Powershell/sh (New! More info [here](https://cakebuild.net/docs/running-builds/runners/dotnet-tool))
-    ```
-    dotnet tool install Cake.Tool -g
-    dotnet cake --target=provision
-    ```
+|  |Xamarin.Forms  |.NET MAUI  |
+|---------|---------|---------|
+|**Platforms**     |         |         |
+|Android     |API 19+        |API 21+        |
+|iOS     |9-15         |10+         |
+|Linux     |Community         |Community         |
+|macOS     |Community         |Microsoft         |
+|Tizen     |Samsung           |Samsung           |
+|Windows     |UWP Microsoft<br/>WPF Community         |Microsoft<sup>*</sup>         |
+|**Features**     |         |         |
+|Renderers     |Tightly coupled to BindableObject         |Loosely coupled, no Xamarin.Forms dependencies         |
+|App Models     |MVVM         |MVVM         |
+|     |RxUI         |RxUI         |
+|     |             |MVU <sup>**</sup> |
+|     |             |Blazor <sup>**</sup> |
+|Single Project     |No         |Yes         |
+|Multi-targeting     |No         |Yes         |
+|Multi-window     |No         |Yes         |
+|**Misc**     |         |         |
+|.NET     |Xamarin.iOS, Xamarin.Android, Mono, .NET Framework, ...         |.NET 6+         |
+|XAML Hot Reload|Experimental: SDK 4.x & Visual Studio 2019 prior to version 16.9<br>Feature Complete: SDK 5.x & Visual Studio 2019 version 16.9 or newer|Yes|
+|.NET Hot Reload|iOS/Android – No<br>UWP – Limited support for runtime edits using .NET “Edit & Continue”|Yes|
+|Acquisition |NuGet & Visual Studio Installer |dotnet |
+|Project System     |Franken-proj         |SDK Style         |
+|dotnet CLI     |No         |Yes         |
+|**Tools**     |         |         |
+|Visual Studio 2019     |Yes         |Yes         |
+|Visual Studio 2019 for Mac     |Yes         |Yes         |
+|Visual Studio Code     |No         |Experimental<sup>***</sup>         |
 
-### Mac ###
-#### Install Visual Studio for Mac 2019 ####
+<sup>*</sup> The Windows implementation is expected to be WinUI 3, pending GA release. 
 
-If you do not already have it installed, instructions to download and setup can be found [here](https://docs.microsoft.com/en-us/visualstudio/mac/installation?view=vsmac-2019).
+<sup>**</sup> These app models are experimental.
 
-Because of current Multi-Targeting limitations with Visual Studio for Mac you will need to manually build/restore some projects before you are able to work on the Xamarin Forms solution.
+<sup>***</sup> Visual Studio Code will work by virtue of .NET unification, however not all experiences that make .NET MAUI development delightful (intellisense for example) may be enabled at the time of .NET 6 release.
 
-Here are a few different options we've put together to help make this process easier
-- Branches 3.5+ come with a Cake script target that you can use to build and open VSMac
-    ```sh
-    ./build.sh --target vsmac
-    ```
-    OR as mentioned above in the Windows section about provisioning, you can also use the new [Cake.Tool](https://cakebuild.net/docs/running-builds/runners/dotnet-tool)
-    ```
-    dotnet tool install Cake.Tool -g
-    dotnet cake --target=provision
-    ```
-    
-- When working on an earlier branch that does not have the cake scripts, you can use the following [build.sh](https://gist.github.com/PureWeen/92c1e1aff0c257c3decf0bcb8d6e9296) script
+## FAQs
 
-- If you don't want to run any scripts:
-  - Open Xamarin.Forms.sln
-  - Wait for VSMAC to finish restoring all projects
-  - from the command line run:
-    - `msbuild Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj`
-  - Now you should be able to run and deploy everything. The only reason you would need to do this process again is if you clean the solution folder or delete the bin/obj folders that are part of the `Xamarin.Forms.Build.Tasks.csproj`
+Do you have questions? Do not worry, we have prepared a complete [FAQ](https://github.com/dotnet/maui/wiki/FAQs) answering the most common questions.
 
-##### Solution Configuration #####
+## How to Engage, Contribute, and Give Feedback
 
-Upon opening the Xamarin.Forms solution, you will find that there are a number of errors and warnings under the Error List pane; you can resolve this by changing the filter of `Build + IntelliSense` to `Build Only`. At this point, you should be able to successfully build the solution.
+Some of the best ways to [contribute](./CONTRIBUTING.md) are to try things out, file issues, join in design conversations,
+and make pull-requests. Proposals for changes specific to MAUI can be found [here for discussion](../../issues).
 
-By default, the `Xamarin.Forms.Controls` project does not have a configuration for various API keys to access certain features on each platform (e.g. maps). When building the solution for the first time, a `controlgallery.config` file will be generated inside that project, which looks like this:
+See [CONTRIBUTING](./CONTRIBUTING.md)
 
-    UWPMapsAuthKey:
+## Code of conduct
 
-If you aren't working with maps, you can ignore this. If you want to work with maps, you will have to obtain your own API keys for each of these services, inserted directly after the identifier (e.g. `UWPMapsAuthKey:abcdefghijklmnopqrstuvwxyz`). You can find out how to obtain each of these as follows:
-
-- `UWPMapsAuthKey` at https://microsoft.com/maps/create-a-bing-maps-key.aspx
-
-Due to the way that Android works, the maps API key cannot be injected at runtime. As a result, you will have to add this key to the `MapsKey.cs` file under `Xamarin.Forms.ControlGallery.Android/Properties`:
-
-    [assembly: Android.App.MetaData("com.google.android.maps.v2.API_KEY", Value = "INSERT_KEY_HERE")]
-
-You can find out how to obtain a Google Maps API key [here](https://developer.xamarin.com/guides/android/platform_features/maps_and_location/maps/obtaining_a_google_maps_api_key/).
-
-##### Build from the Command line #####
-
-Make sure you have nuget.exe 4.0 or above and the latest .NET Core SDK. On macOS you should specify the platform in the msbuild command (`/p:Platform=iPhoneSimulator`)
-
-    msbuild /restore Xamarin.Forms.sln
-
-### UI Tests ###
-
-##### Run Android UI Tests #####
-
-Depending on your environment setup, you might need to configure a few things before being able to debug / run UI tests, especially on Windows.
-
-- If you receive an error about ANDROID_HOME, please make sure to set your environment variable to the Android SDK directory (e.g. C:\Program Files (x86)\Android\android-sdk).
-- If you receive an error about JAVA_HOME, please install the latest Java JDK and set your environment variable to the JDK directory (e.g. C:\Program Files\Java\jdk-13).
-- If you receive an error about a missing ApkFile, please generate an APK file for `Xamarin.Forms.ControlGallery.Android`. The easiest way to do this is to right click the project and select "Deploy". Note that if you rebuild the solution, you might lose the APK and will need to generate it again.
-
-After these steps are taken care of, you should be good to go. You can see all UI tests in Test Explorer, search them for your own convenience, and quickly run individual tests.
-
-##### Run UWP UI Tests #####
-
-To run the UWP UI Tests:
-
-1. Install and run the [Windows Application Driver](https://github.com/Microsoft/WinAppDriver#installing-and-running-windows-application-driver).
-2. Launch the `Xamarin.Forms.ControlGallery.WindowsUniversal` project to install the ControlGallery application onto your system.
-
-You should now be able to run any of the UWP UI Tests.
-
-## Coding Style ##
-
-We follow the style used by the [.NET Foundation](https://github.com/dotnet/runtime/blob/master/docs/coding-guidelines/coding-style.md), with a few exceptions:
-
-- We do not use the `private` keyword as it is the default accessibility level in C#.
-- We use hard tabs over spaces. You can change this setting in Visual Studio for Windows via `Tools > Options` and navigating to `Text Editor > C#` and selecting the "Keep tabs" radio option. In Visual Studio for Mac it's set via preferences in `Source Code > Code Formatting > C# source code` and disabling the checkbox for `Convert tabs to spaces`.
-- Lines should be limited to a max of 120 characters (or as close as possible within reason). This may be set in Visual Studio for Mac via preferences in `Source Code > Code Formatting > C# source code` and changing the `Desired file width` to `120`.
-
-## Contributing ##
-
-- [How to Contribute](https://github.com/xamarin/Xamarin.Forms/blob/main/.github/CONTRIBUTING.md)
-
-### Reporting Bugs ###
-
-We use [GitHub Issues](https://github.com/xamarin/Xamarin.Forms/issues) to track issues. If at all possible, please submit a [reproduction of your bug](https://github.com/xamarin/Xamarin.Forms/blob/main/.github/repro.md) along with your bug report.
+See [CODE-OF-CONDUCT](./CODE-OF-CONDUCT.md)
