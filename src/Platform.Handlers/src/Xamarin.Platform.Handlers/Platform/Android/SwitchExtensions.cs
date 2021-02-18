@@ -1,6 +1,7 @@
 ﻿using Xamarin.Forms;
 using ASwitch = AndroidX.AppCompat.Widget.SwitchCompat;
 using AAttribute = Android.Resource.Attribute;
+using MauiAttribute = Xamarin.Platform.Resource.Attribute;
 using APorterDuff = Android.Graphics.PorterDuff;
 using Android.Content.Res;
 
@@ -8,10 +9,8 @@ namespace Xamarin.Platform
 {
 	public static class SwitchExtensions
 	{
-		public static void UpdateIsToggled(this ASwitch aSwitch, ISwitch view)
-		{
+		public static void UpdateIsToggled(this ASwitch aSwitch, ISwitch view) =>
 			aSwitch.Checked = view.IsToggled;
-		}
 
 		public static void UpdateTrackColor(this ASwitch aSwitch, ISwitch view) =>
 			UpdateTrackColor(aSwitch, view, aSwitch.GetDefaultSwitchTrackColorStateList());	
@@ -23,51 +22,33 @@ namespace Xamarin.Platform
 			if (aSwitch.Context == null)
 				return;
 
-			ColorStateList? currentTrackTintList =
-				aSwitch.TrackTintList ??
-				defaultTrackColor;
-
-			if (aSwitch.TrackTintList == null)
+			if(trackColor.IsDefault)
 			{
-				aSwitch.TrackTintList = new ColorTrackingColorStateList(_checkedStates, trackColor);
-			}
-			else if(currentTrackTintList is ColorTrackingColorStateList csl)
-			{
-				var currentState = aSwitch.GetCurrentState();
-
-				var newState  = csl.CreateForState(currentState, trackColor, defaultTrackColor);
-				if (newState != aSwitch.TrackTintList)
-					aSwitch.TrackTintList = newState;
+				aSwitch.TrackTintMode = APorterDuff.Mode.SrcAtop;
+				aSwitch.TrackTintList = defaultTrackColor;
 			}
 			else
 			{
-				if (!trackColor.IsDefault)
-				{
-					aSwitch.TrackDrawable.SetTintMode(APorterDuff.Mode.SrcAtop);
-					aSwitch.TrackDrawable.SetColorFilter(trackColor.ToNative(), FilterMode.SrcAtop);
-				}
-				else
-				{
-					aSwitch.TrackDrawable.ClearColorFilter();
-				}
+				aSwitch.TrackTintMode = APorterDuff.Mode.SrcIn;
+				aSwitch.TrackTintList = trackColor.ToDefaultColorStateList();
 			}
 		}
 
-		public static void UpdateThumbColor(this ASwitch aSwitch, ISwitch view)
+		public static void UpdateThumbColor(this ASwitch aSwitch, ISwitch view) =>
+			aSwitch.UpdateThumbColor(view, aSwitch.GetDefaultSwitchThumbColorStateList());
+
+		public static void UpdateThumbColor(this ASwitch aSwitch, ISwitch view, ColorStateList? defaultColorStateList)
 		{
 			var thumbColor = view.ThumbColor;
 			if (!thumbColor.IsDefault)
 			{
-				aSwitch.ThumbDrawable.SetTintMode(APorterDuff.Mode.SrcAtop);
-				aSwitch.ThumbDrawable.SetTintList(
-					ColorTrackingColorStateList.Create(aSwitch.ThumbTintList, _checkedStates, thumbColor, GetCurrentState(aSwitch))
-				);
+				aSwitch.ThumbTintMode = APorterDuff.Mode.SrcAtop;
+				aSwitch.ThumbTintList = thumbColor.ToDefaultColorStateList();
 			}
-			// Validates that we set this ThumbTintList
 			else
 			{
-				aSwitch.ThumbDrawable.SetTintMode(APorterDuff.Mode.SrcIn);
-				aSwitch.ThumbDrawable.SetTintList(null);
+				aSwitch.ThumbTintList = defaultColorStateList;
+				aSwitch.ThumbTintMode = APorterDuff.Mode.SrcIn;
 			}
 		}
 
@@ -86,7 +67,7 @@ namespace Xamarin.Platform
 		{
 			var context = aSwitch.Context;
 			if (context == null)
-				return new ColorTrackingColorStateList();
+				return new ColorStateList(null, null);
 
 			int[][] states = new int[3][];
 			int[] colors = new int[3];
@@ -99,7 +80,27 @@ namespace Xamarin.Platform
 
 			states[2] = new int[0];
 			colors[2] = context.GetThemeAttrColor(AAttribute.ColorForeground, 0.3f);
-			return new ColorTrackingColorStateList(states, colors);
+			return new ColorStateList(states, colors);
+		}
+
+		public static ColorStateList GetDefaultSwitchThumbColorStateList(this ASwitch aSwitch)
+		{
+			var context = aSwitch.Context;
+			if (context == null)
+				return new ColorStateList(null, null);
+
+			int[][] states = new int[3][];
+			int[] colors = new int[3];
+
+			states[0] = new int[] { -AAttribute.StateEnabled };
+			colors[0] = context.GetDisabledThemeAttrColor(MauiAttribute.colorSwitchThumbNormal);
+
+			states[1] = new int[] { AAttribute.StateChecked };
+			colors[1] = context.GetThemeAttrColor(AAttribute.ColorControlActivated);
+
+			states[2] = new int[0];
+			colors[2] = context.GetThemeAttrColor(MauiAttribute.colorSwitchThumbNormal);
+			return new ColorStateList(states, colors);
 		}
 
 		static int[][] _checkedStates = new int[][]

@@ -10,6 +10,7 @@ namespace Xamarin.Platform.Handlers
 	{
 		CheckedChangeListener ChangeListener { get; } = new CheckedChangeListener();
 		static ColorStateList? DefaultTrackColorStateList { get; set; }
+		static ColorStateList? DefaultThumbColorStateList { get; set; }
 
 		protected override ASwitch CreateNativeView()
 		{
@@ -31,6 +32,7 @@ namespace Xamarin.Platform.Handlers
 		protected override void SetupDefaults(ASwitch nativeView)
 		{
 			DefaultTrackColorStateList = nativeView.GetDefaultSwitchTrackColorStateList();
+			DefaultThumbColorStateList = nativeView.GetDefaultSwitchThumbColorStateList();
 		}
 
 		public override Size GetDesiredSize(double widthConstraint, double heightConstraint)
@@ -65,7 +67,7 @@ namespace Xamarin.Platform.Handlers
 		public static void MapThumbColor(SwitchHandler handler, ISwitch view)
 		{
 			ViewHandler.CheckParameters(handler, view);
-			handler.TypedNativeView?.UpdateThumbColor(view);
+			handler.TypedNativeView?.UpdateThumbColor(view, DefaultThumbColorStateList);
 		}
 
 		void OnCheckedChanged(bool isToggled)
@@ -76,14 +78,6 @@ namespace Xamarin.Platform.Handlers
 			VirtualView.IsToggled = isToggled;
 		}
 
-		void UpdateOnColor()
-		{
-			if (VirtualView == null || TypedNativeView == null)
-				return;
-
-			TypedNativeView?.UpdateThumbColor(VirtualView);
-		}
-
 		class CheckedChangeListener : Java.Lang.Object, CompoundButton.IOnCheckedChangeListener
 		{
 			public SwitchHandler? Handler { get; set; }
@@ -91,7 +85,6 @@ namespace Xamarin.Platform.Handlers
 			void CompoundButton.IOnCheckedChangeListener.OnCheckedChanged(CompoundButton? buttonView, bool isToggled)
 			{
 				Handler?.OnCheckedChanged(isToggled);
-				Handler?.UpdateOnColor();
 			}
 		}
 	}

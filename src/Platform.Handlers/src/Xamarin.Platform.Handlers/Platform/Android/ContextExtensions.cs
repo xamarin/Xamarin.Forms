@@ -11,6 +11,7 @@ using AApplicationInfoFlags = Android.Content.PM.ApplicationInfoFlags;
 using AFragmentManager = AndroidX.Fragment.App.FragmentManager;
 using Size = Xamarin.Forms.Size;
 using AColor = Android.Graphics.Color;
+using AAttribute = Android.Resource.Attribute;
 
 namespace Xamarin.Platform
 {
@@ -90,21 +91,42 @@ namespace Xamarin.Platform
 			}
 		}
 
+		internal static int GetDisabledThemeAttrColor(this Context context, int attr)
+		{
+			if (context.Theme == null)
+				return 0;
+			
+			using (var value = new TypedValue())
+			{
+				// Now retrieve the disabledAlpha value from the theme
+				context.Theme.ResolveAttribute(AAttribute.DisabledAlpha, value, true);
+				float disabledAlpha = value.Float;
+				return GetThemeAttrColor(context, attr, disabledAlpha);
+			}
+		}
+
+
 		internal static int GetThemeAttrColor(this Context context, int attr)
 		{
-			TypedValue mTypedValue = new TypedValue();
-			if (context.Theme?.ResolveAttribute(attr, mTypedValue, true) == true)
+			using (TypedValue mTypedValue = new TypedValue())
 			{
-				if (mTypedValue.Type >= DataType.FirstInt
-						&& mTypedValue.Type <= DataType.LastInt)
+				if (context.Theme?.ResolveAttribute(attr, mTypedValue, true) == true)
 				{
-					return mTypedValue.Data;
-				}
-				else if (mTypedValue.Type == DataType.String)
-				{
-					throw new NotImplementedException();
+					if (mTypedValue.Type >= DataType.FirstInt
+							&& mTypedValue.Type <= DataType.LastInt)
+					{
+						return mTypedValue.Data;
+					}
+					else if (mTypedValue.Type == DataType.String)
+					{
+						if (context.Resources == null)
+							return 0;
+
+						return context.Resources.GetColor(mTypedValue.ResourceId, context.Theme);
+					}
 				}
 			}
+
 			return 0;
 		}
 

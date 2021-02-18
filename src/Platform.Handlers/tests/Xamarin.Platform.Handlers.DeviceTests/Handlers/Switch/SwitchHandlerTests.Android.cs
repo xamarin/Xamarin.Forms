@@ -1,6 +1,7 @@
 ﻿using Xamarin.Forms;
 using ASwitch = AndroidX.AppCompat.Widget.SwitchCompat;
 using System.Threading.Tasks;
+using System;
 
 namespace Xamarin.Platform.Handlers.DeviceTests
 {
@@ -12,19 +13,19 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 		bool GetNativeIsChecked(SwitchHandler switchHandler) =>
 			GetNativeSwitch(switchHandler).Checked;
 
-		Task ValidateOnColor(ISwitch switchStub, Color color)
-		{
-			return InvokeOnMainThreadAsync(() =>
-			{
-				GetNativeSwitch(CreateHandler(switchStub)).AssertContainsColor(color);
-			});
-		}
+		Task ValidateTrackColor(ISwitch switchStub, Color color, Action action = null) =>
+			ValidateHasColor(switchStub, color, action);
 
-		Task ValidateThumbColor(ISwitch switchStub, Color color)
+		Task ValidateThumbColor(ISwitch switchStub, Color color, Action action = null) =>
+			ValidateHasColor(switchStub, color, action);
+
+		Task ValidateHasColor(ISwitch switchStub, Color color, Action action = null)
 		{
 			return InvokeOnMainThreadAsync(() =>
 			{
-				GetNativeSwitch(CreateHandler(switchStub)).AssertContainsColor(color);
+				var nativeSwitch = GetNativeSwitch(CreateHandler(switchStub));
+				action?.Invoke();
+				nativeSwitch.AssertContainsColor(color);
 			});
 		}
 	}

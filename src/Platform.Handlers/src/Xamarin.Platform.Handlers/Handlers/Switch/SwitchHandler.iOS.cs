@@ -39,7 +39,7 @@ namespace Xamarin.Platform.Handlers
 		public static void MapTrackColor(SwitchHandler handler, ISwitch view)
 		{
 			ViewHandler.CheckParameters(handler, view);
-			handler.TypedNativeView?.UpdateOnColor(view, DefaultOnColor);
+			handler.TypedNativeView?.UpdateTrackColor(view, DefaultOnColor);
 		}
 
 		public static void MapThumbColor(SwitchHandler handler, ISwitch view)

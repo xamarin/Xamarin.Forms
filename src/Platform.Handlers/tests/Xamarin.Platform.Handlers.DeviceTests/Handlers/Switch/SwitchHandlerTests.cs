@@ -18,8 +18,8 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 			await ValidatePropertyInitValue(switchStub, () => switchStub.IsToggled, GetNativeIsChecked, switchStub.IsToggled);
 		}
 
-		[Fact(DisplayName = "On Color Initializes Correctly")]
-		public async Task OnColorInitializesCorrectly()
+		[Fact(DisplayName = "Track Color Initializes Correctly")]
+		public async Task TrackColorInitializesCorrectly()
 		{
 			var switchStub = new SwitchStub()
 			{
@@ -27,7 +27,18 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 				TrackColor = Color.Red
 			};
 
-			await ValidateOnColor(switchStub, Color.Red);
+			await ValidateTrackColor(switchStub, Color.Red);
+		}
+
+		[Fact(DisplayName = "Track Color Updates Correctly")]
+		public async Task TrackColorUpdatesCorrectly()
+		{
+			var switchStub = new SwitchStub()
+			{
+				IsToggled = true
+			};
+
+			await ValidateTrackColor(switchStub, Color.Red, () => switchStub.TrackColor = Color.Red);
 		}
 
 		[Fact(DisplayName = "ThumbColor Initializes Correctly")]
@@ -40,6 +51,17 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 			};
 
 			await ValidateThumbColor(switchStub, Color.Blue);
+		}
+
+		[Fact(DisplayName = "Track Color Updates Correctly")]
+		public async Task ThumbColorUpdatesCorrectly()
+		{
+			var switchStub = new SwitchStub()
+			{
+				IsToggled = true
+			};
+
+			await ValidateTrackColor(switchStub, Color.Red, () => switchStub.ThumbColor = Color.Red);
 		}
 	}
 }

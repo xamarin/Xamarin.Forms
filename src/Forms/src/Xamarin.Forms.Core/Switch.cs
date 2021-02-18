@@ -16,7 +16,11 @@ namespace Xamarin.Forms
 
 		}, defaultBindingMode: BindingMode.TwoWay);
 
-		public static readonly BindableProperty OnColorProperty = BindableProperty.Create(nameof(OnColor), typeof(Color), typeof(Switch), Color.Default);
+		public static readonly BindableProperty OnColorProperty = BindableProperty.Create(nameof(OnColor), typeof(Color), typeof(Switch), Color.Default, 
+			propertyChanged: (bindable, oldValue, newValue) =>
+			{
+				((IFrameworkElement)bindable)?.Handler?.UpdateValue(nameof(ISwitch.TrackColor));
+			});
 
 		public static readonly BindableProperty ThumbColorProperty = BindableProperty.Create(nameof(ThumbColor), typeof(Color), typeof(Switch), Color.Default);
 

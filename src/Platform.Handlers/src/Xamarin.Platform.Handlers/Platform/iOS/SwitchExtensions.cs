@@ -11,10 +11,10 @@ namespace Xamarin.Platform
 
 		public static void UpdateOnColor(this UISwitch uiSwitch, ISwitch view)
 		{
-			uiSwitch.UpdateOnColor(view, null);
+			uiSwitch.UpdateTrackColor(view, null);
 		}
 
-		public static void UpdateOnColor(this UISwitch uiSwitch, ISwitch view, UIColor? defaultOnColor)
+		public static void UpdateTrackColor(this UISwitch uiSwitch, ISwitch view, UIColor? defaultOnColor)
 		{
 			if (view == null)
 				return;

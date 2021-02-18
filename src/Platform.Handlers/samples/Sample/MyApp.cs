@@ -35,37 +35,9 @@ namespace Sample
 			horizontalStack.Add(new Label { Text = "And these buttons are in a HorizontalStackLayout" });
 
 			verticalStack.Add(horizontalStack);
-
 			verticalStack.Add(new Slider());
-			var asdf = new Switch { OnColor = Color.Blue, ThumbColor = Color.Green };
-			asdf.Toggled += Asdf_Toggled;
-			verticalStack.Add(asdf);
-
-			thing = new Switch();
-			verticalStack.Add(thing);
 
 			return verticalStack;
-		}
-
-		Switch thing;
-		private void Asdf_Toggled(object sender, ToggledEventArgs e)
-		{
-			Switch otherSwitch = (Switch)sender;
-
-			if (otherSwitch.IsToggled)
-			{
-				if (!thing.IsToggled)
-					thing.OnColor = Color.Red;
-				else
-					thing.OnColor = Color.Default;
-			}
-			else
-			{
-				if (thing.IsToggled)
-					thing.OnColor = Color.Red;
-				else
-					thing.OnColor = Color.Default;
-			}
 		}
 	}
 }
