@@ -22,7 +22,7 @@ PowerShell:
 #addin "nuget:?package=Cake.Android.Adb&version=3.2.0"
 #addin "nuget:?package=Cake.Git&version=0.21.0"
 #addin "nuget:?package=Cake.Android.SdkManager&version=3.0.2"
-#addin "nuget:?package=Cake.Boots&version=1.0.2.437"
+#addin "nuget:?package=Cake.Boots&version=1.0.3.556"
 #addin "nuget:?package=Cake.AppleSimulator&version=0.2.0"
 #addin "nuget:?package=Cake.FileHelpers&version=3.2.1"
 
@@ -30,6 +30,7 @@ PowerShell:
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 #tool nuget:?package=NUnit.ConsoleRunner&version=3.11.1
+#tool "nuget:?package=nuget.commandline&version=5.8.1"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -388,7 +389,7 @@ Task("provision-netsdk-local")
 
                 Information("Downloading: {0} to {1}", cabUrl, cabPath);
                 DownloadFile(cabUrl, cabPath);
-                InstallMsi(msiUrl, null, msiName);
+                InstallMsiOrExe(msiUrl, null, msiName);
             }
 
             int i = 0;
@@ -541,7 +542,7 @@ Task("provision-uitests-uwp")
         if(!DirectoryExists(driverPath))
         {
             try{
-                InstallMsi(UWP_APP_DRIVER_INSTALL_PATH, installPath);
+                InstallMsiOrExe(UWP_APP_DRIVER_INSTALL_PATH, installPath);
             }
             catch(Exception e)
             {
@@ -550,8 +551,41 @@ Task("provision-uitests-uwp")
         }
     });
 
-void InstallMsi(string msiFile, string installTo, string fileName = "InstallFile.msi")
+
+async Task InstallMsiWithBoots(string msiFile, string installTo = null, string fileName = "InstallFile.msi")
 {
+    bool success = false;
+
+    try
+    {
+        await Boots(msiFile);
+        success = true;
+    }
+    catch (System.Exception e)
+    {
+        Information("Boots failed: {0}", e);
+    }
+
+
+    if(success)
+        return;
+
+    try
+    {
+        InstallMsiOrExe(msiFile, installTo, fileName, !isCIBuild);
+        success = true;
+    }
+    catch (System.Exception e)
+    {
+        Information("Our attempt failed: {0}", e);
+    }
+}
+
+void InstallMsiOrExe(string msiFile, string installTo = null, string fileName = "InstallFile.msi", bool interactive = false)
+{
+     if(msiFile.EndsWith(".exe") && fileName == "InstallFile.msi")
+        fileName = "InstallFile.exe";
+
     string installerPath = $"{System.IO.Path.GetTempPath()}{fileName}";
         
     try
@@ -559,22 +593,35 @@ void InstallMsi(string msiFile, string installTo, string fileName = "InstallFile
         Information ("Installing: {0}", msiFile);
         DownloadFile(msiFile, installerPath);
         Information("File Downloaded To: {0}", installerPath);
+        int result = -1;
 
-        var argumentBuilder = 
-            new ProcessArgumentBuilder()
-                .Append("/a")
-                .Append(installerPath)
-                .Append("/qn");
-
-        if(!String.IsNullOrWhiteSpace(installTo))
+        if(msiFile.EndsWith(".exe"))
         {
-            Information("Installing into: {0}", installTo);
-            argumentBuilder = argumentBuilder.Append("TARGETDIR=\"" + installTo + "\"");
+            result = StartProcess(installerPath, new ProcessSettings {
+                    Arguments = new ProcessArgumentBuilder()
+                        .Append(@" /q")
+                    }
+                );
         }
+        else{
+            var argumentBuilder = 
+                new ProcessArgumentBuilder()
+                    .Append("/a")
+                    .Append(installerPath);
 
-        var result = StartProcess("msiexec", new ProcessSettings {
-            Arguments = argumentBuilder
-        });
+            if(!interactive)
+                argumentBuilder = argumentBuilder.Append("/qn");
+
+            if(!String.IsNullOrWhiteSpace(installTo))
+            {
+                Information("Installing into: {0}", installTo);
+                argumentBuilder = argumentBuilder.Append("TARGETDIR=\"" + installTo + "\"");
+            }
+
+            result = StartProcess("msiexec", new ProcessSettings {
+                Arguments = argumentBuilder
+            });
+        }
 
         if(result != 0)
             throw new Exception("Failed to install: " + msiFile);
@@ -630,8 +677,13 @@ Task("_NuGetPack")
         }
         else
         {
-            var nugetVersionFile = GetFiles(".XamarinFormsVersionFile.txt");
-            nugetversion = FileReadText(nugetVersionFile.First());
+            foreach(var nugetVersionFile in GetFiles("./**/.XamarinFormsVersionFile.txt"))
+            {
+                nugetversion = FileReadText(nugetVersionFile);
+
+                if(!nugetversion.StartsWith(".."))
+                    break;
+            }
         }
 
         Information("Nuget Version: {0}", nugetversion);
@@ -644,7 +696,8 @@ Task("_NuGetPack")
         };
 
         var nugetFilePaths =
-            GetFiles("./.nuspec/*.nuspec");
+            GetFiles("./.nuspec/Xamarin.Forms.nuspec");
+          //  GetFiles("./.nuspec/*.nuspec");
 
         nuGetPackSettings.Properties.Add("configuration", configuration);
         nuGetPackSettings.Properties.Add("platform", "anycpu");
@@ -755,8 +808,18 @@ Task("BuildForNuget")
 
         // dual screen
 
-        // if(IsRunningOnWindows())
-        // {
+
+         // XAML Tests are currently having issues compiling in Release Mode
+        if(configuration == "Debug")
+        {
+            msbuildSettings = GetMSBuildSettings();
+            msbuildSettings.BinaryLogger = binaryLogger;
+            binaryLogger.FileName = $"{artifactStagingDirectory}/Xamarin.Forms.ControlGallery-{configuration}.binlog";
+           MSBuild("./Xamarin.Forms.ControlGallery.sln", msbuildSettings.WithRestore());
+        }
+
+        if(IsRunningOnWindows())
+        {
         //     msbuildSettings = GetMSBuildSettings();
         //     msbuildSettings.BinaryLogger = binaryLogger;
         //     binaryLogger.FileName = $"{artifactStagingDirectory}/dualscreen-{configuration}-csproj.binlog";
@@ -774,27 +837,15 @@ Task("BuildForNuget")
 	    //                     .WithProperty("UwpMinTargetFrameworks", "uap10.0.14393")
 	    //                     .WithRestore());
 	
-	    //     msbuildSettings = GetMSBuildSettings();
-	    //     msbuildSettings.BinaryLogger = binaryLogger;
-	    //     binaryLogger.FileName = $"{artifactStagingDirectory}/win-16299-{configuration}-csproj.binlog";
-	    //     MSBuild("./Xamarin.Forms.Platform.UAP/Xamarin.Forms.Platform.UAP.csproj",
-	    //                 msbuildSettings
-	    //                     .WithRestore()
-	    //                     .WithTarget("rebuild")
-	    //                     .WithProperty("DisableEmbeddedXbf", "false")
-	    //                     .WithProperty("EnableTypeInfoReflection", "false")
-	    //                     .WithProperty("UwpMinTargetFrameworks", "uap10.0.16299"));
-	
-	    //     msbuildSettings = GetMSBuildSettings();
-	    //     msbuildSettings.BinaryLogger = binaryLogger;
-	    //     binaryLogger.FileName = $"{artifactStagingDirectory}/win-14393-{configuration}-csproj.binlog";
-	    //     MSBuild("./Xamarin.Forms.Platform.UAP/Xamarin.Forms.Platform.UAP.csproj",
-	    //                 msbuildSettings
-	    //                     .WithRestore()
-	    //                     .WithTarget("rebuild")
-	    //                     .WithProperty("DisableEmbeddedXbf", "false")
-	    //                     .WithProperty("EnableTypeInfoReflection", "false")
-	    //                     .WithProperty("UwpMinTargetFrameworks", "uap10.0.14393"));
+	        msbuildSettings = GetMSBuildSettings();
+	        msbuildSettings.BinaryLogger = binaryLogger;
+	        binaryLogger.FileName = $"{artifactStagingDirectory}/win-{configuration}-csproj.binlog";
+	        MSBuild("./src/Platform.Renderers/src/Xamarin.Forms.Platform.UAP/Xamarin.Forms.Platform.UAP.csproj",
+	                    msbuildSettings
+	                        .WithRestore()
+	                        .WithTarget("rebuild")
+	                        .WithProperty("DisableEmbeddedXbf", "false")
+	                        .WithProperty("EnableTypeInfoReflection", "false"));
 
         //     msbuildSettings = GetMSBuildSettings();
         //     msbuildSettings.BinaryLogger = binaryLogger;
@@ -809,40 +860,7 @@ Task("BuildForNuget")
         //     MSBuild("./Xamarin.Forms.Platform.MacOS/Xamarin.Forms.Platform.MacOS.csproj",
         //                 msbuildSettings
         //                     .WithTarget("rebuild"));
-        // }
-
-         // XAML Tests are currently having issues compiling in Release Mode
-        if(configuration == "Debug")
-        {
-            msbuildSettings = GetMSBuildSettings();
-            msbuildSettings.BinaryLogger = binaryLogger;
-            binaryLogger.FileName = $"{artifactStagingDirectory}/Xamarin.Forms.ControlGallery-{configuration}.binlog";
-            MSBuild("./Xamarin.Forms.ControlGallery.sln", msbuildSettings.WithRestore());
         }
-
-    }
-    catch(Exception)
-    {
-        if(IsRunningOnWindows())
-            throw;
-    }
-});
-
-Task("BuildPages")
-    .IsDependentOn("BuildTasks")
-    .Description("Build Xamarin.Forms.Pages")
-    .Does(() =>
-{
-    try
-    {
-        var msbuildSettings = GetMSBuildSettings();
-        var binaryLogger = new MSBuildBinaryLogSettings {
-            Enabled  = isCIBuild
-        };
-
-        msbuildSettings.BinaryLogger = binaryLogger;
-        binaryLogger.FileName = $"{artifactStagingDirectory}/win-pages-{configuration}.binlog";
-        MSBuild("./build/Xamarin.Forms.Pages.sln", msbuildSettings.WithRestore());
 
     }
     catch(Exception)
@@ -891,7 +909,7 @@ Task("VSMAC")
     {
         StartVisualStudio();
     });
-
+    
 Task("cg-android")
     .Description("Builds Android Control Gallery")
     .IsDependentOn("WriteGoogleMapsAPIKey")

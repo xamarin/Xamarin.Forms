@@ -1,8 +1,8 @@
-﻿using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using UWPApp = Windows.UI.Xaml.Application;
-using UWPControls = Windows.UI.Xaml.Controls;
-using WScrollMode = Windows.UI.Xaml.Controls.ScrollMode;
+﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using UWPApp = Microsoft.UI.Xaml.Application;
+using UWPControls = Microsoft.UI.Xaml.Controls;
+using WScrollMode = Microsoft.UI.Xaml.Controls.ScrollMode;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -78,6 +78,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_wrapGrid.SizeChanged -= WrapGridSizeChanged;
 			_wrapGrid.SizeChanged += WrapGridSizeChanged;
+
+			UpdateItemSize();
 		}
 
 		void WrapGridSizeChanged(object sender, SizeChangedEventArgs e)
