@@ -35,7 +35,7 @@ jobs:
           ls -l
       - task: ExtractFiles@1
         inputs:
-          archiveFilePatterns: '$(PIPELINE.WORKSPACE)/myappbuild/drop/$(resources.pipeline.xamarinci.runID).zip'
+          archiveFilePatterns: '$(Pipeline.Workspace)/xamarinci/drop/$(resources.pipeline.xamarinci.runID).zip'
           destinationFolder: '$(agent.builddirectory)'
           cleanDestinationFolder: false
       - script: |  
