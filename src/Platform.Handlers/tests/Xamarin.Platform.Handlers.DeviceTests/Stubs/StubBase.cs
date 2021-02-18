@@ -6,7 +6,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests.Stubs
 {
 	public class StubBase : IFrameworkElement
 	{
-		public bool IsEnabled { get; set; }
+		public bool IsEnabled { get; set; } = true;
 
 		public Color BackgroundColor { get; set; }
 

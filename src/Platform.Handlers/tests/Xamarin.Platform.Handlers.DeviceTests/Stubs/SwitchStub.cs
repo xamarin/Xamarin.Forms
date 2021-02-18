@@ -6,7 +6,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests.Stubs
 	{
 		public bool IsToggled { get; set; }
 
-		public Color OnColor { get; set; }
+		public Color TrackColor { get; set; }
 
 		public Color ThumbColor { get; set; }
 

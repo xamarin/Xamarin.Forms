@@ -7,7 +7,7 @@ namespace Xamarin.Platform.Handlers
 		protected override object CreateNativeView() => throw new NotImplementedException();
 
 		public static void MapIsToggled(SwitchHandler handler, ISwitch view) { }
-		public static void MapOnColor(SwitchHandler handler, ISwitch view) { }
+		public static void MapTrackColor(SwitchHandler handler, ISwitch view) { }
 		public static void MapThumbColor(SwitchHandler handler, ISwitch view) { }
 	}
 }

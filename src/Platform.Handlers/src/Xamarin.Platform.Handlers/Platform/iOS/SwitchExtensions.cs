@@ -22,10 +22,10 @@ namespace Xamarin.Platform
 			if (defaultOnColor == null)
 				defaultOnColor = UISwitch.Appearance.OnTintColor;
 
-			if (view.OnColor == Forms.Color.Default)
+			if (view.TrackColor == Forms.Color.Default)
 				uiSwitch.OnTintColor = defaultOnColor;
 			else
-				uiSwitch.OnTintColor = view.OnColor.ToNative();
+				uiSwitch.OnTintColor = view.TrackColor.ToNative();
 		}
 
 		public static void UpdateThumbColor(this UISwitch uiSwitch, ISwitch view)

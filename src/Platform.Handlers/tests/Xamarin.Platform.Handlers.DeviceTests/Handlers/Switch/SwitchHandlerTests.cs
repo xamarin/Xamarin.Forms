@@ -24,7 +24,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 			var switchStub = new SwitchStub()
 			{
 				IsToggled = true,
-				OnColor = Color.Red
+				TrackColor = Color.Red
 			};
 
 			await ValidateOnColor(switchStub, Color.Red);

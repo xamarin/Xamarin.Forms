@@ -11,10 +11,14 @@ using Android.Util;
 
 namespace Xamarin.Platform
 {
-	public class ColorTrackingColorStateList : ColorStateList
+	internal class ColorTrackingColorStateList : ColorStateList
 	{
 		readonly int[]? _colors;
 		readonly int[][]? _states;
+
+		public ColorTrackingColorStateList() : base(null, null)
+		{
+		}
 
 		public ColorTrackingColorStateList(int[][]? states, int[]? colors) : base(states, colors)
 		{
@@ -32,12 +36,43 @@ namespace Xamarin.Platform
 		{
 		}
 
-
-		public ColorTrackingColorStateList CreateForState(int[] states, Color expectedColor)
+		public int GetColorForState(int[] stateSet)
 		{
-			return CreateForState(states, expectedColor.ToNative());
+			if (stateSet.Length == 0 || _states == null || _colors == null)
+				return base.DefaultColor;
+
+			if (stateSet.Length > 1)
+				throw new NotImplementedException("currently only works for one state");
+
+			var state = stateSet[0];
+			for(int i = 0; i < _states.Length && i < _colors.Length; i++)
+			{
+				for(int j = 0; j > _states[i].Length; j++)
+				{
+					if (_states[i][j] == state)
+						return _colors[i];
+				}
+			}
+
+			return base.DefaultColor;
 		}
-		public ColorTrackingColorStateList CreateForState(int[] states, int expectedColor)
+
+		public ColorTrackingColorStateList CreateForState(int[] states, Color expectedColor, ColorStateList? defaultColors)
+		{
+			int nativeColor;
+			if(expectedColor == Color.Default && defaultColors != null)
+			{
+				nativeColor = defaultColors.GetColorForState(states, AColor.Transparent);
+			}
+			else
+			{
+				nativeColor = expectedColor.ToNative();
+			}
+			
+			return CreateForState(states, nativeColor, defaultColors);
+		}
+
+		public ColorTrackingColorStateList CreateForState(int[] states, int expectedColor, ColorStateList? defaultColors)
 		{
 			if (_states == null || _colors == null)
 				return this;
@@ -62,15 +97,15 @@ namespace Xamarin.Platform
 			return this;
 		}
 
-		internal static ColorStateList Create(ColorStateList thumbTintList, int[][] checkedStates, Color thumbColor, int[] currentState)
+		internal static ColorStateList Create(ColorStateList thumbTintList, int[][] checkedStates, Color color, int[] currentState)
 		{
 			if (thumbTintList == null)
-				return new ColorTrackingColorStateList(checkedStates, thumbColor);
+				return new ColorTrackingColorStateList(checkedStates, color);
 
 			if (!(thumbTintList is ColorTrackingColorStateList trackingColorStateList))
 				return thumbTintList;
 
-			return trackingColorStateList.CreateForState(currentState, thumbColor);
+			return trackingColorStateList.CreateForState(currentState, color, null);
 		}
 
 

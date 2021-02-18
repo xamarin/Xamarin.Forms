@@ -1,4 +1,5 @@
-﻿using Android.Graphics.Drawables;
+﻿using Android.Content.Res;
+using Android.Graphics.Drawables;
 using Android.Widget;
 using Xamarin.Forms;
 using ASwitch = AndroidX.AppCompat.Widget.SwitchCompat;
@@ -8,7 +9,7 @@ namespace Xamarin.Platform.Handlers
 	public partial class SwitchHandler : AbstractViewHandler<ISwitch, ASwitch>
 	{
 		CheckedChangeListener ChangeListener { get; } = new CheckedChangeListener();
-		static ColorTrackingColorStateList? DefaultTrackColorStateList { get; set; }
+		static ColorStateList? DefaultTrackColorStateList { get; set; }
 
 		protected override ASwitch CreateNativeView()
 		{
