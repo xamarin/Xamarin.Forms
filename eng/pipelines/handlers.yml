@@ -121,26 +121,6 @@ stages:
           provisionator.extraArguments : '--v'
         steps:
           - template: common/controlgallery-android.yml
-      - job: device_tests
-        workspace:
-          clean: all
-        displayName: Run Device Tests Android
-        timeoutInMinutes: 120
-        pool:
-          name:  $(macOSXVmPool)
-          vmImage: $(macOSXVmImage)
-        variables:
-          provisionator.xcode : '$(System.DefaultWorkingDirectory)/eng/provisioning/xcode.csx'
-          provisionator.path : '$(System.DefaultWorkingDirectory)/eng/provisioning/provisioning.csx'
-          provisionator.extraArguments : '--v'
-        strategy:
-          matrix:
-            Essentials:
-              project: '$(System.DefaultWorkingDirectory)/src/Essentials/test/DeviceTests.Android/Xamarin.Essentials.DeviceTests.Android.csproj'
-            Handlers:
-              project: '$(System.DefaultWorkingDirectory)/src/Platform.Handlers/tests/Xamarin.Platform.Handlers.DeviceTests.Android/Xamarin.Platform.Handlers.DeviceTests.Android.csproj'
-        steps:
-          - template: common/device-tests-android.yml
   
   - stage: build_net6_windows
     displayName: NET6 Windows
