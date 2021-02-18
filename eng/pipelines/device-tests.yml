@@ -20,8 +20,6 @@ resources:
       trigger: 
         branches:
           - dev/ci-device-tests
-        pr:
-          - dev/ci-device-tests
 
 jobs:
   - job: testing
