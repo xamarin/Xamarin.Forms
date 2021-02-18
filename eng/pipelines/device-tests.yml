@@ -16,7 +16,7 @@ resources:
       source: xamarin-handlers-ci
       trigger: 
         branches:
-          - master
+          - dev/ci-device-tests
 
 stages:
   - stage: test_android
