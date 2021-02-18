@@ -348,7 +348,7 @@ namespace Xamarin.Forms
 				var element = LogicalChildren[i];
 				if (element is VisualElement c)
 				{
-					if (c.Bounds != startingLayout[i])
+					if (startingLayout.Count <= i || c.Bounds != startingLayout[i])
 					{
 						LayoutChanged?.Invoke(this, EventArgs.Empty);
 						return;

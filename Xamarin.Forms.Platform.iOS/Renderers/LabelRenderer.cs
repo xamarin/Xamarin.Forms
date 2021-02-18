@@ -174,7 +174,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				}
 
 				UpdateLineBreakMode();
-				UpdateHorizontalTextAlignment();
 				UpdateText();
 				UpdateTextDecorations();
 				UpdateTextColor();
@@ -182,6 +181,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateMaxLines();
 				UpdateCharacterSpacing();
 				UpdatePadding();
+				UpdateHorizontalTextAlignment();
 			}
 
 			base.OnElementChanged(e);
@@ -474,6 +474,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			Control.AttributedStringValue = _formatted.ToAttributed(Element, Element.TextColor, Element.HorizontalTextAlignment, Element.LineHeight);
 #endif
 			_perfectSizeValid = false;
+
+			UpdateHorizontalTextAlignment();
 		}
 
 		void UpdateTextHtml()
