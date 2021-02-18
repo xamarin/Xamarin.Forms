@@ -68,7 +68,12 @@ namespace Maui.Controls.Sample.iOS
 				};
 			}
 
-			services.AddSingleton<ITextService, Services.iOSTextService>();
+			services.AddSingleton<ITextService, iOSTextService>();
+		}
+
+		class iOSTextService : ITextService
+		{
+			public string GetText() => "iOS Text Service";
 		}
 	}
 }
