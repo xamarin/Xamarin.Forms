@@ -7,6 +7,6 @@ namespace Xamarin.Platform.Hosting
 	public interface IAppHostBuilder : IHostBuilder
 	{
 		IHostBuilder ConfigureHandlers(Action<HostBuilderContext, IServiceCollection> configureDelegate);
-		IHost BuildApp(IApp app);
+		IApp BuildApp(IApp app);
 	}
 }

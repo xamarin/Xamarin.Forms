@@ -30,10 +30,11 @@ namespace Xamarin.Platform.Hosting
 		}
 		public IDictionary<object, object> Properties => new Dictionary<object, object>();
 
-		public IHost BuildApp(IApp app)
+		public IApp BuildApp(IApp app)
 		{
 			_app = app;
-			return Build();
+			Build();
+			return _app;
 		}
 
 		public IHost Build()
@@ -186,8 +187,8 @@ namespace Xamarin.Platform.Hosting
 		void ConfigureAppServices(IServiceCollection services)
 		{
 			//Call ConfigureServices methoda on the users App class
-			//if (_app != null)
-			//	AppLoader.ConfigureAppServices(_hostBuilderContext, services, _app);
+			if (_app != null)
+				AppLoader.ConfigureAppServices(_hostBuilderContext, services, _app);
 		}
 	}
 }
