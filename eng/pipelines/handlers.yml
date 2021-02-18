@@ -59,7 +59,22 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     steps:
-      - script: echo 'this just ran!'
+      - script: | 
+          echo 'compile application'
+        displayName: 'compile'
+      - script: | 
+          echo 'do some unit test'
+        displayName: 'unit test'
+      - task: ArchiveFiles@2
+        displayName: 'Archive files'
+        inputs:
+          rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+          includeRootFolder: false
+          archiveType: zip
+          archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+          replaceExistingArchive: true
+      - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        artifact: drop
 
 # stages:
 #   - stage: windows
