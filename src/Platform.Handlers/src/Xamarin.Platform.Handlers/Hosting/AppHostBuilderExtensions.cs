@@ -9,19 +9,20 @@ namespace Xamarin.Platform.Hosting
 	public static class AppHostBuilderExtensions
 	{
 		//BuildApp will call Build(), we should use one or the other.
-		public static TApplication Build<TApplication>(this IHostBuilder builder) where TApplication : class, IApp
-		{
-			if (!(builder is IAppHostBuilder appBuilder))
-				throw new InvalidOperationException($"You can only Init a Maui app with a {nameof(IAppHostBuilder)} builder");
+		//public static IHost Build<TApplication>(this IHostBuilder builder, TApplication app) where TApplication : class, IApp
+		//{
+		//	if (!(builder is IAppHostBuilder appBuilder))
+		//		throw new InvalidOperationException($"You can only Init a Maui app with a {nameof(IAppHostBuilder)} builder");
 
-			//we create the app here because users might need to register services
-			if (!(Activator.CreateInstance(typeof(TApplication)) is TApplication app))
-				throw new Exception($"Could not create a new Application class of type {typeof(TApplication)}");
+		//	//we create the app here because users might need to register services
+		//	//if (!(Activator.CreateInstance(typeof(TApplication)) is TApplication app))
+		//	//	throw new Exception($"Could not create a new Application class of type {typeof(TApplication)}");
+
+
+
+		//	return appBuilder.BuildApp(app);
 			
-			appBuilder.BuildApp(app);
-			
-			return app;
-		}
+		//}
 
 		public static IHostBuilder RegisterHandlers(this IHostBuilder builder, Dictionary<Type, Type> handlers)
 		{

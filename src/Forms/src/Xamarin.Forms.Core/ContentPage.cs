@@ -1,13 +1,15 @@
+using Xamarin.Platform;
+
 namespace Xamarin.Forms
 {
 	[ContentProperty("Content")]
-	public class ContentPage : TemplatedPage
+	public partial class ContentPage : TemplatedPage
 	{
-		public static readonly BindableProperty ContentProperty = BindableProperty.Create(nameof(Content), typeof(View), typeof(ContentPage), null, propertyChanged: TemplateUtilities.OnContentChanged);
+		public static readonly BindableProperty ContentProperty = BindableProperty.Create(nameof(Content), typeof(IView), typeof(ContentPage), null, propertyChanged: TemplateUtilities.OnContentChanged);
 
-		public View Content
+		public IView Content
 		{
-			get { return (View)GetValue(ContentProperty); }
+			get { return (IView)GetValue(ContentProperty); }
 			set { SetValue(ContentProperty, value); }
 		}
 
@@ -15,7 +17,7 @@ namespace Xamarin.Forms
 		{
 			base.OnBindingContextChanged();
 
-			View content = Content;
+			View content = Content as View;
 			ControlTemplate controlTemplate = ControlTemplate;
 			if (content != null && controlTemplate != null)
 			{
@@ -29,7 +31,7 @@ namespace Xamarin.Forms
 				return;
 
 			base.OnControlTemplateChanged(oldValue, newValue);
-			View content = Content;
+			View content = Content as View;
 			ControlTemplate controlTemplate = ControlTemplate;
 			if (content != null && controlTemplate != null)
 			{

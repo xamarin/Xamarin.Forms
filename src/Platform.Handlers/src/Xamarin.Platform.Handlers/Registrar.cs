@@ -40,19 +40,19 @@ namespace Xamarin.Platform
 			_handlerFactories[view] = factory;
 		}
 
-		public void Register<TView>(Func<Type, IViewHandler> factory)
-			where TView : TType
-		{
-			Register(typeof(TView), factory);
-		}
+		//public void Register<TView>(Func<Type, IViewHandler> factory)
+		//	where TView : TType
+		//{
+		//	Register(typeof(TView), factory);
+		//}
 
 		public TTypeRender GetHandler<T>()
 		{
 			return GetHandler(typeof(T));
 		}
 
-		internal List<KeyValuePair<Type, Type>> GetViewType(Type type) =>
-			_handler.Where(x => isType(x.Value, type)).ToList();
+		//internal List<KeyValuePair<Type, Type>> GetViewType(Type type) =>
+		//	_handler.Where(x => isType(x.Value, type)).ToList();
 
 		bool isType(Type type, Type type2)
 		{
@@ -99,25 +99,25 @@ namespace Xamarin.Platform
 			throw new Exception($"Handler not found for {type}");
 		}
 
-		public Type GetRendererType(Type type)
-		{
-			List<Type> types = new List<Type> { type };
-			Type? baseType = type.BaseType;
+		//public Type GetRendererType(Type type)
+		//{
+		//	List<Type> types = new List<Type> { type };
+		//	Type? baseType = type.BaseType;
 
-			while (baseType != null)
-			{
-				types.Add(baseType);
-				baseType = baseType.BaseType;
-			}
+		//	while (baseType != null)
+		//	{
+		//		types.Add(baseType);
+		//		baseType = baseType.BaseType;
+		//	}
 
-			foreach (var t in types)
-			{
-				if (_handler.TryGetValue(t, out var returnType))
-					return returnType;
-			}
+		//	foreach (var t in types)
+		//	{
+		//		if (_handler.TryGetValue(t, out var returnType))
+		//			return returnType;
+		//	}
 
-			throw new Exception($"Renderer Type not found  {type}");
-		}
+		//	throw new Exception($"Renderer Type not found  {type}");
+		//}
 
 		TTypeRender? GetRenderer(Type type)
 		{
