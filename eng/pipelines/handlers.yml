@@ -74,11 +74,8 @@ jobs:
           archiveType: zip
           archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
           replaceExistingArchive: true
-      - task: PublishPipelineArtifact@1
-        displayName: publish artifacts
-        inputs:
-          artifactName: drop
-          targetPath: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        artifact: drop
 # stages:
 #   - stage: windows
 #     displayName: Build Windows
