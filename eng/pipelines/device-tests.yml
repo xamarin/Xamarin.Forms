@@ -26,6 +26,7 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     steps:
+      - script: set
       - task: DownloadPipelineArtifact@2
         inputs:
           artifact: drop  
