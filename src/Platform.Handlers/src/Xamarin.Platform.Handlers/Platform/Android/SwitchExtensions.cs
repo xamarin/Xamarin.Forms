@@ -33,14 +33,13 @@ namespace Xamarin.Platform
 			}
 			else if(currentTrackTintList is ColorTrackingColorStateList csl)
 			{
-				// Option one we detect color changes based on state
 				var currentState = aSwitch.GetCurrentState();
 
 				var newState  = csl.CreateForState(currentState, trackColor, defaultTrackColor);
 				if (newState != aSwitch.TrackTintList)
 					aSwitch.TrackTintList = newState;
 			}
-			else // user has define their own CSL
+			else
 			{
 				if (!trackColor.IsDefault)
 				{
@@ -62,7 +61,7 @@ namespace Xamarin.Platform
 				aSwitch.ThumbDrawable.SetTintMode(APorterDuff.Mode.SrcAtop);
 				aSwitch.ThumbDrawable.SetTintList(
 					ColorTrackingColorStateList.Create(aSwitch.ThumbTintList, _checkedStates, thumbColor, GetCurrentState(aSwitch))
-					);
+				);
 			}
 			// Validates that we set this ThumbTintList
 			else

@@ -62,7 +62,6 @@
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
-    <Compile Include="SandboxActivity.cs" />
     <Compile Include="TestInstrumentation.cs" />
   </ItemGroup>
   <ItemGroup>

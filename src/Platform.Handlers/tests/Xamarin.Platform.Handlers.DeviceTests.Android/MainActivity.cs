@@ -10,7 +10,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 		Name = "com.xamarin.handlers.devicetests.MainActivity",
 		Label = "@string/app_name",
 		Theme = "@style/MainTheme",
-		MainLauncher = false,
+		MainLauncher = true,
 		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : RunnerActivity
 	{

@@ -1,4 +1,5 @@
 using System;
+using Xamarin.Platform;
 
 namespace Xamarin.Forms
 {
@@ -11,6 +12,8 @@ namespace Xamarin.Forms
 		{
 			((Switch)bindable).Toggled?.Invoke(bindable, new ToggledEventArgs((bool)newValue));
 			((Switch)bindable).ChangeVisualState();
+			((IFrameworkElement)bindable)?.Handler?.UpdateValue(nameof(ISwitch.TrackColor));
+
 		}, defaultBindingMode: BindingMode.TwoWay);
 
 		public static readonly BindableProperty OnColorProperty = BindableProperty.Create(nameof(OnColor), typeof(Color), typeof(Switch), Color.Default);
@@ -41,9 +44,10 @@ namespace Xamarin.Forms
 			get { return (bool)GetValue(IsToggledProperty); }
 			set { SetValue(IsToggledProperty, value); }
 		}
+
 		protected internal override void ChangeVisualState()
 		{
-			base.ChangeVisualState();
+			base.ChangeVisualState();			
 			if (IsEnabled && IsToggled)
 				VisualStateManager.GoToState(this, SwitchOnVisualState);
 			else if (IsEnabled && !IsToggled)
