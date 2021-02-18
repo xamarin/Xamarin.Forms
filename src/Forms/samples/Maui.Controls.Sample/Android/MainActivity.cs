@@ -50,12 +50,9 @@ namespace Maui.Controls.Sample
 
 		void ConfigureExtraServices(HostBuilderContext ctx, IServiceCollection services)
 		{
-			services.AddSingleton<ITextService, DroidTextService>();
+			services.AddSingleton<ITextService, Services.DroidTextService>();
 		}
 	}
 
-	class DroidTextService : ITextService
-	{
-		public string GetText() => "Android Text Service";
-	}
+	
 }

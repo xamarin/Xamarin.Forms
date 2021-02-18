@@ -4,7 +4,6 @@
 -->
 <Project>
 
-  <Import Condition="'$(EnvironmentBuildPropsImported)' != 'True'" Project="../../../eng/Environment.Build.props" />
   <!-- Properties -->
   <PropertyGroup>
     <EnableDefaultItems>false</EnableDefaultItems>
