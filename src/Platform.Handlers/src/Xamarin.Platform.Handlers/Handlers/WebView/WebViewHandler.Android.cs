@@ -56,7 +56,7 @@ namespace Xamarin.Platform.Handlers
 				
 		public void LoadHtml(string? html, string? baseUrl)
 		{
-			TypedNativeView?.LoadDataWithBaseURL(baseUrl ?? AssetBaseUrl, html, "text/html", "UTF-8", null);
+			TypedNativeView?.LoadDataWithBaseURL(baseUrl ?? AssetBaseUrl, html ?? string.Empty, "text/html", "UTF-8", null);
 		}
 
 		public void LoadUrl(string? url)
