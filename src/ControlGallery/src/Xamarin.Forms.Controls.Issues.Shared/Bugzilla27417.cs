@@ -59,10 +59,10 @@ Button 8 have the image on the right and the text on the left." };
 								new Button { WidthRequest = 200, HeightRequest = 300, ImageSource = "coffee.png" },
 								new Button { Text = "Click Me", BackgroundColor = Color.Gray },
 								new Button { ImageSource = "coffee.png", BackgroundColor = Color.Gray },
-								CreateButton(new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Left, 10)),
-								CreateButton(new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Top, 10)),
-								CreateButton(new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Bottom, 10)),
-								CreateButton(new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Right, 10))
+								CreateButton(new ButtonContentLayout(ButtonContentLayout.ImagePosition.Left, 10)),
+								CreateButton(new ButtonContentLayout(ButtonContentLayout.ImagePosition.Top, 10)),
+								CreateButton(new ButtonContentLayout(ButtonContentLayout.ImagePosition.Bottom, 10)),
+								CreateButton(new ButtonContentLayout(ButtonContentLayout.ImagePosition.Right, 10))
 							}
 						}
 					}
@@ -70,7 +70,7 @@ Button 8 have the image on the right and the text on the left." };
 			};
 		}
 
-		static Button CreateButton(Button.ButtonContentLayout layout)
+		static Button CreateButton(ButtonContentLayout layout)
 		{
 			return new Button
 			{
