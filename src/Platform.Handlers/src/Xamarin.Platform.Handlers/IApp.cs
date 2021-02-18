@@ -6,5 +6,7 @@ namespace Xamarin.Platform
 	public interface IApp
 	{
 		IServiceProvider? Services { get; }
+	
+		IEnumerable<IWindow>? Windows { get; }
 	}
 }

@@ -6,11 +6,17 @@ using Xamarin.Platform.Hosting;
 
 namespace Xamarin.Platform
 {
-	public abstract class App : IApp
+	public abstract class App :
+#if __ANDROID__
+		global::Android.App.Application,
+#elif __IOS__
+		global::UIKit.UIApplicationDelegate,
+#endif
+		IApp
 	{
 		IServiceProvider? _serviceProvider;
 		IMauiServiceProvider? _handlerServiceProvider;
-
+		
 		protected App()
 		{
 			Current = this;
@@ -22,6 +28,16 @@ namespace Xamarin.Platform
 
 		public IServiceProvider? Handlers => _handlerServiceProvider;
 
+		public virtual IEnumerable<IWindow>? Windows
+		{
+			get
+			{
+				var windows = Services?.GetService<IWindow>();
+				if(windows != null)
+					return new IWindow[] { windows };
+				return null;
+			}
+		}
 
 		internal void SetServiceProvider(IServiceProvider provider)
 		{
@@ -33,9 +49,6 @@ namespace Xamarin.Platform
 		{
 			_handlerServiceProvider = provider;
 		}
-
-		public abstract IAppHostBuilder Builder();
-
 
 		public static IAppHostBuilder CreateDefaultBuilder()
 		{

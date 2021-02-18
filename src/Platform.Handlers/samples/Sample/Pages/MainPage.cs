@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Sample.Pages
 {
 
-	public class MainPage : Xamarin.Forms.ContentPage
+	public class MainPage : Xamarin.Forms.ContentPage, IPage
 	{
 		MainPageViewModel _viewModel;
 		public MainPage() : this(App.Current.Services.GetService<MainPageViewModel>())
@@ -16,8 +16,10 @@ namespace Sample.Pages
 		public MainPage(MainPageViewModel viewModel)
 		{
 			BindingContext = _viewModel = viewModel;
-			Content = GetContentView();
+			View = GetContentView();
 		}
+
+		public IView View { get; set; }
 
 		public IView GetContentView()
 		{
