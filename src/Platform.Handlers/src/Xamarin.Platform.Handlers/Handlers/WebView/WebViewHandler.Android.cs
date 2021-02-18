@@ -61,7 +61,7 @@ namespace Xamarin.Platform.Handlers
 
 		public void LoadUrl(string? url)
 		{
-			TypedNativeView?.LoadUrl(url);
+			TypedNativeView?.LoadUrl(url ?? string.Empty);
 		}
 
 		protected virtual WebViewClient GetWebViewClient() =>
