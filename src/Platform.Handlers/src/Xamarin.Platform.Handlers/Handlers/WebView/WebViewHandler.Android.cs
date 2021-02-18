@@ -15,7 +15,7 @@ namespace Xamarin.Platform.Handlers
 
 		protected override AWebView CreateNativeView()
 		{
-			var aWebView = new AWebView(Context)
+			var aWebView = new AWebView(Context!)
 			{
 #pragma warning disable 618 // This can probably be replaced with LinearLayout(LayoutParams.MatchParent, LayoutParams.MatchParent); just need to test that theory
 				LayoutParameters = new AbsoluteLayout.LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent, 0, 0)
@@ -61,7 +61,7 @@ namespace Xamarin.Platform.Handlers
 
 		public void LoadUrl(string? url)
 		{
-			TypedNativeView?.LoadUrl(url);
+			TypedNativeView?.LoadUrl(url ?? string.Empty);
 		}
 
 		protected virtual WebViewClient GetWebViewClient() =>
