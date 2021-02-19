@@ -9,18 +9,13 @@ namespace Xamarin.Platform
 			textView.Text = label.Text;
 		}
 
-		public static void UpdateTextColor(this TextView textView, ILabel label)
-		{
-			textView.UpdateTextColor(label, null);
-		}
-
-		public static void UpdateTextColor(this TextView textView, ILabel label, Forms.Color? lastUpdateColor)
+		public static void UpdateTextColor(this TextView textView, ILabel label, Forms.Color defaultColor)
 		{
 			Forms.Color textColor = label.TextColor;
 
-			if (textColor.IsDefault && lastUpdateColor.HasValue)
+			if (textColor.IsDefault)
 			{
-				textView.SetTextColor(lastUpdateColor.Value.ToNative());
+				textView.SetTextColor(defaultColor.ToNative());
 			}
 			else
 			{
