@@ -7,8 +7,6 @@ namespace Xamarin.Platform
 	{
 		IServiceProvider? Services { get; }
 
-		public IHandlersContext? Context { get; }
-
-		IWindow GetWindowFor(Dictionary<string, string> state);
+		
 	}
 }

@@ -7,8 +7,6 @@ namespace Sample
 {
 	public class MyApp : IApp
 	{
-		
-
 		public MyApp()
 		{
 			Platform.Init();

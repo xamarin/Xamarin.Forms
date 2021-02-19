@@ -36,6 +36,7 @@ namespace Maui.Controls.Sample
 			return builder;
 		}
 
+		//IAppState state
 		public override IWindow GetWindowFor(Dictionary<string, string> state)
 		{
 			return Services.GetService<IWindow>();
