@@ -32,7 +32,6 @@ namespace Sample.iOS
 		public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
 		{
 			_window = new UIWindow();
-
 			var app = new MyApp();
 
 			IView content = app.CreateView();

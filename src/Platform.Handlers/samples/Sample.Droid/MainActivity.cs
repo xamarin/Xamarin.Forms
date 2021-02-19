@@ -3,8 +3,11 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using AndroidX.AppCompat.App;
+using Xamarin.Forms;
+using AndroidX.Core.Widget;
 using Xamarin.Platform;
 using System.Threading.Tasks;
+using System;
 using System.Linq;
 
 namespace Sample.Droid
@@ -27,13 +30,15 @@ namespace Sample.Droid
 
 			_page = FindViewById<ViewGroup>(Resource.Id.Page);
 
-			var view = Platform.GetWindow().Page.View;
+			var app = new MyApp();
+
+			var view = app.CreateView();
 
 			Add(view);
-		
-			//In 5 seconds, add and remove some controls so we can see that working
-			Task.Run(async () =>
-			{
+
+
+			// In 5 seconds, add and remove some controls so we can see that working
+			Task.Run(async () => {
 
 				await Task.Delay(5000).ConfigureAwait(false);
 
@@ -53,7 +58,7 @@ namespace Sample.Droid
 		{
 			foreach (var view in views)
 			{
-				_page.AddView(view.ToNative(this), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
+				_page.AddView(view.ToNative(this), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent , ViewGroup.LayoutParams.MatchParent));
 			}
 		}
 
@@ -64,6 +69,4 @@ namespace Sample.Droid
 			base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 		}
 	}
-
-	
 }
