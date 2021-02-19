@@ -23,28 +23,28 @@ namespace Xamarin.Platform.Hosting
 		//	return app;
 		//}
 
-		public static IHostBuilder RegisterHandlers(this IHostBuilder builder, Dictionary<Type, Type> handlers)
+		public static IAppHostBuilder RegisterHandlers(this IAppHostBuilder builder, Dictionary<Type, Type> handlers)
 		{
 			foreach (var handler in handlers)
 			{
-				(builder as IAppHostBuilder)?.ConfigureHandlers((context, handlersCollection) => handlersCollection.AddTransient(handler.Key, handler.Value));
+				builder?.ConfigureHandlers((context, handlersCollection) => handlersCollection.AddTransient(handler.Key, handler.Value));
 			}
 
 			return builder;
 		}
 
-		public static IHostBuilder RegisterHandler<TType, TTypeRender>(this IHostBuilder builder)
+		public static IAppHostBuilder RegisterHandler<TType, TTypeRender>(this IAppHostBuilder builder)
 			where TType : IFrameworkElement
 			where TTypeRender : IViewHandler
 		{
-			(builder as IAppHostBuilder)?.ConfigureHandlers((context, handlersCollection) => handlersCollection.AddTransient(typeof(TType), typeof(TTypeRender)));
+			builder.ConfigureHandlers((context, handlersCollection) => handlersCollection.AddTransient(typeof(TType), typeof(TTypeRender)));
 
 			return builder;
 		}
 
-		public static IHostBuilder UseMauiHandlers(this IHostBuilder builder)
+		public static IAppHostBuilder UseMauiHandlers(this IAppHostBuilder builder)
 		{
-			(builder as IAppHostBuilder)?.RegisterHandlers(new Dictionary<Type, Type>
+			builder.RegisterHandlers(new Dictionary<Type, Type>
 			{
 				{  typeof(IButton), typeof(ButtonHandler) },
 				{  typeof(ILayout), typeof(LayoutHandler) },
