@@ -83,6 +83,11 @@ namespace Xamarin.Forms.Platform.iOS
 			_context.Shell.PropertyChanged += HandleShellPropertyChanged;
 		}
 
+		[Export("navigationBar:shouldPopItem:")]
+		[Internals.Preserve(Conditional = true)]
+		public bool ShouldPopItem(UINavigationBar navigationBar, UINavigationItem item) =>
+			SendPop();
+
 		internal bool SendPop()
 		{ 
 			// this means the pop is already done, nothing we can do
@@ -522,6 +527,9 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			var poppedPage = _shellSection.Stack[_shellSection.Stack.Count - 1];
+
+			// this is used to setup appearance changes based on the incoming page
+			((IShellSectionController)_shellSection).SendPopping(popTask);
 
 			await popTask;
 
