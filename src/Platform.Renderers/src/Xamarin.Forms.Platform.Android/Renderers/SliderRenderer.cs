@@ -23,23 +23,27 @@ namespace Xamarin.Forms.Platform.Android
 			AutoPackage = false;
 		}
 
+		[PortHandler]
 		double Value
 		{
 			get { return _min + (_max - _min) * (Control.Progress / 1000.0); }
 			set { Control.Progress = (int)((value - _min) / (_max - _min) * 1000.0); }
 		}
 
+		[PortHandler]
 		void SeekBar.IOnSeekBarChangeListener.OnProgressChanged(SeekBar seekBar, int progress, bool fromUser)
 		{
 			if (fromUser)
 				((IElementController)Element).SetValueFromRenderer(Slider.ValueProperty, Value);
 		}
 
+		[PortHandler]
 		void SeekBar.IOnSeekBarChangeListener.OnStartTrackingTouch(SeekBar seekBar)
 		{
 			((ISliderController)Element)?.SendDragStarted();
 		}
 
+		[PortHandler]
 		void SeekBar.IOnSeekBarChangeListener.OnStopTrackingTouch(SeekBar seekBar)
 		{
 			((ISliderController)Element)?.SendDragCompleted();
@@ -50,6 +54,7 @@ namespace Xamarin.Forms.Platform.Android
 			return new FormsSeekBar(Context);
 		}
 
+		[PortHandler]
 		protected override void OnElementChanged(ElementChangedEventArgs<Slider> e)
 		{
 			base.OnElementChanged(e);
@@ -88,6 +93,7 @@ namespace Xamarin.Forms.Platform.Android
 			get { return Control; }
 		}
 
+		[PortHandler]
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (this.IsDisposed())
@@ -140,6 +146,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		[PortHandler]
 		private void UpdateMinimumTrackColor()
 		{
 			if (Element != null)
@@ -157,6 +164,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		[PortHandler]
 		private void UpdateMaximumTrackColor()
 		{
 			if (Element != null)
@@ -174,6 +182,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		[PortHandler]
 		void UpdateThumbColor()
 		{
 			Control.Thumb.SetColorFilter(Element.ThumbColor, FilterMode.SrcIn, defaultthumbcolorfilter);
