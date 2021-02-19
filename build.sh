@@ -17,7 +17,7 @@ for i in "$@"; do
 done
 
 # Restore Cake tool
-dotnet tool restore
+dotnet tool restore --configfile NuGet.config
 
 if [ $? -ne 0 ]; then
     echo "An error occured while installing Cake."
