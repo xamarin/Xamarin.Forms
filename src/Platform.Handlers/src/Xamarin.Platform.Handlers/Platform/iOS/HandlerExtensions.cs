@@ -14,7 +14,7 @@ namespace Xamarin.Platform
 
 			if (handler == null)
 			{
-				if (App.Current != null)
+				if (context.Handlers != null)
 				{
 					handler = context.Handlers.GetHandler(view.GetType());
 				}

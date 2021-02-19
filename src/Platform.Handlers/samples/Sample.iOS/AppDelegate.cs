@@ -38,7 +38,7 @@ namespace Sample.iOS
 
 			_window.RootViewController = new UIViewController
 			{
-				View = content.ToNative()
+				View = content.ToNative(new HandlersContext(null))
 			};
 
 			_window.MakeKeyAndVisible();

@@ -38,7 +38,8 @@ namespace Sample.Droid
 
 
 			// In 5 seconds, add and remove some controls so we can see that working
-			Task.Run(async () => {
+			Task.Run(async () =>
+			{
 
 				await Task.Delay(5000).ConfigureAwait(false);
 
@@ -58,7 +59,7 @@ namespace Sample.Droid
 		{
 			foreach (var view in views)
 			{
-				_page.AddView(view.ToNative(this), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent , ViewGroup.LayoutParams.MatchParent));
+				_page.AddView(view.ToNative(new HandlersContext(null, this)), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
 			}
 		}
 
