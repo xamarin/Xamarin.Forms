@@ -10,7 +10,6 @@ using Xamarin.Forms.Platform.iOS;
 using System.Linq;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-
 using Maui.Controls.Sample;
 
 namespace Sample.iOS
@@ -42,9 +41,11 @@ namespace Sample.iOS
 
 			var content = app.GetWindowFor(null).Page.View;
 
+			var context = new HandlersContext(app.Services);
+
 			_window.RootViewController = new UIViewController
 			{
-				View = content.ToNative()
+				View = content.ToNative(app.Context)
 			};
 
 			_window.MakeKeyAndVisible();
@@ -62,7 +63,8 @@ namespace Sample.iOS
 						return true;
 					return sslPolicyErrors == System.Net.Security.SslPolicyErrors.None;
 				};
-			}	
+			}
+			services.AddSingleton<IHandlersContext>(provider => new HandlersContext(provider));
 		}
 	}
 }

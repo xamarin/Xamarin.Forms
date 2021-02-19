@@ -4,6 +4,8 @@ using Android.Views;
 using AndroidX.AppCompat.App;
 using Xamarin.Platform;
 using System.Linq;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Maui.Controls.Sample.Droid
 {
@@ -20,15 +22,19 @@ namespace Maui.Controls.Sample.Droid
 			SetSupportActionBar(toolbar);
 
 			var page = FindViewById<ViewGroup>(Resource.Id.Page);
-	
+
 			App app = new MyApp();
 
-			var host= app.CreateBuilder().Build(app);
+			var host = app.CreateBuilder().ConfigureServices(ConfigureNativeServices).Build(app);
 
 			var content = app.GetWindowFor(null).Page.View;
 
-			page.AddView(content.ToNative(this), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
+			page.AddView(content.ToNative(app.Context), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
 
+		}
+		void ConfigureNativeServices(HostBuilderContext ctx, IServiceCollection services)
+		{
+			services.AddSingleton<IHandlersContext>(provider => new HandlersContext(provider, this));
 		}
 	}
 }

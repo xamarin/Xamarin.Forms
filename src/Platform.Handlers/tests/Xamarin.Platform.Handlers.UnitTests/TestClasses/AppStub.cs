@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Xamarin.Platform.Handlers.UnitTests.TestClasses;
 using Xamarin.Platform.Hosting;
 
 namespace Xamarin.Platform.Handlers.Tests
@@ -9,6 +10,7 @@ namespace Xamarin.Platform.Handlers.Tests
 	{
 		public void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
 		{
+			services.AddSingleton<IHandlersContext>(provider => new HandlersContextStub(provider));
 			services.AddTransient<IButton, ButtonStub>();
 		}
 
@@ -19,7 +21,7 @@ namespace Xamarin.Platform.Handlers.Tests
 
 		public override IWindow GetWindowFor(Dictionary<string, string> state)
 		{
-			return null;
+			return new WindowStub();
 		}
 	}
 }

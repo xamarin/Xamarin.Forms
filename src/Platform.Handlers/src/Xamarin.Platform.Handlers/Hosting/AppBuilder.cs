@@ -35,7 +35,6 @@ namespace Xamarin.Platform.Hosting
 		public IHost Build(IApp app)
 		{
 			_app = app;
-			
 			return Build();
 		}
 
@@ -155,7 +154,10 @@ namespace Xamarin.Platform.Hosting
 
 		void CreateServiceProvider(IServiceCollection services)
 		{
-			if (_services != null && _appConfiguration != null)
+			if (services == null)
+				throw new ArgumentNullException(nameof(services));
+
+			if (_appConfiguration != null)
 				services.AddSingleton(_appConfiguration);
 
 			foreach (Action<HostBuilderContext, IServiceCollection> configureServicesAction in _configureServicesActions)

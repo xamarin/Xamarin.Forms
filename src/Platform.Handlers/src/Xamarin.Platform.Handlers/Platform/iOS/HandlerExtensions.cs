@@ -6,7 +6,7 @@ namespace Xamarin.Platform
 {
 	public static class HandlerExtensions
 	{
-		public static UIView ToNative(this IView view)
+		public static UIView ToNative(this IView view, IHandlersContext context)
 		{
 			_ = view ?? throw new ArgumentNullException(nameof(view));
 
@@ -16,7 +16,7 @@ namespace Xamarin.Platform
 			{
 				if (App.Current != null)
 				{
-					handler = App.Current?.Handlers?.GetHandler(view.GetType());
+					handler = context.Handlers.GetHandler(view.GetType());
 				}
 				else
 				{
