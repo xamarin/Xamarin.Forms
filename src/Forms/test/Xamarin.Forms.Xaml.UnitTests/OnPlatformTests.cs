@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			base.TearDown();
 		}
 
+		[Ignore("Temporarily ignore: https://github.com/xamarin/Xamarin.Forms/issues/13815")]
 		[Test]
 		public void ApplyToProperty()
 		{
