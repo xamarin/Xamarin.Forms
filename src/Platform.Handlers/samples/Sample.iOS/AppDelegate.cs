@@ -9,10 +9,6 @@ using Xamarin.Forms.Platform.iOS;
 
 using System.Threading.Tasks;
 using System.Linq;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Xamarin.Platform.Hosting;
-using Sample.Services;
 
 namespace Sample.iOS
 {
@@ -37,26 +33,9 @@ namespace Sample.iOS
 		{
 			_window = new UIWindow();
 
-			IView content = null;
-#if __REGISTRAR__
-			Platform.Init();
-			var page = new Pages.MainPage();
-#else
-			var app = App.CreateDefaultBuilder()
-								//.RegisterHandler<IButton, CustomHandlers.CustomPinkTextButtonHandler>()
-								//.RegisterHandlers(new Dictionary<Type, Type>
-								//{
-								//	{ typeof(Xamarin.Platform.VerticalStackLayout),typeof(LayoutHandler) },
-								//	{ typeof(Xamarin.Platform.HorizontalStackLayout),typeof(LayoutHandler) },
-								//	{ typeof(Xamarin.Forms.FlexLayout),typeof(LayoutHandler) },
-								//	{ typeof(Xamarin.Forms.StackLayout),typeof(LayoutHandler) },
-								//})
-								//.ConfigureServices(ConfigureExtraServices)
-								.Build<MyApp>();
+			var app = new MyApp();
 
-			var page = app.Windows.FirstOrDefault()?.Page;
-#endif
-			content = page.View;
+			IView content = app.CreateView();
 
 			_window.RootViewController = new UIViewController
 			{
@@ -81,21 +60,6 @@ namespace Sample.iOS
 			});
 
 			return true;
-		}
-
-		void ConfigureExtraServices(HostBuilderContext ctx, IServiceCollection services)
-		{
-			if (ctx.HostingEnvironment.IsDevelopment())
-			{
-				System.Net.ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
-				{
-					if (certificate.Issuer.Equals("CN=localhost"))
-						return true;
-					return sslPolicyErrors == System.Net.Security.SslPolicyErrors.None;
-				};
-			}
-
-			services.AddSingleton<ITextService, Services.iOSTextService>();
 		}
 
 		public override void OnResignActivation(UIApplication application)

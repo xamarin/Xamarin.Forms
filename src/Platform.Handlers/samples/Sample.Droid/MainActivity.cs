@@ -6,15 +6,6 @@ using AndroidX.AppCompat.App;
 using Xamarin.Platform;
 using System.Threading.Tasks;
 using System.Linq;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Sample.Services;
-using Xamarin.Platform.Handlers;
-using Xamarin.Forms;
-using Xamarin.Platform.Hosting;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using System;
-using System.Reflection;
 
 namespace Sample.Droid
 {
@@ -27,7 +18,7 @@ namespace Sample.Droid
 		{
 			base.OnCreate(savedInstanceState);
 
-			//Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+			Xamarin.Essentials.Platform.Init(this, savedInstanceState);
 
 			SetContentView(Resource.Layout.activity_main);
 
@@ -36,29 +27,10 @@ namespace Sample.Droid
 
 			_page = FindViewById<ViewGroup>(Resource.Id.Page);
 
-			IView content;
-#if __REGISTRAR__
-			Platform.Init();
-			content = Platform.GetWindow().Page.View;
-#else
-			//var app = App.CreateDefaultBuilder()
-			//				//.RegisterHandlers(new Dictionary<Type, Type>
-			//				//		{
-			//				//			{ typeof(VerticalStackLayout),typeof(LayoutHandler) },
-			//				//			{ typeof(HorizontalStackLayout),typeof(LayoutHandler) },
-			//				//		})
-			//				//.ConfigureServices(ConfigureExtraServices)
-			//				.UseServiceProviderFactory(new DIExtensionsServiceProviderFactory())
-			//				.Build<MyApp>();
+			var view = Platform.GetWindow().Page.View;
 
-			App app = new MyApp();
-			var host= app.CreateBuilder().Build(app);
-
-			content = app.Windows.FirstOrDefault()?.Page.View;
-#endif
-
-			Add(content);
-
+			Add(view);
+		
 			//In 5 seconds, add and remove some controls so we can see that working
 			Task.Run(async () =>
 			{
@@ -67,19 +39,14 @@ namespace Sample.Droid
 
 				void addLabel()
 				{
-					(content as VerticalStackLayout).Add(new Label { Text = "I show up after 5 seconds" });
-					var first = (content as VerticalStackLayout).Children.First();
-					(content as VerticalStackLayout).Remove(first);
+					(view as VerticalStackLayout).Add(new Label { Text = "I show up after 5 seconds" });
+					var first = (view as VerticalStackLayout).Children.First();
+					(view as VerticalStackLayout).Remove(first);
 				};
 
 				new Handler(Looper.MainLooper).Post(addLabel);
 
 			});
-		}
-
-		void ConfigureExtraServices(HostBuilderContext ctx, IServiceCollection services)
-		{
-			services.AddSingleton<ITextService, Services.DroidTextService>();
 		}
 
 		void Add(params IView[] views)
