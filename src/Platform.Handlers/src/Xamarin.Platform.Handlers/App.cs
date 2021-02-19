@@ -7,11 +7,6 @@ using Xamarin.Platform.Hosting;
 namespace Xamarin.Platform
 {
 	public abstract class App :
-#if __ANDROID__
-		global::Android.App.Application,
-#elif __IOS__
-		global::UIKit.UIApplicationDelegate,
-#endif
 		IApp
 	{
 		IServiceProvider? _serviceProvider;
@@ -49,6 +44,8 @@ namespace Xamarin.Platform
 		{
 			_handlerServiceProvider = provider;
 		}
+
+		public abstract IAppHostBuilder CreateBuilder();
 
 		public static IAppHostBuilder CreateDefaultBuilder()
 		{

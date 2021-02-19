@@ -27,7 +27,7 @@ namespace Sample.Droid
 		{
 			base.OnCreate(savedInstanceState);
 
-			Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+			//Xamarin.Essentials.Platform.Init(this, savedInstanceState);
 
 			SetContentView(Resource.Layout.activity_main);
 
@@ -41,15 +41,18 @@ namespace Sample.Droid
 			Platform.Init();
 			content = Platform.GetWindow().Page.View;
 #else
-			var app = App.CreateDefaultBuilder()
-							//.RegisterHandlers(new Dictionary<Type, Type>
-							//		{
-							//			{ typeof(VerticalStackLayout),typeof(LayoutHandler) },
-							//			{ typeof(HorizontalStackLayout),typeof(LayoutHandler) },
-							//		})
-							//.ConfigureServices(ConfigureExtraServices)
-							//.UseServiceProviderFactory(new DIExtensionsServiceProviderFactory())
-							.Build<MyApp>();
+			//var app = App.CreateDefaultBuilder()
+			//				//.RegisterHandlers(new Dictionary<Type, Type>
+			//				//		{
+			//				//			{ typeof(VerticalStackLayout),typeof(LayoutHandler) },
+			//				//			{ typeof(HorizontalStackLayout),typeof(LayoutHandler) },
+			//				//		})
+			//				//.ConfigureServices(ConfigureExtraServices)
+			//				.UseServiceProviderFactory(new DIExtensionsServiceProviderFactory())
+			//				.Build<MyApp>();
+
+			App app = new MyApp();
+			var host= app.CreateBuilder().Build(app);
 
 			content = app.Windows.FirstOrDefault()?.Page.View;
 #endif
@@ -95,13 +98,5 @@ namespace Sample.Droid
 		}
 	}
 
-	public class DIExtensionsServiceProviderFactory : IServiceProviderFactory<ServiceCollection>
-	{
-		public ServiceCollection CreateBuilder(IServiceCollection services)
-			=> new ServiceCollection { services };
-
-
-		public IServiceProvider CreateServiceProvider(ServiceCollection containerBuilder)
-			=> containerBuilder.BuildServiceProvider();
-	}
+	
 }
