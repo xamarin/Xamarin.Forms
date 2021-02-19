@@ -124,7 +124,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 													<Image Source=""Images/cropcircle.png"" HorizontalOptions=""FillAndExpand"" VerticalOptions=""FillAndExpand"" WidthRequest=""32"" HeightRequest=""32"" Aspect=""Fill""/>
 												</Grid>
 												<Label Text=""{Binding FirstName}"" VerticalOptions=""CenterAndExpand""/>
-												<Label Text=""{Binding LastName}"" Font=""HelveticaNeue-Bold, Medium"" VerticalOptions=""CenterAndExpand"" />
+												<Label Text=""{Binding LastName}"" FontFamily=""HelveticaNeue-Bold"" FontSize=""Medium"" VerticalOptions=""CenterAndExpand"" />
 											</StackLayout>
 										</ViewCell.View>
 									</ViewCell>

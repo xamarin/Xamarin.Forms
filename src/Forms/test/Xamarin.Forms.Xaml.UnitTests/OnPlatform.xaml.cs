@@ -80,8 +80,10 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				var layout = new OnPlatform(useCompiledXaml);
 				var onplat = layout.Resources["fontAttributes"] as OnPlatform<FontAttributes>;
 				Assert.NotNull(onplat);
-				Assert.AreEqual(FontAttributes.Bold, onplat.Platforms.Single(p => p.Platform.Contains(Device.iOS)).Value);
-				Assert.AreEqual(FontAttributes.Italic, onplat.Platforms.Single(p => p.Platform.Contains(Device.Android)).Value);
+				((MockPlatformServices)Device.PlatformServices).RuntimePlatform = Device.iOS;
+				Assert.AreEqual(FontAttributes.Bold, (FontAttributes)onplat);
+				((MockPlatformServices)Device.PlatformServices).RuntimePlatform = Device.Android;
+				Assert.AreEqual(FontAttributes.Italic, (FontAttributes)onplat);
 
 			}
 

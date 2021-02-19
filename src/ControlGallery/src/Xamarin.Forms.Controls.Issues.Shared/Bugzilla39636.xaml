@@ -11,7 +11,7 @@
                 x:TypeArguments="x:Double">
                     <On Platform="iOS" Value="40"/>
                     <On Platform="Android" Value="30"/>
-                    <On Platform="WinPhone" Value="60"/>
+                    <On Platform="UWP" Value="60"/>
             </OnPlatform>
 
             <x:Double x:Key="SizeLarge">80</x:Double>
@@ -29,7 +29,7 @@
                         x:TypeArguments="x:Double">
                         <On Platform="iOS" Value="40"/>
                         <On Platform="Android" Value="30"/>
-                        <On Platform="WinPhone" Value="60"/>
+                        <On Platform="UWP" Value="60"/>
                     </OnPlatform>
         </BoxView.HeightRequest>
       </BoxView>

@@ -55,6 +55,28 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		}
 	}
 
+	public class Catalog
+	{
+		public static readonly BindableProperty MessageProperty =
+			BindableProperty.CreateAttached("Message", typeof(string), typeof(Catalog), default(string),
+				propertyChanged: (bindable, oldvalue, newvalue) =>
+				{
+					var label = bindable as Label;
+					if (label != null)
+						label.SetValue(Label.TextProperty, ((string)newvalue).Reverse().ToArray());
+				});
+
+		public static string GetMessage(BindableObject bindable)
+		{
+			return (string)bindable.GetValue(MessageProperty);
+		}
+
+		public static void SetMessage(BindableObject bindable, string value)
+		{
+			bindable.SetValue(MessageProperty, value);
+		}
+	}
+
 	[Flags]
 	public enum MockFlags
 	{

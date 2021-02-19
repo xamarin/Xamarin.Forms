@@ -30,9 +30,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
 			xmlns:scg=""clr-namespace:System.Collections.Generic;assembly=mscorlib"">
 				<OnPlatform x:TypeArguments=""View"">
-					<OnPlatform.iOS><Button Text=""iOS""/></OnPlatform.iOS>
-					<OnPlatform.Android><Button Text=""Android""/></OnPlatform.Android>
-					<OnPlatform.WinPhone><Button Text=""WinPhone""/></OnPlatform.WinPhone>
+					<On Platform=""iOS""><Button Text=""iOS""/></On>
+					<On Platform=""Android""><Button Text=""Android""/></On>
+					<On Platform=""UWP""><Button Text=""UWP""/></On>
 				</OnPlatform>
 			</ContentPage>";
 			var layout = new ContentPage().LoadFromXaml(xaml);
@@ -48,15 +48,15 @@ namespace Xamarin.Forms.Xaml.UnitTests
              Title=""Grid Demo Page"">
 			  <ContentPage.Padding>
 			    <OnPlatform x:TypeArguments=""Thickness"">
-			      <OnPlatform.iOS>
+			      <On Platform=""iOS"">
 			        0, 20, 0, 0
-			      </OnPlatform.iOS>
-			      <OnPlatform.Android>
+			      </On>
+			      <On Platform=""Android"">
 			        0, 0, 10, 0
-			      </OnPlatform.Android>
-			      <OnPlatform.WinPhone>
+			      </On>
+			      <On Platform=""UWP"">
 			        0, 20, 0, 20
-			      </OnPlatform.WinPhone>
+			      </On>
 			    </OnPlatform>
 			  </ContentPage.Padding>  
 			</ContentPage>";
@@ -85,9 +85,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
              xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml"">
 				<Image.Source>
 	                <OnPlatform x:TypeArguments=""ImageSource"">
-	                    <OnPlatform.iOS>icon_twitter.png</OnPlatform.iOS>
-	                    <OnPlatform.Android>icon_twitter.png</OnPlatform.Android>
-	                    <OnPlatform.WinPhone>Images/icon_twitter.png</OnPlatform.WinPhone>
+	                    <On Platform=""iOS"">icon_twitter.png</On>
+	                    <On Platform=""Android"">icon_twitter.png</On>
+	                    <On Platform=""UWP"">Images/icon_twitter.png</On>
 	                </OnPlatform>
 	            </Image.Source>
 			</Image>";
