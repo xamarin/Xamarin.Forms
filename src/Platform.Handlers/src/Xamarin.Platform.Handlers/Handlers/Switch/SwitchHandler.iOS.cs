@@ -6,7 +6,8 @@ namespace Xamarin.Platform.Handlers
 {
 	public partial class SwitchHandler : AbstractViewHandler<ISwitch, UISwitch>
 	{
-		static UIColor? DefaultOnColor;
+		static UIColor? DefaultOnTrackColor;
+		static UIColor? DefaultOffTrackColor;
 		static UIColor? DefaultThumbColor;
 
 		protected override UISwitch CreateNativeView()
@@ -26,7 +27,8 @@ namespace Xamarin.Platform.Handlers
 
 		protected override void SetupDefaults(UISwitch nativeView)
 		{
-			DefaultOnColor = UISwitch.Appearance.OnTintColor;
+			DefaultOnTrackColor = UISwitch.Appearance.OnTintColor;
+			DefaultOffTrackColor = nativeView.GetOffTrackColor();
 			DefaultThumbColor = UISwitch.Appearance.ThumbTintColor;
 		}
 
@@ -39,7 +41,7 @@ namespace Xamarin.Platform.Handlers
 		public static void MapTrackColor(SwitchHandler handler, ISwitch view)
 		{
 			ViewHandler.CheckParameters(handler, view);
-			handler.TypedNativeView?.UpdateTrackColor(view, DefaultOnColor);
+			handler.TypedNativeView?.UpdateTrackColor(view, DefaultOnTrackColor, DefaultOffTrackColor);
 		}
 
 		public static void MapThumbColor(SwitchHandler handler, ISwitch view)

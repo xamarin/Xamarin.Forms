@@ -18,12 +18,14 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 			await ValidatePropertyInitValue(switchStub, () => switchStub.IsToggled, GetNativeIsChecked, switchStub.IsToggled);
 		}
 
-		[Fact(DisplayName = "Track Color Initializes Correctly")]
-		public async Task TrackColorInitializesCorrectly()
+		[Theory(DisplayName = "Track Color Initializes Correctly")]
+		[InlineData(true)]
+		[InlineData(false)]
+		public async Task TrackColorInitializesCorrectly(bool isToggled)
 		{
 			var switchStub = new SwitchStub()
 			{
-				IsToggled = true,
+				IsToggled = isToggled,
 				TrackColor = Color.Red
 			};
 
