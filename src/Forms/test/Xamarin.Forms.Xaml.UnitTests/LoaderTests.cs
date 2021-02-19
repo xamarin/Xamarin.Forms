@@ -63,7 +63,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				{
 					var label = bindable as Label;
 					if (label != null)
-						label.SetValue(Label.TextProperty, ((string)newvalue).Reverse().ToArray());
+						label.SetValue(Label.TextProperty, new string(((string)newvalue).Reverse().ToArray()));
 				});
 
 		public static string GetMessage(BindableObject bindable)
