@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Xamarin.Platform.Hosting;
 
 namespace Xamarin.Platform
 {
-	public abstract class App :
-		IApp
+	public abstract class App : IApp
 	{
 		IServiceProvider? _serviceProvider;
 		IMauiServiceProvider? _handlerServiceProvider;
@@ -23,16 +21,9 @@ namespace Xamarin.Platform
 
 		public IServiceProvider? Handlers => _handlerServiceProvider;
 
-		public virtual IEnumerable<IWindow>? Windows
-		{
-			get
-			{
-				var windows = Services?.GetService<IWindow>();
-				if(windows != null)
-					return new IWindow[] { windows };
-				return null;
-			}
-		}
+		public virtual IAppHostBuilder CreateBuilder() => CreateDefaultBuilder();
+
+		public abstract IWindow GetWindowFor(Dictionary<string, string> state);
 
 		internal void SetServiceProvider(IServiceProvider provider)
 		{
@@ -44,8 +35,6 @@ namespace Xamarin.Platform
 		{
 			_handlerServiceProvider = provider;
 		}
-
-		public abstract IAppHostBuilder CreateBuilder();
 
 		public static IAppHostBuilder CreateDefaultBuilder()
 		{

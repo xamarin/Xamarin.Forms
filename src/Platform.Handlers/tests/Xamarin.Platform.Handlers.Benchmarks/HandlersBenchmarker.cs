@@ -1,4 +1,5 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using System.Collections.Generic;
+using BenchmarkDotNet.Attributes;
 using Xamarin.Platform.Hosting;
 
 namespace Xamarin.Platform.Handlers.Benchmarks
@@ -76,9 +77,9 @@ namespace Xamarin.Platform.Handlers.Benchmarks
 
 	class MockApp : App
 	{
-		public override IAppHostBuilder CreateBuilder()
+		public override IWindow GetWindowFor(Dictionary<string, string> state)
 		{
-			return CreateDefaultBuilder();
+			return null;
 		}
 	}
 }

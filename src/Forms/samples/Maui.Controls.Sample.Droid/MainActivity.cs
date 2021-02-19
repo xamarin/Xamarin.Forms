@@ -25,7 +25,7 @@ namespace Maui.Controls.Sample.Droid
 
 			var host= app.CreateBuilder().Build(app);
 
-			var content = app.Windows.FirstOrDefault()?.Page.View;
+			var content = app.GetWindowFor(null).Page.View;
 
 			page.AddView(content.ToNative(this), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
 
