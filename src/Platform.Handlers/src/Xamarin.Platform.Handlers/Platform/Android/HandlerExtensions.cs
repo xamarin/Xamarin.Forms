@@ -17,11 +17,16 @@ namespace Xamarin.Platform
 
 			if (handler == null)
 			{
-#if __REGISTRAR__
-				handler = Registrar.Handlers.GetHandler(view.GetType());
-#else
-				handler = App.Current?.Handlers?.GetHandler(view.GetType());
-#endif
+
+				if (App.Current != null)
+				{
+					handler = App.Current?.Handlers?.GetHandler(view.GetType());
+				}
+				else
+				{
+					handler = Registrar.Handlers.GetHandler(view.GetType());
+				}
+
 				if (handler == null)
 					throw new System.Exception($"Handler not found for view {view}");
 
