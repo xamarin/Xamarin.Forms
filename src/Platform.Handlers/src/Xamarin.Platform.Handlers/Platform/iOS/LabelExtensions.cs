@@ -13,8 +13,15 @@ namespace Xamarin.Platform
 		{
 			var textColor = label.TextColor;
 
-			// Default value of color documented to be black in iOS docs
-			nativeLabel.TextColor = textColor.ToNative(ColorExtensions.LabelColor);
+			if (textColor.IsDefault)
+			{
+				// Default value of color documented to be black in iOS docs
+				nativeLabel.TextColor = textColor.ToNative(ColorExtensions.LabelColor);
+			}
+			else
+			{
+				nativeLabel.TextColor = textColor.ToNative(textColor);
+			}
 		}
 	}
 }
