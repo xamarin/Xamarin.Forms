@@ -2,9 +2,8 @@
 
 namespace Xamarin.Platform
 {
-	public interface ILabel : IView
+	public interface ILabel : IView, IText
 	{
-		string Text { get; }
-		Color TextColor { get; }
+		
 	}
 }
