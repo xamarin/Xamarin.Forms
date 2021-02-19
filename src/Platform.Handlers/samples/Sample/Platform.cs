@@ -1,8 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Sample.Pages;
-using Sample.Services;
-using Sample.ViewModel;
 using Xamarin.Forms;
 using Xamarin.Platform;
 using Xamarin.Platform.Handlers;
@@ -13,17 +10,6 @@ namespace Sample
 	public class Platform
 	{
 		static bool HasInit;
-
-		public class RegistrarTextService : ITextService
-		{
-			public string GetText() => "Hello From Forms Via Registrar";
-		}
-		public static IWindow GetWindow()
-		{
-			var service = new RegistrarTextService();
-			
-			return new MainWindow(new MainPage(new MainPageViewModel(new List<ITextService> { service })));
-		}
 
 		public static void Init()
 		{
