@@ -1,12 +1,11 @@
-﻿using System;
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
 
 namespace Xamarin.Platform
 {
 	public interface IFrameworkElement
 	{
 		bool IsEnabled { get; }
-		Color BackgroundColor { get; }
+		Brush2 Background { get; }
 		Rectangle Frame { get; }
 		IViewHandler? Handler { get; set; }
 		IFrameworkElement? Parent { get; }
@@ -25,6 +24,5 @@ namespace Xamarin.Platform
 		double Height { get; }
 
 		Thickness Margin { get; }
-
 	}
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Runtime.CompilerServices;
 #if __IOS__
 using NativeView = UIKit.UIView;
@@ -17,7 +16,7 @@ namespace Xamarin.Platform.Handlers
 	{
 		public static PropertyMapper<IView> ViewMapper = new PropertyMapper<IView>
 		{
-			[nameof(IView.BackgroundColor)] = MapBackgroundColor,
+			[nameof(IView.Background)] = MapBackground,
 			[nameof(IView.Frame)] = MapFrame,
 			[nameof(IView.IsEnabled)] = MapIsEnabled
 		};
@@ -34,10 +33,10 @@ namespace Xamarin.Platform.Handlers
 			(handler.NativeView as NativeView)?.UpdateIsEnabled(view);
 		}
 
-		public static void MapBackgroundColor(IViewHandler handler, IView view)
+		public static void MapBackground(IViewHandler handler, IView view)
 		{
 			CheckParameters(handler, view);
-			(handler.NativeView as NativeView)?.UpdateBackgroundColor(view);
+			(handler.NativeView as NativeView)?.UpdateBackground(view);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

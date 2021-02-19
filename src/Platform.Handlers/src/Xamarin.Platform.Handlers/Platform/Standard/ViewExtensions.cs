@@ -6,6 +6,6 @@ namespace Xamarin.Platform
 	{
 		public static void UpdateIsEnabled(this object nativeView, IView view) { }
 
-		public static void UpdateBackgroundColor(this object nativeView, IView view) { }
+		public static void UpdateBackground(this object nativeView, IView view) { }
 	}
 }

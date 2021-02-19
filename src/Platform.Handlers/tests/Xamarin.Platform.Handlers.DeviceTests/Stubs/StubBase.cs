@@ -1,6 +1,4 @@
-﻿using System;
-using Xamarin.Forms;
-using Xamarin.Platform;
+﻿using Xamarin.Forms;
 
 namespace Xamarin.Platform.Handlers.DeviceTests.Stubs
 {
@@ -8,7 +6,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests.Stubs
 	{
 		public bool IsEnabled { get; set; }
 
-		public Color BackgroundColor { get; set; }
+		public Brush2 Background { get; set; }
 
 		public Rectangle Frame { get; set; } = new Rectangle(0, 0, 20, 20);
 
