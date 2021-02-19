@@ -49,6 +49,39 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		}
 
 		[Fact]
+		public void HandlerContextNullBeforeBuild()
+		{
+			var app = new AppStub();
+			var builder = app.CreateBuilder();
+
+			var handlerContext = App.Current.Context;
+
+			Assert.Null(handlerContext);
+		}
+
+		[Fact]
+		public void HandlerContextAfterBuild()
+		{
+			var app = new AppStub();
+			var builder = app.CreateBuilder().Build(app);
+
+			var handlerContext = App.Current.Context;
+
+			Assert.NotNull(handlerContext);
+		}
+
+		[Fact]
+		public void CanHandlerProviderContext()
+		{
+			var app = new AppStub();
+			var builder = app.CreateBuilder().Build(app);
+
+			var handlerContext = App.Current.Context;
+
+			Assert.IsAssignableFrom<IMauiServiceProvider>(handlerContext.Handlers);
+		}
+
+		[Fact]
 		public void CanRegisterAndGetHandler()
 		{
 			var app = new AppStub();
@@ -57,7 +90,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 			var host = builder.RegisterHandler<IViewStub, ViewHandlerStub>()
 							   .Build(app);
 
-			var handler = App.Current.Handlers.GetHandler(typeof(IViewStub));
+			var handler = App.Current.Context.Handlers.GetHandler(typeof(IViewStub));
 			Assert.NotNull(handler);
 			Assert.IsType<ViewHandlerStub>(handler);
 		}
@@ -73,7 +106,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 							})
 							.Build(app);
 
-			var handler = App.Current.Handlers.GetHandler(typeof(IViewStub));
+			var handler = App.Current.Context.Handlers.GetHandler(typeof(IViewStub));
 			Assert.NotNull(handler);
 			Assert.IsType<ViewHandlerStub>(handler);
 		}
@@ -87,7 +120,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 			var host = builder.RegisterHandler<IViewStub, ViewHandlerStub>()
 							.Build(app);
 
-			var handler = App.Current.Handlers.GetHandler(typeof(ViewStub));
+			var handler = App.Current.Context.Handlers.GetHandler(typeof(ViewStub));
 			Assert.NotNull(handler);
 			Assert.IsType<ViewHandlerStub>(handler);
 		}
@@ -100,7 +133,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 
 			var host = builder.Build(app);
 
-			var handler = App.Current.Handlers.GetHandler(typeof(IButton));
+			var handler = App.Current.Context.Handlers.GetHandler(typeof(IButton));
 			Assert.NotNull(handler);
 			Assert.IsType<ButtonHandler>(handler);
 		}
@@ -114,8 +147,8 @@ namespace Xamarin.Platform.Handlers.UnitTests
 							.RegisterHandler<ButtonStub, ButtonHandlerStub>()
 							.Build(app);
 
-			var defaultHandler = App.Current.Handlers.GetHandler(typeof(IButton));
-			var specificHandler = App.Current.Handlers.GetHandler(typeof(ButtonStub));
+			var defaultHandler = App.Current.Context.Handlers.GetHandler(typeof(IButton));
+			var specificHandler = App.Current.Context.Handlers.GetHandler(typeof(ButtonStub));
 			Assert.NotNull(defaultHandler);
 			Assert.NotNull(specificHandler);
 			Assert.IsType<ButtonHandler>(defaultHandler);
@@ -129,12 +162,12 @@ namespace Xamarin.Platform.Handlers.UnitTests
 			var app = new AppStub();
 			var host = app.CreateBuilder().Build(app);
 
-			var handlerWarmup = app.Handlers.GetHandler<Button>();
+			var handlerWarmup = app.Context.Handlers.GetHandler<Button>();
 
 			Stopwatch watch = Stopwatch.StartNew();
 			for (int i = 0; i < iterations; i++)
 			{
-				var defaultHandler = app.Handlers.GetHandler<Button>();
+				var defaultHandler = app.Context.Handlers.GetHandler<Button>();
 				Assert.NotNull(defaultHandler);
 			}
 			watch.Stop();

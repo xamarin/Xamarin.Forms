@@ -1,5 +1,4 @@
 using System;
-using Android.Content;
 using Xamarin.Platform.Hosting;
 using AView = Android.Views.View;
 
@@ -7,8 +6,7 @@ namespace Xamarin.Platform
 {
 	public static class HandlerExtensions
 	{
-		//IContext - > With a Context and IServiceProvider, Dispatcher
-		public static AView ToNative(this IView view, Context context)
+		public static AView ToNative(this IView view, IHandlersContext context)
 		{
 			_ = view ?? throw new ArgumentNullException(nameof(view));
 			_ = context ?? throw new ArgumentNullException(nameof(context));
@@ -20,7 +18,7 @@ namespace Xamarin.Platform
 
 				if (App.Current != null)
 				{
-					handler = App.Current?.Handlers?.GetHandler(view.GetType());
+					handler = context.Handlers.GetHandler(view.GetType());
 				}
 				else
 				{
@@ -28,10 +26,10 @@ namespace Xamarin.Platform
 				}
 
 				if (handler == null)
-					throw new System.Exception($"Handler not found for view {view}");
+					throw new Exception($"Handler not found for view {view}");
 
 				if (handler is IAndroidViewHandler ahandler)
-					ahandler.SetContext(context);
+					ahandler.SetContext(context.Context);
 
 				view.Handler = handler;
 			}

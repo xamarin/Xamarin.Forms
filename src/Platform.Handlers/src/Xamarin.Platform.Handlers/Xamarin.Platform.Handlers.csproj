@@ -18,8 +18,4 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(_DotNetPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(_DotNetPackageVersion)" />
   </ItemGroup>
-  <PropertyGroup>
-    <__REGISTRAR__ Condition="'$(__REGISTRAR__)' == ''">false</__REGISTRAR__>
-    <DefineConstants Condition="'$(__REGISTRAR__)' == 'true'">$(DefineConstants);__REGISTRAR__</DefineConstants>
-  </PropertyGroup>
 </Project>

@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Xamarin.Platform.Hosting;
 
 namespace Xamarin.Platform.Handlers.Benchmarks
@@ -61,7 +64,7 @@ namespace Xamarin.Platform.Handlers.Benchmarks
 		{
 			for (int i = 0; i < _numberOfItems; i++)
 			{
-				var defaultHandler = _app.Handlers.GetHandler<IButton>();
+				var defaultHandler = _app.Context.Handlers.GetHandler<IButton>();
 			}
 		}
 
@@ -77,9 +80,35 @@ namespace Xamarin.Platform.Handlers.Benchmarks
 
 	class MockApp : App
 	{
+		public void ConfigureNativeServices(HostBuilderContext ctx, IServiceCollection services)
+		{
+			services.AddSingleton<IHandlersContext>(provider => new HandlersContextStub(provider));
+		}
+
+		public override IAppHostBuilder CreateBuilder()
+		{
+			return base.CreateBuilder().ConfigureServices(ConfigureNativeServices);
+		}
+
+
 		public override IWindow GetWindowFor(Dictionary<string, string> state)
 		{
 			return null;
 		}
+	}
+
+	class HandlersContextStub : IHandlersContext
+	{
+		IServiceProvider _provider;
+		IMauiServiceProvider _handlersServiceProvider;
+		public HandlersContextStub(IServiceProvider provider)
+		{
+			_provider = provider;
+			_handlersServiceProvider = Provider.GetService<IMauiServiceProvider>() ?? throw new NullReferenceException(nameof(IMauiServiceProvider));
+		}
+
+		public IServiceProvider Provider => _provider;
+
+		public IMauiServiceProvider Handlers => _handlersServiceProvider;
 	}
 }
