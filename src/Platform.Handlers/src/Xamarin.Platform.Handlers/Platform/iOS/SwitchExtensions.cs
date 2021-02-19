@@ -9,18 +9,13 @@ namespace Xamarin.Platform
 			uiSwitch.SetState(view.IsToggled, true);
 		}
 
-		public static void UpdateOnColor(this UISwitch uiSwitch, ISwitch view)
-		{
-			uiSwitch.UpdateTrackColor(view, null);
-		}
+		public static void UpdateTrackColor(this UISwitch uiSwitch, ISwitch view) =>
+			uiSwitch.UpdateTrackColor(view, UISwitch.Appearance.OnTintColor);
 
 		public static void UpdateTrackColor(this UISwitch uiSwitch, ISwitch view, UIColor? defaultOnColor)
 		{
 			if (view == null)
 				return;
-
-			if (defaultOnColor == null)
-				defaultOnColor = UISwitch.Appearance.OnTintColor;
 
 			if (view.TrackColor == Forms.Color.Default)
 				uiSwitch.OnTintColor = defaultOnColor;
@@ -28,18 +23,13 @@ namespace Xamarin.Platform
 				uiSwitch.OnTintColor = view.TrackColor.ToNative();
 		}
 
-		public static void UpdateThumbColor(this UISwitch uiSwitch, ISwitch view)
-		{
-			uiSwitch.UpdateThumbColor(view, null);
-		}
+		public static void UpdateThumbColor(this UISwitch uiSwitch, ISwitch view) =>
+			uiSwitch.UpdateThumbColor(view, UISwitch.Appearance.ThumbTintColor);
 
 		public static void UpdateThumbColor(this UISwitch uiSwitch, ISwitch view, UIColor? defaultThumbColor)
 		{
 			if (view == null)
 				return;
-
-			if (defaultThumbColor == null)
-				defaultThumbColor = UISwitch.Appearance.ThumbTintColor;
 
 			Forms.Color thumbColor = view.ThumbColor;
 			uiSwitch.ThumbTintColor = thumbColor.IsDefault ? defaultThumbColor : thumbColor.ToNative();

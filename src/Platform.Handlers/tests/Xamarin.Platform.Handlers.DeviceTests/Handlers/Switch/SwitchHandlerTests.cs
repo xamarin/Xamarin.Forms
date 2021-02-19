@@ -61,7 +61,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 				IsToggled = true
 			};
 
-			await ValidateTrackColor(switchStub, Color.Red, () => switchStub.ThumbColor = Color.Red);
+			await ValidateThumbColor(switchStub, Color.Red, () => switchStub.ThumbColor = Color.Red);
 		}
 	}
 }

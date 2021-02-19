@@ -16,13 +16,24 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 
 		async Task ValidateTrackColor(ISwitch switchStub, Color color, Action action = null)
 		{
-			var expected = await GetValueAsync(switchStub, handler => GetNativeSwitch(handler).OnTintColor.ToColor());
+			var expected = await GetValueAsync(switchStub, handler =>
+			{
+				var native = GetNativeSwitch(handler);
+				action?.Invoke();
+				return native.OnTintColor.ToColor();
+			});
 			Assert.Equal(expected, color);
 		}
 
 		async Task ValidateThumbColor(ISwitch switchStub, Color color, Action action = null)
 		{
-			var expected = await GetValueAsync(switchStub, handler => GetNativeSwitch(handler).ThumbTintColor.ToColor());
+			var expected = await GetValueAsync(switchStub, handler =>
+			{
+				var native = GetNativeSwitch(handler);
+				action?.Invoke();
+				return native.ThumbTintColor.ToColor();
+			});
+
 			Assert.Equal(expected, color);
 		}
 	}
