@@ -12,9 +12,6 @@ namespace Xamarin.Platform
 		public static void UpdateIsToggled(this ASwitch aSwitch, ISwitch view) =>
 			aSwitch.Checked = view.IsToggled;
 
-		public static void UpdateTrackColor(this ASwitch aSwitch, ISwitch view) =>
-			UpdateTrackColor(aSwitch, view, aSwitch.GetDefaultSwitchTrackColorStateList());	
-
 		public static void UpdateTrackColor(this ASwitch aSwitch, ISwitch view, ColorStateList? defaultTrackColor)
 		{
 			var trackColor = view.TrackColor;
@@ -33,9 +30,6 @@ namespace Xamarin.Platform
 				aSwitch.TrackTintList = trackColor.ToDefaultColorStateList();
 			}
 		}
-
-		public static void UpdateThumbColor(this ASwitch aSwitch, ISwitch view) =>
-			aSwitch.UpdateThumbColor(view, aSwitch.GetDefaultSwitchThumbColorStateList());
 
 		public static void UpdateThumbColor(this ASwitch aSwitch, ISwitch view, ColorStateList? defaultColorStateList)
 		{
