@@ -2,15 +2,13 @@
 using Android.OS;
 using Android.Views;
 using AndroidX.AppCompat.App;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using AndroidX.CoordinatorLayout.Widget;
 using AndroidX.Core.Widget;
 
 namespace Xamarin.Platform
 {
-	public class MauiAppCompatActivity<TApplication> : AppCompatActivity where TApplication: App
+	public class MauiAppCompatActivity : AppCompatActivity
 	{
 
 #pragma warning disable CS8765 // Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
@@ -19,11 +17,16 @@ namespace Xamarin.Platform
 		{
 			base.OnCreate(savedInstanceState);
 
-			TApplication app = (TApplication)Activator.CreateInstance(typeof(TApplication));
+			if (App.Current == null || App.Current.Services == null)
+				throw new InvalidOperationException("App was not intialized");
 
-			var host = app.CreateBuilder().ConfigureServices(ConfigureNativeServices).Build(app);
+			var app = App.Current;
 
-			var content = app.GetWindowFor(null!).Page.View;
+			var window = app.GetWindowFor(null!);
+
+			window.HandlersContext = new HandlersContext(app.Services, this);
+
+			var content = window.Page.View;
 
 			CoordinatorLayout parent = new CoordinatorLayout(BaseContext);
 			NestedScrollView main = new NestedScrollView(BaseContext);
@@ -32,14 +35,7 @@ namespace Xamarin.Platform
 			
 			parent.AddView(main, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
 			
-			main.AddView(content.ToNative(app.Context!), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
-
-		}
-
-		//configure native services like HandlersContext, ImageSourceHandlers etc.. 
-		void ConfigureNativeServices(HostBuilderContext ctx, IServiceCollection services)
-		{
-			services.AddSingleton<IHandlersContext>(provider => new HandlersContext(provider, this));
+			main.AddView(content.ToNative(window.HandlersContext), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
 		}
 	}
 }
