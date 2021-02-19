@@ -72,7 +72,7 @@
 
 
   <PropertyGroup>
-    <_DotNetPackageVersion>5.0.0</_DotNetPackageVersion>
+    <_DotNetPackageVersion>6.0.0-preview.2.21110.7</_DotNetPackageVersion>
   </PropertyGroup>
 
 
