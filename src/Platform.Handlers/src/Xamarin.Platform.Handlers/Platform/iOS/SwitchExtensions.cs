@@ -10,9 +10,6 @@ namespace Xamarin.Platform
 			uiSwitch.SetState(view.IsToggled, true);
 		}
 
-		public static void UpdateTrackColor(this UISwitch uiSwitch, ISwitch view) =>
-			uiSwitch.UpdateTrackColor(view, UISwitch.Appearance.OnTintColor, uiSwitch.GetOffTrackColor());
-
 		public static void UpdateTrackColor(this UISwitch uiSwitch, ISwitch view, UIColor? defaultOnTrackColor, UIColor? defaultOffTrackColor)
 		{
 			if (view == null)
@@ -34,9 +31,6 @@ namespace Xamarin.Platform
 			else
 				uIView.BackgroundColor = uiSwitch.OnTintColor;
 		}
-
-		public static void UpdateThumbColor(this UISwitch uiSwitch, ISwitch view) =>
-			uiSwitch.UpdateThumbColor(view, UISwitch.Appearance.ThumbTintColor);
 
 		public static void UpdateThumbColor(this UISwitch uiSwitch, ISwitch view, UIColor? defaultThumbColor)
 		{
