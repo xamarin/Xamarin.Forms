@@ -159,58 +159,6 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public void ChangingHorizontalTextAlignmentFiresXAlignChanged()
-		{
-			var label = new Label() { HorizontalTextAlignment = TextAlignment.Center };
-
-			var xAlignFired = false;
-			var horizontalTextAlignmentFired = false;
-
-			label.PropertyChanged += (sender, args) =>
-			{
-				if (args.PropertyName == "XAlign")
-				{
-					xAlignFired = true;
-				}
-				else if (args.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName)
-				{
-					horizontalTextAlignmentFired = true;
-				}
-			};
-
-			label.HorizontalTextAlignment = TextAlignment.End;
-
-			Assert.True(xAlignFired);
-			Assert.True(horizontalTextAlignmentFired);
-		}
-
-		[Test]
-		public void ChangingVerticalTextAlignmentFiresYAlignChanged()
-		{
-			var label = new Label() { VerticalTextAlignment = TextAlignment.Center };
-
-			var yAlignFired = false;
-			var verticalTextAlignmentFired = false;
-
-			label.PropertyChanged += (sender, args) =>
-			{
-				if (args.PropertyName == "YAlign")
-				{
-					yAlignFired = true;
-				}
-				else if (args.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
-				{
-					verticalTextAlignmentFired = true;
-				}
-			};
-
-			label.VerticalTextAlignment = TextAlignment.End;
-
-			Assert.True(yAlignFired);
-			Assert.True(verticalTextAlignmentFired);
-		}
-
-		[Test]
 		public void EntryCellXAlignBindingMatchesHorizontalTextAlignmentBinding()
 		{
 			var vm = new ViewModel();
