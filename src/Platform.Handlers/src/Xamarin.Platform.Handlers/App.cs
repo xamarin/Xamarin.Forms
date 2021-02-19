@@ -8,7 +8,6 @@ namespace Xamarin.Platform
 	public abstract class App : IApp
 	{
 		IServiceProvider? _serviceProvider;
-		IMauiServiceProvider? _handlerServiceProvider;
 		IHandlersContext? _context;
 
 		protected App()
@@ -20,8 +19,6 @@ namespace Xamarin.Platform
 
 		public IServiceProvider? Services => _serviceProvider;
 
-		//public IServiceProvider? Handlers => _handlerServiceProvider;
-
 		public IHandlersContext? Context => _context;
 
 		public virtual IAppHostBuilder CreateBuilder() => CreateDefaultBuilder();
@@ -31,13 +28,7 @@ namespace Xamarin.Platform
 		internal void SetServiceProvider(IServiceProvider provider)
 		{
 			_serviceProvider = provider;
-			SetHandlerServiceProvider(provider.GetService<IMauiServiceProvider>());
 			SetHandlerContext(provider.GetService<IHandlersContext>());
-		}
-
-		internal void SetHandlerServiceProvider(IMauiServiceProvider? provider)
-		{
-			_handlerServiceProvider = provider;
 		}
 
 		internal void SetHandlerContext(IHandlersContext? context)
