@@ -15,7 +15,7 @@ resources:
       endpoint: xamarin
       ref: refs/heads/main # still defaults to master even though main is the main branch
   pipelines:
-    - pipeline: xamarinci
+    - pipeline: handlersci
       source: xamarin-handlers-ci
       trigger: 
         branches:
