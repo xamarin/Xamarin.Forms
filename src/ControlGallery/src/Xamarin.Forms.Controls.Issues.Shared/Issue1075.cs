@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			foreach (string color in new string[]
 				{
-					"Aqua", "Black", "Blue", "Fuschia",
+					"Aqua", "Black", "Blue", "Fuchsia",
 					"Gray", "Green", "Lime", "Maroon",
 					"Navy", "Olive", "Purple", "Red",
 					"Silver", "Teal", "White", "Yellow"
