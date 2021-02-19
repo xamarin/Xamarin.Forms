@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Xamarin.Platform.Hosting;
 
@@ -13,7 +14,12 @@ namespace Xamarin.Platform.Handlers.Tests
 
 		public override IAppHostBuilder CreateBuilder()
 		{
-			return CreateDefaultBuilder().ConfigureServices(ConfigureServices);
+			return base.CreateBuilder().ConfigureServices(ConfigureServices);
+		}
+
+		public override IWindow GetWindowFor(Dictionary<string, string> state)
+		{
+			return null;
 		}
 	}
 }

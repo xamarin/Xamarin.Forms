@@ -16,12 +16,12 @@ namespace Maui.Controls.Sample
 	{
 		public override IAppHostBuilder CreateBuilder()
 		{
-			var builder = CreateDefaultBuilder()
-					//.ConfigureLogging(logging =>
-					//{
-					//	logging.ClearProviders();
-					//	logging.AddConsole();
-					//})
+			var builder = base.CreateBuilder()
+				   //.ConfigureLogging(logging =>
+				   //{
+				   //	logging.ClearProviders();
+				   //	logging.AddConsole();
+				   //})
 				   .ConfigureAppConfiguration((hostingContext, config) =>
 				   {
 					   config.AddInMemoryCollection(new Dictionary<string, string>
@@ -36,20 +36,22 @@ namespace Maui.Controls.Sample
 			return builder;
 		}
 
-		public void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
+		public override IWindow GetWindowFor(Dictionary<string, string> state)
+		{
+			return Services.GetService<IWindow>();
+		}
+
+		void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
 		{
 			services.AddLogging();
 			services.AddSingleton<ITextService, TextService>();
 			services.AddTransient<MainPageViewModel>();
 			services.AddTransient<MainPage>();
 			services.AddTransient<IWindow, MainWindow>();
-
 		}
-
-		//Uncomment if you don't use DI
-		//public override IEnumerable<IWindow> Windows => new IWindow[1] { Platform.GetWindow() };
 	}
 
+	//to use DI ServiceCollection and not the MAUI one
 	public class DIExtensionsServiceProviderFactory : IServiceProviderFactory<ServiceCollection>
 	{
 		public ServiceCollection CreateBuilder(IServiceCollection services)

@@ -38,9 +38,9 @@ namespace Sample.iOS
 
 			App app = new MyApp();
 
-			var host = app.CreateBuilder().Build(app);
+			var host = app.CreateBuilder().ConfigureServices(ConfigureExtraServices).Build(app);
 
-			var content = app.Windows.FirstOrDefault()?.Page.View;
+			var content = app.GetWindowFor(null).Page.View;
 
 			_window.RootViewController = new UIViewController
 			{
