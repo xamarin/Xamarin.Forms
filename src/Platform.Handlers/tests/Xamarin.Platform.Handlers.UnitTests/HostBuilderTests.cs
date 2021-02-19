@@ -20,20 +20,11 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		}
 
 		[Fact]
-		public void CanGetApp()
-		{
-			var app = App.CreateDefaultBuilder()
-							  .Build<AppStub>();
-			Assert.NotNull(app);
-			Assert.IsType<AppStub>(app);
-		}
-
-		[Fact]
 		public void CanGetStaticApp()
 		{
-			var app = App.CreateDefaultBuilder()
-						  .Build<AppStub>();
-
+			var app = new AppStub();
+			var builder = app.CreateBuilder().Build(app);
+		
 			Assert.NotNull(App.Current);
 			Assert.Equal(App.Current, app);
 		}
@@ -41,8 +32,8 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		[Fact]
 		public void CanGetServices()
 		{
-			var app = App.CreateDefaultBuilder()
-							  .Build<AppStub>();
+			var app = new AppStub();
+			var builder = app.CreateBuilder().Build(app);
 
 			Assert.NotNull(app.Services);
 		}
@@ -50,8 +41,8 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		[Fact]
 		public void CanGetStaticServices()
 		{
-			var app = App.CreateDefaultBuilder()
-							  .Build<AppStub>();
+			var app = new AppStub();
+			var builder = app.CreateBuilder().Build(app);
 
 			Assert.NotNull(App.Current.Services);
 			Assert.Equal(app.Services, App.Current.Services);
@@ -60,9 +51,11 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		[Fact]
 		public void CanRegisterAndGetHandler()
 		{
-			var app = App.CreateDefaultBuilder()
-							   .RegisterHandler<IViewStub, ViewHandlerStub>()
-							   .Build<AppStub>();
+			var app = new AppStub();
+			var builder = app.CreateBuilder();
+
+			var host = builder.RegisterHandler<IViewStub, ViewHandlerStub>()
+							   .Build(app);
 
 			var handler = App.Current.Handlers.GetHandler(typeof(IViewStub));
 			Assert.NotNull(handler);
@@ -72,11 +65,13 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		[Fact]
 		public void CanRegisterAndGetHandlerWithDictionary()
 		{
-			var app = App.CreateDefaultBuilder()
-							.RegisterHandlers(new Dictionary<Type, Type> {
+			var app = new AppStub();
+			var builder = app.CreateBuilder();
+
+			var host = builder.RegisterHandlers(new Dictionary<Type, Type> {
 								{ typeof(IViewStub), typeof(ViewHandlerStub) }
 							})
-							.Build<AppStub>();
+							.Build(app);
 
 			var handler = App.Current.Handlers.GetHandler(typeof(IViewStub));
 			Assert.NotNull(handler);
@@ -86,9 +81,11 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		[Fact]
 		public void CanRegisterAndGetHandlerForType()
 		{
-			var app = App.CreateDefaultBuilder()
-							.RegisterHandler<IViewStub, ViewHandlerStub>()
-							.Build<AppStub>();
+			var app = new AppStub();
+			var builder = app.CreateBuilder();
+
+			var host = builder.RegisterHandler<IViewStub, ViewHandlerStub>()
+							.Build(app);
 
 			var handler = App.Current.Handlers.GetHandler(typeof(ViewStub));
 			Assert.NotNull(handler);
@@ -98,8 +95,10 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		[Fact]
 		public void DefaultHandlersAreRegistered()
 		{
-			var app = App.CreateDefaultBuilder()
-							.Build<AppStub>();
+			var app = new AppStub();
+			var builder = app.CreateBuilder();
+
+			var host = builder.Build(app);
 
 			var handler = App.Current.Handlers.GetHandler(typeof(IButton));
 			Assert.NotNull(handler);
@@ -109,9 +108,11 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		[Fact]
 		public void CanSpecifyHandler()
 		{
-			var app = App.CreateDefaultBuilder()
+			var app = new AppStub();
+			var builder = app.CreateBuilder();
+			var host = builder
 							.RegisterHandler<ButtonStub, ButtonHandlerStub>()
-							.Build<AppStub>();
+							.Build(app);
 
 			var defaultHandler = App.Current.Handlers.GetHandler(typeof(IButton));
 			var specificHandler = App.Current.Handlers.GetHandler(typeof(ButtonStub));
@@ -125,8 +126,8 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		public void Get10000Handlers()
 		{
 			int iterations = 10000;
-			var app = App.CreateDefaultBuilder()
-						 .Build<AppStub>();
+			var app = new AppStub();
+			var host = app.CreateBuilder().Build(app);
 
 			var handlerWarmup = app.Handlers.GetHandler<Button>();
 

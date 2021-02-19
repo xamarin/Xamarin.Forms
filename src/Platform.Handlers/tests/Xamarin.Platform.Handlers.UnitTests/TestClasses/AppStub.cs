@@ -10,5 +10,10 @@ namespace Xamarin.Platform.Handlers.Tests
 		{
 			services.AddTransient<IButton, ButtonStub>();
 		}
+
+		public override IAppHostBuilder CreateBuilder()
+		{
+			return CreateDefaultBuilder().ConfigureServices(ConfigureServices);
+		}
 	}
 }
