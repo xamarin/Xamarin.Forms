@@ -27,12 +27,7 @@ namespace Xamarin.Forms.Platform.UWP
 				run.Foreground = span.TextColor.ToBrush();
 
 			if (!span.IsDefault())
-			{
-				run.FontSize = span.FontSize;
-				run.FontFamily = span.FontFamily.ToFontFamily();
-				run.FontStyle = span.FontAttributes.HasFlag(FontAttributes.Italic) ? FontStyle.Italic : FontStyle.Normal;
-				run.FontWeight = span.FontAttributes.HasFlag(FontAttributes.Bold) ? FontWeights.Bold : FontWeights.Normal;
-			}
+				run.ApplyFont(span);
 
 			if (span.IsSet(Span.TextDecorationsProperty))
 				run.TextDecorations = (Windows.UI.Text.TextDecorations)span.TextDecorations;
@@ -270,21 +265,9 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 
 			if (label.IsDefault() && _isInitiallyDefault)
-			{
-				var font = Font.SystemFontOfSize(NamedSize.Medium);
-
-				textBlock.FontSize = font.FontSize;
-				textBlock.FontFamily = font.FontFamily.ToFontFamily();
-				textBlock.FontStyle = font.FontAttributes.HasFlag(FontAttributes.Italic) ? FontStyle.Italic : FontStyle.Normal;
-				textBlock.FontWeight = font.FontAttributes.HasFlag(FontAttributes.Bold) ? FontWeights.Bold : FontWeights.Normal;
-			}
+				textBlock.ApplyFont(Font.SystemFontOfSize(NamedSize.Medium));
 			else
-			{
-				textBlock.FontSize = label.FontSize;
-				textBlock.FontFamily = label.FontFamily.ToFontFamily();
-				textBlock.FontStyle = label.FontAttributes.HasFlag(FontAttributes.Italic) ? FontStyle.Italic : FontStyle.Normal;
-				textBlock.FontWeight = label.FontAttributes.HasFlag(FontAttributes.Bold) ? FontWeights.Bold : FontWeights.Normal;
-			}
+				textBlock.ApplyFont(label);
 
 			_fontApplied = true;
 		}

@@ -147,11 +147,11 @@ namespace Xamarin.Forms.Platform.WPF
 			if (label == null || (label.IsDefault() && !_fontApplied))
 				return;
 
-			Control.FontFamily = label.FontFamily.ToFontFamily("FontFamilyNormal");
-			Control.FontSize = label.FontSize;
-			Control.FontWeight = label.FontAttributes.HasFlag(FontAttributes.Bold) ? FontWeights.Bold : FontWeights.Normal;
-			Control.FontStyle = label.FontAttributes.HasFlag(FontAttributes.Italic) ? FontStyles.Italic : FontStyles.Normal;
+#pragma warning disable 618
+			Font fontToApply = label.IsDefault() ? Font.SystemFontOfSize(NamedSize.Medium) : label.Font;
+#pragma warning restore 618
 
+			Control.ApplyFont(fontToApply);
 			_fontApplied = true;
 		}
 

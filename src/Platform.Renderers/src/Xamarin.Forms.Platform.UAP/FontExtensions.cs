@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using Windows.UI.Text;
 using Xamarin.Forms.Internals;
@@ -22,6 +23,38 @@ namespace Xamarin.Forms.Platform.UWP
 			self.FontFamily = font.ToFontFamily();
 			self.FontStyle = font.FontAttributes.HasFlag(FontAttributes.Italic) ? FontStyle.Italic : FontStyle.Normal;
 			self.FontWeight = font.FontAttributes.HasFlag(FontAttributes.Bold) ? FontWeights.Bold : FontWeights.Normal;
+		}
+
+		public static void ApplyFont(this TextBlock self, Font font)
+		{
+			self.FontSize = font.UseNamedSize ? font.NamedSize.GetFontSize() : font.FontSize;
+			self.FontFamily = font.ToFontFamily();
+			self.FontStyle = font.FontAttributes.HasFlag(FontAttributes.Italic) ? FontStyle.Italic : FontStyle.Normal;
+			self.FontWeight = font.FontAttributes.HasFlag(FontAttributes.Bold) ? FontWeights.Bold : FontWeights.Normal;
+		}
+
+		public static void ApplyFont(this Microsoft.UI.Xaml.Documents.TextElement self, Font font)
+		{
+			self.FontSize = font.UseNamedSize ? font.NamedSize.GetFontSize() : font.FontSize;
+			self.FontFamily = font.ToFontFamily();
+			self.FontStyle = font.FontAttributes.HasFlag(FontAttributes.Italic) ? FontStyle.Italic : FontStyle.Normal;
+			self.FontWeight = font.FontAttributes.HasFlag(FontAttributes.Bold) ? FontWeights.Bold : FontWeights.Normal;
+		}
+
+		internal static void ApplyFont(this TextBlock self, IFontElement element)
+		{
+			self.FontSize = element.FontSize;
+			self.FontFamily = element.FontFamily.ToFontFamily();
+			self.FontStyle = element.FontAttributes.HasFlag(FontAttributes.Italic) ? FontStyle.Italic : FontStyle.Normal;
+			self.FontWeight = element.FontAttributes.HasFlag(FontAttributes.Bold) ? FontWeights.Bold : FontWeights.Normal;
+		}
+
+		internal static void ApplyFont(this TextElement self, IFontElement element)
+		{
+			self.FontSize = element.FontSize;
+			self.FontFamily = element.FontFamily.ToFontFamily();
+			self.FontStyle = element.FontAttributes.HasFlag(FontAttributes.Italic) ? FontStyle.Italic : FontStyle.Normal;
+			self.FontWeight = element.FontAttributes.HasFlag(FontAttributes.Bold) ? FontWeights.Bold : FontWeights.Normal;
 		}
 
 		internal static void ApplyFont(this Control self, IFontElement element)

@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Documents;
 
 namespace Xamarin.Forms.Platform.WPF
@@ -23,12 +26,9 @@ namespace Xamarin.Forms.Platform.WPF
 				run.Background = span.BackgroundColor.ToBrush();
 
 			if (!span.IsDefault())
-			{
-				run.FontFamily = span.FontFamily.ToFontFamily("FontFamilyNormal");
-				run.FontSize = span.FontSize;
-				run.FontWeight = span.FontAttributes.HasFlag(FontAttributes.Bold) ? FontWeights.Bold : FontWeights.Normal;
-				run.FontStyle = span.FontAttributes.HasFlag(FontAttributes.Italic) ? FontStyles.Italic : FontStyles.Normal;
-			}
+#pragma warning disable 618
+				run.ApplyFont(span.Font);
+#pragma warning restore 618
 
 			if (!span.IsSet(Span.TextDecorationsProperty))
 				return run;
