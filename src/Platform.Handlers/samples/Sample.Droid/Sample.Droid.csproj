@@ -25,9 +25,7 @@
     <AndroidEnableSGenConcurrent>true</AndroidEnableSGenConcurrent>
     <AndroidUseAapt2>true</AndroidUseAapt2>
     <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
-    <__REGISTRAR__ Condition="'$(__REGISTRAR__)' == ''">false</__REGISTRAR__>
-    <DefineConstants Condition="'$(__REGISTRAR__)' == 'true'">$(DefineConstants);__REGISTRAR__</DefineConstants>
-  </PropertyGroup>
+    </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>portable</DebugType>
@@ -41,9 +39,7 @@
     <EmbedAssembliesIntoApk>false</EmbedAssembliesIntoApk>
     <AndroidUseAapt2>true</AndroidUseAapt2>
     <AndroidSupportedAbis>x86;x86_64;arm64-v8a</AndroidSupportedAbis>
-    <__REGISTRAR__ Condition="'$(__REGISTRAR__)' == ''">false</__REGISTRAR__>
-    <DefineConstants Condition="'$(__REGISTRAR__)' == 'true'">$(DefineConstants);__REGISTRAR__</DefineConstants>
-  </PropertyGroup>
+   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>portable</DebugType>
@@ -56,8 +52,6 @@
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
-    <__REGISTRAR__ Condition="'$(__REGISTRAR__)' == ''">false</__REGISTRAR__>
-    <DefineConstants Condition="'$(__REGISTRAR__)' == 'true'">$(DefineConstants);__REGISTRAR__</DefineConstants>
     <AotAssemblies>true</AotAssemblies>
     <EnableLLVM>false</EnableLLVM>
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
@@ -120,9 +114,6 @@
     <Folder Include="Resources\drawable\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection">
-      <Version>5.0.1</Version>
-    </PackageReference>
     <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.2.0.4" />
     <PackageReference Include="Xamarin.Google.Android.Material" Version="1.2.1.1" />
     <PackageReference Include="Xamarin.AndroidX.Legacy.Support.V4" Version="1.0.0.6" />
