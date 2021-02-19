@@ -1194,11 +1194,6 @@ MSBuildSettings GetMSBuildSettings(PlatformTarget? platformTarget = PlatformTarg
         buildSettings = buildSettings.WithProperty("XamarinFormsVersion", XamarinFormsVersion);
     }
     
-    if(isCIBuild)
-    {
-        buildSettings = buildSettings.WithProperty("RestoreConfigFile", $"eng/DevopsNuget.config");
-    }
-    
     buildSettings.ArgumentCustomization = args => args.Append($"/nowarn:VSX1000 {MSBuildArguments}");
     return buildSettings;
 }
