@@ -1,6 +1,7 @@
-﻿using Xamarin.Forms;
+﻿using System;
+using System.Collections.Generic;
+using Xamarin.Forms;
 using Xamarin.Platform;
-using Xamarin.Platform.Core;
 
 namespace Sample
 {
@@ -10,6 +11,10 @@ namespace Sample
 		{
 			Platform.Init();
 		}
+
+		public IServiceProvider Services => throw new NotImplementedException();
+
+		public IEnumerable<IWindow> Windows => throw new NotImplementedException();
 
 		public IView CreateView()
 		{
