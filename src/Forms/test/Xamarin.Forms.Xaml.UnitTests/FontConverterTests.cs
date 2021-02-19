@@ -1,8 +1,9 @@
+using NUnit.Framework;
 using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {
-    [TestFixture]
+	[TestFixture]
 	public class FontConverterTests : BaseTestFixture
 	{
 		[TestCase("Bold", Forms.FontAttributes.Bold)]

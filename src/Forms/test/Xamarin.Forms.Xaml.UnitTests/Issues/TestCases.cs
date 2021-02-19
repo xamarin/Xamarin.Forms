@@ -1,8 +1,13 @@
-﻿using Xamarin.Forms.Core.UnitTests;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using NUnit.Framework;
+using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {
-    public class BasePage : ContentPage
+	public class BasePage : ContentPage
 	{
 
 	}
@@ -26,7 +31,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			System.Threading.Thread.CurrentThread.CurrentCulture = _defaultCulture;
 		}
 
-		public static readonly BindableProperty InnerViewProperty = BindableProperty.CreateAttached<TestCases, View>("InnerView", typeof(View), typeof(TestCases), default(View));
+		public static readonly BindableProperty InnerViewProperty = BindableProperty.CreateAttached("InnerView", typeof(View), typeof(TestCases), default(View));
 
 		public static View GetInnerView(BindableObject bindable)
 		{

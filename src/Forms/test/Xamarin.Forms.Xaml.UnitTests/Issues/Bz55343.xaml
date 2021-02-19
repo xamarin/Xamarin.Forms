@@ -5,7 +5,7 @@
 	<ContentPage.Resources>
 		<ResourceDictionary>
 			<OnPlatform x:Key="HeaderFont"
-                        x:TypeArguments="Font">
+                        x:TypeArguments="NamedSize">
                 <On Platform="Android"
                     Value="Large" />
                 <On Platform="WinPhone"
@@ -26,7 +26,7 @@
 		</ResourceDictionary>
 	</ContentPage.Resources>
 	<StackLayout>
-		<Label x:Name="label0" Font="{StaticResource HeaderFont}" />
+		<Label x:Name="label0" FontSize="{StaticResource HeaderFont}" />
 		<Label x:Name="label1" FontSize="{StaticResource HeaderFontSize}" />
 	</StackLayout>
 </ContentPage>

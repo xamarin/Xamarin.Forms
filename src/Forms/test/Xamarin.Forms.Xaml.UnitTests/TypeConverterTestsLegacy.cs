@@ -1,8 +1,12 @@
-﻿using Xamarin.Forms.Core.UnitTests;
+﻿using System;
+using System.Globalization;
+using System.Xml;
+using NUnit.Framework;
+using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {
-    public class FooConverter : TypeConverter
+	public class FooConverter : TypeConverter
 	{
 		public override object ConvertFromInvariantString(string value)
 		{

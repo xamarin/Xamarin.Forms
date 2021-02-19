@@ -1,8 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Mono.Cecil;
+using NUnit.Framework;
+using Xamarin.Forms.Build.Tasks;
 using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {
-    [ContentProperty("Content")]
+	[ContentProperty("Content")]
 	public class CustomView : View
 	{
 		public string NotBindable { get; set; }

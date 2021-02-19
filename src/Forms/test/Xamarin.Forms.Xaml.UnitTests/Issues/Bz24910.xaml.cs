@@ -1,6 +1,11 @@
-﻿namespace Xamarin.Forms.Xaml.UnitTests
+﻿using System;
+using System.Collections.Generic;
+using NUnit.Framework;
+using Xamarin.Forms;
+
+namespace Xamarin.Forms.Xaml.UnitTests
 {
-    public partial class Bz24910 : ContentPage
+	public partial class Bz24910 : ContentPage
 	{
 		public Bz24910()
 		{
