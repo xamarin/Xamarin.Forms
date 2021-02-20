@@ -26,6 +26,8 @@ namespace Xamarin.Platform.Handlers.Tests
 
 		public TextAlignment VerticalTextAlignment => throw new NotImplementedException();
 
+		public Color TextColor => throw new NotImplementedException();
+
 		public void Clicked()
 		{
 			throw new NotImplementedException();
