@@ -89,12 +89,6 @@ namespace Xamarin.Platform.Handlers.Benchmarks
 		{
 			return base.CreateBuilder().ConfigureServices(ConfigureNativeServices);
 		}
-
-
-		public override IWindow GetWindowFor(Dictionary<string, string> state)
-		{
-			return null;
-		}
 	}
 
 	class HandlersContextStub : IHandlersContext
