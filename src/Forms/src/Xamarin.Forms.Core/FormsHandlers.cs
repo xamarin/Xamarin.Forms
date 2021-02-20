@@ -1,4 +1,7 @@
-﻿using Xamarin.Platform.Handlers;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Xamarin.Platform.Handlers;
 
 namespace Xamarin.Forms
 {
@@ -10,6 +13,12 @@ namespace Xamarin.Forms
 		public static void InitHandlers()
 		{
 			Platform.Registrar.Handlers.Register(typeof(Button), typeof(ButtonHandler));
+			//Xamarin.Platform.Registrar.Handlers.Register(typeof(Slider), typeof(Xamarin.Platform.Handlers.SliderHandler));
+			//Xamarin.Platform.Registrar.Handlers.Register(typeof(Button), typeof(Xamarin.Platform.Handlers.ButtonHandler));
+			//RegistrarHandlers.Handlers.Register<Xamarin.Forms.StackLayout, Xamarin.Platform.Handlers.LayoutHandler>();
+
+			Xamarin.Platform.Registrar.Handlers.Register<VerticalStackLayout, LayoutHandler>();
+			Xamarin.Platform.Registrar.Handlers.Register<HorizontalStackLayout, LayoutHandler>();
 		}
 	}
 }

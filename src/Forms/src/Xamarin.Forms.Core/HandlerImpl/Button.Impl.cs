@@ -4,6 +4,10 @@ namespace Xamarin.Forms
 {
 	public partial class Button : IButton
 	{
+		public TextAlignment HorizontalTextAlignment => throw new NotImplementedException();
+
+		public TextAlignment VerticalTextAlignment => throw new NotImplementedException();
+
 		void IButton.Clicked()
 		{
 			(this as IButtonController).SendClicked();
