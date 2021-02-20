@@ -1,4 +1,5 @@
-﻿using AndroidX.AppCompat.Widget;
+﻿using System.Threading.Tasks;
+using AndroidX.AppCompat.Widget;
 using Xamarin.Forms;
 using AColor = global::Android.Graphics.Color;
 
@@ -18,6 +19,14 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 			AColor currentTextColor = new AColor(currentTextColorInt);
 
 			return currentTextColor.ToColor();
+		}
+
+		Task PerformClick(IButton button)
+		{
+			return InvokeOnMainThreadAsync(() =>
+			{
+				GetNativeButton(CreateHandler(button)).PerformClick();
+			});
 		}
 	}
 }

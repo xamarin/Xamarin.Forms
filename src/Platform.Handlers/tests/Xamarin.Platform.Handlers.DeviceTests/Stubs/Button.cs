@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using System;
+using Xamarin.Forms;
 
 namespace Xamarin.Platform.Handlers.DeviceTests.Stubs
 {
@@ -14,8 +15,12 @@ namespace Xamarin.Platform.Handlers.DeviceTests.Stubs
 
 		public double FontSize => throw new System.NotImplementedException();
 
-		public void Clicked() { }
-		public void Pressed() { }
-		public void Released() { }
+		public event EventHandler Pressed;
+		public event EventHandler Released;
+		public event EventHandler Clicked;
+
+		void IButton.Pressed() => Pressed?.Invoke(this, EventArgs.Empty);
+		void IButton.Released() => Released?.Invoke(this, EventArgs.Empty);
+		void IButton.Clicked() => Clicked?.Invoke(this, EventArgs.Empty);
 	}
 }

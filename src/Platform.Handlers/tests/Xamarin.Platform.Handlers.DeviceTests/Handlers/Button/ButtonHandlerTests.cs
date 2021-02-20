@@ -29,5 +29,21 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 
 			await ValidatePropertyInitValue(button, () => button.TextColor, GetNativeTextColor, button.TextColor);
 		}
+
+		[Fact]
+		public async Task ClickEventFires()
+		{
+			var clicked = false;
+
+			var button = new ButtonStub();
+			button.Clicked += delegate
+			{
+				clicked = true;
+			};
+
+			await PerformClick(button);
+
+			Assert.True(clicked);
+		}
 	}
 }

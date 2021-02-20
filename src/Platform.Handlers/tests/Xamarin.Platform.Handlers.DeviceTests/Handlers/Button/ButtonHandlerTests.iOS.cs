@@ -1,4 +1,5 @@
-﻿using UIKit;
+﻿using System.Threading.Tasks;
+using UIKit;
 using Xamarin.Forms;
 
 namespace Xamarin.Platform.Handlers.DeviceTests
@@ -13,5 +14,13 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 
 		Color GetNativeTextColor(ButtonHandler buttonHandler) =>
 			GetNativeButton(buttonHandler).CurrentTitleColor.ToColor();
+
+		Task PerformClick(IButton button)
+		{
+			return InvokeOnMainThreadAsync(() =>
+			{
+				GetNativeButton(CreateHandler(button)).SendActionForControlEvents(UIControlEvent.TouchUpInside);
+			});
+		}
 	}
 }
