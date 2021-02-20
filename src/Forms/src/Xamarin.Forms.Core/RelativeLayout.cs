@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using Xamarin.Forms.Internals;
@@ -176,6 +177,42 @@ namespace Xamarin.Forms
 		{
 			_childrenInSolveOrder = null;
 			base.OnRemoved(view);
+		}
+
+		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		protected override SizeRequest OnSizeRequest(double widthConstraint, double heightConstraint)
+		{
+			double mockWidth = double.IsPositiveInfinity(widthConstraint) ? ParentView.Width : widthConstraint;
+			double mockHeight = double.IsPositiveInfinity(heightConstraint) ? ParentView.Height : heightConstraint;
+			MockBounds(new Rectangle(0, 0, mockWidth, mockHeight));
+
+			var boundsRectangle = new Rectangle();
+			var set = false;
+			foreach (View child in ChildrenInSolveOrder)
+			{
+				Rectangle bounds = SolveView(child);
+				child.MockBounds(bounds);
+				if (!set)
+				{
+					boundsRectangle = bounds;
+					set = true;
+				}
+				else
+				{
+					boundsRectangle.Left = Math.Min(boundsRectangle.Left, bounds.Left);
+					boundsRectangle.Top = Math.Min(boundsRectangle.Top, bounds.Top);
+					boundsRectangle.Right = Math.Max(boundsRectangle.Right, bounds.Right);
+					boundsRectangle.Bottom = Math.Max(boundsRectangle.Bottom, bounds.Bottom);
+				}
+			}
+
+			foreach (View child in ChildrenInSolveOrder)
+				child.UnmockBounds();
+
+			UnmockBounds();
+
+			return new SizeRequest(new Size(boundsRectangle.Right, boundsRectangle.Bottom));
 		}
 
 		bool CanSolveView(View view, Dictionary<View, bool> solveTable)
