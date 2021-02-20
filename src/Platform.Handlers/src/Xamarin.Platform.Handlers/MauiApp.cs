@@ -9,9 +9,7 @@ namespace Xamarin.Platform
 
 		public MauiApp()
 		{
-			//Current = this;
+			
 		}
-
-		//public static MauiApp? Current { get; private set; }
 	}
 }
