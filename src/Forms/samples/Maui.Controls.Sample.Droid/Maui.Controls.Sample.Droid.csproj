@@ -75,15 +75,11 @@
     <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\activity_main.xml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
     <AndroidResource Include="Resources\values\colors.xml" />
     <AndroidResource Include="Resources\values\dimens.xml" />
     <AndroidResource Include="Resources\values\ic_launcher_background.xml" />
     <AndroidResource Include="Resources\values\strings.xml" />
     <AndroidResource Include="Resources\values\styles.xml" />
-    <AndroidResource Include="Resources\menu\menu_main.xml" />
     <AndroidResource Include="Resources\mipmap-anydpi-v26\ic_launcher.xml" />
     <AndroidResource Include="Resources\mipmap-anydpi-v26\ic_launcher_round.xml" />
     <AndroidResource Include="Resources\mipmap-hdpi\ic_launcher.png" />
@@ -101,14 +97,6 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_launcher.png" />
     <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_launcher_foreground.png" />
     <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_launcher_round.png" />
-    <AndroidResource Include="Resources\layout\content_main.xml">
-      <SubType>
-      </SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\drawable\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection">
