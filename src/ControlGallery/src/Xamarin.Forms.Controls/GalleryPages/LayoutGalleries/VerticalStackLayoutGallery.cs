@@ -4,7 +4,7 @@
 	{
 		public VerticalStackLayoutGallery() 
 		{
-			var layout = new StackLayout();
+			var layout = new VerticalStackLayout();
 
 			for (int n = 0; n < 10; n++)
 			{
