@@ -12,8 +12,6 @@ namespace Sample
 			Platform.Init();
 		}
 
-		public IWindow GetWindowFor(Dictionary<string, string> state) => throw new NotImplementedException();
-
 		public IServiceProvider Services => throw new NotImplementedException();
 
 		public IView CreateView()
