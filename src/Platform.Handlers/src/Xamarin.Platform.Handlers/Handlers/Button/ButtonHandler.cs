@@ -7,7 +7,7 @@
 			[nameof(IButton.Text)] = MapText,
 			[nameof(IButton.TextColor)] = MapTextColor
 		};
-				
+
 		public ButtonHandler() : base(ButtonMapper)
 		{
 

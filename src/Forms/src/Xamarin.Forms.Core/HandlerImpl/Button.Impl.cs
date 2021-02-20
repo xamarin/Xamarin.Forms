@@ -1,4 +1,5 @@
-﻿using Xamarin.Platform;
+﻿using System;
+using Xamarin.Platform;
 
 namespace Xamarin.Forms
 {

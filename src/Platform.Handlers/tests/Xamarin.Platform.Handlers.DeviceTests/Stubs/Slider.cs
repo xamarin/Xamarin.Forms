@@ -1,4 +1,9 @@
-﻿using Xamarin.Forms;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Xamarin.Forms;
+using Xamarin.Platform;
+using Xamarin.Platform.Handlers;
 
 namespace Xamarin.Platform.Handlers.DeviceTests.Stubs
 {

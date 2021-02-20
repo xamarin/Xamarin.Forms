@@ -2,7 +2,7 @@
 
 namespace Xamarin.Platform
 {
-	public interface IBorder : IView
+	public interface IBorder
 	{
 		int CornerRadius { get; }
 		Color BorderColor { get; }

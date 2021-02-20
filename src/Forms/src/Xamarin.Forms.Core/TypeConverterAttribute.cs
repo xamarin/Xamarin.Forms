@@ -32,7 +32,6 @@
 
 using System;
 using System.Collections.Generic;
-using static Xamarin.Forms.Button;
 
 namespace Xamarin.Forms
 {
@@ -45,7 +44,7 @@ namespace Xamarin.Forms
 		};
 
 		internal static Dictionary<Type, Type> KnownConverters = new Dictionary<Type, Type> {
-			{ typeof(ButtonContentLayout), typeof(ButtonContentTypeConverter) },
+			{ typeof(ButtonContentLayout), typeof(Button.ButtonContentTypeConverter) },
 			{ typeof(Color), typeof(ColorTypeConverter) },
 			{ typeof(Font), typeof(FontTypeConverter) },
 			{ typeof(Keyboard), typeof(KeyboardTypeConverter) },
