@@ -173,7 +173,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 			watch.Stop();
 			var total = watch.ElapsedMilliseconds;
 			watch.Reset();
-			Registrar.Handlers.Register<IButton, ButtonHandler>();
+			Registrar.Handlers.Register<Button, ButtonHandler>();
 			watch.Start();
 			for (int i = 0; i < iterations; i++)
 			{
