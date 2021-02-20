@@ -14,11 +14,9 @@ namespace Xamarin.Platform
 		IHost? _host;
 		public override void OnCreate()
 		{
-			TApplication app;
-			var instance = Activator.CreateInstance(typeof(TApplication));
-			if (instance is TApplication app)
+			if (!(Activator.CreateInstance(typeof(TApplication)) is TApplication app))
 				throw new InvalidOperationException($"We weren't able to create the App {typeof(TApplication)}");
-			
+
 			_host = app.CreateBuilder().ConfigureServices(ConfigureNativeServices).Build(app);
 
 			//_host.Start();
