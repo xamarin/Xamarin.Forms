@@ -4,7 +4,7 @@
     <RuntimeIdentifier>ios-x64</RuntimeIdentifier>
     <OutputType>Exe</OutputType>
     <RootNamespace>Maui.Controls.Sample.iOS</RootNamespace>
-    <AssemblyName>Maui.Controls..iOS</AssemblyName>
+    <AssemblyName>Maui.Controls.Sample.iOS</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />
