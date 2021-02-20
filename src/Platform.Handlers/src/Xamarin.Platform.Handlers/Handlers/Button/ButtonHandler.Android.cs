@@ -71,7 +71,7 @@ namespace Xamarin.Platform.Handlers
 			public bool OnTouch(AView? v, global::Android.Views.MotionEvent? e)
 			{
 				ButtonManager.OnTouch(Handler?.VirtualView, v, e);
-				return true;
+				return false;
 			}
 		}
 	}
