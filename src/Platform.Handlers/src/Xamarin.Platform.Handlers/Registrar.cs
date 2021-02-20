@@ -74,12 +74,12 @@ namespace Xamarin.Platform
 			List<Type> types = new List<Type> { type };
 
 			//allow to register handlers for Interfaces of a type
-			foreach (var existingInterfaces in type.GetInterfaces())
-			{
-				if (typeof(IView).IsAssignableFrom(existingInterfaces))
-					types.Add(existingInterfaces);
+			//foreach (var existingInterfaces in type.GetInterfaces())
+			//{
+			//	if (typeof(IView).IsAssignableFrom(existingInterfaces))
+			//		types.Add(existingInterfaces);
 
-			}
+			//}
 
 			Type? baseType = type.BaseType;
 
