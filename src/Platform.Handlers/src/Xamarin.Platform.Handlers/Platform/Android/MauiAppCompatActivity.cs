@@ -1,5 +1,8 @@
 ﻿using Android.App;
+using Android.Content;
+using Android.Content.Res;
 using Android.OS;
+using Android.Runtime;
 using Android.Views;
 using AndroidX.AppCompat.App;
 using System;
@@ -8,6 +11,7 @@ using AndroidX.Core.Widget;
 using Google.Android.Material.AppBar;
 using AndroidX.AppCompat.Widget;
 using AndroidX.AppCompat.Content.Res;
+using AToolbar = AndroidX.AppCompat.Widget.Toolbar;
 
 namespace Xamarin.Platform
 {
@@ -37,24 +41,37 @@ namespace Xamarin.Platform
 
 			var content = window.Page.View;
 
-			CoordinatorLayout parent = new CoordinatorLayout(this);
-			NestedScrollView main = new NestedScrollView(this);
+			SetContentView(Resource.Layout.activity_main);
 
-			SetContentView(parent, new ViewGroup.LayoutParams(CoordinatorLayout.LayoutParams.MatchParent, CoordinatorLayout.LayoutParams.MatchParent));
+			AndroidX.AppCompat.Widget.Toolbar? toolbar = FindViewById<AndroidX.AppCompat.Widget.Toolbar>(Resource.Id.toolbar);
+			SetSupportActionBar(toolbar);
+
+			var page = FindViewById<ViewGroup>(Resource.Id.Page);
+
+			//CoordinatorLayout parent = new CoordinatorLayout(this);
+			//NestedScrollView main = new NestedScrollView(this);
+
+			//SetContentView(parent, new ViewGroup.LayoutParams(CoordinatorLayout.LayoutParams.MatchParent, CoordinatorLayout.LayoutParams.MatchParent));
 
 			//AddToolbar(parent);
 
-			parent.AddView(main, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
+			//parent.AddView(main, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
 
-			main.AddView(content.ToNative(window.HandlersContext), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
+			page.AddView(content.ToNative(window.HandlersContext), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
 		}
 
 		void AddToolbar(ViewGroup parent)
 		{	
-			Toolbar toolbar = new Toolbar(this);
+		//	Toolbar toolbar = new Toolbar(this);
 			var appbarLayout = new AppBarLayout(this);
-			var themeID = global::Android.Resource.Style.ThemeOverlayMaterialDarkActionBar;
-			appbarLayout.Context?.SetTheme(themeID);
+			//AndroidX.AppCompat.Widget.Toolbar? toolbar = FindViewById<AndroidX.AppCompat.Widget.Toolbar>(Resource.Id.toolbar);
+
+			AToolbar? toolbar = LayoutInflater.Inflate(Resource.Id.toolbar, null).JavaCast<AToolbar>();
+			SetSupportActionBar(toolbar);
+
+			//var themeID = global::Android.Resource.Style.ThemeOverlayMaterialDarkActionBar;
+		//	var toolbarResource = Resource.Layout.Toolbar;
+			//appbarLayout.Context?.SetTheme(themeID);
 			appbarLayout.AddView(toolbar, new ViewGroup.LayoutParams(AppBarLayout.LayoutParams.MatchParent, global::Android.Resource.Attribute.ActionBarSize));
 			SetSupportActionBar(toolbar);
 			parent.AddView(appbarLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent));
