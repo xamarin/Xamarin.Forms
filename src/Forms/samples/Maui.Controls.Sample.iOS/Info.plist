@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>Sample.iOS</string>
+	<string>Maui</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.Microsoft.Sample-iOS</string>
+	<string>com.microsoft.maui</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
