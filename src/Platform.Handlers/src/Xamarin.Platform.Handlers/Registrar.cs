@@ -110,17 +110,14 @@ namespace Xamarin.Platform
 
 		TTypeRender? GetRenderer(Type type)
 		{
-			if (!_handler.TryGetValue(type, out var handler))
+			if (_handlerFactories.TryGetValue(type, out var handlerFactory))
 			{
-				if (_handlerFactories.TryGetValue(type, out var handlerFactory))
-				{
-					var newObject = handlerFactory?.Invoke(type) as TTypeRender;
-					if (newObject != null)
-						return newObject;
-				}
+				var newObject = handlerFactory?.Invoke(type) as TTypeRender;
+				if (newObject != null)
+					return newObject;
 			}
 
-			if (handler == null)
+			if (!_handler.TryGetValue(type, out var handler))
 			{
 				return default(TTypeRender);
 			}
@@ -129,7 +126,7 @@ namespace Xamarin.Platform
 			{
 				var newObject = Activator.CreateInstance(handler);
 
-				if(newObject == null)
+				if (newObject == null)
 					throw new ArgumentException($"No Handler found for type: {type}", nameof(type));
 
 				return (TTypeRender)newObject;
