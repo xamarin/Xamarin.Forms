@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0-android;net6.0-ios;</TargetFrameworks>
-    <RootNamespace>Sample</RootNamespace>
-    <AssemblyName>Sample</AssemblyName>
+    <RootNamespace>Maui.Controls.Sample</RootNamespace>
+    <AssemblyName>Maui.Controls.Sample</AssemblyName>
   </PropertyGroup>  
   <Import Project="..\..\..\..\.nuspec\Xamarin.Forms.MultiTargeting.targets" />
   <PropertyGroup>
