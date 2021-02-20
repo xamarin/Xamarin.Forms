@@ -35,7 +35,14 @@ namespace Xamarin.Platform.Handlers
 
 			foreach (var child in VirtualView.Children)
 			{
-				TypedNativeView.AddView(child.ToNative(MauiApp.Current?.Context!));
+				if (MauiApp.Current != null)
+				{
+				 	TypedNativeView.AddView(child.ToNative(MauiApp.Current.Context!));
+				}
+				else
+				{
+					TypedNativeView.AddView(child.ToNativeOld(Context!));
+				}
 			}
 		}
 
@@ -44,7 +51,14 @@ namespace Xamarin.Platform.Handlers
 			_ = TypedNativeView ?? throw new InvalidOperationException($"{nameof(TypedNativeView)} should have been set by base class.");
 			_ = VirtualView ?? throw new InvalidOperationException($"{nameof(VirtualView)} should have been set by base class.");
 
-			TypedNativeView.AddView(child.ToNative(MauiApp.Current?.Context!), 0);
+			if (MauiApp.Current != null)
+			{
+				TypedNativeView.AddView(child.ToNative(MauiApp.Current.Context!), 0);
+			}
+			else
+			{
+				TypedNativeView.AddView(child.ToNativeOld(Context!), 0);
+			}
 		}
 
 		public void Remove(IView child)

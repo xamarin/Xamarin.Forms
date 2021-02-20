@@ -13,7 +13,8 @@ namespace Xamarin.Platform
 		{
 			_context = context;
 			_provider = provider;
-			_mauiServiceProvider = Provider.GetService<IMauiServiceProvider>() ?? throw new NullReferenceException(nameof(IMauiServiceProvider));
+			_mauiServiceProvider = Provider.GetRequiredService<IMauiServiceProvider>() ??
+				throw new InvalidOperationException($"The Handlers provider of type {nameof(IMauiServiceProvider)} was not found");
 		}
 		public Context Context => _context;
 

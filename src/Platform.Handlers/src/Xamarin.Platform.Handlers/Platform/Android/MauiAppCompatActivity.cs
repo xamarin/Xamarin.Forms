@@ -29,6 +29,9 @@ namespace Xamarin.Platform
 
 			window.HandlersContext = new HandlersContext(mauiApp.Services, this);
 
+			//Hack for now we set this on the App Static but this should be on IFrameworkElement
+			App.Current.SetHandlerContext(window.HandlersContext);
+
 			var content = window.Page.View;
 
 			CoordinatorLayout parent = new CoordinatorLayout(BaseContext);
