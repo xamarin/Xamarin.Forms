@@ -16,8 +16,6 @@ namespace Sample
 
 		public IServiceProvider Services => throw new NotImplementedException();
 
-		public IHandlersContext Context => throw new NotImplementedException();
-
 		public IView CreateView()
 		{
 			var verticalStack = new VerticalStackLayout() { Spacing = 5, BackgroundColor = Color.AntiqueWhite };

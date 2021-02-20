@@ -25,8 +25,8 @@ namespace Xamarin.Platform.Handlers.UnitTests
 			var app = new AppStub();
 			var builder = app.CreateBuilder().Build(app);
 		
-			Assert.NotNull(App.Current);
-			Assert.Equal(App.Current, app);
+			Assert.NotNull(MauiApp.Current);
+			Assert.Equal(MauiApp.Current, app);
 		}
 
 		[Fact]
@@ -44,8 +44,8 @@ namespace Xamarin.Platform.Handlers.UnitTests
 			var app = new AppStub();
 			var builder = app.CreateBuilder().Build(app);
 
-			Assert.NotNull(App.Current.Services);
-			Assert.Equal(app.Services, App.Current.Services);
+			Assert.NotNull(MauiApp.Current.Services);
+			Assert.Equal(app.Services, MauiApp.Current.Services);
 		}
 
 		[Fact]
@@ -54,7 +54,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 			var app = new AppStub();
 			var builder = app.CreateBuilder();
 
-			var handlerContext = App.Current.Context;
+			var handlerContext = MauiApp.Current.Context;
 
 			Assert.Null(handlerContext);
 		}
@@ -65,7 +65,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 			var app = new AppStub();
 			var builder = app.CreateBuilder().Build(app);
 
-			var handlerContext = App.Current.Context;
+			var handlerContext = MauiApp.Current.Context;
 
 			Assert.NotNull(handlerContext);
 		}
@@ -76,7 +76,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 			var app = new AppStub();
 			var builder = app.CreateBuilder().Build(app);
 
-			var handlerContext = App.Current.Context;
+			var handlerContext = MauiApp.Current.Context;
 
 			Assert.IsAssignableFrom<IMauiServiceProvider>(handlerContext.Handlers);
 		}
@@ -90,7 +90,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 			var host = builder.RegisterHandler<IViewStub, ViewHandlerStub>()
 							   .Build(app);
 
-			var handler = App.Current.Context.Handlers.GetHandler(typeof(IViewStub));
+			var handler = MauiApp.Current.Context.Handlers.GetHandler(typeof(IViewStub));
 			Assert.NotNull(handler);
 			Assert.IsType<ViewHandlerStub>(handler);
 		}
@@ -106,7 +106,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 							})
 							.Build(app);
 
-			var handler = App.Current.Context.Handlers.GetHandler(typeof(IViewStub));
+			var handler = MauiApp.Current.Context.Handlers.GetHandler(typeof(IViewStub));
 			Assert.NotNull(handler);
 			Assert.IsType<ViewHandlerStub>(handler);
 		}
@@ -120,7 +120,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 			var host = builder.RegisterHandler<IViewStub, ViewHandlerStub>()
 							.Build(app);
 
-			var handler = App.Current.Context.Handlers.GetHandler(typeof(ViewStub));
+			var handler = MauiApp.Current.Context.Handlers.GetHandler(typeof(ViewStub));
 			Assert.NotNull(handler);
 			Assert.IsType<ViewHandlerStub>(handler);
 		}
@@ -133,7 +133,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 
 			var host = builder.Build(app);
 
-			var handler = App.Current.Context.Handlers.GetHandler(typeof(IButton));
+			var handler = MauiApp.Current.Context.Handlers.GetHandler(typeof(IButton));
 			Assert.NotNull(handler);
 			Assert.IsType<ButtonHandler>(handler);
 		}
@@ -147,8 +147,8 @@ namespace Xamarin.Platform.Handlers.UnitTests
 							.RegisterHandler<ButtonStub, ButtonHandlerStub>()
 							.Build(app);
 
-			var defaultHandler = App.Current.Context.Handlers.GetHandler(typeof(IButton));
-			var specificHandler = App.Current.Context.Handlers.GetHandler(typeof(ButtonStub));
+			var defaultHandler = MauiApp.Current.Context.Handlers.GetHandler(typeof(IButton));
+			var specificHandler = MauiApp.Current.Context.Handlers.GetHandler(typeof(ButtonStub));
 			Assert.NotNull(defaultHandler);
 			Assert.NotNull(specificHandler);
 			Assert.IsType<ButtonHandler>(defaultHandler);

@@ -24,7 +24,7 @@ namespace Xamarin.Platform.Hosting
 		IServiceCollection? _services;
 		IConfiguration? _hostConfiguration;
 		IConfiguration? _appConfiguration;
-		IApp? _app;
+		App? _app;
 
 		public AppBuilder()
 		{
@@ -34,7 +34,7 @@ namespace Xamarin.Platform.Hosting
 
 		public IHost Build(IApp app)
 		{
-			_app = app;
+			_app = app as App;
 			return Build();
 		}
 
@@ -64,7 +64,7 @@ namespace Xamarin.Platform.Hosting
 
 			//we do this here because we can't inject the provider on the App ctor
 			//before we register the user ConfigureServices should this live in IApp ?
-			(_app as App)?.SetServiceProvider(_serviceProvider);
+			_app?.SetServiceProvider(_serviceProvider);
 
 			return new AppHost(_serviceProvider, null);
 		}

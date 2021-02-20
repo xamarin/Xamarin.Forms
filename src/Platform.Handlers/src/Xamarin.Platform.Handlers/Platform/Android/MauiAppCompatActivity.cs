@@ -17,14 +17,17 @@ namespace Xamarin.Platform
 		{
 			base.OnCreate(savedInstanceState);
 
-			if (App.Current == null || App.Current.Services == null)
-				throw new InvalidOperationException("App was not intialized");
+			if (App.Current as MauiApp == null)
+				throw new InvalidOperationException($"App is not {nameof(MauiApp)}");
 
-			var app = App.Current;
+			var mauiApp = (MauiApp)App.Current;
 
-			var window = app.GetWindowFor(null!);
+			if (mauiApp.Services == null)
+				throw new InvalidOperationException("App was not initialized");
 
-			window.HandlersContext = new HandlersContext(app.Services, this);
+			var window = mauiApp.GetWindowFor(null!);
+
+			window.HandlersContext = new HandlersContext(mauiApp.Services, this);
 
 			var content = window.Page.View;
 
