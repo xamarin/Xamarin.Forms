@@ -7,9 +7,21 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>Xamarin.Platform</PackageId>
-    <Product>Xamarin</Product>
+    <Product>Microsoft</Product>
   </PropertyGroup>
   <Import Project="..\..\..\..\.nuspec\Xamarin.Forms.MultiTargeting.targets" />
+
+  <PropertyGroup>
+    <!-- Android -->
+    <AndroidProjectFolder>Platform\Android\</AndroidProjectFolder>
+    <MonoAndroidResourcePrefix>$(AndroidProjectFolder)Resources</MonoAndroidResourcePrefix>
+    <MonoAndroidAssetsPrefix>$(AndroidProjectFolder)Assets</MonoAndroidAssetsPrefix>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('MonoAndroid10.0')) == true" >
+    <AndroidResource Include="$(MonoAndroidResourcePrefix)\*\*.xml" />
+    <AndroidResource Include="$(MonoAndroidResourcePrefix)\*\*.axml" />
+  </PropertyGroup>
+
   <PropertyGroup>
     <_DotNetPackageVersion>5.0.0</_DotNetPackageVersion>
   </PropertyGroup>
