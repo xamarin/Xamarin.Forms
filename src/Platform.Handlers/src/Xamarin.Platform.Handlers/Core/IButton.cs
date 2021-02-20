@@ -2,7 +2,7 @@
 
 namespace Xamarin.Platform
 {
-	public interface IButton : IView
+	public interface IButton : IView, IText
 	{
 		string Text { get; }
 		Color TextColor { get; }
