@@ -5,11 +5,6 @@ using Xamarin.Platform.Hosting;
 
 namespace Xamarin.Platform
 {
-	//MAUIApp
-
-	//public IHandlersContext? Context { get; }
-
-	//IWindow GetWindowFor(Dictionary<string, string> state);
 	public abstract class App : IApp
 	{
 		IServiceProvider? _serviceProvider;
@@ -29,8 +24,7 @@ namespace Xamarin.Platform
 		//move to abstract
 		public virtual IAppHostBuilder CreateBuilder() => CreateDefaultBuilder();
 
-		public abstract IWindow GetWindowFor(Dictionary<string, string> state);
-
+	
 		internal void SetServiceProvider(IServiceProvider provider)
 		{
 			_serviceProvider = provider;

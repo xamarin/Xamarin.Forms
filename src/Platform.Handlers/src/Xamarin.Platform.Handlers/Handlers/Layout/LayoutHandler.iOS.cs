@@ -38,7 +38,7 @@ namespace Xamarin.Platform.Handlers
 
 			foreach (var child in VirtualView.Children)
 			{
-				TypedNativeView.AddSubview(child.ToNative(App.Current?.Context!));
+				TypedNativeView.AddSubview(child.ToNative(MauiApp.Current?.Context!));
 			}
 		}
 
@@ -47,7 +47,7 @@ namespace Xamarin.Platform.Handlers
 			_ = TypedNativeView ?? throw new InvalidOperationException($"{nameof(TypedNativeView)} should have been set by base class.");
 			_ = VirtualView ?? throw new InvalidOperationException($"{nameof(VirtualView)} should have been set by base class.");
 
-			TypedNativeView.AddSubview(child.ToNative(App.Current?.Context!));
+			TypedNativeView.AddSubview(child.ToNative(MauiApp.Current?.Context!));
 			TypedNativeView.SetNeedsLayout();
 		}
 

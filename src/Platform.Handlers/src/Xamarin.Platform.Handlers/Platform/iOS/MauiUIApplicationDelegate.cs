@@ -9,7 +9,7 @@ using Xamarin.Platform.Hosting;
 
 namespace Xamarin.Platform
 {
-	public class MauiUIApplicationDelegate<TApplication> : UIApplicationDelegate, IUIApplicationDelegate where TApplication : App
+	public class MauiUIApplicationDelegate<TApplication> : UIApplicationDelegate, IUIApplicationDelegate where TApplication : MauiApp
 	{
 		public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
 		{
@@ -17,12 +17,12 @@ namespace Xamarin.Platform
 
 			var host = app.CreateBuilder().ConfigureServices(ConfigureNativeServices).Build(app);
 
-			if (App.Current == null || App.Current.Services == null)
+			if (MauiApp.Current == null || MauiApp.Current.Services == null)
 				throw new InvalidOperationException("App was not intialized");
 
 			var window = app.GetWindowFor(null!);
 
-			window.HandlersContext = new HandlersContext(App.Current.Services);
+			window.HandlersContext = new HandlersContext(MauiApp.Current.Services);
 
 			var content = window.Page.View;
 

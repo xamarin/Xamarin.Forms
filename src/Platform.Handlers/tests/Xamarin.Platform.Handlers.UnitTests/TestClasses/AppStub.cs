@@ -6,7 +6,7 @@ using Xamarin.Platform.Hosting;
 
 namespace Xamarin.Platform.Handlers.Tests
 {
-	class AppStub : App
+	class AppStub : MauiApp
 	{
 		public void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
 		{
@@ -19,7 +19,7 @@ namespace Xamarin.Platform.Handlers.Tests
 			return base.CreateBuilder().ConfigureServices(ConfigureServices);
 		}
 
-		public override IWindow GetWindowFor(Dictionary<string, string> state)
+		public override IWindow GetWindowFor(IActivationState state)
 		{
 			return new WindowStub();
 		}

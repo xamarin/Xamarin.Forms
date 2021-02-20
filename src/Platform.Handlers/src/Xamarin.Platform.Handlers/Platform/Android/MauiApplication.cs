@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Xamarin.Platform
 {
-	public class MauiApplication<TApplication> : global::Android.App.Application where TApplication : App
+	public class MauiApplication<TApplication> : global::Android.App.Application where TApplication : MauiApp
 	{
 		public MauiApplication(IntPtr handle, JniHandleOwnership ownerShip) : base(handle, ownerShip)
 		{

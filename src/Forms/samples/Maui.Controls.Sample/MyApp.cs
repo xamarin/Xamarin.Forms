@@ -12,7 +12,7 @@ using Xamarin.Platform.Hosting;
 
 namespace Maui.Controls.Sample
 {
-	public class MyApp : App
+	public class MyApp : MauiApp
 	{
 		public override IAppHostBuilder CreateBuilder()
 		{
@@ -37,7 +37,7 @@ namespace Maui.Controls.Sample
 		}
 
 		//IAppState state
-		public override IWindow GetWindowFor(Dictionary<string, string> state)
+		public override IWindow GetWindowFor(IActivationState state)
 		{
 			return Services.GetService<IWindow>();
 		}
