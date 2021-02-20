@@ -5,6 +5,7 @@ using SizeF = CoreGraphics.CGSize;
 using Foundation;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Xamarin.Platform;
 
 #if __MOBILE__
 using UIKit;
@@ -561,6 +562,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			UpdateLayout();
 		}
 
+		[PortHandler]
 		void UpdateTextColor()
 		{
 			if (IsTextFormatted)

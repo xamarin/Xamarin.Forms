@@ -173,6 +173,7 @@ namespace Xamarin.Forms.Platform.Android
 			Control.UpdateFlowDirection(Element);
 		}
 
+		[PortHandler]
 		void UpdateColor()
 		{
 			Color c = Element.TextColor;
