@@ -383,6 +383,31 @@ namespace Xamarin.Forms
 		public virtual string UpdateFormsText(string source, TextTransform textTransform)
 			=> TextTransformUtilites.GetTransformedText(source, textTransform);
 
+		[DebuggerDisplay("Image Position = {Position}, Spacing = {Spacing}")]
+		[TypeConverter(typeof(ButtonContentTypeConverter))]
+		public sealed class ButtonContentLayout
+		{
+			public enum ImagePosition
+			{
+				Left,
+				Top,
+				Right,
+				Bottom
+			}
+
+			public ButtonContentLayout(ImagePosition position, double spacing)
+			{
+				Position = position;
+				Spacing = spacing;
+			}
+
+			public ImagePosition Position { get; }
+
+			public double Spacing { get; }
+
+			public override string ToString() => $"Image Position = {Position}, Spacing = {Spacing}";
+		}
+
 		[Xaml.TypeConversion(typeof(ButtonContentLayout))]
 		public sealed class ButtonContentTypeConverter : TypeConverter
 		{

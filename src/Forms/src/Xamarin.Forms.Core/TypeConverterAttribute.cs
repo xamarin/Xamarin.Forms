@@ -44,7 +44,6 @@ namespace Xamarin.Forms
 		};
 
 		internal static Dictionary<Type, Type> KnownConverters = new Dictionary<Type, Type> {
-			{ typeof(ButtonContentLayout), typeof(Button.ButtonContentTypeConverter) },
 			{ typeof(Color), typeof(ColorTypeConverter) },
 			{ typeof(Font), typeof(FontTypeConverter) },
 			{ typeof(Keyboard), typeof(KeyboardTypeConverter) },

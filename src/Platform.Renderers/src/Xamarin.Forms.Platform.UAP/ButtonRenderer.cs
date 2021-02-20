@@ -245,7 +245,7 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateLineBreakMode();
 		}
 
-		static StackPanel CreateContentContainer(ButtonContentLayout layout, WImage image, string text)
+		static StackPanel CreateContentContainer(Button.ButtonContentLayout layout, WImage image, string text)
 		{
 			var container = new StackPanel();
 			var textBlock = new TextBlock
@@ -262,19 +262,19 @@ namespace Xamarin.Forms.Platform.UWP
 
 			switch (layout.Position)
 			{
-				case ButtonContentLayout.ImagePosition.Top:
+				case Button.ButtonContentLayout.ImagePosition.Top:
 					container.Orientation = Orientation.Vertical;
 					image.Margin = WinUIHelpers.CreateThickness(0, 0, 0, spacing);
 					container.Children.Add(image);
 					container.Children.Add(textBlock);
 					break;
-				case ButtonContentLayout.ImagePosition.Bottom:
+				case Button.ButtonContentLayout.ImagePosition.Bottom:
 					container.Orientation = Orientation.Vertical;
 					image.Margin = WinUIHelpers.CreateThickness(0, spacing, 0, 0);
 					container.Children.Add(textBlock);
 					container.Children.Add(image);
 					break;
-				case ButtonContentLayout.ImagePosition.Right:
+				case Button.ButtonContentLayout.ImagePosition.Right:
 					container.Orientation = Orientation.Horizontal;
 					image.Margin = WinUIHelpers.CreateThickness(spacing, 0, 0, 0);
 					container.Children.Add(textBlock);
