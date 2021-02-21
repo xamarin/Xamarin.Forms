@@ -35,5 +35,4 @@ namespace Xamarin.Platform.Handlers.Tests
 			DisconnectHandlerCount++;
 		}
 	}
-
 }
