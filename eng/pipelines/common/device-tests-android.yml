@@ -21,23 +21,21 @@ steps:
       version: $(DOTNET_VERSION)
       packageType: 'sdk'
 
-  - bash: set
-
   - pwsh: |
-      ./build.ps1 -Script eng/devices/android.cake --project="$(project)" --results=""
+      ./build.ps1 -Script eng/devices/android.cake --project="$(project)" --results="output/testlogs"
     displayName: $(Agent.JobName)
 
-  # - task: PublishTestResults@2
-  #   displayName: Publish the iOS test results
-  #   condition: always()
-  #   inputs:
-  #     testResultsFormat: xUnit
-  #     testResultsFiles: 'output/testlogs/SkiaSharp.iOS.Tests/**/TestResults.xml'
-  #     testRunTitle: 'iOS Tests'
+  - task: PublishTestResults@2
+    displayName: Publish the $(System.StageName)_$(System.PhaseName)_$System.JobName) test results
+    condition: always()
+    inputs:
+      testResultsFormat: xUnit
+      testResultsFiles: 'output/testlogs/**/TestResults.xml'
+      testRunTitle: 'iOS Tests'
 
-  # - task: PublishBuildArtifacts@1
-  #   displayName: Publish the test logs
-  #   condition: always()
-  #   inputs:
-  #     artifactName: testlogs_ios
-  #     pathToPublish: 'output/testlogs'
+  - task: PublishBuildArtifacts@1
+    displayName: Publish the test logs
+    condition: always()
+    inputs:
+      artifactName: $(System.StageName)_$(System.PhaseName)_$System.JobName)
+      pathToPublish: 'output/testlogs'
