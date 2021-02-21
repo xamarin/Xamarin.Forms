@@ -1,4 +1,5 @@
-﻿using AndroidX.AppCompat.Widget;
+﻿using Android.Views;
+using AndroidX.AppCompat.Widget;
 using AView = Android.Views.View;
 
 namespace Xamarin.Platform.Handlers
@@ -54,13 +55,33 @@ namespace Xamarin.Platform.Handlers
 			handler.TypedNativeView?.UpdateTextColor(button);
 		}
 
+		public bool OnTouch(IButton? button, AView? v, MotionEvent? e)
+		{
+			switch (e?.ActionMasked)
+			{
+				case MotionEventActions.Down:
+					button?.Pressed();
+					break;
+				case MotionEventActions.Up:
+					button?.Released();
+					break;
+			}
+
+			return false;
+		}
+
+		public void OnClick(IButton? button, AView? v)
+		{
+			button?.Clicked();
+		}
+
 		public class ButtonClickListener : Java.Lang.Object, AView.IOnClickListener
 		{
 			public ButtonHandler? Handler { get; set; }
 
 			public void OnClick(AView? v)
 			{
-				ButtonManager.OnClick(Handler?.VirtualView, v);
+				Handler?.OnClick(Handler?.VirtualView, v);
 			}
 		}
 
@@ -68,11 +89,8 @@ namespace Xamarin.Platform.Handlers
 		{
 			public ButtonHandler? Handler { get; set; }
 
-			public bool OnTouch(AView? v, global::Android.Views.MotionEvent? e)
-			{
-				ButtonManager.OnTouch(Handler?.VirtualView, v, e);
-				return false;
-			}
+			public bool OnTouch(AView? v, global::Android.Views.MotionEvent? e) =>
+				Handler?.OnTouch(Handler?.VirtualView, v, e) ?? false;
 		}
 	}
 }
