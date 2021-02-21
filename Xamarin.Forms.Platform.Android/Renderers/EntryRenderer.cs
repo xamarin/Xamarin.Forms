@@ -613,9 +613,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				bool showClearBtn = Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing;
 				UpdateClearBtn(showClearBtn);
-
-				if (!showClearBtn && isFocused)
-					ListenForCloseBtnTouch(false);
+				ListenForCloseBtnTouch(showClearBtn);
 			}
 		}
 
