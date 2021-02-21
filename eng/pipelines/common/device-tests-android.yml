@@ -31,7 +31,7 @@ steps:
     inputs:
       testResultsFormat: xUnit
       testResultsFiles: 'output/testlogs/**/TestResults.xml'
-      testRunTitle: 'iOS Tests'
+      testRunTitle: '$(System.StageName)_$(System.PhaseName)_$System.JobName)'
 
   - task: PublishBuildArtifacts@1
     displayName: Publish the test logs
