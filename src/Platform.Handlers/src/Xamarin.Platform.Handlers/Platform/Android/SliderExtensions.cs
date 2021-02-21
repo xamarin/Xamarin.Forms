@@ -9,9 +9,9 @@ namespace Xamarin.Platform
 	{
 		public const double NativeMaxValue = int.MaxValue;
 
-		public static void UpdateMinimum(this SeekBar seekBar, ISlider slider) { }
+		public static void UpdateMinimum(this SeekBar seekBar, ISlider slider) => UpdateValue(seekBar, slider);
 
-		public static void UpdateMaximum(this SeekBar seekBar, ISlider slider) { }
+		public static void UpdateMaximum(this SeekBar seekBar, ISlider slider) => UpdateValue(seekBar, slider);
 
 		public static void UpdateValue(this SeekBar seekBar, ISlider slider)
 		{
