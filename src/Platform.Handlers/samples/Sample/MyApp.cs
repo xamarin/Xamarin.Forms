@@ -37,7 +37,7 @@ namespace Sample
 
 			verticalStack.Add(horizontalStack);
 
-			var slider = new Slider() { Maximum=125,Minimum=32, Value=76 };
+			var slider = new Slider();
 			slider.ValueChanged += value => Console.WriteLine($"Slider value: {value:0.000}");
 			verticalStack.Add(slider);
 
