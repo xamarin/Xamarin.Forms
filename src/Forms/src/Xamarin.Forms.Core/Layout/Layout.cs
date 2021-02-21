@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Layout2
 
 		protected override void ArrangeOverride(Rectangle bounds)
 		{
-			if (IsArrangeValid)
+			if (IsArrangeValid || !IsMeasureValid)
 			{
 				return;
 			}
