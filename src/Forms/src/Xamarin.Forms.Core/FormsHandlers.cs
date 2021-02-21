@@ -12,9 +12,11 @@ namespace Xamarin.Forms
 		// And other scenarios
 		public static void InitHandlers()
 		{
-			Platform.Registrar.Handlers.Register(typeof(Label), typeof(LabelHandler));
 			Xamarin.Platform.Registrar.Handlers.Register<VerticalStackLayout, LayoutHandler>();
 			Xamarin.Platform.Registrar.Handlers.Register<HorizontalStackLayout, LayoutHandler>();
+			Xamarin.Platform.Registrar.Handlers.Register<Button, ButtonHandler>();
+			Xamarin.Platform.Registrar.Handlers.Register<Label, LabelHandler>();
+			Xamarin.Platform.Registrar.Handlers.Register(typeof(Switch), typeof(SwitchHandler));
 		}
 	}
 }
