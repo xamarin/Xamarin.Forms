@@ -8,7 +8,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 	public partial class SliderHandlerTests
 	{
 		UISlider GetNativeSlider(SliderHandler sliderHandler) =>
-			((UISlider)sliderHandler.View);
+			(UISlider)sliderHandler.View;
 
 		double GetNativeProgress(SliderHandler sliderHandler) =>
 			GetNativeSlider(sliderHandler).Value;

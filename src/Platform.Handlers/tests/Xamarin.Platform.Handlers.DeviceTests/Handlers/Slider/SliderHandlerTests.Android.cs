@@ -8,7 +8,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 	public partial class SliderHandlerTests
 	{
 		SeekBar GetNativeSlider(SliderHandler sliderHandler) =>
-			((SeekBar)sliderHandler.View);
+			(SeekBar)sliderHandler.View;
 
 		double GetNativeProgress(SliderHandler sliderHandler) =>
 			GetNativeSlider(sliderHandler).Progress;
