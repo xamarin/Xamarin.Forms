@@ -8,7 +8,7 @@ steps:
     inputs:
       provisioning_script: $(provisionator.path)
       provisioning_extra_args: $(provisionator.extraArguments)
-  
+
   - pwsh: |
       ./build.ps1 --target provision --TeamProject="$(System.TeamProject)"
     displayName: 'Cake Provision'
@@ -20,7 +20,24 @@ steps:
     inputs:
       version: $(DOTNET_VERSION)
       packageType: 'sdk'
-  
+
+  - bash: set
+
   - pwsh: |
-      ./build.ps1 -Script eng/devices/android.cake --project="$(project)"
+      ./build.ps1 -Script eng/devices/android.cake --project="$(project)" --results=""
     displayName: $(Agent.JobName)
+
+  # - task: PublishTestResults@2
+  #   displayName: Publish the iOS test results
+  #   condition: always()
+  #   inputs:
+  #     testResultsFormat: xUnit
+  #     testResultsFiles: 'output/testlogs/SkiaSharp.iOS.Tests/**/TestResults.xml'
+  #     testRunTitle: 'iOS Tests'
+
+  # - task: PublishBuildArtifacts@1
+  #   displayName: Publish the test logs
+  #   condition: always()
+  #   inputs:
+  #     artifactName: testlogs_ios
+  #     pathToPublish: 'output/testlogs'

@@ -31,7 +31,7 @@ stages:
       - job: device_tests
         workspace:
           clean: all
-        displayName: Run Device Tests Android
+        displayName: Device Tests
         timeoutInMinutes: 120
         pool:
           name:  $(macOSXVmPool)
