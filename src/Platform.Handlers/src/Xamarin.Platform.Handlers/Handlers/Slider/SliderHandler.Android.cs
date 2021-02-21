@@ -19,7 +19,7 @@ namespace Xamarin.Platform.Handlers
 			return new SeekBar(Context)
 			{
 				DuplicateParentStateEnabled = false,
-				Max = 1000
+				Max = (int)SliderExtensions.NativeMaxValue
 			};
 		}
 
@@ -94,7 +94,7 @@ namespace Xamarin.Platform.Handlers
 			var min = VirtualView.Minimum;
 			var max = VirtualView.Maximum;
 
-			var value = min + (max - min) * (progress / 1000.0);
+			var value = min + (max - min) * (progress / SliderExtensions.NativeMaxValue);
 
 			VirtualView.Value = value;
 		}

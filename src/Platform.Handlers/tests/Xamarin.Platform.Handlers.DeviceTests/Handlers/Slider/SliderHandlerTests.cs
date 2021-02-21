@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Threading.Tasks;
 using Xamarin.Platform.Handlers.DeviceTests.Stubs;
 using Xunit;
@@ -7,35 +8,50 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 {
 	public partial class SliderHandlerTests : HandlerTestBase<SliderHandler>
 	{
-#if __ANDROID__
-		[Fact(DisplayName = "Value Initializes Correctly", Skip = "Currently Fails on Android")]
-#else
-		[Fact(DisplayName = "Value Initializes Correctly")]
-#endif
-		public async Task ValueInitializesCorrectly()
+		[Theory(DisplayName = "[SliderHandler] Value Initializes Correctly")]
+		[InlineData(0, 1, 0)]
+		[InlineData(0, 1, 0.5)]
+		[InlineData(0, 1, 1)]
+		[InlineData(0, 100, 0)]
+		[InlineData(0, 100, 1)]
+		[InlineData(0, 100, 5)]
+		[InlineData(0, 100, 50)]
+		[InlineData(0, 100, 100)]
+		[InlineData(0, 100, 10000)]
+		[InlineData(0, 100, -10000)]
+		[InlineData(0, 10000, 10000)]
+		[InlineData(0, 10000, -10000)]
+		public async Task PercentValueInitializesCorrectly(double min, double max, double value)
 		{
+			var expectedValue = Math.Clamp(value, min, max);
+			var expectedPercent = (expectedValue - min) / (max - min);
+
 			var slider = new SliderStub()
 			{
-				Maximum = 1,
-				Minimum = 0,
-				Value = 0.5
+				Maximum = max,
+				Minimum = min,
+				Value = value
 			};
 
-			await ValidatePropertyInitValue(slider, () => slider.Value, GetNativeProgress, slider.Value);
-		}
+			Assert.Equal(min, slider.Minimum);
+			Assert.Equal(max, slider.Maximum);
+			Assert.Equal(expectedValue, slider.Value);
 
-		[Fact(DisplayName = "Maximum Initializes Correctly")]
-		public async Task MaximumInitializesCorrectly()
-		{
-			var slider = new SliderStub()
+			var native = await GetValueAsync(slider, (handler) =>
 			{
-				Maximum = 1
-			};
+				return new
+				{
+					Min = GetNativeMinimum(handler),
+					Max = GetNativeMaximum(handler),
+					Val = GetNativeProgress(handler),
+				};
+			});
+			var nativePercent = (native.Val - native.Min) / (native.Max - native.Min);
 
-			await ValidatePropertyInitValue(slider, () => slider.Maximum, GetNativeMaximum, slider.Maximum);
+			Assert.Equal(expectedPercent, nativePercent, 5);
 		}
 
-		[Fact(DisplayName = "Thumb Color Initializes Correctly")]
+		[Fact(DisplayName = "[SliderHandler] Thumb Color Initializes Correctly")]
 		public async Task ThumbColorInitializesCorrectly()
 		{
 			var slider = new SliderStub()

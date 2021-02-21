@@ -13,6 +13,9 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 		double GetNativeProgress(SliderHandler sliderHandler) =>
 			GetNativeSlider(sliderHandler).Progress;
 
+		double GetNativeMinimum(SliderHandler sliderHandler) =>
+			GetNativeSlider(sliderHandler).Min;
+
 		double GetNativeMaximum(SliderHandler sliderHandler) =>
 			GetNativeSlider(sliderHandler).Max;
 

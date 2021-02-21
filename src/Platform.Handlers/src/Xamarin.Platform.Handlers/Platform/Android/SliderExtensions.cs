@@ -7,6 +7,8 @@ namespace Xamarin.Platform
 {
 	public static class SliderExtensions
 	{
+		public const double NativeMaxValue = int.MaxValue;
+
 		public static void UpdateMinimum(this SeekBar seekBar, ISlider slider) { }
 
 		public static void UpdateMaximum(this SeekBar seekBar, ISlider slider) { }
@@ -17,7 +19,7 @@ namespace Xamarin.Platform
 			var max = slider.Maximum;
 			var value = slider.Value;
 
-			seekBar.Progress = (int)((value - min) / (max - min) * 1000.0);
+			seekBar.Progress = (int)((value - min) / (max - min) * NativeMaxValue);
 		}
 
 		public static void UpdateMinimumTrackColor(this SeekBar seekBar, ISlider slider) =>
