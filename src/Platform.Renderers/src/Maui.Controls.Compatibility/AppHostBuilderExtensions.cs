@@ -24,5 +24,10 @@ namespace Maui.Controls.Compatibility
 			builder.RegisterHandler<TMauiType, RendererToHandlerShim>();
 			return builder;
 		}
+
+		public static IAppHostBuilder RegisterCompatibilityRenderer<TControlType, TRenderer>(this IAppHostBuilder builder)
+			where TControlType : IFrameworkElement =>		
+				builder.RegisterCompatibilityRenderer<TControlType, TControlType, TRenderer>();
+		
 	}
 }
