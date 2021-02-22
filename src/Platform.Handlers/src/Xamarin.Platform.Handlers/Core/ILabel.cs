@@ -1,6 +1,9 @@
-﻿namespace Xamarin.Platform
+﻿using Xamarin.Forms;
+
+namespace Xamarin.Platform
 {
-	public interface ILabel : IText, ITextAlignment
+	public interface ILabel : IView, IText
 	{
+		
 	}
 }

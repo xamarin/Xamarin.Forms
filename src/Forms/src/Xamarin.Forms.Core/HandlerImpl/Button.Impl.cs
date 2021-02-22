@@ -4,8 +4,6 @@ namespace Xamarin.Forms
 {
 	public partial class Button : IButton
 	{
-		Color IText.Color => TextColor;
-
 		void IButton.Clicked()
 		{
 			(this as IButtonController).SendClicked();
