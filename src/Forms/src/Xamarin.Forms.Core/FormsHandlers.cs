@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xamarin.Platform.Handlers;
 
 namespace Xamarin.Forms
@@ -12,12 +9,12 @@ namespace Xamarin.Forms
 		// And other scenarios
 		public static void InitHandlers()
 		{
-			Xamarin.Platform.Registrar.Handlers.Register<VerticalStackLayout, LayoutHandler>();
-			Xamarin.Platform.Registrar.Handlers.Register<HorizontalStackLayout, LayoutHandler>();
-			Xamarin.Platform.Registrar.Handlers.Register<Button, ButtonHandler>();
-			Xamarin.Platform.Registrar.Handlers.Register<Label, LabelHandler>();
-			Xamarin.Platform.Registrar.Handlers.Register(typeof(Switch), typeof(SwitchHandler));
-      Platform.Registrar.Handlers.Register(typeof(WebView), typeof(WebViewHandler));
+			Platform.Registrar.Handlers.Register<Button, ButtonHandler>();
+			Platform.Registrar.Handlers.Register<Label, LabelHandler>();
+			Platform.Registrar.Handlers.Register<Switch, SwitchHandler>();
+			Platform.Registrar.Handlers.Register<WebView, WebViewHandler>();
+			Platform.Registrar.Handlers.Register<HorizontalStackLayout, LayoutHandler>();
+			Platform.Registrar.Handlers.Register<VerticalStackLayout, LayoutHandler>();
 		}
 	}
 }
