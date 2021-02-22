@@ -51,11 +51,19 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 			Assert.Equal(expectedPercent, nativePercent, 5);
 		}
 
-		[Fact(DisplayName = "[SliderHandler] Value Initializes Correctly"
-#if __ANDROID__
-			, Skip = "Android does not support decimal places and a min-max range."
-#endif
-		)]
+		[Fact(DisplayName = "[SliderHandler] Thumb Color Initializes Correctly")]
+		public async Task ThumbColorInitializesCorrectly()
+		{
+			var slider = new SliderStub()
+			{
+				ThumbColor = Color.Purple
+			};
+
+			await ValidateNativeThumbColor(slider, Color.Purple);
+		}
+
+#if !__ANDROID__ // Android native control behavior works differently; see SliderHandlerTests.Android.cs
+		[Fact(DisplayName = "[SliderHandler] Value Initializes Correctly")]
 		public async Task ValueInitializesCorrectly()
 		{
 			var slider = new SliderStub()
@@ -68,12 +76,7 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 			await ValidatePropertyInitValue(slider, () => slider.Value, GetNativeProgress, slider.Value);
 		}
 
-		[Fact(DisplayName = "[SliderHandler] Maximum Initializes Correctly"
-#if __ANDROID__
-			, Skip = "Android does not support decimal places and a min-max range."
-#endif
-		)]
-
+		[Fact(DisplayName = "[SliderHandler] Maximum Value Initializes Correctly")]
 		public async Task MaximumInitializesCorrectly()
 		{
 			var slider = new SliderStub()
@@ -81,18 +84,8 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 				Maximum = 1
 			};
 
-			await ValidatePropertyInitValue(slider, () => slider.Maximum, GetNativeMaximum, slider.Maximum);
+			await ValidatePropertyInitValue(slider, () => slider.Maximum, GetNativeMaximum, 1);
 		}
-
-		[Fact(DisplayName = "[SliderHandler] Thumb Color Initializes Correctly")]
-		public async Task ThumbColorInitializesCorrectly()
-		{
-			var slider = new SliderStub()
-			{
-				ThumbColor = Color.Purple
-			};
-
-			await ValidateNativeThumbColor(slider, Color.Purple);
-		}
+#endif
 	}
 }
