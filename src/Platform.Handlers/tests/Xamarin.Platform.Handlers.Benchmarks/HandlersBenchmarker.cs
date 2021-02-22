@@ -82,7 +82,7 @@ namespace Xamarin.Platform.Handlers.Benchmarks
 	{
 		public void ConfigureNativeServices(HostBuilderContext ctx, IServiceCollection services)
 		{
-			services.AddSingleton<IHandlersContext>(provider => new HandlersContextStub(provider));
+			services.AddSingleton<IMauiContext>(provider => new HandlersContextStub(provider));
 		}
 
 		public override IAppHostBuilder CreateBuilder()
@@ -91,7 +91,7 @@ namespace Xamarin.Platform.Handlers.Benchmarks
 		}
 	}
 
-	class HandlersContextStub : IHandlersContext
+	class HandlersContextStub : IMauiContext
 	{
 		IServiceProvider _provider;
 		IMauiServiceProvider _handlersServiceProvider;

@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Xamarin.Platform.Handlers.Tests
 { 
-	class HandlersContextStub : IHandlersContext
+	class HandlersContextStub : IMauiContext
 	{
 		IServiceProvider _provider;
 		IMauiServiceProvider _handlersServiceProvider;

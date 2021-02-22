@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Xamarin.Platform
 {
-	public class HandlersContext : IHandlersContext
+	public class HandlersContext : IMauiContext
 	{
 		Context _context;
 		IServiceProvider _provider;

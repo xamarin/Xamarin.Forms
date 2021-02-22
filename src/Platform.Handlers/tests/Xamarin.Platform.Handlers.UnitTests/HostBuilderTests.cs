@@ -185,13 +185,13 @@ namespace Xamarin.Platform.Handlers.UnitTests
 			Console.WriteLine($"Elapsed time DI: {total} and Registrar: {totalRegistrar}");
 		}
 
-		AppBuilder _builder;
+		AppHostBuilder _builder;
 
 		[Fact]
 		public void Register100Handlers()
 		{
 			int iterations = 10000;
-			_builder = new AppBuilder();
+			_builder = new AppHostBuilder();
 			for (int i = 0; i < iterations; i++)
 			{
 				_builder.RegisterHandler<IButton, ButtonHandler>();

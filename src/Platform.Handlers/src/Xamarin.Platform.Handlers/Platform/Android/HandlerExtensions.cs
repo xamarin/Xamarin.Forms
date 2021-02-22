@@ -39,7 +39,7 @@ namespace Xamarin.Platform
 			return result;
 		}
 
-		public static AView ToNative(this IView view, IHandlersContext context)
+		public static AView ToNative(this IView view, IMauiContext context)
 		{
 			_ = view ?? throw new ArgumentNullException(nameof(view));
 			_ = context ?? throw new ArgumentNullException(nameof(context));

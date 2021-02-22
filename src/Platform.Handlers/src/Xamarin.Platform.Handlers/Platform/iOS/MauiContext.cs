@@ -3,10 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Xamarin.Platform
 { 
-	public class HandlersContext : IHandlersContext
+	public class MauiContext : IMauiContext
 	{
 		IServiceProvider _provider;
-		public HandlersContext(IServiceProvider provider)
+		public MauiContext(IServiceProvider provider)
 		{
 			_provider = provider;
 		}

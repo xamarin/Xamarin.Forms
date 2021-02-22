@@ -8,7 +8,8 @@ using Xamarin.Platform.Hosting.Internal;
 
 namespace Xamarin.Platform.Hosting
 {
-	public class AppBuilder : IAppHostBuilder
+	public class AppHostBuilder
+		: IAppHostBuilder
 	{
 		readonly List<Action<HostBuilderContext, IServiceCollection>> _configureHandlersActions = new List<Action<HostBuilderContext, IServiceCollection>>();
 		readonly List<Action<IConfigurationBuilder>> _configureHostConfigActions = new List<Action<IConfigurationBuilder>>();
@@ -26,7 +27,7 @@ namespace Xamarin.Platform.Hosting
 		IConfiguration? _appConfiguration;
 		App? _app;
 
-		public AppBuilder()
+		public AppHostBuilder()
 		{
 
 		}

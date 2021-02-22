@@ -10,7 +10,7 @@ namespace Xamarin.Platform.Handlers.Tests
 	{
 		public void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
 		{
-			services.AddSingleton<IHandlersContext>(provider => new HandlersContextStub(provider));
+			services.AddSingleton<IMauiContext>(provider => new HandlersContextStub(provider));
 			services.AddTransient<IButton, ButtonStub>();
 		}
 

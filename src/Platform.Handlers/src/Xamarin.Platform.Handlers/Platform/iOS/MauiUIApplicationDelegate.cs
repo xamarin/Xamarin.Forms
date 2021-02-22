@@ -23,7 +23,7 @@ namespace Xamarin.Platform
 
 			var window = app.GetWindowFor(null!);
 
-			window.HandlersContext = new HandlersContext(MauiApp.Current.Services);
+			window.HandlersContext = new MauiContext(MauiApp.Current.Services);
 
 			//Hack for now we set this on the App Static but this should be on IFrameworkElement
 			App.Current.SetHandlerContext(window.HandlersContext);
