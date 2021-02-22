@@ -35,7 +35,13 @@ namespace Sample
 			horizontalStack.Add(new Label { Text = "And these buttons are in a HorizontalStackLayout" });
 
 			verticalStack.Add(horizontalStack);
+
 			verticalStack.Add(new Slider());
+
+			verticalStack.Add(new Stepper());
+			verticalStack.Add(new Stepper { BackgroundColor = Color.IndianRed });
+			verticalStack.Add(new Stepper { Minimum = 0, Maximum = 10, Value = 5 });
+
 			verticalStack.Add(new Switch());
 			verticalStack.Add(new Switch() { OnColor = Color.Green });
 			verticalStack.Add(new Switch() { ThumbColor = Color.Yellow });
