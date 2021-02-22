@@ -7,7 +7,11 @@ namespace Xamarin.Platform.Handlers
 	{
 		protected override AProgressBar CreateNativeView()
 		{
-			return new AProgressBar(Context, null, Attribute.ProgressBarStyleHorizontal) { Indeterminate = false, Max = 10000 };
+			return new AProgressBar(Context, null, Attribute.ProgressBarStyleHorizontal)
+			{
+				Indeterminate = false,
+				Max = ProgressBar.Maximum
+			};
 		}
 	}
 }

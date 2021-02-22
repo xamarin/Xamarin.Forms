@@ -1,32 +1,44 @@
-﻿using System.Drawing;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Xamarin.Platform.Handlers.DeviceTests.Stubs;
 using Xunit;
+using Xamarin.Forms;
 
 namespace Xamarin.Platform.Handlers.DeviceTests
 {
 	public partial class ProgressBarHandlerTests : HandlerTestBase<ProgressBarHandler>
 	{
-		[Fact]
-		public async Task ProgressInitializesCorrectly()
+		[Theory(DisplayName = "Progress Initializes Correctly")]
+		[InlineData(0.25)]
+		[InlineData(0.5)]
+		[InlineData(0.75)]
+		[InlineData(1.0)]
+		public async Task ProgressInitializesCorrectly(double progress)
 		{
 			var progressBar = new ProgressBarStub()
 			{
-				Progress = 0.5
+				Progress = progress
 			};
+
+			var expected = progressBar.Progress;
 
 			await ValidatePropertyInitValue(progressBar, () => progressBar.Progress, GetNativeProgress, progressBar.Progress);
 		}
 
-		[Fact]
-		public async Task ProgressColorInitializesCorrectly()
+		[Theory(DisplayName = "Progress Color Initializes Correctly")]
+		[InlineData("#FF0000")]
+		[InlineData("#00FF00")]
+		[InlineData("#0000FF")]
+		public async Task ProgressColorInitializesCorrectly(string colorHex)
 		{
+			Color progressColor = Color.FromHex(colorHex);
+
 			var progressBar = new ProgressBarStub()
 			{
-				ProgressColor = Color.Red
+				Progress = 0.9,
+				ProgressColor = progressColor
 			};
 
-			await ValidateNativeProgressColor(progressBar, Color.Red);
+			await ValidateNativeProgressColor(progressBar, progressColor);
 		}
 	}
 }

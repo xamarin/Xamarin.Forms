@@ -2,6 +2,7 @@
 using UIKit;
 using System.Threading.Tasks;
 using Xunit;
+using System;
 
 namespace Xamarin.Platform.Handlers.DeviceTests
 {
@@ -13,9 +14,14 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 		double GetNativeProgress(ProgressBarHandler progressBarHandler) =>
 			GetNativeProgressBar(progressBarHandler).Progress;
 
-		async Task ValidateNativeProgressColor(IProgress progressBar, Color color)
+		async Task ValidateNativeProgressColor(IProgress progressBar, Color color, Action action = null)
 		{
-			var expected = await GetValueAsync(progressBar, handler => GetNativeProgressBar(handler).ProgressTintColor.ToColor());
+			var expected = await GetValueAsync(progressBar, handler =>
+			{
+				var native = GetNativeProgressBar(handler);
+				action?.Invoke();
+				return native.ProgressTintColor.ToColor();
+			});
 			Assert.Equal(expected, color);
 		}
 	}

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using AProgressBar = Android.Widget.ProgressBar;
 
@@ -10,13 +11,18 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 			(AProgressBar)progressBarHandler.View;
 
 		double GetNativeProgress(ProgressBarHandler progressBarHandler) =>
-			GetNativeProgressBar(progressBarHandler).Progress;
+			(double)GetNativeProgressBar(progressBarHandler).Progress / ProgressBar.Maximum;
 
-		Task ValidateNativeProgressColor(IProgress progressBar, Color color)
+		Task ValidateNativeProgressColor(IProgress progressBar, Color color, Action action = null) =>
+		   ValidateHasColor(progressBar, color, action);
+
+		Task ValidateHasColor(IProgress progressBar, Color color, Action action = null)
 		{
 			return InvokeOnMainThreadAsync(() =>
 			{
-				GetNativeProgressBar(CreateHandler(progressBar)).AssertContainsColor(color);
+				var nativeProgressBar = GetNativeProgressBar(CreateHandler(progressBar));
+				action?.Invoke();
+				nativeProgressBar.AssertContainsColor(color);
 			});
 		}
 	}

@@ -5,11 +5,16 @@ using AProgressBar = Android.Widget.ProgressBar;
 
 namespace Xamarin.Platform
 {
+	public static class ProgressBar
+	{
+		public const int Maximum = 10000;
+	}
+
 	public static class ProgressBarExtensions
 	{
 		public static void UpdateProgress(this AProgressBar nativeProgressBar, IProgress progress)
 		{
-			nativeProgressBar.Progress = (int)(progress.Progress * 10000);
+			nativeProgressBar.Progress = (int)(progress.Progress * ProgressBar.Maximum);
 		}
 
 		public static void UpdateProgressColor(this AProgressBar nativeProgressBar, IProgress progress)
