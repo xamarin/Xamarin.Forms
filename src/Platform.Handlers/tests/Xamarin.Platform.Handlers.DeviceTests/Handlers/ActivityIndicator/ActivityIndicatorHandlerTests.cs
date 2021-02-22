@@ -7,15 +7,29 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 {
 	public partial class ActivityIndicatorHandlerTests : HandlerTestBase<ActivityIndicatorHandler>
 	{
-		[Fact]
-		public async Task IsRunningInitializesCorrectly()
+		[Theory(DisplayName = "IsRunning Initializes Correctly")]
+		[InlineData(true)]
+		[InlineData(false)]
+		public async Task IsRunningInitializesCorrectly(bool isRunning)
 		{
-			var activityIndicatorStub = new ActivityIndicatorStub()
+			var activityIndicator = new ActivityIndicatorStub()
 			{
+				IsRunning = isRunning
+			};
+
+			await ValidatePropertyInitValue(activityIndicator, () => activityIndicator.IsRunning, GetNativeIsRunning, activityIndicator.IsRunning);
+		}
+
+		[Fact(DisplayName = "BackgroundColor Updates Correctly")]
+		public async Task BackgroundColorUpdatesCorrectly()
+		{
+			var activityIndicator = new ActivityIndicatorStub()
+			{
+				BackgroundColor = Color.Yellow,
 				IsRunning = true
 			};
 
-			await ValidatePropertyInitValue(activityIndicatorStub, () => activityIndicatorStub.IsRunning, GetNativeIsRunning, activityIndicatorStub.IsRunning);
+			await ValidateColor(activityIndicator, Color.Yellow, () => activityIndicator.BackgroundColor = Color.Yellow);
 		}
 	}
 }

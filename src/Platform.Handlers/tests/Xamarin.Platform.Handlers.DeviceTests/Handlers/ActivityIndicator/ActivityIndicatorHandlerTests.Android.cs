@@ -1,5 +1,8 @@
-﻿using Android.Views;
+﻿using System;
+using System.Threading.Tasks;
+using Android.Views;
 using Android.Widget;
+using Xamarin.Forms;
 
 namespace Xamarin.Platform.Handlers.DeviceTests
 {
@@ -10,5 +13,18 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 
 		bool GetNativeIsRunning(ActivityIndicatorHandler activityIndicatorHandler) =>
 			GetNativeActivityIndicator(activityIndicatorHandler).Visibility == ViewStates.Visible;
+
+		Task ValidateColor(IActivityIndicator activityIndicator, Color color, Action action = null) =>
+			ValidateHasColor(activityIndicator, color, action);
+
+		Task ValidateHasColor(IActivityIndicator activityIndicator, Color color, Action action = null)
+		{
+			return InvokeOnMainThreadAsync(() =>
+			{
+				var nativeActivityIndicator = GetNativeActivityIndicator(CreateHandler(activityIndicator));
+				action?.Invoke();
+				nativeActivityIndicator.AssertContainsColor(color);
+			});
+		}
 	}
 }

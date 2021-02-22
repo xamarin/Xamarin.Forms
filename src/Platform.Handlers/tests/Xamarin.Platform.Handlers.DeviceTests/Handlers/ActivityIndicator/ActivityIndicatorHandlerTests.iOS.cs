@@ -1,4 +1,8 @@
-﻿using UIKit;
+﻿using System;
+using System.Threading.Tasks;
+using UIKit;
+using Xamarin.Forms;
+using Xunit;
 
 namespace Xamarin.Platform.Handlers.DeviceTests
 {
@@ -9,5 +13,16 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 
 		bool GetNativeIsRunning(ActivityIndicatorHandler activityIndicatorHandler) =>
 			GetNativeActivityIndicator(activityIndicatorHandler).IsAnimating;
+
+		async Task ValidateColor(IActivityIndicator activityIndicator, Color color, Action action = null)
+		{
+			var expected = await GetValueAsync(activityIndicator, handler =>
+			{
+				var native = GetNativeActivityIndicator(handler);
+				action?.Invoke();
+				return native.BackgroundColor.ToColor();
+			});
+			Assert.Equal(expected, color);
+		}
 	}
 }

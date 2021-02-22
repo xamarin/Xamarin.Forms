@@ -13,6 +13,7 @@ namespace Xamarin.Forms.Platform.Android
 			AutoPackage = false;
 		}
 
+		[PortHandler]
 		protected override AProgressBar CreateNativeControl()
 		{
 			return new AProgressBar(Context) { Indeterminate = true };
