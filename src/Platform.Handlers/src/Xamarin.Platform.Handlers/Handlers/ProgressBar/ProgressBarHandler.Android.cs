@@ -1,13 +1,13 @@
 ﻿using static Android.Resource;
-using AProgressBar = Android.Widget.ProgressBar;
+using AndroidProgressBar = Android.Widget.ProgressBar;
 
 namespace Xamarin.Platform.Handlers
 {
-	public partial class ProgressBarHandler : AbstractViewHandler<IProgress, AProgressBar>
+	public partial class ProgressBarHandler : AbstractViewHandler<IProgress, AndroidProgressBar>
 	{
-		protected override AProgressBar CreateNativeView()
+		protected override AndroidProgressBar CreateNativeView()
 		{
-			return new AProgressBar(Context, null, Attribute.ProgressBarStyleHorizontal)
+			return new AndroidProgressBar(Context, null, Attribute.ProgressBarStyleHorizontal)
 			{
 				Indeterminate = false,
 				Max = ProgressBar.Maximum
