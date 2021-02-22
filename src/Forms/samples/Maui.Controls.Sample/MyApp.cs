@@ -44,7 +44,7 @@ namespace Maui.Controls.Sample
 
 		void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
 		{
-			services.AddLogging();
+			//services.AddLogging();
 			services.AddSingleton<ITextService, TextService>();
 			services.AddTransient<MainPageViewModel>();
 			services.AddTransient<MainPage>();
