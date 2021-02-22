@@ -25,6 +25,9 @@ namespace Xamarin.Platform
 
 			window.HandlersContext = new HandlersContext(MauiApp.Current.Services);
 
+			//Hack for now we set this on the App Static but this should be on IFrameworkElement
+			App.Current.SetHandlerContext(window.HandlersContext);
+
 			var content = window.Page.View;
 
 			var uiWindow = new UIWindow
