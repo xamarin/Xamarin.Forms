@@ -9,7 +9,9 @@ using Maui.Controls.Sample.Services;
 using Maui.Controls.Sample.ViewModel;
 using Xamarin.Platform;
 using Xamarin.Platform.Hosting;
+#if __ANDROID__
 using Maui.Controls.Compatibility;
+#endif
 
 namespace Maui.Controls.Sample
 {
@@ -33,7 +35,12 @@ namespace Maui.Controls.Sample
 										   {"Logging:LogLevel:Default", "Warning"}
 										});
 				   })
-				   .ConfigureServices(ConfigureServices);
+				   .ConfigureServices(ConfigureServices)
+#if __ANDROID__
+				   //.RegisterCompatibilityRenderer<Xamarin.Forms.Button, Xamarin.Forms.Button, Xamarin.Forms.Platform.Android.FastRenderers.ButtonRenderer>()
+#endif
+				   ;
+			;
 			return builder;
 		}
 
