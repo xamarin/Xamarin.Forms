@@ -14,10 +14,5 @@ namespace Xamarin.Platform
 		{
 			nativeProgressBar.ProgressTintColor = progress.ProgressColor == Color.Default ? null : progress.ProgressColor.ToNative();
 		}
-
-		public static void UpdateBackgroundColor(this UIProgressView nativeProgressBar, IProgress progress)
-		{
-			nativeProgressBar.TrackTintColor = progress.BackgroundColor != Color.Default ? progress.BackgroundColor.ToNative() : null;
-		}
 	}
 }

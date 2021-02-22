@@ -5,10 +5,7 @@
 		public static PropertyMapper<IProgress, ProgressBarHandler> ProgressMapper = new PropertyMapper<IProgress, ProgressBarHandler>(ViewHandler.ViewMapper)
 		{
 			[nameof(IProgress.Progress)] = MapProgress,
-			[nameof(IProgress.ProgressColor)] = MapProgressColor,
-#if __IOS__
-			[nameof(IView.BackgroundColor)] = MapBackgroundColor
-#endif
+			[nameof(IProgress.ProgressColor)] = MapProgressColor
 		};
 
 		public static void MapProgress(ProgressBarHandler handler, IProgress progress)
@@ -21,12 +18,6 @@
 		{
 			ViewHandler.CheckParameters(handler, progress);
 			handler.TypedNativeView?.UpdateProgressColor(progress);
-		}
-
-		public static void MapBackgroundColor(ProgressBarHandler handler, IProgress progress)
-		{
-			ViewHandler.CheckParameters(handler, progress);
-			handler.TypedNativeView?.UpdateBackgroundColor(progress);
 		}
 
 		public ProgressBarHandler() : base(ProgressMapper)
