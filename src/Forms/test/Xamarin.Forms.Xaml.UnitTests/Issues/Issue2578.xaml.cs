@@ -27,6 +27,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Device.PlatformServices = new MockPlatformServices();
 			}
 
+			[Ignore("[Bug] NamedSizes don't work in triggers: https://github.com/xamarin/Xamarin.Forms/issues/13831")]
 			[TestCase(false)]
 			[TestCase(true)]
 			public void MultipleTriggers(bool useCompiledXaml)
