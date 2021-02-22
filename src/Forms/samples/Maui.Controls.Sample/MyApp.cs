@@ -9,6 +9,7 @@ using Maui.Controls.Sample.Services;
 using Maui.Controls.Sample.ViewModel;
 using Xamarin.Platform;
 using Xamarin.Platform.Hosting;
+using Maui.Controls.Compatibility;
 
 namespace Maui.Controls.Sample
 {
