@@ -84,3 +84,5 @@ WriteDevopsVariables.csproj
 /tools
 *.svclog
 launchSettings.json
+AppPackages/
+BundleArtifacts/
