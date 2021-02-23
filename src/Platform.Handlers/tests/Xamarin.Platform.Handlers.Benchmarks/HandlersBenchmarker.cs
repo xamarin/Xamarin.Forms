@@ -31,7 +31,7 @@ namespace Xamarin.Platform.Handlers.Benchmarks
 		[IterationSetup(Target = nameof(RegisterHandlerUsingDI))]
 		public void GlobalSetupForDiWithHandlersRegistration()
 		{
-			_builder = new AppBuilder();
+			_builder = new AppHostBuilder();
 		}
 
 		[GlobalCleanup(Target = nameof(GetHandlerUsingDI))]
