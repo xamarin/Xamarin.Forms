@@ -8,45 +8,45 @@ using System.Text;
 
 namespace Xamarin.Forms.Resizetizer.NT.Tests
 {
-    public abstract class MSBuildTaskTestFixture<TTask> : IDisposable, IBuildEngine where TTask : Microsoft.Build.Framework.ITask
-    {
-        protected readonly string DestinationDirectory;
-        protected readonly TestLogger Logger;
+	public abstract class MSBuildTaskTestFixture<TTask> : IDisposable, IBuildEngine where TTask : Microsoft.Build.Framework.ITask
+	{
+		protected readonly string DestinationDirectory;
+		protected readonly TestLogger Logger;
 
-        protected List<BuildErrorEventArgs> LogErrorEvents = new List<BuildErrorEventArgs>();
-        protected List<BuildMessageEventArgs> LogMessageEvents = new List<BuildMessageEventArgs>();
-        protected List<CustomBuildEventArgs> LogCustomEvents = new List<CustomBuildEventArgs>();
-        protected List<BuildWarningEventArgs> LogWarningEvents = new List<BuildWarningEventArgs>();
+		protected List<BuildErrorEventArgs> LogErrorEvents = new List<BuildErrorEventArgs>();
+		protected List<BuildMessageEventArgs> LogMessageEvents = new List<BuildMessageEventArgs>();
+		protected List<CustomBuildEventArgs> LogCustomEvents = new List<CustomBuildEventArgs>();
+		protected List<BuildWarningEventArgs> LogWarningEvents = new List<BuildWarningEventArgs>();
 
-        public MSBuildTaskTestFixture(string testContextDirectory = null)
-        {
-            DestinationDirectory = testContextDirectory ?? Path.Combine(Path.GetTempPath(), GetType().Name, Path.GetRandomFileName());
-        }
+		public MSBuildTaskTestFixture(string testContextDirectory = null)
+		{
+			DestinationDirectory = testContextDirectory ?? Path.Combine(Path.GetTempPath(), GetType().Name, Path.GetRandomFileName());
+		}
 
-        void IDisposable.Dispose()
-        {
-            if (Directory.Exists(DestinationDirectory))
-                Directory.Delete(DestinationDirectory, true);
-        }
+		void IDisposable.Dispose()
+		{
+			if (Directory.Exists(DestinationDirectory))
+				Directory.Delete(DestinationDirectory, true);
+		}
 
-        // IBuildEngine
+		// IBuildEngine
 
-        bool IBuildEngine.ContinueOnError => false;
+		bool IBuildEngine.ContinueOnError => false;
 
-        int IBuildEngine.LineNumberOfTaskNode => 0;
+		int IBuildEngine.LineNumberOfTaskNode => 0;
 
-        int IBuildEngine.ColumnNumberOfTaskNode => 0;
+		int IBuildEngine.ColumnNumberOfTaskNode => 0;
 
-        string IBuildEngine.ProjectFileOfTaskNode => $"Fake{GetType().Name}Project.proj";
+		string IBuildEngine.ProjectFileOfTaskNode => $"Fake{GetType().Name}Project.proj";
 
-        bool IBuildEngine.BuildProjectFile(string projectFileName, string[] targetNames, IDictionary globalProperties, IDictionary targetOutputs) => throw new NotImplementedException();
+		bool IBuildEngine.BuildProjectFile(string projectFileName, string[] targetNames, IDictionary globalProperties, IDictionary targetOutputs) => throw new NotImplementedException();
 
-        void IBuildEngine.LogCustomEvent(CustomBuildEventArgs e) => LogCustomEvents.Add(e);
+		void IBuildEngine.LogCustomEvent(CustomBuildEventArgs e) => LogCustomEvents.Add(e);
 
-        void IBuildEngine.LogErrorEvent(BuildErrorEventArgs e) => LogErrorEvents.Add(e);
+		void IBuildEngine.LogErrorEvent(BuildErrorEventArgs e) => LogErrorEvents.Add(e);
 
-        void IBuildEngine.LogMessageEvent(BuildMessageEventArgs e) => LogMessageEvents.Add(e);
+		void IBuildEngine.LogMessageEvent(BuildMessageEventArgs e) => LogMessageEvents.Add(e);
 
-        void IBuildEngine.LogWarningEvent(BuildWarningEventArgs e) => LogWarningEvents.Add(e);
-    }
+		void IBuildEngine.LogWarningEvent(BuildWarningEventArgs e) => LogWarningEvents.Add(e);
+	}
 }

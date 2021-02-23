@@ -10,66 +10,66 @@ using System.Text.RegularExpressions;
 
 namespace Xamarin.Forms.Resizetizer.NT
 {
-    public class CreatePartialInfoPlistTask : AsyncTask
-    {
-        public ITaskItem[] CustomFonts { get; set; }
+	public class CreatePartialInfoPlistTask : AsyncTask
+	{
+		public ITaskItem[] CustomFonts { get; set; }
 
-        [Required]
-        public string IntermediateOutputPath { get; set; }
+		[Required]
+		public string IntermediateOutputPath { get; set; }
 
-        public string PlistName { get;set; }
-        
-        [Output]
-        public ITaskItem[] PlistFiles { get; set; }
+		public string PlistName { get;set; }
+		
+		[Output]
+		public ITaskItem[] PlistFiles { get; set; }
 
-        const string plistHeader = 
+		const string plistHeader = 
 @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <!DOCTYPE plist PUBLIC ""-//Apple//DTD PLIST 1.0//EN"" ""http://www.apple.com/DTDs/PropertyList-1.0.dtd"">
 <plist version=""1.0"">
 <dict>";
-        const string plistFooter = @"
+		const string plistFooter = @"
 </dict>
 </plist>";
 
-        public override bool Execute()
-        {
-            System.Threading.Tasks.Task.Run(() =>
-            {
-                try
-                {
-                    var plistFilename = Path.Combine(IntermediateOutputPath, PlistName ?? "PartialInfo.plist");
+		public override bool Execute()
+		{
+			System.Threading.Tasks.Task.Run(() =>
+			{
+				try
+				{
+					var plistFilename = Path.Combine(IntermediateOutputPath, PlistName ?? "PartialInfo.plist");
 
-                    using (var f = File.CreateText(plistFilename))
-                    {
-                        f.WriteLine(plistHeader);
+					using (var f = File.CreateText(plistFilename))
+					{
+						f.WriteLine(plistHeader);
 
-                        f.WriteLine("  <key>UIAppFonts</key>");
-                        f.WriteLine("  <array>");
+						f.WriteLine("  <key>UIAppFonts</key>");
+						f.WriteLine("  <array>");
 
-                        foreach (var font in CustomFonts)
-                        {
-                            var fontFile = new FileInfo(font.ItemSpec);
+						foreach (var font in CustomFonts)
+						{
+							var fontFile = new FileInfo(font.ItemSpec);
 
-                            f.WriteLine("    <string>" + fontFile.Name + "</string>");
-                        }
+							f.WriteLine("	<string>" + fontFile.Name + "</string>");
+						}
 
-                        f.WriteLine("  </array>");
-                        f.WriteLine(plistFooter);
-                    }
+						f.WriteLine("  </array>");
+						f.WriteLine(plistFooter);
+					}
 
-                    PlistFiles = new[] { new TaskItem(plistFilename) };
-                }
-                catch (Exception ex)
-                {
-                    Log.LogErrorFromException(ex);
-                }
-                finally
-                {
-                    Complete();
-                }
-            });
+					PlistFiles = new[] { new TaskItem(plistFilename) };
+				}
+				catch (Exception ex)
+				{
+					Log.LogErrorFromException(ex);
+				}
+				finally
+				{
+					Complete();
+				}
+			});
 
-            return base.Execute();
-        }
-    }
+			return base.Execute();
+		}
+	}
 }

@@ -1,7 +1,7 @@
 ﻿namespace Xamarin.Forms.Resizetizer.NT
 {
-    public interface ILogger
-    {
-        void Log(string message);
-    }
+	public interface ILogger
+	{
+		void Log(string message);
+	}
 }
