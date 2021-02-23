@@ -17,10 +17,7 @@ namespace Xamarin.Platform
 {
 	public class MauiAppCompatActivity : AppCompatActivity
 	{
-
-#pragma warning disable CS8765 // Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
-		protected override void OnCreate(Bundle savedInstanceState)
-#pragma warning restore CS8765 // Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
+		protected override void OnCreate(Bundle? savedInstanceState)
 		{
 			base.OnCreate(savedInstanceState);
 
