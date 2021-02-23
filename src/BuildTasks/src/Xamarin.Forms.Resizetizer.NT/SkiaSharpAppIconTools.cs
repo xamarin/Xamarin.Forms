@@ -3,109 +3,108 @@ using System.Diagnostics;
 using System.IO;
 using SkiaSharp;
 
-namespace Resizetizer
+namespace Xamarin.Forms.Resizetizer.NT
 {
-	internal class SkiaSharpAppIconTools
-	{
-		public SkiaSharpAppIconTools(SharedImageInfo info, ILogger logger)
-		{
-			Info = info;
-			Logger = logger;
+    internal class SkiaSharpAppIconTools
+    {
+        public SkiaSharpAppIconTools(SharedImageInfo info, ILogger logger)
+        {
+            Info = info;
+            Logger = logger;
 
-			AppIconName = Path.GetFileNameWithoutExtension(info.Filename);
-			
+            AppIconName = info.OutputName;
 
-			hasForeground = File.Exists(info.ForegroundFilename);
+            hasForeground = File.Exists(info.ForegroundFilename);
 
-			if (hasForeground)
-				foregroundTools = SkiaSharpTools.Create(info.ForegroundIsVector, info.ForegroundFilename, null, info.TintColor, logger);
+            if (hasForeground)
+                foregroundTools = SkiaSharpTools.Create(info.ForegroundIsVector, info.ForegroundFilename, null, info.TintColor, logger);
 
-			backgroundTools = SkiaSharpTools.Create(info.IsVector, info.Filename, null, null, logger);
+            backgroundTools = SkiaSharpTools.Create(info.IsVector, info.Filename, null, null, logger);
 
-			backgroundOriginalSize = backgroundTools.GetOriginalSize();
+            backgroundOriginalSize = backgroundTools.GetOriginalSize();
 
-			if (hasForeground)
-				foregroundOriginalSize = foregroundTools.GetOriginalSize();
-		}
+            if (hasForeground)
+                foregroundOriginalSize = foregroundTools.GetOriginalSize();
+        }
 
-		bool hasForeground = false;
+        bool hasForeground = false;
 
-		SkiaSharpTools backgroundTools;
-		SkiaSharpTools foregroundTools;
+        SkiaSharpTools backgroundTools;
+        SkiaSharpTools foregroundTools;
 
-		SKSize foregroundOriginalSize;
-		SKSize backgroundOriginalSize;
+        SKSize foregroundOriginalSize;
+        SKSize backgroundOriginalSize;
 
-		public SharedImageInfo Info { get; }
-		public ILogger Logger { get; }
+        public SharedImageInfo Info { get; }
+        public ILogger Logger { get; }
 
-		public string AppIconName { get; }
+        public string AppIconName { get; }
 
-		public ResizedImageInfo Resize(DpiPath dpi, string destination)
-		{
-			var sw = new Stopwatch();
-			sw.Start();
+        public ResizedImageInfo Resize(DpiPath dpi, string destination)
+        {
+            var sw = new Stopwatch();
+            sw.Start();
 
-			var (bgScaledSize, bgScale) = backgroundTools.GetScaledSize(backgroundOriginalSize, dpi);
+            var (bgScaledSize, bgScale) = backgroundTools.GetScaledSize(backgroundOriginalSize, dpi);
 
-			// Allocate
-			using (var tempBitmap = new SKBitmap(bgScaledSize.Width, bgScaledSize.Height))
-			{
-				// Draw (copy)
-				using (var canvas = new SKCanvas(tempBitmap))
-				{
-					canvas.Clear(SKColors.Transparent);
-					canvas.Save();
-					canvas.Scale(bgScale, bgScale);
+            // Allocate
+            using (var tempBitmap = new SKBitmap(bgScaledSize.Width, bgScaledSize.Height))
+            {
+                // Draw (copy)
+                using (var canvas = new SKCanvas(tempBitmap))
+                {
+                    canvas.Clear(SKColors.Transparent);
+                    canvas.Save();
+                    canvas.Scale(bgScale, bgScale);
 
-					backgroundTools.DrawUnscaled(canvas, bgScale);
-					canvas.Restore();
+                    backgroundTools.DrawUnscaled(canvas, bgScale);
+                    canvas.Restore();
 
-					if (hasForeground)
-					{
-						var userFgScale = (float)Info.ForegroundScale;
+                    if (hasForeground)
+                    {
+                        var userFgScale = (float)Info.ForegroundScale;
 
-						// get the ratio to make the foreground fill the background
-						var fitRatio = bgScaledSize.Width / foregroundOriginalSize.Width;
+                        // get the ratio to make the foreground fill the background
+                        var fitRatio = bgScaledSize.Width / foregroundOriginalSize.Width;
 
-						// calculate the scale for the foreground to fit the background exactly
-						var (fgScaledSize, fgScale) = foregroundTools.GetScaledSize(foregroundOriginalSize, (decimal)fitRatio);
+                        // calculate the scale for the foreground to fit the background exactly
+                        var (fgScaledSize, fgScale) = foregroundTools.GetScaledSize(foregroundOriginalSize, (decimal)fitRatio);
 
-						Logger.Log("dpi.Size: " + dpi.Size);
-						Logger.Log("dpi.Scale: " + dpi.Scale);
-						Logger.Log("bgScaledSize: " + bgScaledSize);
-						Logger.Log("bgScale: " + bgScale);
-						Logger.Log("foregroundOriginalSize: " + foregroundOriginalSize);
-						Logger.Log("fgScaledSize: " + fgScaledSize);
-						Logger.Log("fgScale: " + fgScale);
-						Logger.Log("userFgScale: " + userFgScale);
+                        //Logger.Log("\tdpi.Size: " + dpi.Size);
+                        //Logger.Log("\tdpi.Scale: " + dpi.Scale);
+                        //Logger.Log("\tbgScaledSize: " + bgScaledSize);
+                        //Logger.Log("\tbgScale: " + bgScale);
+                        //Logger.Log("\tforegroundOriginalSize: " + foregroundOriginalSize);
+                        //Logger.Log("\tfgScaledSize: " + fgScaledSize);
+                        //Logger.Log("\tfgScale: " + fgScale);
+                        //Logger.Log("\tuserFgScale: " + userFgScale);
 
-						// now work out the center as if the canvas was exactly the same size as the foreground
-						var fgScaledSizeCenterX = foregroundOriginalSize.Width / 2;
-						var fgScaledSizeCenterY = foregroundOriginalSize.Height / 2;
+                        // now work out the center as if the canvas was exactly the same size as the foreground
+                        var fgScaledSizeCenterX = foregroundOriginalSize.Width / 2;
+                        var fgScaledSizeCenterY = foregroundOriginalSize.Height / 2;
 
-						Logger.Log("fgScaledSizeCenterX: " + fgScaledSizeCenterX);
-						Logger.Log("fgScaledSizeCenterY: " + fgScaledSizeCenterY);
+                        //Logger.Log("\tfgScaledSizeCenterX: " + fgScaledSizeCenterX);
+                        //Logger.Log("\tfgScaledSizeCenterY: " + fgScaledSizeCenterY);
 
-						// scale so the forground is the same size as the background
-						canvas.Scale(fgScale, fgScale);
+                        // scale so the forground is the same size as the background
+                        canvas.Scale(fgScale, fgScale);
 
-						// scale to the user scale, centering
-						canvas.Scale(userFgScale, userFgScale, fgScaledSizeCenterX, fgScaledSizeCenterY);
+                        // scale to the user scale, centering
+                        canvas.Scale(userFgScale, userFgScale, fgScaledSizeCenterX, fgScaledSizeCenterY);
 
-						foregroundTools.DrawUnscaled(canvas, fgScale * userFgScale);
-					}
-				}
+                        foregroundTools.DrawUnscaled(canvas, fgScale * userFgScale);
+                    }
+                }
 
-				// Save (encode)
-				using var wrapper = File.Create(destination);
-				tempBitmap.Encode(wrapper, SKEncodedImageFormat.Png, 100);
-			}
+                // Save (encode)
+                using var wrapper = File.Create(destination);
+                tempBitmap.Encode(wrapper, SKEncodedImageFormat.Png, 100);
+            }
 
-			sw.Stop();
-			Logger?.Log($"Save Image took {sw.ElapsedMilliseconds}ms");
+            sw.Stop();
+            Logger?.Log($"Save app icon took {sw.ElapsedMilliseconds}ms ({destination})");
 
-			return new ResizedImageInfo { Dpi = dpi, Filename = destination };
-		}
-	}
+            return new ResizedImageInfo { Dpi = dpi, Filename = destination };
+        }
+    }
 }

@@ -1,30 +1,43 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Text.RegularExpressions;
 
-namespace Resizetizer
+namespace Xamarin.Forms.Resizetizer.NT
 {
-	internal class SharedImageInfo
-	{
-		public string Filename { get; set; }
+    internal class SharedImageInfo
+    {
+        public string Alias { get; set; }
 
-		public Size? BaseSize { get; set; }
+        public string Filename { get; set; }
 
-		public bool Resize { get; set; } = true;
+        public string OutputName =>
+            string.IsNullOrWhiteSpace(Alias)
+                ? Path.GetFileNameWithoutExtension(Filename)
+                : Path.GetFileNameWithoutExtension(Alias);
 
-		public Color? TintColor { get; set; }
+        public string OutputExtension =>
+            string.IsNullOrWhiteSpace(Alias) || !Path.HasExtension(Alias)
+                ? Path.GetExtension(Filename)
+                : Path.GetExtension(Alias);
 
-		public bool IsVector => IsVectorFilename(Filename);
+        public Size? BaseSize { get; set; }
 
-		public bool IsAppIcon { get; set; }
+        public bool Resize { get; set; } = true;
 
-		public string ForegroundFilename { get; set; }
+        public Color? TintColor { get; set; }
 
-		public bool ForegroundIsVector => IsVectorFilename(ForegroundFilename);
+        public bool IsVector => IsVectorFilename(Filename);
 
-		public double ForegroundScale { get; set; } = 1.0;
+        public bool IsAppIcon { get; set; }
 
-		private static bool IsVectorFilename(string filename)
-			=> Path.GetExtension(filename)?.Equals(".svg", StringComparison.OrdinalIgnoreCase) ?? false;
-	}
+        public string ForegroundFilename { get; set; }
+
+        public bool ForegroundIsVector => IsVectorFilename(ForegroundFilename);
+
+        public double ForegroundScale { get; set; } = 1.0;
+
+        private static bool IsVectorFilename(string filename)
+            => Path.GetExtension(filename)?.Equals(".svg", StringComparison.OrdinalIgnoreCase) ?? false;
+    }
 }

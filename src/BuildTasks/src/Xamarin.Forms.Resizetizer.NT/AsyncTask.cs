@@ -5,7 +5,7 @@ using Microsoft.Build.Framework;
 using System.Threading;
 using System.Collections;
 
-namespace Resizetizer
+namespace Xamarin.Forms.Resizetizer.NT
 {
     /// <summary>
     /// Base class for tasks that need long-running cancellable asynchronous tasks 

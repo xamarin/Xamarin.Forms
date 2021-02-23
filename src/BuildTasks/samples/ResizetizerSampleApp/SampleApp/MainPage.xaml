@@ -6,16 +6,16 @@
              mc:Ignorable="d"
              x:Class="SampleApp.MainPage">
 
-	<StackLayout BackgroundColor="Black">
-		<Grid>
-			<!-- Place new controls here -->
-			<Label Text="Welcome to Xamarin.Forms!" 
-			   HorizontalOptions="Center"
-			   VerticalOptions="CenterAndExpand" TextColor="White" />
+    <StackLayout BackgroundColor="Black">
+        <Grid>
+            <!-- Place new controls here -->
+            <Label Text="Welcome to Xamarin.Forms!" 
+               HorizontalOptions="Center"
+               VerticalOptions="CenterAndExpand" TextColor="White" />
 
-			<Image Source="loginbg.png" HeightRequest="123" WidthRequest="105" />
-			<Image Source="camera.png" HeightRequest="44" WidthRequest="44" />
-		</Grid>
-	</StackLayout>
+            <Image Source="loginbg.png" HeightRequest="123" WidthRequest="105" />
+            <Image Source="camera.png" HeightRequest="44" WidthRequest="44" />
+        </Grid>
+    </StackLayout>
 
 </ContentPage>

@@ -2,32 +2,32 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Resizetizer
+namespace Xamarin.Forms.Resizetizer.NT
 {
-	internal class AndroidAdaptiveIconGenerator
-	{
-		public AndroidAdaptiveIconGenerator(SharedImageInfo info, string appIconName, string intermediateOutputPath, ILogger logger)
-		{
-			Info = info;
-			Logger = logger;
-			IntermediateOutputPath = intermediateOutputPath;
-			AppIconName = appIconName;
-		}
+    internal class AndroidAdaptiveIconGenerator
+    {
+        public AndroidAdaptiveIconGenerator(SharedImageInfo info, string appIconName, string intermediateOutputPath, ILogger logger)
+        {
+            Info = info;
+            Logger = logger;
+            IntermediateOutputPath = intermediateOutputPath;
+            AppIconName = appIconName;
+        }
 
-		public SharedImageInfo Info { get; private set; }
-		public string IntermediateOutputPath { get; private set; }
-		public ILogger Logger { get; private set; }
+        public SharedImageInfo Info { get; private set; }
+        public string IntermediateOutputPath { get; private set; }
+        public ILogger Logger { get; private set; }
 
-		public string AppIconName { get; }
+        public string AppIconName { get; }
 
-		const string AdaptiveIconDrawableXml =
+        const string AdaptiveIconDrawableXml =
 @"<?xml version=""1.0"" encoding=""utf-8""?>
 <adaptive-icon xmlns:android=""http://schemas.android.com/apk/res/android"">
-	<background android:drawable=""@drawable/{name}_background""/>
-	<foreground android:drawable=""@drawable/{name}_foreground""/>
+    <background android:drawable=""@drawable/{name}_background""/>
+    <foreground android:drawable=""@drawable/{name}_foreground""/>
 </adaptive-icon>";
 
-		const string EmptyVectorDrawable =
+        const string EmptyVectorDrawable =
 @"<vector xmlns:android=""http://schemas.android.com/apk/res/android"" xmlns:aapt=""http://schemas.android.com/aapt""
     android:viewportWidth=""1024""
     android:viewportHeight=""1024""
@@ -35,70 +35,70 @@ namespace Resizetizer
     android:height=""1024dp"" />
 ";
 
-		public IEnumerable<ResizedImageInfo> Generate()
-		{
-			var results = new List<ResizedImageInfo>();
+        public IEnumerable<ResizedImageInfo> Generate()
+        {
+            var results = new List<ResizedImageInfo>();
 
-			var fullIntermediateOutputPath = new DirectoryInfo(IntermediateOutputPath);
+            var fullIntermediateOutputPath = new DirectoryInfo(IntermediateOutputPath);
 
-			var backgroundFile = Info.Filename;
-			var backgroundIsVector = Info.IsVector;
+            var backgroundFile = Info.Filename;
+            var backgroundIsVector = Info.IsVector;
 
-			var foregroundFile = Info.ForegroundFilename;
-			var foregroundIsVector = Info.ForegroundIsVector;
-			var foregroundExists = File.Exists(foregroundFile);
+            var foregroundFile = Info.ForegroundFilename;
+            var foregroundIsVector = Info.ForegroundIsVector;
+            var foregroundExists = File.Exists(foregroundFile);
 
-			Logger.Log("Looking for Foreground File: " + foregroundFile);
-			
-			// If we have vectors we can emit an adaptive icon
-			if (backgroundIsVector && (foregroundIsVector || !foregroundExists))
-			{
-				var backgroundDestination = Path.Combine(fullIntermediateOutputPath.FullName, "drawable-v24", AppIconName + "_background.xml");
-				var fileInfo = new FileInfo(backgroundDestination);
-				if (!fileInfo.Directory.Exists)
-					fileInfo.Directory.Create();
+            Logger.Log("Looking for Foreground File: " + foregroundFile);
+            
+            // If we have vectors we can emit an adaptive icon
+            if (backgroundIsVector && (foregroundIsVector || !foregroundExists))
+            {
+                var backgroundDestination = Path.Combine(fullIntermediateOutputPath.FullName, "drawable-v24", AppIconName + "_background.xml");
+                var fileInfo = new FileInfo(backgroundDestination);
+                if (!fileInfo.Directory.Exists)
+                    fileInfo.Directory.Create();
 
-				Logger.Log("Converting Background SVG to Android Drawable Vector: " + backgroundFile);
-				var bgConvertErr = Svg2VectorDrawable.Svg2Vector.Convert(backgroundFile, backgroundDestination);
-				if (!string.IsNullOrEmpty(bgConvertErr))
-					throw new Svg2AndroidDrawableConversionException(bgConvertErr, backgroundFile);
+                Logger.Log("Converting Background SVG to Android Drawable Vector: " + backgroundFile);
+                var bgConvertErr = Svg2VectorDrawable.Svg2Vector.Convert(backgroundFile, backgroundDestination);
+                if (!string.IsNullOrEmpty(bgConvertErr))
+                    throw new Svg2AndroidDrawableConversionException(bgConvertErr, backgroundFile);
 
-				var foregroundDestination = Path.Combine(fullIntermediateOutputPath.FullName, "drawable", AppIconName + "_foreground.xml");
-				fileInfo = new FileInfo(foregroundDestination);
-				if (!fileInfo.Directory.Exists)
-					fileInfo.Directory.Create();
+                var foregroundDestination = Path.Combine(fullIntermediateOutputPath.FullName, "drawable", AppIconName + "_foreground.xml");
+                fileInfo = new FileInfo(foregroundDestination);
+                if (!fileInfo.Directory.Exists)
+                    fileInfo.Directory.Create();
 
-				// Convert to android vector drawable, or use a blank one if it doesn't exist
-				if (foregroundExists)
-				{
-					Logger.Log("Converting Foreground SVG to Android Drawable Vector: " + foregroundFile);
-					var fgConvertErr = Svg2VectorDrawable.Svg2Vector.Convert(foregroundFile, foregroundDestination);
-					if (!string.IsNullOrEmpty(fgConvertErr))
-						throw new Svg2AndroidDrawableConversionException(fgConvertErr, foregroundFile);
-				}
-				else
-					File.WriteAllText(foregroundDestination, EmptyVectorDrawable);
+                // Convert to android vector drawable, or use a blank one if it doesn't exist
+                if (foregroundExists)
+                {
+                    Logger.Log("Converting Foreground SVG to Android Drawable Vector: " + foregroundFile);
+                    var fgConvertErr = Svg2VectorDrawable.Svg2Vector.Convert(foregroundFile, foregroundDestination);
+                    if (!string.IsNullOrEmpty(fgConvertErr))
+                        throw new Svg2AndroidDrawableConversionException(fgConvertErr, foregroundFile);
+                }
+                else
+                    File.WriteAllText(foregroundDestination, EmptyVectorDrawable);
 
-				var adaptiveIconXmlStr = AdaptiveIconDrawableXml.Replace("{name}", AppIconName);
+                var adaptiveIconXmlStr = AdaptiveIconDrawableXml.Replace("{name}", AppIconName);
 
-				var adaptiveIconDestination = Path.Combine(fullIntermediateOutputPath.FullName, "mipmap-anydpi-v26", AppIconName + ".xml");
-				var adaptiveIconRoundDestination = Path.Combine(fullIntermediateOutputPath.FullName, "mipmap-anydpi-v26", AppIconName + "_round.xml");
+                var adaptiveIconDestination = Path.Combine(fullIntermediateOutputPath.FullName, "mipmap-anydpi-v26", AppIconName + ".xml");
+                var adaptiveIconRoundDestination = Path.Combine(fullIntermediateOutputPath.FullName, "mipmap-anydpi-v26", AppIconName + "_round.xml");
 
-				fileInfo = new FileInfo(adaptiveIconDestination);
-				if (!fileInfo.Directory.Exists)
-					fileInfo.Directory.Create();
+                fileInfo = new FileInfo(adaptiveIconDestination);
+                if (!fileInfo.Directory.Exists)
+                    fileInfo.Directory.Create();
 
-				// Write out the adaptive icon xml drawables
-				File.WriteAllText(adaptiveIconDestination, adaptiveIconXmlStr);
-				File.WriteAllText(adaptiveIconRoundDestination, adaptiveIconXmlStr);
+                // Write out the adaptive icon xml drawables
+                File.WriteAllText(adaptiveIconDestination, adaptiveIconXmlStr);
+                File.WriteAllText(adaptiveIconRoundDestination, adaptiveIconXmlStr);
 
-				results.Add(new ResizedImageInfo { Dpi = new DpiPath("drawable-v24", 1, "_background"), Filename = backgroundDestination });
-				results.Add(new ResizedImageInfo { Dpi = new DpiPath("drawable", 1, "_foreground"), Filename = foregroundDestination });
-				results.Add(new ResizedImageInfo { Dpi = new DpiPath("mipmap-anydpi-v26", 1), Filename = adaptiveIconDestination });
-				results.Add(new ResizedImageInfo { Dpi = new DpiPath("mipmap-anydpi-v26", 1, "_round"), Filename = adaptiveIconRoundDestination });
-			}
+                results.Add(new ResizedImageInfo { Dpi = new DpiPath("drawable-v24", 1, "_background"), Filename = backgroundDestination });
+                results.Add(new ResizedImageInfo { Dpi = new DpiPath("drawable", 1, "_foreground"), Filename = foregroundDestination });
+                results.Add(new ResizedImageInfo { Dpi = new DpiPath("mipmap-anydpi-v26", 1), Filename = adaptiveIconDestination });
+                results.Add(new ResizedImageInfo { Dpi = new DpiPath("mipmap-anydpi-v26", 1, "_round"), Filename = adaptiveIconRoundDestination });
+            }
 
-			return results;
-		}
-	}
+            return results;
+        }
+    }
 }

@@ -1,118 +1,108 @@
-﻿//using SixLabors.ImageSharp;
-//using SixLabors.ImageSharp.Processing;
-using System;
-using System.IO;
+﻿using System.IO;
 
-namespace Resizetizer
+namespace Xamarin.Forms.Resizetizer.NT
 {
-	internal class Resizer
-	{
-		public Resizer(SharedImageInfo info, string intermediateOutputPath, ILogger logger)
-		{
-			Info = info;
-			Logger = logger;
-			IntermediateOutputPath = intermediateOutputPath;
-		}
+    internal class Resizer
+    {
+        public Resizer(SharedImageInfo info, string intermediateOutputPath, ILogger logger)
+        {
+            Info = info;
+            Logger = logger;
+            IntermediateOutputPath = intermediateOutputPath;
+        }
 
-		public ILogger Logger { get; private set; }
-		public string IntermediateOutputPath { get; private set; }
+        public ILogger Logger { get; private set; }
 
-		public SharedImageInfo Info { get; private set; }
+        public string IntermediateOutputPath { get; private set; }
 
-		SkiaSharpTools tools;
+        public SharedImageInfo Info { get; private set; }
 
-		public string GetFileDestination(DpiPath dpi)
-			=> GetFileDestination(Info, dpi, IntermediateOutputPath);
+        SkiaSharpTools tools;
 
-		public static string GetFileDestination(SharedImageInfo info, DpiPath dpi, string intermediateOutputPath)
-		{
-			var name = Path.GetFileNameWithoutExtension(info.Filename);
-			var ext = Path.GetExtension(info.Filename);
+        public string GetFileDestination(DpiPath dpi)
+            => GetFileDestination(Info, dpi, IntermediateOutputPath);
 
-			var fullIntermediateOutputPath = new DirectoryInfo(intermediateOutputPath);
+        public static string GetFileDestination(SharedImageInfo info, DpiPath dpi, string intermediateOutputPath)
+        {
+            var fullIntermediateOutputPath = new DirectoryInfo(intermediateOutputPath);
 
-			var destination = Path.Combine(fullIntermediateOutputPath.FullName, dpi.Path, name + dpi.FileSuffix + ext);
+            var destination = Path.Combine(fullIntermediateOutputPath.FullName, dpi.Path, info.OutputName + dpi.FileSuffix + info.OutputExtension);
 
-			var fileInfo = new FileInfo(destination);
-			if (!fileInfo.Directory.Exists)
-				fileInfo.Directory.Create();
+            var fileInfo = new FileInfo(destination);
+            if (!fileInfo.Directory.Exists)
+                fileInfo.Directory.Create();
 
-			return destination;
-		}
+            return destination;
+        }
 
-		public static ResizedImageInfo CopyFile(SharedImageInfo info, DpiPath dpi, string intermediateOutputPath, string inputsFile, ILogger logger, bool isAndroid = false)
-		{
-			var destination = Resizer.GetFileDestination(info, dpi, intermediateOutputPath);
-			var androidVector = false;
+        public ResizedImageInfo CopyFile(DpiPath dpi, string inputsFile, bool isAndroid = false)
+        {
+            var destination = GetFileDestination(dpi);
+            var androidVector = false;
 
-			if (isAndroid && info.IsVector && !info.Resize)
-			{
-				// Update destination to be .xml file
-				destination = Path.ChangeExtension(info.Filename, ".xml");
-				androidVector = true;
-			}
+            if (isAndroid && Info.IsVector && !Info.Resize)
+            {
+                // Update destination to be .xml file
+                destination = Path.ChangeExtension(destination, ".xml");
+                androidVector = true;
+            }
 
-			if (IsUpToDate(info.Filename, destination, inputsFile, logger))
-				return new ResizedImageInfo { Filename = destination, Dpi = dpi };
-			
-			if (androidVector)
-			{
-				logger.Log("Converting SVG to Android Drawable Vector: " + info.Filename);
-				// Transform into an android vector drawable
-				var convertErr = Svg2VectorDrawable.Svg2Vector.Convert(info.Filename, destination);
-				if (!string.IsNullOrEmpty(convertErr))
-					throw new Svg2AndroidDrawableConversionException(convertErr, info.Filename);
-			}
-			else
-			{
-				// Otherwise just copy it straight
-				File.Copy(info.Filename, destination, true);
-			}
+            if (IsUpToDate(Info.Filename, destination, inputsFile, Logger))
+                return new ResizedImageInfo { Filename = destination, Dpi = dpi };
 
-			return new ResizedImageInfo { Filename = destination, Dpi = dpi };
-		}
+            if (androidVector)
+            {
+                Logger.Log("Converting SVG to Android Drawable Vector: " + Info.Filename);
 
-		static bool IsUpToDate(string inputFile, string outputFile, string inputsFile, ILogger logger)
-		{
-			var fileIn = new FileInfo(inputFile);
-			var fileOut = new FileInfo(outputFile);
-			var fileInputs = new FileInfo(inputsFile);
+                // Transform into an android vector drawable
+                var convertErr = Svg2VectorDrawable.Svg2Vector.Convert(Info.Filename, destination);
+                if (!string.IsNullOrEmpty(convertErr))
+                    throw new Svg2AndroidDrawableConversionException(convertErr, Info.Filename);
+            }
+            else
+            {
+                // Otherwise just copy it straight
+                File.Copy(Info.Filename, destination, true);
+            }
 
-			if (fileIn.Exists && fileOut.Exists && fileInputs.Exists
-				&& fileIn.LastWriteTimeUtc <= fileOut.LastWriteTimeUtc
-				&& fileInputs.LastWriteTimeUtc <= fileOut.LastWriteTimeUtc)
-			{
-				logger.Log($"Skipping '{inputFile}' as output '{outputFile}' is already up to date.");
-				return true;
-			}
+            return new ResizedImageInfo { Filename = destination, Dpi = dpi };
+        }
 
-			return false;
-		}
+        static bool IsUpToDate(string inputFile, string outputFile, string inputsFile, ILogger logger)
+        {
+            var fileIn = new FileInfo(inputFile);
+            var fileOut = new FileInfo(outputFile);
+            var fileInputs = new FileInfo(inputsFile);
 
-		public ResizedImageInfo Resize(DpiPath dpi, string inputsFile)
-		{
-			var destination = GetFileDestination(dpi);
+            if (fileIn.Exists && fileOut.Exists && fileInputs.Exists
+                && fileIn.LastWriteTimeUtc <= fileOut.LastWriteTimeUtc
+                && fileInputs.LastWriteTimeUtc <= fileOut.LastWriteTimeUtc)
+            {
+                logger.Log($"Skipping '{inputFile}' as output '{outputFile}' is already up to date.");
+                return true;
+            }
 
-			if (Info.IsVector)
-				destination = Path.ChangeExtension(destination, ".png");
+            return false;
+        }
 
-			if (IsUpToDate(Info.Filename, destination, inputsFile, Logger))
-				return new ResizedImageInfo { Filename = destination, Dpi = dpi };
+        public ResizedImageInfo Resize(DpiPath dpi, string inputsFile)
+        {
+            var destination = GetFileDestination(dpi);
 
-			if (tools == null)
-			{
-				tools = SkiaSharpTools.Create(Info.IsVector, Info.Filename, Info.BaseSize, Info.TintColor, Logger);
-			}
+            if (Info.IsVector)
+                destination = Path.ChangeExtension(destination, ".png");
 
-			tools.Resize(dpi, destination);
+            if (IsUpToDate(Info.Filename, destination, inputsFile, Logger))
+                return new ResizedImageInfo { Filename = destination, Dpi = dpi };
 
-			return new ResizedImageInfo { Filename = destination, Dpi = dpi };
-		}
-	}
+            if (tools == null)
+            {
+                tools = SkiaSharpTools.Create(Info.IsVector, Info.Filename, Info.BaseSize, Info.TintColor, Logger);
+            }
 
-	internal class ResizedImageInfo
-	{
-		public string Filename { get; set; }
-		public DpiPath Dpi { get; set; }
-	}
+            tools.Resize(dpi, destination);
+
+            return new ResizedImageInfo { Filename = destination, Dpi = dpi };
+        }
+    }
 }

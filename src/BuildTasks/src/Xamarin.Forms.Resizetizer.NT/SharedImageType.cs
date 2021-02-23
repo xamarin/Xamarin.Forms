@@ -1,11 +1,8 @@
-﻿//using SixLabors.ImageSharp;
-//using SixLabors.ImageSharp.Processing;
-
-namespace Resizetizer
+﻿namespace Xamarin.Forms.Resizetizer.NT
 {
-	public enum SharedImageType
-	{
-		Vector,
-		Bitmap
-	}
+    public enum SharedImageType
+    {
+        Vector,
+        Bitmap
+    }
 }
