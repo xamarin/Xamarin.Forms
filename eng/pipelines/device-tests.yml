@@ -30,8 +30,9 @@ resources:
           - dev/ci-device-tests
 
 stages:
-  - stage: android
-    displayName: Android
+
+  - stage: android_essentials
+    displayName: Essentials (Android)
     dependsOn: []
     jobs:
       - job: device_tests
@@ -43,12 +44,47 @@ stages:
           name:  $(macOSXVmPool)
           vmImage: $(macOSXVmImage)
         variables:
-          ANDROID_EMULATORS: "system-images;android-30;google_apis_playstore;x86"
+          devicetests.project: '$(System.DefaultWorkingDirectory)/src/Essentials/test/DeviceTests.Android/Xamarin.Essentials.DeviceTests.Android.csproj'
         strategy:
           matrix:
-            Essentials:
-              project: '$(System.DefaultWorkingDirectory)/src/Essentials/test/DeviceTests.Android/Xamarin.Essentials.DeviceTests.Android.csproj'
-            Handlers:
-              project: '$(System.DefaultWorkingDirectory)/src/Platform.Handlers/tests/Xamarin.Platform.Handlers.DeviceTests.Android/Xamarin.Platform.Handlers.DeviceTests.Android.csproj'
+            api_30:
+              devicetests.device: android-emulator-32_30
+            api_29:
+              devicetests.device: android-emulator-32_29
+            api_28:
+              devicetests.device: android-emulator-32_28
+            api_26:
+              devicetests.device: android-emulator-32_26
+            api_21:
+              devicetests.device: android-emulator-32_21
+        steps:
+          - template: common/device-tests-android.yml
+
+  - stage: android_handlers
+    displayName: Handlers (Android)
+    dependsOn: []
+    jobs:
+      - job: device_tests
+        workspace:
+          clean: all
+        displayName: Device Tests
+        timeoutInMinutes: 120
+        pool:
+          name:  $(macOSXVmPool)
+          vmImage: $(macOSXVmImage)
+        variables:
+          devicetests.project: '$(System.DefaultWorkingDirectory)/src/Platform.Handlers/tests/Xamarin.Platform.Handlers.DeviceTests.Android/Xamarin.Platform.Handlers.DeviceTests.Android.csproj'
+        strategy:
+          matrix:
+            api_30:
+              devicetests.device: android-emulator-32_30
+            api_29:
+              devicetests.device: android-emulator-32_29
+            api_28:
+              devicetests.device: android-emulator-32_28
+            api_26:
+              devicetests.device: android-emulator-32_26
+            api_21:
+              devicetests.device: android-emulator-32_21
         steps:
           - template: common/device-tests-android.yml

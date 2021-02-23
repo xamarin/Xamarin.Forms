@@ -22,7 +22,7 @@ steps:
       packageType: 'sdk'
 
   - pwsh: |
-      ./build.ps1 -Script eng/devices/android.cake --project="$(project)" --results="$(System.DefaultWorkingDirectory)/output/testlogs"
+      ./build.ps1 -Script eng/devices/android.cake --project="$(devicetests.project)" --device=$(devicetests.device) --results="$(System.DefaultWorkingDirectory)/output/testlogs"
     displayName: $(Agent.JobName)
 
   - task: PublishTestResults@2

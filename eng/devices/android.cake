@@ -78,7 +78,7 @@ Setup(context =>
 			else
 				DEVICE_ARCH = "arm64-v8a";
 		}
-		DEVICE_ID = $"system-images;android-{api};google_apis_playstore;{DEVICE_ARCH}";
+		DEVICE_ID = $"system-images;android-{api};google_apis;{DEVICE_ARCH}";
 
 		// we are not using a virtual device, so quit
 		if (!emulator)
