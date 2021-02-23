@@ -20,7 +20,7 @@ namespace Xamarin.Platform
 	{
 		internal Dictionary<Type, Type> _handler = new Dictionary<Type, Type>();
 		internal Dictionary<Type, Func<Type, IViewHandler>> _handlerFactories = new Dictionary<Type, Func<Type, IViewHandler>>();
-
+#nullable enable
 		public void Register<TView, TRender>()
 			where TView : TType
 			where TRender : TTypeRender
@@ -107,9 +107,8 @@ namespace Xamarin.Platform
 
 			throw new Exception($"Renderer Type not found  {type}");
 		}
-#nullable enable
+
 		TTypeRender? GetRenderer(Type type)
-#nullable disable
 		{
 			if (_handlerFactories.TryGetValue(type, out var handlerFactory))
 			{
@@ -141,4 +140,5 @@ namespace Xamarin.Platform
 			return default(TTypeRender);
 		}
 	}
+#nullable disable
 }
