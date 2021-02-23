@@ -9,7 +9,7 @@
     <PropertyGroup>
         <_ResizetizerTaskAssemblyName>Xamarin.Forms.Resizetizer.NT.dll</_ResizetizerTaskAssemblyName>
     </PropertyGroup>
-    
+
     <UsingTask
         AssemblyFile="$(_ResizetizerTaskAssemblyName)"
         TaskName="Xamarin.Forms.Resizetizer.NT.ResizetizeSharedImages" />
@@ -27,18 +27,18 @@
             $(CleanDependsOn);
             _CleanResizetizer;
         </CleanDependsOn>
-        
+
         <_ResizetizerInputsFile>$(IntermediateOutputPath)resizetizer.inputs</_ResizetizerInputsFile>
         <_SharedFontInputsFile>$(IntermediateOutputPath)sharedfont.inputs</_SharedFontInputsFile>
         <_SharedFontStampFile>$(IntermediateOutputPath)sharedfont.stamp</_SharedFontStampFile>
-        
+
         <ResizetizerIncludeSelfProject Condition="'$(ResizetizerIncludeSelfProject)' == ''">False</ResizetizerIncludeSelfProject>
 
         <_ResizetizerDefaultInvalidFilenamesErrorMessage>
             One or more invalid file names were detected.  File names must be lowercase, start and end with a letter character, and contain only alphanumeric characters or underscores: &#13;&#10;
         </_ResizetizerDefaultInvalidFilenamesErrorMessage>
     </PropertyGroup>
-    
+
     <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' != '.NETCoreApp'">
         <_ResizetizerIsNetCore>False</_ResizetizerIsNetCore>
         <_ResizetizerIsAndroidApp Condition="'$(TargetFrameworkIdentifier)' == 'MonoAndroid' And '$(AndroidApplication)' == 'True'">True</_ResizetizerIsAndroidApp>
@@ -46,7 +46,7 @@
         <_ResizetizerIsUWPApp Condition="'$(TargetPlatformIdentifier)' == 'UAP' And '$(OutputType)' == 'AppContainerExe'">True</_ResizetizerIsUWPApp>
         <_ResizetizerIsWPFApp Condition="'$(IsApplication)' == 'True' And '$(NuGetRuntimeIdentifier)' == 'win' And '$(TargetPlatformIdentifier)' == 'Windows'">True</_ResizetizerIsWPFApp>
     </PropertyGroup>
-    
+
     <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp'">
         <_ResizetizerIsNetCore>True</_ResizetizerIsNetCore>
         <_ResizetizerIsAndroidApp Condition="'$(TargetPlatformIdentifier)' == 'Android' And '$(OutputType)' == 'Exe'">True</_ResizetizerIsAndroidApp>
@@ -54,11 +54,11 @@
         <_ResizetizerIsUWPApp Condition="'$(TargetPlatformIdentifier)'=='UAP' And '$(OutputType)' == 'AppContainerExe'">True</_ResizetizerIsUWPApp>
         <_ResizetizerIsWPFApp Condition="'$(IsApplication)' == 'True' And '$(NuGetRuntimeIdentifier)' == 'win' And '$(TargetPlatformIdentifier)'=='Windows'">True</_ResizetizerIsWPFApp>
     </PropertyGroup>
-    
+
     <PropertyGroup Condition="'$(_ResizetizerIsAndroidApp)' == 'True' Or '$(_ResizetizerIsiOSApp)' == 'True' Or '$(_ResizetizerIsUWPApp)' == 'True' Or '$(_ResizetizerIsWPFApp)' == 'True'">
         <_ResizetizerIsCompatibleApp>True</_ResizetizerIsCompatibleApp>
     </PropertyGroup>
-    
+
     <!-- iOS -->
     <PropertyGroup Condition="'$(_ResizetizerIsiOSApp)' == 'True'">
         <ResizetizerPlatformType>ios</ResizetizerPlatformType>
@@ -247,7 +247,7 @@
             <BundleResource Include="@(_SharedFontBundleResource)" />
 
         </ItemGroup>
-        
+
         <!-- Create a partial info.plist for iOS -->
         <CreatePartialInfoPlistTask
             Condition="'$(_ResizetizerIsiOSApp)' == 'True' And '@(_SharedFontCopied)' != ''"
@@ -257,7 +257,7 @@
             <Output
                 TaskParameter="PListFiles"
                 ItemName="_SharedFontPListFiles" />
-                
+
         </CreatePartialInfoPlistTask>
 
         <!-- iOS - Partial Info.plist for font registration  -->
@@ -299,7 +299,7 @@
             Condition="'$(BuildSessionId)' != '' And '$(_ResizetizerIsiOSApp)' == 'True' And '$(IsMacEnabled)'=='true'"
             SessionId="$(BuildSessionId)"
             Files="@(_SharedFontBundleResource);@(_SharedFontPListFiles)" />
-        
+
         <!-- Touch/create our stamp file for outputs -->
         <Touch Files="$(_SharedFontStampFile)" AlwaysCreate="True" />
 
