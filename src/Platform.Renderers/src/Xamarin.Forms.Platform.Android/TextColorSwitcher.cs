@@ -1,6 +1,7 @@
 using System;
 using Android.Content.Res;
 using Android.Widget;
+using Xamarin.Platform;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -8,6 +9,7 @@ namespace Xamarin.Forms.Platform.Android
 	/// Handles color state management for the TextColor property 
 	/// for Entry, Button, Picker, TimePicker, and DatePicker
 	/// </summary>
+	[PortHandler]
 	internal class TextColorSwitcher
 	{
 		static readonly int[][] s_colorStates = { new[] { global::Android.Resource.Attribute.StateEnabled }, new[] { -global::Android.Resource.Attribute.StateEnabled } };

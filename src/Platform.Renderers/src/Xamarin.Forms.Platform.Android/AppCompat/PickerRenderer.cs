@@ -8,6 +8,7 @@ using Android.Text;
 using Android.Text.Style;
 using Android.Util;
 using Android.Widget;
+using Xamarin.Platform;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -89,6 +90,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateGravity();
 		}
 
+		[PortHandler("Pending to port code related with Focus")]
 		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
 		{
 			base.OnFocusChangeRequested(sender, e);
@@ -109,6 +111,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 
+		[PortHandler]
 		void IPickerRenderer.OnClick()
 		{
 			Picker model = Element;
@@ -168,6 +171,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 
+		[PortHandler]
 		void UpdatePicker()
 		{
 			UpdatePlaceHolderText();
@@ -189,6 +193,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 	public class PickerRenderer : PickerRendererBase<EditText>
 	{
+		[PortHandler]
 		TextColorSwitcher _textColorSwitcher;
 		TextColorSwitcher _hintColorSwitcher;
 
@@ -203,12 +208,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		protected override EditText EditText => Control;
 
+		[PortHandler]
 		protected override void UpdateTitleColor()
 		{
 			_hintColorSwitcher = _hintColorSwitcher ?? new TextColorSwitcher(EditText.HintTextColors, Element.UseLegacyColorManagement());
 			_hintColorSwitcher.UpdateTextColor(EditText, Element.TitleColor, EditText.SetHintTextColor);
 		}
 
+		[PortHandler]
 		protected override void UpdateTextColor()
 		{
 			_textColorSwitcher = _textColorSwitcher ?? new TextColorSwitcher(EditText.TextColors, Element.UseLegacyColorManagement());

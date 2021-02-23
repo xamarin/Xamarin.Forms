@@ -7,10 +7,12 @@ using Foundation;
 using ObjCRuntime;
 using UIKit;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
+using Xamarin.Platform;
 using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
 {
+	[PortHandler("NativePicker")]
 	internal class ReadOnlyField : NoCaretField
 	{
 		readonly HashSet<string> enableActions;
@@ -24,6 +26,7 @@ namespace Xamarin.Forms.Platform.iOS
 			=> enableActions.Contains(action.Name);
 	}
 
+	[PortHandler]
 	public class PickerRenderer : PickerRendererBase<UITextField>
 	{
 		[Internals.Preserve(Conditional = true)]
@@ -231,6 +234,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual void UpdateAttributedPlaceholder(NSAttributedString nsAttributedString) => 
 			Control.AttributedPlaceholder = nsAttributedString;
 
+		[PortHandler("Partially ported")]
 		void UpdatePicker()
 		{
 			var selectedIndex = Element.SelectedIndex;
@@ -283,6 +287,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.VerticalAlignment = Element.VerticalTextAlignment.ToNativeTextAlignment();			
 		}
 
+		[PortHandler]
 		protected internal virtual void UpdateTextColor()
 		{
 			var textColor = Element.TextColor;
@@ -296,6 +301,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.Text = Control.Text;			
 		}		
 
+		[PortHandler]
 		protected override void Dispose(bool disposing)
 		{
 			if (_disposed)
@@ -334,6 +340,7 @@ namespace Xamarin.Forms.Platform.iOS
 			base.Dispose(disposing);
 		}
 
+		[PortHandler]
 		class PickerSource : UIPickerViewModel
 		{
 			PickerRendererBase<TControl> _renderer;

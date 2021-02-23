@@ -1,4 +1,6 @@
 ﻿using Maui.Controls.Sample.ViewModel;
+﻿using System;
+using System.Collections.Generic;
 using Xamarin.Forms;
 using Xamarin.Platform;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,7 +41,27 @@ namespace Maui.Controls.Sample.Pages
 			horizontalStack.Add(new Label { Text = "And these buttons are in a HorizontalStackLayout" });
 
 			verticalStack.Add(horizontalStack);
-			verticalStack.Add(new Slider());
+
+			var monkeyList = new List<string>
+			{
+				"Baboon",
+				"Capuchin Monkey",
+				"Blue Monkey",
+				"Squirrel Monkey",
+				"Golden Lion Tamarin",
+				"Howler Monkey",
+				"Japanese Macaque"
+			};
+
+			var picker = new Picker { Title = "Select a monkey", TitleColor = Color.Red, TextColor = Color.Orange };
+
+			picker.ItemsSource = monkeyList;
+			verticalStack.Add(picker);
+
+			var slider = new Slider();
+			slider.ValueChanged += value => Console.WriteLine($"Slider value: {value:0.000}");
+			verticalStack.Add(slider);
+
 			verticalStack.Add(new Switch());
 			verticalStack.Add(new Switch() { OnColor = Color.Green });
 			verticalStack.Add(new Switch() { ThumbColor = Color.Yellow });

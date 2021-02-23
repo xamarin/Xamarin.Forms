@@ -9,7 +9,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public class Picker : View, IFontElement, ITextElement, ITextAlignmentElement, IElementConfiguration<Picker>
+	public partial class Picker : View, IFontElement, ITextElement, ITextAlignmentElement, IElementConfiguration<Picker>
 	{
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 

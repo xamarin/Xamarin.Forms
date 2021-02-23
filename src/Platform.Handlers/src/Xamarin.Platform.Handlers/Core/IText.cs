@@ -2,7 +2,7 @@
 
 namespace Xamarin.Platform
 {
-	public interface IText : IFont
+	public interface IText : IView
 	{
 		string Text { get; }
 
