@@ -5,17 +5,17 @@ namespace Xamarin.Platform.Handlers.Benchmarks
 {
 	class HandlersContextStub : IMauiContext
 	{
-		readonly IServiceProvider _provider;
-		readonly IMauiServiceProvider _handlersServiceProvider;
+		readonly IServiceProvider _services;
+		readonly IMauiHandlersServiceProvider _handlersServiceProvider;
 
-		public HandlersContextStub(IServiceProvider provider)
+		public HandlersContextStub(IServiceProvider services)
 		{
-			_provider = provider;
-			_handlersServiceProvider = Provider.GetRequiredService<IMauiServiceProvider>();
+			_services = services;
+			_handlersServiceProvider = Services.GetRequiredService<IMauiHandlersServiceProvider>();
 		}
 
-		public IServiceProvider Provider => _provider;
+		public IServiceProvider Services => _services;
 
-		public IMauiServiceProvider Handlers => _handlersServiceProvider;
+		public IMauiHandlersServiceProvider Handlers => _handlersServiceProvider;
 	}
 }

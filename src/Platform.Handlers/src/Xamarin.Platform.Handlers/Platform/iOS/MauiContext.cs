@@ -5,13 +5,16 @@ namespace Xamarin.Platform
 { 
 	public class MauiContext : IMauiContext
 	{
-		IServiceProvider _provider;
-		public MauiContext(IServiceProvider provider)
+		readonly IServiceProvider _services;
+		readonly IMauiHandlersServiceProvider _mauiHandlersServiceProvider;
+		public MauiContext(IServiceProvider services)
 		{
-			_provider = provider;
+			_services = services;
+			_mauiHandlersServiceProvider = Services.GetRequiredService<IMauiHandlersServiceProvider>() ??
+				throw new InvalidOperationException($"The Handlers provider of type {nameof(IMauiHandlersServiceProvider)} was not found");
 		}
-		public IServiceProvider Provider => _provider;
+		public IServiceProvider Services => _services;
 
-		public IMauiServiceProvider Handlers => Provider.GetService<IMauiServiceProvider>() ?? throw new NullReferenceException(nameof(IMauiServiceProvider));
+		public IMauiHandlersServiceProvider Handlers => _mauiHandlersServiceProvider;
 	}
 }

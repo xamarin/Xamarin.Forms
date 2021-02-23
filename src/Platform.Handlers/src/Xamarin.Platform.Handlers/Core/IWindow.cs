@@ -2,7 +2,7 @@
 {
 	public interface IWindow
 	{
-		public IMauiContext HandlersContext { get; set; }
+		public IMauiContext MauiContext { get; set; }
 		public IPage Page { get; set; }
 	}
 }

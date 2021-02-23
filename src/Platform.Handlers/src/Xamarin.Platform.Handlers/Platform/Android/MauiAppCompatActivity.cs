@@ -31,10 +31,10 @@ namespace Xamarin.Platform
 
 			var window = mauiApp.GetWindowFor(null!);
 
-			window.HandlersContext = new HandlersContext(mauiApp.Services, this);
+			window.MauiContext = new HandlersContext(mauiApp.Services, this);
 
 			//Hack for now we set this on the App Static but this should be on IFrameworkElement
-			App.Current.SetHandlerContext(window.HandlersContext);
+			App.Current.SetHandlerContext(window.MauiContext);
 
 			var content = window.Page.View;
 
@@ -47,7 +47,7 @@ namespace Xamarin.Platform
 
 			parent.AddView(main, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
 
-			main.AddView(content.ToNative(window.HandlersContext), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
+			main.AddView(content.ToNative(window.MauiContext), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
 		}
 
 		void AddToolbar(ViewGroup parent)

@@ -4,9 +4,9 @@ namespace Xamarin.Platform
 {
 	public interface IMauiContext
 	{
-		IServiceProvider Provider { get; }
+		IServiceProvider Services { get; }
 
-		IMauiServiceProvider Handlers { get; }
+		IMauiHandlersServiceProvider Handlers { get; }
 
 #if __ANDROID__
 		global::Android.Content.Context Context { get; }

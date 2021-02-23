@@ -23,10 +23,10 @@ namespace Xamarin.Platform
 
 			var window = app.GetWindowFor(null!);
 
-			window.HandlersContext = new MauiContext(MauiApp.Current.Services);
+			window.MauiContext = new MauiContext(MauiApp.Current.Services);
 
 			//Hack for now we set this on the App Static but this should be on IFrameworkElement
-			App.Current.SetHandlerContext(window.HandlersContext);
+			App.Current.SetHandlerContext(window.MauiContext);
 
 			var content = window.Page.View;
 
@@ -34,7 +34,7 @@ namespace Xamarin.Platform
 			{
 				RootViewController = new UIViewController
 				{
-					View = content.ToNative(window.HandlersContext)
+					View = content.ToNative(window.MauiContext)
 				}
 			};
 

@@ -5,16 +5,16 @@ namespace Xamarin.Platform.Handlers.Tests
 { 
 	class HandlersContextStub : IMauiContext
 	{
-		IServiceProvider _provider;
-		IMauiServiceProvider _handlersServiceProvider;
-		public HandlersContextStub(IServiceProvider provider)
+		IServiceProvider _services;
+		IMauiHandlersServiceProvider _mauiHandlersServiceProvider;
+		public HandlersContextStub(IServiceProvider services)
 		{
-			_provider = provider;
-			_handlersServiceProvider = Provider.GetService<IMauiServiceProvider>() ?? throw new NullReferenceException(nameof(IMauiServiceProvider));
+			_services = services;
+			_mauiHandlersServiceProvider = Services.GetService<IMauiHandlersServiceProvider>() ?? throw new NullReferenceException(nameof(IMauiServiceProvider));
 		}
 		
-		public IServiceProvider Provider => _provider;
+		public IServiceProvider Services => _services;
 
-		public IMauiServiceProvider Handlers => _handlersServiceProvider;
+		public IMauiHandlersServiceProvider Handlers => _mauiHandlersServiceProvider;
 	}
 }

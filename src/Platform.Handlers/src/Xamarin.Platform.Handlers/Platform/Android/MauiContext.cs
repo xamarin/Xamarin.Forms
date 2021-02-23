@@ -6,20 +6,20 @@ namespace Xamarin.Platform
 {
 	public class HandlersContext : IMauiContext
 	{
-		Context _context;
-		IServiceProvider _provider;
-		IMauiServiceProvider _mauiServiceProvider;
-		public HandlersContext(IServiceProvider provider, Context context)
+		readonly Context _context;
+		readonly IServiceProvider _services;
+		readonly IMauiHandlersServiceProvider _mauiHandlersServiceProvider;
+		public HandlersContext(IServiceProvider services, Context context)
 		{
+			_services = services;
 			_context = context;
-			_provider = provider;
-			_mauiServiceProvider = Provider.GetRequiredService<IMauiServiceProvider>() ??
-				throw new InvalidOperationException($"The Handlers provider of type {nameof(IMauiServiceProvider)} was not found");
+			_mauiHandlersServiceProvider = Services.GetRequiredService<IMauiHandlersServiceProvider>() ??
+				throw new InvalidOperationException($"The Handlers provider of type {nameof(IMauiHandlersServiceProvider)} was not found");
 		}
 		public Context Context => _context;
 
-		public IServiceProvider Provider => _provider;
+		public IServiceProvider Services => _services;
 
-		public IMauiServiceProvider Handlers => _mauiServiceProvider;
+		public IMauiHandlersServiceProvider Handlers => _mauiHandlersServiceProvider;
 	}
 }

@@ -215,7 +215,7 @@ namespace Xamarin.Platform.Hosting
 				if (_hostBuilderContext != null)
 					configureHandlersAction(_hostBuilderContext, _handlersCollection);
 			}
-			services.AddSingleton((IMauiServiceProvider)_handlersCollection.BuildServiceProvider());
+			services.AddSingleton((IMauiHandlersServiceProvider)_handlersCollection.BuildServiceProvider());
 		}
 
 		IHostBuilder IAppHostBuilder.ConfigureHandlers(Action<HostBuilderContext, IServiceCollection> configureDelegate)
