@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using Xunit;
-using Xamarin.Forms;
-using Xamarin.Platform.Hosting;
 using Xamarin.Platform.Handlers.Tests;
+using Xamarin.Platform.Hosting;
+using Xunit;
 
 namespace Xamarin.Platform.Handlers.UnitTests
 {
 	[Category(TestCategory.Core, TestCategory.Hosting)]
 	public partial class HostBuilderTests
 	{
-
 		[Fact]
 		public void CanBuildAHost()
 		{
@@ -23,8 +20,8 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		public void CanGetStaticApp()
 		{
 			var app = new AppStub();
-			var builder = app.CreateBuilder().Build(app);
-		
+			app.CreateBuilder().Build(app);
+
 			Assert.NotNull(MauiApp.Current);
 			Assert.Equal(MauiApp.Current, app);
 		}
@@ -33,7 +30,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		public void CanGetServices()
 		{
 			var app = new AppStub();
-			var builder = app.CreateBuilder().Build(app);
+			app.CreateBuilder().Build(app);
 
 			Assert.NotNull(app.Services);
 		}
@@ -42,7 +39,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		public void CanGetStaticServices()
 		{
 			var app = new AppStub();
-			var builder = app.CreateBuilder().Build(app);
+			app.CreateBuilder().Build(app);
 
 			Assert.NotNull(MauiApp.Current.Services);
 			Assert.Equal(app.Services, MauiApp.Current.Services);
@@ -52,7 +49,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		public void HandlerContextNullBeforeBuild()
 		{
 			var app = new AppStub();
-			var builder = app.CreateBuilder();
+			app.CreateBuilder();
 
 			var handlerContext = MauiApp.Current.Context;
 
@@ -63,7 +60,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		public void HandlerContextAfterBuild()
 		{
 			var app = new AppStub();
-			var builder = app.CreateBuilder().Build(app);
+			app.CreateBuilder().Build(app);
 
 			var handlerContext = MauiApp.Current.Context;
 
@@ -74,7 +71,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		public void CanHandlerProviderContext()
 		{
 			var app = new AppStub();
-			var builder = app.CreateBuilder().Build(app);
+			app.CreateBuilder().Build(app);
 
 			var handlerContext = MauiApp.Current.Context;
 
@@ -85,10 +82,9 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		public void CanRegisterAndGetHandler()
 		{
 			var app = new AppStub();
-			var builder = app.CreateBuilder();
-
-			var host = builder.RegisterHandler<IViewStub, ViewHandlerStub>()
-							   .Build(app);
+			app.CreateBuilder()
+				.RegisterHandler<IViewStub, ViewHandlerStub>()
+				.Build(app);
 
 			var handler = MauiApp.Current.Context.Handlers.GetHandler(typeof(IViewStub));
 			Assert.NotNull(handler);
@@ -99,12 +95,12 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		public void CanRegisterAndGetHandlerWithDictionary()
 		{
 			var app = new AppStub();
-			var builder = app.CreateBuilder();
-
-			var host = builder.RegisterHandlers(new Dictionary<Type, Type> {
-								{ typeof(IViewStub), typeof(ViewHandlerStub) }
-							})
-							.Build(app);
+			app.CreateBuilder()
+				.RegisterHandlers(new Dictionary<Type, Type>
+				{
+					{ typeof(IViewStub), typeof(ViewHandlerStub) }
+				})
+				.Build(app);
 
 			var handler = MauiApp.Current.Context.Handlers.GetHandler(typeof(IViewStub));
 			Assert.NotNull(handler);
@@ -115,10 +111,9 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		public void CanRegisterAndGetHandlerForType()
 		{
 			var app = new AppStub();
-			var builder = app.CreateBuilder();
-
-			var host = builder.RegisterHandler<IViewStub, ViewHandlerStub>()
-							.Build(app);
+			app.CreateBuilder()
+				.RegisterHandler<IViewStub, ViewHandlerStub>()
+				.Build(app);
 
 			var handler = MauiApp.Current.Context.Handlers.GetHandler(typeof(ViewStub));
 			Assert.NotNull(handler);
@@ -129,9 +124,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		public void DefaultHandlersAreRegistered()
 		{
 			var app = new AppStub();
-			var builder = app.CreateBuilder();
-
-			var host = builder.Build(app);
+			app.CreateBuilder().Build(app);
 
 			var handler = MauiApp.Current.Context.Handlers.GetHandler(typeof(IButton));
 			Assert.NotNull(handler);
@@ -142,62 +135,16 @@ namespace Xamarin.Platform.Handlers.UnitTests
 		public void CanSpecifyHandler()
 		{
 			var app = new AppStub();
-			var builder = app.CreateBuilder();
-			var host = builder
-							.RegisterHandler<ButtonStub, ButtonHandlerStub>()
-							.Build(app);
+			app.CreateBuilder()
+				.RegisterHandler<ButtonStub, ButtonHandlerStub>()
+				.Build(app);
 
 			var defaultHandler = MauiApp.Current.Context.Handlers.GetHandler(typeof(IButton));
 			var specificHandler = MauiApp.Current.Context.Handlers.GetHandler(typeof(ButtonStub));
 			Assert.NotNull(defaultHandler);
 			Assert.NotNull(specificHandler);
 			Assert.IsType<ButtonHandler>(defaultHandler);
-			Assert.IsType<ButtonHandlerStub>( specificHandler);
-		}
-
-		[Fact]
-		public void Get10000Handlers()
-		{
-			int iterations = 10000;
-			var app = new AppStub();
-			var host = app.CreateBuilder().Build(app);
-
-			var handlerWarmup = app.Context.Handlers.GetHandler<Button>();
-
-			Stopwatch watch = Stopwatch.StartNew();
-			for (int i = 0; i < iterations; i++)
-			{
-				var defaultHandler = app.Context.Handlers.GetHandler<Button>();
-				Assert.NotNull(defaultHandler);
-			}
-			watch.Stop();
-			var total = watch.ElapsedMilliseconds;
-			watch.Reset();
-			Registrar.Handlers.Register<Button, ButtonHandler>();
-			watch.Start();
-			for (int i = 0; i < iterations; i++)
-			{
-				var defaultHandler = Registrar.Handlers.GetHandler<Button>();
-				Assert.NotNull(defaultHandler);
-			}
-			watch.Stop();
-			var totalRegistrar = watch.ElapsedMilliseconds;
-			Console.WriteLine($"Elapsed time DI: {total} and Registrar: {totalRegistrar}");
-		}
-
-		AppHostBuilder _builder;
-
-		[Fact]
-		public void Register100Handlers()
-		{
-			int iterations = 10000;
-			_builder = new AppHostBuilder();
-			for (int i = 0; i < iterations; i++)
-			{
-				_builder.RegisterHandler<IButton, ButtonHandler>();
-			}
-			var host = _builder.Build();
-
+			Assert.IsType<ButtonHandlerStub>(specificHandler);
 		}
 	}
 }

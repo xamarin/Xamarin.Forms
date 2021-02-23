@@ -6,7 +6,7 @@ namespace Xamarin.Platform.Handlers.Benchmarks
 	{
 		static void Main(string[] args)
 		{
-			var summary = BenchmarkRunner.Run<HandlersBenchmarker>();
+			BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).RunAllJoined();
 		}
 	}
 }
