@@ -7,6 +7,8 @@ namespace Xamarin.Platform.Hosting
 		internal static IServiceProvider BuildServiceProvider(this IMauiServiceCollection serviceCollection)
 			=> new MauiServiceProvider(serviceCollection);
 
+		internal static IMauiHandlersServiceProvider BuildHandlersServiceProvider(this IMauiServiceCollection serviceCollection)
+			=> new MauiHandlersServiceProvider(serviceCollection);
 
 		public static IViewHandler? GetHandler(this IServiceProvider services, Type type)
 			=> services.GetService(type) as IViewHandler;

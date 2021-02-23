@@ -7,7 +7,7 @@ using Xunit;
 namespace Xamarin.Platform.Handlers.UnitTests
 {
 	[Category(TestCategory.Core, TestCategory.Hosting)]
-	public partial class HostBuilderTests
+	public partial class HostBuilderTests : IDisposable
 	{
 		[Fact]
 		public void CanBuildAHost()
@@ -24,6 +24,13 @@ namespace Xamarin.Platform.Handlers.UnitTests
 
 			Assert.NotNull(MauiApp.Current);
 			Assert.Equal(MauiApp.Current, app);
+		}
+
+		[Fact]
+		public void ShouldntCreateMultipleApp()
+		{
+			var app = new AppStub();
+			Assert.Throws<InvalidOperationException>(() => new AppStub());
 		}
 
 		[Fact]
@@ -75,7 +82,7 @@ namespace Xamarin.Platform.Handlers.UnitTests
 
 			var handlerContext = MauiApp.Current.Context;
 
-			Assert.IsAssignableFrom<IMauiServiceProvider>(handlerContext.Handlers);
+			Assert.IsAssignableFrom<IMauiHandlersServiceProvider>(handlerContext.Handlers);
 		}
 
 		[Fact]
@@ -145,6 +152,11 @@ namespace Xamarin.Platform.Handlers.UnitTests
 			Assert.NotNull(specificHandler);
 			Assert.IsType<ButtonHandler>(defaultHandler);
 			Assert.IsType<ButtonHandlerStub>(specificHandler);
+		}
+
+		public void Dispose()
+		{
+			(App.Current as AppStub)?.ClearApp();
 		}
 	}
 }

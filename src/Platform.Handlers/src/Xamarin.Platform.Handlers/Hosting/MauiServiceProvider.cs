@@ -3,15 +3,14 @@ using System.Collections.Generic;
 
 namespace Xamarin.Platform.Hosting
 {
+
 	class MauiServiceProvider : IMauiServiceProvider
 	{
-		IDictionary<Type, Func<IServiceProvider, object?>?> _implementationsFactories;
+		IDictionary<Type, Func<IServiceProvider, object?>?> _collection;
 
 		public MauiServiceProvider(IMauiServiceCollection collection)
 		{
-			if (collection == null)
-				throw new ArgumentNullException(nameof(collection));
-			_implementationsFactories = collection;
+			_collection = collection ?? throw new ArgumentNullException(nameof(collection));
 		}
 
 		public object? GetService(Type serviceType)
@@ -36,9 +35,9 @@ namespace Xamarin.Platform.Hosting
 
 			foreach (var type in types)
 			{
-				if (_implementationsFactories != null && _implementationsFactories.ContainsKey(type))
+				if (_collection != null && _collection.ContainsKey(type))
 				{
-					var typeInstance = _implementationsFactories[type]?.Invoke(this);
+					var typeInstance = _collection[type]?.Invoke(this);
 					return typeInstance;
 				}
 			}

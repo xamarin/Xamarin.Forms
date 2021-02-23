@@ -12,10 +12,12 @@ namespace Xamarin.Platform
 
 		protected App()
 		{
+			if (Current != null)
+				throw new InvalidOperationException($"Only one {nameof(App)} instance is allowed");
 			Current = this;
 		}
 
-		public static App? Current { get; private set; }
+		public static App? Current { get; internal set; }
 
 		public IServiceProvider? Services => _serviceProvider;
 

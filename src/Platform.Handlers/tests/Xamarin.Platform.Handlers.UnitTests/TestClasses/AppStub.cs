@@ -23,5 +23,10 @@ namespace Xamarin.Platform.Handlers.Tests
 		{
 			return new WindowStub();
 		}
+
+		internal void ClearApp()
+		{
+			Current = null;
+		}
 	}
 }
