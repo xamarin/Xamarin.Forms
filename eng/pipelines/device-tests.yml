@@ -6,9 +6,12 @@ pr:
 
 variables:
   - template: /eng/pipelines/common/variables.yml
-  - provisionator.xcode : '$(System.DefaultWorkingDirectory)/eng/provisioning/xcode.csx'
-  - provisionator.path : '$(System.DefaultWorkingDirectory)/eng/provisioning/provisioning.csx'
-  - provisionator.extraArguments : '--v'
+  - name: provisionator.xcode
+    value: '$(System.DefaultWorkingDirectory)/eng/provisioning/xcode.csx'
+  - name: provisionator.path
+    value: '$(System.DefaultWorkingDirectory)/eng/provisioning/provisioning.csx'
+  - name: provisionator.extraArguments
+    value: '--v'
 
 resources:
   repositories:
