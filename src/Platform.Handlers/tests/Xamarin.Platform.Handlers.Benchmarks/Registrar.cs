@@ -107,8 +107,9 @@ namespace Xamarin.Platform
 
 			throw new Exception($"Renderer Type not found  {type}");
 		}
-
+#nullable enable
 		TTypeRender? GetRenderer(Type type)
+#nullable disable
 		{
 			if (_handlerFactories.TryGetValue(type, out var handlerFactory))
 			{
