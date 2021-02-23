@@ -6,6 +6,9 @@ pr:
 
 variables:
   - template: /eng/pipelines/common/variables.yml
+  provisionator.xcode : '$(System.DefaultWorkingDirectory)/eng/provisioning/xcode.csx'
+  provisionator.path : '$(System.DefaultWorkingDirectory)/eng/provisioning/provisioning.csx'
+  provisionator.extraArguments : '--v'
 
 resources:
   repositories:
@@ -24,7 +27,7 @@ resources:
           - dev/ci-device-tests
 
 stages:
-  - stage: test_android
+  - stage: android
     displayName: Android
     dependsOn: []
     jobs:
@@ -37,9 +40,6 @@ stages:
           name:  $(macOSXVmPool)
           vmImage: $(macOSXVmImage)
         variables:
-          provisionator.xcode : '$(System.DefaultWorkingDirectory)/eng/provisioning/xcode.csx'
-          provisionator.path : '$(System.DefaultWorkingDirectory)/eng/provisioning/provisioning.csx'
-          provisionator.extraArguments : '--v'
           ANDROID_EMULATORS: "system-images;android-30;google_apis_playstore;x86"
         strategy:
           matrix:
