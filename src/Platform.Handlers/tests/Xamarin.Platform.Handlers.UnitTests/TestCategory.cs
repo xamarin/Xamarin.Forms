@@ -1,4 +1,4 @@
-﻿namespace Xamarin.Platform.Handlers.Tests
+﻿namespace Xamarin.Platform.Handlers.UnitTests
 {
 	public static class TestCategory
 	{
@@ -6,5 +6,6 @@
 		public const string Layout = "Layout";
 		public const string PropertyMapping = "PropertyMapping";
 		public const string Lifecycle = "Lifecycle";
+		public const string Hosting = "Hosting";
 	}
 }

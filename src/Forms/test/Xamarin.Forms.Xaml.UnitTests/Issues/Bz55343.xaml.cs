@@ -31,6 +31,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Device.PlatformServices = null;
 			}
 
+			[Ignore("[Bug] Types that require conversion don't work in OnPlatform: https://github.com/xamarin/Xamarin.Forms/issues/13830")]
 			[TestCase(true)]
 			[TestCase(false)]
 			public void OnPlatformFontConversion(bool useCompiledXaml)
