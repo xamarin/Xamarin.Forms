@@ -1,9 +1,6 @@
 ﻿using Android.Content.Res;
 using Android.Graphics;
-using Android.OS;
-using Android.Views;
 using Android.Widget;
-using Java.Net;
 
 namespace Xamarin.Platform.Handlers
 {
@@ -17,7 +14,14 @@ namespace Xamarin.Platform.Handlers
 
 		SeekBarChangeListener ChangeListener { get; } = new SeekBarChangeListener();
 
-		protected override SeekBar CreateNativeView() => new SeekBar(Context);
+		protected override SeekBar CreateNativeView()
+		{
+			return new SeekBar(Context)
+			{
+				DuplicateParentStateEnabled = false,
+				Max = (int)SliderExtensions.NativeMaxValue
+			};
+		}
 
 		protected override void ConnectHandler(SeekBar nativeView)
 		{
@@ -84,10 +88,15 @@ namespace Xamarin.Platform.Handlers
 
 		void OnProgressChanged(SeekBar seekBar, int progress, bool fromUser)
 		{
-			if (VirtualView == null)
+			if (VirtualView == null || !fromUser)
 				return;
 
-			VirtualView.Value = progress;
+			var min = VirtualView.Minimum;
+			var max = VirtualView.Maximum;
+
+			var value = min + (max - min) * (progress / SliderExtensions.NativeMaxValue);
+
+			VirtualView.Value = value;
 		}
 
 		void OnStartTrackingTouch(SeekBar seekBar) =>

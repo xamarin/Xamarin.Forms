@@ -1,26 +1,28 @@
-﻿
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using UIKit;
 using Xamarin.Forms;
+using Xamarin.Platform.Handlers.DeviceTests.Stubs;
 using Xunit;
 
 namespace Xamarin.Platform.Handlers.DeviceTests
 {
 	public partial class SliderHandlerTests
 	{
-		UISlider GetSlider(SliderHandler sliderHandler) =>
-			((UISlider)sliderHandler.View);
+		UISlider GetNativeSlider(SliderHandler sliderHandler) =>
+			(UISlider)sliderHandler.View;
 
 		double GetNativeProgress(SliderHandler sliderHandler) =>
-			GetSlider(sliderHandler).Value;
+			GetNativeSlider(sliderHandler).Value;
+
+		double GetNativeMinimum(SliderHandler sliderHandler) =>
+			GetNativeSlider(sliderHandler).MinValue;
 
 		double GetNativeMaximum(SliderHandler sliderHandler) =>
-			GetSlider(sliderHandler).MaxValue;
-
+			GetNativeSlider(sliderHandler).MaxValue;
 
 		async Task ValidateNativeThumbColor(ISlider slider, Color color)
 		{
-			var expected = await GetValueAsync(slider, handler => GetSlider(handler).ThumbTintColor.ToColor());
+			var expected = await GetValueAsync(slider, handler => GetNativeSlider(handler).ThumbTintColor.ToColor());
 			Assert.Equal(expected, color);
 		}
 	}
