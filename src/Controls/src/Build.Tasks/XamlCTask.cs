@@ -4,13 +4,13 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using Microsoft.Build.Framework;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Microsoft.Maui.Controls.Xaml;
 using static Microsoft.Build.Framework.MessageImportance;
 using static Mono.Cecil.Cil.OpCodes;
 using IOPath = System.IO.Path;
+using Controls.Build.Tasks;
 
 namespace Microsoft.Maui.Controls.Build.Tasks
 {
