@@ -5,14 +5,7 @@ steps:
   - checkout: self
     clean: true
 
-  - task: xamops.azdevex.provisionator-task.provisionator@1
-    displayName: 'Provisionator'
-    condition: eq(variables['provisioning'], 'true')
-    inputs:
-      provisioning_script: $(provisionator.path)
-      provisioning_extra_args: $(provisionator.extraArguments)
-
-  - ${{ if parameters['platform'] == 'ios' }}:
+  - ${{ if eq(parameters['platform'], 'ios') }}:
     - task: xamops.azdevex.provisionator-task.provisionator@1
       displayName: 'Provision Xcode'
       condition: ne(variables['REQUIRED_XCODE'], '')
@@ -36,6 +29,13 @@ steps:
       inputs:
         provProfileSecureFile: 'Xamarin Forms iOS Provisioning.mobileprovision'
 
+  - task: xamops.azdevex.provisionator-task.provisionator@1
+    displayName: 'Provisionator'
+    condition: eq(variables['provisioning'], 'true')
+    inputs:
+      provisioning_script: $(provisionator.path)
+      provisioning_extra_args: $(provisionator.extraArguments)
+
   - pwsh: |
       ./build.ps1 --target provision --TeamProject="$(System.TeamProject)"
     displayName: 'Cake Provision'
@@ -48,12 +48,12 @@ steps:
       version: $(DOTNET_VERSION)
       packageType: 'sdk'
 
-  - ${{ if parameters['platform'] == 'android' }}:
+  - ${{ if eq(parameters['platform'], 'android') }}:
     - pwsh: |
         ./build.ps1 -Script eng/devices/android.cake --project="$(devicetests.project)" --device=$(devicetests.device) --results="$(System.DefaultWorkingDirectory)/output/testlogs"
       displayName: $(Agent.JobName)
 
-  - ${{ if parameters['platform'] == 'ios' }}:
+  - ${{ if eq(parameters['platform'], 'ios') }}:
     - pwsh: |
         ./build.ps1 -Script eng/devices/ios.cake --project="$(devicetests.project)" --device=$(devicetests.device) --results="$(System.DefaultWorkingDirectory)/output/testlogs"
       displayName: $(Agent.JobName)
