@@ -1,6 +1,6 @@
 using Foundation;
 using UIKit;
-using Microsoft.Maui.Controls.Platform;
+using Microsoft.Maui;
 
 #if !NET6_0
 using Microsoft.Maui.Controls;
