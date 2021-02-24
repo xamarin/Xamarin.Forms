@@ -76,6 +76,8 @@ bool isHostedAgent = agentName.StartsWith("Azure Pipelines") || agentName.Starts
 
 var MAUI_SLN = "./Microsoft.Maui.sln";
 
+var CONTROLGALLERY_SLN = "./ControlGallery.sln";
+
 string defaultUnitTestWhere = "";
 
 if(target.ToLower().Contains("uwp"))
@@ -813,8 +815,8 @@ Task("BuildForNuget")
         {
             msbuildSettings = GetMSBuildSettings();
             msbuildSettings.BinaryLogger = binaryLogger;
-            binaryLogger.FileName = $"{artifactStagingDirectory}/Xamarin.Forms.ControlGallery-{configuration}.binlog";
-           MSBuild("./Xamarin.Forms.ControlGallery.sln", msbuildSettings.WithRestore());
+            binaryLogger.FileName = $"{artifactStagingDirectory}/ControlGallery-{configuration}.binlog";
+           MSBuild(CONTROLGALLERY_SLN, msbuildSettings.WithRestore());
         }
 
         if(IsRunningOnWindows())
