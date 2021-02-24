@@ -70,7 +70,6 @@ TestResults/
 caketools/
 *.binlog
 .ionide/**
-/.nuspec
 .XamarinFormsVersionFile.txt
 .idea
 Visual Studio 2019/**
