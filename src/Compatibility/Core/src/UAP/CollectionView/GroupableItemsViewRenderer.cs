@@ -7,7 +7,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 	public class GroupableItemsViewRenderer<TItemsView> : SelectableItemsViewRenderer<TItemsView>
 		where TItemsView : GroupableItemsView
 	{
-		protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs changedProperty)
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
 		{
 			base.OnElementPropertyChanged(sender, changedProperty);
 

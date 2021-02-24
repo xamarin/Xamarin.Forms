@@ -21,7 +21,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			if (e.Parameter == null)
 			{
 				throw new InvalidOperationException($"Cannot navigate to {nameof(FormsEmbeddedPageWrapper)} without "
-					+ $"providing a {nameof(Microsoft.Maui.Controls.Compatibility.Page)} identifier.");
+					+ $"providing a {nameof(Microsoft.Maui.Controls.Page)} identifier.");
 			}
 
 			// Find the page instance in the dictionary and then discard it so we don't prevent it from being collected

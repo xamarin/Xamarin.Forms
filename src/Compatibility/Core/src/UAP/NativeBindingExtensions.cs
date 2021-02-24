@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Microsoft.UI.Xaml;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 using static System.String;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP

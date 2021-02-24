@@ -4,14 +4,14 @@ using Microsoft.UI.Xaml.Data;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 {
-	class NativePropertyListener : DependencyObject, System.ComponentModel.INotifyPropertyChanged
+	class NativePropertyListener : DependencyObject, INotifyPropertyChanged
 	{
 		readonly DependencyObject _target;
 		readonly string _targetProperty;
 
 		public static readonly DependencyProperty TargetPropertyValueProperty = DependencyProperty.Register(nameof(TargetPropertyValue), typeof(object), typeof(NativePropertyListener), new PropertyMetadata(null, OnNativePropertyChanged));
 
-		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler PropertyChanged;
 
 		public NativePropertyListener(DependencyObject target, string propertyName)
 		{
@@ -36,7 +36,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 		static void OnNativePropertyChanged(object sender, DependencyPropertyChangedEventArgs args)
 		{
 			NativePropertyListener source = (NativePropertyListener)sender;
-			source?.PropertyChanged?.Invoke(source._target, new System.ComponentModel.PropertyChangedEventArgs(source._targetProperty));
+			source?.PropertyChanged?.Invoke(source._target, new PropertyChangedEventArgs(source._targetProperty));
 		}		
 	}
 }

@@ -1,8 +1,8 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific;
-using VisualElementSpecifics = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific.VisualElement;
+using Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;
+using VisualElementSpecifics = Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific.VisualElement;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 {

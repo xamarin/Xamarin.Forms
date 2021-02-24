@@ -11,8 +11,8 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using Windows.UI.Core;
 using Microsoft.UI.Xaml.Data;
-using Microsoft.Maui.Controls.Compatibility.Internals;
-using static Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific.Page;
+using Microsoft.Maui.Controls.Internals;
+using static Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific.Page;
 using WBrush = Microsoft.UI.Xaml.Media.Brush;
 using WImageSource = Microsoft.UI.Xaml.Media.ImageSource;
 
@@ -335,7 +335,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			_parentsLookedUp = true;
 		}
 
-		void MultiPagePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		void MultiPagePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == "CurrentPage" || e.PropertyName == "Detail")
 			{
@@ -355,7 +355,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			UpdateBackButton();
 		}
 
-		void OnCurrentPagePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		void OnCurrentPagePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == NavigationPage.HasBackButtonProperty.PropertyName)
 				UpdateBackButton();
@@ -377,7 +377,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			UpdateBackButton();
 		}
 
-		void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName)
 				UpdateTitleColor();

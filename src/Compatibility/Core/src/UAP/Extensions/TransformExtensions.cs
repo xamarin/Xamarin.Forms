@@ -1,4 +1,4 @@
-using Microsoft.Maui.Controls.Compatibility.Shapes;
+using Microsoft.Maui.Controls.Shapes;
 
 #if WINDOWS_UWP
 using WMatrix = Microsoft.UI.Xaml.Media.Matrix;

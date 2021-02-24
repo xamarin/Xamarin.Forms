@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using WBrush = Microsoft.UI.Xaml.Media.Brush;
 using WVisualStateManager = Microsoft.UI.Xaml.VisualStateManager;
+using System.Text;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 {
@@ -258,7 +259,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			else if (lengthDifference < 0)
 				realText = realText.Remove(start, -lengthDifference);
 
-			var sb = new System.Text.StringBuilder(passwordText.Length);
+			var sb = new StringBuilder(passwordText.Length);
 			for (int i = 0; i < passwordText.Length; i++)
 				sb.Append(passwordText[i] == ObfuscationCharacter ? realText[i] : passwordText[i]);
 

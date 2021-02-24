@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel;
-using Microsoft.Maui.Controls.Compatibility.Shapes;
-using Shape = Microsoft.Maui.Controls.Compatibility.Shapes.Shape;
+using Shape = Microsoft.Maui.Controls.Shapes.Shape;
+using Microsoft.Maui.Controls.Shapes;
 
 #if WINDOWS_UWP
 using Microsoft.UI.Xaml;

@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using WBrush = Microsoft.UI.Xaml.Media.Brush;
 

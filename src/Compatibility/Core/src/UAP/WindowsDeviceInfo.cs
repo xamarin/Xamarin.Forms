@@ -1,7 +1,7 @@
 using System;
 using Windows.Graphics.Display;
 using Microsoft.UI.Xaml;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 using WRect = Windows.Foundation.Rect;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
@@ -10,7 +10,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 	{
 		DisplayInformation _information;
 		bool _isDisposed;
-		DualScreen.IDualScreenService DualScreenService => DependencyService.Get<DualScreen.IDualScreenService>();
+	//	DualScreen.IDualScreenService DualScreenService => DependencyService.Get<DualScreen.IDualScreenService>();
 
 		public WindowsDeviceInfo()
 		{
@@ -87,14 +87,14 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 
 		void OnOrientationChanged(DisplayInformation sender, object args)
 		{
-			if (DualScreenService?.IsSpanned == true)
-			{
-				CurrentOrientation = (DualScreenService.IsLandscape) ? DeviceOrientation.Landscape : DeviceOrientation.Portrait;
-			}
-			else
-			{
-				CurrentOrientation = GetDeviceOrientation(sender.CurrentOrientation);
-			}
+			//if (DualScreenService?.IsSpanned == true)
+			//{
+			//	CurrentOrientation = (DualScreenService.IsLandscape) ? DeviceOrientation.Landscape : DeviceOrientation.Portrait;
+			//}
+			//else
+			//{
+			//	CurrentOrientation = GetDeviceOrientation(sender.CurrentOrientation);
+			//}
 		}
 	}
 }

@@ -1,8 +1,8 @@
 using System.Reflection;
-using Microsoft.Maui.Controls.Compatibility;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Compatibility.Platform.UWP;
-using Microsoft.Maui.Controls.Compatibility.Shapes;
-using Rectangle = Microsoft.Maui.Controls.Compatibility.Shapes.Rectangle;
+using Microsoft.Maui.Controls.Shapes;
+using Rectangle = Microsoft.Maui.Controls.Shapes.Rectangle;
 
 [assembly: Dependency(typeof(WindowsSerializer))]
 
@@ -78,5 +78,5 @@ using Rectangle = Microsoft.Maui.Controls.Compatibility.Shapes.Rectangle;
 //Fonts
 [assembly: ExportRenderer(typeof(EmbeddedFont), typeof(EmbeddedFontLoader))]
 
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Microsoft.Maui.Controls.Compatibility.DualScreen")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Microsoft.Maui.Controls.DualScreen")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Microsoft.Maui.Controls.Compatibility.Platform.UAP.UnitTests")]

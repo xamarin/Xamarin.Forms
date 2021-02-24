@@ -92,7 +92,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			}
 		}
 
-		void ShellElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		void ShellElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.Is(BaseShellItem.IsCheckedProperty))
 				UpdateVisualState();

@@ -5,8 +5,8 @@ using Windows.Foundation;
 using Windows.UI.Core;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific;
-using Specifics = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific.RefreshView;
+using Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;
+using Specifics = Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific.RefreshView;
 using WBrush = Microsoft.UI.Xaml.Media.Brush;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP

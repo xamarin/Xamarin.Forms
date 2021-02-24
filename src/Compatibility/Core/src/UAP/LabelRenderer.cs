@@ -10,8 +10,8 @@ using Microsoft.UI.Xaml.Documents;
 using Windows.UI.Text;
 using Microsoft.Maui.Controls.Compatibility.Platform.UAP;
 using Microsoft.Maui.Controls.Compatibility.Platform.UAP.Extensions;
-using Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific;
-using Specifics = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific.Label;
+using Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;
+using Specifics = Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific.Label;
 using WRect = Windows.Foundation.Rect;
 using WThickness = Microsoft.UI.Xaml.Thickness;
 

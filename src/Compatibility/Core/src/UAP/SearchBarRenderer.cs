@@ -2,10 +2,10 @@ using System.ComponentModel;
 using Windows.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Maui.Controls.Compatibility.Internals;
-using Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific;
+using Microsoft.Maui.Controls.Internals;
+using Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;
 using WBrush = Microsoft.UI.Xaml.Media.Brush;
-using Specifics = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific.SearchBar;
+using Specifics = Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific.SearchBar;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 {

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using Microsoft.UI.Xaml;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -40,7 +41,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			}
 		}
 
-		void OnShellPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		void OnShellPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if(e.IsOneOf(Shell.FlyoutFooterProperty, Shell.FlyoutFooterTemplateProperty))
 				UpdateFooter();

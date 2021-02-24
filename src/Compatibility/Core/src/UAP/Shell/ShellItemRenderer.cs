@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 using Microsoft.UI.Xaml;
 
 using UwpGrid = Microsoft.UI.Xaml.Controls.Grid;
@@ -39,7 +39,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 
 		public ShellItemRenderer(ShellRenderer shellContext)
 		{
-			Microsoft.Maui.Controls.Compatibility.Shell.VerifyShellUWPFlagEnabled(nameof(ShellItemRenderer));
+			Microsoft.Maui.Controls.Shell.VerifyShellUWPFlagEnabled(nameof(ShellItemRenderer));
 			_ = shellContext ?? throw new ArgumentNullException(nameof(shellContext));
 
 			ShellContext = shellContext;
@@ -361,12 +361,12 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			if (DisplayedPage == null || Shell.GetNavBarIsVisible(DisplayedPage))
 			{
 				_HeaderArea.Visibility = Visibility.Visible;
-				Shell.SetFlyoutBehavior(Shell.Current, Microsoft.Maui.Controls.Compatibility.FlyoutBehavior.Flyout);
+				Shell.SetFlyoutBehavior(Shell.Current, Microsoft.Maui.Controls.FlyoutBehavior.Flyout);
 			}
 			else
 			{
 				_HeaderArea.Visibility = Visibility.Collapsed;
-				Shell.SetFlyoutBehavior(Shell.Current, Microsoft.Maui.Controls.Compatibility.FlyoutBehavior.Disabled);
+				Shell.SetFlyoutBehavior(Shell.Current, Microsoft.Maui.Controls.FlyoutBehavior.Disabled);
 			}
 		}
 

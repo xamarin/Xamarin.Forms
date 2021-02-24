@@ -6,7 +6,7 @@ using System.Reflection;
 using Microsoft.UI.Xaml;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Resources.Core;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 using Microsoft.Maui.Controls.Compatibility.Platform.UWP;
 using WSolidColorBrush = Microsoft.UI.Xaml.Media.SolidColorBrush;
 

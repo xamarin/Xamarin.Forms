@@ -8,7 +8,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 using WImageSource = Microsoft.UI.Xaml.Media.ImageSource;
 using UwpScrollBarVisibility = Microsoft.UI.Xaml.Controls.ScrollBarVisibility;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -51,7 +51,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 				case ReturnType.Search:
 					return InputScopeNameValue.Search;
 				default:
-					throw new System.NotImplementedException($"ReturnType {returnType} not supported");
+					throw new NotImplementedException($"ReturnType {returnType} not supported");
 			}
 		}
 

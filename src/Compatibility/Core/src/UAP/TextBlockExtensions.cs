@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 #if WINDOWS_UWP
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;

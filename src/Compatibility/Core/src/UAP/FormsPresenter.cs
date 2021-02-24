@@ -1,6 +1,6 @@
 using System;
 using Microsoft.UI.Xaml;
-using Microsoft.Maui.Controls.Compatibility;
+using Microsoft.Maui.Controls;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 {

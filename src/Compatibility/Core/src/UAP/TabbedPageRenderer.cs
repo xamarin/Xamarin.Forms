@@ -7,8 +7,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.Maui.Controls.Compatibility.Internals;
-using Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific;
+using Microsoft.Maui.Controls.Internals;
+using Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;
 using WBrush = Microsoft.UI.Xaml.Media.Brush;
 using WGrid = Microsoft.UI.Xaml.Controls.Grid;
 using WTextAlignment = Microsoft.UI.Xaml.TextAlignment;
@@ -18,9 +18,9 @@ using WStackPanel = Microsoft.UI.Xaml.Controls.StackPanel;
 using WImage = Microsoft.UI.Xaml.Controls.Image;
 using WSolidColorBrush = Microsoft.UI.Xaml.Media.SolidColorBrush;
 using WTextBlock = Microsoft.UI.Xaml.Controls.TextBlock;
-using Specifics = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific.TabbedPage;
-using VisualElementSpecifics = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific.VisualElement;
-using PageSpecifics = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific.Page;
+using Specifics = Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific.TabbedPage;
+using VisualElementSpecifics = Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific.VisualElement;
+using PageSpecifics = Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific.Page;
 using WSelectionChangedEventArgs = Microsoft.UI.Xaml.Controls.SelectionChangedEventArgs;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
@@ -217,7 +217,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			ElementChanged?.Invoke(this, e);
 		}
 
-		void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == nameof(TabbedPage.CurrentPage))
 			{
@@ -298,7 +298,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			}
 		}
 
-		void OnChildPagePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {
+		void OnChildPagePropertyChanged(object sender, PropertyChangedEventArgs e) {
 			var page = sender as Page;
 			if (page != null)
 			{

@@ -4,7 +4,7 @@
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Hosting;
-using Microsoft.Maui.Controls.Compatibility.Shapes;
+using Microsoft.Maui.Controls.Shapes;
 using WRectangleGeometry = Microsoft.UI.Xaml.Media.RectangleGeometry;
 
 #if UWP_18362

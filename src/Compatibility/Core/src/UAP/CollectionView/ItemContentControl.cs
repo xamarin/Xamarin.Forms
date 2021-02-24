@@ -1,7 +1,7 @@
 using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 using WThickness = Microsoft.UI.Xaml.Thickness;
 using WSize = Windows.Foundation.Size;
 

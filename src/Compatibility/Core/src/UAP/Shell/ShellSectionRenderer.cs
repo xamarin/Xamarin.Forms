@@ -10,7 +10,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
+using System.Collections.Specialized;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 {
@@ -28,7 +29,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 		ObservableCollection<ShellContent> ShellContentMenuItems;
 		public ShellSectionRenderer()
 		{
-			Microsoft.Maui.Controls.Compatibility.Shell.VerifyShellUWPFlagEnabled(nameof(ShellSectionRenderer));
+			Microsoft.Maui.Controls.Shell.VerifyShellUWPFlagEnabled(nameof(ShellSectionRenderer));
 			MenuItemTemplate = (Microsoft.UI.Xaml.DataTemplate)Microsoft.UI.Xaml.Application.Current.Resources["ShellSectionMenuItemTemplate"];
 			IsBackButtonVisible = Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed;
 			IsSettingsVisible = false;
@@ -145,7 +146,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			IsPaneVisible = ShellSectionController.GetItems().Count > 1;
 		}
 
-		void OnShellSectionRendererCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		void OnShellSectionRendererCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			SyncMenuItems();
 		}

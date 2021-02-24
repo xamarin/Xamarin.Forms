@@ -164,7 +164,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			}
 		}
 
-		protected override void HandleLayoutPropertyChanged(System.ComponentModel.PropertyChangedEventArgs property)
+		protected override void HandleLayoutPropertyChanged(PropertyChangedEventArgs property)
 		{
 			if (property.Is(GridItemsLayout.SpanProperty))
 			{

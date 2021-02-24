@@ -17,9 +17,9 @@ using WListView = Microsoft.UI.Xaml.Controls.ListView;
 using WBinding = Microsoft.UI.Xaml.Data.Binding;
 using WApp = Microsoft.UI.Xaml.Application;
 using WRect = Windows.Foundation.Rect;
-using Microsoft.Maui.Controls.Compatibility.Internals;
-using Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific;
-using Specifics = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific.ListView;
+using Microsoft.Maui.Controls.Internals;
+using Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;
+using Specifics = Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific.ListView;
 using System.Collections.ObjectModel;
 using UwpScrollBarVisibility = Microsoft.UI.Xaml.Controls.ScrollBarVisibility;
 using WSelectionChangedEventArgs = Microsoft.UI.Xaml.Controls.SelectionChangedEventArgs;
@@ -238,7 +238,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 				Element.Dispatcher.BeginInvokeOnMainThread(() => List?.UpdateLayout());
 		}
 
-		protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
 

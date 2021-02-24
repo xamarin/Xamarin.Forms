@@ -2,9 +2,9 @@
 using System;
 using System.ComponentModel;
 using Windows.UI.Core;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 using static System.String;
-using Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific;
+using Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;
 using System.Threading.Tasks;
 using System.Net;
 using Windows.Web.Http;
@@ -90,7 +90,7 @@ if(bases.length == 0){
 					//var httpRequestMessage = new Windows.Web.Http.HttpRequestMessage(Windows.Web.Http.HttpMethod.Get, uri);
 					//Control.NavigateWithHttpRequestMessage(httpRequestMessage);
 				}
-				catch (System.Exception exc)
+				catch (Exception exc)
 				{
 					Internals.Log.Warning(nameof(WebViewRenderer), $"Failed to load: {uri} {exc}");
 				}
@@ -102,7 +102,7 @@ if(bases.length == 0){
 					//No Cookies so just navigate...
 					Control.Source = uri;
 				}
-				catch (System.Exception exc)
+				catch (Exception exc)
 				{
 					Internals.Log.Warning(nameof(WebViewRenderer), $"Failed to load: {uri} {exc}");
 				}
@@ -273,7 +273,7 @@ if(bases.length == 0){
 			if (myCookieJar == null)
 				return;
 
-			var uri = new System.Uri(url);
+			var uri = new Uri(url);
 
 			if (!_loadedCookies.Add(uri.Host))
 				return;

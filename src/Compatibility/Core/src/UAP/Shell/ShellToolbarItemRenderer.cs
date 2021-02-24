@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 
 		public ShellToolbarItemRenderer()
 		{
-			Microsoft.Maui.Controls.Compatibility.Shell.VerifyShellUWPFlagEnabled(nameof(ShellToolbarItemRenderer));
+			Microsoft.Maui.Controls.Shell.VerifyShellUWPFlagEnabled(nameof(ShellToolbarItemRenderer));
 			Click += OnClick;
 		}
 
@@ -48,7 +49,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			if (newItem != null)
 				newItem.PropertyChanged += ToolbarItemPropertyChanged;
 
-			void ToolbarItemPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+			void ToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
 			{
 				this.SetAutomationProperties(newItem, defaultName: newItem?.Text);
 			}

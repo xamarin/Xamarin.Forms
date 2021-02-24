@@ -1,6 +1,7 @@
 using System;
 using Windows.Foundation;
 using Microsoft.UI.Xaml;
+using System.ComponentModel;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 {
@@ -39,7 +40,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			}
 		}
 
-		void OnShellPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		void OnShellPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if(e.IsOneOf(Shell.FlyoutHeaderProperty, Shell.FlyoutHeaderTemplateProperty))
 				UpdateHeader();

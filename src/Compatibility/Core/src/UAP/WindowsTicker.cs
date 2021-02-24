@@ -1,7 +1,7 @@
 using Windows.ApplicationModel.Core;
 using System;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 {

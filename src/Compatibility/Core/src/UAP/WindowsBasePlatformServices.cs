@@ -20,7 +20,7 @@ using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 using IOPath = System.IO.Path;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
@@ -81,11 +81,11 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			if (!assemblies.Contains(thisAssembly))
 				assemblies.Add(thisAssembly);
 
-			Assembly coreAssembly = typeof(Microsoft.Maui.Controls.Compatibility.Label).GetTypeInfo().Assembly;
+			Assembly coreAssembly = typeof(Microsoft.Maui.Controls.Label).GetTypeInfo().Assembly;
 			if (!assemblies.Contains(coreAssembly))
 				assemblies.Add(coreAssembly);
 
-			Assembly xamlAssembly = typeof(Microsoft.Maui.Controls.Compatibility.Xaml.Extensions).GetTypeInfo().Assembly;
+			Assembly xamlAssembly = typeof(Microsoft.Maui.Controls.Xaml.Extensions).GetTypeInfo().Assembly;
 			if (!assemblies.Contains(xamlAssembly))
 				assemblies.Add(xamlAssembly);
 

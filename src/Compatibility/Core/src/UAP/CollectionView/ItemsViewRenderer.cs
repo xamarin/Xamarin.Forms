@@ -6,7 +6,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 using UwpApp = Microsoft.UI.Xaml.Application;
 using UwpDataTemplate = Microsoft.UI.Xaml.DataTemplate;
 using UwpScrollBarVisibility = Microsoft.UI.Xaml.Controls.ScrollBarVisibility;
@@ -47,35 +47,35 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			SetUpNewElement(args.NewElement);
 		}
 
-		protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs changedProperty)
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
 		{
 			base.OnElementPropertyChanged(sender, changedProperty);
 
-			if (changedProperty.Is(Microsoft.Maui.Controls.Compatibility.ItemsView.ItemsSourceProperty))
+			if (changedProperty.Is(Microsoft.Maui.Controls.ItemsView.ItemsSourceProperty))
 			{
 				UpdateItemsSource();
 			}
-			else if (changedProperty.Is(Microsoft.Maui.Controls.Compatibility.ItemsView.ItemTemplateProperty))
+			else if (changedProperty.Is(Microsoft.Maui.Controls.ItemsView.ItemTemplateProperty))
 			{
 				UpdateItemTemplate();
 			}
-			else if (changedProperty.Is(Microsoft.Maui.Controls.Compatibility.ItemsView.HorizontalScrollBarVisibilityProperty))
+			else if (changedProperty.Is(Microsoft.Maui.Controls.ItemsView.HorizontalScrollBarVisibilityProperty))
 			{
 				UpdateHorizontalScrollBarVisibility();
 			}
-			else if (changedProperty.Is(Microsoft.Maui.Controls.Compatibility.ItemsView.VerticalScrollBarVisibilityProperty))
+			else if (changedProperty.Is(Microsoft.Maui.Controls.ItemsView.VerticalScrollBarVisibilityProperty))
 			{
 				UpdateVerticalScrollBarVisibility();
 			}
-			else if (changedProperty.IsOneOf(Microsoft.Maui.Controls.Compatibility.ItemsView.EmptyViewProperty,
-				Microsoft.Maui.Controls.Compatibility.ItemsView.EmptyViewTemplateProperty))
+			else if (changedProperty.IsOneOf(Microsoft.Maui.Controls.ItemsView.EmptyViewProperty,
+				Microsoft.Maui.Controls.ItemsView.EmptyViewTemplateProperty))
 			{
 				UpdateEmptyView();
 			}
 		}
 
 		protected abstract ListViewBase SelectListViewBase();
-		protected abstract void HandleLayoutPropertyChanged(System.ComponentModel.PropertyChangedEventArgs property);
+		protected abstract void HandleLayoutPropertyChanged(PropertyChangedEventArgs property);
 		protected abstract IItemsLayout Layout { get; }
 
 		protected virtual void UpdateItemsSource()
@@ -172,7 +172,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			UpdateItemsSource();
 		}
 
-		void LayoutPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs property)
+		void LayoutPropertyChanged(object sender, PropertyChangedEventArgs property)
 		{
 			HandleLayoutPropertyChanged(property);
 		}

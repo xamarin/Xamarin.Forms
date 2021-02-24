@@ -1,7 +1,7 @@
 using System;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
-using Microsoft.Maui.Controls.Compatibility;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Compatibility.Platform.UWP;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP

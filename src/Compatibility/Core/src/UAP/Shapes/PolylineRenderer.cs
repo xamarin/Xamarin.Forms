@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using Microsoft.Maui.Controls.Compatibility.Shapes;
+using Microsoft.Maui.Controls.Shapes;
 using System.Collections.Specialized;
 
 #if WINDOWS_UWP

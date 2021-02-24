@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using FormsRectangle = Microsoft.Maui.Controls.Compatibility.Shapes.Rectangle;
+using FormsRectangle = Microsoft.Maui.Controls.Shapes.Rectangle;
 
 #if WINDOWS_UWP
 using WRectangle = Microsoft.UI.Xaml.Shapes.Rectangle;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 
 		UWPDataTemplate CarouselItemsViewTemplate => (UWPDataTemplate)UWPApp.Current.Resources["CarouselItemsViewDefaultTemplate"];
 
-		protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs changedProperty)
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
 		{
 			base.OnElementPropertyChanged(sender, changedProperty);
 
@@ -60,7 +61,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			UpdateItemsSource();
 		}
 
-		protected override void HandleLayoutPropertyChanged(System.ComponentModel.PropertyChangedEventArgs property)
+		protected override void HandleLayoutPropertyChanged(PropertyChangedEventArgs property)
 		{
 			if (property.Is(LinearItemsLayout.ItemSpacingProperty))
 				UpdateItemSpacing();
@@ -175,7 +176,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			return args;
 		}
 
-		void CollectionItemsSourceChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		void CollectionItemsSourceChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			var carouselPosition = CarouselView.Position;
 			var currentItemPosition = GetItemPositionInCarousel(CarouselView.CurrentItem);
@@ -196,7 +197,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 				carouselPosition = currentItemPosition;
 			}
 			//If we are adding a new item make sure to maintain the CurrentItemPosition
-			else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add
+			else if (e.Action == NotifyCollectionChangedAction.Add
 				&& currentItemPosition != -1)
 			{
 				carouselPosition = currentItemPosition;

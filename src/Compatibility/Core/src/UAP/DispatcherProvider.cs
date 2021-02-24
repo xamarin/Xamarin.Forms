@@ -1,5 +1,5 @@
 using System;
-using Microsoft.Maui.Controls.Compatibility;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Compatibility.Platform.UWP;
 
 [assembly: Dependency(typeof(DispatcherProvider))]

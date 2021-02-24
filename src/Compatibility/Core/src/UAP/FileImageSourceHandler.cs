@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific;
+using Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;
 using IOPath = System.IO.Path;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP

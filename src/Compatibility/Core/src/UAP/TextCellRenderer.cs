@@ -2,7 +2,7 @@ using System;
 using System.Windows.Input;
 using WDataTemplate = Microsoft.UI.Xaml.DataTemplate;
 using WApplication = Microsoft.UI.Xaml.Application;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 {

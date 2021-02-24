@@ -5,8 +5,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Automation.Peers;
-using Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific;
-using Specifics = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific.MasterDetailPage;
+using Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;
+using Specifics = Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific.MasterDetailPage;
 using WBrush = Microsoft.UI.Xaml.Media.Brush;
 using WImageSource = Microsoft.UI.Xaml.Media.ImageSource;
 
@@ -188,7 +188,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			}
 		}
 
-		protected virtual void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == FlyoutPage.IsPresentedProperty.PropertyName || e.PropertyName == FlyoutPage.FlyoutLayoutBehaviorProperty.PropertyName)
 				UpdateIsPresented();
@@ -265,7 +265,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			Element?.SendDisappearing();
 		}
 
-		void OnDetailPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		void OnDetailPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Page.TitleProperty.PropertyName)
 				UpdateDetailTitle();
@@ -286,7 +286,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			UpdateBounds();
 		}
 
-		void OnMasterPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		void OnMasterPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Page.TitleProperty.PropertyName)
 				Control.FlyoutTitle = _master?.Title;

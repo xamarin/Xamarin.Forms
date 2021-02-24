@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using Microsoft.Maui.Controls.Compatibility.Shapes;
+using Microsoft.Maui.Controls.Shapes;
 
 #if WINDOWS_UWP
 using WLine = Microsoft.UI.Xaml.Shapes.Line;

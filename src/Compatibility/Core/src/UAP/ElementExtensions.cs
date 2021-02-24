@@ -1,5 +1,5 @@
 using System;
-using Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.WindowsSpecific;
+using Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 {

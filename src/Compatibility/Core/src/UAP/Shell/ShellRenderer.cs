@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml.Controls;
 using WBrush = Microsoft.UI.Xaml.Media.Brush;
 using WSolidColorBrush = Microsoft.UI.Xaml.Media.SolidColorBrush;
 using Microsoft.UI;
+using System.Collections.Specialized;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 {
@@ -39,7 +40,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 
 		public ShellRenderer()
 		{
-			Microsoft.Maui.Controls.Compatibility.Shell.VerifyShellUWPFlagEnabled(nameof(ShellRenderer));
+			Microsoft.Maui.Controls.Shell.VerifyShellUWPFlagEnabled(nameof(ShellRenderer));
 			_flyoutBackdrop = Brush.Default;
 			IsSettingsVisible = false;
 			PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.LeftMinimal;
@@ -383,7 +384,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.UWP
 			UpdateMenuItemSource();
 		}
 
-		void OnItemsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		void OnItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			UpdateMenuItemSource();
 		}
