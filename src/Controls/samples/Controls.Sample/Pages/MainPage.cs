@@ -8,11 +8,13 @@ namespace Maui.Controls.Sample.Pages
 
 	public class MainPage : ContentPage, IPage
 	{
-		MainPageViewModel _viewModel;
+		readonly MainPageViewModel _viewModel;
+
 		public MainPage() : this(App.Current.Services.GetService<MainPageViewModel>())
 		{
 
 		}
+
 		public MainPage(MainPageViewModel viewModel)
 		{
 			BindingContext = _viewModel = viewModel;
@@ -20,7 +22,7 @@ namespace Maui.Controls.Sample.Pages
 			var verticalStack = new VerticalStackLayout() { Spacing = 5, BackgroundColor = Color.AntiqueWhite };
 			var horizontalStack = new HorizontalStackLayout() { Spacing = 2, BackgroundColor = Color.CornflowerBlue };
 
-			var label = new Label { Text = "This will disappear in ~5 seconds", BackgroundColor = Color.Fuchsia };
+			var label = new Label { Text = "This will disappear in ~5 seconds", BackgroundColor = Color.Fuchsia, HorizontalTextAlignment = TextAlignment.End };
 			label.Margin = new Thickness(15, 10, 20, 15);
 
 			verticalStack.Add(label);
@@ -48,6 +50,6 @@ namespace Maui.Controls.Sample.Pages
 			Content = verticalStack;
 		}
 
-		public IView View { get => (IView)Content; set => Content = (View)value; }
+		public IView View { get => Content; set => Content = (View)value; }
 	}
 }

@@ -11,36 +11,36 @@ namespace Microsoft.Maui.DeviceTests
 		[Fact]
 		public async Task BackgroundColorInitializesCorrectly()
 		{
-			var label = new LabelStub()
+			var labelStub = new LabelStub()
 			{
 				BackgroundColor = Color.Blue,
 				Text = "Test"
 			};
 
-			await ValidateNativeBackgroundColor(label, Color.Blue);
+			await ValidateNativeBackgroundColor(labelStub, Color.Blue);
 		}
 
 		[Fact]
 		public async Task TextInitializesCorrectly()
 		{
-			var label = new LabelStub()
+			var labelStub = new LabelStub()
 			{
 				Text = "Test"
 			};
 
-			await ValidatePropertyInitValue(label, () => label.Text, GetNativeText, label.Text);
+			await ValidatePropertyInitValue(labelStub, () => labelStub.Text, GetNativeText, labelStub.Text);
 		}
 
 		[Fact]
 		public async Task TextColorInitializesCorrectly()
 		{
-			var label = new LabelStub()
+			var labelStub = new LabelStub()
 			{
 				Text = "Test",
 				TextColor = Color.Red
 			};
 
-			await ValidatePropertyInitValue(label, () => label.TextColor, GetNativeTextColor, label.TextColor);
+			await ValidatePropertyInitValue(labelStub, () => labelStub.TextColor, GetNativeTextColor, labelStub.TextColor);
 		}
 	}
 }

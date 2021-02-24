@@ -34,5 +34,19 @@ namespace Microsoft.Maui.Handlers
 
 			handler.TypedNativeView?.UpdateTextColor(label, DefaultTextColor);
 		}
+
+		public static void MapHorizontalTextAlignment(LabelHandler handler, ILabel label)
+		{
+			ViewHandler.CheckParameters(handler, label);
+
+			handler.TypedNativeView?.UpdateGravity(label);
+		}
+
+		public static void MapVerticalTextAlignment(LabelHandler handler, ILabel label)
+		{
+			ViewHandler.CheckParameters(handler, label);
+
+			handler.TypedNativeView?.UpdateGravity(label);
+		}
 	}
 }

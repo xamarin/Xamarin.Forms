@@ -1,15 +1,12 @@
-using UIKit;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+﻿using UIKit;
+using Xamarin.Forms;
 
-
-namespace Microsoft.Maui.Controls.Compatibility.Platform.iOS
+namespace Xamarin.Platform
 {
-	[PortHandler]
-	internal static class AlignmentExtensions
+	public static class AlignmentExtensions
 	{
-		internal static UITextAlignment ToNativeTextAlignment(this TextAlignment alignment, EffectiveFlowDirection flowDirection)
+		public static UITextAlignment ToNative(this TextAlignment alignment, bool isLtr)
 		{
-			var isLtr = flowDirection.IsLeftToRight();
 			switch (alignment)
 			{
 				case TextAlignment.Center:
@@ -27,7 +24,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.iOS
 			}
 		}
 
-		internal static UIControlContentVerticalAlignment ToNativeTextAlignment(this TextAlignment alignment)
+		public static UIControlContentVerticalAlignment ToNative(this TextAlignment alignment)
 		{
 			switch (alignment)
 			{

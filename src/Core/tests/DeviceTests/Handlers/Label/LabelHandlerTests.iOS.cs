@@ -1,7 +1,8 @@
-using Microsoft.Maui.Handlers;
+﻿using Microsoft.Maui.Handlers;
 using System.Threading.Tasks;
 using UIKit;
 using Microsoft.Maui;
+using Xunit;
 
 namespace Microsoft.Maui.DeviceTests
 {
@@ -22,6 +23,35 @@ namespace Microsoft.Maui.DeviceTests
 			{
 				GetNativeLabel(CreateHandler(label)).AssertContainsColor(color);
 			});
+		}
+
+		UITextAlignment GetNativeTextAlignment(LabelHandler labelHandler) =>
+			GetNativeLabel(labelHandler).TextAlignment;
+
+		[Fact(DisplayName = "[LabelHandler] HorizontalTextAlignment Updates Correctly")]
+		public async Task HorizontalTextAlignmentInitializesCorrectly()
+		{
+			var xplatHorizontalTextAlignment = TextAlignment.End;
+
+			var labelStub = new LabelStub()
+			{
+				Text = "Test",
+				HorizontalTextAlignment = xplatHorizontalTextAlignment
+			};
+
+			UITextAlignment expectedValue = UITextAlignment.Right;
+
+			var values = await GetValueAsync(labelStub, (handler) =>
+			{
+				return new
+				{
+					ViewValue = labelStub.HorizontalTextAlignment,
+					NativeViewValue = GetNativeTextAlignment(handler)
+				};
+			});
+
+			Assert.Equal(xplatHorizontalTextAlignment, values.ViewValue);
+			Assert.True(values.NativeViewValue.HasFlag(expectedValue));
 		}
 	}
 }

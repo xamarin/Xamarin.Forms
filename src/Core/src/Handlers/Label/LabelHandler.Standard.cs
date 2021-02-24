@@ -8,5 +8,7 @@ namespace Microsoft.Maui.Handlers
 
 		public static void MapText(IViewHandler handler, ILabel label) { }
 		public static void MapTextColor(IViewHandler handler, ILabel label) { }
+		public static void MapHorizontalTextAlignment(IViewHandler handler, ILabel label) { }
+		public static void MapVerticalTextAlignment(IViewHandler handler, ILabel label) { }
 	}
 }

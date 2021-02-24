@@ -6,6 +6,8 @@ namespace Microsoft.Maui.Handlers
 		{
 			[nameof(ILabel.TextColor)] = MapTextColor,
 			[nameof(ILabel.Text)] = MapText,
+			[nameof(ILabel.HorizontalTextAlignment)] = MapHorizontalTextAlignment,
+			[nameof(ILabel.VerticalTextAlignment)] = MapVerticalTextAlignment
 		};
 
 		public LabelHandler() : base(LabelMapper)
