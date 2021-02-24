@@ -811,13 +811,13 @@ Task("BuildForNuget")
 
 
          // XAML Tests are currently having issues compiling in Release Mode
-        if(configuration == "Debug")
-        {
-            msbuildSettings = GetMSBuildSettings();
-            msbuildSettings.BinaryLogger = binaryLogger;
-            binaryLogger.FileName = $"{artifactStagingDirectory}/ControlGallery-{configuration}.binlog";
-           MSBuild(CONTROLGALLERY_SLN, msbuildSettings.WithRestore());
-        }
+        // if(configuration == "Debug")
+        // {
+        //     msbuildSettings = GetMSBuildSettings();
+        //     msbuildSettings.BinaryLogger = binaryLogger;
+        //     binaryLogger.FileName = $"{artifactStagingDirectory}/ControlGallery-{configuration}.binlog";
+        //    MSBuild(CONTROLGALLERY_SLN, msbuildSettings.WithRestore());
+        // }
 
         if(IsRunningOnWindows())
         {
@@ -841,7 +841,7 @@ Task("BuildForNuget")
 	        msbuildSettings = GetMSBuildSettings();
 	        msbuildSettings.BinaryLogger = binaryLogger;
 	        binaryLogger.FileName = $"{artifactStagingDirectory}/win-{configuration}-csproj.binlog";
-	        MSBuild("./src/Platform.Renderers/src/Xamarin.Forms.Platform.UAP/Xamarin.Forms.Platform.UAP.csproj",
+	        MSBuild("./src/Compatibility/Core/src/UAP/Compatibility.UAP.csproj",
 	                    msbuildSettings
 	                        .WithRestore()
 	                        .WithTarget("rebuild")
