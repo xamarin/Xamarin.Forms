@@ -156,9 +156,9 @@ stages:
             errorActionPreference: stop
 
           - powershell: |
-              & dotnet restore Maui.sln
-              & dotnet build Maui.sln -c Debug   -bl:$(LogDirectory)\Debug.binlog
-              & dotnet build Maui.sln -c Release -bl:$(LogDirectory)\Release.binlog
+              & dotnet restore Microsoft.Maui-net6.sln
+              & dotnet build Microsoft.Maui-net6.sln -c Debug   -bl:$(LogDirectory)\Debug.binlog
+              & dotnet build Microsoft.Maui-net6.sln -c Release -bl:$(LogDirectory)\Release.binlog
             displayName: build samples
             errorActionPreference: stop
 
@@ -219,9 +219,9 @@ stages:
             displayName: configure vsmac xcode
 
           - bash: |
-              dotnet restore Maui.sln &&
-              dotnet build Maui.sln -c Debug   -bl:$(LogDirectory)/Debug.binlog &&
-              dotnet build Maui.sln -c Release -bl:$(LogDirectory)/Release.binlog
+              dotnet restore Microsoft.Maui-net6.sln &&
+              dotnet build Microsoft.Maui-net6.sln -c Debug   -bl:$(LogDirectory)/Debug.binlog &&
+              dotnet build Microsoft.Maui-net6.sln -c Release -bl:$(LogDirectory)/Release.binlog
             displayName: build samples
 
           - task: PublishPipelineArtifact@1
