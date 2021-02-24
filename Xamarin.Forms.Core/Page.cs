@@ -165,7 +165,6 @@ namespace Xamarin.Forms
 
 				if (titleViewPart2TheNavBar != null)
 					yield return titleViewPart2TheNavBar;
-
 			}
 		}
 
@@ -180,7 +179,14 @@ namespace Xamarin.Forms
 
 		public Task<string> DisplayActionSheet(string title, string cancel, string destruction, params string[] buttons)
 		{
+			return DisplayActionSheet(title, cancel, destruction, FlowDirection.MatchParent, buttons);
+		}
+
+		public Task<string> DisplayActionSheet(string title, string cancel, string destruction, FlowDirection flowDirection, params string[] buttons)
+		{
 			var args = new ActionSheetArguments(title, cancel, destruction, buttons);
+
+			args.FlowDirection = flowDirection;
 
 			if (IsPlatformEnabled)
 				MessagingCenter.Send(this, ActionSheetSignalName, args);
@@ -192,15 +198,27 @@ namespace Xamarin.Forms
 
 		public Task DisplayAlert(string title, string message, string cancel)
 		{
-			return DisplayAlert(title, message, null, cancel);
+			return DisplayAlert(title, message, null, cancel, FlowDirection.MatchParent);
 		}
 
 		public Task<bool> DisplayAlert(string title, string message, string accept, string cancel)
+		{
+			return DisplayAlert(title, message, accept, cancel, FlowDirection.MatchParent);
+		}
+
+		public Task DisplayAlert(string title, string message, string cancel, FlowDirection flowDirection)
+		{
+			return DisplayAlert(title, message, null, cancel, flowDirection);
+		}
+
+		public Task<bool> DisplayAlert(string title, string message, string accept, string cancel, FlowDirection flowDirection)
 		{
 			if (string.IsNullOrEmpty(cancel))
 				throw new ArgumentNullException("cancel");
 
 			var args = new AlertArguments(title, message, accept, cancel);
+			args.FlowDirection = flowDirection;
+
 			if (IsPlatformEnabled)
 				MessagingCenter.Send(this, AlertSignalName, args);
 			else
@@ -361,7 +379,7 @@ namespace Xamarin.Forms
 				var element = LogicalChildren[i];
 				if (element is VisualElement c)
 				{
-					if (c.Bounds != startingLayout[i])
+					if (startingLayout.Count <= i || c.Bounds != startingLayout[i])
 					{
 						LayoutChanged?.Invoke(this, EventArgs.Empty);
 						return;

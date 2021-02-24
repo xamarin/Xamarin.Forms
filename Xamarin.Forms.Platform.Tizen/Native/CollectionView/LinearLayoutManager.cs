@@ -322,14 +322,21 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		public void ItemMeasureInvalidated(int index)
 		{
-			if (_realizedItem.ContainsKey(index))
-			{
-				CollectionView.RequestLayoutItems();
-			}
 			if (_hasUnevenRows)
 			{
 				if (_cached.Count > index)
 					_cached[index] = false;
+
+				if (_realizedItem.ContainsKey(index))
+				{
+					CollectionView.RequestLayoutItems();
+				}
+			}
+			else if (index == 0)
+			{
+				// Reset item size to measure updated size
+				InitializeMeasureCache();
+				CollectionView.RequestLayoutItems();
 			}
 		}
 
@@ -344,9 +351,16 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				return CollectionView.Count - 1;
 
 			if (!_hasUnevenRows)
-				return coordinate / (BaseItemSize + ItemSpacing);
+			{
+				return Math.Min(Math.Max(0, (coordinate - ItemStartPoint) / (BaseItemSize + ItemSpacing)), CollectionView.Count - 1);
+			}
 			else
-				return _accumulatedItemSizes.FindIndex(current => coordinate <= current);
+			{
+				var index = _accumulatedItemSizes.FindIndex(current => coordinate <= current);
+				if (index == -1)
+					index = CollectionView.Count - 1;
+				return index;
+			}
 		}
 
 		public int GetScrollBlockSize()
