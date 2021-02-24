@@ -8,7 +8,7 @@ using Microsoft.Maui.Controls.Xaml;
 using static Mono.Cecil.Cil.Instruction;
 using static Mono.Cecil.Cil.OpCodes;
 
-namespace Microsoft.Maui.Controls.Core.XamlC
+namespace Microsoft.Maui.Controls.XamlC
 {
 	class RDSourceTypeConverter : ICompiledTypeConverter
 	{

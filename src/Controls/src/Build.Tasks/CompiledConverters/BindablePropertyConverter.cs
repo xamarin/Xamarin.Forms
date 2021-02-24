@@ -10,7 +10,7 @@ using Microsoft.Maui.Controls.Xaml;
 using static System.String;
 using static Microsoft.Maui.Controls.Build.Tasks.BuildExceptionCode;
 
-namespace Microsoft.Maui.Controls.Core.XamlC
+namespace Microsoft.Maui.Controls.XamlC
 {
 	class BindablePropertyConverter : ICompiledTypeConverter
 	{

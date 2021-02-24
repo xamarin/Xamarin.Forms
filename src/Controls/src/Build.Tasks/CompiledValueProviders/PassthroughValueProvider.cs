@@ -4,7 +4,7 @@ using Mono.Cecil.Cil;
 using Microsoft.Maui.Controls.Build.Tasks;
 using Microsoft.Maui.Controls.Xaml;
 
-namespace Microsoft.Maui.Controls.Core.XamlC
+namespace Microsoft.Maui.Controls.XamlC
 {
 	class PassthroughValueProvider : ICompiledValueProvider
 	{

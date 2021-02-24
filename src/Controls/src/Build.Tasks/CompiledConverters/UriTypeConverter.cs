@@ -1,14 +1,11 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Microsoft.Maui.Controls.Build.Tasks;
 using Microsoft.Maui.Controls.Xaml;
 using static Mono.Cecil.Cil.Instruction;
 using static Mono.Cecil.Cil.OpCodes;
 
-namespace Microsoft.Maui.Controls.Core.XamlC
+namespace Microsoft.Maui.Controls.XamlC
 {
 	class UriTypeConverter : ICompiledTypeConverter
 	{
