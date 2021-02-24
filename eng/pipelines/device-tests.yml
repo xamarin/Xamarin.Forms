@@ -49,16 +49,18 @@ stages:
           matrix:
             api_30:
               devicetests.device: android-emulator-32_30
-            api_29:
-              devicetests.device: android-emulator-32_29
-            api_28:
-              devicetests.device: android-emulator-32_28
-            api_26:
-              devicetests.device: android-emulator-32_26
-            api_21:
-              devicetests.device: android-emulator-32_21
+            # api_29:
+            #   devicetests.device: android-emulator-32_29
+            # api_28:
+            #   devicetests.device: android-emulator-32_28
+            # api_26:
+            #   devicetests.device: android-emulator-32_26
+            # api_21:
+            #   devicetests.device: android-emulator-32_21
         steps:
-          - template: common/device-tests-android.yml
+          - template: common/device-tests-steps.yml
+            parameters:
+              platform: android
 
   - stage: android_handlers
     displayName: Handlers (Android)
@@ -78,13 +80,42 @@ stages:
           matrix:
             api_30:
               devicetests.device: android-emulator-32_30
-            api_29:
-              devicetests.device: android-emulator-32_29
-            api_28:
-              devicetests.device: android-emulator-32_28
-            api_26:
-              devicetests.device: android-emulator-32_26
-            api_21:
-              devicetests.device: android-emulator-32_21
+            # api_29:
+            #   devicetests.device: android-emulator-32_29
+            # api_28:
+            #   devicetests.device: android-emulator-32_28
+            # api_26:
+            #   devicetests.device: android-emulator-32_26
+            # api_21:
+            #   devicetests.device: android-emulator-32_21
         steps:
-          - template: common/device-tests-android.yml
+          - template: common/device-tests-steps.yml
+            parameters:
+              platform: android
+
+  - stage: ios_handlers
+    displayName: Handlers (iOS)
+    dependsOn: []
+    jobs:
+      - job: device_tests
+        workspace:
+          clean: all
+        displayName: Device Tests
+        timeoutInMinutes: 120
+        pool:
+          name:  $(macOSXVmPool)
+          vmImage: $(macOSXVmImage)
+        variables:
+          devicetests.project: '$(System.DefaultWorkingDirectory)/src/Platform.Handlers/tests/Xamarin.Platform.Handlers.DeviceTests.iOS/Xamarin.Platform.Handlers.DeviceTests.iOS.csproj'
+        strategy:
+          matrix:
+            v14:
+              devicetests.device: ios-simulator-64_14
+            v14_4:
+              devicetests.device: ios-simulator-64_14.4
+            v10:
+              devicetests.device: ios-simulator-64_10
+        steps:
+          - template: common/device-tests-steps.yml
+            parameters:
+              platform: ios
