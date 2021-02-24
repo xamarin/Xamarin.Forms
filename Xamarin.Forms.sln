@@ -119,6 +119,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleApp.UWP", "src\BuildTasks\samples\ResizetizerSampleApp\SampleApp.UWP\SampleApp.UWP.csproj", "{17F7E982-F09B-44F0-9CA9-9C25C671C365}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleApp.WPF", "src\BuildTasks\samples\ResizetizerSampleApp\SampleApp.WPF\SampleApp.WPF.csproj", "{62DBB813-E489-45D7-BF32-E64D04649CC8}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.Platform.Handlers.Benchmarks", "src\Platform.Handlers\tests\Xamarin.Platform.Handlers.Benchmarks\Xamarin.Platform.Handlers.Benchmarks.csproj", "{73100F0D-C0BB-4F16-8FC2-FA3FA8ACD424}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{806499EB-C2CC-4E85-BC19-613F3DE5E0C3}"
