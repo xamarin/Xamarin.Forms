@@ -14,7 +14,7 @@
     <AssemblyName>Microsoft.Maui.Controls.Compatibility.Android.UnitTests</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <Deterministic>True</Deterministic>
-    <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
+    <AndroidUseIntermediateDesignerFile>true</AndroidUseIntermediateDesignerFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <TargetFrameworkVersion>v10.0</TargetFrameworkVersion>
     <AndroidUseAapt2>true</AndroidUseAapt2>
