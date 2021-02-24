@@ -83,3 +83,4 @@ WriteDevopsVariables.csproj
 /tools
 *.svclog
 launchSettings.json
+src/Essentials/samples/Samples.UWP/AppPackages
