@@ -11,11 +11,12 @@ using RectangleF = CoreGraphics.CGRect;
 
 #if __MOBILE__
 using UIKit;
-using Microsoft.Maui.Controls.Platform.iOS;
+using Microsoft.Maui.Controls.Compatibility.Platform.iOS;
+
 namespace Microsoft.Maui.Controls.Compatibility.Maps.iOS
 #else
 using AppKit;
-using Microsoft.Maui.Controls.Platform.MacOS;
+using Microsoft.Maui.Controls.Compatibility.Platform.MacOS;
 namespace Microsoft.Maui.Controls.Compatibility.Maps.MacOS
 #endif
 {

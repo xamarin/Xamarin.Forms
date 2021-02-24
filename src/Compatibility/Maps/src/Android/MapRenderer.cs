@@ -14,7 +14,7 @@ using Android.OS;
 using AndroidX.Core.Content;
 using Java.Lang;
 using Microsoft.Maui.Controls.Internals;
-using Microsoft.Maui.Controls.Platform.Android;
+using Microsoft.Maui.Controls.Compatibility.Platform.Android;
 using ACircle = Android.Gms.Maps.Model.Circle;
 using APolygon = Android.Gms.Maps.Model.Polygon;
 using APolyline = Android.Gms.Maps.Model.Polyline;

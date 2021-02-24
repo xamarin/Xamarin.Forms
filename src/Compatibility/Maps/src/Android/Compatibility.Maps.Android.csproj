@@ -10,11 +10,11 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Controls\Maps\src\Controls.Maps.csproj" />
     <ProjectReference Include="..\..\..\..\Controls\src\Core\Controls.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\Core\src\Core.csproj" />
     <ProjectReference Include="..\..\..\Core\src\Android.FormsViewGroup\Compatibility.Android.FormsViewGroup.csproj" />
     <ProjectReference Include="..\..\..\Core\src\Android\Compatibility.Android.csproj" />
-    <ProjectReference Include="..\Core\Compatibility.Maps.csproj">
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.2.0.4" />

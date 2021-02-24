@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Android;
 using Android.App;
-using Microsoft.Maui.Controls;
+using Microsoft.Maui.Controls.Compatibility;
 using Microsoft.Maui.Controls.Internals;
 using Microsoft.Maui.Controls.Compatibility.Maps;
 using Microsoft.Maui.Controls.Compatibility.Maps.Android;
