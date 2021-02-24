@@ -87,5 +87,16 @@ namespace Xamarin.Platform.Handlers.DeviceTests
 			await ValidatePropertyInitValue(slider, () => slider.Maximum, GetNativeMaximum, 1);
 		}
 #endif
+
+		[Fact]
+		public async Task NativeMeasurementFiniteGivenInfiniteConstraints()
+		{
+			var slider = new SliderStub();
+
+			var size = await GetValueAsync(slider, (h) => h.GetDesiredSize(double.PositiveInfinity, double.PositiveInfinity));
+
+			Assert.False(double.IsInfinity(size.Width));
+			Assert.False(double.IsInfinity(size.Height));
+		}
 	}
 }
