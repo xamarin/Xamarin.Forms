@@ -838,15 +838,15 @@ Task("BuildForNuget")
 	    //                     .WithProperty("UwpMinTargetFrameworks", "uap10.0.14393")
 	    //                     .WithRestore());
 	
-	        msbuildSettings = GetMSBuildSettings();
-	        msbuildSettings.BinaryLogger = binaryLogger;
-	        binaryLogger.FileName = $"{artifactStagingDirectory}/win-{configuration}-csproj.binlog";
-	        MSBuild("./src/Compatibility/Core/src/UAP/Compatibility.UAP.csproj",
-	                    msbuildSettings
-	                        .WithRestore()
-	                        .WithTarget("rebuild")
-	                        .WithProperty("DisableEmbeddedXbf", "false")
-	                        .WithProperty("EnableTypeInfoReflection", "false"));
+	        // msbuildSettings = GetMSBuildSettings();
+	        // msbuildSettings.BinaryLogger = binaryLogger;
+	        // binaryLogger.FileName = $"{artifactStagingDirectory}/win-{configuration}-csproj.binlog";
+	        // MSBuild("./src/Compatibility/Core/src/UAP/Compatibility.UAP.csproj",
+	        //             msbuildSettings
+	        //                 .WithRestore()
+	        //                 .WithTarget("rebuild")
+	        //                 .WithProperty("DisableEmbeddedXbf", "false")
+	        //                 .WithProperty("EnableTypeInfoReflection", "false"));
 
         //     msbuildSettings = GetMSBuildSettings();
         //     msbuildSettings.BinaryLogger = binaryLogger;
