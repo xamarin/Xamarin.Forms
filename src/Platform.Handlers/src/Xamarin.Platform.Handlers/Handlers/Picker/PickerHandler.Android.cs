@@ -16,7 +16,7 @@ namespace Xamarin.Platform.Handlers
 		AlertDialog? _dialog;
 
 		protected override NativePicker CreateNativeView() =>
-			new NativePicker(Context, _dialog);
+			new NativePicker(Context);
 
 		protected override void ConnectHandler(NativePicker nativeView)
 		{
