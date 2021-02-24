@@ -21,7 +21,7 @@ steps:
     - task: InstallAppleCertificate@2
       displayName: 'Install an Apple certificate'
       inputs:
-        certSecureFile: 'XamarinForms.p12'
+        certSecureFile: 'Xamarin Forms iOS Certificate.p12'
         certPwd: $(P12password)
 
     - task: InstallAppleProvisioningProfile@1
