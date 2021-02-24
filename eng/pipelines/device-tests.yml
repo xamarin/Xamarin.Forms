@@ -48,14 +48,19 @@ stages:
         strategy:
           matrix:
             api_30:
+              ANDROID_EMULATORS: "system-images;android-30;google_apis;x86"
               devicetests.device: android-emulator-32_30
             # api_29:
+            #   ANDROID_EMULATORS: "system-images;android-29;google_apis;x86"
             #   devicetests.device: android-emulator-32_29
             # api_28:
+            #   ANDROID_EMULATORS: "system-images;android-28;google_apis;x86"
             #   devicetests.device: android-emulator-32_28
             # api_26:
+            #   ANDROID_EMULATORS: "system-images;android-26;google_apis;x86"
             #   devicetests.device: android-emulator-32_26
             # api_21:
+            #   ANDROID_EMULATORS: "system-images;android-21;google_apis;x86"
             #   devicetests.device: android-emulator-32_21
         steps:
           - template: common/device-tests-steps.yml
@@ -79,14 +84,19 @@ stages:
         strategy:
           matrix:
             api_30:
+              ANDROID_EMULATORS: "system-images;android-30;google_apis;x86"
               devicetests.device: android-emulator-32_30
             # api_29:
+            #   ANDROID_EMULATORS: "system-images;android-29;google_apis;x86"
             #   devicetests.device: android-emulator-32_29
             # api_28:
+            #   ANDROID_EMULATORS: "system-images;android-28;google_apis;x86"
             #   devicetests.device: android-emulator-32_28
             # api_26:
+            #   ANDROID_EMULATORS: "system-images;android-26;google_apis;x86"
             #   devicetests.device: android-emulator-32_26
             # api_21:
+            #   ANDROID_EMULATORS: "system-images;android-21;google_apis;x86"
             #   devicetests.device: android-emulator-32_21
         steps:
           - template: common/device-tests-steps.yml
