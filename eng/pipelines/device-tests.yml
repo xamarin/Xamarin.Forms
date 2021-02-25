@@ -91,6 +91,31 @@ stages:
             parameters:
               platform: android
 
+  - stage: ios_essentials
+    displayName: Essentials (iOS)
+    dependsOn: []
+    jobs:
+      - job: device_tests
+        workspace:
+          clean: all
+        displayName: Device Tests
+        timeoutInMinutes: 120
+        pool:
+          name:  $(macOSXVmPool)
+          vmImage: $(macOSXVmImage)
+        variables:
+          devicetests.project: '$(System.DefaultWorkingDirectory)/src/Essentials/test/DeviceTests.iOS/Xamarin.Essentials.DeviceTests.iOS.csproj'
+        strategy:
+          matrix:
+            v14_3:
+              devicetests.device: ios-simulator-64_14.3
+            # v10_3_1:
+            #   devicetests.device: ios-simulator-64_10.3.1
+        steps:
+          - template: common/device-tests-steps.yml
+            parameters:
+              platform: ios
+
   - stage: ios_handlers
     displayName: Handlers (iOS)
     dependsOn: []
