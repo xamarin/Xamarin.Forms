@@ -55,7 +55,7 @@ stages:
               ANDROID_EMULATORS: "system-images;android-21;google_apis;x86"
               devicetests.device: android-emulator-32_21
         steps:
-          - template: steps/device-tests.yml
+          - template: common/device-tests.yml
             parameters:
               platform: android
 
@@ -84,7 +84,7 @@ stages:
               ANDROID_EMULATORS: "system-images;android-21;google_apis;x86"
               devicetests.device: android-emulator-32_21
         steps:
-          - template: steps/device-tests.yml
+          - template: common/device-tests.yml
             parameters:
               platform: android
 
@@ -108,7 +108,7 @@ stages:
             # v10_3_1:
             #   devicetests.device: ios-simulator-64_10.3.1
         steps:
-          - template: steps/device-tests.yml
+          - template: common/device-tests.yml
             parameters:
               platform: ios
 
@@ -132,6 +132,6 @@ stages:
             # v10_3_1:
             #   devicetests.device: ios-simulator-64_10.3.1
         steps:
-          - template: steps/device-tests.yml
+          - template: common/device-tests.yml
             parameters:
               platform: ios
