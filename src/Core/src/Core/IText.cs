@@ -1,5 +1,3 @@
-using Microsoft.Maui;
-
 namespace Microsoft.Maui
 {
 	public interface IText : IFont
@@ -7,5 +5,7 @@ namespace Microsoft.Maui
 		string Text { get; }
 
 		Color TextColor { get; }
+
+		double CharacterSpacing { get; }
 	}
 }

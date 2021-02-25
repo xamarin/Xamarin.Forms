@@ -43,6 +43,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Android
 			layout.Position == Button.ButtonContentLayout.ImagePosition.Right;
 
 
+		[PortHandler]
 		internal static float ToEm(this double pt)
 		{
 			return (float)pt * 0.0624f; //Coefficient for converting Pt to Em

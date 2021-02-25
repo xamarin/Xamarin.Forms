@@ -20,7 +20,15 @@ namespace Microsoft.Maui
 			else
 			{
 				textView.SetTextColor(textColor.ToNative());
-			}				
+			}
+		}
+
+		public static void UpdateCharacterSpacing(this TextView textView, ILabel label)
+		{
+			if (NativeVersion.IsAtLeast(21))
+			{
+				textView.LetterSpacing = label.CharacterSpacing.ToEm();
+			}
 		}
 	}
 }

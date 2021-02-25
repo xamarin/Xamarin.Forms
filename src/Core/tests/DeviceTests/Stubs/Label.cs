@@ -1,5 +1,3 @@
-using Microsoft.Maui;
-
 namespace Microsoft.Maui.DeviceTests.Stubs
 {
 	public partial class LabelStub : StubBase, ILabel
@@ -8,10 +6,12 @@ namespace Microsoft.Maui.DeviceTests.Stubs
 
 		public Color TextColor { get; set; }
 
-		public FontAttributes FontAttributes => throw new System.NotImplementedException();
+		public FontAttributes FontAttributes { get; set; }
 
-		public string FontFamily => throw new System.NotImplementedException();
+		public string FontFamily { get; set; }
 
-		public double FontSize => throw new System.NotImplementedException();
+		public double FontSize { get; set; }
+
+		public double CharacterSpacing { get; set; }
 	}
 }
