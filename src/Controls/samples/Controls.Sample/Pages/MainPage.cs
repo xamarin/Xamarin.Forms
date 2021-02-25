@@ -25,6 +25,9 @@ namespace Maui.Controls.Sample.Pages
 
 			verticalStack.Add(label);
 
+			var underlineLabel = new Label { Text = "underline", TextDecorations = TextDecorations.Underline };
+			verticalStack.Add(underlineLabel);
+
 			var button = new Button() { Text = _viewModel.Text, WidthRequest = 200 };
 			var button2 = new Button()
 			{

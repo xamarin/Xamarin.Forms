@@ -11,5 +11,10 @@ namespace Microsoft.Maui
 		{
 
 		}
+
+		public static void UpdateTextDecorations(this object nothing, ILabel label)
+		{
+
+		}
 	}
 }

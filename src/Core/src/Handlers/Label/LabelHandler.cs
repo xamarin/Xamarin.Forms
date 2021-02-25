@@ -6,6 +6,7 @@ namespace Microsoft.Maui.Handlers
 		{
 			[nameof(ILabel.TextColor)] = MapTextColor,
 			[nameof(ILabel.Text)] = MapText,
+			[nameof(ILabel.TextDecorations)] = MapTextDecorations
 		};
 
 		public LabelHandler() : base(LabelMapper)
