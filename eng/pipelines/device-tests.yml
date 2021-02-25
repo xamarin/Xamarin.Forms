@@ -107,10 +107,10 @@ stages:
           devicetests.project: '$(System.DefaultWorkingDirectory)/src/Platform.Handlers/tests/Xamarin.Platform.Handlers.DeviceTests.iOS/Xamarin.Platform.Handlers.DeviceTests.iOS.csproj'
         strategy:
           matrix:
-            v14.3:
+            v14_3:
               devicetests.device: ios-simulator-64_14.3
-            v10.3.1:
-              devicetests.device: ios-simulator-64_10.3.1
+            # v10_3_1:
+            #   devicetests.device: ios-simulator-64_10.3.1
         steps:
           - template: common/device-tests-steps.yml
             parameters:
