@@ -1,7 +1,6 @@
 ﻿using UIKit;
-using Xamarin.Forms;
 
-namespace Xamarin.Platform
+namespace Microsoft.Maui
 {
 	public static class AlignmentExtensions
 	{

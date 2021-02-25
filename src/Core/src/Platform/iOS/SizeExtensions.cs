@@ -1,7 +1,7 @@
-﻿using Xamarin.Forms;
+﻿using Microsoft.Maui;
 using SizeF = CoreGraphics.CGSize;
 
-namespace Xamarin.Platform
+namespace Microsoft.Maui
 {
 	public static class SizeExtensions
 	{

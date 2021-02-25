@@ -1,3 +1,4 @@
+using Android.Views;
 using Android.Widget;
 
 namespace Microsoft.Maui
@@ -21,11 +22,6 @@ namespace Microsoft.Maui
 			{
 				textView.SetTextColor(textColor.ToNative());
 			}
-		}
-
-		public static void UpdateGravity(this TextView textView, ILabel label)
-		{
-			textView.Gravity = label.HorizontalTextAlignment.ToHorizontalGravityFlags() | label.VerticalTextAlignment.ToVerticalGravityFlags();
 		}
 	}
 }

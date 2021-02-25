@@ -1,5 +1,4 @@
 using Android.Views;
-using Xamarin.Platform;
 using ATextAlignment = Android.Views.TextAlignment;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Android

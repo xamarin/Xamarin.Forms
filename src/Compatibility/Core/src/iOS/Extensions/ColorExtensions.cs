@@ -3,7 +3,6 @@ using CoreGraphics;
 using PointF = CoreGraphics.CGPoint;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
-using Xamarin.Platform;
 #if __MOBILE__
 using UIKit;
 namespace Microsoft.Maui.Controls.Compatibility.Platform.iOS

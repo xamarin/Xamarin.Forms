@@ -2,7 +2,7 @@
 
 namespace Microsoft.Maui
 {
-	public interface ILabel : IView, IText
+	public interface ILabel : IView, IText, ITextAlignment
 	{
 		
 	}

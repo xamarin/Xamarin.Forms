@@ -1,5 +1,4 @@
 using Android.Widget;
-using Microsoft.Maui;
 
 namespace Microsoft.Maui.Handlers
 {
@@ -39,14 +38,14 @@ namespace Microsoft.Maui.Handlers
 		{
 			ViewHandler.CheckParameters(handler, label);
 
-			handler.TypedNativeView?.UpdateGravity(label);
+			handler.TypedNativeView?.UpdateTextAlignment(label);
 		}
 
 		public static void MapVerticalTextAlignment(LabelHandler handler, ILabel label)
 		{
 			ViewHandler.CheckParameters(handler, label);
 
-			handler.TypedNativeView?.UpdateGravity(label);
+			handler.TypedNativeView?.UpdateTextAlignment(label);
 		}
 	}
 }

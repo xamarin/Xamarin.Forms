@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using UIKit;
 using Microsoft.Maui;
 using Xunit;
+using Microsoft.Maui.DeviceTests.Stubs;
 
 namespace Microsoft.Maui.DeviceTests
 {

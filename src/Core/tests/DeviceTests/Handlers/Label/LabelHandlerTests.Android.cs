@@ -4,6 +4,7 @@ using Android.Views;
 using Android.Widget;
 using Microsoft.Maui;
 using Xunit;
+using Microsoft.Maui.DeviceTests.Stubs;
 
 namespace Microsoft.Maui.DeviceTests
 {
@@ -29,10 +30,13 @@ namespace Microsoft.Maui.DeviceTests
 		GravityFlags GetNativeGravity(LabelHandler labelHandler) =>
 			GetNativeLabel(labelHandler).Gravity;
 
+		Android.Views.TextAlignment GetNativeTextAlignment(LabelHandler labelHandler) =>
+			GetNativeLabel(labelHandler).TextAlignment;
+
 		[Fact(DisplayName = "[LabelHandler] HorizontalTextAlignment Updates Correctly")]
 		public async Task HorizontalTextAlignmentInitializesCorrectly()
 		{
-			var xplatHorizontalTextAlignment = Forms.TextAlignment.End;
+			var xplatHorizontalTextAlignment = TextAlignment.End;
 
 			var labelStub = new LabelStub()
 			{
@@ -40,25 +44,25 @@ namespace Microsoft.Maui.DeviceTests
 				HorizontalTextAlignment = xplatHorizontalTextAlignment
 			};
 
-			GravityFlags expectedValue = GravityFlags.End;
+			Android.Views.TextAlignment expectedValue = Android.Views.TextAlignment.ViewEnd;
 
 			var values = await GetValueAsync(labelStub, (handler) =>
 			{
 				return new
 				{
 					ViewValue = labelStub.HorizontalTextAlignment,
-					NativeViewValue = GetNativeGravity(handler)
+					NativeViewValue = GetNativeTextAlignment(handler)
 				};
 			});
 
 			Assert.Equal(xplatHorizontalTextAlignment, values.ViewValue);
-			Assert.True(values.NativeViewValue.HasFlag(expectedValue));
+			Assert.True(values.NativeViewValue == expectedValue);
 		}
 
 		[Fact(DisplayName = "[LabelHandler] VerticalTextAlignment Updates Correctly")]
 		public async Task VerticalTextAlignmentInitializesCorrectly()
 		{
-			var xplatVerticalTextAlignment = Forms.TextAlignment.End;
+			var xplatVerticalTextAlignment = TextAlignment.End;
 
 			var labelStub = new LabelStub()
 			{
