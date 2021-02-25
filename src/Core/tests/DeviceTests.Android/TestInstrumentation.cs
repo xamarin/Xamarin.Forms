@@ -12,7 +12,7 @@ using Xamarin.Essentials;
 
 namespace Microsoft.Maui.DeviceTests
 {
-    [Instrumentation(Name = "com.xamarin.handlers.devicetests.TestInstrumentation")]
+    [Instrumentation(Name = "com.microsoft.maui.devicetests.TestInstrumentation")]
     public class TestInstrumentation : Instrumentation
     {
         string resultsFileName;
