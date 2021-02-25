@@ -29,9 +29,9 @@ namespace Microsoft.Maui.DeviceTests
 			(float)GetNativeButton(buttonHandler).Layer.CornerRadius;
 
 		[Fact(DisplayName = "[ButtonHandler] CornerRadius Initializes Correctly")]
-		public async Task ValueInitializesCorrectly()
+		public async Task CornerRadiusInitializesCorrectly()
 		{
-			var xplatCornerRadius = 12;
+			int xplatCornerRadius = 12;
 
 			var buttonStub = new ButtonStub()
 			{
