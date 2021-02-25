@@ -2,7 +2,6 @@ using Microsoft.Maui.Handlers;
 using System;
 using System.Threading.Tasks;
 using UIKit;
-using Microsoft.Maui;
 using Xunit;
 
 namespace Microsoft.Maui.DeviceTests

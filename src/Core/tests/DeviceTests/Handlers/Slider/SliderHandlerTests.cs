@@ -1,6 +1,5 @@
 using Microsoft.Maui.Handlers;
 using System;
-using System.Drawing;
 using System.Threading.Tasks;
 using Microsoft.Maui.DeviceTests.Stubs;
 using Xunit;

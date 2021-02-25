@@ -1,5 +1,4 @@
 using Microsoft.Maui.Handlers;
-using Microsoft.Maui;
 using System.Threading.Tasks;
 using Android.Widget;
 using Xunit;

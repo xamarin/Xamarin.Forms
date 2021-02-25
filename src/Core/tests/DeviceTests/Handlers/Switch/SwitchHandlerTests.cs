@@ -8,7 +8,7 @@ namespace Microsoft.Maui.DeviceTests
 {
 	public partial class SwitchHandlerTests : HandlerTestBase<SwitchHandler>
 	{
-		[Fact(DisplayName= "Is Toggled Initializes Correctly")]
+		[Fact(DisplayName= "[SwitchHandler] Is Toggled Initializes Correctly")]
 		public async Task IsToggledInitializesCorrectly()
 		{
 			var switchStub = new SwitchStub()
@@ -19,7 +19,7 @@ namespace Microsoft.Maui.DeviceTests
 			await ValidatePropertyInitValue(switchStub, () => switchStub.IsToggled, GetNativeIsChecked, switchStub.IsToggled);
 		}
 
-		[Theory(DisplayName = "Track Color Initializes Correctly")]
+		[Theory(DisplayName = "[SwitchHandler] Track Color Initializes Correctly")]
 		[InlineData(true)]
 		[InlineData(false)]
 		public async Task TrackColorInitializesCorrectly(bool isToggled)
@@ -33,7 +33,7 @@ namespace Microsoft.Maui.DeviceTests
 			await ValidateTrackColor(switchStub, Color.Red);
 		}
 
-		[Fact(DisplayName = "Track Color Updates Correctly")]
+		[Fact(DisplayName = "[SwitchHandler] Track Color Updates Correctly")]
 		public async Task TrackColorUpdatesCorrectly()
 		{
 			var switchStub = new SwitchStub()
@@ -44,7 +44,7 @@ namespace Microsoft.Maui.DeviceTests
 			await ValidateTrackColor(switchStub, Color.Red, () => switchStub.TrackColor = Color.Red);
 		}
 
-		[Fact(DisplayName = "ThumbColor Initializes Correctly")]
+		[Fact(DisplayName = "[SwitchHandler] ThumbColor Initializes Correctly")]
 		public async Task ThumbColorInitializesCorrectly()
 		{
 			var switchStub = new SwitchStub()
@@ -56,7 +56,7 @@ namespace Microsoft.Maui.DeviceTests
 			await ValidateThumbColor(switchStub, Color.Blue);
 		}
 
-		[Fact(DisplayName = "Track Color Updates Correctly")]
+		[Fact(DisplayName = "[SwitchHandler] Track Color Updates Correctly")]
 		public async Task ThumbColorUpdatesCorrectly()
 		{
 			var switchStub = new SwitchStub()

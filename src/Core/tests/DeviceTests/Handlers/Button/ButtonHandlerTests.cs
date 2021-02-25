@@ -8,7 +8,7 @@ namespace Microsoft.Maui.DeviceTests
 {
 	public partial class ButtonHandlerTests : HandlerTestBase<ButtonHandler>
 	{
-		[Fact]
+		[Fact(DisplayName = "[ButtonHandler] Text Initializes Correctly")]
 		public async Task TextInitializesCorrectly()
 		{
 			var button = new ButtonStub()
@@ -19,7 +19,7 @@ namespace Microsoft.Maui.DeviceTests
 			await ValidatePropertyInitValue(button, () => button.Text, GetNativeText, button.Text);
 		}
 
-		[Fact]
+		[Fact(DisplayName = "[ButtonHandler] Text Color Initializes Correctly")]
 		public async Task TextColorInitializesCorrectly()
 		{
 			var button = new ButtonStub()
@@ -31,7 +31,7 @@ namespace Microsoft.Maui.DeviceTests
 			await ValidatePropertyInitValue(button, () => button.TextColor, GetNativeTextColor, button.TextColor);
 		}
 
-		[Fact]
+		[Fact(DisplayName = "[ButtonHandler] Click event fires Correctly")]
 		public async Task ClickEventFires()
 		{
 			var clicked = false;
