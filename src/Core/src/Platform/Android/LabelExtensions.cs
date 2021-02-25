@@ -9,9 +9,9 @@ namespace Microsoft.Maui
 			textView.Text = label.Text;
 		}
 
-		public static void UpdateTextColor(this TextView textView, ILabel label,  Maui.Color defaultColor)
+		public static void UpdateTextColor(this TextView textView, ILabel label,  Color defaultColor)
 		{
-			 Maui.Color textColor = label.TextColor;
+			 Color textColor = label.TextColor;
 
 			if (textColor.IsDefault)
 			{

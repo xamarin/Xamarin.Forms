@@ -1,47 +1,25 @@
 using Microsoft.Maui.Controls;
-using System;
-using Microsoft.Maui;
-using Microsoft.Maui.Hosting;
 
 namespace Microsoft.Maui.Tests
 {
 	class ButtonStub : View, IButton
 	{
-		public string Text => throw new NotImplementedException();
+		public string Text { get; set; }
 
-		public Color Color => throw new NotImplementedException();
+		public Color TextColor { get; set; }
 
-		public Font Font => throw new NotImplementedException();
+		public FontAttributes FontAttributes { get; set; }
 
-		public TextTransform TextTransform => throw new NotImplementedException();
+		public string FontFamily { get; set; }
 
-		public double CharacterSpacing => throw new NotImplementedException();
+		public double FontSize { get; set; }
 
-		public FontAttributes FontAttributes => throw new NotImplementedException();
+		public int CornerRadius { get; set; }
 
-		public string FontFamily => throw new NotImplementedException();
+		public void Clicked() { }
 
-		public double FontSize => throw new NotImplementedException();
+		public void Pressed() { }
 
-		public TextAlignment HorizontalTextAlignment => throw new NotImplementedException();
-
-		public TextAlignment VerticalTextAlignment => throw new NotImplementedException();
-
-		public Color TextColor => throw new NotImplementedException();
-
-		public void Clicked()
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Pressed()
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Released()
-		{
-			throw new NotImplementedException();
-		}
+		public void Released() { }
 	}
 }
