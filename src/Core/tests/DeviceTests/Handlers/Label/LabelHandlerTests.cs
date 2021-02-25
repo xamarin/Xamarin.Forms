@@ -1,6 +1,5 @@
 using Microsoft.Maui.Handlers;
 using System.Threading.Tasks;
-using Microsoft.Maui;
 using Microsoft.Maui.DeviceTests.Stubs;
 using Xunit;
 
@@ -41,6 +40,18 @@ namespace Microsoft.Maui.DeviceTests
 			};
 
 			await ValidatePropertyInitValue(label, () => label.TextColor, GetNativeTextColor, label.TextColor);
+		}
+
+		[Fact(DisplayName = "[LabelHandler] MaxLines Initializes Correctly")]
+		public async Task MaxLinesInitializesCorrectly()
+		{
+			var label = new LabelStub()
+			{
+				Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+				MaxLines = 2
+			};
+
+			await ValidatePropertyInitValue(label, () => label.MaxLines, GetNativeMaxLines, label.MaxLines);
 		}
 	}
 }

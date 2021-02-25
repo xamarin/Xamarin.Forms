@@ -1,3 +1,4 @@
+using Android.Text;
 using Android.Widget;
 
 namespace Microsoft.Maui
@@ -9,9 +10,9 @@ namespace Microsoft.Maui
 			textView.Text = label.Text;
 		}
 
-		public static void UpdateTextColor(this TextView textView, ILabel label,  Maui.Color defaultColor)
+		public static void UpdateTextColor(this TextView textView, ILabel label,  Color defaultColor)
 		{
-			 Maui.Color textColor = label.TextColor;
+			 Color textColor = label.TextColor;
 
 			if (textColor.IsDefault)
 			{
@@ -22,5 +23,63 @@ namespace Microsoft.Maui
 				textView.SetTextColor(textColor.ToNative());
 			}				
 		}
-	}
+
+        public static void UpdateLineBreakMode(this TextView textView, ILabel label)
+        {
+            textView.SetLineBreakMode(label);
+        }
+
+        public static void UpdateMaxLines(this TextView textView, ILabel label)
+        {
+            var maxLines = label.MaxLines;
+
+            if (maxLines == 0)
+            {
+                // MaxLines is not explicitly set, so just let it be whatever gets set by LineBreakMode
+                textView.SetLineBreakMode(label);
+                return;
+            }
+
+            textView.SetMaxLines(maxLines);
+        }
+
+        internal static void SetLineBreakMode(this TextView textView, ILabel label)
+        {
+            var lineBreakMode = label.LineBreakMode;
+
+            int maxLines = int.MaxValue;
+            bool singleLine = false;
+
+            switch (lineBreakMode)
+            {
+                case LineBreakMode.NoWrap:
+                    maxLines = 1;
+                    textView.Ellipsize = null;
+                    break;
+                case LineBreakMode.WordWrap:
+                    textView.Ellipsize = null;
+                    break;
+                case LineBreakMode.CharacterWrap:
+                    textView.Ellipsize = null;
+                    break;
+                case LineBreakMode.HeadTruncation:
+                    maxLines = 1;
+                    singleLine = true; // Workaround for bug in older Android API versions (https://bugzilla.xamarin.com/show_bug.cgi?id=49069)
+                    textView.Ellipsize = TextUtils.TruncateAt.Start;
+                    break;
+                case LineBreakMode.TailTruncation:
+                    maxLines = 1;
+                    textView.Ellipsize = TextUtils.TruncateAt.End;
+                    break;
+                case LineBreakMode.MiddleTruncation:
+                    maxLines = 1;
+                    singleLine = true; // Workaround for bug in older Android API versions (https://bugzilla.xamarin.com/show_bug.cgi?id=49069)
+                    textView.Ellipsize = TextUtils.TruncateAt.Middle;
+                    break;
+            }
+
+            textView.SetSingleLine(singleLine);
+            textView.SetMaxLines(maxLines);
+        }
+    }
 }

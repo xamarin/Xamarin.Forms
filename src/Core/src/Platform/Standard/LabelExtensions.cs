@@ -11,5 +11,15 @@ namespace Microsoft.Maui
 		{
 
 		}
+
+		public static void UpdateLineBreakMode(this object nothing, ILabel label)
+		{
+
+		}
+
+		public static void UpdateMaxLines(this object nothing, ILabel label)
+		{
+
+		}
 	}
 }

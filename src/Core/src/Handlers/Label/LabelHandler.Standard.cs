@@ -8,5 +8,7 @@ namespace Microsoft.Maui.Handlers
 
 		public static void MapText(IViewHandler handler, ILabel label) { }
 		public static void MapTextColor(IViewHandler handler, ILabel label) { }
+		public static void MapLineBreakMode(IViewHandler handler, ILabel label) { }
+		public static void MapMaxLines(IViewHandler handler, ILabel label) { }
 	}
 }

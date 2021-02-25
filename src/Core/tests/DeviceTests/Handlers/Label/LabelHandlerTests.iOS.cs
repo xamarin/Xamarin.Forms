@@ -1,7 +1,6 @@
 using Microsoft.Maui.Handlers;
 using System.Threading.Tasks;
 using UIKit;
-using Microsoft.Maui;
 
 namespace Microsoft.Maui.DeviceTests
 {
@@ -23,5 +22,8 @@ namespace Microsoft.Maui.DeviceTests
 				GetNativeLabel(CreateHandler(label)).AssertContainsColor(color);
 			});
 		}
+
+		int GetNativeMaxLines(LabelHandler labelHandler) =>
+			(int)GetNativeLabel(labelHandler).Lines;
 	}
 }

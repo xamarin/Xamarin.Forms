@@ -19,5 +19,19 @@ namespace Microsoft.Maui.Handlers
 
 			handler.TypedNativeView?.UpdateTextColor(label);
 		}
+
+		public static void MapLineBreakMode(LabelHandler handler, ILabel label)
+		{
+			ViewHandler.CheckParameters(handler, label);
+
+			handler.TypedNativeView?.UpdateLineBreakMode(label);
+		}
+
+		public static void MapMaxLines(LabelHandler handler, ILabel label)
+		{
+			ViewHandler.CheckParameters(handler, label);
+
+			handler.TypedNativeView?.UpdateMaxLines(label);
+		}
 	}
 }
