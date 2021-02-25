@@ -1,15 +1,10 @@
-using System;
-
 namespace Microsoft.Maui
 {
+	/// <summary>
+	/// Represents a visual element that is used to place layouts and controls on the screen.
+	/// </summary>
 	public interface IView : IFrameworkElement
 	{
-#if NETSTANDARD2_1
-		//Alignment GetVerticalAlignment(ILayout layout) => Alignment.Fill;
-		//Alignment GetHorizontalAlignment(ILayout layout) => Alignment.Fill;
-#else
-		//Alignment GetVerticalAlignment(ILayout layout);
-		//Alignment GetHorizontalAlignment(ILayout layout);
-#endif
+
 	}
 }
