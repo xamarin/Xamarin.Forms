@@ -9,9 +9,9 @@ namespace Microsoft.Maui
 			textView.Text = label.Text;
 		}
 
-		public static void UpdateTextColor(this TextView textView, ILabel label,  Maui.Color defaultColor)
+		public static void UpdateTextColor(this TextView textView, ILabel label,  Color defaultColor)
 		{
-			 Maui.Color textColor = label.TextColor;
+			 Color textColor = label.TextColor;
 
 			if (textColor.IsDefault)
 			{
@@ -23,12 +23,7 @@ namespace Microsoft.Maui
 			}
 		}
 
-		public static void UpdateCharacterSpacing(this TextView textView, ILabel label)
-		{
-			if (NativeVersion.IsAtLeast(21))
-			{
-				textView.LetterSpacing = label.CharacterSpacing.ToEm();
-			}
-		}
+		public static void UpdateCharacterSpacing(this TextView textView, ILabel label) =>
+			textView.LetterSpacing = label.CharacterSpacing.ToEm();
 	}
 }
