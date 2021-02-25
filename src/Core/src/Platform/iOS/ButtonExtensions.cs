@@ -1,5 +1,4 @@
 using UIKit;
-using Microsoft.Maui;
 
 namespace Microsoft.Maui
 {
@@ -29,6 +28,11 @@ namespace Microsoft.Maui
 
 				nativeButton.TintColor = color;
 			}
+		}
+
+		public static void UpdateCornerRadius(this UIButton nativeButton, IButton button)
+		{
+			BorderElementManager.UpdateBorder(nativeButton, button);
 		}
 	}
 }

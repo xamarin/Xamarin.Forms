@@ -26,11 +26,13 @@ namespace Maui.Controls.Sample.Pages
 			verticalStack.Add(label);
 
 			var button = new Button() { Text = _viewModel.Text, WidthRequest = 200 };
+
 			var button2 = new Button()
 			{
 				TextColor = Color.Green,
 				Text = "Hello I'm a button",
 				BackgroundColor = Color.Purple,
+				CornerRadius = 12,
 				Margin = new Thickness(12)
 			};
 

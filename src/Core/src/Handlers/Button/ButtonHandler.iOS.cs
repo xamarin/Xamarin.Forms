@@ -58,6 +58,13 @@ namespace Microsoft.Maui.Handlers
 			handler.TypedNativeView?.UpdateTextColor(button, ButtonTextColorDefaultNormal, ButtonTextColorDefaultHighlighted, ButtonTextColorDefaultDisabled);
 		}
 
+		public static void MapCornerRadius(ButtonHandler handler, IButton button)
+		{
+			ViewHandler.CheckParameters(handler, button);
+
+			handler.TypedNativeView?.UpdateCornerRadius(button);
+		}
+
 		void SetControlPropertiesFromProxy()
 		{
 			if (TypedNativeView == null)

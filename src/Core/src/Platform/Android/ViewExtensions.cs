@@ -1,7 +1,4 @@
-using System;
-using Android.Content.Res;
 using Android.Graphics.Drawables;
-using Microsoft.Maui;
 using AView = Android.Views.View;
 
 namespace Microsoft.Maui
@@ -19,6 +16,11 @@ namespace Microsoft.Maui
 			var backgroundColor = view.BackgroundColor;
 			if (!backgroundColor.IsDefault)
 				nativeView?.SetBackgroundColor(backgroundColor.ToNative());
+		}
+
+		public static void SetBackground(this AView view, Drawable drawable)
+		{
+			view.Background = drawable;
 		}
 	}
 }

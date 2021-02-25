@@ -8,6 +8,7 @@ using Specifics = Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Android
 {
+	[PortHandler("Partially ported to ButtonBorderBackgroundManager")]
 	internal class BorderBackgroundManager : IDisposable
 	{
 		Drawable _defaultDrawable;

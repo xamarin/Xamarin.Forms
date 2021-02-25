@@ -7,6 +7,7 @@ using APath = Android.Graphics.Path;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Android
 {
+	[PortHandler("Partially ported to ButtonBorderDrawable")]
 	internal class BorderDrawable : Drawable
 	{
 		public const int DefaultCornerRadius = 2; // Default value for Android material button.

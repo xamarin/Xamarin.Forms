@@ -4,6 +4,7 @@ using NativeView = UIKit.UIView;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.iOS
 {
+	[PortHandler("Partially ported")]
 	internal static class BorderElementManager
 	{
 		static nfloat _defaultCornerRadius = 5;

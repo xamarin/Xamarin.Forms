@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
 
 namespace Microsoft.Maui
 {
@@ -13,6 +10,11 @@ namespace Microsoft.Maui
 		}
 
 		public static void UpdateText(this object nothing, IButton button)
+		{
+
+		}
+
+		public static void UpdateCornerRadius(this object nothing, IButton button)
 		{
 
 		}

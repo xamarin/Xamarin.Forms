@@ -6,6 +6,8 @@ namespace Microsoft.Maui.Handlers
 {
 	public partial class ButtonHandler : AbstractViewHandler<IButton, AppCompatButton>
 	{
+		static ButtonBorderBackgroundManager? BackgroundTracker;
+
 		ButtonClickListener ClickListener { get; } = new ButtonClickListener();
 		ButtonTouchListener TouchListener { get; } = new ButtonTouchListener();
 
@@ -27,6 +29,8 @@ namespace Microsoft.Maui.Handlers
 			TouchListener.Handler = this;
 			nativeView.SetOnTouchListener(TouchListener);
 
+			BackgroundTracker = new ButtonBorderBackgroundManager(nativeView, VirtualView);
+
 			base.ConnectHandler(nativeView);
 		}
 
@@ -37,6 +41,9 @@ namespace Microsoft.Maui.Handlers
 
 			TouchListener.Handler = null;
 			nativeView.SetOnTouchListener(null);
+
+			BackgroundTracker?.Dispose();
+			BackgroundTracker = null;
 
 			base.DisconnectHandler(nativeView);
 		}
@@ -53,6 +60,13 @@ namespace Microsoft.Maui.Handlers
 			ViewHandler.CheckParameters(handler, button);
 
 			handler.TypedNativeView?.UpdateTextColor(button);
+		}
+
+		public static void MapCornerRadius(ButtonHandler handler, IButton button)
+		{
+			ViewHandler.CheckParameters(handler, button);
+
+			handler.TypedNativeView?.UpdateCornerRadius(button, BackgroundTracker);
 		}
 
 		public bool OnTouch(IButton? button, AView? v, MotionEvent? e)
@@ -89,7 +103,7 @@ namespace Microsoft.Maui.Handlers
 		{
 			public ButtonHandler? Handler { get; set; }
 
-			public bool OnTouch(AView? v, global::Android.Views.MotionEvent? e) =>
+			public bool OnTouch(AView? v, MotionEvent? e) =>
 				Handler?.OnTouch(Handler?.VirtualView, v, e) ?? false;
 		}
 	}
