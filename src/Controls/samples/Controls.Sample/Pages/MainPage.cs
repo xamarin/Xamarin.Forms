@@ -8,7 +8,8 @@ namespace Maui.Controls.Sample.Pages
 
 	public class MainPage : ContentPage, IPage
 	{
-		MainPageViewModel _viewModel;
+		readonly MainPageViewModel _viewModel;
+
 		public MainPage() : this(App.Current.Services.GetService<MainPageViewModel>())
 		{
 
@@ -39,7 +40,13 @@ namespace Maui.Controls.Sample.Pages
 			horizontalStack.Add(new Label { Text = "And these buttons are in a HorizontalStackLayout" });
 
 			verticalStack.Add(horizontalStack);
+
+			verticalStack.Add(new CheckBox());
+			verticalStack.Add(new CheckBox { BackgroundColor = Color.LightPink });
+			verticalStack.Add(new CheckBox { IsChecked = true, Color = Color.Aquamarine });
+
 			verticalStack.Add(new Slider());
+
 			verticalStack.Add(new Switch());
 			verticalStack.Add(new Switch() { OnColor = Color.Green });
 			verticalStack.Add(new Switch() { ThumbColor = Color.Yellow });
