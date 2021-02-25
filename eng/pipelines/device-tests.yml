@@ -39,12 +39,11 @@ stages:
         workspace:
           clean: all
         displayName: Device Tests
-        timeoutInMinutes: 120
         pool:
           name:  $(macOSXVmPool)
           vmImage: $(macOSXVmImage)
         variables:
-          devicetests.project: '$(System.DefaultWorkingDirectory)/src/Essentials/test/DeviceTests.Android/Xamarin.Essentials.DeviceTests.Android.csproj'
+          devicetests.project: '$(System.DefaultWorkingDirectory)/src/Essentials/test/DeviceTests.Android/Essentials.DeviceTests.Android.csproj'
         strategy:
           matrix:
             api_30:
@@ -57,7 +56,7 @@ stages:
               ANDROID_EMULATORS: "system-images;android-21;google_apis;x86"
               devicetests.device: android-emulator-32_21
         steps:
-          - template: common/device-tests-steps.yml
+          - template: steps/device-tests.yml
             parameters:
               platform: android
 
@@ -69,12 +68,11 @@ stages:
         workspace:
           clean: all
         displayName: Device Tests
-        timeoutInMinutes: 120
         pool:
           name:  $(macOSXVmPool)
           vmImage: $(macOSXVmImage)
         variables:
-          devicetests.project: '$(System.DefaultWorkingDirectory)/src/Platform.Handlers/tests/Xamarin.Platform.Handlers.DeviceTests.Android/Xamarin.Platform.Handlers.DeviceTests.Android.csproj'
+          devicetests.project: '$(System.DefaultWorkingDirectory)/src/Core/tests/DeviceTests.Android/Core.DeviceTests.Android.csproj'
         strategy:
           matrix:
             api_30:
@@ -87,7 +85,7 @@ stages:
               ANDROID_EMULATORS: "system-images;android-21;google_apis;x86"
               devicetests.device: android-emulator-32_21
         steps:
-          - template: common/device-tests-steps.yml
+          - template: steps/device-tests.yml
             parameters:
               platform: android
 
@@ -99,12 +97,11 @@ stages:
         workspace:
           clean: all
         displayName: Device Tests
-        timeoutInMinutes: 120
         pool:
           name:  $(macOSXVmPool)
           vmImage: $(macOSXVmImage)
         variables:
-          devicetests.project: '$(System.DefaultWorkingDirectory)/src/Essentials/test/DeviceTests.iOS/Xamarin.Essentials.DeviceTests.iOS.csproj'
+          devicetests.project: '$(System.DefaultWorkingDirectory)/src/Essentials/test/DeviceTests.iOS/Essentials.DeviceTests.iOS.csproj'
         strategy:
           matrix:
             v14_3:
@@ -112,7 +109,7 @@ stages:
             # v10_3_1:
             #   devicetests.device: ios-simulator-64_10.3.1
         steps:
-          - template: common/device-tests-steps.yml
+          - template: steps/device-tests.yml
             parameters:
               platform: ios
 
@@ -124,12 +121,11 @@ stages:
         workspace:
           clean: all
         displayName: Device Tests
-        timeoutInMinutes: 120
         pool:
           name:  $(macOSXVmPool)
           vmImage: $(macOSXVmImage)
         variables:
-          devicetests.project: '$(System.DefaultWorkingDirectory)/src/Platform.Handlers/tests/Xamarin.Platform.Handlers.DeviceTests.iOS/Xamarin.Platform.Handlers.DeviceTests.iOS.csproj'
+          devicetests.project: '$(System.DefaultWorkingDirectory)/src/Core/tests/DeviceTests.iOS/Core.DeviceTests.iOS.csproj'
         strategy:
           matrix:
             v14_3:
@@ -137,6 +133,6 @@ stages:
             # v10_3_1:
             #   devicetests.device: ios-simulator-64_10.3.1
         steps:
-          - template: common/device-tests-steps.yml
+          - template: steps/device-tests.yml
             parameters:
               platform: ios
