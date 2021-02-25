@@ -27,7 +27,6 @@ resources:
         branches:
           - main
           - main-handlers
-          - dev/ci-device-tests
 
 stages:
 
