@@ -23,11 +23,10 @@ resources:
   pipelines:
     - pipeline: handlersci
       source: xamarin-handlers-ci
-      trigger: 
+      trigger:
         branches:
           - main
           - main-handlers
-          - dev/ci-device-tests
 
 stages:
 
