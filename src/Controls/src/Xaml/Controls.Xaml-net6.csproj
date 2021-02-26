@@ -2,6 +2,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net6.0-android;net6.0-ios</TargetFrameworks>
 		<AssemblyName>Microsoft.Maui.Controls.Xaml</AssemblyName>
+		<RootNamespace>Microsoft.Maui.Controls.Xaml</RootNamespace>
 		<NoWarn>$(NoWarn);CA2200;</NoWarn>
 	</PropertyGroup>
 	<PropertyGroup>
