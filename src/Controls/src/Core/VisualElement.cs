@@ -889,10 +889,14 @@ namespace Microsoft.Maui.Controls
 		{
 			InvalidateMeasureInternal(trigger);
 		}
+
 		internal virtual void InvalidateMeasureInternal(InvalidationTrigger trigger)
 		{
 			_measureCache.Clear();
 			MeasureInvalidated?.Invoke(this, new InvalidationEventArgs(trigger));
+
+			if(IsMeasureValid)
+				((IFrameworkElement)this).InvalidateMeasure();
 		}
 
 		void IVisualElementController.InvalidateMeasure(InvalidationTrigger trigger) => InvalidateMeasureInternal(trigger);

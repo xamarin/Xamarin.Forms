@@ -31,6 +31,11 @@ namespace Microsoft.Maui.Controls.Compatibility
 				SetupRenderer(visualElementRenderer);
 		}
 
+		public override Size GetDesiredSize(double widthConstraint, double heightConstraint)
+		{
+			return base.GetDesiredSize(widthConstraint, heightConstraint);
+		}
+
 		public void SetupRenderer(IVisualElementRenderer visualElementRenderer)
 		{
 			VisualElementRenderer = visualElementRenderer;

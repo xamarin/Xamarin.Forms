@@ -307,7 +307,10 @@ namespace Microsoft.Maui.Controls
 			region.Y += margin.Top;
 			region.Height -= margin.VerticalThickness;
 
-			child.Layout(region);
+			if (child is IFrameworkElement fe)
+				fe.Arrange(region);
+			else
+				child.Layout(region);
 		}
 
 		internal virtual void OnChildMeasureInvalidated(VisualElement child, InvalidationTrigger trigger)

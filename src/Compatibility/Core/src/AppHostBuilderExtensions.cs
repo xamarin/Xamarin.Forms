@@ -3,13 +3,31 @@ using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Compatibility;
 using Microsoft.Maui.Hosting;
+using Microsoft.Maui.Handlers;
+#if __ANDROID__
+using static Microsoft.Maui.Controls.Compatibility.Platform.Android.AppCompat.Platform;
+using Microsoft.Maui.Controls.Compatibility.Platform.Android;
+#elif __IOS__
+using static Microsoft.Maui.Controls.Compatibility.Platform.iOS.Platform;
+#endif
 
 namespace Maui.Controls.Compatibility
 {
 	public static class AppHostBuilderExtensions
 	{
+		public static void ConfigureCompatibiltyApp(IActivationState activationState)
+		{
+
+			//TODO COLLAPSE
+#if __ANDROID__
+			Microsoft.Maui.Controls.Compatibility.Forms.Init(activationState.Context, activationState.SavedInstance);
+#elif __IOS__
+			Microsoft.Maui.Controls.Compatibility.Forms.Init();
+#endif
+		}
 
 		public static IAppHostBuilder RegisterCompatibilityRenderer<TControlType, TMauiType, TRenderer>(this IAppHostBuilder builder)
 			where TMauiType : IFrameworkElement

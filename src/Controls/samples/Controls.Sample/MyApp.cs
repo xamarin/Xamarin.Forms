@@ -10,9 +10,9 @@ using Maui.Controls.Sample.ViewModel;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Hosting;
 using Microsoft.Maui;
-//#if __ANDROID__
-//using Maui.Controls.Compatibility;
-//#endif
+#if __ANDROID__
+using Maui.Controls.Compatibility;
+#endif
 
 namespace Maui.Controls.Sample
 {
@@ -38,7 +38,7 @@ namespace Maui.Controls.Sample
 				   })
 				   .ConfigureServices(ConfigureServices)
 #if __ANDROID__
-				   //.RegisterCompatibilityRenderer<Microsoft.Maui.Controls.Button, Microsoft.Maui.Controls.Button, Microsoft.Maui.Controls.Platform.Android.FastRenderers.ButtonRenderer>()
+				   .RegisterCompatibilityRenderer<Microsoft.Maui.Controls.Button, Microsoft.Maui.Controls.Compatibility.Platform.Android.FastRenderers.ButtonRenderer>()
 #endif
 				   ;
 			;
@@ -48,6 +48,10 @@ namespace Maui.Controls.Sample
 		//IAppState state
 		public override IWindow GetWindowFor(IActivationState state)
 		{
+
+#if __ANDROID__ || __IOS__
+			Maui.Controls.Compatibility.AppHostBuilderExtensions.ConfigureCompatibiltyApp(state);
+#endif
 			return Services.GetService<IWindow>();
 		}
 

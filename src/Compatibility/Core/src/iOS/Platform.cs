@@ -205,7 +205,12 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.iOS
 
 			var renderView = GetRenderer(view);
 			if (renderView == null || renderView.NativeView == null)
+			{
+				if (view is IView iView)
+					return new SizeRequest(iView.Handler.GetDesiredSize(widthConstraint, heightConstraint));
+
 				return new SizeRequest(Size.Zero);
+			}
 
 			Performance.Stop(reference);
 			return renderView.GetDesiredSize(widthConstraint, heightConstraint);

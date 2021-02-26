@@ -10,7 +10,7 @@ using Microsoft.Maui.Controls.Internals;
 
 namespace Microsoft.Maui.Controls
 {
-	public class Page : VisualElement, ILayout, IPageController, IElementConfiguration<Page>, IPaddingElement
+	public partial class Page : VisualElement, ILayout, IPageController, IElementConfiguration<Page>, IPaddingElement
 	{
 		public const string BusySetSignalName = "Microsoft.Maui.Controls.BusySet";
 
