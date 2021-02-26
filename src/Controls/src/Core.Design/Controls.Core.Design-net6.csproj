@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0</TargetFrameworks>
+		<TargetFrameworks>net6.0</TargetFrameworks>
 		<AssemblyName>Microsoft.Maui.Controls.Core.Design</AssemblyName>
 		<EnableDefaultCompileItems>False</EnableDefaultCompileItems>
 	</PropertyGroup>
