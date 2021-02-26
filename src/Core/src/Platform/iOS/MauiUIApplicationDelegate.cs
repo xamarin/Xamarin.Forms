@@ -1,16 +1,17 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Foundation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using UIKit;
-using Microsoft.Maui.Hosting;
 
 namespace Microsoft.Maui
 {
 	public class MauiUIApplicationDelegate<TApplication> : UIApplicationDelegate, IUIApplicationDelegate where TApplication : MauiApp
 	{
+		bool _isSuspended;
+		MauiApp? _app;
+		IWindow? _window;
+
 		public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
 		{
 			if (!(Activator.CreateInstance(typeof(TApplication)) is TApplication app))
@@ -18,23 +19,29 @@ namespace Microsoft.Maui
 
 			var host = app.CreateBuilder().ConfigureServices(ConfigureNativeServices).Build(app);
 
-			if (MauiApp.Current == null || MauiApp.Current.Services == null)
+			if (App.Current == null || App.Current.Services == null)
 				throw new InvalidOperationException("App was not intialized");
 
-			var window = app.GetWindowFor(null!);
+			_app = App.Current as MauiApp;
 
-			window.MauiContext = new MauiContext(MauiApp.Current.Services);
+			_app?.Create();
+
+			_window = app.GetWindowFor(null!);
+
+			_window.Create();
+
+			_window.MauiContext = new MauiContext(App.Current.Services);
 
 			//Hack for now we set this on the App Static but this should be on IFrameworkElement
-			App.Current.SetHandlerContext(window.MauiContext);
+			App.Current.SetHandlerContext(_window.MauiContext);
 
-			var content = window.Page.View;
+			var content = _window.Page.View;
 
 			var uiWindow = new UIWindow
 			{
 				RootViewController = new UIViewController
 				{
-					View = content.ToNative(window.MauiContext)
+					View = content.ToNative(_window.MauiContext)
 				}
 			};
 
@@ -43,9 +50,29 @@ namespace Microsoft.Maui
 			return true;
 		}
 
+		public override void OnActivated(UIApplication application)
+		{
+			if (_isSuspended)
+			{
+				_isSuspended = false;
+				_app?.Resume();
+			}
+		}
+
+		public override void OnResignActivation(UIApplication application)
+		{
+			_isSuspended = true;
+			_app?.Pause();
+		}
+
+		public override void WillTerminate(UIApplication application)
+		{
+			_app?.Stop();
+		}
+
 		void ConfigureNativeServices(HostBuilderContext ctx, IServiceCollection services)
 		{
-			
+
 		}
 	}
 }

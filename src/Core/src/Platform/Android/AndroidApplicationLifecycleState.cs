@@ -1,6 +1,5 @@
-namespace Microsoft.Maui.Controls.Compatibility.Platform.Android
+﻿namespace Microsoft.Maui
 {
-	[PortHandler]
 	internal enum AndroidApplicationLifecycleState
 	{
 		Uninitialized,

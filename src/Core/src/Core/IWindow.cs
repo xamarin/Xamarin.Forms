@@ -4,5 +4,11 @@ namespace Microsoft.Maui
 	{
 		public IMauiContext MauiContext { get; set; }
 		public IPage Page { get; set; }
+
+
+		void Create();
+		void Resume();
+		void Pause();
+		void Destroy();
 	}
 }

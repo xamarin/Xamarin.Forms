@@ -10,6 +10,7 @@ namespace Maui.Controls.Sample.Droid
 	{
 		public MainApplication(IntPtr handle, JniHandleOwnership ownerShip) : base(handle, ownerShip)
 		{
+
 		}
 	}
 }

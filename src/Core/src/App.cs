@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Hosting;
 
@@ -23,10 +22,25 @@ namespace Microsoft.Maui
 
 		public IMauiContext? Context => _context;
 
-		//move to abstract
+		// Move to abstract
 		public virtual IAppHostBuilder CreateBuilder() => CreateDefaultBuilder();
 
-	
+		public virtual void Create()
+		{
+		}
+
+		public virtual void Resume()
+		{
+		}
+
+		public virtual void Pause()
+		{
+		}
+
+		public virtual void Destroy()
+		{
+		}
+
 		internal void SetServiceProvider(IServiceProvider provider)
 		{
 			_serviceProvider = provider;

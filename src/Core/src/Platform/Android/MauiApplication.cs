@@ -5,13 +5,15 @@ using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Maui
 {
-	public class MauiApplication<TApplication> : global::Android.App.Application where TApplication : MauiApp
+	public class MauiApplication<TApplication> : Android.App.Application where TApplication : MauiApp
 	{
+		IHost? _host;
+
 		public MauiApplication(IntPtr handle, JniHandleOwnership ownerShip) : base(handle, ownerShip)
 		{
 		
 		}
-		IHost? _host;
+
 		public override void OnCreate()
 		{
 			if (!(Activator.CreateInstance(typeof(TApplication)) is TApplication app))
@@ -19,13 +21,15 @@ namespace Microsoft.Maui
 
 			_host = app.CreateBuilder().ConfigureServices(ConfigureNativeServices).Build(app);
 
-			//_host.Start();
+			_host.Start();
+
 			base.OnCreate();
 		}
-		
-		//configure native services like HandlersContext, ImageSourceHandlers etc.. 
+
+		// Configure native services like HandlersContext, ImageSourceHandlers etc.. 
 		void ConfigureNativeServices(HostBuilderContext ctx, IServiceCollection services)
 		{
+
 		}
 	}
 }
