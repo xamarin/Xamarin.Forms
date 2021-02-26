@@ -25,5 +25,8 @@ namespace Microsoft.Maui.DeviceTests
 
 		int GetNativeMaxLines(LabelHandler labelHandler) =>
 			(int)GetNativeLabel(labelHandler).Lines;
+
+		UILineBreakMode GetNativeLineBreakMode(LabelHandler labelHandler) =>
+			GetNativeLabel(labelHandler).LineBreakMode;
 	}
 }

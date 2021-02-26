@@ -1,4 +1,5 @@
 using Android.Graphics;
+using Android.Text;
 using Android.Views;
 using Android.Widget;
 using System;
@@ -105,7 +106,7 @@ namespace Microsoft.Maui.DeviceTests
 			return bitmap.AssertColorAtPoint(expectedColor, bitmap.Width - 1, bitmap.Height - 1);
 		}
 
-		public static Bitmap AssertContainsColor(this AView view,  Maui.Color expectedColor) =>
+		public static Bitmap AssertContainsColor(this AView view, Maui.Color expectedColor) =>
 			AssertContainsColor(view, expectedColor.ToNative());
 
 		public static Bitmap AssertContainsColor(this AView view, AColor expectedColor)
@@ -164,5 +165,17 @@ namespace Microsoft.Maui.DeviceTests
 			var bitmap = view.ToBitmap();
 			return bitmap.AssertColorAtTopRight(expectedColor);
 		}
+
+		public static TextUtils.TruncateAt ToNative(this LineBreakMode mode) =>
+			mode switch
+			{
+				LineBreakMode.NoWrap => null,
+				LineBreakMode.WordWrap => null,
+				LineBreakMode.CharacterWrap => null,
+				LineBreakMode.HeadTruncation => TextUtils.TruncateAt.Start,
+				LineBreakMode.TailTruncation => TextUtils.TruncateAt.End,
+				LineBreakMode.MiddleTruncation => TextUtils.TruncateAt.Middle,
+				_ => throw new ArgumentOutOfRangeException(nameof(mode))
+			};
 	}
 }
