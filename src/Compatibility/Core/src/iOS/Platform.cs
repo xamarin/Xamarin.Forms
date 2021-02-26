@@ -221,8 +221,8 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.iOS
 			IVisualElementRenderer renderer = null;
 
 			// temporary hack to fix the following issues
-			// https://github.com/xamarin/Microsoft.Maui.Controls.Compatibility/issues/13261
-			// https://github.com/xamarin/Microsoft.Maui.Controls.Compatibility/issues/12484
+			// https://github.com/xamarin/Xamarin.Forms/issues/13261
+			// https://github.com/xamarin/Xamarin.Forms/issues/12484
 			if (element is RadioButton tv && tv.ResolveControlTemplate() != null)
 			{
 				renderer = new DefaultRenderer();

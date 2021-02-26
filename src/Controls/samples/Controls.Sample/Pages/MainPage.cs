@@ -8,44 +8,55 @@ namespace Maui.Controls.Sample.Pages
 
 	public class MainPage : ContentPage, IPage, IView
 	{
-		//MainPageViewModel _viewModel;
+		MainPageViewModel _viewModel;
 		public MainPage() : this(App.Current.Services.GetService<MainPageViewModel>())
 		{
 
 		}
 		public MainPage(MainPageViewModel viewModel)
 		{
-			//BindingContext = _viewModel = viewModel;
+			SetupMauiLayout(viewModel);
+			// SetupCompatibilityLayout();
+		}
 
-			//var verticalStack = new VerticalStackLayout() { Spacing = 5, BackgroundColor = Color.AntiqueWhite };
-			//var horizontalStack = new HorizontalStackLayout() { Spacing = 2, BackgroundColor = Color.CornflowerBlue };
+		void SetupMauiLayout(MainPageViewModel viewModel)
+		{
+			BindingContext = _viewModel = viewModel;
 
-			//var label = new Label { Text = "This will disappear in ~5 seconds", BackgroundColor = Color.Fuchsia };
-			//label.Margin = new Thickness(15, 10, 20, 15);
+			var verticalStack = new VerticalStackLayout() { Spacing = 5, BackgroundColor = Color.AntiqueWhite };
+			var horizontalStack = new HorizontalStackLayout() { Spacing = 2, BackgroundColor = Color.CornflowerBlue };
 
-			//verticalStack.Add(label);
+			var label = new Label { Text = "This will disappear in ~5 seconds", BackgroundColor = Color.Fuchsia };
+			label.Margin = new Thickness(15, 10, 20, 15);
 
-			//var button = new Button() { Text = _viewModel.Text, WidthRequest = 200 };
-			//var button2 = new Button()
-			//{
-			//	TextColor = Color.Green,
-			//	Text = "Hello I'm a button",
-			//	BackgroundColor = Color.Purple,
-			//	Margin = new Thickness(12)
-			//};
+			verticalStack.Add(label);
 
-			//horizontalStack.Add(button);
-			//horizontalStack.Add(button2);
-			//horizontalStack.Add(new Label { Text = "And these buttons are in a HorizontalStackLayout" });
+			var button = new Button() { Text = _viewModel.Text, WidthRequest = 200 };
+			var button2 = new Button()
+			{
+				TextColor = Color.Green,
+				Text = "Hello I'm a button",
+				BackgroundColor = Color.Purple,
+				Margin = new Thickness(12)
+			};
 
-			//verticalStack.Add(horizontalStack);
-			//verticalStack.Add(new Slider());
-			//verticalStack.Add(new Switch());
-			//verticalStack.Add(new Switch() { OnColor = Color.Green });
-			//verticalStack.Add(new Switch() { ThumbColor = Color.Yellow });
-			//verticalStack.Add(new Switch() { OnColor = Color.Green, ThumbColor = Color.Yellow });
+			horizontalStack.Add(button);
+			horizontalStack.Add(button2);
+			horizontalStack.Add(new Label { Text = "And these buttons are in a HorizontalStackLayout" });
 
-			//Content = verticalStack;
+			verticalStack.Add(horizontalStack);
+			verticalStack.Add(new Slider());
+			verticalStack.Add(new Switch());
+			verticalStack.Add(new Switch() { OnColor = Color.Green });
+			verticalStack.Add(new Switch() { ThumbColor = Color.Yellow });
+			verticalStack.Add(new Switch() { OnColor = Color.Green, ThumbColor = Color.Yellow });
+
+			Content = verticalStack;
+
+		}
+
+		void SetupCompatibilityLayout()
+		{
 
 			var layout = new StackLayout()
 			{

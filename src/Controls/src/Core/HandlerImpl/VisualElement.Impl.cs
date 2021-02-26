@@ -36,8 +36,6 @@ namespace Microsoft.Maui.Controls
 
 		public bool IsArrangeValid { get; protected set; }
 
-		Thickness IFrameworkElement.Margin => new Thickness();
-
 		public void Arrange(Rectangle bounds)
 		{
 			Layout(bounds);
@@ -61,8 +59,6 @@ namespace Microsoft.Maui.Controls
 			Layout(newRect);
 			Handler?.SetFrame(Bounds);
 		}
-
-
 
 		void IFrameworkElement.InvalidateMeasure()
 		{

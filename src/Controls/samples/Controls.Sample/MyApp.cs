@@ -38,7 +38,7 @@ namespace Maui.Controls.Sample
 				   })
 				   .ConfigureServices(ConfigureServices)
 #if __ANDROID__
-				   .RegisterCompatibilityRenderer<Microsoft.Maui.Controls.Button, Microsoft.Maui.Controls.Compatibility.Platform.Android.FastRenderers.ButtonRenderer>()
+				   .// RegisterCompatibilityRenderer<Microsoft.Maui.Controls.Button, Microsoft.Maui.Controls.Compatibility.Platform.Android.FastRenderers.ButtonRenderer>()
 #endif
 				   ;
 			;

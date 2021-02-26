@@ -4,13 +4,16 @@ using System.Text;
 
 namespace Microsoft.Maui.Controls
 {
-	// TODO: We don't currently have any concept of a page
+	// TODO: We don't currently have any concept of a page in Maui
+	// so this just treats it as a layout for now
 	public partial class ContentPage : Microsoft.Maui.ILayout
 	{
 		IReadOnlyList<Microsoft.Maui.IView> Microsoft.Maui.ILayout.Children =>
 			new List<IView>() { Content };
 
 		ILayoutHandler Maui.ILayout.LayoutHandler => Handler as ILayoutHandler;
+
+		Thickness Maui.IView.Margin => new Thickness();
 
 		void Maui.ILayout.Add(IView child)
 		{

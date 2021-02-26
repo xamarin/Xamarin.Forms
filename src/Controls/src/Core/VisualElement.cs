@@ -895,7 +895,11 @@ namespace Microsoft.Maui.Controls
 			_measureCache.Clear();
 			MeasureInvalidated?.Invoke(this, new InvalidationEventArgs(trigger));
 
-			if(IsMeasureValid)
+			// Framework Element parts are already invalid
+			// This is a bit awkward because we could have invalidations coming from old bits
+			// to here first and new bits going to IFrameworkElement.InvalidateMeasure
+			// first and each one needs to call the other so this short circuits the ping pong
+			if (IsMeasureValid)
 				((IFrameworkElement)this).InvalidateMeasure();
 		}
 
