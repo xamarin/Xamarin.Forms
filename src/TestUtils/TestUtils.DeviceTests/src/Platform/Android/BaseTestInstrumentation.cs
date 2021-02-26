@@ -71,12 +71,12 @@ namespace Microsoft.Maui.TestUtils
 			throw new NotImplementedException();
 		}
 
-		public TestRunner GetTestRunner(TestRunner testRunner, LogWriter logWriter)
+		public virtual TestRunner GetTestRunner(TestRunner testRunner, LogWriter logWriter)
 		{
 			return testRunner;
 		}
 
-		public void TerminateWithSuccess()
+		public virtual void TerminateWithSuccess()
 		{
 		}
 	}

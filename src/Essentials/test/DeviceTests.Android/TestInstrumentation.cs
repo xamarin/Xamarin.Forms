@@ -21,5 +21,16 @@ namespace Microsoft.Maui.Essentials.DeviceTests.Droid
 			yield return new TestAssemblyInfo(Assembly.GetExecutingAssembly(), Assembly.GetExecutingAssembly().Location);
 			yield return new TestAssemblyInfo(typeof(Battery_Tests).Assembly, typeof(Battery_Tests).Assembly.Location);
 		}
+
+		public override TestRunner GetTestRunner(TestRunner testRunner, LogWriter logWriter)
+		{
+			var additional = new List<string>
+			{
+				$"{Traits.FileProvider}={Traits.FeatureSupport.ToExclude(Platform.HasApiLevel(24))}",
+			};
+			testRunner.SkipCategories(Traits.GetSkipTraits(additional));
+
+			return testRunner;
+		}
 	}
 }
