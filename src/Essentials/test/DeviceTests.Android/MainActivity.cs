@@ -4,7 +4,7 @@ using Android.Content.PM;
 using Android.OS;
 using Xunit.Runners.UI;
 
-namespace DeviceTests.Droid
+namespace Microsoft.Maui.Essentials.DeviceTests.Droid
 {
 	[Activity(
 		Name = "com.microsoft.maui.essentials.devicetests.MainActivity",

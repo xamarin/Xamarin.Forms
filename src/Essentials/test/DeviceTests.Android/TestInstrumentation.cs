@@ -6,7 +6,7 @@ using Android.Runtime;
 using Microsoft.DotNet.XHarness.TestRunners.Common;
 using Microsoft.Maui.TestUtils;
 
-namespace DeviceTests.Droid
+namespace Microsoft.Maui.Essentials.DeviceTests.Droid
 {
 	[Instrumentation(Name = "com.microsoft.maui.essentials.devicetests.TestInstrumentation")]
 	public class TestInstrumentation : BaseTestInstrumentation
