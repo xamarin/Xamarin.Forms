@@ -19,7 +19,7 @@ namespace Microsoft.Maui
 		public static void UpdateTextColor(this EditText editText, IEntry entry, ColorStateList? defaultColor)
 		{
 			var textColor = entry.TextColor;
-			if(textColor.IsDefault)
+			if (textColor.IsDefault)
 			{
 				editText.SetTextColor(defaultColor);
 			}
