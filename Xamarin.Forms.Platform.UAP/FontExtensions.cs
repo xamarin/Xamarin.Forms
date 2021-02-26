@@ -56,11 +56,7 @@ namespace Xamarin.Forms.Platform.UWP
 			switch (size)
 			{
 				case NamedSize.Default:
-					if(DefaultFontSize == double.NegativeInfinity)
-					{
-						DefaultFontSize = (double)WApplication.Current.Resources["ControlContentThemeFontSize"];
-					}
-					return DefaultFontSize;
+					return 14.667;
 				case NamedSize.Micro:
 					return 15.667;
 				case NamedSize.Small:
