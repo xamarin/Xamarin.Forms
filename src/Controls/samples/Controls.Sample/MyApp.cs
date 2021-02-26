@@ -38,10 +38,11 @@ namespace Maui.Controls.Sample
 				   })
 				   .ConfigureServices(ConfigureServices)
 #if __ANDROID__
-				   .// RegisterCompatibilityRenderer<Microsoft.Maui.Controls.Button, Microsoft.Maui.Controls.Compatibility.Platform.Android.FastRenderers.ButtonRenderer>()
+				   //.RegisterCompatibilityRenderer<Microsoft.Maui.Controls.ContentPage, Microsoft.Maui.Controls.Compatibility.Platform.Android.PageRenderer>()
+				   //.RegisterCompatibilityRenderer<Microsoft.Maui.Controls.Button, Microsoft.Maui.Controls.Compatibility.Platform.Android.FastRenderers.ButtonRenderer>()
 #endif
 				   ;
-			;
+
 			return builder;
 		}
 
@@ -53,7 +54,6 @@ namespace Maui.Controls.Sample
 
 			// This will probably go into a compatibility app or window
 			Microsoft.Maui.Controls.Compatibility.Forms.Init(state);
-			Maui.Controls.Compatibility.AppHostBuilderExtensions.ConfigureCompatibiltyApp(state);
 #endif
 			return Services.GetService<IWindow>();
 		}

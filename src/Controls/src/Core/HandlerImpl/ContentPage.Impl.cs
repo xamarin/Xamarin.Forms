@@ -33,11 +33,6 @@ namespace Microsoft.Maui.Controls
 
 		protected override void ArrangeOverride(Rectangle bounds)
 		{
-			if (!IsMeasureValid)
-			{
-				return;
-			}
-
 			if (IsArrangeValid)
 			{
 				return;
@@ -45,6 +40,7 @@ namespace Microsoft.Maui.Controls
 
 			Arrange(bounds);
 			IsArrangeValid = true;
+			IsMeasureValid = true;
 			Handler?.SetFrame(Frame);
 
 			if (Content is IFrameworkElement fe)

@@ -37,7 +37,8 @@ namespace Microsoft.Maui
 			//Hack for now we set this on the App Static but this should be on IFrameworkElement
 			App.Current.SetHandlerContext(window.MauiContext);
 
-			var content = window.Page.View;
+			var content = (window.Page as IView) ?? 
+				window.Page.View;
 
 			CoordinatorLayout parent = new CoordinatorLayout(this);
 			NestedScrollView main = new NestedScrollView(this);
@@ -46,9 +47,7 @@ namespace Microsoft.Maui
 
 			//AddToolbar(parent);
 
-			parent.AddView(main, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
-
-			main.AddView(content.ToNative(window.MauiContext), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
+			parent.AddView(content.ToNative(window.MauiContext), new CoordinatorLayout.LayoutParams(CoordinatorLayout.LayoutParams.MatchParent, CoordinatorLayout.LayoutParams.MatchParent));
 		}
 
 		void AddToolbar(ViewGroup parent)
