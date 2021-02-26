@@ -5,7 +5,6 @@
 	</PropertyGroup>
 	<PropertyGroup>
 		<PackageId>Microsoft.Maui.Controls.Xaml</PackageId>
-		<Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Core\Controls.Core.csproj">
