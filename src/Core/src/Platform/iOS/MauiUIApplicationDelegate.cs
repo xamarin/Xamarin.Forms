@@ -19,21 +19,23 @@ namespace Microsoft.Maui
 
 			var host = app.CreateBuilder().ConfigureServices(ConfigureNativeServices).Build(app);
 
-			if (App.Current == null || App.Current.Services == null)
-				throw new InvalidOperationException("App was not intialized");
-
 			_app = App.Current as MauiApp;
 
-			_app?.Create();
+			if (_app == null || _app.Services == null)
+				throw new InvalidOperationException("App was not intialized");
+
+			_app.Create();
 
 			_window = app.GetWindowFor(null!);
 
 			_window.Create();
 
-			_window.MauiContext = new MauiContext(App.Current.Services);
+			_window.MauiContext = new MauiContext(_app.Services);
+
+			_app.MainWindow = _window;
 
 			//Hack for now we set this on the App Static but this should be on IFrameworkElement
-			App.Current.SetHandlerContext(_window.MauiContext);
+			App.Current..SetHandlerContext(_window.MauiContext);
 
 			var content = _window.Page.View;
 

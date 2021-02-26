@@ -6,6 +6,7 @@ namespace Microsoft.Maui
 {
 	public abstract class App : IApp
 	{
+		readonly WindowCollection _windows;
 		IServiceProvider? _serviceProvider;
 		IMauiContext? _context;
 
@@ -13,10 +14,17 @@ namespace Microsoft.Maui
 		{
 			if (Current != null)
 				throw new InvalidOperationException($"Only one {nameof(App)} instance is allowed");
+
 			Current = this;
+
+			_windows = new WindowCollection();
 		}
 
 		public static App? Current { get; internal set; }
+
+		public IWindow? MainWindow { get; set; }
+
+		public WindowCollection Windows => _windows;
 
 		public IServiceProvider? Services => _serviceProvider;
 
@@ -31,14 +39,17 @@ namespace Microsoft.Maui
 
 		public virtual void Resume()
 		{
+			MainWindow?.Resume();
 		}
 
 		public virtual void Pause()
 		{
+			MainWindow?.Pause();
 		}
 
-		public virtual void Destroy()
+		public virtual void Stop()
 		{
+			MainWindow?.Stop();
 		}
 
 		internal void SetServiceProvider(IServiceProvider provider)

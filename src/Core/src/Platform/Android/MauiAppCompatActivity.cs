@@ -32,7 +32,7 @@ namespace Microsoft.Maui
 
 			_app = App.Current as MauiApp;
 
-			if (_app?.Services == null)
+			if (_app == null || _app.Services == null)
 				throw new InvalidOperationException("App was not initialized");
 
 			_previousState = _currentState;
@@ -43,6 +43,9 @@ namespace Microsoft.Maui
 			_window.Create();
 
 			_window.MauiContext = new HandlersContext(_app.Services, this);
+
+			//if (_app != null)
+				_app.MainWindow = _window;
 
 			//Hack for now we set this on the App Static but this should be on IFrameworkElement
 			App.Current.SetHandlerContext(_window.MauiContext);
