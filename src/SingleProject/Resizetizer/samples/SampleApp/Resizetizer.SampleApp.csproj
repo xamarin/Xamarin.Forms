@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SingleProject\Resizetizer.csproj" ReferenceOutputAssembly="False" />
+    <ProjectReference Include="..\..\src\SingleProject\Resizetizer\Resizetizer.csproj" ReferenceOutputAssembly="False" />
   </ItemGroup>
 
   <ItemGroup>
