@@ -44,11 +44,10 @@ namespace Microsoft.Maui
 
 			_window.MauiContext = new HandlersContext(_app.Services, this);
 
-			//if (_app != null)
-				_app.MainWindow = _window;
+			_app.MainWindow = _window;
 
 			//Hack for now we set this on the App Static but this should be on IFrameworkElement
-			App.Current.SetHandlerContext(_window.MauiContext);
+			App.Current?.SetHandlerContext(_window.MauiContext);
 
 			var content = _window.Page.View;
 

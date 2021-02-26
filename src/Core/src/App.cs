@@ -49,7 +49,7 @@ namespace Microsoft.Maui
 
 		public virtual void Stop()
 		{
-			MainWindow?.Stop();
+
 		}
 
 		internal void SetServiceProvider(IServiceProvider provider)
