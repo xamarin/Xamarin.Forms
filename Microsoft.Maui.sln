@@ -113,21 +113,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{08F720FF-753
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{B688531D-C2BD-41FC-9694-5311346DB789}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Resizetizer", "src\Resizetizer\src\Resizetizer.csproj", "{3E1D0DED-6B13-42C8-AA15-2EDFD8ECE80C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Resizetizer", "src\SingleProject\Resizetizer\src\Resizetizer.csproj", "{3E1D0DED-6B13-42C8-AA15-2EDFD8ECE80C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Resizetizer.UnitTests", "src\Resizetizer\test\UnitTests\Resizetizer.UnitTests.csproj", "{BDFA84D6-6C6B-44C9-ABC5-563CFD0C4DB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Resizetizer.UnitTests", "src\SingleProject\Resizetizer\test\UnitTests\Resizetizer.UnitTests.csproj", "{BDFA84D6-6C6B-44C9-ABC5-563CFD0C4DB5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Resizetizer.SampleApp", "src\Resizetizer\samples\SampleApp\Resizetizer.SampleApp.csproj", "{E48A5692-28C7-4B8F-B7E9-EDD53F2EDFE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Resizetizer.SampleApp", "src\SingleProject\Resizetizer\samples\SampleApp\Resizetizer.SampleApp.csproj", "{E48A5692-28C7-4B8F-B7E9-EDD53F2EDFE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resizetizer.SampleApp.Android", "src\Resizetizer\samples\SampleApp.Android\Resizetizer.SampleApp.Android.csproj", "{9BCC46FD-2A36-4A92-8A57-B1451E1AFBF7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resizetizer.SampleApp.Android", "src\SingleProject\Resizetizer\samples\SampleApp.Android\Resizetizer.SampleApp.Android.csproj", "{9BCC46FD-2A36-4A92-8A57-B1451E1AFBF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resizetizer.SampleApp.iOS", "src\Resizetizer\samples\SampleApp.iOS\Resizetizer.SampleApp.iOS.csproj", "{6E4DAA20-F554-4E91-9F14-42EFB1815644}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resizetizer.SampleApp.iOS", "src\SingleProject\Resizetizer\samples\SampleApp.iOS\Resizetizer.SampleApp.iOS.csproj", "{6E4DAA20-F554-4E91-9F14-42EFB1815644}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resizetizer.SampleApp.UWP", "src\Resizetizer\samples\SampleApp.UWP\Resizetizer.SampleApp.UWP.csproj", "{17F7E982-F09B-44F0-9CA9-9C25C671C365}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resizetizer.SampleApp.UWP", "src\SingleProject\Resizetizer\samples\SampleApp.UWP\Resizetizer.SampleApp.UWP.csproj", "{17F7E982-F09B-44F0-9CA9-9C25C671C365}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resizetizer.SampleApp.WPF", "src\Resizetizer\samples\SampleApp.WPF\Resizetizer.SampleApp.WPF.csproj", "{62DBB813-E489-45D7-BF32-E64D04649CC8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resizetizer.SampleApp.WPF", "src\SingleProject\Resizetizer\samples\SampleApp.WPF\Resizetizer.SampleApp.WPF.csproj", "{62DBB813-E489-45D7-BF32-E64D04649CC8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essentials.DeviceTests.Android", "src\Essentials\test\DeviceTests.Android\Essentials.DeviceTests.Android.csproj", "{CB2072E0-A437-4811-AE17-16CAE0DDA1B1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SingleProject", "SingleProject", "{15878D2D-B0F1-4EE9-875D-4A643DB0C842}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1250,6 +1252,7 @@ Global
 		{676C1EE2-C2B3-4C01-9781-3DAE0995D2FE} = {806499EB-C2CC-4E85-BC19-613F3DE5E0C3}
 		{D51AD52D-C4C6-445A-BD0F-884BE5C1C526} = {806499EB-C2CC-4E85-BC19-613F3DE5E0C3}
 		{F2379E0F-524F-47BC-877C-0428E4C836D4} = {D5B986A3-7FC9-437E-8030-349AA4698DFD}
+		{4A3BAF64-E9D9-4036-9FDA-8B326C382667} = {15878D2D-B0F1-4EE9-875D-4A643DB0C842}
 		{F83AC93C-9694-4A01-B9CB-7AA8E514B01F} = {4A3BAF64-E9D9-4036-9FDA-8B326C382667}
 		{08F720FF-7530-43BF-A252-8946927669E3} = {4A3BAF64-E9D9-4036-9FDA-8B326C382667}
 		{B688531D-C2BD-41FC-9694-5311346DB789} = {4A3BAF64-E9D9-4036-9FDA-8B326C382667}

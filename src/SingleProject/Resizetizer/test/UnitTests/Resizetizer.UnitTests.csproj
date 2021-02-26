@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Resizetizer.csproj" />
+    <ProjectReference Include="..\..\src\SingleProject\Resizetizer.csproj" />
   </ItemGroup>
 
   <ItemGroup>
