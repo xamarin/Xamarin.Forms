@@ -15,7 +15,6 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		[ThreadStatic]
 		static Dictionary<string, FontFamily> FontFamilies = new Dictionary<string, FontFamily>();
-		static double DefaultFontSize = double.NegativeInfinity;
 
 		public static void ApplyFont(this Control self, Font font)
 		{
