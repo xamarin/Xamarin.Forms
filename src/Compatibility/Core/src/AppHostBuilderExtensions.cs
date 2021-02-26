@@ -18,17 +18,6 @@ namespace Maui.Controls.Compatibility
 {
 	public static class AppHostBuilderExtensions
 	{
-		public static void ConfigureCompatibiltyApp(IActivationState activationState)
-		{
-
-			//TODO COLLAPSE
-#if __ANDROID__
-			Microsoft.Maui.Controls.Compatibility.Forms.Init(activationState.Context, activationState.SavedInstance);
-#elif __IOS__
-			Microsoft.Maui.Controls.Compatibility.Forms.Init();
-#endif
-		}
-
 		public static IAppHostBuilder RegisterCompatibilityRenderer<TControlType, TMauiType, TRenderer>(this IAppHostBuilder builder)
 			where TMauiType : IFrameworkElement
 		{

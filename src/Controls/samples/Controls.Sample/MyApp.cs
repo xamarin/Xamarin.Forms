@@ -46,10 +46,13 @@ namespace Maui.Controls.Sample
 		}
 
 		//IAppState state
-		public override IWindow GetWindowFor(IActivationState state)
+		public override IWindow CreateWindowFor(IActivationState state)
 		{
 
 #if __ANDROID__ || __IOS__
+
+			// This will probably go into a compatibility app or window
+			Microsoft.Maui.Controls.Compatibility.Forms.Init(state);
 			Maui.Controls.Compatibility.AppHostBuilderExtensions.ConfigureCompatibiltyApp(state);
 #endif
 			return Services.GetService<IWindow>();

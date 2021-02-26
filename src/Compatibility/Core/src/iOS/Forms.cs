@@ -31,6 +31,7 @@ namespace Microsoft.Maui.Controls.Compatibility
 {
 	public static class Forms
 	{
+		public static IActivationState ActivationState { get; private set; }
 		public static bool IsInitialized { get; private set; }
 
 #if __MOBILE__
@@ -167,10 +168,12 @@ namespace Microsoft.Maui.Controls.Compatibility
 				Profile.Enable();
 		}
 
-		public static void Init()
+		public static void Init(IActivationState activationState)
 		{
 			if (IsInitialized)
 				return;
+
+			ActivationState = activationState;
 			IsInitialized = true;
 
 			Microsoft.Maui.Controls.Internals.Registrar.RegisterRendererToHandlerShim(RendererToHandlerShim.CreateShim);

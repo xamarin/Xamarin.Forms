@@ -30,7 +30,7 @@ namespace Microsoft.Maui
 				throw new InvalidOperationException("App was not initialized");
 
 			var mauiContext = new HandlersContext(mauiApp.Services, this);
-			var window = mauiApp.GetWindowFor(new ActivationState(savedInstanceState, mauiContext));
+			var window = mauiApp.CreateWindowFor(new ActivationState(savedInstanceState, mauiContext));
 
 			window.MauiContext = mauiContext;
 

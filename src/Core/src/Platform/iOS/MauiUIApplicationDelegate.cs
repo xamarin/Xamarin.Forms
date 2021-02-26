@@ -23,7 +23,7 @@ namespace Microsoft.Maui
 
 
 			var mauiContext = new MauiContext(MauiApp.Current.Services);
-			var window = app.GetWindowFor(new ActivationState(mauiContext));
+			var window = app.CreateWindowFor(new ActivationState(mauiContext));
 
 			window.MauiContext = mauiContext;
 

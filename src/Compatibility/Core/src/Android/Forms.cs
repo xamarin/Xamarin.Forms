@@ -186,6 +186,9 @@ namespace Microsoft.Maui.Controls.Compatibility
 			return _ColorButtonNormal;
 		}
 
+		public static void Init(IActivationState activationState) =>
+			Init(activationState.Context, activationState.SavedInstance);
+
 		// Provide backwards compat for Forms.Init and AndroidActivity
 		// Why is bundle a param if never used?
 		public static void Init(IMauiContext context, Bundle bundle)
