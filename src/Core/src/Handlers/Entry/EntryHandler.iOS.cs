@@ -28,22 +28,16 @@ namespace Microsoft.Maui.Handlers
 
 		public static void MapText(EntryHandler handler, IEntry entry)
 		{
-			ViewHandler.CheckParameters(handler, entry);
-
 			handler.TypedNativeView?.UpdateText(entry);
 		}
 
 		public static void MapTextColor(EntryHandler handler, IEntry entry)
 		{
-			ViewHandler.CheckParameters(handler, entry);
-
 			handler.TypedNativeView?.UpdateTextColor(entry, DefaultTextColor);
 		}
 
 		public static void MapIsPassword(EntryHandler handler, IEntry entry)
 		{
-			ViewHandler.CheckParameters(handler, entry);
-
 			handler.TypedNativeView?.UpdateIsPassword(entry);
 		}
 	}
