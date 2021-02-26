@@ -23,7 +23,7 @@
       <Extensions>
         <uap:Extension Category="windows.protocol">
           <uap:Protocol Name="xamarin-essentials-device-tests">
-            <uap:DisplayName>Xamarin.Essentials Device Tests</uap:DisplayName>
+            <uap:DisplayName>Essentials Device Tests</uap:DisplayName>
           </uap:Protocol>
         </uap:Extension>
       </Extensions>
