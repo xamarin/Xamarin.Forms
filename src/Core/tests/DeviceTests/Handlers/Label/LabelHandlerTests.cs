@@ -55,8 +55,13 @@ namespace Microsoft.Maui.DeviceTests
 			await ValidatePropertyInitValue(label, () => label.MaxLines, GetNativeMaxLines, label.MaxLines);
 		}
 
-		[Fact]
-		public async Task MaxLinesDoesNotAffectLineBreakMode()
+		[Theory]
+#if __ANDROID__
+		[InlineData(false)]
+#elif __IOS__
+		[InlineData(true)]
+#endif
+		public async Task MaxLinesDoesNotAffectLineBreakMode(bool independentProperties)
 		{
 			var label = new LabelStub()
 			{
@@ -68,18 +73,27 @@ namespace Microsoft.Maui.DeviceTests
 			var handler = await CreateHandlerAsync(label);
 			var nativeLabel = GetNativeLabel(handler);
 
-			Assert.Equal(1, GetNativeMaxLines(handler));
-			Assert.Equal(LineBreakMode.NoWrap.ToNative(), GetNativeLineBreakMode(handler));
+			await InvokeOnMainThreadAsync(() =>
+			{
+				Assert.Equal(independentProperties ? 0 : 1, GetNativeMaxLines(handler));
+				Assert.Equal(LineBreakMode.NoWrap.ToNative(), GetNativeLineBreakMode(handler));
 
-			label.MaxLines = 1;
-			nativeLabel.UpdateMaxLines(label);
+				label.MaxLines = 1;
+				nativeLabel.UpdateMaxLines(label);
 
-			Assert.Equal(1, GetNativeMaxLines(handler));
-			Assert.Equal(LineBreakMode.NoWrap.ToNative(), GetNativeLineBreakMode(handler));
+				Assert.Equal(1, GetNativeMaxLines(handler));
+				Assert.Equal(LineBreakMode.NoWrap.ToNative(), GetNativeLineBreakMode(handler));
+			});
 		}
 
-		[Fact]
-		public async Task SettingMaxLinesOutsideOfHandlerDoesNotAffectLineBreakMode()
+		[Theory]
+#if __ANDROID__
+		[InlineData(false)]
+#elif __IOS__
+		[InlineData(true)]
+#endif
+
+		public async Task SettingMaxLinesOutsideOfHandlerDoesNotAffectLineBreakMode(bool independentProperties)
 		{
 			var label = new LabelStub()
 			{
@@ -91,14 +105,17 @@ namespace Microsoft.Maui.DeviceTests
 			var handler = await CreateHandlerAsync(label);
 			var nativeLabel = GetNativeLabel(handler);
 
-			Assert.Equal(1, GetNativeMaxLines(handler));
-			Assert.Equal(LineBreakMode.NoWrap.ToNative(), GetNativeLineBreakMode(handler));
+			await InvokeOnMainThreadAsync(() =>
+			{
+				Assert.Equal(independentProperties ? 0 : 1, GetNativeMaxLines(handler));
+				Assert.Equal(LineBreakMode.NoWrap.ToNative(), GetNativeLineBreakMode(handler));
 
-			label.MaxLines = 5;
-			nativeLabel.UpdateMaxLines(label);
+				label.MaxLines = 5;
+				nativeLabel.UpdateMaxLines(label);
 
-			Assert.Equal(1, GetNativeMaxLines(handler));
-			Assert.Equal(LineBreakMode.NoWrap.ToNative(), GetNativeLineBreakMode(handler));
+				Assert.Equal(independentProperties ? 5 : 1, GetNativeMaxLines(handler));
+				Assert.Equal(LineBreakMode.NoWrap.ToNative(), GetNativeLineBreakMode(handler));
+			});
 		}
 
 		[Fact]
@@ -114,18 +131,26 @@ namespace Microsoft.Maui.DeviceTests
 			var handler = await CreateHandlerAsync(label);
 			var nativeLabel = GetNativeLabel(handler);
 
-			Assert.Equal(3, GetNativeMaxLines(handler));
-			Assert.Equal(LineBreakMode.WordWrap.ToNative(), GetNativeLineBreakMode(handler));
+			await InvokeOnMainThreadAsync(() =>
+			{
+				Assert.Equal(3, GetNativeMaxLines(handler));
+				Assert.Equal(LineBreakMode.WordWrap.ToNative(), GetNativeLineBreakMode(handler));
 
-			label.LineBreakMode = LineBreakMode.CharacterWrap;
-			nativeLabel.UpdateLineBreakMode(label);
+				label.LineBreakMode = LineBreakMode.CharacterWrap;
+				nativeLabel.UpdateLineBreakMode(label);
 
-			Assert.Equal(3, GetNativeMaxLines(handler));
-			Assert.Equal(LineBreakMode.CharacterWrap.ToNative(), GetNativeLineBreakMode(handler));
+				Assert.Equal(3, GetNativeMaxLines(handler));
+				Assert.Equal(LineBreakMode.CharacterWrap.ToNative(), GetNativeLineBreakMode(handler));
+			});
 		}
 
-		[Fact]
-		public async Task SingleLineBreakModeChangesMaxLines()
+		[Theory]
+#if __ANDROID__
+		[InlineData(false)]
+#elif __IOS__
+		[InlineData(true)]
+#endif
+		public async Task SingleLineBreakModeChangesMaxLines(bool independentProperties)
 		{
 			var label = new LabelStub()
 			{
@@ -137,18 +162,26 @@ namespace Microsoft.Maui.DeviceTests
 			var handler = await CreateHandlerAsync(label);
 			var nativeLabel = GetNativeLabel(handler);
 
-			Assert.Equal(3, GetNativeMaxLines(handler));
-			Assert.Equal(LineBreakMode.WordWrap.ToNative(), GetNativeLineBreakMode(handler));
+			await InvokeOnMainThreadAsync(() =>
+			{
+				Assert.Equal(3, GetNativeMaxLines(handler));
+				Assert.Equal(LineBreakMode.WordWrap.ToNative(), GetNativeLineBreakMode(handler));
 
-			label.LineBreakMode = LineBreakMode.HeadTruncation;
-			nativeLabel.UpdateLineBreakMode(label);
+				label.LineBreakMode = LineBreakMode.HeadTruncation;
+				nativeLabel.UpdateLineBreakMode(label);
 
-			Assert.Equal(1, GetNativeMaxLines(handler));
-			Assert.Equal(LineBreakMode.HeadTruncation.ToNative(), GetNativeLineBreakMode(handler));
+				Assert.Equal(independentProperties ? 3 : 1, GetNativeMaxLines(handler));
+				Assert.Equal(LineBreakMode.HeadTruncation.ToNative(), GetNativeLineBreakMode(handler));
+			});
 		}
 
-		[Fact]
-		public async Task UnsettingSingleLineBreakModeResetsMaxLines()
+		[Theory]
+#if __ANDROID__
+		[InlineData(false)]
+#elif __IOS__
+		[InlineData(true)]
+#endif
+		public async Task UnsettingSingleLineBreakModeResetsMaxLines(bool independentProperties)
 		{
 			var label = new LabelStub()
 			{
@@ -160,20 +193,23 @@ namespace Microsoft.Maui.DeviceTests
 			var handler = await CreateHandlerAsync(label);
 			var nativeLabel = GetNativeLabel(handler);
 
-			Assert.Equal(3, GetNativeMaxLines(handler));
-			Assert.Equal(LineBreakMode.WordWrap.ToNative(), GetNativeLineBreakMode(handler));
+			await InvokeOnMainThreadAsync(() =>
+			{
+				Assert.Equal(3, GetNativeMaxLines(handler));
+				Assert.Equal(LineBreakMode.WordWrap.ToNative(), GetNativeLineBreakMode(handler));
 
-			label.LineBreakMode = LineBreakMode.HeadTruncation;
-			nativeLabel.UpdateLineBreakMode(label);
+				label.LineBreakMode = LineBreakMode.HeadTruncation;
+				nativeLabel.UpdateLineBreakMode(label);
 
-			Assert.Equal(1, GetNativeMaxLines(handler));
-			Assert.Equal(LineBreakMode.HeadTruncation.ToNative(), GetNativeLineBreakMode(handler));
+				Assert.Equal(independentProperties ? 3 : 1, GetNativeMaxLines(handler));
+				Assert.Equal(LineBreakMode.HeadTruncation.ToNative(), GetNativeLineBreakMode(handler));
 
-			label.LineBreakMode = LineBreakMode.WordWrap;
-			nativeLabel.UpdateLineBreakMode(label);
+				label.LineBreakMode = LineBreakMode.WordWrap;
+				nativeLabel.UpdateLineBreakMode(label);
 
-			Assert.Equal(3, GetNativeMaxLines(handler));
-			Assert.Equal(LineBreakMode.WordWrap.ToNative(), GetNativeLineBreakMode(handler));
+				Assert.Equal(3, GetNativeMaxLines(handler));
+				Assert.Equal(LineBreakMode.WordWrap.ToNative(), GetNativeLineBreakMode(handler));
+			});
 		}
 	}
 }
