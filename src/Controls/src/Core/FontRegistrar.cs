@@ -19,6 +19,52 @@ namespace Microsoft.Maui.Controls.Internals
 				EmbeddedFonts[fontAttribute.Alias] = (fontAttribute, assembly);
 		}
 
+		static bool TryLoadFont(string cacheKey, Stream fontStream)
+		{
+			var type = Registrar.Registered.GetHandlerType(typeof(EmbeddedFont));
+			var fontHandler = (IEmbeddedFontLoader)Activator.CreateInstance(type);
+
+			var result = fontHandler.LoadFont(new EmbeddedFont { ResourceStream = fontStream });
+
+			fontLookupCache[cacheKey] = result;
+
+			return result.success;
+		}
+
+		internal static bool RegisterNative(string fontName, string alias = null)
+		{
+			var cacheKey = alias ?? fontName;
+
+#if __IOS__ || IOS
+			var mainBundlePath = NSBundle.MainBundle.BundlePath;
+			var fontBundlePath = Path.Combine(mainBundlePath, fontName);
+
+			if (!File.Exists(fontBundlePath))
+				fontBundlePath = Path.Combine(mainBundlePath, "Resources", fontName);
+
+			if (!File.Exists(fontBundlePath))
+				fontBundlePath = Path.Combine(mainBundlePath, "Fonts", fontName);
+
+			if (!File.Exists(fontBundlePath))
+				fontBundlePath = Path.Combine(mainBundlePath, "Resources", "Fonts", fontName);
+
+			if (!File.Exists(fontBundlePath))
+				return false;
+
+			using (var fontStream = File.OpenRead(fontBundlePath))
+			{
+				return TryLoadFont(cacheKey, fontStream);
+			}
+#elif __ANDROID__ || ANDROID
+			var assets = Android.App.Application.Context.Assets;
+			using (var fontStream = assets.Open(fontName))
+			{
+				return TryLoadFont(cacheKey, fontStream);
+			}
+#endif
+			return false;
+		}
+
 		//TODO: Investigate making this Async
 		public static (bool hasFont, string fontPath) HasFont(string font)
 		{
@@ -43,7 +89,11 @@ namespace Microsoft.Maui.Controls.Internals
 			}
 			catch (Exception ex)
 			{
+#if !__ANDROID__ && !__IOS__
 				Debug.WriteLine(ex);
+#else
+				System.Console.WriteLine(ex);
+#endif
 			}
 			return fontLookupCache[font] = (false, null);
 		}
