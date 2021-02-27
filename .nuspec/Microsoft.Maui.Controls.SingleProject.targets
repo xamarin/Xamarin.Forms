@@ -1,6 +1,10 @@
 <!-- "Single Project" support -->
 <Project>
   <PropertyGroup Condition=" '$(SingleProject)' == 'true' ">
+  
+    <!-- Shared -->
+    <EnableDefaultSharedItems Condition=" '$(EnableDefaultSharedItems)' == '' ">true</EnableDefaultSharedItems>
+
     <!-- Android -->
     <EnableDefaultAndroidItems>false</EnableDefaultAndroidItems>
     <AndroidProjectFolder Condition=" '$(AndroidProjectFolder)' == '' ">Android/</AndroidProjectFolder>

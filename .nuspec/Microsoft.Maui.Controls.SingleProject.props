@@ -1,6 +1,12 @@
 <!-- "Single Project" support - all <ItemGroup/>'s must check if $(EnableDefaultItems) and $(SingleProject) are true -->
 <Project>
 
+  <!-- Shared -->
+  <ItemGroup Condition=" '$(EnableDefaultItems)' == 'true' and '$(EnableDefaultSharedItems)' == 'true' and '$(SingleProject)' == 'true' ">
+    <SharedFont Include="Resources\Fonts\*.ttf" />
+    <SharedFont Include="Resources\Fonts\*.otf" />
+  </ItemGroup>
+
   <!-- Android -->
   <ItemGroup Condition=" '$(EnableDefaultItems)' == 'true' and '$(SingleProject)' == 'true' and '$(TargetPlatformIdentifier)' == 'android' and '$(MonoAndroidResourcePrefix)' != '' ">
     <AndroidResource Include="$(MonoAndroidResourcePrefix)/*/*.xml" />
