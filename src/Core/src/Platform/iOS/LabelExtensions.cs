@@ -26,10 +26,25 @@ namespace Microsoft.Maui
 
 		public static void UpdateLineBreakMode(this UILabel nativeLabel, ILabel label)
 		{
+			SetLineBreakMode(nativeLabel, label);
+		}
+
+		public static void UpdateMaxLines(this UILabel nativeLabel, ILabel label)
+		{
+			SetLineBreakMode(nativeLabel, label);
+		}
+
+		internal static void SetLineBreakMode(this UILabel nativeLabel, ILabel label)
+		{
+			int maxLines = label.MaxLines;
+			if (maxLines < 0)
+				maxLines = 0;
+
 			switch (label.LineBreakMode)
 			{
 				case LineBreakMode.NoWrap:
 					nativeLabel.LineBreakMode = UILineBreakMode.Clip;
+					maxLines = 1;
 					break;
 				case LineBreakMode.WordWrap:
 					nativeLabel.LineBreakMode = UILineBreakMode.WordWrap;
@@ -39,38 +54,19 @@ namespace Microsoft.Maui
 					break;
 				case LineBreakMode.HeadTruncation:
 					nativeLabel.LineBreakMode = UILineBreakMode.HeadTruncation;
+					maxLines = 1;
 					break;
 				case LineBreakMode.MiddleTruncation:
 					nativeLabel.LineBreakMode = UILineBreakMode.MiddleTruncation;
+					maxLines = 1;
 					break;
 				case LineBreakMode.TailTruncation:
 					nativeLabel.LineBreakMode = UILineBreakMode.TailTruncation;
+					maxLines = 1;
 					break;
 			}
-		}
 
-		public static void UpdateMaxLines(this UILabel nativeLabel, ILabel label)
-		{
-			if (label.MaxLines >= 0)
-			{
-				nativeLabel.Lines = label.MaxLines;
-			}
-			else
-			{
-				switch (label.LineBreakMode)
-				{
-					case LineBreakMode.WordWrap:
-					case LineBreakMode.CharacterWrap:
-						nativeLabel.Lines = 0;
-						break;
-					case LineBreakMode.NoWrap:
-					case LineBreakMode.HeadTruncation:
-					case LineBreakMode.MiddleTruncation:
-					case LineBreakMode.TailTruncation:
-						nativeLabel.Lines = 1;
-						break;
-				}
-			}
+			nativeLabel.Lines = maxLines;
 		}
 	}
 }

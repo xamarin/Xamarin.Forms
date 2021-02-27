@@ -1,7 +1,9 @@
 using System.Threading.Tasks;
 using Android.Text;
 using Android.Widget;
+using Microsoft.Maui.DeviceTests.Stubs;
 using Microsoft.Maui.Handlers;
+using Xunit;
 
 namespace Microsoft.Maui.DeviceTests
 {
@@ -29,5 +31,20 @@ namespace Microsoft.Maui.DeviceTests
 
 		TextUtils.TruncateAt GetNativeLineBreakMode(LabelHandler labelHandler) =>
 			GetNativeLabel(labelHandler).Ellipsize;
+
+		[Fact]
+		public async Task NegativeMaxValueWithWrapIsCorrect()
+		{
+			var label = new LabelStub()
+			{
+				Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+				MaxLines = -1,
+				LineBreakMode = LineBreakMode.WordWrap,
+			};
+
+			var nativeValue = await GetValueAsync(label, GetNativeMaxLines);
+
+			Assert.Equal(int.MaxValue, nativeValue);
+		}
 	}
 }
