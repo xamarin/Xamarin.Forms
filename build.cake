@@ -918,13 +918,13 @@ Task("Android100")
     });
 
 
-Task("VS-MAUI")
+Task("VS-NET6")
     .IsDependentOn("Clean")
-    .Does((ctx) =>
+    .Does(() =>
     {
-        DotNetCoreRestore("Maui.sln");
-        DotNetCoreBuild("Maui.sln");
-        StartVisualStudio(ctx, "Maui.sln");
+        DotNetCoreRestore("Microsoft.Maui-net6.sln");
+        DotNetCoreBuild("Microsoft.Maui-net6.sln");
+        StartVisualStudio("Microsoft.Maui-net6.sln");
     });
 
 Task("VS")
@@ -937,40 +937,40 @@ Task("VS")
 Task("VSWINDOWS")
     .Description("Builds projects necessary so solution compiles on VS Windows")
     .WithCriteria(IsRunningOnWindows())
-    .Does((ctx) =>
+    .Does(() =>
     {
-        MSBuild("Xamarin.Forms.sln",
+        MSBuild("Microsoft.Maui.sln",
                 GetMSBuildSettings()
                     .WithRestore());
 
-        StartVisualStudio(ctx);
+        StartVisualStudio();
     });
 
 Task("VSMAC")
     .Description("Builds projects necessary so solution compiles on VSMAC")
     .WithCriteria(!IsRunningOnWindows())
     .IsDependentOn("BuildTasks")
-    .Does((ctx) =>
+    .Does(() =>
     {
 
-        MSBuild("src/Platform.Handlers/src/Xamarin.Platform.Handlers/Xamarin.Platform.Handlers.csproj",
+        MSBuild("src/Core/src.Core.csproj",
                 GetMSBuildSettings()
                     .WithRestore());
 
-        MSBuild("src/Forms/samples/Maui.Controls.Sample.Droid/Maui.Controls.Sample.Droid.csproj",
+        MSBuild("src/Controls/samples/Controls.Sample.Droid/Controls.Sample.Droid.csproj",
                 GetMSBuildSettings()
                     .WithRestore());
 
-        MSBuild("src/Forms/samples/Maui.Controls.Sample.iOS/Maui.Controls.Sample.iOS.csproj",
+        MSBuild("src/Controls/samples/Controls.Sample.iOS/Controls.Sample.iOS.csproj",
                 GetMSBuildSettings()
                     .WithProperty("iOSPlatform", "iPhoneSimulator")
                     .WithRestore());
 
-        MSBuild("src/Essentials/src/Xamarin.Essentials/Xamarin.Essentials.csproj",
+        MSBuild("src/Essentials/src/Essentials/Essentials.csproj",
                 GetMSBuildSettings()
                     .WithRestore());
                     
-        StartVisualStudio(ctx);
+        StartVisualStudio();
     });
     
 Task("cg-android")

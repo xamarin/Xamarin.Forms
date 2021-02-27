@@ -38,6 +38,7 @@ namespace Maui.Controls.Sample
 				   })
 				   .ConfigureServices(ConfigureServices)
 #if __ANDROID__
+				   // These only work on NET6
 				   //.RegisterCompatibilityRenderer<Microsoft.Maui.Controls.ContentPage, Microsoft.Maui.Controls.Compatibility.Platform.Android.PageRenderer>()
 				   //.RegisterCompatibilityRenderer<Microsoft.Maui.Controls.Button, Microsoft.Maui.Controls.Compatibility.Platform.Android.FastRenderers.ButtonRenderer>()
 #endif
