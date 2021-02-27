@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Maui.Controls.Sample.Pages
 {
 
-	public class MainPage : ContentPage, IPage, IView
+	public class MainPage : ContentPage, IPage
 	{
 		MainPageViewModel _viewModel;
 		public MainPage() : this(App.Current.Services.GetService<MainPageViewModel>())
