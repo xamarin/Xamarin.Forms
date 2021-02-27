@@ -31,7 +31,7 @@ namespace Microsoft.Maui.Controls.Internals
 			return result.success;
 		}
 
-		internal static bool RegisterNative(string fontName, string alias = null)
+		public static bool RegisterNative(string fontName, string alias = null)
 		{
 			var cacheKey = alias ?? fontName;
 
