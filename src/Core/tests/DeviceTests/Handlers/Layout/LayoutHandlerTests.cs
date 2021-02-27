@@ -1,20 +1,21 @@
-using Microsoft.Maui.Handlers;
 using System.Threading.Tasks;
 using Microsoft.Maui.DeviceTests.Stubs;
+using Microsoft.Maui.Handlers;
 using Xunit;
 
 namespace Microsoft.Maui.DeviceTests.Handlers.Layout
 {
+	[Category("LayoutHandler")]
 	public partial class LayoutHandlerTests : HandlerTestBase<LayoutHandler>
 	{
-		[Fact(DisplayName = "[LayoutHandler] Empty layout")]
+		[Fact(DisplayName = "Empty layout")]
 		public async Task EmptyLayout()
 		{
 			var layout = new LayoutStub();
 			await ValidatePropertyInitValue(layout, () => layout.Children.Count, GetNativeChildCount, 0);
 		}
 
-		[Fact(DisplayName = "[LayoutHandler] Handler view count matches layout view count")]
+		[Fact(DisplayName = "Handler view count matches layout view count")]
 		public async Task HandlerViewCountMatchesLayoutViewCount()
 		{
 			var layout = new LayoutStub();
@@ -25,7 +26,7 @@ namespace Microsoft.Maui.DeviceTests.Handlers.Layout
 			await ValidatePropertyInitValue(layout, () => layout.Children.Count, GetNativeChildCount, 2);
 		}
 
-		[Fact(DisplayName = "[LayoutHandler] Handler removes child from native layout")]
+		[Fact(DisplayName = "Handler removes child from native layout")]
 		public async Task HandlerRemovesChildFromNativeLayout()
 		{
 			var layout = new LayoutStub();
