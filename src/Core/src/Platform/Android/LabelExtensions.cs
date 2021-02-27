@@ -39,7 +39,7 @@ namespace Microsoft.Maui
 			var lineBreakMode = label.LineBreakMode;
 
 			int maxLines = label.MaxLines;
-			if (maxLines < 0)
+			if (maxLines <= 0)
 				maxLines = int.MaxValue;
 
 			bool singleLine = false;
