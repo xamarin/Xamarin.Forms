@@ -41,7 +41,6 @@ namespace Microsoft.Maui
 				window.Page.View;
 
 			CoordinatorLayout parent = new CoordinatorLayout(this);
-			NestedScrollView main = new NestedScrollView(this);
 
 			SetContentView(parent, new ViewGroup.LayoutParams(CoordinatorLayout.LayoutParams.MatchParent, CoordinatorLayout.LayoutParams.MatchParent));
 
