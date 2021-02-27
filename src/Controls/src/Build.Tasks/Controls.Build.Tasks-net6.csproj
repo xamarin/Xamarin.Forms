@@ -6,17 +6,17 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-			<_DisableStrongNamer Condition=" '$(_DisableStrongNamer)' != 'True' ">False</_DisableStrongNamer>
-			<AssemblyName>Microsoft.Maui.Controls.Build.Tasks</AssemblyName>
-			<Description>Microsoft MAUI Build Task</Description>
-			<TargetFramework>net6.0</TargetFramework>
-			<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-			<SignAssembly Condition=" '$(_DisableStrongNamer)' != 'True' ">True</SignAssembly>
-			<DisableStrongNamer Condition=" '$(_DisableStrongNamer)' == 'True' ">True</DisableStrongNamer>
-			<DelaySign>true</DelaySign>
-			<AssemblyOriginatorKeyFile>..\..\..\..\eng\microsoft.maui.controls.snk</AssemblyOriginatorKeyFile>
-			<StrongNamerKeyFile>..\..\..\..\eng\microsoft.maui.controls.snk</StrongNamerKeyFile>
-			<DefineConstants Condition=" '$(_DisableStrongNamer)' != 'True' ">$(DefineConstants);STRONG_NAME</DefineConstants>
+		<!-- <_DisableStrongNamer Condition=" '$(_DisableStrongNamer)' != 'True' ">False</_DisableStrongNamer> -->
+		<AssemblyName>Microsoft.Maui.Controls.Build.Tasks</AssemblyName>
+		<Description>Microsoft MAUI Build Task</Description>
+		<TargetFramework>net6.0</TargetFramework>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<!-- <SignAssembly Condition=" '$(_DisableStrongNamer)' != 'True' ">True</SignAssembly>
+		<DisableStrongNamer Condition=" '$(_DisableStrongNamer)' == 'True' ">True</DisableStrongNamer>
+		<DelaySign>true</DelaySign>
+		<AssemblyOriginatorKeyFile>..\..\..\..\eng\microsoft.maui.controls.snk</AssemblyOriginatorKeyFile>
+		<StrongNamerKeyFile>..\..\..\..\eng\microsoft.maui.controls.snk</StrongNamerKeyFile>
+		<DefineConstants Condition=" '$(_DisableStrongNamer)' != 'True' ">$(DefineConstants);STRONG_NAME</DefineConstants> -->
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -26,7 +26,7 @@
 		<PackageReference Include="Microsoft.Build.Framework" Version="15.9.20" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.9.20" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.9.20" PrivateAssets="all" />
-		<PackageReference Include="StrongNamer" Version="0.2.5" PrivateAssets="all" GeneratePathProperty="true" />
+		<!-- <PackageReference Include="StrongNamer" Version="0.2.5" PrivateAssets="all" GeneratePathProperty="true" /> -->
 		<PackageReference Include="XliffTasks" Version="1.0.0-beta.21110.1" PrivateAssets="all" />
 	</ItemGroup>
 
