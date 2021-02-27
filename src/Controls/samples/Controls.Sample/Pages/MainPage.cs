@@ -8,6 +8,18 @@ namespace Maui.Controls.Sample.Pages
 
 	public class MainPage : ContentPage, IPage
 	{
+		const string longLoremIpsum =
+			"Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+			"Quisque ut dolor metus. Duis vel iaculis mauris, sit amet finibus mi. " +
+			"Etiam congue ornare risus, in facilisis libero tempor eget. " +
+			"Phasellus mattis mollis libero ut semper. In sit amet sapien odio. " +
+			"Sed interdum ullamcorper dui eu rutrum. Vestibulum non sagittis justo. " +
+			"Cras rutrum scelerisque elit, et porta est lobortis ac. " +
+			"Pellentesque eu ornare tortor. Sed bibendum a nisl at laoreet.";
+
+		const string loremIpsum =
+			"Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
+
 		MainPageViewModel _viewModel;
 		public MainPage() : this(App.Current.Services.GetService<MainPageViewModel>())
 		{
@@ -24,6 +36,10 @@ namespace Maui.Controls.Sample.Pages
 			label.Margin = new Thickness(15, 10, 20, 15);
 
 			verticalStack.Add(label);
+			verticalStack.Add(new Label { Text = loremIpsum });
+			verticalStack.Add(new Label { Text = loremIpsum, MaxLines = 2 });
+			verticalStack.Add(new Label { Text = loremIpsum, LineBreakMode = LineBreakMode.TailTruncation });
+			verticalStack.Add(new Label { Text = loremIpsum, MaxLines = 2, LineBreakMode = LineBreakMode.TailTruncation });
 
 			var button = new Button() { Text = _viewModel.Text, WidthRequest = 200 };
 			var button2 = new Button()

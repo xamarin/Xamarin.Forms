@@ -31,23 +31,17 @@ namespace Microsoft.Maui
 
 		public static void UpdateMaxLines(this TextView textView, ILabel label)
 		{
-			var maxLines = label.MaxLines;
-
-			if (maxLines == 0)
-			{
-				// MaxLines is not explicitly set, so just let it be whatever gets set by LineBreakMode
-				textView.SetLineBreakMode(label);
-				return;
-			}
-
-			textView.SetMaxLines(maxLines);
+			textView.SetLineBreakMode(label);
 		}
 
 		internal static void SetLineBreakMode(this TextView textView, ILabel label)
 		{
 			var lineBreakMode = label.LineBreakMode;
 
-			int maxLines = int.MaxValue;
+			int maxLines = label.MaxLines;
+			if (maxLines < 0)
+				maxLines = int.MaxValue;
+
 			bool singleLine = false;
 
 			switch (lineBreakMode)

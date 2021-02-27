@@ -55,6 +55,31 @@ namespace Microsoft.Maui.DeviceTests
 			await ValidatePropertyInitValue(label, () => label.MaxLines, GetNativeMaxLines, label.MaxLines);
 		}
 
+		[Fact(DisplayName = "LineBreakMode Initializes Correctly")]
+		public async Task LineBreakModeInitializesCorrectly()
+		{
+			var xplatLineBreakMode = LineBreakMode.TailTruncation;
+
+			var labelStub = new LabelStub()
+			{
+				LineBreakMode = xplatLineBreakMode
+			};
+
+			var expectedValue = xplatLineBreakMode.ToNative();
+
+			var values = await GetValueAsync(labelStub, (handler) =>
+			{
+				return new
+				{
+					ViewValue = labelStub.LineBreakMode,
+					NativeViewValue = GetNativeLineBreakMode(handler)
+				};
+			});
+
+			Assert.Equal(xplatLineBreakMode, values.ViewValue);
+			Assert.Equal(expectedValue, values.NativeViewValue);
+		}
+
 		[Theory]
 #if __ANDROID__
 		[InlineData(false)]
