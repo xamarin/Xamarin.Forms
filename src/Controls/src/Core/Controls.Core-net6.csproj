@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.1;netstandard2.0;net6.0;net6.0-android;net6.0-ios</TargetFrameworks>
-    <RootNamespace>Microsoft.Maui.Controls</RootNamespace>
-    <AssemblyName>Microsoft.Maui.Controls</AssemblyName>
-    <Nullable>disable</Nullable>
+		<RootNamespace>Microsoft.Maui.Controls</RootNamespace>
+		<AssemblyName>Microsoft.Maui.Controls</AssemblyName>
+		<Nullable>disable</Nullable>
+		<NoWarn>$(NoWarn);CS0162;</NoWarn>
 	</PropertyGroup>
-  <PropertyGroup>
-    <PackageId>Microsoft.Maui.Controls</PackageId>
-  </PropertyGroup>
+	<PropertyGroup>
+    	<PackageId>Microsoft.Maui.Controls</PackageId>
+	</PropertyGroup>
 	<ItemGroup>
 		<Compile Remove="Internals\Legacy\**" />
 		<EmbeddedResource Remove="Internals\Legacy\**" />
