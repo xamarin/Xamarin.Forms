@@ -271,6 +271,8 @@ namespace Microsoft.Maui.Controls.Internals
 			Registered = new Registrar<IRegisterable>();
 		}
 
+		public static IFontRegistrar FontRegistrar { get; } = new FontRegistrar();
+
 		internal static Dictionary<string, Type> Effects { get; } = new Dictionary<string, Type>();
 		internal static Dictionary<string, IList<StylePropertyAttribute>> StyleProperties => LazyStyleProperties.Value;
 
