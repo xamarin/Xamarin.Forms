@@ -177,7 +177,9 @@ namespace Microsoft.Maui.Controls.Compatibility
 			IsInitialized = true;
 
 			Microsoft.Maui.Controls.Internals.Registrar.RegisterRendererToHandlerShim(RendererToHandlerShim.CreateShim);
-			Color.SetAccent(ColorExtensions.AccentColor.ToColor());
+
+			//TODO: MAUI Accent Color?
+			Color.SetAccent(Color.FromRgba(50, 79, 133, 255));
 
 			Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
 

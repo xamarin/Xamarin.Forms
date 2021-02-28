@@ -10,7 +10,7 @@ using Maui.Controls.Sample.ViewModel;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Hosting;
 using Microsoft.Maui;
-#if __ANDROID__ && NET6
+#if __ANDROID__
 using Maui.Controls.Compatibility;
 #endif
 
@@ -37,7 +37,7 @@ namespace Maui.Controls.Sample
 										});
 				   })
 				   .ConfigureServices(ConfigureServices)
-#if __ANDROID__ && NET6
+#if __ANDROID__
 				   // These only work on NET6
 				   //.RegisterCompatibilityRenderer<Microsoft.Maui.Controls.ContentPage, Microsoft.Maui.Controls.Compatibility.Platform.Android.PageRenderer>()
 				   //.RegisterCompatibilityRenderer<Microsoft.Maui.Controls.Button, Microsoft.Maui.Controls.Compatibility.Platform.Android.FastRenderers.ButtonRenderer>()
@@ -51,7 +51,7 @@ namespace Maui.Controls.Sample
 		public override IWindow CreateWindowFor(IActivationState state)
 		{
 
-#if (__ANDROID__ || __IOS__) && NET6
+#if (__ANDROID__ || __IOS__)
 
 			// This will probably go into a compatibility app or window
 			Microsoft.Maui.Controls.Compatibility.Forms.Init(state);
