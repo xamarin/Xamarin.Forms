@@ -116,7 +116,6 @@ namespace Microsoft.Maui.Controls.Compatibility
 				return s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden.Value;
 			}
 		}
-
 #else
 		static bool? s_isSierraOrNewer;
 
