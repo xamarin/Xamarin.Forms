@@ -215,6 +215,16 @@ namespace Microsoft.Maui.Controls
 		{
 		}
 
+		protected override Size MeasureOverride(double widthConstraint, double heightConstraint)
+		{
+			if (!IsMeasureValid)
+#pragma warning disable CS0618 // Type or member is obsolete
+				DesiredSize = OnSizeRequest(widthConstraint, heightConstraint).Request;
+#pragma warning restore CS0618 // Type or member is obsolete
+			IsMeasureValid = true;
+			return DesiredSize;
+		}
+
 		protected override void OnSizeAllocated(double width, double height)
 		{
 			_allocatedFlag = true;
@@ -307,10 +317,7 @@ namespace Microsoft.Maui.Controls
 			region.Y += margin.Top;
 			region.Height -= margin.VerticalThickness;
 
-			if (child is IFrameworkElement fe)
-				fe.Arrange(region);
-			else
-				child.Layout(region);
+			child.Layout(region);
 		}
 
 		internal virtual void OnChildMeasureInvalidated(VisualElement child, InvalidationTrigger trigger)
