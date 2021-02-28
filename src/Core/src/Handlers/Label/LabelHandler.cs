@@ -7,6 +7,8 @@ namespace Microsoft.Maui.Handlers
 			[nameof(ILabel.TextColor)] = MapTextColor,
 			[nameof(ILabel.Text)] = MapText,
 			[nameof(ILabel.FontFamily)] = MapFontFamily,
+			[nameof(ILabel.FontSize)] = MapFontSize,
+			[nameof(ILabel.FontAttributes)] = MapFontAttributes,
 		};
 
 		public LabelHandler() : base(LabelMapper)

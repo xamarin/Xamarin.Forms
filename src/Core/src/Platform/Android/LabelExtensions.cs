@@ -1,3 +1,4 @@
+using Android.Util;
 using Android.Widget;
 
 namespace Microsoft.Maui
@@ -25,8 +26,13 @@ namespace Microsoft.Maui
 
 		public static void UpdateFont(this TextView textView, ILabel label, IFontManager fontManager)
 		{
-			var tf = fontManager.GetTypeface(label.GetFont());
+			var font = label.GetFont();
+
+			var tf = fontManager.GetTypeface(font);
 			textView.Typeface = tf;
+
+			var sp = fontManager.GetScaledPixel(font);
+			textView.SetTextSize(ComplexUnitType.Sp, sp);
 		}
 	}
 }

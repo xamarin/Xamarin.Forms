@@ -20,6 +20,21 @@ namespace Microsoft.Maui.Handlers
 
 		public static void MapFontFamily(LabelHandler handler, ILabel label)
 		{
+			MapFont(handler, label);
+		}
+
+		public static void MapFontSize(LabelHandler handler, ILabel label)
+		{
+			MapFont(handler, label);
+		}
+
+		public static void MapFontAttributes(LabelHandler handler, ILabel label)
+		{
+			MapFont(handler, label);
+		}
+
+		static void MapFont(LabelHandler handler, ILabel label)
+		{
 			var context = MauiApp.Current?.Context ?? throw new InvalidOperationException($"The MauiApp.Current.Context can't be null.");
 			var fontManager = context.Services.GetRequiredService<IFontManager>();
 
