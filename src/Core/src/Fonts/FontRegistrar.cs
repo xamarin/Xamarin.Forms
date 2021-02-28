@@ -72,13 +72,13 @@ namespace Microsoft.Maui
 				.Where(x => x.EndsWith(resourceFileName, StringComparison.CurrentCultureIgnoreCase))
 				.ToArray();
 
-			if (!resourcePaths.Any())
+			if (resourcePaths.Length == 0)
 				throw new Exception($"Resource ending with {resourceFileName} not found.");
 
 			if (resourcePaths.Length > 1)
 				resourcePaths = resourcePaths.Where(x => IsFile(x, resourceFileName)).ToArray();
 
-			return assembly.GetManifestResourceStream(resourcePaths.FirstOrDefault());
+			return assembly.GetManifestResourceStream(resourcePaths[0]);
 		}
 
 		bool IsFile(string path, string file)
