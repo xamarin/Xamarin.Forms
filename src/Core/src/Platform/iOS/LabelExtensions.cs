@@ -23,5 +23,9 @@ namespace Microsoft.Maui
 				nativeLabel.TextColor = textColor.ToNative(textColor);
 			}
 		}
+
+		public static void UpdateFont(this UILabel nativeLabel, ILabel label, IFontManager fontManager)
+		{
+		}
 	}
 }

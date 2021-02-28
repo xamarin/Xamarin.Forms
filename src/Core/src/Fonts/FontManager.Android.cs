@@ -2,39 +2,32 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using Android.Graphics;
-using Microsoft.Maui.Controls.Internals;
 using AApplication = Android.App.Application;
 
-namespace Microsoft.Maui.Controls.Compatibility.Platform.Android
+namespace Microsoft.Maui
 {
-	internal class TypefaceManager : ITypefaceManager
+	public class FontManager : IFontManager
 	{
-		readonly ConcurrentDictionary<(string fontFamily, FontAttributes fontAttributes), Typeface> _typefaces =
-			new ConcurrentDictionary<(string fontFamily, FontAttributes fontAttributes), Typeface>();
+		readonly ConcurrentDictionary<(string fontFamily, FontAttributes fontAttributes), Typeface?> _typefaces =
+			new ConcurrentDictionary<(string fontFamily, FontAttributes fontAttributes), Typeface?>();
 
 		readonly IFontRegistrar _fontRegistrar;
 
-		Typeface _defaultTypeface;
+		Typeface? _defaultTypeface;
 
-		public TypefaceManager(IFontRegistrar fontRegistrar)
+		public FontManager(IFontRegistrar fontRegistrar)
 		{
 			_fontRegistrar = fontRegistrar;
 		}
 
+		public Typeface DefaultTypeface => _defaultTypeface ??= Typeface.Default!;
 
-		public Typeface DefaultTypeface => _defaultTypeface ??= Typeface.Default;
-
-		public Typeface GetTypeface(Font font)
+		public Typeface? GetTypeface(Font font)
 		{
 			if (font.IsDefault || (font.FontAttributes == FontAttributes.None && string.IsNullOrEmpty(font.FontFamily)))
 				return DefaultTypeface;
 
-			return GetTypeface(font.FontFamily, font.FontAttributes);
-		}
-
-		public Typeface GetTypeface(string fontFamily, FontAttributes fontAttributes)
-		{
-			return _typefaces.GetOrAdd((fontFamily, fontAttributes), CreateTypeface);
+			return _typefaces.GetOrAdd((font.FontFamily, font.FontAttributes), CreateTypeface);
 		}
 
 		public float GetScaledPixel(Font font)
@@ -64,8 +57,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Android
 			return (float)font.FontSize;
 		}
 
-
-		(bool success, Typeface typeface) TryGetFromAssets(string fontName)
+		(bool success, Typeface? typeface) TryGetFromAssets(string fontName)
 		{
 			//First check Alias
 			var (hasFontAlias, fontPostScriptName) = _fontRegistrar.HasFont(fontName);
@@ -84,7 +76,6 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Android
 				"Fonts/",
 				"fonts/",
 			};
-
 
 			//copied text
 			var fontFile = FontFile.FromString(fontName);
@@ -122,7 +113,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Android
 			return (false, null);
 		}
 
-		(bool success, Typeface typeface) LoadTypefaceFromAsset(string fontfamily)
+		(bool success, Typeface? typeface) LoadTypefaceFromAsset(string fontfamily)
 		{
 			try
 			{
@@ -141,14 +132,14 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Android
 			return name != null && (name.Contains(".ttf#") || name.Contains(".otf#"));
 		}
 
-		Typeface CreateTypeface((string fontFamily, FontAttributes fontAttributes) familyAttributePair)
+		Typeface? CreateTypeface((string fontFamily, FontAttributes fontAttributes) familyAttributePair)
 		{
 			var (fontFamily, fontAttributes) = familyAttributePair;
 			fontFamily ??= string.Empty;
 
-			Typeface result;
+			Typeface? result;
 
-			if (String.IsNullOrWhiteSpace(fontFamily))
+			if (string.IsNullOrWhiteSpace(fontFamily))
 			{
 				var style = ToTypefaceStyle(fontAttributes);
 				result = Typeface.Create(Typeface.Default, style);
@@ -189,7 +180,8 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Android
 
 		string FontNameToFontFile(string fontFamily)
 		{
-			fontFamily = fontFamily ?? String.Empty;
+			fontFamily ??= string.Empty;
+
 			int hashtagIndex = fontFamily.IndexOf('#');
 			if (hashtagIndex >= 0)
 				return fontFamily.Substring(0, hashtagIndex);

@@ -6,13 +6,13 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Android
 	public static class FontExtensions
 	{
 		public static float ToScaledPixel(this Font self)
-			=> Forms.TypefaceManager.GetScaledPixel(self);
+			=> Forms.FontManager.GetScaledPixel(self);
 
 		public static Typeface ToTypeface(this Font self)
-			=> Forms.TypefaceManager.GetTypeface(self);
+			=> Forms.FontManager.GetTypeface(self);
 
 		internal static Typeface ToTypeface(this string fontfamily, FontAttributes attr = FontAttributes.None)
-			=> Forms.TypefaceManager.GetTypeface(fontfamily, attr);
+			=> Forms.FontManager.GetTypeface(Font.OfSize(fontfamily, 0.0).WithAttributes(attr));
 
 		internal static bool IsDefault(this IFontElement self)
 			=> self.FontFamily == null && self.FontSize == Device.GetNamedSize(NamedSize.Default, typeof(Label), true) && self.FontAttributes == FontAttributes.None;
@@ -20,9 +20,9 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Android
 		internal static Typeface ToTypeface(this IFontElement self)
 		{
 			if (self.IsDefault())
-				return Forms.TypefaceManager.DefaultTypeface;
+				return Forms.FontManager.DefaultTypeface;
 
-			return Forms.TypefaceManager.GetTypeface(self.FontFamily, self.FontAttributes);
+			return Forms.FontManager.GetTypeface(Font.OfSize(self.FontFamily, self.FontSize).WithAttributes(self.FontAttributes));
 		}
 	}
 }

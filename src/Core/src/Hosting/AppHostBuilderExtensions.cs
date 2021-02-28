@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Maui.Handlers;
 
 namespace Microsoft.Maui.Hosting
@@ -37,6 +36,19 @@ namespace Microsoft.Maui.Hosting
 				{  typeof(ISlider), typeof(SliderHandler) },
 				{  typeof(ISwitch), typeof(SwitchHandler) }
 			});
+			return builder;
+		}
+
+		public static IAppHostBuilder UseFonts(this IAppHostBuilder builder)
+		{
+			builder.ConfigureServices((context, collection) =>
+				collection.AddSingleton(
+					new Dictionary<Type, Type>
+					{
+						{ typeof(IEmbeddedFontLoader), typeof(EmbeddedFontLoader) },
+						{ typeof(IFontManager), typeof(FontManager) },
+						{ typeof(IFontRegistrar), typeof(FontRegistrar) },
+					}));
 			return builder;
 		}
 	}

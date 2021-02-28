@@ -60,7 +60,7 @@ namespace Microsoft.Maui.Controls.Compatibility
 		static bool? s_isNougatOrNewer;
 		static bool? s_isOreoOrNewer;
 		static bool? s_isPieOrNewer;
-		static TypefaceManager s_typefaceManager;
+		static FontManager s_fontManager;
 
 		[Obsolete("Context is obsolete as of version 2.5. Please use a local context instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -156,8 +156,8 @@ namespace Microsoft.Maui.Controls.Compatibility
 			}
 		}
 
-		internal static ITypefaceManager TypefaceManager =>
-			s_typefaceManager ??= new TypefaceManager(Registrar.FontRegistrar);
+		internal static IFontManager FontManager =>
+			s_fontManager ??= new FontManager(Registrar.FontRegistrar);
 
 		public static float GetFontSizeNormal(Context context)
 		{
