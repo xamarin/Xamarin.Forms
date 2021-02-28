@@ -2,5 +2,8 @@
 {
 	public class FontManager : IFontManager
 	{
+		public FontManager(IFontRegistrar fontRegistrar)
+		{
+		}
 	}
 }
