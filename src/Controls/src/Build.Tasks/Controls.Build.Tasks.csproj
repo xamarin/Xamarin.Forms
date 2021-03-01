@@ -40,7 +40,6 @@
 	<ItemGroup>
 		<None Include="$(TargetPath)" Visible="False" Pack="True" PackagePath="buildTransitive;build" />
 
-
 		<None Include="..\..\..\..\.nuspec\Microsoft.Maui.Controls.props" Visible="False" Pack="True" PackagePath="buildTransitive;build" />
 		<None Include="..\..\..\..\.nuspec\Microsoft.Maui.Controls.targets" Visible="False" Pack="True" PackagePath="buildTransitive;build" />
 		<None Include="..\..\..\..\.nuspec\Microsoft.Maui.Controls.SingleProject.props" Visible="False" Pack="True" PackagePath="buildTransitive;build" />
@@ -55,7 +54,7 @@
 		<None Include="$(PkgMono_Cecil)\lib\netstandard2.0\Mono.Cecil.Rocks.dll" Visible="False" Pack="True" PackagePath="buildTransitive;build" />
 
 		<None Include="..\Core\bin\$(Configuration)\netstandard2.0\Microsoft.Maui.Controls.dll" Visible="False" Pack="True" PackagePath="buildTransitive;build" />
-	<None Include="..\Xaml\bin\$(Configuration)\netstandard2.0\Microsoft.Maui.Controls.Xaml.dll" Visible="False" Pack="True" PackagePath="buildTransitive;build" />
+		<None Include="..\Xaml\bin\$(Configuration)\netstandard2.0\Microsoft.Maui.Controls.Xaml.dll" Visible="False" Pack="True" PackagePath="buildTransitive;build" />
 	</ItemGroup>
 
 	<PropertyGroup>
@@ -108,4 +107,11 @@
 		</ItemGroup>
 		<Copy SourceFiles="@(_CopyItems)" DestinationFolder="..\..\..\..\.nuspec\$(TargetFramework)\" ContinueOnError="true" Retries="0" />
 	</Target> -->
+
+	<Target Name="_CopyToNuspecDir" AfterTargets="Build">
+		<ItemGroup>
+			<_CopyItems Include="$(TargetDir)*.dll" />
+		</ItemGroup>
+		<Copy SourceFiles="@(_CopyItems)" DestinationFolder="..\..\..\..\.nuspec\" ContinueOnError="true" Retries="0" />
+	</Target>
 </Project>
