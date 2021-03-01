@@ -276,7 +276,7 @@ namespace Microsoft.Maui.Controls.Compatibility
 			InitializationOptions? maybeOptions = null
 		)
 		{
-			var activity = (Activity)context.Context;
+			var activity = context.Context;
 			Profile.FrameBegin();
 			Registrar.RegisterRendererToHandlerShim(RendererToHandlerShim.CreateShim);
 			if (!IsInitialized)
