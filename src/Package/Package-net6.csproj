@@ -7,7 +7,6 @@
     <Nullable>enable</Nullable>
     <RuntimeIdentifier Condition=" '$(TargetFramework)' == 'net6.0-ios' ">ios-x64</RuntimeIdentifier>
     <IncludeBuildOutput>False</IncludeBuildOutput>
-    <EnableDefaultItems>False</EnableDefaultItems>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -16,18 +15,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Core\src\Core-net6.csproj" />
-    <ProjectReference Include="..\src\Controls\src\Build.Tasks\Controls.Build.Tasks-net6.csproj" />
-    <ProjectReference Include="..\src\Controls\src\Core\Controls.Core-net6.csproj" />
-    <ProjectReference Include="..\src\Controls\src\Xaml\Controls.Xaml-net6.csproj" />
-    <ProjectReference Include="..\src\SingleProject\Resizetizer\src\Resizetizer.csproj" />
+    <ProjectReference Include="..\Core\src\Core-net6.csproj" />
+    <ProjectReference Include="..\Controls\src\Build.Tasks\Controls.Build.Tasks-net6.csproj" />
+    <ProjectReference Include="..\Controls\src\Core\Controls.Core-net6.csproj" />
+    <ProjectReference Include="..\Controls\src\Xaml\Controls.Xaml-net6.csproj" />
+    <ProjectReference Include="..\SingleProject\Resizetizer\src\Resizetizer.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetPlatformIdentifier)' == 'android' ">
-    <ProjectReference Include="..\src\Compatibility\Core\src\Android.FormsViewGroup\Compatibility.Android.FormsViewGroup-net6.csproj" />
+    <ProjectReference Include="..\Compatibility\Core\src\Android.FormsViewGroup\Compatibility.Android.FormsViewGroup-net6.csproj" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetPlatformIdentifier)' == 'android' Or  '$(TargetPlatformIdentifier)' == 'ios' ">
-    <ProjectReference Include="..\src\Compatibility\Core\src\Compatibility-net6.csproj" />
+    <ProjectReference Include="..\Compatibility\Core\src\Compatibility-net6.csproj" />
   </ItemGroup>
 
 </Project>
