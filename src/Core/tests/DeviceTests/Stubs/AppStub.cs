@@ -4,7 +4,7 @@ namespace Microsoft.Maui.DeviceTests.Stubs
 {
 	class AppStub : MauiApp, IDisposable
 	{
-		public override IWindow GetWindowFor(IActivationState state)
+		public override IWindow CreateWindow(IActivationState state)
 		{
 			throw new NotImplementedException();
 		}
