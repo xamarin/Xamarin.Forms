@@ -8,13 +8,13 @@
         <Label Text="Custom font using filename" FontFamily="Dokdo-Regular.ttf" />
         <Label Text="The same font using an alias" FontFamily="Cool Writing Font" />
 
-        <Label Text="Normal and default font" FontSize="24" />
-        <Label Text="Custom font using filename" FontFamily="Dokdo-Regular.ttf" FontSize="24" />
-        <Label Text="The same font using an alias" FontFamily="Cool Writing Font" FontSize="24" />
+        <Label Text="Large and default font" FontSize="24" />
+        <Label Text="Custom large font using filename" FontFamily="Dokdo-Regular.ttf" FontSize="24" />
+        <Label Text="The same large font using an alias" FontFamily="Cool Writing Font" FontSize="24" />
 
-        <Label Text="Normal and default font" FontAttributes="Bold" />
-        <Label Text="Custom font using filename" FontFamily="Dokdo-Regular.ttf" FontAttributes="Bold" />
-        <Label Text="The same font using an alias" FontFamily="Cool Writing Font" FontAttributes="Bold" />
+        <Label Text="Bold and default font" FontAttributes="Bold" />
+        <Label Text="Custom bold font using filename" FontFamily="Dokdo-Regular.ttf" FontAttributes="Bold" />
+        <Label Text="The same bold font using an alias" FontFamily="Cool Writing Font" FontAttributes="Bold" />
     </StackLayout>
 
 </ContentPage>

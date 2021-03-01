@@ -19,12 +19,6 @@
     <ProjectReference Include="..\..\..\..\Essentials\src\Essentials.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Views\FontsPage.xaml.cs">
-      <DependentUpon>FontsPage.xaml</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
   <Import Project="..\..\..\..\..\.nuspec\Microsoft.Maui.Controls.targets" />
 
 </Project>

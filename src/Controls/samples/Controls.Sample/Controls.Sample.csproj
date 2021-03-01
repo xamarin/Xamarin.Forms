@@ -19,4 +19,8 @@
     <ProjectReference Include="..\..\src\Core\Controls.Core.csproj" />
     <ProjectReference Include="..\..\..\Core\src\Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <SharedFont Include="Fonts\*" />
+  </ItemGroup>
+  <Import Project="..\..\..\..\.nuspec\Microsoft.Maui.Resizetizer.targets" />
 </Project>

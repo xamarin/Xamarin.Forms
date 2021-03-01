@@ -1,63 +1,52 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Maui.Controls.Sample.Pages;
 using Maui.Controls.Sample.Services;
 using Maui.Controls.Sample.ViewModel;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Hosting;
-using Microsoft.Maui;
-//#if __ANDROID__
-//using Maui.Controls.Compatibility;
-//#endif
 
 namespace Maui.Controls.Sample
 {
 	public class MyApp : MauiApp
 	{
-		public override IAppHostBuilder CreateBuilder()
-		{
-			var builder = base.CreateBuilder()
-				   //.ConfigureLogging(logging =>
-				   //{
-				   //	logging.ClearProviders();
-				   //	logging.AddConsole();
-				   //})
-				   .ConfigureAppConfiguration((hostingContext, config) =>
-				   {
-					   config.AddInMemoryCollection(new Dictionary<string, string>
-										{
-										   {"MyKey", "Dictionary MyKey Value"},
-										   {":Title", "Dictionary_Title"},
-										   {"Position:Name", "Dictionary_Name" },
-										   {"Logging:LogLevel:Default", "Warning"}
-										});
-				   })
-				   .ConfigureServices(ConfigureServices)
-#if __ANDROID__
-				   //.RegisterCompatibilityRenderer<Microsoft.Maui.Controls.Button, Microsoft.Maui.Controls.Button, Microsoft.Maui.Controls.Platform.Android.FastRenderers.ButtonRenderer>()
-#endif
-				   ;
-			;
-			return builder;
-		}
+		public override IAppHostBuilder CreateBuilder() =>
+			base.CreateBuilder()
+				//.ConfigureLogging(logging =>
+				//{
+				//	logging.ClearProviders();
+				//	logging.AddConsole();
+				//})
+				.ConfigureAppConfiguration((hostingContext, config) =>
+				{
+					config.AddInMemoryCollection(new Dictionary<string, string>
+					{
+						{ "MyKey", "Dictionary MyKey Value" },
+						{ ":Title", "Dictionary_Title" },
+						{ "Position:Name", "Dictionary_Name" },
+						{ "Logging:LogLevel:Default", "Warning" }
+					});
+				})
+				.ConfigureServices((hostingContext, services) =>
+				{
+					services.AddSingleton<ITextService, TextService>();
+					services.AddTransient<MainPageViewModel>();
+					services.AddTransient<MainPage>();
+					services.AddTransient<IWindow, MainWindow>();
+				})
+				.ConfigureFonts((hostingContext, fonts) =>
+				{
+					fonts.AddFont("dokdo_regular.ttf", "Dokdo");
+				});
 
 		//IAppState state
 		public override IWindow GetWindowFor(IActivationState state)
 		{
 			return Services.GetService<IWindow>();
-		}
-
-		void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
-		{
-			//services.AddLogging();
-			services.AddSingleton<ITextService, TextService>();
-			services.AddTransient<MainPageViewModel>();
-			services.AddTransient<MainPage>();
-			services.AddTransient<IWindow, MainWindow>();
 		}
 	}
 
