@@ -24,11 +24,6 @@ namespace Microsoft.Maui.Hosting
 				throw new ArgumentNullException(nameof(serviceType));
 
 			List<Type> types = new List<Type> { serviceType };
-			foreach (var interfac in serviceType.GetInterfaces())
-			{
-				if (typeof(IView).IsAssignableFrom(interfac))
-					types.Add(interfac);
-			}
 
 			Type? baseType = serviceType.BaseType;
 
@@ -36,6 +31,12 @@ namespace Microsoft.Maui.Hosting
 			{
 				types.Add(baseType);
 				baseType = baseType.BaseType;
+			}
+
+			foreach (var interfac in serviceType.GetInterfaces())
+			{
+				if (typeof(IView).IsAssignableFrom(interfac))
+					types.Add(interfac);
 			}
 
 			foreach (var type in types)
