@@ -123,7 +123,7 @@ stages:
   #         - template: common/controlgallery-android.yml
 
   - stage: pack_net6_windows
-    displayName: NET6 Windows
+    displayName: Pack .NET 6 Windows
     dependsOn: []
     jobs:
       - job: net6_pack
@@ -155,7 +155,7 @@ stages:
             displayName: install .NET workloads
             errorActionPreference: stop
 
-          - pwsh: ./.nuspec/package.ps1 -packageVersion 0.0.1
+          - pwsh: ./.nuspec/package.ps1 -packageVersion 0.0.1-preview
             displayName: pack nugets
             errorActionPreference: stop
 
