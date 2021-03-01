@@ -5,9 +5,10 @@ using Xunit;
 
 namespace Microsoft.Maui.DeviceTests
 {
+	[Category("EntryHandler")]
 	public partial class EntryHandlerTests : HandlerTestBase<EntryHandler>
 	{
-		[Fact(DisplayName = "[EntryHandler] Text Initializes Correctly")]
+		[Fact(DisplayName = "Text Initializes Correctly")]
 		public async Task TextInitializesCorrectly()
 		{
 			var entry = new EntryStub()
@@ -18,7 +19,7 @@ namespace Microsoft.Maui.DeviceTests
 			await ValidatePropertyInitValue(entry, () => entry.Text, GetNativeText, entry.Text);
 		}
 
-		[Fact(DisplayName = "[EntryHandler] TextColor Initializes Correctly")]
+		[Fact(DisplayName = "TextColor Initializes Correctly")]
 		public async Task TextColorInitializesCorrectly()
 		{
 			var entry = new EntryStub()
@@ -30,15 +31,17 @@ namespace Microsoft.Maui.DeviceTests
 			await ValidatePropertyInitValue(entry, () => entry.TextColor, GetNativeTextColor, entry.TextColor);
 		}
 
-		[Fact(DisplayName = "[EntryHandler] IsPassword Initializes Correctly")]
-		public async Task IsPasswordInitializesCorrectly()
+		[Theory(DisplayName = "IsPassword Initializes Correctly")]
+		[InlineData(true)]
+		[InlineData(false)]
+		public async Task IsPasswordInitializesCorrectly(bool isPassword)
 		{
 			var entry = new EntryStub()
 			{
-				IsPassword = true
+				IsPassword = isPassword
 			};
 
-			await ValidatePropertyInitValue(entry, () => entry.IsPassword, GetNativeIsPassword, entry.IsPassword);
+			await ValidatePropertyInitValue(entry, () => entry.IsPassword, GetNativeIsPassword, isPassword);
 		}
 	}
 }
