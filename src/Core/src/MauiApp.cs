@@ -5,7 +5,7 @@ namespace Microsoft.Maui
 {
 	public abstract class MauiApp : App
 	{
-		public abstract IWindow CreateWindowFor(IActivationState state);
+		public abstract IWindow CreateWindow(IActivationState state);
 
 		public MauiApp()
 		{

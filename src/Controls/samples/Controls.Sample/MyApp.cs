@@ -48,7 +48,7 @@ namespace Maui.Controls.Sample
 		}
 
 		//IAppState state
-		public override IWindow CreateWindowFor(IActivationState state)
+		public override IWindow CreateWindow(IActivationState state)
 		{
 
 #if (__ANDROID__ || __IOS__)

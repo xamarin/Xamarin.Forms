@@ -13,7 +13,7 @@ namespace Maui.Controls.Sample.SingleProject
 					services.AddTransient<IWindow, MainWindow>();
 				});
 
-		public override IWindow CreateWindowFor(IActivationState state)
+		public override IWindow CreateWindow(IActivationState state)
 		{
 #if (ANDROID || IOS)
 
