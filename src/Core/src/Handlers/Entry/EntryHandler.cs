@@ -8,7 +8,7 @@
 			[nameof(IEntry.TextColor)] = MapTextColor,
 			[nameof(IEntry.IsPassword)] = MapIsPassword
 		};
-				
+
 		public EntryHandler() : base(EntryMapper)
 		{
 

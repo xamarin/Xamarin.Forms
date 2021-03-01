@@ -9,11 +9,5 @@
 		public Color TextColor { get; set; }
 
 		public bool IsPassword { get; set; }
-
-		public FontAttributes FontAttributes { get; set; }
-
-		public string FontFamily { get; set; }
-
-		public double FontSize { get; set; }
 	}
 }
