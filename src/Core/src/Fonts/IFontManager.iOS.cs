@@ -4,7 +4,7 @@ namespace Microsoft.Maui
 {
 	public interface IFontManager
 	{
-		string DefaultFontName { get; }
+		UIFont DefaultFont { get; }
 
 		UIFont GetFont(Font font);
 	}

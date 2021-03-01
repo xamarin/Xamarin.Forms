@@ -13,15 +13,15 @@ namespace Microsoft.Maui
 
 		readonly IFontRegistrar _fontRegistrar;
 
-		string? _defaultFontName;
+		UIFont? _defaultFont;
 
 		public FontManager(IFontRegistrar fontRegistrar)
 		{
 			_fontRegistrar = fontRegistrar;
 		}
 
-		public string DefaultFontName =>
-			_defaultFontName ??= UIFont.SystemFontOfSize(12).Name;
+		public UIFont DefaultFont =>
+			_defaultFont ??= UIFont.SystemFontOfSize(12);
 
 		public UIFont GetFont(Font font)
 		{
@@ -62,7 +62,7 @@ namespace Microsoft.Maui
 			var bold = (attributes & FontAttributes.Bold) != 0;
 			var italic = (attributes & FontAttributes.Italic) != 0;
 
-			if (family != null && family != DefaultFontName)
+			if (family != null && family != DefaultFont.FamilyName)
 			{
 				try
 				{
