@@ -30,7 +30,7 @@ namespace Microsoft.Maui.DeviceTests
 			await ValidatePropertyInitValue(entry, () => entry.TextColor, GetNativeTextColor, entry.TextColor);
 		}
 
-		[Fact(DisplayName = "[EntryHandler] Is IsPassword Initializes Correctly")]
+		[Fact(DisplayName = "[EntryHandler] IsPassword Initializes Correctly")]
 		public async Task IsPasswordInitializesCorrectly()
 		{
 			var entry = new EntryStub()
