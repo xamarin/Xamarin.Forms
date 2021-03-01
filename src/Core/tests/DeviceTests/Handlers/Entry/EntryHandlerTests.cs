@@ -18,7 +18,7 @@ namespace Microsoft.Maui.DeviceTests
 			await ValidatePropertyInitValue(entry, () => entry.Text, GetNativeText, entry.Text);
 		}
 
-		[Fact(DisplayName = "[EntryHandler] Is TextColor Initializes Correctly")]
+		[Fact(DisplayName = "[EntryHandler] TextColor Initializes Correctly")]
 		public async Task TextColorInitializesCorrectly()
 		{
 			var entry = new EntryStub()
