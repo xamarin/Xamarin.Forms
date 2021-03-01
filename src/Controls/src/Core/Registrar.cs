@@ -417,7 +417,8 @@ namespace Microsoft.Maui.Controls.Internals
 			if (FontRegistrar is FontRegistrar fontRegistrar)
 			{
 				var type = Registered.GetHandlerType(typeof(EmbeddedFont));
-				fontRegistrar.SetFontLoader((IEmbeddedFontLoader)Activator.CreateInstance(type));
+				if (type != null)
+					fontRegistrar.SetFontLoader((IEmbeddedFontLoader)Activator.CreateInstance(type));
 			}
 
 			RegisterStylesheets(flags);
