@@ -7,7 +7,7 @@ namespace Microsoft.Maui.DeviceTests
 {
 	public partial class EntryHandlerTests : HandlerTestBase<EntryHandler>
 	{
-		[Fact(DisplayName = "[EntryHandler] Is Text Initializes Correctly")]
+		[Fact(DisplayName = "[EntryHandler] Text Initializes Correctly")]
 		public async Task TextInitializesCorrectly()
 		{
 			var entry = new EntryStub()
@@ -18,7 +18,7 @@ namespace Microsoft.Maui.DeviceTests
 			await ValidatePropertyInitValue(entry, () => entry.Text, GetNativeText, entry.Text);
 		}
 
-		[Fact(DisplayName = "[EntryHandler] Is TextColor Initializes Correctly")]
+		[Fact(DisplayName = "[EntryHandler] TextColor Initializes Correctly")]
 		public async Task TextColorInitializesCorrectly()
 		{
 			var entry = new EntryStub()
@@ -30,7 +30,7 @@ namespace Microsoft.Maui.DeviceTests
 			await ValidatePropertyInitValue(entry, () => entry.TextColor, GetNativeTextColor, entry.TextColor);
 		}
 
-		[Fact(DisplayName = "[EntryHandler] Is IsPassword Initializes Correctly")]
+		[Fact(DisplayName = "[EntryHandler] IsPassword Initializes Correctly")]
 		public async Task IsPasswordInitializesCorrectly()
 		{
 			var entry = new EntryStub()
