@@ -42,7 +42,7 @@ namespace Microsoft.Maui.Hosting
 			{
 				if (_collection.TryGetService(type, out var descriptor))
 				{
-					if (descriptor.Lifetime == ServiceLifetime.Singleton)
+					if (descriptor!.Lifetime == ServiceLifetime.Singleton)
 					{
 						if (_singletons.TryGetValue(descriptor, out var singletonInstance))
 							return singletonInstance;
