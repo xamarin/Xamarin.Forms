@@ -58,6 +58,7 @@ steps:
       projects: |
         **/Controls.Core.UnitTests.csproj
         **/Core.UnitTests.csproj
+        **/Essentials.UnitTests.csproj
         **/Resizetizer.UnitTests.csproj
       arguments: '--configuration $(BuildConfiguration)'
 
