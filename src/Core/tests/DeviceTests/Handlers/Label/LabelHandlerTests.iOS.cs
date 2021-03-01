@@ -10,10 +10,19 @@ namespace Microsoft.Maui.DeviceTests
 			(UILabel)labelHandler.View;
 
 		string GetNativeText(LabelHandler labelHandler) =>
-			 GetNativeLabel(labelHandler).Text;
+			GetNativeLabel(labelHandler).Text;
 
 		Color GetNativeTextColor(LabelHandler labelHandler) =>
-			 GetNativeLabel(labelHandler).TextColor.ToColor();
+			GetNativeLabel(labelHandler).TextColor.ToColor();
+
+		double GetNativeUnscaledFontSize(LabelHandler labelHandler) =>
+			GetNativeLabel(labelHandler).Font.PointSize;
+
+		bool GetNativeIsBold(LabelHandler labelHandler) =>
+			GetNativeLabel(labelHandler).Font.FontDescriptor.SymbolicTraits.HasFlag(UIFontDescriptorSymbolicTraits.Bold);
+
+		bool GetNativeIsItalic(LabelHandler labelHandler) =>
+			GetNativeLabel(labelHandler).Font.FontDescriptor.SymbolicTraits.HasFlag(UIFontDescriptorSymbolicTraits.Italic);
 
 		Task ValidateNativeBackgroundColor(ILabel label, Color color)
 		{
