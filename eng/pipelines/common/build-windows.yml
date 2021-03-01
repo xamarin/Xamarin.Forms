@@ -42,7 +42,7 @@ steps:
     displayName: 'XAML Unit Tests'
     inputs:
       testAssemblyVer2: |
-        **/bin/$(BuildConfiguration)/**/Xamarin.Forms.Xaml.UnitTests.dll
+        **/bin/$(BuildConfiguration)/**/Controls.Xaml.UnitTests.dll
       searchFolder: ${{ parameters.nunitTestFolder }}
       codeCoverageEnabled: true
       testRunTitle: '$(BuildConfiguration)_UnitTests'
@@ -55,7 +55,10 @@ steps:
     displayName: 'Unit Tests'
     inputs:
       command: test
-      projects: '**/*.UnitTests.csproj'
+      projects: |
+        **/Controls.Core.UnitTests.csproj
+        **/Core.UnitTests.csproj
+        **/Resizetizer.UnitTests.csproj
       arguments: '--configuration $(BuildConfiguration)'
 
   - task: CopyFiles@2
