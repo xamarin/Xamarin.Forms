@@ -70,7 +70,7 @@ namespace Microsoft.Maui.Hosting
 			_descriptorDictionary.Remove(descriptor.ServiceType);
 		}
 
-		public bool TryGetService(Type serviceType, out ServiceDescriptor descriptor) =>
+		public bool TryGetService(Type serviceType, out ServiceDescriptor? descriptor) =>
 			_descriptorDictionary.TryGetValue(serviceType, out descriptor);
 	}
 }

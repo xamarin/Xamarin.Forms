@@ -9,7 +9,7 @@ namespace Microsoft.Maui
 		public (bool success, string? filePath) LoadFont(EmbeddedFont font)
 		{
 			var tmpdir = Path.GetTempPath();
-			var filePath = Path.Combine(tmpdir, font.FontName);
+			var filePath = Path.Combine(tmpdir, font.FontName!);
 			if (File.Exists(filePath))
 				return (true, filePath);
 

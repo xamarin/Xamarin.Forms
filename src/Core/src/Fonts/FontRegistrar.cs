@@ -100,7 +100,7 @@ namespace Microsoft.Maui
 			if (resourcePaths.Length > 1)
 				resourcePaths = resourcePaths.Where(x => IsFile(x, embeddedFont.Filename)).ToArray();
 
-			return embeddedFont.Assembly.GetManifestResourceStream(resourcePaths[0]);
+			return embeddedFont.Assembly.GetManifestResourceStream(resourcePaths[0])!;
 		}
 
 		bool IsFile(string path, string file)
