@@ -65,7 +65,7 @@ var ANDROID_CONTROLGALLERY_PROJ = $"{ANDROID_CONTROLGALLERY}Xamarin.Forms.Contro
 var ANDROID_RENDERERS = Argument("ANDROID_RENDERERS", "FAST");
 var ANDROID_TEST_PROJ = "./src/ControlGallery/test/Xamarin.Forms.Core.Android.UITests/Xamarin.Forms.Core.Android.UITests.csproj";
 
-var BUILD_TASKS_PROJ ="src/Controls/src/Build.Tasks/Controls.Build.Tasks.csproj";
+var BUILD_TASKS_PROJ ="Microsoft.Maui.Build.Tasks.sln";
 
 var XamarinFormsVersion = Argument("XamarinFormsVersion", "");
 var packageVersion = Argument("packageVersion", "");
