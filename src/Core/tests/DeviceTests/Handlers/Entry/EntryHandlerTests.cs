@@ -7,7 +7,7 @@ namespace Microsoft.Maui.DeviceTests
 {
 	public partial class EntryHandlerTests : HandlerTestBase<EntryHandler>
 	{
-		[Fact(DisplayName = "[EntryHandler] Is Text Initializes Correctly")]
+		[Fact(DisplayName = "[EntryHandler] Text Initializes Correctly")]
 		public async Task TextInitializesCorrectly()
 		{
 			var entry = new EntryStub()
