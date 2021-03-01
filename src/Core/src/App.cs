@@ -6,23 +6,51 @@ namespace Microsoft.Maui
 {
 	public abstract class App : IApp
 	{
+		static object? GlobalLock;
+		static App? AppInstance;
+
+		IWindow? _mainWindow;
+
 		readonly WindowCollection _windows;
 		IServiceProvider? _serviceProvider;
 		IMauiContext? _context;
 
 		protected App()
 		{
-			if (Current != null)
+			GlobalLock = new object();
+			_windows = new WindowCollection();
+
+			if (AppInstance != null)
 				throw new InvalidOperationException($"Only one {nameof(App)} instance is allowed");
 
-			Current = this;
-
-			_windows = new WindowCollection();
+			lock (GlobalLock)
+			{
+				AppInstance = this;
+			}
 		}
 
-		public static App? Current { get; internal set; }
+		static public App? Current
+		{
+			get
+			{
+				return AppInstance;
+			}
+		}
 
-		public IWindow? MainWindow { get; set; }
+		public IWindow? MainWindow
+		{
+			get
+			{
+				return _mainWindow;
+			}
+			set
+			{
+				if (value != _mainWindow)
+				{
+					_mainWindow = value;
+				}
+			}
+		}
 
 		public WindowCollection Windows => _windows;
 
@@ -30,26 +58,59 @@ namespace Microsoft.Maui
 
 		public IMauiContext? Context => _context;
 
+		public void Run()
+		{
+			Run(null);
+		}
+
+		public void Run(IWindow? window)
+		{
+			if (window != null)
+			{ 
+				if (Windows.HasItem(window) == false)
+				{
+					Windows.Add(window);
+				}
+
+				if (MainWindow == null)
+				{
+					MainWindow = window;
+				}
+
+				Window? win = window as Window;
+				win?.Show();
+			}
+		}
+
 		// Move to abstract
 		public virtual IAppHostBuilder CreateBuilder() => CreateDefaultBuilder();
 
-		public virtual void Create()
+		public virtual void OnCreated()
 		{
 		}
 
-		public virtual void Resume()
+		public virtual void OnResumed()
 		{
-			MainWindow?.Resume();
+			MainWindow?.OnResumed();
 		}
 
-		public virtual void Pause()
+		public virtual void OnPaused()
 		{
-			MainWindow?.Pause();
+			MainWindow?.OnPaused();
 		}
 
-		public virtual void Stop()
+		public virtual void OnStopped()
 		{
 
+		}
+
+		public static IAppHostBuilder CreateDefaultBuilder()
+		{
+			var builder = new AppHostBuilder();
+
+			builder.UseMauiHandlers();
+
+			return builder;
 		}
 
 		internal void SetServiceProvider(IServiceProvider provider)
@@ -61,15 +122,6 @@ namespace Microsoft.Maui
 		internal void SetHandlerContext(IMauiContext? context)
 		{
 			_context = context;
-		}
-
-		public static IAppHostBuilder CreateDefaultBuilder()
-		{
-			var builder = new AppHostBuilder();
-
-			builder.UseMauiHandlers();
-
-			return builder;
 		}
 	}
 }

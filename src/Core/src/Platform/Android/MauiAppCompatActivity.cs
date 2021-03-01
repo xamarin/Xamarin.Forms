@@ -40,7 +40,7 @@ namespace Microsoft.Maui
 
 			_window = _app.GetWindowFor(null!);
 
-			_window.Create();
+			_window.Show();
 
 			_window.MauiContext = new HandlersContext(_app.Services, this);
 
@@ -49,7 +49,7 @@ namespace Microsoft.Maui
 			//Hack for now we set this on the App Static but this should be on IFrameworkElement
 			App.Current?.SetHandlerContext(_window.MauiContext);
 
-			var content = _window.Page.View;
+			var content = _window.Content?.View;
 
 			CoordinatorLayout parent = new CoordinatorLayout(this);
 			NestedScrollView main = new NestedScrollView(this);
@@ -60,7 +60,7 @@ namespace Microsoft.Maui
 
 			parent.AddView(main, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
 
-			main.AddView(content.ToNative(_window.MauiContext), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
+			main.AddView(content?.ToNative(_window.MauiContext), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
 		}
 
 		protected override void OnStart()
@@ -114,13 +114,13 @@ namespace Microsoft.Maui
 		void UpdateApplicationLifecycleState()
 		{
 			if (_previousState == AndroidApplicationLifecycleState.OnCreate && _currentState == AndroidApplicationLifecycleState.OnStart)
-				_app?.Create();
+				_app?.OnCreated();
 			else if (_previousState == AndroidApplicationLifecycleState.OnRestart && _currentState == AndroidApplicationLifecycleState.OnStart)
-				_app?.Resume();
+				_app?.OnResumed();
 			else if (_previousState == AndroidApplicationLifecycleState.OnPause && _currentState == AndroidApplicationLifecycleState.OnStop)
-				_app?.Pause();
+				_app?.OnPaused();
 			else if (_currentState == AndroidApplicationLifecycleState.OnDestroy)
-				_app?.Stop();
+				_app?.OnStopped();
 		}
 	}
 }

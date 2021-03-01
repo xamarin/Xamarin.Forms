@@ -24,11 +24,11 @@ namespace Microsoft.Maui
 			if (_app == null || _app.Services == null)
 				throw new InvalidOperationException("App was not intialized");
 
-			_app.Create();
+			_app.OnCreated();
 
 			_window = app.GetWindowFor(null!);
 
-			_window.Create();
+			_window.OnCreated();
 
 			_window.MauiContext = new MauiContext(_app.Services);
 
@@ -37,13 +37,13 @@ namespace Microsoft.Maui
 			//Hack for now we set this on the App Static but this should be on IFrameworkElement
 			App.Current?.SetHandlerContext(_window.MauiContext);
 
-			var content = _window.Page.View;
+			var content = _window.Content?.View;
 
 			var uiWindow = new UIWindow
 			{
 				RootViewController = new UIViewController
 				{
-					View = content.ToNative(_window.MauiContext)
+					View = content?.ToNative(_window.MauiContext)
 				}
 			};
 
@@ -57,24 +57,24 @@ namespace Microsoft.Maui
 			if (_isSuspended)
 			{
 				_isSuspended = false;
-				_app?.Resume();
+				_app?.OnResumed();
 			}
 		}
 
 		public override void OnResignActivation(UIApplication application)
 		{
 			_isSuspended = true;
-			_app?.Pause();
+			_app?.OnPaused();
 		}
 
 		public override void WillTerminate(UIApplication application)
 		{
-			_app?.Stop();
+			_app?.OnStopped();
 		}
 
 		void ConfigureNativeServices(HostBuilderContext ctx, IServiceCollection services)
 		{
-
+			services.AddTransient<IWindowService, WindowService>();
 		}
 	}
 }

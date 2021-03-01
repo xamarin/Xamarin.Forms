@@ -45,7 +45,7 @@ namespace Maui.Controls.Sample
 			return builder;
 		}
 
-		//IAppState state
+		// IAppState state
 		public override IWindow GetWindowFor(IActivationState state)
 		{
 			return Services.GetService<IWindow>();
@@ -61,7 +61,7 @@ namespace Maui.Controls.Sample
 		}
 	}
 
-	//to use DI ServiceCollection and not the MAUI one
+	// To use DI ServiceCollection and not the MAUI one
 	public class DIExtensionsServiceProviderFactory : IServiceProviderFactory<ServiceCollection>
 	{
 		public ServiceCollection CreateBuilder(IServiceCollection services)

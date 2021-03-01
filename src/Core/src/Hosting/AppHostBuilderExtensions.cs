@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Maui.Handlers;
 
 namespace Microsoft.Maui.Hosting
@@ -37,6 +36,14 @@ namespace Microsoft.Maui.Hosting
 				{  typeof(ISlider), typeof(SliderHandler) },
 				{  typeof(ISwitch), typeof(SwitchHandler) }
 			});
+
+			return builder;
+		}
+
+		public static IAppHostBuilder RegisterPlatformLifecycleHandler<THandler>(this IAppHostBuilder builder)
+			where THandler : IPlatformLifecycleHandler
+		{
+			// TODO: Register PlatformLifecycleHandler
 			return builder;
 		}
 	}

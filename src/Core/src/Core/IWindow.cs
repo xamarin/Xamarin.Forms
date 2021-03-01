@@ -1,13 +1,63 @@
 namespace Microsoft.Maui
 {
+	/// <summary>
+	/// Encapsulates the window and its available services.
+	/// </summary>
 	public interface IWindow
 	{
-		public IMauiContext MauiContext { get; set; }
-		public IPage Page { get; set; }
+		/// <summary>
+		/// Gets the .NET MAUI Context.
+		/// </summary>
+		public IMauiContext? MauiContext { get; set; }
 
-		void Create();
-		void Resume();
-		void Pause();
-		void Stop();
+		/// <summary>
+		/// Gets the window's logical child page.
+		/// </summary>
+		public IPage? Content { get; set; }
+
+		/// <summary>
+		/// Gets a value that indicates whether the window is active.
+		/// </summary>
+		public bool IsActive { get; set; }
+
+		/// <summary>
+		/// Opens a window and returns without waiting for the newly opened window to close.
+		/// </summary>
+		void Show();
+
+		/// <summary>
+		/// Attempts to bring the window to the foreground and activates it.
+		/// </summary>
+		void Activate();
+
+		/// <summary>
+		/// Makes a window invisible.
+		/// </summary>
+		void Hide();
+
+		/// <summary>
+		/// Manually closes a Window.
+		/// </summary>
+		void Close();
+
+		/// <summary>
+		/// Called when the Window is created.
+		/// </summary>
+		void OnCreated();
+
+		/// <summary>
+		/// Called when the application is not visible to the user.
+		/// </summary>
+		void OnResumed();
+
+		/// <summary>
+		/// Called before the application is closed.
+		/// </summary>
+		void OnPaused();
+
+		/// <summary>
+		/// Called when the Window is closed.
+		/// </summary>
+		void OnStopped();
 	}
 }

@@ -1,49 +1,156 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Microsoft.Maui
 {
-	public sealed class WindowCollection : ICollection
-	{
-		readonly List<IWindow> _windows;
+    /// <summary>
+    /// WindowCollection can be used to interate over all the windows that have been 
+    /// opened in the current application.
+    /// </summary>
+    public sealed class WindowCollection : ICollection
+    {
+		readonly ArrayList _list;
 
-		public WindowCollection()
-		{
-			_windows = new List<IWindow>();
-		}
+        /// <summary>
+        /// Default Constructor
+        /// </summary>
+        public WindowCollection()
+        {
+            _list = new ArrayList(1);
+        }
 
-		public WindowCollection(IEnumerable<IWindow> windows)
-		{
-			_windows = windows.ToList();
-		}
+        internal WindowCollection(int count)
+        {
+            _list = new ArrayList(count);
+        }
 
-		public int Count => _windows.Count;
+        /// <summary>
+        /// Overloaded [] operator to access the WindowCollection list
+        /// </summary>
+        public IWindow? this[int index]
+        {
+            get
+            {
+                return _list[index] as IWindow;
+            }
+        }
 
-		public object SyncRoot
-		{
-			get { throw new NotImplementedException(); }
-		}
+        /// <summary>
+        /// GetEnumerator
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator GetEnumerator()
+        {
+            return _list.GetEnumerator();
+        }
 
-		public bool IsSynchronized
-		{
-			get { throw new NotImplementedException(); }
-		}
+        /// <summary>
+        /// CopyTo
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="index"></param>
+        void ICollection.CopyTo(Array array, int index)
+        {
+            _list.CopyTo(array, index);
+        }
 
-		public void CopyTo(Array array, int index)
-		{
-			throw new NotImplementedException();
-		}
+        /// <summary>
+        /// CopyTo
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="index"></param>
+        public void CopyTo(IWindow[] array, int index)
+        {
+            _list.CopyTo(array, index);
+        }
 
-		public IEnumerator GetEnumerator()
-		{
-			return _windows.GetEnumerator();
-		}
+        /// <summary>
+        /// Count property
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                return _list.Count;
+            }
+        }
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
-	}
+        /// <summary>
+        /// IsSynchronized
+        /// </summary>
+        public bool IsSynchronized
+        {
+            get
+            {
+                return _list.IsSynchronized;
+            }
+        }
+
+        /// <summary>
+        /// SyncRoot
+        /// </summary>
+        public object SyncRoot
+        {
+            get
+            {
+                return _list.SyncRoot;
+            }
+        }
+
+        internal WindowCollection Clone()
+        {
+            WindowCollection clone;
+
+            lock (_list.SyncRoot)
+            {
+                clone = new WindowCollection(_list.Count);
+                for (int i = 0; i < _list.Count; i++)
+                {
+                    clone._list.Add(_list[i]);
+                }
+            }
+
+            return clone;
+        }
+
+        internal void Remove(IWindow win)
+        {
+            lock (_list.SyncRoot)
+            {
+                _list.Remove(win);
+            }
+        }
+
+        internal void RemoveAt(int index)
+        {
+            lock (_list.SyncRoot)
+            {
+                _list.Remove(index);
+            }
+        }
+
+        internal int Add(IWindow win)
+        {
+            lock (_list.SyncRoot)
+            {
+                return _list.Add(win);
+            }
+        }
+
+        internal bool HasItem(IWindow win)
+        {
+            lock (_list.SyncRoot)
+            {
+                for (int i = 0; i < _list.Count; i++)
+                {
+                    if (_list[i] == win)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+    }
 }

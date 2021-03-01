@@ -23,23 +23,34 @@ namespace Microsoft.Maui
 		IServiceProvider? Services { get; }
 
 		/// <summary>
+		/// Create is called to start an application.
+		/// </summary>
+		void Run();
+
+		/// <summary>
+		/// Create is called to start an application.
+		/// </summary>
+		/// <param name="window">Window that will be added to the Windows property and made the MainWindow of the Application.</param>
+		void Run(IWindow window);
+
+		/// <summary>
 		/// Called when the application is first created.
 		/// </summary>
-		void Create();
+		void OnCreated();
 
 		/// <summary>
 		/// Called when the application content will start interacting with the user.
 		/// </summary>
-		void Resume();
+		void OnResumed();
 
 		/// <summary>
 		/// Called when the application is not visible to the user.
 		/// </summary>
-		void Pause();
+		void OnPaused();
 
 		/// <summary>
 		/// Called before the application is closed.
 		/// </summary>
-		void Stop();
+		void OnStopped();
 	}
 }

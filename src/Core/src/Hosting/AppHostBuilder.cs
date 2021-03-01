@@ -18,6 +18,7 @@ namespace Microsoft.Maui.Hosting
 		readonly List<IConfigureContainerAdapter> _configureContainerActions = new List<IConfigureContainerAdapter>();
 		readonly Func<IServiceCollection> _serviceColectionFactory = new Func<IServiceCollection>(() => new MauiServiceCollection());
 		IServiceFactoryAdapter _serviceProviderFactory = new ServiceFactoryAdapter<IServiceCollection>(new MauiServiceProviderFactory());
+
 		bool _hostBuilt;
 		HostBuilderContext? _hostBuilderContext;
 		IHostEnvironment? _hostEnvironment;
@@ -48,7 +49,7 @@ namespace Microsoft.Maui.Hosting
 
 			_hostBuilt = true;
 
-			// the order is important here
+			// The order is important here
 			BuildHostConfiguration();
 			CreateHostingEnvironment();
 			CreateHostBuilderContext();
@@ -245,12 +246,12 @@ namespace Microsoft.Maui.Hosting
 
 		IHostBuilder IHostBuilder.UseServiceProviderFactory<TContainerBuilder>(Func<HostBuilderContext, IServiceProviderFactory<TContainerBuilder>> factory)
 		{
-			return UseServiceProviderFactory<TContainerBuilder>(factory);
+			return UseServiceProviderFactory(factory);
 		}
 
 		IHostBuilder IHostBuilder.ConfigureContainer<TContainerBuilder>(Action<HostBuilderContext, TContainerBuilder> configureDelegate)
 		{
-			return ConfigureContainer<TContainerBuilder>(configureDelegate);
+			return ConfigureContainer(configureDelegate);
 		}
 	}
 }
