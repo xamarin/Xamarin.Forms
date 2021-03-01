@@ -7,4 +7,4 @@ param ($packageVersion, $configuration)
 
 & dotnet pack $PSScriptRoot\..\src\SingleProject\Resizetizer\src\Resizetizer.csproj -c:$configuration -p:PackageVersion=$packageVersion
 
-& dotnet pack $PSScriptRoot\..\.nuspec\Microsoft.Maui.Package.csproj -c:$configuration -p:PackageVersion=$packageVersion
+& dotnet pack $PSScriptRoot\..\.nuspec\Microsoft.Maui.Package.csproj -c:$configuration -p:PackageVersion=$packageVersion -bl:$PSScriptRoot\..\artifacts
