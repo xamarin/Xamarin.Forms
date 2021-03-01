@@ -7,7 +7,7 @@
     <!--<Nullable>enable</Nullable>-->
     <LangVersion>8.0</LangVersion>
     <IncludeBuildOutput>False</IncludeBuildOutput>
-    <NoWarn>NU5100;NU5128</NoWarn>
+		<NoWarn>$(NoWarn);NU5100;NU5128;</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>

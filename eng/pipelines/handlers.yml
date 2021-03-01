@@ -162,7 +162,7 @@ stages:
           - task: PublishPipelineArtifact@1
             displayName: publish artifacts
             inputs:
-              artifactName: artifacts
+              artifactName: nuget
               targetPath: artifacts
             condition: always()
 
