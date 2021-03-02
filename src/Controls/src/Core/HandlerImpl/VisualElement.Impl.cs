@@ -69,7 +69,7 @@ namespace Microsoft.Maui.Controls
 			Bounds = bounds;
 			// If Layout is called without arrange getting called this ensures
 			// all the necessary arranged parts are set so that handlers will layout			
-			IsArrangeValid = true;
+			
 			Handler?.SetFrame(Bounds);
 		}
 
