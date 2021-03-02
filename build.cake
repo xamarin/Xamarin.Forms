@@ -669,7 +669,7 @@ Task("NuGetPack")
     var settings = new DotNetCoreToolSettings
     {
         DiagnosticOutput = true,
-        ArgumentCustomization = args => args.Append($"./.nuspec/package.ps1 -packageVersion \"{packageVersion}\"")
+        ArgumentCustomization = args => args.Append($"./.nuspec/package.ps1 -configuration \"{configuration}\"")
     };
 
    DotNetCoreTool("pwsh", settings);
