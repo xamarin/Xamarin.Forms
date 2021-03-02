@@ -10,9 +10,9 @@ using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Hosting;
 
-#if __ANDROID__
-using Maui.Controls.Compatibility;
-#endif
+//#if __ANDROID__
+//using Microsoft.Maui.Controls.Compatibility;
+//#endif
 
 namespace Maui.Controls.Sample
 {
@@ -20,11 +20,11 @@ namespace Maui.Controls.Sample
 	{
 		public override IAppHostBuilder CreateBuilder() =>
 			base.CreateBuilder()
-#if __ANDROID__
-				// These only work on NET6
-				//.RegisterCompatibilityRenderer<Microsoft.Maui.Controls.ContentPage, Microsoft.Maui.Controls.Compatibility.Platform.Android.PageRenderer>()
-				//.RegisterCompatibilityRenderer<Microsoft.Maui.Controls.Button, Microsoft.Maui.Controls.Compatibility.Platform.Android.FastRenderers.ButtonRenderer>()
-#endif
+//#if __ANDROID__
+//				// These only work on NET6
+//				.RegisterCompatibilityRenderer<Microsoft.Maui.Controls.ContentPage, Microsoft.Maui.Controls.Compatibility.Platform.Android.PageRenderer>()
+//				.RegisterCompatibilityRenderer<Microsoft.Maui.Controls.Button, Microsoft.Maui.Controls.Compatibility.Platform.Android.FastRenderers.ButtonRenderer>()
+//#endif
 				//.ConfigureLogging(logging =>
 				//{
 				//	logging.ClearProviders();
