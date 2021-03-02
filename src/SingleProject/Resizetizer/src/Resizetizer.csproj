@@ -40,9 +40,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="$(TargetPath)" Visible="False" Pack="True" PackagePath="buildTransitive;build" />
-    <None Include="@(_ItemToPack)" Visible="False" Pack="True" PackagePath="buildTransitive;build" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\..\..\..\.nuspec\Microsoft.Maui.Resizetizer.targets" Pack="True" PackagePath="buildTransitive;build" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="$(TargetPath)" Visible="False" Pack="True" PackagePath="buildTransitive" />
+    <None Include="@(_ItemToPack)" Visible="False" Pack="True" PackagePath="buildTransitive" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\..\.nuspec\Microsoft.Maui.Resizetizer.targets" Pack="True" PackagePath="buildTransitive" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
