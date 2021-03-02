@@ -155,7 +155,7 @@ stages:
             displayName: install .NET workloads
             errorActionPreference: stop
 
-          - pwsh: ./.nuspec/package.ps1 -configuration Release -packageVersion 0.0.1-preview
+          - pwsh: ./.nuspec/package.ps1 -configuration Release
             displayName: pack nugets
             errorActionPreference: stop
 
