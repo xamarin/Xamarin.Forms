@@ -11,10 +11,12 @@
   <PropertyGroup>
     <CoreCompileDependsOn>
       SetVersions;
+      VersionInfoReport;
       $(CoreCompileDependsOn);
     </CoreCompileDependsOn>
     <GenerateNuspecDependsOn>
       SetVersions;
+      VersionInfoReport;
       $(GenerateNuspecDependsOn);
     </GenerateNuspecDependsOn>
   </PropertyGroup>
@@ -79,9 +81,9 @@
     <Message Condition="$(CI)" Importance="high" Text="##vso[task.setvariable variable=XamarinFormsPackageVersion;isOutput=true;]$(PackageVersion)"/>
   </Target>
 
-  <Target Name="VersionInfoReport" DependsOnTargets="SetVersions" AfterTargets="GitInfoReport">
+  <Target Name="VersionInfoReport" DependsOnTargets="SetVersions">
    <ItemGroup>
-		<Message Importance="$(GitInfoReportImportance)" Text="Version Info:
+    <Message Importance="$(GitInfoReportImportance)" Text="Version Info:
   AssemblyVersion:        $(AssemblyVersion)
   FileVersion:            $(FileVersion)
   InformationalVersion:   $(InformationalVersion)
@@ -91,6 +93,6 @@
   VersionSuffix:  $(VersionSuffix)
 "/>
    </ItemGroup>
-	</Target>
+  </Target>
 
 </Project>
