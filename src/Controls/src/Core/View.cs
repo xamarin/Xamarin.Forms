@@ -7,8 +7,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.Maui.Controls.Internals;
 
-
-
 namespace Microsoft.Maui.Controls
 {
 	public class View : VisualElement, IView, IViewController, IGestureController, IGestureRecognizers, IPropertyMapperView
@@ -199,6 +197,46 @@ namespace Microsoft.Maui.Controls
 
 		public bool IsArrangeValid { get; protected set; }
 
+		public virtual void OnCreating()
+		{
+
+		}
+
+		public virtual void OnCreated()
+		{
+
+		}
+
+		public virtual void OnAttaching()
+		{
+
+		}
+
+		public virtual void OnAttached()
+		{
+
+		}
+
+		public virtual void OnDetaching()
+		{
+
+		}
+
+		public virtual void OnDetached()
+		{
+
+		}
+
+		public virtual void OnDestroying()
+		{
+
+		}
+
+		public virtual void OnDestroyed()
+		{
+
+		}
+
 		public void Arrange(Rectangle bounds)
 		{
 			Layout(bounds);
@@ -274,7 +312,7 @@ namespace Microsoft.Maui.Controls
 
 		protected PropertyMapper<T> GetRendererOverides<T>() where T : IView => (PropertyMapper<T>)(propertyMapper as PropertyMapper<T> ?? (propertyMapper = new PropertyMapper<T>()));
 		PropertyMapper IPropertyMapperView.GetPropertyMapperOverrides() => propertyMapper;
-
+				
 		double IFrameworkElement.Width { get => WidthRequest; }
 		double IFrameworkElement.Height { get => HeightRequest; }
 

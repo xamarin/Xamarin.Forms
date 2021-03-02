@@ -3,6 +3,7 @@ using Android.Content;
 using Android.Views;
 using Android.Widget;
 using ARect = Android.Graphics.Rect;
+using AWindow = Android.Views.Window;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Android
 {
@@ -27,7 +28,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Android
 
 		protected override void OnFocusChanged(bool gainFocus, FocusSearchDirection direction, ARect previouslyFocusedRect)
 		{
-			Window window = Context.GetActivity().Window;
+			AWindow window = Context.GetActivity().Window;
 			if (gainFocus)
 			{
 				_startingMode = window.Attributes.SoftInputMode;

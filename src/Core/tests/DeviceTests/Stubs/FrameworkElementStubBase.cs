@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Microsoft.Maui;
 
 namespace Microsoft.Maui.DeviceTests.Stubs
 {
-	public class StubBase : IFrameworkElement
+	public class FrameworkElementStubBase : IFrameworkElement
 	{
 		public bool IsEnabled { get; set; } = true;
 
@@ -34,7 +33,6 @@ namespace Microsoft.Maui.DeviceTests.Stubs
 			Frame = bounds;
 			DesiredSize = bounds.Size;
 		}
-
 
 		protected bool SetProperty<T>(ref T backingStore, T value,
 			[CallerMemberName] string propertyName = "",

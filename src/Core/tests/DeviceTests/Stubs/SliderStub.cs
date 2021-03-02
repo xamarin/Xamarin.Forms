@@ -1,11 +1,10 @@
 using System;
-using Microsoft.Maui;
 
 namespace Microsoft.Maui.DeviceTests.Stubs
 {
-	public partial class SliderStub : StubBase, ISlider
+	public partial class SliderStub : ViewStubBase, ISlider
 	{
-		private double _value;
+		double _value;
 
 		public double Minimum { get; set; }
 		public double Maximum { get; set; }

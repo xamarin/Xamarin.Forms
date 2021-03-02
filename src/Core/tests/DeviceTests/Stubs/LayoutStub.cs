@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 
 namespace Microsoft.Maui.DeviceTests.Stubs
 {
-	public class LayoutStub : StubBase, ILayout
+	public class LayoutStub : ViewStubBase, ILayout
 	{
-		List<IView> _children = new List<IView>();
+		readonly List<IView> _children = new List<IView>();
 
 		public IReadOnlyList<IView> Children => _children.AsReadOnly();
 

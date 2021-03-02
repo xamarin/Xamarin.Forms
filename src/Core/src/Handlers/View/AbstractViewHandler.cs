@@ -50,12 +50,20 @@ namespace Microsoft.Maui.Handlers
 
 			bool setupNativeView = VirtualView == null;
 
+			view.OnCreating();
+
 			VirtualView = view as TVirtualView;
 			TypedNativeView ??= CreateNativeView();
 
+			view.OnCreated();
+
 			if (setupNativeView && TypedNativeView != null)
 			{
+				view.OnAttaching();
+
 				ConnectHandler(TypedNativeView);
+
+				view.OnAttached();
 			}
 
 			if (!HasSetDefaults)
@@ -100,11 +108,20 @@ namespace Microsoft.Maui.Handlers
 		void IViewHandler.DisconnectHandler()
 		{
 			if (TypedNativeView != null && VirtualView != null)
+			{
+				VirtualView.OnDetaching();
+
 				DisconnectHandler(TypedNativeView);
+
+				VirtualView.OnDetached();
+			}
+
+			VirtualView?.OnDestroying();
 
 			if (VirtualView != null)
 				VirtualView.Handler = null;
 
+			VirtualView?.OnDestroyed();
 			VirtualView = null;
 		}
 
