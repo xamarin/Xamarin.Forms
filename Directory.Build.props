@@ -28,7 +28,6 @@
     <PackageOutputPath>$(MSBuildThisFileDirectory)artifacts</PackageOutputPath>
   </PropertyGroup>
   <!-- This target is replaced by GitInfo when restored. Allows Version.targets to rely on it before restore. -->
-  <Target Name="GitVersion" />
   <Import Condition="'$(EnvironmentBuildPropsImported)' != 'True'" Project="$(MSBuildThisFileDirectory)eng\Environment.Build.props" />
   <Import Condition="'$(SampleProject)' != 'True' and '$(CI)' == 'true'" Project="$(MSBuildThisFileDirectory)eng\SourceLink.Build.props" />
 </Project>

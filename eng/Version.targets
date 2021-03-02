@@ -8,11 +8,18 @@
     <GitBranch Condition="'$(SYSTEM_PULLREQUEST_TARGETBRANCH)' == '' and '$(BUILD_SOURCEBRANCHNAME)' != ''">$(BUILD_SOURCEBRANCHNAME)</GitBranch>
   </PropertyGroup>
 
-  <Target Name="SetVersions"
-          BeforeTargets="PrepareForBuild;GetAssemblyVersion;GetPackageVersion;Pack"
-          DependsOnTargets="GitVersion"
-          Returns="$(Version)"
-         >
+  <PropertyGroup>
+    <CoreCompileDependsOn>
+      SetVersions;
+      $(CoreCompileDependsOn);
+    </CoreCompileDependsOn>
+    <GenerateNuspecDependsOn>
+      SetVersions;
+      $(GenerateNuspecDependsOn);
+    </GenerateNuspecDependsOn>
+  </PropertyGroup>
+
+  <Target Name="SetVersions" DependsOnTargets="GitInfo;GitVersion" Returns="$(Version)">
     <PropertyGroup>
       <PreOut>$([System.Text.RegularExpressions.Regex]::Match($(GitTag), $(RegexPre)))</PreOut>
       <GitSemVerLabel Condition=" '$(GitTag)' != '' and '$(GitTag)' == '$(GitBranch)' and $([System.Text.RegularExpressions.Regex]::IsMatch('$(GitTag)', $(RegexPre))) ">$(PreOut)</GitSemVerLabel>
@@ -46,13 +53,13 @@
     <PropertyGroup>
       <InformationalVersion>$(PackageVersion)</InformationalVersion>
       <FileVersion>$(Version).$(GitCommits)</FileVersion>
-      <AssemblyVersion>2.0.0.0</AssemblyVersion> <!-- THIS SHALL REMAIN 2.0.0.0 -->
+      <AssemblyVersion>1.0.0.0</AssemblyVersion> <!-- THIS SHALL REMAIN 1.0.0.0 -->
     </PropertyGroup>
 
     <ItemGroup>
       <AssemblyAttribute Include="System.Reflection.AssemblyMetadata">
         <_Parameter1>Version</_Parameter1>
-        <_Parameter2>2.0.0.0</_Parameter2> <!-- THIS SHALL REMAIN 2.0.0.0 -->
+        <_Parameter2>1.0.0.0</_Parameter2> <!-- THIS SHALL REMAIN 1.0.0.0 -->
       </AssemblyAttribute>
       <AssemblyAttribute Include="System.Reflection.AssemblyMetadata">
         <_Parameter1>PackageVersion</_Parameter1>
