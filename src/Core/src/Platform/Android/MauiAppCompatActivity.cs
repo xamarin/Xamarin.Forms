@@ -4,14 +4,13 @@ using AndroidX.AppCompat.App;
 using System;
 using AndroidX.CoordinatorLayout.Widget;
 using AndroidX.Core.Widget;
-using Google.Android.Material.AppBar;
-using AndroidX.AppCompat.Widget;
+using MauiApplication = Microsoft.Maui.Application;
 
 namespace Microsoft.Maui
 {
 	public class MauiAppCompatActivity : AppCompatActivity
 	{
-		MauiApp? _app;
+		MauiApplication? _app;
 		IWindow? _window;
 
 		AndroidApplicationLifecycleState _currentState;
@@ -27,50 +26,56 @@ namespace Microsoft.Maui
 		{
 			base.OnCreate(savedInstanceState);
 
-			if (App.Current as MauiApp == null)
-				throw new InvalidOperationException($"App is not {nameof(MauiApp)}");
+			if (MauiApplication.Current == null)
+				throw new InvalidOperationException($"App is not {nameof(Application)}");
 
-			_app = App.Current as MauiApp;
+			_app = MauiApplication.Current;
 
 			if (_app == null || _app.Services == null)
-				throw new InvalidOperationException("App was not initialized");
+				throw new InvalidOperationException("App was not intialized");
+
+			_app.OnCreated();
 
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnCreate;
 
-			_window = _app.GetWindowFor(null!);
+			_window = _app.MainWindow;
 
-			_window.Show();
+			if (_window != null)
+			{
+				_window.Show();
 
-			_window.MauiContext = new HandlersContext(_app.Services, this);
+				_window.MauiContext = new HandlersContext(_app.Services, this);
 
-			_app.MainWindow = _window;
+				_app.MainWindow = _window;
 
-			//Hack for now we set this on the App Static but this should be on IFrameworkElement
-			App.Current?.SetHandlerContext(_window.MauiContext);
+				// Hack for now we set this on the App Static but this should be on IFrameworkElement
+				MauiApplication.Current?.SetHandlerContext(_window.MauiContext);
 
-			var content = _window.Content?.View;
+				var content = _window.Content?.View;
 
-			CoordinatorLayout parent = new CoordinatorLayout(this);
-			NestedScrollView main = new NestedScrollView(this);
+				CoordinatorLayout parent = new CoordinatorLayout(this);
+				NestedScrollView main = new NestedScrollView(this);
 
-			SetContentView(parent, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
+				SetContentView(parent, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
+				parent.AddView(main, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
 
-			//AddToolbar(parent);
-
-			parent.AddView(main, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
-
-			main.AddView(content?.ToNative(_window.MauiContext), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
+				main.AddView(content?.ToNative(_window.MauiContext), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
+			}
 		}
 
 		protected override void OnStart()
 		{
+			base.OnStart();
+
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnStart;
 		}
 
 		protected override void OnPause()
 		{
+			base.OnPause();
+
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnPause;
 
@@ -79,6 +84,8 @@ namespace Microsoft.Maui
 
 		protected override void OnResume()
 		{
+			base.OnResume();
+
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnResume;
 
@@ -95,20 +102,12 @@ namespace Microsoft.Maui
 
 		protected override void OnDestroy()
 		{
+			base.OnDestroy();
+
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnDestroy;
 
 			UpdateApplicationLifecycleState();
-		}
-
-		void AddToolbar(ViewGroup parent)
-		{
-			Toolbar toolbar = new Toolbar(this);
-			var appbarLayout = new AppBarLayout(this);
-
-			appbarLayout.AddView(toolbar, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, Android.Resource.Attribute.ActionBarSize));
-			SetSupportActionBar(toolbar);
-			parent.AddView(appbarLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent));
 		}
 
 		void UpdateApplicationLifecycleState()

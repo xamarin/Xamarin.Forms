@@ -5,8 +5,13 @@ using Microsoft.Maui.Hosting;
 
 namespace Microsoft.Maui.Tests
 {
-	class AppStub : MauiApp
+	class AppStub : App
 	{
+		public AppStub()
+		{
+			MainWindow = new WindowStub();
+		}
+
 		public void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
 		{
 			services.AddSingleton<IMauiContext>(provider => new HandlersContextStub(provider));
@@ -16,16 +21,6 @@ namespace Microsoft.Maui.Tests
 		public override IAppHostBuilder CreateBuilder()
 		{
 			return base.CreateBuilder().ConfigureServices(ConfigureServices);
-		}
-
-		public override IWindow GetWindowFor(IActivationState state)
-		{
-			return new WindowStub();
-		}
-
-		internal void ClearApp()
-		{
-			Current = null;
 		}
 	}
 }

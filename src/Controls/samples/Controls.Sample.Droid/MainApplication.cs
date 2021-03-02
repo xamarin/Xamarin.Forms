@@ -6,7 +6,7 @@ using Microsoft.Maui;
 namespace Maui.Controls.Sample.Droid
 {
 	[Application]
-	public class MainApplication : MauiApplication<MyApp>
+	public class MainApplication : MauiApplication<App>
 	{
 		public MainApplication(IntPtr handle, JniHandleOwnership ownerShip) : base(handle, ownerShip)
 		{

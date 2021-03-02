@@ -3,9 +3,9 @@ using System;
 namespace Microsoft.Maui
 {
 	/// <summary>
-	/// Encapsulates the app and its available services.
+	/// Encapsulates the Application and its available services.
 	/// </summary>
-	public interface IApp
+	public interface IApplication
 	{
 		/// <summary>
 		/// Gets or sets the main window of the application.

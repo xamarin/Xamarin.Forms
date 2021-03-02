@@ -26,7 +26,7 @@ namespace Microsoft.Maui.Hosting
 		IServiceCollection? _services;
 		IConfiguration? _hostConfiguration;
 		IConfiguration? _appConfiguration;
-		App? _app;
+		Application? _app;
 
 		public AppHostBuilder()
 		{
@@ -34,9 +34,9 @@ namespace Microsoft.Maui.Hosting
 		}
 		public IDictionary<object, object> Properties => new Dictionary<object, object>();
 
-		public IHost Build(IApp app)
+		public IHost Build(IApplication app)
 		{
-			_app = app as App;
+			_app = app as Application;
 			return Build();
 		}
 

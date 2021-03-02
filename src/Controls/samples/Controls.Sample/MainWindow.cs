@@ -6,7 +6,7 @@ namespace Maui.Controls.Sample
 {
 	public class MainWindow : Window
 	{
-		public MainWindow() : this(App.Current.Services.GetService<MainPage>())
+		public MainWindow() : this(Application.Current.Services.GetService<MainPage>())
 		{
 		}
 

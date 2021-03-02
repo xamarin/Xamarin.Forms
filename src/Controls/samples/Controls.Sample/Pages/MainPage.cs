@@ -8,8 +8,9 @@ namespace Maui.Controls.Sample.Pages
 
 	public class MainPage : ContentPage, IPage
 	{
-		MainPageViewModel _viewModel;
-		public MainPage() : this(App.Current.Services.GetService<MainPageViewModel>())
+		readonly MainPageViewModel _viewModel;
+
+		public MainPage() : this(Microsoft.Maui.Application.Current.Services.GetService<MainPageViewModel>())
 		{
 
 		}
@@ -48,6 +49,6 @@ namespace Maui.Controls.Sample.Pages
 			Content = verticalStack;
 		}
 
-		public IView View { get => (IView)Content; set => Content = (View)value; }
+		public IView View { get => Content; set => Content = (View)value; }
 	}
 }

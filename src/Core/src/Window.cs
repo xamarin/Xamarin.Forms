@@ -38,6 +38,7 @@ namespace Microsoft.Maui
 		public void Close()
 		{
 			Dispose();
+			OnStopped();
 		}
 
 		public virtual void OnCreated()
@@ -62,15 +63,17 @@ namespace Microsoft.Maui
 
 		void Initialize()
 		{
-			if (App.Current != null)
+			if (Application.Current != null)
 			{
-				App.Current.Windows.Add(this);
+				Application.Current.Windows.Add(this);
 
-				if (App.Current.MainWindow == null)
+				if (Application.Current.MainWindow == null)
 				{
-					App.Current.MainWindow = this;
+					Application.Current.MainWindow = this;
 				}
 			}
+
+			OnCreated();
 		}	
 	}
 }

@@ -4,10 +4,10 @@ using Microsoft.Maui.Hosting;
 
 namespace Microsoft.Maui
 {
-	public abstract class App : IApp
+	public abstract class Application : IApplication
 	{
 		static object? GlobalLock;
-		static App? AppInstance;
+		static Application? AppInstance;
 
 		IWindow? _mainWindow;
 
@@ -15,13 +15,13 @@ namespace Microsoft.Maui
 		IServiceProvider? _serviceProvider;
 		IMauiContext? _context;
 
-		protected App()
+		protected Application()
 		{
 			GlobalLock = new object();
 			_windows = new WindowCollection();
 
 			if (AppInstance != null)
-				throw new InvalidOperationException($"Only one {nameof(App)} instance is allowed");
+				throw new InvalidOperationException($"Only one {nameof(Application)} instance is allowed");
 
 			lock (GlobalLock)
 			{
@@ -29,7 +29,7 @@ namespace Microsoft.Maui
 			}
 		}
 
-		static public App? Current
+		static public Application? Current
 		{
 			get
 			{

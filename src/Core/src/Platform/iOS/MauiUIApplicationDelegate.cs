@@ -6,10 +6,10 @@ using UIKit;
 
 namespace Microsoft.Maui
 {
-	public class MauiUIApplicationDelegate<TApplication> : UIApplicationDelegate, IUIApplicationDelegate where TApplication : MauiApp
+	public class MauiUIApplicationDelegate<TApplication> : UIApplicationDelegate, IUIApplicationDelegate where TApplication : Application
 	{
 		bool _isSuspended;
-		MauiApp? _app;
+		Application? _app;
 		IWindow? _window;
 
 		public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
@@ -19,35 +19,38 @@ namespace Microsoft.Maui
 
 			var host = app.CreateBuilder().ConfigureServices(ConfigureNativeServices).Build(app);
 
-			_app = App.Current as MauiApp;
+			_app = Application.Current;
 
 			if (_app == null || _app.Services == null)
 				throw new InvalidOperationException("App was not intialized");
 
 			_app.OnCreated();
 
-			_window = app.GetWindowFor(null!);
+			_window = app.MainWindow;
 
-			_window.OnCreated();
-
-			_window.MauiContext = new MauiContext(_app.Services);
-
-			_app.MainWindow = _window;
-
-			//Hack for now we set this on the App Static but this should be on IFrameworkElement
-			App.Current?.SetHandlerContext(_window.MauiContext);
-
-			var content = _window.Content?.View;
-
-			var uiWindow = new UIWindow
+			if (_window != null)
 			{
-				RootViewController = new UIViewController
-				{
-					View = content?.ToNative(_window.MauiContext)
-				}
-			};
+				_window.OnCreated();
 
-			uiWindow.MakeKeyAndVisible();
+				_window.MauiContext = new MauiContext(_app.Services);
+
+				_app.MainWindow = _window;
+
+				// Hack for now we set this on the App Static but this should be on IFrameworkElement
+				Application.Current?.SetHandlerContext(_window.MauiContext);
+
+				var content = _window.Content?.View;
+
+				var uiWindow = new UIWindow
+				{
+					RootViewController = new UIViewController
+					{
+						View = content?.ToNative(_window.MauiContext)
+					}
+				};
+
+				uiWindow.MakeKeyAndVisible();
+			}
 
 			return true;
 		}

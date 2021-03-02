@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Maui
 {
-	public class MauiApplication<TApplication> : Android.App.Application where TApplication : MauiApp
+	public class MauiApplication<TApplication> : Android.App.Application where TApplication : Application
 	{
 		IHost? _host;
 
@@ -19,9 +19,12 @@ namespace Microsoft.Maui
 			if (!(Activator.CreateInstance(typeof(TApplication)) is TApplication app))
 				throw new InvalidOperationException($"We weren't able to create the App {typeof(TApplication)}");
 
-			_host = app.CreateBuilder().ConfigureServices(ConfigureNativeServices).Build(app);
+			_host = app
+				.CreateBuilder()
+				.ConfigureServices(ConfigureNativeServices)
+				.Build(app);
 
-			_host.Start();
+			//_host.Start();
 
 			base.OnCreate();
 		}

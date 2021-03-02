@@ -14,41 +14,54 @@ using Microsoft.Maui;
 //using Maui.Controls.Compatibility;
 //#endif
 
+using Application = Microsoft.Maui.Application;
+using System.Diagnostics;
+
 namespace Maui.Controls.Sample
 {
-	public class MyApp : MauiApp
+	public class App : Application
 	{
 		public override IAppHostBuilder CreateBuilder()
 		{
 			var builder = base.CreateBuilder()
-				   //.ConfigureLogging(logging =>
-				   //{
-				   //	logging.ClearProviders();
-				   //	logging.AddConsole();
-				   //})
-				   .ConfigureAppConfiguration((hostingContext, config) =>
+				.ConfigureAppConfiguration((hostingContext, config) =>
 				   {
 					   config.AddInMemoryCollection(new Dictionary<string, string>
-										{
-										   {"MyKey", "Dictionary MyKey Value"},
-										   {":Title", "Dictionary_Title"},
-										   {"Position:Name", "Dictionary_Name" },
-										   {"Logging:LogLevel:Default", "Warning"}
-										});
+					   {
+							{"MyKey", "Dictionary MyKey Value"},
+							{":Title", "Dictionary_Title"},
+							{"Position:Name", "Dictionary_Name" },
+							{"Logging:LogLevel:Default", "Warning"}
+						});
 				   })
-				   .ConfigureServices(ConfigureServices)
+				   .ConfigureServices(ConfigureServices);
 #if __ANDROID__
 				   //.RegisterCompatibilityRenderer<Microsoft.Maui.Controls.Button, Microsoft.Maui.Controls.Button, Microsoft.Maui.Controls.Platform.Android.FastRenderers.ButtonRenderer>()
 #endif
-				   ;
-			;
 			return builder;
 		}
 
-		// IAppState state
-		public override IWindow GetWindowFor(IActivationState state)
+		public override void OnCreated()
 		{
-			return Services.GetService<IWindow>();
+			Debug.WriteLine("Application Created.");
+
+			MainWindow window = new MainWindow();
+			window.Show();
+		}
+
+		public override void OnPaused()
+		{
+			Debug.WriteLine("Application Paused.");
+		}
+
+		public override void OnResumed()
+		{
+			Debug.WriteLine("Application Resumed.");
+		}
+
+		public override void OnStopped()
+		{
+			Debug.WriteLine("Application Stopped.");
 		}
 
 		void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
