@@ -46,7 +46,6 @@
     <TargetPlatformMinVersion>10.0.17134.0</TargetPlatformMinVersion>
   </PropertyGroup>
   <ItemGroup Condition=" $(TargetFramework.Contains('-windows10.0')) ">
-    <TargetPlatformMinVersion>10.0.17134.0</TargetPlatformMinVersion>
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
     <Compile Include="**\*.uwp.cs" />
     <Compile Include="**\*.uwp.*.cs" />
