@@ -37,6 +37,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{09C264E9-E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Controls.Build.Tasks-net6", "src\Controls\src\Build.Tasks\Controls.Build.Tasks-net6.csproj", "{75C380E0-CE53-4C01-B89F-CF685331DE18}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Package-net6", "src\Package\Package-net6.csproj", "{5BEB3326-79B4-438C-BF65-274202F387EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +82,10 @@ Global
 		{75C380E0-CE53-4C01-B89F-CF685331DE18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75C380E0-CE53-4C01-B89F-CF685331DE18}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75C380E0-CE53-4C01-B89F-CF685331DE18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BEB3326-79B4-438C-BF65-274202F387EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BEB3326-79B4-438C-BF65-274202F387EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BEB3326-79B4-438C-BF65-274202F387EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BEB3326-79B4-438C-BF65-274202F387EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
