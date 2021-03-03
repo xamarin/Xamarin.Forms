@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
-    <_MauiBuildTasksLocation>$(_MauiBuildTasksLocation)</_MauiBuildTasksLocation>
-    <_MauiBuildTasksLocation Condition="'$(_MauiBuildTasksLocation)' == ''">$(MSBuildThisFileDirectory).nuspec\</_MauiBuildTasksLocation>
+    <__XFBuildTasksLocation>$(_XFBuildTasksLocation)</__XFBuildTasksLocation>
+    <__XFBuildTasksLocation Condition="'$(__XFBuildTasksLocation)' == '' ">$(MSBuildThisFileDirectory).nuspec\</__XFBuildTasksLocation>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>portable</DebugType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
