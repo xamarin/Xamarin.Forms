@@ -216,7 +216,7 @@ stages:
           - task: PublishPipelineArtifact@1
             displayName: publish artifacts
             inputs:
-              artifactName: NET6-WINDOWS
+              artifactName: NET6-WINDOWS-$(BuildConfiguration)
               targetPath: $(Build.ArtifactStagingDirectory)
             condition: always()
 
@@ -271,12 +271,12 @@ stages:
 
           - bash: |
               dotnet restore Microsoft.Maui-net6.sln &&
-              dotnet build Microsoft.Maui-net6.sln -c $BUILDCONFIGURATION -bl:$LOGDIRECTORY/$BUILDCONFIGURATION.binlog
+              dotnet build Microsoft.Maui-net6.sln -c $BUILDCONFIGURATION -bl:$BUILD_ARTIFACTSTAGINGDIRECTORY/logs/$BUILDCONFIGURATION.binlog
             displayName: build samples
 
           - task: PublishPipelineArtifact@1
             displayName: publish artifacts
             inputs:
-              artifactName: NET6-OSX
+              artifactName: NET6-OSX-$(BuildConfiguration)
               targetPath: $(Build.ArtifactStagingDirectory)
             condition: always()
