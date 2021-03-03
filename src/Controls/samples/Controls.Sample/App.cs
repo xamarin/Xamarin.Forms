@@ -21,6 +21,11 @@ namespace Maui.Controls.Sample
 {
 	public class App : Application
 	{
+		public override IWindow CreateWindow(IActivationState state)
+		{
+			return Services.GetService<IWindow>();
+		}
+
 		public override IAppHostBuilder CreateBuilder()
 		{
 			var builder = base.CreateBuilder()
@@ -44,9 +49,6 @@ namespace Maui.Controls.Sample
 		public override void OnCreated()
 		{
 			Debug.WriteLine("Application Created.");
-
-			MainWindow window = new MainWindow();
-			window.Show();
 		}
 
 		public override void OnPaused()

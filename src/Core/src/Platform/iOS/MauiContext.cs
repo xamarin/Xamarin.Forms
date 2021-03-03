@@ -2,11 +2,12 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Maui
-{ 
+{
 	public class MauiContext : IMauiContext
 	{
 		readonly IServiceProvider _services;
 		readonly IMauiHandlersServiceProvider _mauiHandlersServiceProvider;
+
 		public MauiContext(IServiceProvider services)
 		{
 			_services = services;

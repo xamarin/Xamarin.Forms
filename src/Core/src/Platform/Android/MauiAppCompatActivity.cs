@@ -39,29 +39,24 @@ namespace Microsoft.Maui
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnCreate;
 
-			_window = _app.MainWindow;
+			var mauiContext = new MauiContext(_app.Services, this);
 
-			if (_window != null)
-			{
-				_window.Show();
+			_window = _app.CreateWindow(new ActivationState(savedInstanceState, mauiContext));
 
-				_window.MauiContext = new HandlersContext(_app.Services, this);
+			_window.MauiContext = mauiContext;
 
-				_app.MainWindow = _window;
+			// Hack for now we set this on the App Static but this should be on IFrameworkElement
+			MauiApplication.Current?.SetHandlerContext(_window.MauiContext);
 
-				// Hack for now we set this on the App Static but this should be on IFrameworkElement
-				MauiApplication.Current?.SetHandlerContext(_window.MauiContext);
+			var content = _window.Content?.View;
 
-				var content = _window.Content?.View;
+			CoordinatorLayout parent = new CoordinatorLayout(this);
+			NestedScrollView main = new NestedScrollView(this);
 
-				CoordinatorLayout parent = new CoordinatorLayout(this);
-				NestedScrollView main = new NestedScrollView(this);
+			SetContentView(parent, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
+			parent.AddView(main, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
 
-				SetContentView(parent, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
-				parent.AddView(main, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
-
-				main.AddView(content?.ToNative(_window.MauiContext), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
-			}
+			main.AddView(content?.ToNative(_window.MauiContext), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent));
 		}
 
 		protected override void OnStart()
@@ -113,13 +108,25 @@ namespace Microsoft.Maui
 		void UpdateApplicationLifecycleState()
 		{
 			if (_previousState == AndroidApplicationLifecycleState.OnCreate && _currentState == AndroidApplicationLifecycleState.OnStart)
+			{
 				_app?.OnCreated();
+				_window?.OnCreated();
+			}
 			else if (_previousState == AndroidApplicationLifecycleState.OnRestart && _currentState == AndroidApplicationLifecycleState.OnStart)
+			{
 				_app?.OnResumed();
+				_window?.OnResumed();
+			}
 			else if (_previousState == AndroidApplicationLifecycleState.OnPause && _currentState == AndroidApplicationLifecycleState.OnStop)
+			{
 				_app?.OnPaused();
+				_window?.OnPaused();
+			}
 			else if (_currentState == AndroidApplicationLifecycleState.OnDestroy)
+			{
 				_app?.OnStopped();
+				_window?.OnStopped();
+			}
 		}
 	}
 }

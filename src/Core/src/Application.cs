@@ -9,16 +9,12 @@ namespace Microsoft.Maui
 		static object? GlobalLock;
 		static Application? AppInstance;
 
-		IWindow? _mainWindow;
-
-		readonly WindowCollection _windows;
 		IServiceProvider? _serviceProvider;
 		IMauiContext? _context;
 
 		protected Application()
 		{
 			GlobalLock = new object();
-			_windows = new WindowCollection();
 
 			if (AppInstance != null)
 				throw new InvalidOperationException($"Only one {nameof(Application)} instance is allowed");
@@ -37,23 +33,6 @@ namespace Microsoft.Maui
 			}
 		}
 
-		public IWindow? MainWindow
-		{
-			get
-			{
-				return _mainWindow;
-			}
-			set
-			{
-				if (value != _mainWindow)
-				{
-					_mainWindow = value;
-				}
-			}
-		}
-
-		public WindowCollection Windows => _windows;
-
 		public IServiceProvider? Services => _serviceProvider;
 
 		public IMauiContext? Context => _context;
@@ -66,32 +45,10 @@ namespace Microsoft.Maui
 
 		public event EventHandler? Stopped;
 
-		public void Run()
-		{
-			Run(null);
-		}
-
-		public void Run(IWindow? window)
-		{
-			if (window != null)
-			{
-				if (Windows.HasItem(window) == false)
-				{
-					Windows.Add(window);
-				}
-
-				if (MainWindow == null)
-				{
-					MainWindow = window;
-				}
-
-				Window? win = window as Window;
-				win?.Show();
-			}
-		}
-
 		// Move to abstract
 		public virtual IAppHostBuilder CreateBuilder() => CreateDefaultBuilder();
+
+		public abstract IWindow CreateWindow(IActivationState state);
 
 		public virtual void OnCreated()
 		{
@@ -101,13 +58,11 @@ namespace Microsoft.Maui
 		public virtual void OnResumed()
 		{
 			Resumed?.Invoke(this, EventArgs.Empty);
-			MainWindow?.OnResumed();
 		}
 
 		public virtual void OnPaused()
 		{
 			Paused?.Invoke(this, EventArgs.Empty);
-			MainWindow?.OnPaused();
 		}
 
 		public virtual void OnStopped()
@@ -120,7 +75,6 @@ namespace Microsoft.Maui
 			var builder = new AppHostBuilder();
 
 			builder.UseMauiHandlers();
-			builder.
 
 			return builder;
 		}

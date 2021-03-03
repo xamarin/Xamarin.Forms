@@ -26,31 +26,27 @@ namespace Microsoft.Maui
 
 			_app.OnCreated();
 
-			_window = app.MainWindow;
+			var mauiContext = new MauiContext(_app.Services);
+			_window = app.CreateWindow(new ActivationState(mauiContext));
 
-			if (_window != null)
+			_window.MauiContext = mauiContext;
+
+			_window.OnCreated();
+
+			//Hack for now we set this on the App Static but this should be on IFrameworkElement
+			_app.SetHandlerContext(_window.MauiContext);
+
+			var content = (_window.Content as IView) ?? _window.Content?.View;
+
+			var uiWindow = new UIWindow
 			{
-				_window.OnCreated();
-
-				_window.MauiContext = new MauiContext(_app.Services);
-
-				_app.MainWindow = _window;
-
-				// Hack for now we set this on the App Static but this should be on IFrameworkElement
-				Application.Current?.SetHandlerContext(_window.MauiContext);
-
-				var content = _window.Content?.View;
-
-				var uiWindow = new UIWindow
+				RootViewController = new UIViewController
 				{
-					RootViewController = new UIViewController
-					{
-						View = content?.ToNative(_window.MauiContext)
-					}
-				};
+					View = content?.ToNative(_window.MauiContext)
+				}
+			};
 
-				uiWindow.MakeKeyAndVisible();
-			}
+			uiWindow.MakeKeyAndVisible();
 
 			return true;
 		}
@@ -61,6 +57,7 @@ namespace Microsoft.Maui
 			{
 				_isSuspended = false;
 				_app?.OnResumed();
+				_window?.OnResumed();
 			}
 		}
 
@@ -68,11 +65,13 @@ namespace Microsoft.Maui
 		{
 			_isSuspended = true;
 			_app?.OnPaused();
+			_window?.OnPaused();
 		}
 
 		public override void WillTerminate(UIApplication application)
 		{
 			_app?.OnStopped();
+			_window?.OnStopped();
 		}
 
 		void ConfigureNativeServices(HostBuilderContext ctx, IServiceCollection services)

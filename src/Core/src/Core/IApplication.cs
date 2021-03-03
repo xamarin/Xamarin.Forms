@@ -8,30 +8,16 @@ namespace Microsoft.Maui
 	public interface IApplication
 	{
 		/// <summary>
-		/// Gets or sets the main window of the application.
-		/// </summary>
-		IWindow? MainWindow { get; set; }
-		
-		/// <summary>
-		/// Gets the instantiated windows in an application.
-		/// </summary>
-		WindowCollection Windows { get; }
-
-		/// <summary>
 		/// Gets a collection of application-scoped services.
 		/// </summary>
 		IServiceProvider? Services { get; }
 
 		/// <summary>
-		/// Create is called to start an application.
+		/// Create the application main window.
 		/// </summary>
-		void Run();
-
-		/// <summary>
-		/// Create is called to start an application.
-		/// </summary>
-		/// <param name="window">Window that will be added to the Windows property and made the MainWindow of the Application.</param>
-		void Run(IWindow window);
+		/// <param name="state">The activation state of the application.</param>
+		/// <returns>Created window.</returns>
+		IWindow CreateWindow(IActivationState state);
 
 		/// <summary>
 		/// Called when the application is first created.

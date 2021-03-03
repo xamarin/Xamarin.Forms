@@ -16,32 +16,7 @@ namespace Microsoft.Maui
 		/// Gets the window's logical child page.
 		/// </summary>
 		public IPage? Content { get; set; }
-
-		/// <summary>
-		/// Gets a value that indicates whether the window is active.
-		/// </summary>
-		public bool IsActive { get; set; }
-
-		/// <summary>
-		/// Opens a window and returns without waiting for the newly opened window to close.
-		/// </summary>
-		void Show();
-
-		/// <summary>
-		/// Attempts to bring the window to the foreground and activates it.
-		/// </summary>
-		void Activate();
-
-		/// <summary>
-		/// Makes a window invisible.
-		/// </summary>
-		void Hide();
-
-		/// <summary>
-		/// Manually closes a Window.
-		/// </summary>
-		void Close();
-
+				
 		/// <summary>
 		/// Called when the Window is created.
 		/// </summary>

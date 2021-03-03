@@ -2,18 +2,16 @@
 
 namespace Microsoft.Maui
 {
-	public class Window : IWindow, IDisposable
+	public class Window : IWindow
 	{
 		public Window()
 		{
-			Initialize();
+			OnCreated();
 		}
 
 		public IPage? Content { get; set; }
 
 		public IMauiContext? MauiContext { get; set; }
-
-		public bool IsActive { get; set; }
 
 		public event EventHandler? Closed;
 
@@ -24,32 +22,6 @@ namespace Microsoft.Maui
 		public event EventHandler? Paused;
 
 		public event EventHandler? Stopped;
-
-		public void Dispose()
-		{
-			Content = null;
-		}
-
-		public void Show()
-		{
-		
-		}
-
-		public void Activate()
-		{
-			
-		}
-
-		public void Hide()
-		{
-			
-		}
-
-		public void Close()
-		{
-			Dispose();
-			OnStopped();
-		}
 
 		public virtual void OnCreated()
 		{
@@ -71,20 +43,5 @@ namespace Microsoft.Maui
 			Stopped?.Invoke(this, EventArgs.Empty);
 			Closed?.Invoke(this, EventArgs.Empty);
 		}
-
-		void Initialize()
-		{
-			if (Application.Current != null)
-			{
-				Application.Current.Windows.Add(this);
-
-				if (Application.Current.MainWindow == null)
-				{
-					Application.Current.MainWindow = this;
-				}
-			}
-
-			OnCreated();
-		}	
 	}
 }
