@@ -6,6 +6,6 @@ param ($configuration)
 
 & dotnet pack $PSScriptRoot\..\src\Controls\src\Build.Tasks\Controls.Build.Tasks-net6.csproj -c:$configuration -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -bl:$PSScriptRoot\..\artifacts\binlogs\build.tasks.binlog
 & dotnet pack $PSScriptRoot\..\src\SingleProject\Resizetizer\src\Resizetizer.csproj -c:$configuration -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -bl:$PSScriptRoot\..\artifacts\binlogs\resizetizer.binlog
-& dotnet pack $PSScriptRoot\..\src\Essentials\src\Essentials.csproj -c:$configuration -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -bl:$PSScriptRoot\..\artifacts\binlogs\essentials.binlog
+& dotnet pack $PSScriptRoot\..\src\Essentials\src\Essentials-net6.csproj -c:$configuration -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -bl:$PSScriptRoot\..\artifacts\binlogs\essentials.binlog
 
 & dotnet pack $PSScriptRoot\..\src\Package\Package-net6.csproj -c:$configuration -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -bl:$PSScriptRoot\..\artifacts\binlogs\package.binlog
