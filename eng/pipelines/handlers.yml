@@ -266,7 +266,7 @@ stages:
 
           - bash: |
               dotnet restore Microsoft.Maui-net6.sln &&
-              dotnet build Microsoft.Maui-net6.sln -c $BUILDCONFIGURATION -bl:$LOGDIRECTORY/$BUILDCONFIGURATION.binlog &&
+              dotnet build Microsoft.Maui-net6.sln -c $BUILDCONFIGURATION -bl:$LOGDIRECTORY/$BUILDCONFIGURATION.binlog
             displayName: build samples
 
           - task: PublishPipelineArtifact@1
