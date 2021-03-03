@@ -56,7 +56,7 @@ namespace Maui.Controls.Sample
 			// This will probably go into a compatibility app or window
 			Microsoft.Maui.Controls.Compatibility.Forms.Init(state);
 #endif
-			return Services.GetService<IWindow>();
+			return Services.GetRequiredService<IWindow>();
 		}
 
 		void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
@@ -64,7 +64,8 @@ namespace Maui.Controls.Sample
 			//services.AddLogging();
 			services.AddSingleton<ITextService, TextService>();
 			services.AddTransient<MainPageViewModel>();
-			services.AddTransient<MainPage>();
+			services.AddTransient<IPage, MainPage>();
+			//services.AddTransient<IPage, XamlPage>();
 			services.AddTransient<IWindow, MainWindow>();
 		}
 	}
