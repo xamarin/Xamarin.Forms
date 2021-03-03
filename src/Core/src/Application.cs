@@ -58,6 +58,14 @@ namespace Microsoft.Maui
 
 		public IMauiContext? Context => _context;
 
+		public event EventHandler? Created;
+
+		public event EventHandler? Resumed;
+
+		public event EventHandler? Paused;
+
+		public event EventHandler? Stopped;
+
 		public void Run()
 		{
 			Run(null);
@@ -66,7 +74,7 @@ namespace Microsoft.Maui
 		public void Run(IWindow? window)
 		{
 			if (window != null)
-			{ 
+			{
 				if (Windows.HasItem(window) == false)
 				{
 					Windows.Add(window);
@@ -87,21 +95,24 @@ namespace Microsoft.Maui
 
 		public virtual void OnCreated()
 		{
+			Created?.Invoke(this, EventArgs.Empty);
 		}
 
 		public virtual void OnResumed()
 		{
+			Resumed?.Invoke(this, EventArgs.Empty);
 			MainWindow?.OnResumed();
 		}
 
 		public virtual void OnPaused()
 		{
+			Paused?.Invoke(this, EventArgs.Empty);
 			MainWindow?.OnPaused();
 		}
 
 		public virtual void OnStopped()
 		{
-
+			Stopped?.Invoke(this, EventArgs.Empty);
 		}
 
 		public static IAppHostBuilder CreateDefaultBuilder()
@@ -109,6 +120,7 @@ namespace Microsoft.Maui
 			var builder = new AppHostBuilder();
 
 			builder.UseMauiHandlers();
+			builder.
 
 			return builder;
 		}

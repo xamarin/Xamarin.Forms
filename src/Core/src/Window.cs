@@ -15,6 +15,16 @@ namespace Microsoft.Maui
 
 		public bool IsActive { get; set; }
 
+		public event EventHandler? Closed;
+
+		public event EventHandler? Created;
+
+		public event EventHandler? Resumed;
+
+		public event EventHandler? Paused;
+
+		public event EventHandler? Stopped;
+
 		public void Dispose()
 		{
 			Content = null;
@@ -43,22 +53,23 @@ namespace Microsoft.Maui
 
 		public virtual void OnCreated()
 		{
-
+			Created?.Invoke(this, EventArgs.Empty);
 		}
 
 		public virtual void OnResumed()
 		{
-
+			Resumed?.Invoke(this, EventArgs.Empty);
 		}
 
 		public virtual void OnPaused()
 		{
-		
+			Paused?.Invoke(this, EventArgs.Empty);
 		}
 
 		public virtual void OnStopped()
 		{
-		
+			Stopped?.Invoke(this, EventArgs.Empty);
+			Closed?.Invoke(this, EventArgs.Empty);
 		}
 
 		void Initialize()

@@ -1,3 +1,5 @@
+using System;
+
 namespace Microsoft.Maui
 {
 	/// <summary>
@@ -59,5 +61,30 @@ namespace Microsoft.Maui
 		/// Called when the Window is closed.
 		/// </summary>
 		void OnStopped();
+
+		/// <summary>
+		/// This event is raised when the window is closed.
+		/// </summary>
+		event EventHandler? Closed;
+
+		/// <summary>
+		/// This event is raised when the window is created.
+		/// </summary>
+		event EventHandler? Created;
+
+		/// <summary>
+		/// This event is raised when the window is resumed.
+		/// </summary>
+		event EventHandler? Resumed;
+
+		/// <summary>
+		/// This event is raised when the window is paused.
+		/// </summary>
+		event EventHandler? Paused;
+
+		/// <summary>
+		/// This event is raised when the window is closed.
+		/// </summary>
+		event EventHandler? Stopped;
 	}
 }

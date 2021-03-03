@@ -11,7 +11,7 @@ namespace Microsoft.Maui
 		/// Gets or sets the main window of the application.
 		/// </summary>
 		IWindow? MainWindow { get; set; }
-
+		
 		/// <summary>
 		/// Gets the instantiated windows in an application.
 		/// </summary>
@@ -52,5 +52,25 @@ namespace Microsoft.Maui
 		/// Called before the application is closed.
 		/// </summary>
 		void OnStopped();
+
+		/// <summary>
+		/// This event is raised when the window is closed.
+		/// </summary>
+		event EventHandler? Created;
+
+		/// <summary>
+		/// This event is raised when the window is resumed.
+		/// </summary>
+		event EventHandler? Resumed;
+
+		/// <summary>
+		/// This event is raised when the window is pasued.
+		/// </summary>
+		event EventHandler? Paused;
+
+		/// <summary>
+		/// This event is raised when the window is closed.
+		/// </summary>
+		event EventHandler? Stopped;
 	}
 }
