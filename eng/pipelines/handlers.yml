@@ -185,6 +185,12 @@ stages:
         timeoutInMinutes: 120
         pool:
           vmImage:  windows-latest
+        strategy:
+          matrix:
+            debug:
+              BuildConfiguration:  'Debug'
+            release:
+              BuildConfiguration:  'Release'
         steps:
           - powershell: |
               $ProgressPreference = 'SilentlyContinue'
@@ -203,8 +209,7 @@ stages:
 
           - powershell: |
               & dotnet restore Microsoft.Maui-net6.sln
-              & dotnet build Microsoft.Maui-net6.sln -c Debug   -bl:$(LogDirectory)\Debug.binlog
-              & dotnet build Microsoft.Maui-net6.sln -c Release -bl:$(LogDirectory)\Release.binlog
+              & dotnet build Microsoft.Maui-net6.sln -c $(BuildConfiguration) -bl:$(LogDirectory)\$(BuildConfiguration).binlog
             displayName: build samples
             errorActionPreference: stop
 
