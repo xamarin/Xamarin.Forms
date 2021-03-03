@@ -18,6 +18,8 @@ namespace Maui.Controls.Sample
 {
 	public class MyApp : MauiApp
 	{
+		public readonly static bool UseXamlPage = false;
+
 		public override IAppHostBuilder CreateBuilder() =>
 			base.CreateBuilder()
 //#if __ANDROID__
@@ -44,7 +46,10 @@ namespace Maui.Controls.Sample
 				{
 					services.AddSingleton<ITextService, TextService>();
 					services.AddTransient<MainPageViewModel>();
-					services.AddTransient<MainPage>();
+					if (UseXamlPage)
+						services.AddTransient<IPage, XamlPage>();
+					else
+						services.AddTransient<IPage, MainPage>();
 					services.AddTransient<IWindow, MainWindow>();
 				})
 				.ConfigureFonts((hostingContext, fonts) =>
@@ -59,7 +64,7 @@ namespace Maui.Controls.Sample
 			// This will probably go into a compatibility app or window
 			Microsoft.Maui.Controls.Compatibility.Forms.Init(state);
 #endif
-			return Services.GetService<IWindow>();
+			return Services.GetRequiredService<IWindow>();
 		}
 	}
 
