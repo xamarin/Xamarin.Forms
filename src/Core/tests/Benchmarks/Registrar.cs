@@ -52,9 +52,9 @@ namespace Microsoft.Maui
 		}
 
 		internal List<KeyValuePair<Type, Type>> GetViewType(Type type) =>
-			_handler.Where(x => isType(x.Value, type)).ToList();
+			_handler.Where(x => Registrar<TType, TTypeRender>.isType(x.Value, type)).ToList();
 
-		bool isType(Type type, Type type2)
+		static bool isType(Type type, Type type2)
 		{
 			if (type == type2)
 				return true;
@@ -112,14 +112,13 @@ namespace Microsoft.Maui
 		{
 			if (_handlerFactories.TryGetValue(type, out var handlerFactory))
 			{
-				var newObject = handlerFactory?.Invoke(type) as TTypeRender;
-				if (newObject != null)
+				if (handlerFactory?.Invoke(type) is TTypeRender newObject)
 					return newObject;
 			}
 
 			if (!_handler.TryGetValue(type, out var handler))
 			{
-				return default(TTypeRender);
+				return default;
 			}
 
 			try
@@ -137,7 +136,7 @@ namespace Microsoft.Maui
 					throw;
 			}
 
-			return default(TTypeRender);
+			return default;
 		}
 	}
 #nullable disable

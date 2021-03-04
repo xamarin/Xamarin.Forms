@@ -1,14 +1,14 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Maui.Hosting;
 
 namespace Microsoft.Maui.Handlers.Benchmarks
 {
-	class MockApp : App
+	public class StartupStub : IStartup
 	{
-		public override IAppHostBuilder CreateBuilder()
+		public void Configure(IAppHostBuilder appBuilder)
 		{
-			return base.CreateBuilder()
+			appBuilder
 				.ConfigureServices(ConfigureNativeServices);
 		}
 

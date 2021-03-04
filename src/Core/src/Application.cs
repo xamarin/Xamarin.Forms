@@ -6,7 +6,6 @@ namespace Microsoft.Maui
 	public abstract class Application : IApplication
 	{
 		static object? GlobalLock;
-		static Application? AppInstance;
 
 		IServiceProvider? _serviceProvider;
 		IMauiContext? _context;
@@ -15,22 +14,16 @@ namespace Microsoft.Maui
 		{
 			GlobalLock = new object();
 
-			if (AppInstance != null)
+			if (Current != null)
 				throw new InvalidOperationException($"Only one {nameof(Application)} instance is allowed");
 
 			lock (GlobalLock)
 			{
-				AppInstance = this;
+				Current = this;
 			}
 		}
 
-		static public Application? Current
-		{
-			get
-			{
-				return AppInstance;
-			}
-		}
+		static public Application? Current { get; internal set; }
 
 		public IServiceProvider? Services => _serviceProvider;
 

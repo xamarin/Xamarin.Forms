@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 
-namespace Microsoft.Maui.UnitTests.TestClasses
+namespace Microsoft.Maui.Handlers.Benchmarks
 {
-	class WindowStub : IWindow
+	public class WindowStub : IWindow
 	{
 		public IMauiContext MauiContext { get; set; }
 		public IPage Content { get; set; }

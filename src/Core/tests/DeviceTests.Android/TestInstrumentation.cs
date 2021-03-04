@@ -9,6 +9,7 @@ using Android.Runtime;
 using Microsoft.DotNet.XHarness.TestRunners.Common;
 using Microsoft.DotNet.XHarness.TestRunners.Xunit;
 using Xamarin.Essentials;
+using AApplication = Android.App.Application;
 
 namespace Microsoft.Maui.DeviceTests
 {
@@ -75,7 +76,7 @@ namespace Microsoft.Maui.DeviceTests
 #pragma warning disable CS0618 // Type or member is obsolete
                 var root = ((int)Build.VERSION.SdkInt) >= 30
 					? global::Android.OS.Environment.ExternalStorageDirectory.AbsolutePath
-                    : Application.Context.GetExternalFilesDir(null)?.AbsolutePath ?? FileSystem.AppDataDirectory;
+                    : AApplication.Context.GetExternalFilesDir(null)?.AbsolutePath ?? FileSystem.AppDataDirectory;
 #pragma warning restore CS0618 // Type or member is obsolete
 
                 var docsDir = Path.Combine(root, "Documents");

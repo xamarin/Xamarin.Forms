@@ -5,8 +5,9 @@ namespace Microsoft.Maui.Tests
 { 
 	class HandlersContextStub : IMauiContext
 	{
-		IServiceProvider _services;
-		IMauiHandlersServiceProvider _mauiHandlersServiceProvider;
+		readonly IServiceProvider _services;
+		readonly IMauiHandlersServiceProvider _mauiHandlersServiceProvider;
+
 		public HandlersContextStub(IServiceProvider services)
 		{
 			_services = services;
