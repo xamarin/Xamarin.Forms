@@ -62,10 +62,8 @@ namespace Xamarin.Forms.Platform.iOS
 				kind, HorizontalSupplementaryView.ReuseId);
 			CollectionView.RegisterClassForSupplementaryView(typeof(VerticalSupplementaryView),
 				kind, VerticalSupplementaryView.ReuseId);
-			CollectionView.RegisterClassForSupplementaryView(typeof(HorizontalDefaultSupplementalView),
-				kind, HorizontalDefaultSupplementalView.ReuseId);
-			CollectionView.RegisterClassForSupplementaryView(typeof(VerticalDefaultSupplementalView),
-				kind, VerticalDefaultSupplementalView.ReuseId);
+			CollectionView.RegisterClassForSupplementaryView(typeof(EmptySupplementalView),
+				kind, EmptySupplementalView.ReuseId);
 		}
 
 		public override UICollectionReusableView GetViewForSupplementaryElement(UICollectionView collectionView,
@@ -125,10 +123,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (template == null)
 			{
-				// No template, fall back the the default supplemental views
-				return ItemsViewLayout.ScrollDirection == UICollectionViewScrollDirection.Horizontal
-					? HorizontalDefaultSupplementalView.ReuseId
-					: VerticalDefaultSupplementalView.ReuseId;
+				return EmptySupplementalView.ReuseId;
 			}
 
 			return ItemsViewLayout.ScrollDirection == UICollectionViewScrollDirection.Horizontal
