@@ -1,12 +1,16 @@
 using System;
+using System.Linq;
 using Foundation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Maui.Hosting;
 using UIKit;
 
 namespace Microsoft.Maui
 {
-	public class MauiUIApplicationDelegate<TApplication> : UIApplicationDelegate, IUIApplicationDelegate where TApplication : Application
+	public class MauiUIApplicationDelegate<TStartup, TApplication> : UIApplicationDelegate, IUIApplicationDelegate
+		where TStartup : IStartup
+		where TApplication : Application
 	{
 		bool _isSuspended;
 		Application? _app;
@@ -14,12 +18,23 @@ namespace Microsoft.Maui
 
 		public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
 		{
+			if (!(Activator.CreateInstance(typeof(TStartup)) is TStartup startup))
+				throw new InvalidOperationException($"We weren't able to create the Startup {typeof(TStartup)}");
+
+			var appBuilder = AppHostBuilder
+				.CreateDefaultAppBuilder()
+				.ConfigureServices(ConfigureNativeServices);
+
+			startup.Configure(appBuilder);
+
+			appBuilder.BuildHost();
+
 			if (!(Activator.CreateInstance(typeof(TApplication)) is TApplication app))
 				throw new InvalidOperationException($"We weren't able to create the App {typeof(TApplication)}");
 
-			var host = app.CreateBuilder().ConfigureServices(ConfigureNativeServices).Build(app);
-
 			_app = Application.Current;
+
+			appBuilder.SetServiceProvider(app);
 
 			if (_app == null || _app.Services == null)
 				throw new InvalidOperationException("App was not intialized");
@@ -48,6 +63,11 @@ namespace Microsoft.Maui
 
 			uiWindow.MakeKeyAndVisible();
 
+			var iOSApplicationDelegateHandlers = Application.Current?.Services?.GetServices<IIosApplicationDelegateHandler>() ?? Enumerable.Empty<IIosApplicationDelegateHandler>();
+
+			foreach (var iOSApplicationDelegateHandler in iOSApplicationDelegateHandlers)
+				iOSApplicationDelegateHandler.FinishedLaunching(application, launchOptions);
+
 			return true;
 		}
 
@@ -58,6 +78,11 @@ namespace Microsoft.Maui
 				_isSuspended = false;
 				_app?.OnResumed();
 				_window?.OnResumed();
+
+				var iOSApplicationDelegateHandlers = Application.Current?.Services?.GetServices<IIosApplicationDelegateHandler>() ?? Enumerable.Empty<IIosApplicationDelegateHandler>();
+
+				foreach (var iOSApplicationDelegateHandler in iOSApplicationDelegateHandlers)
+					iOSApplicationDelegateHandler.OnActivated(application);
 			}
 		}
 
@@ -66,17 +91,27 @@ namespace Microsoft.Maui
 			_isSuspended = true;
 			_app?.OnPaused();
 			_window?.OnPaused();
+
+			var iOSApplicationDelegateHandlers = Application.Current?.Services?.GetServices<IIosApplicationDelegateHandler>() ?? Enumerable.Empty<IIosApplicationDelegateHandler>();
+
+			foreach (var iOSApplicationDelegateHandler in iOSApplicationDelegateHandlers)
+				iOSApplicationDelegateHandler.OnResignActivation(application);
 		}
 
 		public override void WillTerminate(UIApplication application)
 		{
 			_app?.OnStopped();
 			_window?.OnStopped();
+
+			var iOSApplicationDelegateHandlers = Application.Current?.Services?.GetServices<IIosApplicationDelegateHandler>() ?? Enumerable.Empty<IIosApplicationDelegateHandler>();
+
+			foreach (var iOSApplicationDelegateHandler in iOSApplicationDelegateHandlers)
+				iOSApplicationDelegateHandler.WillTerminate(application);
 		}
 
 		void ConfigureNativeServices(HostBuilderContext ctx, IServiceCollection services)
 		{
-			services.AddTransient<IWindowService, WindowService>();
+			services.AddTransient<IIosApplicationDelegateHandler, IosApplicationDelegateHandler>();
 		}
 	}
 }

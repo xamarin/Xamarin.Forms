@@ -4,6 +4,8 @@ using AndroidX.AppCompat.App;
 using System;
 using AndroidX.CoordinatorLayout.Widget;
 using AndroidX.Core.Widget;
+using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 using MauiApplication = Microsoft.Maui.Application;
 
 namespace Microsoft.Maui
@@ -12,6 +14,7 @@ namespace Microsoft.Maui
 	{
 		MauiApplication? _app;
 		IWindow? _window;
+		Bundle? _savedInstanceState;
 
 		AndroidApplicationLifecycleState _currentState;
 		AndroidApplicationLifecycleState _previousState;
@@ -25,6 +28,8 @@ namespace Microsoft.Maui
 		protected override void OnCreate(Bundle? savedInstanceState)
 		{
 			base.OnCreate(savedInstanceState);
+
+			_savedInstanceState = savedInstanceState;
 
 			if (MauiApplication.Current == null)
 				throw new InvalidOperationException($"App is not {nameof(Application)}");
@@ -65,6 +70,8 @@ namespace Microsoft.Maui
 
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnStart;
+
+			UpdateApplicationLifecycleState();
 		}
 
 		protected override void OnPause()
@@ -107,25 +114,39 @@ namespace Microsoft.Maui
 
 		void UpdateApplicationLifecycleState()
 		{
+			var androidLifecycleHandlers = MauiApplication.Current?.Services?.GetServices<IAndroidLifecycleHandler>() ?? Enumerable.Empty<IAndroidLifecycleHandler>();
+
 			if (_previousState == AndroidApplicationLifecycleState.OnCreate && _currentState == AndroidApplicationLifecycleState.OnStart)
 			{
 				_app?.OnCreated();
 				_window?.OnCreated();
+
+				foreach (var androidLifecycleHandler in androidLifecycleHandlers)
+					androidLifecycleHandler.OnCreate(this, _savedInstanceState);
 			}
 			else if (_previousState == AndroidApplicationLifecycleState.OnRestart && _currentState == AndroidApplicationLifecycleState.OnStart)
 			{
 				_app?.OnResumed();
 				_window?.OnResumed();
+
+				foreach (var androidLifecycleHandler in androidLifecycleHandlers)
+					androidLifecycleHandler.OnResume(this);
 			}
 			else if (_previousState == AndroidApplicationLifecycleState.OnPause && _currentState == AndroidApplicationLifecycleState.OnStop)
 			{
 				_app?.OnPaused();
 				_window?.OnPaused();
+
+				foreach (var androidLifecycleHandler in androidLifecycleHandlers)
+					androidLifecycleHandler.OnPause(this);
 			}
 			else if (_currentState == AndroidApplicationLifecycleState.OnDestroy)
 			{
 				_app?.OnStopped();
 				_window?.OnStopped();
+
+				foreach (var androidLifecycleHandler in androidLifecycleHandlers)
+					androidLifecycleHandler.OnStop(this);
 			}
 		}
 	}

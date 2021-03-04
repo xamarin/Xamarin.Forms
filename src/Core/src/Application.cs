@@ -1,6 +1,5 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Maui.Hosting;
 
 namespace Microsoft.Maui
 {
@@ -45,9 +44,6 @@ namespace Microsoft.Maui
 
 		public event EventHandler? Stopped;
 
-		// Move to abstract
-		public virtual IAppHostBuilder CreateBuilder() => CreateDefaultBuilder();
-
 		public abstract IWindow CreateWindow(IActivationState state);
 
 		public virtual void OnCreated()
@@ -68,15 +64,6 @@ namespace Microsoft.Maui
 		public virtual void OnStopped()
 		{
 			Stopped?.Invoke(this, EventArgs.Empty);
-		}
-
-		public static IAppHostBuilder CreateDefaultBuilder()
-		{
-			var builder = new AppHostBuilder();
-
-			builder.UseMauiHandlers();
-
-			return builder;
 		}
 
 		internal void SetServiceProvider(IServiceProvider provider)

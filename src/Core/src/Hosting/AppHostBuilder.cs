@@ -34,13 +34,19 @@ namespace Microsoft.Maui.Hosting
 		}
 		public IDictionary<object, object> Properties => new Dictionary<object, object>();
 
-		public IHost Build(IApplication app)
+		public static IAppHostBuilder CreateDefaultAppBuilder()
 		{
-			_app = app as Application;
-			return Build();
+			var builder = new AppHostBuilder();
+
+			builder.UseMauiHandlers();
+
+			return builder;
 		}
 
 		public IHost Build()
+			=> BuildHost();
+
+		public IHost BuildHost()
 		{
 			_services = _serviceColectionFactory();
 
@@ -64,11 +70,19 @@ namespace Microsoft.Maui.Hosting
 			if (_serviceProvider == null)
 				throw new InvalidOperationException($"The ServiceProvider cannot be null");
 
+			return new AppHost(_serviceProvider, null);
+		}
+
+		public void SetServiceProvider(IApplication app)
+		{
+			_app = app as Application;
+
+			if (_serviceProvider == null)
+				throw new InvalidOperationException($"The ServiceProvider cannot be null");
+
 			//we do this here because we can't inject the provider on the App ctor
 			//before we register the user ConfigureServices should this live in IApp ?
 			_app?.SetServiceProvider(_serviceProvider);
-
-			return new AppHost(_serviceProvider, null);
 		}
 
 		public IAppHostBuilder ConfigureAppConfiguration(Action<HostBuilderContext, IConfigurationBuilder> configureDelegate)

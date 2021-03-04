@@ -32,18 +32,11 @@ namespace Microsoft.Maui.Hosting
 			{
 				{  typeof(IButton), typeof(ButtonHandler) },
 				{  typeof(ILayout), typeof(LayoutHandler) },
-				{  typeof(ILabel), typeof(LabelHandler) },
+				{  typeof(ILabel), typeof(LabelHandler)   },
 				{  typeof(ISlider), typeof(SliderHandler) },
 				{  typeof(ISwitch), typeof(SwitchHandler) }
 			});
 
-			return builder;
-		}
-
-		public static IAppHostBuilder RegisterPlatformLifecycleHandler<THandler>(this IAppHostBuilder builder)
-			where THandler : IPlatformLifecycleHandler
-		{
-			// TODO: Register PlatformLifecycleHandler
 			return builder;
 		}
 	}

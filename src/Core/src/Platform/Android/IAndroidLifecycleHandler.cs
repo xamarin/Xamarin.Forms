@@ -13,7 +13,7 @@ namespace Microsoft.Maui
 		/// </summary>
 		/// <param name="activity">The activity on which we receive lifecycle events callbacks</param>
 		/// <param name="savedInstanceState">Previous state saved</param>
-		void OnCreate(Activity activity, Bundle savedInstanceState);
+		void OnCreate(Activity activity, Bundle? savedInstanceState);
 
 		/// <summary>
 		/// Called when the activity had been stopped, but is now again being displayed to the user. 
