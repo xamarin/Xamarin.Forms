@@ -179,6 +179,7 @@ namespace Xamarin.Forms.Platform.iOS
 				var safeHostUri = new Uri($"{uri.Scheme}://{uri.Authority}", UriKind.Absolute);
 				var safeRelativeUri = new Uri($"{uri.PathAndQuery}{uri.Fragment}", UriKind.Relative);
 				NSUrlRequest request = new NSUrlRequest(new Uri(safeHostUri, safeRelativeUri));
+				CustomUserAgent = WebView.UserAgentString;
 
 				if (!_firstLoadFinished && HasCookiesToLoad(url) && !Forms.IsiOS13OrNewer)
 				{

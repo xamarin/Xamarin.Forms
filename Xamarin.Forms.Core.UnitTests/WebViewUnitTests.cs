@@ -162,5 +162,16 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.IsNotNull(defaultWebView.Cookies);
 		}
+
+		[Test]
+		public void TestSettingUserAgentString()
+		{
+			var defaultWebView = new WebView
+			{
+				UserAgentString = "Test UAS"
+			};
+
+			Assert.AreEqual(defaultWebView.UserAgentString, "Test UAS");
+		}
 	}
 }
