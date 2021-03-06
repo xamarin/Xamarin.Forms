@@ -91,9 +91,9 @@ namespace Xamarin.Forms.Controls
 #if __IOS__
 		static IApp InitializeiOSApp()
 		{
-			string UDID = null;
+			string UDID = "";
 
-			if(TestContext.Parameters.Exists("UDID"))
+			if (TestContext.Parameters.Exists("UDID"))
 			{
 				UDID = TestContext.Parameters["UDID"];
 			}
@@ -658,12 +658,40 @@ namespace Xamarin.Forms.Controls
 				content.Route = content.Title;
 		}
 
+		public ContentPage AddBottomTab(ContentPage page, string title, string icon = null)
+		{
+			if (Items.Count == 0)
+			{
+				var item = AddContentPage(page);
+				item.Items[0].Items[0].Title = title ?? page.Title;
+				item.Items[0].Title = title ?? page.Title;
+				return page;
+			}
+
+			Items[0].Items.Add(new ShellSection()
+			{
+				AutomationId = title,
+				Route = title,
+				Title = title,
+				Icon = icon,
+				Items =
+ 				{
+ 					new ShellContent()
+ 					{
+ 						ContentTemplate = new DataTemplate(() => page),
+ 						Title = title
+ 					}
+ 				}
+			});
+			return page;
+		}
+
 		public ContentPage AddBottomTab(string title, string icon = null)
 		{
 			ContentPage page = new ContentPage();
 			if (Items.Count == 0)
 			{
-				var item = AddContentPage(page);
+				var item = AddContentPage(page, title);
 				item.Items[0].Items[0].Title = title ?? page.Title;
 				item.Items[0].Title = title ?? page.Title;
 				return page;

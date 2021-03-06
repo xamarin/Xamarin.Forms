@@ -341,7 +341,10 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			IVisualElementRenderer renderer = null;
 
-			if (element is TemplatedView tv && tv.ResolveControlTemplate() != null)
+			// temporary hack to fix the following issues
+			// https://github.com/xamarin/Xamarin.Forms/issues/13261
+			// https://github.com/xamarin/Xamarin.Forms/issues/12484
+			if (element is RadioButton tv && tv.ResolveControlTemplate() != null)
 			{
 				renderer = new DefaultRenderer(context);
 			}
@@ -353,7 +356,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			renderer.SetElement(element);
-
 			return renderer;
 		}
 
@@ -808,7 +810,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (fileImageSource == null)
 				throw new InvalidOperationException("Icon property must be a FileImageSource on Flyout page");
 
-			int icon = ResourceManager.GetDrawableByName(fileImageSource);
+			int icon = _activity.GetDrawableId(fileImageSource);
 
 			FastRenderers.AutomationPropertiesProvider.GetDrawerAccessibilityResources(_activity, CurrentFlyoutPage, out int resourceIdOpen, out int resourceIdClose);
 #pragma warning disable 618 // Eventually we will need to determine how to handle the v7 ActionBarDrawerToggle for AppCompat
@@ -1312,16 +1314,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			bool ILayoutChanges.HasLayoutOccurred => _hasLayoutOccurred;
-
-			protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
-			{
-				if (Element is Layout layout)
-				{
-					layout.ResolveLayoutChanges();
-				}
-
-				base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
-			}
 
 			protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
 			{

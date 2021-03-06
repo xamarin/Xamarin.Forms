@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using ElmSharp;
 using Xamarin.Forms.Internals;
+using EColor = ElmSharp.Color;
 using ERect = ElmSharp.Rect;
 using EScroller = ElmSharp.Scroller;
-using EColor = ElmSharp.Color;
 
 namespace Xamarin.Forms.Platform.Tizen.Native
 {
@@ -689,7 +689,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 							renderer.NativeView.MinimumHeight = Forms.ConvertToScaledPixel(context.Element.MinimumHeightRequest);
 						}
 
-						(renderer as LayoutRenderer)?.RegisterOnLayoutUpdated();
+						(renderer as ILayoutRenderer)?.RegisterOnLayoutUpdated();
 
 						return renderer.NativeView;
 					}

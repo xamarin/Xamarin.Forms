@@ -58,9 +58,12 @@ namespace Xamarin.Forms.Material.iOS
 			var underlineColors = MaterialColors.GetUnderlineColor(element.PlaceholderColor);
 
 			textField.TextInput.TextColor = textColor;
-			textField.ActiveTextInputController.InlinePlaceholderColor = placeHolderColors.InlineColor;
-			textField.ActiveTextInputController.FloatingPlaceholderNormalColor = placeHolderColors.InlineColor;
-			textField.ActiveTextInputController.FloatingPlaceholderActiveColor = placeHolderColors.FloatingColor;
+
+			var inputController = textField.ActiveTextInputController;
+			inputController.InlinePlaceholderColor = placeHolderColors.InlineColor;
+			inputController.FloatingPlaceholderNormalColor = placeHolderColors.InlineColor;
+			inputController.FloatingPlaceholderActiveColor = placeHolderColors.FloatingColor;
+			inputController.DisabledColor = placeHolderColors.InlineColor;
 
 			var brush = element.Background;
 
@@ -143,7 +146,7 @@ namespace Xamarin.Forms.Material.iOS
 				var elementTextColor = element.TextColor;
 				AlphaAdjustment += 0.0000001;
 
-				var adjustedAlpha = elementTextColor.A - AlphaAdjustment;
+				var adjustedAlpha = elementTextColor.IsDefault ? 1 - AlphaAdjustment : elementTextColor.A - AlphaAdjustment;
 				if (adjustedAlpha < 0)
 				{
 					// Below an alpha of 0.01 stuff on iOS doesn't show up in hit tests anyway, so it seems unlikely

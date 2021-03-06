@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using CoreGraphics;
 using Foundation;
@@ -15,6 +16,10 @@ namespace Xamarin.Forms.Platform.iOS
 		CGSize _adjustmentSize0;
 		CGSize _adjustmentSize1;
 		CGSize _currentSize;
+
+		const double ConstraintSizeTolerance = 0.00001;
+
+		Dictionary<object, CGSize> _cellSizeCache = new Dictionary<object, CGSize>();
 
 		public ItemsUpdatingScrollMode ItemsUpdatingScrollMode { get; set; }
 
@@ -85,10 +90,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal virtual void UpdateConstraints(CGSize size)
 		{
-			if (size == _currentSize)
+			if (!RequiresConstraintUpdate(size, _currentSize))
 			{
 				return;
 			}
+
+			ClearCellSizeCache();
 
 			_currentSize = size;
 
@@ -187,7 +194,10 @@ namespace Xamarin.Forms.Platform.iOS
 			//		an estimate set so that when a cell _does_ become available (i.e., when the items source
 			//		has at least one item), Autolayout will kick in for the first cell and size it correctly
 			// If GetPrototype() _can_ return a cell, this estimate will be updated once that cell is measured
-			EstimatedItemSize = new CGSize(1, 1);
+			if (EstimatedItemSize == CGSize.Empty)
+			{
+				EstimatedItemSize = new CGSize(1, 1);
+			}
 
 			ItemsViewCell prototype = null;
 
@@ -360,11 +370,31 @@ namespace Xamarin.Forms.Platform.iOS
 			if (preferredAttributes.RepresentedElementKind != UICollectionElementKindSectionKey.Header
 				&& preferredAttributes.RepresentedElementKind != UICollectionElementKindSectionKey.Footer)
 			{
-				return base.GetInvalidationContext(preferredAttributes, originalAttributes);
+				if (Forms.IsiOS12OrNewer)
+				{
+					return base.GetInvalidationContext(preferredAttributes, originalAttributes);
+				}
+
+				try
+				{
+					// We only have to do this on older iOS versions; sometimes when removing a cell that's right at the edge
+					// of the viewport we'll run into a race condition where the invalidation context will have the removed
+					// indexpath. And then things crash. So 
+
+					var defaultContext = base.GetInvalidationContext(preferredAttributes, originalAttributes);
+					return defaultContext;
+				}
+				catch (MonoTouchException ex) when (ex.Name == "NSRangeException") 
+				{
+					Log.Warning("ItemsViewLayout", ex.ToString());
+				}
+
+				UICollectionViewFlowLayoutInvalidationContext context = new UICollectionViewFlowLayoutInvalidationContext();
+				return context;
 			}
-			
+
 			// Ensure that if this invalidation was triggered by header/footer changes, the header/footer are being invalidated
-			
+
 			UICollectionViewFlowLayoutInvalidationContext invalidationContext = new UICollectionViewFlowLayoutInvalidationContext();
 			var indexPath = preferredAttributes.IndexPath;
 
@@ -537,6 +567,43 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return true;
+		}
+
+		internal bool TryGetCachedCellSize(object item, out CGSize size) 
+		{
+			if (_cellSizeCache.TryGetValue(item, out CGSize internalSize))
+			{
+				size = internalSize;
+				return true;
+			}
+
+			size = CGSize.Empty;
+			return false;
+		}
+
+		internal void CacheCellSize(object item, CGSize size) 
+		{
+			_cellSizeCache[item] = size;
+		}
+
+		internal void ClearCellSizeCache() 
+		{
+			_cellSizeCache.Clear();
+		}
+
+		bool RequiresConstraintUpdate(CGSize newSize, CGSize current)
+		{
+			if (Math.Abs(newSize.Width - current.Width) > ConstraintSizeTolerance)
+			{
+				return true;
+			}
+
+			if (Math.Abs(newSize.Height - current.Height) > ConstraintSizeTolerance)
+			{
+				return true;
+			}
+
+			return false;
 		}
 	}
 }
