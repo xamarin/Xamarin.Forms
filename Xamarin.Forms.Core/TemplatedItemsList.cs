@@ -242,6 +242,12 @@ namespace Xamarin.Forms.Internals
 				if (item != null)
 					UnhookItem(item);
 			}
+			
+			for (var i = 0; i < _groupedItems?.Count; i++)
+			{
+				var item = _groupedItems[i];
+				item.CollectionChanged -= OnInnerCollectionChanged;
+			}
 
 			_disposed = true;
 		}
