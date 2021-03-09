@@ -22,6 +22,7 @@ namespace Xamarin.Forms.Platform.UWP
 		public ImageButtonRenderer() : base()
 		{
 			ImageElementManager.Init(this);
+			Windows.UI.Xaml.Application.Current.Resuming += OnResumingAsync;
 		}
 
 		protected override void Dispose(bool disposing)
@@ -40,6 +41,7 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					_image.ImageOpened -= OnImageOpened;
 					_image.ImageFailed -= OnImageFailed;
+					Windows.UI.Xaml.Application.Current.Resuming -= OnResumingAsync;
 				}
 			}
 
@@ -149,6 +151,18 @@ namespace Xamarin.Forms.Platform.UWP
 			await ImageElementManager.UpdateSource(this).ConfigureAwait(false);
 		}
 
+		async void OnResumingAsync(object sender, object e)
+		{
+			try
+			{
+				await ImageElementManager.UpdateSource(this);
+			}
+			catch (Exception exception)
+			{
+				Log.Warning("Update image source after app resume", 
+					$"ImageSource failed to update after app resume: {exception.Message}");				
+			}
+		}
 
 		void OnImageOpened(object sender, RoutedEventArgs routedEventArgs)
 		{
