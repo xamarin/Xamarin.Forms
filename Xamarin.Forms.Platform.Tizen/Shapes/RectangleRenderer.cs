@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using System.ComponentModel;
+using SkiaSharp;
 using FormsRectangle = Xamarin.Forms.Shapes.Rectangle;
 
 
@@ -6,12 +7,6 @@ namespace Xamarin.Forms.Platform.Tizen.SkiaSharp
 {
 	public class RectangleRenderer : ShapeRenderer<FormsRectangle, RectView>
 	{
-		public RectangleRenderer() : base()
-		{
-			RegisterPropertyHandler(FormsRectangle.RadiusXProperty, UpdateRadiusX);
-			RegisterPropertyHandler(FormsRectangle.RadiusYProperty, UpdateRadiusY);
-		}
-
 		protected override void OnElementChanged(ElementChangedEventArgs<FormsRectangle> e)
 		{
 			if (Control == null)
@@ -20,6 +15,20 @@ namespace Xamarin.Forms.Platform.Tizen.SkiaSharp
 			}
 
 			base.OnElementChanged(e);
+		}
+
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			base.OnElementPropertyChanged(sender, e);
+
+			if (e.PropertyName == VisualElement.WidthProperty.PropertyName || e.PropertyName == FormsRectangle.RadiusXProperty.PropertyName)
+			{
+				UpdateRadiusX();
+			}
+			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName || e.PropertyName == FormsRectangle.RadiusYProperty.PropertyName)
+			{
+				UpdateRadiusY();
+			}
 		}
 
 		void UpdateRadiusX()
