@@ -51,6 +51,11 @@ namespace Xamarin.Forms.Platform.Tizen
 					Element.ScrollToRequested -= OnScrollToRequest;
 					ItemsLayout.PropertyChanged -= OnLayoutPropertyChanged;
 					Control.Scrolled -= OnScrolled;
+					// Remove all child that created by ItemTemplate
+					foreach (var child in Element.LogicalChildren.ToList())
+					{
+						Element.RemoveLogicalChild(child);
+					}
 				}
 				if (_observableSource != null)
 				{
