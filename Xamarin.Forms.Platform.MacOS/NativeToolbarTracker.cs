@@ -250,8 +250,14 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 		async Task NavigateBackFrombackButton()
-		{
-			var popAsyncInner = _navigation?.PopAsyncInner(true, true);
+		{ 
+			Task popAsyncInner = null;
+
+			if (IsRootPage() && IsParentNavigationPage())
+				popAsyncInner = ((NavigationPage)_navigation.Parent).PopAsyncInner(true, true);
+			else
+				popAsyncInner = _navigation?.PopAsyncInner(true, true);
+
 			if (popAsyncInner != null)
 				await popAsyncInner;
 		}
@@ -261,7 +267,14 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (_navigation == null)
 				return false;
 
-			return NavigationPage.GetHasBackButton(_navigation.CurrentPage) && (forceShowBackButton || !IsRootPage());
+			return NavigationPage.GetHasBackButton(_navigation.CurrentPage) && (forceShowBackButton || !IsRootPage() || IsParentNavigationPage());
+		}
+
+		bool IsParentNavigationPage()
+		{
+			if (_navigation == null)
+				return false;
+			return _navigation.Parent is NavigationPage && ((NavigationPage)_navigation.Parent).StackDepth > 1;
 		}
 
 		bool IsRootPage()
@@ -297,10 +310,18 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		string GetBackButtonText()
 		{
-			if (_navigation == null || _navigation.StackDepth <= 1)
+			if (_navigation == null)
 				return string.Empty;
 
-			var page = _navigation.Peek(1);
+			Page page = null;
+
+			if (_navigation.StackDepth > 1)
+				page = _navigation.Peek(1);
+			else if (IsParentNavigationPage())
+				page = _navigation.Peek(0);
+			else
+				return string.Empty;
+
 			return NavigationPage.GetBackButtonTitle(page)
 				?? page.Title
 				?? _defaultBackButtonTitle;
