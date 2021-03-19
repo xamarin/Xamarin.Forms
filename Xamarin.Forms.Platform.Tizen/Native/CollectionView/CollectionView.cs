@@ -476,6 +476,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				(Adaptor as INotifyCollectionChanged).CollectionChanged -= OnCollectionChanged;
 				Adaptor.CollectionView = null;
 			}
+			_innerLayout.UnPackAll();
 		}
 
 		void OnAdaptorChanged()

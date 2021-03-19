@@ -168,6 +168,10 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (!initialize)
 			{
+				if (Control.Adaptor != null)
+				{
+					Control.Adaptor.ItemSelected -= OnItemSelectedFromUI;
+				}
 				if (Element.ItemsSource == null || !Element.ItemsSource.Cast<object>().Any())
 				{
 					Control.Adaptor = EmptyItemAdaptor.Create(Element);
