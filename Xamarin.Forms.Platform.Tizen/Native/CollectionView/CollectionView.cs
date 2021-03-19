@@ -684,7 +684,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		void SendScrolledEvent()
 		{
-			var args = new ItemsViewScrolledExtenedEventArgs();
+			var args = new ItemsViewScrolledExtendedEventArgs();
 			args.FirstVisibleItemIndex = _layoutManager.GetVisibleItemIndex(ViewPort.X, ViewPort.Y);
 			args.CenterItemIndex = _layoutManager.GetVisibleItemIndex(ViewPort.X + (ViewPort.Width / 2), ViewPort.Y + (ViewPort.Height / 2));
 			args.LastVisibleItemIndex = _layoutManager.GetVisibleItemIndex(ViewPort.X + ViewPort.Width, ViewPort.Y + ViewPort.Height);
