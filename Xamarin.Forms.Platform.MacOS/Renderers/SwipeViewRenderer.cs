@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Platform.MacOS
                      .Select(item => item as SwipeItem)
                      .ForEach(item => menu.AddItem(new NSMenuItemWithCommand(item.Text, (Command)item.Command, item.CommandParameter, (s, e) => {
                          if ( s is NSMenuItemWithCommand menuItem )
-                             menuItem.Command?.SafelyExecute(menuItem.CommandParameter);
+                             menuItem.Command?.Execute(menuItem.CommandParameter);
                      })));
             return menu;
         }
