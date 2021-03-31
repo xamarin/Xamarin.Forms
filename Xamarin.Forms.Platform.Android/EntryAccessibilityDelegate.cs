@@ -3,13 +3,13 @@ using Xamarin.Forms.Platform.Android.FastRenderers;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	class EntryAccessibilityDelegate : global::Android.Views.View.AccessibilityDelegate
+	class EntryAccessibilityDelegate : AccessibilityDelegateAutomationId
 	{
 		BindableObject _element;
 
-		public EntryAccessibilityDelegate(BindableObject Element) : base()
+		public EntryAccessibilityDelegate(BindableObject element) : base(element)
 		{
-			_element = Element;
+			_element = element;
 		}
 
 		protected override void Dispose(bool disposing)
