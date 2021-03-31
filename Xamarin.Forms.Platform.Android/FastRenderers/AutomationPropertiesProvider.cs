@@ -32,8 +32,14 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		}
 
 		static bool ShoudISetImportantForAccessibilityToNoIfAutomationIdIsSet(AView control, Element element)
-		{
+		{			
 			if (!Flags.IsAccessibilityExperimentalSet())
+				return false;
+
+			if (element == null)
+				return false;
+
+			if (String.IsNullOrWhiteSpace(element.AutomationId))
 				return false;
 
 			// User has specifically said what they want
