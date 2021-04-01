@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Text;
 using Android.Views.Accessibility;
 using AndroidX.AppCompat.Widget;
+using AndroidX.Core.View;
+using AndroidX.Core.View.Accessibiity;
 using Xamarin.Forms.Platform.Android.FastRenderers;
-using AAccessibilityDelegate = Android.Views.View.AccessibilityDelegate;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	class AccessibilityDelegateAutomationId : AAccessibilityDelegate
+	class AccessibilityDelegateAutomationId : AccessibilityDelegateCompat
+
 	{
 		BindableObject _element;
 
@@ -18,7 +20,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 
-		public override void OnInitializeAccessibilityNodeInfo(global::Android.Views.View host, AccessibilityNodeInfo info)
+		public override void OnInitializeAccessibilityNodeInfo(global::Android.Views.View host, AccessibilityNodeInfoCompat info)
 		{
 			base.OnInitializeAccessibilityNodeInfo(host, info);
 

@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Android.Views;
 using Android.Widget;
+using AndroidX.Core.View;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
@@ -85,7 +86,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					control.ImportantForAccessibility = ImportantForAccessibility.No;
 				}
 				else if (Flags.IsAccessibilityExperimentalSet() && control.GetAccessibilityDelegate() == null)
-					control.SetAccessibilityDelegate(new AccessibilityDelegateAutomationId(element));
+					ViewCompat.SetAccessibilityDelegate(control, new AccessibilityDelegateAutomationId(element));
 
 			}
 		}

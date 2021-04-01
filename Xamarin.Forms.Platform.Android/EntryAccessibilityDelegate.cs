@@ -1,4 +1,5 @@
 ﻿using Android.Views.Accessibility;
+using AndroidX.Core.View.Accessibiity;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 
 namespace Xamarin.Forms.Platform.Android
@@ -22,7 +23,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public string ClassName { get; set; } = "android.widget.Button";
 
-		public override void OnInitializeAccessibilityNodeInfo(global::Android.Views.View host, AccessibilityNodeInfo info)
+		public override void OnInitializeAccessibilityNodeInfo(global::Android.Views.View host, AccessibilityNodeInfoCompat info)
 		{
 			base.OnInitializeAccessibilityNodeInfo(host, info);
 			info.ClassName = ClassName;
