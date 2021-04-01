@@ -451,7 +451,10 @@ namespace Xamarin.Forms.Platform.Android
 			else if (image == null ||
 				toolbar.SetNavigationContentDescription(image) == null)
 			{
-				toolbar.SetNavigationContentDescription(R.String.Ok);
+				if(CanNavigateBack)
+					toolbar.SetNavigationContentDescription(Resource.String.nav_app_bar_navigate_up_description);
+				else
+					toolbar.SetNavigationContentDescription(R.String.Ok);
 			}
 		}
 
