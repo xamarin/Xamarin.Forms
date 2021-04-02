@@ -1138,18 +1138,24 @@ namespace Xamarin.Forms
 			// it to process through the internal shell navigation bits
 			internal Task PushModalInnerAsync(Page modal, bool animated)
 			{
-				return Inner.PushModalAsync(modal, animated);
+				return Inner?.PushModalAsync(modal, animated);
 			}
 
 			// This is used when we just want to process the modal operation and we don't need
 			// it to process through the internal shell navigation bits
 			internal Task<Page> PopModalInnerAsync(bool animated)
 			{
-				return Inner.PopModalAsync(animated);
+				return Inner?.PopModalAsync(animated);
 			}
 
 			protected override async Task OnPushModal(Page modal, bool animated)
 			{
+				if (_owner.Shell.NavigationManager.AccumulateNavigatedEvents)
+				{
+					await base.OnPushModal(modal, animated);
+					return;
+				}
+
 				if (animated)
 					Shell.SetPresentationMode(modal, PresentationMode.ModalAnimated);
 				else
@@ -1166,6 +1172,9 @@ namespace Xamarin.Forms
 
 			protected async override Task<Page> OnPopModal(bool animated)
 			{
+				if (_owner.Shell.NavigationManager.AccumulateNavigatedEvents)
+					return await base.OnPopModal(animated);
+
 				var page = ModalStack[ModalStack.Count - 1];
 				await _owner.Shell.GoToAsync("..", animated);
 				return page;

@@ -1026,14 +1026,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			public class NavigationImpl : NavigationProxy
 			{
 				readonly NavigationMonitoringTab _navigationMonitoringTab;
-				readonly INavigation _navigation;
+				readonly NavigationProxy _navigation;
 
 				public NavigationImpl(
 					NavigationMonitoringTab navigationMonitoringTab,
 					INavigation navigation)
 				{
 					_navigationMonitoringTab = navigationMonitoringTab;
-					_navigation = navigation;
+					_navigation = (NavigationProxy)navigation;
 				}
 
 				protected override IReadOnlyList<Page> GetModalStack() => _navigation.ModalStack;

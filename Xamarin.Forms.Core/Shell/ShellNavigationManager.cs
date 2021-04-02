@@ -10,7 +10,7 @@ namespace Xamarin.Forms
 	{
 		readonly Shell _shell;
 		ShellNavigatedEventArgs _accumulatedEvent;
-		bool _accumulateNavigatedEvents;
+		public bool AccumulateNavigatedEvents { get; private set; }
 
 		public event EventHandler<ShellNavigatedEventArgs> Navigated;
 		public event EventHandler<ShellNavigatingEventArgs> Navigating;
@@ -66,7 +66,7 @@ namespace Xamarin.Forms
 
 			Routing.RegisterImplicitPageRoutes(_shell);
 
-			_accumulateNavigatedEvents = true;
+			AccumulateNavigatedEvents = true;
 
 			var uri = navigationRequest.Request.FullUri;
 			var queryString = navigationRequest.Query;
@@ -166,7 +166,7 @@ namespace Xamarin.Forms
 				await _shell.CurrentItem.CurrentItem.GoToAsync(navigationRequest, queryData, animate, isRelativePopping);
 			}
 
-			_accumulateNavigatedEvents = false;
+			AccumulateNavigatedEvents = false;
 
 			// this can be null in the event that no navigation actually took place!
 			if (_accumulatedEvent != null)
@@ -175,7 +175,7 @@ namespace Xamarin.Forms
 
 		public void HandleNavigated(ShellNavigatedEventArgs args)
 		{
-			if (_accumulateNavigatedEvents)
+			if (AccumulateNavigatedEvents)
 			{
 				if (_accumulatedEvent == null)
 					_accumulatedEvent = args;
@@ -285,7 +285,7 @@ namespace Xamarin.Forms
 			bool canCancel,
 			bool isAnimated)
 		{
-			if (_accumulateNavigatedEvents)
+			if (AccumulateNavigatedEvents)
 				return true;
 
 			var proposedState = GetNavigationState(shellItem, shellSection, shellContent, stack, shellSection.Navigation.ModalStack);
@@ -318,7 +318,7 @@ namespace Xamarin.Forms
 			bool canCancel,
 			bool isAnimated)
 		{
-			if (_accumulateNavigatedEvents)
+			if (AccumulateNavigatedEvents)
 				return null;
 
 			var navArgs = new ShellNavigatingEventArgs(_shell.CurrentState, proposedState, source, canCancel)
