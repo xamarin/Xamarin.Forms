@@ -75,3 +75,6 @@ Visual Studio 2019/**
 TestResult.xml
 build/packages
 WriteDevopsVariables.csproj
+
+# TODO Remove before merge: MFractors (Xamarin productivity tool) working folder 
+.mfractor/
