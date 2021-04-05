@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using System.Diagnostics;
 
 #if UITEST
 using Xamarin.UITest;
@@ -27,12 +28,44 @@ namespace Xamarin.Forms.Controls.Issues
 #if APP
 			InitializeComponent();
 			BindingContext = this;
+			MyWebView.Navigating += OnNavigating;
+			//MyWebView.Navigating += OnNavigatingAsync;
 #endif
 		}
 
 		protected override void Init()
 		{
-			
+
+		}
+
+		private void OnNavigating(object sender, WebNavigatingEventArgs e)
+		{
+			bool shouldCancel = ShouldCancel();
+
+			Debug.WriteLine($"Issue12720 - OnNavigating - Cancelling? {shouldCancel}");
+
+			e.Cancel = shouldCancel;
+		}
+
+		private async void OnNavigatingAsync(object sender, WebNavigatingEventArgs e)
+		{
+			bool shouldCancel = await ShouldCancelAsync();
+
+			Debug.WriteLine($"Issue12720 - OnNavigatingAsync - Cancelling? {shouldCancel}");
+
+			e.Cancel = shouldCancel;
+		}
+
+		private bool ShouldCancel()
+		{
+			return false;
+		}
+
+		private async Task<bool> ShouldCancelAsync()
+		{
+			await Task.Delay(2000);
+
+			return false;
 		}
 	}
 }

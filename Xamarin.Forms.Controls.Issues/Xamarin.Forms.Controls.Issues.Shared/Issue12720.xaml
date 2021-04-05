@@ -5,6 +5,6 @@
 		     x:Class="Xamarin.Forms.Controls.Issues.Issue12720"
 			 Title="Issue 12720">
 	<controls:TestContentPage.Content>
-		<Label Text="Issue 12720" VerticalOptions="Center" HorizontalOptions="Center"/>
+		<WebView x:Name="MyWebView" Source="https://github.com/xamarin/Xamarin.Forms"/>
 	</controls:TestContentPage.Content>
 </controls:TestContentPage>
