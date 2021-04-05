@@ -12,7 +12,8 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		public const int EmptyTag = 333;
 
-		public IItemsViewSource ItemsSource { get; protected set; }
+
+		public IItemsViewSource ItemsSource { get; set; }
 		public TItemsView ItemsView { get; }
 		protected ItemsViewLayout ItemsViewLayout { get; set; }
 		bool _initialized;
@@ -209,6 +210,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_measurementCells.Clear();
 			ItemsViewLayout?.ClearCellSizeCache();
+			ItemsSource?.Dispose();
 			ItemsSource = CreateItemsViewSource();
 			CollectionView.ReloadData();
 			CollectionView.CollectionViewLayout.InvalidateLayout();
@@ -403,7 +405,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual void HandleFormsElementMeasureInvalidated(VisualElement formsElement)
 		{
 			RemeasureLayout(formsElement);
-        }
+		}
 
 		internal void UpdateView(object view, DataTemplate viewTemplate, ref UIView uiView, ref VisualElement formsElement)
 		{
