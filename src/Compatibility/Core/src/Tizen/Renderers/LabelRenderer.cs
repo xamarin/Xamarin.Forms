@@ -1,5 +1,5 @@
 using Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Native;
-using Specific = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.TizenSpecific.Label;
+using Specific = Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific.Label;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 {

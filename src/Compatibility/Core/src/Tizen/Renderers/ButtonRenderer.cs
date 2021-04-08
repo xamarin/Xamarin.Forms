@@ -1,7 +1,8 @@
 using System;
 using Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Native;
+using NIButton = Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Native.IButton;
 using EButton = ElmSharp.Button;
-using Specific = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.TizenSpecific.VisualElement;
+using Specific = Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific.VisualElement;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 {
@@ -61,7 +62,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 			var style = Specific.GetStyle(Element);
 			if (!string.IsNullOrEmpty(style))
 			{
-				(Control as IButton)?.UpdateStyle(style);
+				(Control as NIButton)?.UpdateStyle(style);
 				((IVisualElementController)Element).NativeSizeChanged();
 				UpdateBackgroundColor(false);
 			}
@@ -98,12 +99,12 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void UpdateText()
 		{
-			(Control as IButton).Text = Element.Text ?? "";
+			(Control as NIButton).Text = Element.Text ?? "";
 		}
 
 		void UpdateFontSize()
 		{
-			if (Control is IButton ib)
+			if (Control is NIButton ib)
 			{
 				ib.FontSize = Element.FontSize;
 			}
@@ -111,7 +112,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void UpdateFontAttributes()
 		{
-			if (Control is IButton ib)
+			if (Control is NIButton ib)
 			{
 				ib.FontAttributes = Element.FontAttributes;
 			}
@@ -119,7 +120,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void UpdateFontFamily()
 		{
-			if (Control is IButton ib)
+			if (Control is NIButton ib)
 			{
 				ib.FontFamily = Element.FontFamily.ToNativeFontFamily();
 			}
@@ -127,7 +128,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void UpdateTextColor()
 		{
-			if (Control is IButton ib)
+			if (Control is NIButton ib)
 			{
 				ib.TextColor = Element.TextColor.ToNative();
 			}
@@ -135,7 +136,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 
 		void UpdateBitmap()
 		{
-			if (Control is IButton ib)
+			if (Control is NIButton ib)
 			{
 				if (Element.ImageSource != null)
 				{

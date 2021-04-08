@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ElmSharp;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 using EColor = ElmSharp.Color;
 using EImage = ElmSharp.Image;
 
@@ -311,7 +311,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 				{
 					FontSize = this.GetFlyoutItemFontSize(),
 					VerticalTextAlignment = TextAlignment.Center,
-					TextColor = Microsoft.Maui.Controls.Compatibility.Color.Black.MultiplyAlpha(0.87),
+					TextColor = Maui.Color.Black.MultiplyAlpha(0.87),
 					Margin = new Thickness(this.GetFlyoutMargin(), 0, 0, 0),
 				};
 				label.SetBinding(Label.TextProperty, new Binding(textBinding));

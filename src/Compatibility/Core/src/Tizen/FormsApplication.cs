@@ -7,11 +7,11 @@ using ElmSharp;
 using ElmSharp.Wearable;
 using Tizen.Applications;
 using Tizen.Common;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
 using Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Native;
-using DeviceOrientation = Microsoft.Maui.Controls.Compatibility.Internals.DeviceOrientation;
+using DeviceOrientation = Microsoft.Maui.Controls.Internals.DeviceOrientation;
 using ELayout = ElmSharp.Layout;
-using Specific = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.TizenSpecific.Application;
+using Specific = Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific.Application;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 {

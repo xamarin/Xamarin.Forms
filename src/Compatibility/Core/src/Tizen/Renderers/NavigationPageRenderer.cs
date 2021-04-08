@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ElmSharp;
-using Microsoft.Maui.Controls.Compatibility.Internals;
-using Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.TizenSpecific;
+using Microsoft.Maui.Controls.Internals;
+using Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific;
 using EButton = ElmSharp.Button;
 using EToolbar = ElmSharp.Toolbar;
 using EToolbarItem = ElmSharp.ToolbarItem;
-using Specific = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.TizenSpecific.NavigationPage;
-using SpecificPage = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.TizenSpecific.Page;
+using Specific = Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific.NavigationPage;
+using SpecificPage = Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific.Page;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 {

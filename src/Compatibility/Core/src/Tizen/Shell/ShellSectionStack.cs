@@ -137,9 +137,9 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 			if (_navBar == null)
 				return;
 
-			var titleColor = (appearance as IShellAppearanceElement)?.EffectiveTabBarTitleColor ?? Microsoft.Maui.Controls.Compatibility.Color.Default;
-			var backgroundColor = appearance?.BackgroundColor ?? Microsoft.Maui.Controls.Compatibility.Color.Default;
-			var foregroundColor = appearance?.ForegroundColor ?? Microsoft.Maui.Controls.Compatibility.Color.Default;
+			var titleColor = (appearance as IShellAppearanceElement)?.EffectiveTabBarTitleColor ?? Maui.Color.Default;
+			var backgroundColor = appearance?.BackgroundColor ?? Maui.Color.Default;
+			var foregroundColor = appearance?.ForegroundColor ?? Maui.Color.Default;
 
 			_navBar.TitleColor = titleColor.IsDefault ? ShellRenderer.DefaultTitleColor.ToNative() : titleColor.ToNative();
 			_navBar.BackgroundColor = backgroundColor.IsDefault ? ShellRenderer.DefaultBackgroundColor.ToNative() : backgroundColor.ToNative();

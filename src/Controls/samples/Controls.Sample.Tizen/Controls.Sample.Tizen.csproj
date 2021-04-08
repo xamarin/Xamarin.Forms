@@ -1,0 +1,32 @@
+﻿<Project Sdk="Tizen.NET.Sdk/1.1.6">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>tizen40</TargetFramework>
+    <RootNamespace>Maui.Controls.Sample.Tizen</RootNamespace>
+    <AssemblyName>Maui.Controls.Sample.Tizen</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Xamarin.Essentials" Version="1.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Core\src\Core.csproj">
+      <Project>{29913989-0f70-48d8-8ede-b1dd217f21d1}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Compatibility\Core\src\Tizen\Compatibility.Tizen.csproj">
+      <Project>{271193c1-6e7c-429c-a36d-3f1be5267231}</Project>
+      <Name>Compatibility.Tizen</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Core\Controls.Core.csproj">
+      <Project>{57b8b73d-c3b5-4c42-869e-7b2f17d354ac}</Project>
+      <Name>Controls.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Controls.Sample\Controls.Sample.csproj">
+      <Project>{90b727dd-4c7b-4462-950f-61842a87de8a}</Project>
+      <Name>Controls.Sample</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

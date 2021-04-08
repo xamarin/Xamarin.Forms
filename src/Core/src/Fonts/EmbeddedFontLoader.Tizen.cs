@@ -1,0 +1,54 @@
+using System;
+using System.Diagnostics;
+using System.IO;
+using ElmSharp;
+using Tizen.Common;
+using IOPath = System.IO.Path;
+using TApplication = Tizen.Applications.Application;
+
+namespace Microsoft.Maui
+{
+	public class EmbeddedFontLoader : IEmbeddedFontLoader
+	{
+		const string _fontCacheFolderName = "fonts";
+
+		public DirectoryInfo FontCacheDirectory { get; private set; }
+
+		public EmbeddedFontLoader()
+		{
+			FontCacheDirectory = Directory.CreateDirectory(IOPath.Combine(TApplication.Current.DirectoryInfo.Data, _fontCacheFolderName));
+			Utility.AppendGlobalFontPath(FontCacheDirectory.FullName);
+		}
+
+		public (bool success, string? filePath) LoadFont(EmbeddedFont font)
+		{
+			var filePath = IOPath.Combine(FontCacheDirectory.FullName, font.FontName);
+			if (File.Exists(filePath))
+				return (true, filePath);
+			try
+			{
+				using (var fileStream = File.Create(filePath))
+				{
+					if (font.ResourceStream == null)
+						throw new InvalidOperationException("ResourceStream was null.");
+
+					font.ResourceStream.CopyTo(fileStream);
+				}
+
+				//TODO: should include below
+				//if (DotnetUtil.TizenAPIVersion > 5)
+				//{
+				//	FontExtensions.FontReinit();
+				//}
+
+				return (true, filePath);
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+				File.Delete(filePath);
+			}
+			return (false, null);
+		}
+	}
+}

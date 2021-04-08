@@ -1,9 +1,9 @@
 using System;
 using ElmSharp;
-using Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.TizenSpecific;
+using Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific;
 using EColor = ElmSharp.Color;
-using Specific = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.TizenSpecific.VisualElement;
-using SpecificSwitch = Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.TizenSpecific.Switch;
+using Specific = Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific.VisualElement;
+using SpecificSwitch = Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific.Switch;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 {

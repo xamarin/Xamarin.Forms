@@ -7,13 +7,15 @@ using NativeView = AppKit.NSView;
 using NativeView = Android.Views.View;
 #elif NETSTANDARD || (NET6_0 && !IOS && !ANDROID)
 using NativeView = System.Object;
+#elif __TIZEN__
+using NativeView = ElmSharp.EvasObject;
 #endif
 
 namespace Microsoft.Maui.Handlers
 {
 	public abstract partial class AbstractViewHandler<TVirtualView, TNativeView> : IViewHandler
 		where TVirtualView : class, IView
-#if !NETSTANDARD || IOS || ANDROID
+#if !NETSTANDARD || IOS || ANDROID || __TIZEN__
 		where TNativeView : NativeView
 #else
 		where TNativeView : class

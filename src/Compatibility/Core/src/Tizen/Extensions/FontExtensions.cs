@@ -1,6 +1,4 @@
 using System.Runtime.InteropServices;
-using Microsoft.Maui.Controls.Compatibility.Core;
-using Microsoft.Maui.Controls.Compatibility.Internals;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 {
@@ -28,14 +26,14 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 		static string CleanseFontName(string fontName)
 		{
 			//First check Alias
-			var (hasFontAlias, fontPostScriptName) = FontRegistrar.HasFont(fontName);
+			var (hasFontAlias, fontPostScriptName) = Controls.Internals.Registrar.FontRegistrar.HasFont(fontName);
 			if (hasFontAlias)
 				return fontPostScriptName;
 			var fontFile = FontFile.FromString(fontName);
 
 			if (!string.IsNullOrWhiteSpace(fontFile.Extension))
 			{
-				var (hasFont, _) = FontRegistrar.HasFont(fontFile.FileNameWithExtension());
+				var (hasFont, _) = Controls.Internals.Registrar.FontRegistrar.HasFont(fontFile.FileNameWithExtension());
 				if (hasFont)
 					return fontFile.PostScriptName;
 			}
@@ -44,7 +42,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 				foreach (var ext in FontFile.Extensions)
 				{
 					var formated = fontFile.FileNameWithExtension(ext);
-					var (hasFont, filePath) = FontRegistrar.HasFont(formated);
+					var (hasFont, filePath) = Controls.Internals.Registrar.FontRegistrar.HasFont(formated);
 					if (hasFont)
 						return fontFile.PostScriptName;
 				}

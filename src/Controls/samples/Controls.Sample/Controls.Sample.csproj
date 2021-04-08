@@ -1,7 +1,11 @@
 <Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;MonoAndroid10.0;Xamarin.iOS10</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;MonoAndroid10.0;Xamarin.iOS10;tizen40</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('tizen')) == true ">
+    <DefineConstants>$(DefineConstants);__TIZEN__;</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +27,9 @@
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('MonoAndroid')) == true ">
     <ProjectReference Include="..\..\..\Compatibility\Core\src\Android\Compatibility.Android.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('tizen')) == true ">
+    <ProjectReference Include="..\..\..\Compatibility\Core\src\Tizen\Compatibility.Tizen.csproj" />
   </ItemGroup>
 
   <ItemGroup>

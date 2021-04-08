@@ -1,7 +1,6 @@
 using System;
 using ElmSharp;
 using ElmSharp.Wearable;
-using Microsoft.Maui.Controls.Compatibility.Platform.TV;
 using static Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Native.TableView;
 using EButton = ElmSharp.Button;
 using EColor = ElmSharp.Color;

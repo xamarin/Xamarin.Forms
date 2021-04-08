@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Microsoft.Maui.Controls.Compatibility.Internals;
+using Microsoft.Maui.Controls.Internals;
+using Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific;
+using Microsoft.Maui.Controls.Shapes;
+using Microsoft.Maui.Controls.Xaml.Internals;
 using Microsoft.Maui.Controls.Compatibility.Platform.Tizen.Native;
-using Microsoft.Maui.Controls.Compatibility.PlatformConfiguration.TizenSpecific;
-using Microsoft.Maui.Controls.Compatibility.Shapes;
-using Microsoft.Maui.Controls.Compatibility.Xaml.Internals;
 
 namespace Microsoft.Maui.Controls.Compatibility.Platform.Tizen
 {
