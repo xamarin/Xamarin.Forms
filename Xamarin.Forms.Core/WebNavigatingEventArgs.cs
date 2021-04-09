@@ -1,11 +1,24 @@
+using System;
+
 namespace Xamarin.Forms
 {
-	public class WebNavigatingEventArgs : WebNavigationEventArgs
+	public class WebNavigatingEventArgs : DeferrableEventArgs, IWebNavigationEventArgs
 	{
-		public WebNavigatingEventArgs(WebNavigationEvent navigationEvent, WebViewSource source, string url) : base(navigationEvent, source, url)
+		public WebNavigatingEventArgs(WebNavigationEvent navigationEvent, WebViewSource source, string url)
+			: base(true)
 		{
+			NavigationEvent = navigationEvent;
+			Source = source;
+			Url = url;
 		}
 
-		public bool Cancel { get; set; }
+		//[Obsolete("This will be replaced by deferral token")]
+		public bool OldCancel { get; set; }
+
+		public WebNavigationEvent NavigationEvent { get; }
+
+		public WebViewSource Source { get; }
+
+		public string Url { get; }
 	}
 }

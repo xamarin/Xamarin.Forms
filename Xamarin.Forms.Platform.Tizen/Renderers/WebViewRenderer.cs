@@ -109,7 +109,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				var args = new WebNavigatingEventArgs(_eventState, new UrlWebViewSource { Url = url }, url);
 				Element.SendNavigating(args);
 
-				if (args.Cancel)
+				if (args.OldCancel)
 				{
 					_eventState = WebNavigationEvent.NewPage;
 				}

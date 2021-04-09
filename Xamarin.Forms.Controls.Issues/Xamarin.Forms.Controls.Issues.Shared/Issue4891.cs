@@ -76,7 +76,7 @@ namespace Xamarin.Forms.Controls.Issues
 			if (e.Url.StartsWith("xamforms4223", StringComparison.OrdinalIgnoreCase))
 			{
 				LogToScreen("Caught custom scheme, cancelling navigation.");
-				e.Cancel = true;
+				e.OldCancel = true;
 			}
 		}
 

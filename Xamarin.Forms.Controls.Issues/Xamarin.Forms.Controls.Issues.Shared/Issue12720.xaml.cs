@@ -44,16 +44,19 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Debug.WriteLine($"Issue12720 - OnNavigating - Cancelling? {shouldCancel}");
 
-			e.Cancel = shouldCancel;
+			e.OldCancel = shouldCancel;
 		}
 
 		private async void OnNavigatingAsync(object sender, WebNavigatingEventArgs e)
 		{
+			Debug.WriteLine($"Issue12720 - OnNavigatingAsync - Grabbing deferral token and waiting a while");
+
+			var token = e.GetDeferral();
 			bool shouldCancel = await ShouldCancelAsync();
 
 			Debug.WriteLine($"Issue12720 - OnNavigatingAsync - Cancelling? {shouldCancel}");
 
-			e.Cancel = shouldCancel;
+			token.Complete();
 		}
 
 		private bool ShouldCancel()

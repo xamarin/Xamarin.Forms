@@ -138,7 +138,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 				if (cancel)
 				{
-					e.Cancel = true;
+					e.OldCancel = true;
 					log("Cancel navigation");
 					cancel = false;
 				}

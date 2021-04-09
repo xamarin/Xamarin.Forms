@@ -172,7 +172,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 				Element.SendNavigating(args);
 
-				if (args.Cancel)
+				if (args.OldCancel)
 					_lastEvent = WebNavigationEvent.NewPage;
 			}
 		}

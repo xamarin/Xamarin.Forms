@@ -788,7 +788,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				WebView.SendNavigating(args);
 				_renderer.UpdateCanGoBackForward();
-				decisionHandler(args.Cancel ? WKNavigationActionPolicy.Cancel : WKNavigationActionPolicy.Allow);
+				decisionHandler(args.OldCancel ? WKNavigationActionPolicy.Cancel : WKNavigationActionPolicy.Allow);
 			}
 
 			string GetCurrentUrl()

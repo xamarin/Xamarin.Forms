@@ -170,10 +170,10 @@ namespace Xamarin.Forms.Platform.WPF
 
 			Element.SendNavigating(args);
 
-			navigatingEventArgs.Cancel = args.Cancel;
+			navigatingEventArgs.Cancel = args.OldCancel;
 
 			// reset in this case because this is the last event we will get
-			if (args.Cancel)
+			if (args.OldCancel)
 				_eventState = WebNavigationEvent.NewPage;
 		}
 

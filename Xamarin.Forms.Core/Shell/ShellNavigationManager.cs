@@ -333,14 +333,10 @@ namespace Xamarin.Forms
 
 		public void HandleNavigating(ShellNavigatingEventArgs args)
 		{
-			if (!args.DeferredEventArgs)
-			{
-				Navigating?.Invoke(this, args);
-			}
-			else
-			{
+			if (args.DeferredEventArgs)
 				return;
-			}
+
+			Navigating?.Invoke(this, args);
 		}
 
 		public static ShellNavigationSource CalculateNavigationSource(Shell shell, ShellNavigationState current, NavigationRequest request)

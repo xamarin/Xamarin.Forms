@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				Element.SendNavigating(args);
 				UpdateCanGoBackForward();
-				if (!args.Cancel)
+				if (!args.OldCancel)
 				{
 					decisionToken.Use();
 				}
