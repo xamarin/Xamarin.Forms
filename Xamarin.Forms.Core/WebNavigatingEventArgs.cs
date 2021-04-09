@@ -4,8 +4,8 @@ namespace Xamarin.Forms
 {
 	public class WebNavigatingEventArgs : DeferrableEventArgs, IWebNavigationEventArgs
 	{
-		public WebNavigatingEventArgs(WebNavigationEvent navigationEvent, WebViewSource source, string url)
-			: base(true)
+		public WebNavigatingEventArgs(WebNavigationEvent navigationEvent, WebViewSource source, string url, bool canCancel)
+			: base(canCancel)
 		{
 			NavigationEvent = navigationEvent;
 			Source = source;

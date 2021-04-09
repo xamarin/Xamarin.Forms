@@ -333,7 +333,7 @@ namespace Xamarin.Forms
 
 		public void HandleNavigating(ShellNavigatingEventArgs args)
 		{
-			if (args.DeferredEventArgs)
+			if (args.DeferralRequested)
 				return;
 
 			Navigating?.Invoke(this, args);

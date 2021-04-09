@@ -784,11 +784,48 @@ namespace Xamarin.Forms.Platform.iOS
 				_lastEvent = navEvent;
 				var request = navigationAction.Request;
 				var lastUrl = request.Url.ToString();
-				var args = new WebNavigatingEventArgs(navEvent, new UrlWebViewSource { Url = lastUrl }, lastUrl);
+				var args = new WebNavigatingEventArgs(navEvent, new UrlWebViewSource { Url = lastUrl }, lastUrl, true);
+
+				/*
+				 * Register the deferral before sending the args incase the code using the deferral token
+				 * is not executed async. In that scenario the token completion will be called before the
+				 * callback is registered and the decision handler won't get called
+				 */
+				args.RegisterDeferralCompletedCallBack(() => NavigatingDeterminedCallback(args, decisionHandler));
 
 				WebView.SendNavigating(args);
 				_renderer.UpdateCanGoBackForward();
-				decisionHandler(args.OldCancel ? WKNavigationActionPolicy.Cancel : WKNavigationActionPolicy.Allow);
+
+				// user is not trying to cancel navigation, allow navigation
+				if (!args.DeferralRequested)
+				{
+					decisionHandler(WKNavigationActionPolicy.Allow);
+				}
+			}
+
+			async Task NavigatingDeterminedCallback(WebNavigatingEventArgs args, Action<WKNavigationActionPolicy> decisionHandler)
+			{
+				/* 
+				 * Decision handler MUST be called otherwise WKWebView throws the following exception:
+				 * Objective-C exception thrown.  Name: NSInternalInconsistencyException Reason: 
+				 * Completion handler passed to -[Xamarin_Forms_Platform_iOS_WkWebViewRenderer_CustomWebViewNavigationDelegate webView:decidePolicyForNavigationAction:decisionHandler:] was not called
+				 */
+
+				Func<Task> navigationTask = () => Task.Run(() => DetermineNavigating(args, decisionHandler));
+
+				if (Device.IsInvokeRequired)
+					await Device.InvokeOnMainThreadAsync(navigationTask);
+				else
+					await navigationTask();
+			}
+
+			void DetermineNavigating(WebNavigatingEventArgs args, Action<WKNavigationActionPolicy> decisionHandler)
+			{
+				var cancel = args.Cancelled ? WKNavigationActionPolicy.Cancel : WKNavigationActionPolicy.Allow;
+
+				Debug.WriteLine($"Calling decision handler: {cancel}");
+
+				decisionHandler(cancel);
 			}
 
 			string GetCurrentUrl()

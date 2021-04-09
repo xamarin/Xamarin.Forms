@@ -43,7 +43,7 @@ namespace Xamarin.Forms
 			if (!CanCancel)
 				return null;
 
-			DeferredEventArgs = true;
+			DeferralRequested = true;
 			var currentCount = Interlocked.Increment(ref _deferralCount);
 			if (currentCount == 1)
 			{
@@ -81,14 +81,15 @@ namespace Xamarin.Forms
 
 		internal Task<bool> DeferredTask => _deferredTaskCompletionSource?.Task;
 		internal bool Animate { get; set; }
-		internal bool DeferredEventArgs { get; set; }
+
+		public bool DeferralRequested { get; set; }
 
 		internal int DeferralCount => _deferralCount;
 
 		internal bool NavigationDelayedOrCancelled =>
 			Cancelled || DeferralCount > 0;
 
-		internal void RegisterDeferralCompletedCallBack(Func<Task> deferralFinishedTask)
+		public void RegisterDeferralCompletedCallBack(Func<Task> deferralFinishedTask)
 		{
 			_deferralFinishedTask = deferralFinishedTask;
 		}

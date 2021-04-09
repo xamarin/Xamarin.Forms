@@ -28,8 +28,9 @@ namespace Xamarin.Forms.Controls.Issues
 #if APP
 			InitializeComponent();
 			BindingContext = this;
-			MyWebView.Navigating += OnNavigating;
-			//MyWebView.Navigating += OnNavigatingAsync;
+			//MyWebView.Navigating += OnNavigatingWithoutDeferral;
+			//MyWebView.Navigating += OnNavigatingWithDeferral;
+			MyWebView.Navigating += OnNavigatingWithDeferralAsync;
 #endif
 		}
 
@@ -38,37 +39,74 @@ namespace Xamarin.Forms.Controls.Issues
 
 		}
 
-		private void OnNavigating(object sender, WebNavigatingEventArgs e)
+		private void OnNavigatingWithoutDeferral(object sender, WebNavigatingEventArgs e)
 		{
-			bool shouldCancel = ShouldCancel();
-
-			Debug.WriteLine($"Issue12720 - OnNavigating - Cancelling? {shouldCancel}");
-
-			e.OldCancel = shouldCancel;
+			Debug.WriteLine("Navigating - Not going to do anything with deferrals!");
 		}
 
-		private async void OnNavigatingAsync(object sender, WebNavigatingEventArgs e)
+		private void OnNavigatingWithDeferral(object sender, WebNavigatingEventArgs e)
 		{
-			Debug.WriteLine($"Issue12720 - OnNavigatingAsync - Grabbing deferral token and waiting a while");
-
 			var token = e.GetDeferral();
-			bool shouldCancel = await ShouldCancelAsync();
 
-			Debug.WriteLine($"Issue12720 - OnNavigatingAsync - Cancelling? {shouldCancel}");
+			var shouldCancel = ShouldCancel(e.Url);
+
+			if (shouldCancel)
+			{
+				Debug.WriteLine($"Navigation to url was cancelled: {e.Url}");
+				e.Cancel();
+			}
 
 			token.Complete();
 		}
 
-		private bool ShouldCancel()
+		private async void OnNavigatingWithDeferralAsync(object sender, WebNavigatingEventArgs e)
 		{
+			Debug.WriteLine($"Issue12720 - OnNavigatingAsync - Grabbing deferral token and waiting a while");
+			Debug.WriteLine(DateTime.Now.ToString("T"));
+
+			var token = e.GetDeferral();
+
+			bool shouldCancel = await ShouldCancelAsync(e.Url);
+
+			Debug.WriteLine(DateTime.Now.ToString("T"));
+
+			if (shouldCancel)
+			{
+				Debug.WriteLine($"Navigation to url was cancelled: {e.Url}");
+				e.Cancel();
+			}
+
+			token.Complete();
+		}
+
+		private bool ShouldCancel(string url)
+		{
+			if (url.Contains("bbc.co.uk"))
+				return true;
+
 			return false;
 		}
 
-		private async Task<bool> ShouldCancelAsync()
-		{
-			await Task.Delay(2000);
+		int _delayMs = 0;
 
-			return false;
+		private int GetDelay()
+		{
+			_delayMs = _delayMs + 1000;
+
+			return _delayMs;
+		}
+
+		private async Task<bool> ShouldCancelAsync(string url)
+		{
+			if (url.Contains("bbc.co.uk"))
+			{
+				var delay = GetDelay();
+
+				Debug.WriteLine($"Delaying for {delay}ms");
+				await Task.Delay(delay);
+			}
+
+			return ShouldCancel(url);
 		}
 	}
 }
