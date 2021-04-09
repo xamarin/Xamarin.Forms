@@ -720,7 +720,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 #if DEBUG
 			// Enables logging of moveToState operations to logcat
+#pragma warning disable CS0618 // Type or member is obsolete
 			FragmentManager.EnableDebugLogging(true);
+#pragma warning restore CS0618 // Type or member is obsolete
 #endif
 
 			// Go ahead and take care of the fragment bookkeeping for the page being removed
@@ -804,7 +806,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 #if DEBUG
 			// Enables logging of moveToState operations to logcat
+#pragma warning disable CS0618 // Type or member is obsolete
 			FragmentManager.EnableDebugLogging(true);
+#pragma warning restore CS0618 // Type or member is obsolete
 #endif
 
 			Current?.SendDisappearing();
@@ -965,7 +969,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					bar.NavigationIcon = icon;
 
 					var prevPage = Element.Peek(1);
-					_defaultNavigationContentDescription = bar.SetNavigationContentDescription(prevPage, _defaultNavigationContentDescription);
+					var backButtonTitle = NavigationPage.GetBackButtonTitle(prevPage);
+					_defaultNavigationContentDescription = backButtonTitle != null
+						? bar.SetNavigationContentDescription(prevPage, backButtonTitle)
+						: bar.SetNavigationContentDescription(prevPage, _defaultNavigationContentDescription);
 				}
 				else if (toggle != null && _flyoutPage != null)
 				{

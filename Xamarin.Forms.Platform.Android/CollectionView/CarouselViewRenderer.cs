@@ -205,12 +205,15 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_carouselViewLoopManager == null)
 				return;
-			//Special case here
-			//We could have a race condition where we are scrolling our collection to center the first item
-			//And at the same time the user is requesting we go to a particular item
-			if (position == -1 && Carousel.Loop)
+
+			// Special case here
+			// We could have a race condition where we are scrolling our collection to center the first item
+			// And at the same time the user is requesting we go to a particular item
+			if (position == -1)
 			{
-				_carouselViewLoopManager.AddPendingScrollTo(args);
+				if (Carousel.Loop)
+					_carouselViewLoopManager.AddPendingScrollTo(args);
+
 				return;
 			}
 
@@ -268,6 +271,9 @@ namespace Xamarin.Forms.Platform.Android
 			bool removingCurrentElement = currentItemPosition == -1;
 			bool removingLastElement = e.OldStartingIndex == count;
 			bool removingFirstElement = e.OldStartingIndex == 0;
+			bool removingAnyPrevious =
+				e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove
+				&& e.OldStartingIndex < carouselPosition;
 
 			_noNeedForScroll = true;
 			_gotoPosition = -1;
@@ -297,20 +303,28 @@ namespace Xamarin.Forms.Platform.Android
 				carouselPosition = currentItemPosition;
 			}
 
-			if (!Carousel.Loop)
+			// Queue the rest up for later after the Adapter has finished processing item change notifications
+
+			if (removingAnyPrevious)
 			{
+				return;
+			}
+
+			Device.BeginInvokeOnMainThread(() =>
+			{
+
 				SetCurrentItem(carouselPosition);
 				UpdatePosition(carouselPosition);
-			}
 
-			//If we are adding or removing the last item we need to update
-			//the inset that we give to items so they are centered
-			if (e.NewStartingIndex == count - 1 || removingLastElement)
-			{
-				UpdateItemDecoration();
-			}
+				//If we are adding or removing the last item we need to update
+				//the inset that we give to items so they are centered
+				if (e.NewStartingIndex == count - 1 || removingLastElement)
+				{
+					UpdateItemDecoration();
+				}
 
-			UpdateVisualStates();
+				UpdateVisualStates();
+			});
 		}
 
 		void UpdateItemDecoration()
@@ -323,21 +337,21 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateInitialPosition()
 		{
-			int position = 0;
-			var items = Carousel.ItemsSource as IList;
-			var itemCount = items?.Count ?? 0;
+			int itemCount = 0;
+			int position;
 
-			if (Carousel.CurrentItem != null || items == null)
+			if (Carousel.CurrentItem != null)
 			{
-				for (int n = 0; n < itemCount; n++)
+				var carouselEnumerator = Carousel.ItemsSource.GetEnumerator();
+				var items = new List<object>();
+
+				while (carouselEnumerator.MoveNext())
 				{
-					if (items[n] == Carousel.CurrentItem)
-					{
-						position = n;
-						break;
-					}
+					items.Add(carouselEnumerator.Current);
+					itemCount++;
 				}
 
+				position = items.IndexOf(Carousel.CurrentItem);
 				Carousel.Position = position;
 			}
 			else
@@ -347,8 +361,20 @@ namespace Xamarin.Forms.Platform.Android
 
 			SetCurrentItem(_oldPosition);
 
-			var index = Carousel.Loop ? itemCount * 5000 + _oldPosition : _oldPosition;
+			var index = Carousel.Loop ? LoopedPosition(itemCount) + _oldPosition : _oldPosition;
 			ScrollHelper.JumpScrollToPosition(index, Xamarin.Forms.ScrollToPosition.Center);
+			_gotoPosition = -1;
+		}
+
+		int LoopedPosition(int itemCount)
+		{
+			if (itemCount == 0)
+			{
+				return 0;
+			}
+
+			var loopScale = CarouselViewLoopManager.LoopScale / 2;
+			return loopScale - (loopScale % itemCount);
 		}
 
 		void UpdatePositionFromVisibilityChanges()
@@ -650,8 +676,10 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		class CarouselViewLoopManager
+		internal class CarouselViewLoopManager
 		{
+			public const int LoopScale = 16384;
+
 			IItemsViewSource _itemsSource;
 			readonly Queue<ScrollToRequestEventArgs> _pendingScrollTo = new Queue<ScrollToRequestEventArgs>();
 

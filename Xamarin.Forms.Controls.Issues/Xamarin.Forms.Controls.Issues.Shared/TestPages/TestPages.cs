@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using NUnit.Framework.Interfaces;
 using Xamarin.Forms.Controls.Issues;
@@ -89,9 +91,9 @@ namespace Xamarin.Forms.Controls
 #if __IOS__
 		static IApp InitializeiOSApp()
 		{
-			string UDID = null;
+			string UDID = "";
 
-			if(TestContext.Parameters.Exists("UDID"))
+			if (TestContext.Parameters.Exists("UDID"))
 			{
 				UDID = TestContext.Parameters["UDID"];
 			}
@@ -574,7 +576,7 @@ namespace Xamarin.Forms.Controls
 	public abstract class TestShell : Shell
 	{
 		protected const string FlyoutIconAutomationId = "OK";
-#if __IOS__
+#if __IOS__ || __WINDOWS__
 		protected const string BackButtonAutomationId = "Back";
 #else
 		protected const string BackButtonAutomationId = "OK";
@@ -604,6 +606,7 @@ namespace Xamarin.Forms.Controls
 
 		protected TestShell() : base()
 		{
+			Device.SetFlags(new List<string> { ExperimentalFlags.ShellUWPExperimental });
 			Routing.Clear();
 #if APP
 			Init();
@@ -618,19 +621,19 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
-		public ContentPage AddTopTab(string title, string icon = null)
+		public ContentPage AddTopTab(string title, string icon = null, ShellSection root = null)
 		{
 			var page = new ContentPage()
 			{
 				Title = title
 			};
 
-			AddTopTab(page, title, icon);
+			AddTopTab(page, title, icon, root);
 			return page;
 		}
 
 
-		public void AddTopTab(ContentPage page, string title = null, string icon = null)
+		public void AddTopTab(ContentPage page, string title = null, string icon = null, ShellSection root = null)
 		{
 			if (Items.Count == 0)
 			{
@@ -639,17 +642,48 @@ namespace Xamarin.Forms.Controls
 				return;
 			}
 
+			root = Items[0].Items[0];
+			title = title ?? page.Title;
 			var content = new ShellContent()
 			{
-				Title = title ?? page.Title,
+				Title = title,
 				Content = page,
-				Icon = icon
+				Icon = icon,
+				AutomationId = title
 			};
 
-			Items[0].Items[0].Items.Add(content);
+			root.Items.Add(content);
 
 			if (!String.IsNullOrWhiteSpace(content.Title))
 				content.Route = content.Title;
+		}
+
+		public ContentPage AddBottomTab(ContentPage page, string title, string icon = null)
+		{
+			if (Items.Count == 0)
+			{
+				var item = AddContentPage(page);
+				item.Items[0].Items[0].Title = title ?? page.Title;
+				item.Items[0].Title = title ?? page.Title;
+				return page;
+			}
+
+			Items[0].Items.Add(new ShellSection()
+			{
+				AutomationId = title,
+				Route = title,
+				Title = title,
+				Icon = icon,
+				Items =
+ 				{
+ 					new ShellContent()
+ 					{
+ 						ContentTemplate = new DataTemplate(() => page),
+ 						Title = title
+ 					}
+ 				}
+			});
+			return page;
 		}
 
 		public ContentPage AddBottomTab(string title, string icon = null)
@@ -657,7 +691,7 @@ namespace Xamarin.Forms.Controls
 			ContentPage page = new ContentPage();
 			if (Items.Count == 0)
 			{
-				var item = AddContentPage(page);
+				var item = AddContentPage(page, title);
 				item.Items[0].Items[0].Title = title ?? page.Title;
 				item.Items[0].Title = title ?? page.Title;
 				return page;
@@ -794,12 +828,41 @@ namespace Xamarin.Forms.Controls
 		}
 
 
-		public void TapInFlyout(string text, string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, string timeoutMessage = null)
+		public void TapInFlyout(string text, string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, string timeoutMessage = null, bool makeSureFlyoutStaysOpen = false)
 		{
 			timeoutMessage = timeoutMessage ?? text;
-			ShowFlyout(flyoutIcon, usingSwipe);
-			RunningApp.WaitForElement(text, timeoutMessage);
-			RunningApp.Tap(text);
+#if __WINDOWS__
+			RunningApp.WaitForElement(flyoutIcon);
+#endif
+
+			System.Threading.Thread.Sleep(500);
+			CheckIfOpen();
+			try
+			{
+				RunningApp.Tap(text);
+			}
+			catch
+			{
+				// Give it one more try
+				CheckIfOpen();
+				RunningApp.Tap(text);
+			}
+
+			if (makeSureFlyoutStaysOpen)
+			{
+				System.Threading.Thread.Sleep(500);
+				if(RunningApp.Query(text).Count() == 0)
+					this.ShowFlyout(flyoutIcon);
+			}
+
+			void CheckIfOpen()
+			{
+				if (RunningApp.Query(text).Count() == 0)
+				{
+					ShowFlyout(flyoutIcon, usingSwipe);
+					RunningApp.WaitForElement(text, timeoutMessage);
+				}
+			}
 		}
 
 		public void DoubleTapInFlyout(string text, string flyoutIcon = FlyoutIconAutomationId, bool usingSwipe = false, string timeoutMessage = null)

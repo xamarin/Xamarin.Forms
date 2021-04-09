@@ -32,6 +32,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		bool _hasBackButton = false;
 		private bool disposedValue;
+		bool _isTV = Device.Idiom == TargetIdiom.TV;
 
 		public ShellNavBar() : base(Forms.NativeParent)
 		{
@@ -39,12 +40,9 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			_menuButton = new EButton(Forms.NativeParent);
 			_menuButton.Clicked += OnMenuClicked;
+
 			_menuIcon = new EImage(Forms.NativeParent);
 			UpdateMenuIcon();
-			_menuIcon.Show();
-			_menuButton.Show();
-
-			_menuButton.SetIconPart(_menuIcon);
 
 			_title = new Native.Label(Forms.NativeParent)
 			{
@@ -203,12 +201,20 @@ namespace Xamarin.Forms.Platform.Tizen
 		void UpdateMenuIcon()
 		{
 			ImageSource source = null;
-			_menuButton.Show();
 			if (HasBackButton)
 			{
-				var assembly = typeof(ShellNavBar).GetTypeInfo().Assembly;
-				var assemblyName = assembly.GetName().Name;
-				source = ImageSource.FromResource(assemblyName + "." + _backIconRes, assembly);
+				if (_isTV)
+				{
+					_menuButton.Style = ThemeConstants.Button.Styles.Default;
+					_menuButton.Text = ThemeConstants.Shell.Resources.TV.BackIconCode;
+					_menuIcon = null;
+				}
+				else
+				{
+					var assembly = typeof(ShellNavBar).GetTypeInfo().Assembly;
+					var assemblyName = assembly.GetName().Name;
+					source = ImageSource.FromResource(assemblyName + "." + _backIconRes, assembly);
+				}
 			}
 			else if (_flyoutBehavior != FlyoutBehavior.Flyout)
 			{
@@ -216,15 +222,36 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 			else if (ShellController.FlyoutIcon != null)
 			{
+				if (_isTV)
+				{
+					_menuButton.Style = ThemeConstants.Button.Styles.Circle;
+					_menuIcon = new EImage(Forms.NativeParent);
+				}
 				source = Shell.Current.FlyoutIcon;
 			}
 			else
 			{
-				var assembly = typeof(ShellNavBar).GetTypeInfo().Assembly;
-				var assemblyName = assembly.GetName().Name;
-				source = ImageSource.FromResource(assemblyName + "." + _menuIconRes, assembly);
+				if (_isTV)
+				{
+					_menuButton.Style = ThemeConstants.Button.Styles.Default;
+					_menuButton.Text = ThemeConstants.Shell.Resources.TV.MenuIconCode;
+					_menuIcon = null;
+				}
+				else
+				{
+					var assembly = typeof(ShellNavBar).GetTypeInfo().Assembly;
+					var assemblyName = assembly.GetName().Name;
+					source = ImageSource.FromResource(assemblyName + "." + _menuIconRes, assembly);
+				}
 			}
-			_ = _menuIcon.LoadFromImageSourceAsync(source);
+
+			if (source != null && _menuIcon != null)
+			{
+				_menuIcon.Show();
+				_ = _menuIcon.LoadFromImageSourceAsync(source);
+			}
+			_menuButton.SetIconPart(_menuIcon);
+			_menuButton.Show();
 		}
 
 		void OnMenuClicked(object sender, EventArgs e)
@@ -240,7 +267,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 			else if (_flyoutBehavior == FlyoutBehavior.Flyout)
 			{
-				Shell.Current.FlyoutIsPresented = true;
+				Shell.Current.FlyoutIsPresented = !Shell.Current.FlyoutIsPresented;
 			}
 		}
 
@@ -252,7 +279,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (titleView != null)
 			{
 				var renderer = Platform.GetOrCreateRenderer(titleView);
-				(renderer as LayoutRenderer)?.RegisterOnLayoutUpdated();
+				(renderer as ILayoutRenderer)?.RegisterOnLayoutUpdated();
 				_nativeTitleView = renderer.NativeView;
 				_nativeTitleView.Show();
 				PackEnd(_nativeTitleView);
