@@ -11,6 +11,7 @@ namespace Xamarin.Forms
 	{
 		internal const string ShellUWPExperimental = "Shell_UWP_Experimental";
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static void VerifyFlagEnabled(
 			string coreComponentName,
 			string flagName,
