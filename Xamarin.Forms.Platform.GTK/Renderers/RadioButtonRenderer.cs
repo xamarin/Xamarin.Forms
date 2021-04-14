@@ -4,27 +4,53 @@ using Xamarin.Forms.Platform.GTK.Extensions;
 
 namespace Xamarin.Forms.Platform.GTK.Renderers
 {
-	public class RadioButtonRenderer : ViewRenderer<RadioButton, Gtk.RadioButton>
+	public class RadioButtonRenderer : ViewRenderer<RadioButton, Controls.RadioButton>
 	{
 		#region VisualElementRenderer overrides
 
+		protected override void Dispose(bool disposing)
+		{
+			var formsButton = Control;
+			if (formsButton != null)
+			{
+				formsButton.Activated -= Button_Activated;
+			}
+
+			base.Dispose(disposing);
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<RadioButton> e)
 		{
-			base.OnElementChanged(e);
-
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
-					var button = new Gtk.RadioButton("label");
+					var button = new Controls.RadioButton();
 					button.Activated += Button_Activated;
+
+					SetNativeControl(button);
 				}
 
 				//UpdateContent();
 				//UpdateFont();
 			}
+
+			base.OnElementChanged(e);
 		}
 
+		protected override bool PreventGestureBubbling { get; set; } = true;
+
+		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
+		{
+			var req = Control.SizeRequest();
+
+			var widthFits = widthConstraint >= req.Width;
+			var heightFits = heightConstraint >= req.Height;
+
+			var size = new Size(widthFits ? req.Width : (int)widthConstraint, heightFits ? req.Height : (int)heightConstraint);
+
+			return new SizeRequest(size);
+		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -66,6 +92,31 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			}
 		}
 
+		protected override void SetAccessibilityLabel()
+		{
+			//TODO
+			base.SetAccessibilityLabel();
+		}
+
+		protected override void UpdateBackgroundColor()
+		{
+			if (Element == null)
+				return;
+
+			if (Element.BackgroundColor.IsDefault)
+			{
+				Control.ResetBackgroundColor();
+			}
+			else if (Element.BackgroundColor != Color.Transparent)
+			{
+				Control.SetBackgroundColor(Element.BackgroundColor.ToGtkColor());
+			}
+			else
+			{
+				Control.SetBackgroundColor(null);
+			}
+		}
+
 		#endregion VisualElementRenderer overrides
 
 		#region Private methods
@@ -84,7 +135,10 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 		void UpdatePadding() { }
 
-		void UpdateCheck() { }
+		void UpdateCheck()
+		{
+			Control.Active = Element.IsChecked ? true : false;
+		}
 
 		#endregion Private methods
 
@@ -92,7 +146,12 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 		private void Button_Activated(object sender, EventArgs e)
 		{
-			throw new NotImplementedException();
+			if (Element == null || sender == null)
+			{
+				return;
+			}
+
+			Element.IsChecked = (sender as Controls.RadioButton).Active;
 		}
 
 		#endregion Handlers
