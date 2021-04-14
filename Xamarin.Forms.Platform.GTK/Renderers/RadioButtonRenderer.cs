@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			var formsButton = Control;
 			if (formsButton != null)
 			{
-				formsButton.Activated -= Button_Activated;
+				formsButton.Clicked -= Button_Clicked;
 			}
 
 			base.Dispose(disposing);
@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				if (Control == null)
 				{
 					var button = new Controls.RadioButton();
-					button.Activated += Button_Activated;
+					button.Clicked += Button_Clicked;
 
 					SetNativeControl(button);
 				}
@@ -144,7 +144,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 		#region Handlers
 
-		private void Button_Activated(object sender, EventArgs e)
+		private void Button_Clicked(object sender, EventArgs e)
 		{
 			if (Element == null || sender == null)
 			{
