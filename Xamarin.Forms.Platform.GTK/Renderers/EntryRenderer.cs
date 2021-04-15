@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				SetNativeControl(wrapper);
 
 				wrapper.Entry.Changed += OnChanged;
-				wrapper.Entry.Focused += OnFocused;
+				wrapper.Entry.FocusInEvent += OnFocusedIn;
 				wrapper.Entry.FocusOutEvent += OnFocusedOut;
 				wrapper.Entry.EditingDone += OnEditingDone;
 				wrapper.Entry.KeyReleaseEvent += OnKeyReleased;
@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				if (Control != null)
 				{
 					Control.Entry.Changed -= OnChanged;
-					Control.Entry.Focused -= OnFocused;
+					Control.Entry.FocusInEvent -= OnFocusedIn;
 					Control.Entry.FocusOutEvent -= OnFocusedOut;
 					Control.Entry.EditingDone -= OnEditingDone;
 					Control.Entry.KeyReleaseEvent -= OnKeyReleased;
@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			ElementController.SetValueFromRenderer(Entry.TextProperty, Control.Entry.Text);
 		}
 
-		private void OnFocused(object o, FocusedArgs args)
+		private void OnFocusedIn(object o, FocusInEventArgs args)
 		{
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
 		}
