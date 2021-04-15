@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 				wrapper.Entry.Changed += OnChanged;
 				wrapper.Entry.Focused += OnFocused;
+				wrapper.Entry.FocusOutEvent += OnFocusedOut;
 				wrapper.Entry.EditingDone += OnEditingDone;
 				wrapper.Entry.KeyReleaseEvent += OnKeyReleased;
 			}
@@ -77,6 +78,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				{
 					Control.Entry.Changed -= OnChanged;
 					Control.Entry.Focused -= OnFocused;
+					Control.Entry.FocusOutEvent -= OnFocusedOut;
 					Control.Entry.EditingDone -= OnEditingDone;
 					Control.Entry.KeyReleaseEvent -= OnKeyReleased;
 				}
@@ -142,6 +144,11 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 		private void OnFocused(object o, FocusedArgs args)
 		{
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
+		}
+
+		private void OnFocusedOut(object o, FocusOutEventArgs args)
+		{
+			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
 		}
 
 		private void OnEditingDone(object sender, System.EventArgs e)
