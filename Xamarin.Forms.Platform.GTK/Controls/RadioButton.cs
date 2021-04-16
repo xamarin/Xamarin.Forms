@@ -29,18 +29,13 @@ namespace Xamarin.Forms.Platform.GTK.Controls
 			_label = new Gtk.Label();
 			_container = new Gtk.Alignment(0.5f, 0.5f, 0, 0);
 
-			//TODO: Hack!!! Remove.
-			var otro = new Gtk.RadioButton("ghost");
-			this.Group = otro.Group;
 
 			Add(_container);
 
 			RecreateContainer();
 		}
 
-		public RadioButton(string label) : this(null, label)
-		{
-		}
+		public RadioButton(string label) : this(null, label) { }
 
 		public RadioButton() : this(string.Empty) { }
 

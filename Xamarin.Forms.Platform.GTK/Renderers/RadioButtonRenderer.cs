@@ -6,6 +6,8 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 {
 	public class RadioButtonRenderer : ViewRenderer<RadioButton, Controls.RadioButton>
 	{
+		Gtk.RadioButton _ghost;
+
 		#region VisualElementRenderer overrides
 
 		protected override void Dispose(bool disposing)
@@ -28,11 +30,11 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 					var button = new Controls.RadioButton();
 					button.Clicked += Button_Clicked;
 
+					_ghost = new Gtk.RadioButton(button);
+					_ghost.Active = true;
+
 					SetNativeControl(button);
 				}
-
-				//UpdateContent();
-				//UpdateFont();
 			}
 
 			base.OnElementChanged(e);
@@ -92,12 +94,6 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			}
 		}
 
-		protected override void SetAccessibilityLabel()
-		{
-			//TODO
-			base.SetAccessibilityLabel();
-		}
-
 		protected override void UpdateBackgroundColor()
 		{
 			if (Element == null)
@@ -137,7 +133,16 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 		void UpdateCheck()
 		{
-			Control.Active = Element.IsChecked ? true : false;
+			if (Element.IsChecked)
+			{
+				Control.Active = true;
+				_ghost.Active = false;
+			}
+			else
+			{
+				_ghost.Active = true;
+				Control.Active = false;
+			}
 		}
 
 		#endregion Private methods
