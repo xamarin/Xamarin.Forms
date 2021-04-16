@@ -35,6 +35,8 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 					SetNativeControl(button);
 				}
+
+				UpdateContent();
 			}
 
 			base.OnElementChanged(e);
@@ -117,7 +119,12 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 		#region Private methods
 
-		void UpdateContent() { }
+		void UpdateContent()
+		{
+			var content = Element?.Content;
+
+			Control.Label = content?.ToString();
+		}
 
 		void UpdateTextColor() { }
 
