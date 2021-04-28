@@ -119,6 +119,9 @@
     <Compile Include="Cells\ViewCell.cs" />
     <Compile Include="Cells\ViewCellRenderer.cs" />
     <Compile Include="Controls\ActivityIndicator.cs" />
+    <Compile Include="Controls\Shapes\EllipseView.cs" />
+    <Compile Include="Controls\Shapes\PathView.cs" />
+    <Compile Include="Controls\Shapes\RectangleView.cs" />
     <Compile Include="Controls\BoxView.cs" />
     <Compile Include="Controls\Carousel.cs" />
     <Compile Include="Controls\CustomComboBox.cs" />
@@ -139,6 +142,7 @@
     <Compile Include="Controls\ScrolledTextView.cs" />
     <Compile Include="Controls\PageContainer.cs" />
     <Compile Include="Controls\SearchEntry.cs" />
+    <Compile Include="Controls\Shapes\ShapeView.cs" />
     <Compile Include="Controls\TabbedPageHeader.cs" />
     <Compile Include="Controls\TableView.cs" />
     <Compile Include="Controls\TimePicker.cs" />
@@ -188,6 +192,10 @@
     <Compile Include="RendererFactory.cs" />
     <Compile Include="Renderers\AbstractPageRenderer.cs" />
     <Compile Include="Renderers\ActivityIndicatorRenderer.cs" />
+    <Compile Include="Renderers\Shapes\EllipseRenderer.cs" />
+    <Compile Include="Renderers\Shapes\PathRenderer.cs" />
+    <Compile Include="Renderers\Shapes\ShapeRenderer.cs" />
+    <Compile Include="Renderers\Shapes\RectangleRenderer.cs" />
     <Compile Include="Renderers\BoxViewRenderer.cs" />
     <Compile Include="Renderers\ButtonRenderer.cs" />
     <Compile Include="Renderers\CarouselPageRenderer.cs" />
