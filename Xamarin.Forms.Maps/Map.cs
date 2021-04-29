@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Maps
 
 		public static readonly BindableProperty HasScrollEnabledProperty = BindableProperty.Create("HasScrollEnabled", typeof(bool), typeof(Map), true);
 
-		public static readonly BindableProperty HasMapToolbarEnabledProperty = BindableProperty.Create("HasMapToolbarEnabled", typeof(bool), typeof(Map), false);
+		public static readonly BindableProperty HasMapToolbarEnabledProperty = BindableProperty.Create("HasMapToolbarEnabled", typeof(bool), typeof(Map), true);
 
 		public static readonly BindableProperty HasZoomEnabledProperty = BindableProperty.Create("HasZoomEnabled", typeof(bool), typeof(Map), true);
 
