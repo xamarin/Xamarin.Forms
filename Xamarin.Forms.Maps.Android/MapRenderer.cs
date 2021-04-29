@@ -26,6 +26,8 @@ namespace Xamarin.Forms.Maps.Android
 	{
 		const string MoveMessageName = "MapMoveToRegion";
 
+		const string MapShowPinInfoWindowMessageName = "MapShowPinInfoWindow";
+
 		static Bundle s_bundle;
 
 		bool _disposed;
@@ -82,6 +84,7 @@ namespace Xamarin.Forms.Maps.Android
 				if (Element != null)
 				{
 					MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
+					MessagingCenter.Unsubscribe<Map, Pin>(this, MapShowPinInfoWindowMessageName);
 
 					((ObservableCollection<Pin>)Element.Pins).CollectionChanged -= OnPinCollectionChanged;
 					foreach (Pin pin in Element.Pins)
@@ -142,6 +145,7 @@ namespace Xamarin.Forms.Maps.Android
 				}
 
 				MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
+				MessagingCenter.Unsubscribe<Map, Pin>(this, MapShowPinInfoWindowMessageName);
 
 				if (NativeMap != null)
 				{
@@ -158,6 +162,8 @@ namespace Xamarin.Forms.Maps.Android
 			Control.GetMapAsync(this);
 
 			MessagingCenter.Subscribe<Map, MapSpan>(this, MoveMessageName, OnMoveToRegionMessage, Map);
+
+			MessagingCenter.Subscribe<Map, Pin>(this, MapShowPinInfoWindowMessageName, OnMapShowPinInfoWindow, Map);
 
 			((INotifyCollectionChanged)Map.Pins).CollectionChanged += OnPinCollectionChanged;
 			((INotifyCollectionChanged)Map.MapElements).CollectionChanged += OnMapElementCollectionChanged;
@@ -241,6 +247,7 @@ namespace Xamarin.Forms.Maps.Android
 			map.UiSettings.ZoomControlsEnabled = Map.HasZoomEnabled;
 			map.UiSettings.ZoomGesturesEnabled = Map.HasZoomEnabled;
 			map.UiSettings.ScrollGesturesEnabled = Map.HasScrollEnabled;
+			map.UiSettings.MapToolbarEnabled = Map.HasMapToolbarEnabled;
 			SetUserVisible();
 			SetMapType();
 		}
@@ -464,6 +471,11 @@ namespace Xamarin.Forms.Maps.Android
 		void OnMoveToRegionMessage(Map s, MapSpan a)
 		{
 			MoveToRegion(a, true);
+		}
+
+		void OnMapShowPinInfoWindow(Map s, Pin a)
+		{
+			ShowPinInfoWindow(a);
 		}
 
 		void RemovePins(IList pins)
@@ -1049,6 +1061,16 @@ namespace Xamarin.Forms.Maps.Android
 		void GoogleMap.IOnCameraMoveListener.OnCameraMove()
 		{
 			UpdateVisibleRegion(NativeMap.CameraPosition.Target);
+		}
+
+		void ShowPinInfoWindow(Pin pin)
+		{
+			var currentMarker = GetMarkerForPin(pin);
+
+			if(currentMarker != null)
+			{
+				currentMarker.ShowInfoWindow();
+			}
 		}
 	}
 }

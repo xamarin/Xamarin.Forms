@@ -19,6 +19,8 @@ namespace Xamarin.Forms.Maps
 
 		public static readonly BindableProperty HasScrollEnabledProperty = BindableProperty.Create("HasScrollEnabled", typeof(bool), typeof(Map), true);
 
+		public static readonly BindableProperty HasMapToolbarEnabledProperty = BindableProperty.Create("HasMapToolbarEnabled", typeof(bool), typeof(Map), false);
+
 		public static readonly BindableProperty HasZoomEnabledProperty = BindableProperty.Create("HasZoomEnabled", typeof(bool), typeof(Map), true);
 
 		public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(Map), default(IEnumerable),
@@ -48,6 +50,12 @@ namespace Xamarin.Forms.Maps
 		// center on Rome by default
 		public Map() : this(new MapSpan(new Position(41.890202, 12.492049), 0.1, 0.1))
 		{
+		}
+
+		public bool HasMapToolbarEnabled
+		{
+			get { return (bool)GetValue(HasMapToolbarEnabledProperty); }
+			set { SetValue(HasMapToolbarEnabledProperty, value); }
 		}
 
 		public bool HasScrollEnabled
@@ -152,6 +160,13 @@ namespace Xamarin.Forms.Maps
 				throw new ArgumentNullException(nameof(mapSpan));
 			LastMoveToRegion = mapSpan;
 			MessagingCenter.Send(this, "MapMoveToRegion", mapSpan);
+		}
+
+		public void ShowPinInfoWindow(Pin pin)
+		{
+			if (pin == null)
+				throw new ArgumentNullException(nameof(pin));
+			MessagingCenter.Send(this, "MapShowPinInfoWindow", pin);
 		}
 
 		void PinsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

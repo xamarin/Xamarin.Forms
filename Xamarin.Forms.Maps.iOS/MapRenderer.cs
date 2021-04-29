@@ -32,6 +32,8 @@ namespace Xamarin.Forms.Maps.MacOS
 
 		const string MoveMessageName = "MapMoveToRegion";
 
+		const string MapShowPinInfoWindowMessageName = "MapShowPinInfoWindow";
+
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			return Control.GetSizeRequest(widthConstraint, heightConstraint);
@@ -61,6 +63,7 @@ namespace Xamarin.Forms.Maps.MacOS
 				{
 					var mapModel = (Map)Element;
 					MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
+					MessagingCenter.Unsubscribe<Map, Pin>(this, MapShowPinInfoWindowMessageName);
 					((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnPinCollectionChanged;
 					((ObservableCollection<MapElement>)mapModel.MapElements).CollectionChanged -= OnMapElementCollectionChanged;
 					foreach (Pin pin in mapModel.Pins)
@@ -115,6 +118,7 @@ namespace Xamarin.Forms.Maps.MacOS
 				var mapModel = (Map)e.OldElement;
 
 				MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
+				MessagingCenter.Unsubscribe<Map, Pin>(this, MapShowPinInfoWindowMessageName);
 
 				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnPinCollectionChanged;
 				foreach (Pin pin in mapModel.Pins)
@@ -162,6 +166,8 @@ namespace Xamarin.Forms.Maps.MacOS
 				}
 
 				MessagingCenter.Subscribe<Map, MapSpan>(this, MoveMessageName, (s, a) => MoveToRegion(a), mapModel);
+				MessagingCenter.Subscribe<Map, Pin>(this, MapShowPinInfoWindowMessageName, (s, a) => OnMapShowPinInfoWindow(a), mapModel);
+				
 				if (mapModel.LastMoveToRegion != null)
 					MoveToRegion(mapModel.LastMoveToRegion, false);
 
@@ -409,6 +415,14 @@ namespace Xamarin.Forms.Maps.MacOS
 			Position center = mapSpan.Center;
 			var mapRegion = new MKCoordinateRegion(new CLLocationCoordinate2D(center.Latitude, center.Longitude), new MKCoordinateSpan(mapSpan.LatitudeDegrees, mapSpan.LongitudeDegrees));
 			((MKMapView)Control).SetRegion(mapRegion, animated);
+		}
+
+		void OnMapShowPinInfoWindow(Pin pin)
+		{
+			if (pin != null)
+			{
+				((MKMapView)Control).SelectAnnotation((IMKAnnotation)pin.MarkerId, true);
+			}
 		}
 
 		void OnPinCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
