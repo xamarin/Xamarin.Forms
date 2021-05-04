@@ -1724,6 +1724,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue13376.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LabelFormattedTextHtmlPadding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue13436.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue13315.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue12259.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue13476.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellFlyoutHeaderBehavior.cs" />
@@ -2134,6 +2135,9 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue13436.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue13315.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue13616.xaml">
