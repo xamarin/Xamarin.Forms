@@ -8,9 +8,7 @@ using Xamarin.Forms.Core.UITests;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Issue(IssueTracker.Github, 13392,
-		"[Bug] Brush dissappear after scroll in ListView on Android",
-		PlatformAffected.Android)]
+	[Issue(IssueTracker.Github, 13392, "[Bug] Brush dissappear after scroll in ListView on Android", PlatformAffected.Android)]
 	public partial class Issue13392 : TestContentPage
 	{
 		public Issue13392()
