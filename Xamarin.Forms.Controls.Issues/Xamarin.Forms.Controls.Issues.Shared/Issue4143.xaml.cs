@@ -57,16 +57,5 @@ namespace Xamarin.Forms.Controls.Issues
 
 			span.BackgroundColor = newColor;
 		}
-
-		//ToDo:
-		/*
-#if UITEST
-		[Test]
-		public void Issue4143Test ()
-		{
-			RunningApp.TapCoordinates();
-		}
-#endif
-		*/
 	}
 }
