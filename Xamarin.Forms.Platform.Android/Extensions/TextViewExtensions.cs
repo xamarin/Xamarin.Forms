@@ -121,12 +121,13 @@ namespace Xamarin.Forms.Platform.Android
 				var spanStartLine = layout.GetLineForOffset(spanStartOffset);
 				var spanEndLine = layout.GetLineForOffset(spanEndOffset);
 				
-				//go through all lines that are affected by the span and calculate an rectangle for each
+				// go through all lines that are affected by the span and calculate a rectangle for each
 				var spanRectangles = new List<Rectangle>();
 				for (var curLine = spanStartLine; curLine <= spanEndLine; curLine++)
 				{
 					global::Android.Graphics.Rect bounds = new global::Android.Graphics.Rect();
 					layout.GetLineBounds(curLine, bounds);
+					
 					var lineHeight = bounds.Height();
 					var lineStartOffset = layout.GetLineStart(curLine);
 					var lineVisibleEndOffset = layout.GetLineVisibleEnd(curLine);
@@ -139,7 +140,7 @@ namespace Xamarin.Forms.Platform.Android
 
 					var spanWidth = spanEndX - spanStartX;
 					var spanLeftX = spanStartX;
-					//if rtl is used, startX would be bigger than endX
+					// if rtl is used, startX would be bigger than endX
 					if (spanStartX > spanEndX)
 					{
 						spanWidth = spanStartX - spanEndX;
