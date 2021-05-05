@@ -163,6 +163,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 		UIView TapoffView { get; set; }
 
+		public override UIViewController ChildViewControllerForStatusBarStyle()
+		{
+			if (Detail is ShellRenderer renderer && renderer.Shell.CurrentPage != null)
+			{
+				return (UIViewController)Platform.GetRenderer(renderer.Shell.CurrentPage);
+			}
+
+			return base.ChildViewControllerForStatusBarStyle();
+		}
+
 		public override void ViewDidLayoutSubviews()
 		{
 			base.ViewDidLayoutSubviews();
