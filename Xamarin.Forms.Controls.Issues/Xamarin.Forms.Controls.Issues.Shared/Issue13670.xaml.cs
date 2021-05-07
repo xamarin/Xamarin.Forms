@@ -21,51 +21,51 @@ namespace Xamarin.Forms.Controls.Issues
 #if APP
 			InitializeComponent();
 
-            Items = new ObservableCollection<Issue13670Model>
-            {
-                new Issue13670Model { Name = "First" },
-                new Issue13670Model { Name = "Second" },
-                new Issue13670Model { Name = "Third" },
-            };
+			Items = new ObservableCollection<Issue13670Model>
+			{
+				new Issue13670Model { Name = "First" },
+				new Issue13670Model { Name = "Second" },
+				new Issue13670Model { Name = "Third" },
+			};
 
-            InitializeComponent();
+			InitializeComponent();
 
-            ViewModel = this;
+			ViewModel = this;
 #endif
-        }
+		}
 
 		protected override void Init()
 		{
-        }
+		}
 
-        public ObservableCollection<Issue13670Model> Items { get; private set; }
+		public ObservableCollection<Issue13670Model> Items { get; private set; }
 
-        public Issue13670 ViewModel
-        {
-            get => BindingContext as Issue13670;
-            set => BindingContext = value;
-        }
-    }
+		public Issue13670 ViewModel
+		{
+			get => BindingContext as Issue13670;
+			set => BindingContext = value;
+		}
+	}
 
-    public class Issue13670Model : INotifyPropertyChanged
-    {
-        string _name;
-        bool _canShow = true;
+	public class Issue13670Model : INotifyPropertyChanged
+	{
+		string _name;
+		bool _canShow = true;
 
-        public event PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler PropertyChanged;
 
-        public string Name { get => _name; set { _name = value; OnPropertyChanged(nameof(Name)); } }
+		public string Name { get => _name; set { _name = value; OnPropertyChanged(nameof(Name)); } }
 
-        public bool CanShow { get => _canShow; set { _canShow = value; OnPropertyChanged(nameof(CanShow)); } }
+		public bool CanShow { get => _canShow; set { _canShow = value; OnPropertyChanged(nameof(CanShow)); } }
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            var changed = PropertyChanged;
+		protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
+		{
+			var changed = PropertyChanged;
 
-            if (changed == null)
-                return;
+			if (changed == null)
+				return;
 
-            changed.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
+			changed.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+	}
 }
