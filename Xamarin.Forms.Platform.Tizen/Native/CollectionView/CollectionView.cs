@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using ElmSharp;
 using ElmSharp.Wearable;
+using Xamarin.Forms.Core.PlatformConfiguration.TizenSpecific;
 using EBox = ElmSharp.Box;
 using EPoint = ElmSharp.Point;
 using ERect = ElmSharp.Rect;
@@ -685,14 +686,15 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		void SendScrolledEvent()
 		{
-			var args = new ItemsViewScrolledEventArgs();
+			var args = new ItemsViewScrolledExtendedEventArgs();
 			args.FirstVisibleItemIndex = _layoutManager.GetVisibleItemIndex(ViewPort.X, ViewPort.Y);
 			args.CenterItemIndex = _layoutManager.GetVisibleItemIndex(ViewPort.X + (ViewPort.Width / 2), ViewPort.Y + (ViewPort.Height / 2));
 			args.LastVisibleItemIndex = _layoutManager.GetVisibleItemIndex(ViewPort.X + ViewPort.Width, ViewPort.Y + ViewPort.Height);
-			args.HorizontalOffset = ViewPort.X;
-			args.HorizontalDelta = ViewPort.X - _previousHorizontalOffset;
-			args.VerticalOffset = ViewPort.Y;
-			args.VerticalDelta = ViewPort.Y - _previousVerticalOffset;
+			args.HorizontalOffset = Forms.ConvertToScaledDP(ViewPort.X);
+			args.HorizontalDelta = Forms.ConvertToScaledDP(ViewPort.X - _previousHorizontalOffset);
+			args.VerticalOffset = Forms.ConvertToScaledDP(ViewPort.Y);
+			args.VerticalDelta = Forms.ConvertToScaledDP(ViewPort.Y - _previousVerticalOffset);
+			args.CanvasSize = _layoutManager.GetScrollCanvasSize().ToDP();
 
 			Scrolled?.Invoke(this, args);
 
