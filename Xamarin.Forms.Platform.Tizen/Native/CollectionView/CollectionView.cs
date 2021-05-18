@@ -476,6 +476,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				(Adaptor as INotifyCollectionChanged).CollectionChanged -= OnCollectionChanged;
 				Adaptor.CollectionView = null;
 			}
+			_innerLayout.UnPackAll();
 		}
 
 		void OnAdaptorChanged()
@@ -613,7 +614,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				Scroller.HorizontalStepSize = _layoutManager.GetScrollBlockSize();
 				Scroller.VerticalStepSize = _layoutManager.GetScrollBlockSize();
 				UpdateSnapPointsType(SnapPointsType);
-				Device.BeginInvokeOnMainThread(SendScrolledEvent);
+				if (Geometry.Width > 0 && Geometry.Height > 0 )
+					Device.BeginInvokeOnMainThread(SendScrolledEvent);
 			}
 		}
 

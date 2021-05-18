@@ -51,6 +51,11 @@ namespace Xamarin.Forms.Platform.Tizen
 					Element.ScrollToRequested -= OnScrollToRequest;
 					ItemsLayout.PropertyChanged -= OnLayoutPropertyChanged;
 					Control.Scrolled -= OnScrolled;
+					// Remove all child that created by ItemTemplate
+					foreach (var child in Element.LogicalChildren.ToList())
+					{
+						Element.RemoveLogicalChild(child);
+					}
 				}
 				if (_observableSource != null)
 				{
@@ -163,6 +168,10 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (!initialize)
 			{
+				if (Control.Adaptor != null)
+				{
+					Control.Adaptor.ItemSelected -= OnItemSelectedFromUI;
+				}
 				if (Element.ItemsSource == null || !Element.ItemsSource.Cast<object>().Any())
 				{
 					Control.Adaptor = EmptyItemAdaptor.Create(Element);
