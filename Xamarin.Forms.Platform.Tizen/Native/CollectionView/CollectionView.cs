@@ -615,7 +615,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				Scroller.HorizontalStepSize = _layoutManager.GetScrollBlockSize();
 				Scroller.VerticalStepSize = _layoutManager.GetScrollBlockSize();
 				UpdateSnapPointsType(SnapPointsType);
-				if (Geometry.Width > 0 && Geometry.Height > 0 )
+				if (Geometry.Width > 0 && Geometry.Height > 0)
 					Device.BeginInvokeOnMainThread(SendScrolledEvent);
 			}
 		}
