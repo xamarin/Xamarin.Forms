@@ -333,7 +333,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_drawerToggle == null && !context.IsDesignerContext())
 			{
-				_drawerToggle = new ActionBarDrawerToggle(context.GetActivity(), drawerLayout, toolbar, R.String.Ok, R.String.Ok)
+				var openId = R.String.Ok;
+				if (Flags.IsAccessibilityExperimentalSet())
+					openId = Resource.String.nav_app_bar_open_drawer_description;
+
+				_drawerToggle = new ActionBarDrawerToggle(context.GetActivity(), drawerLayout, toolbar, openId, R.String.Ok)
 				{
 					ToolbarNavigationClickListener = this,
 				};
@@ -451,8 +455,13 @@ namespace Xamarin.Forms.Platform.Android
 			else if (image == null ||
 				toolbar.SetNavigationContentDescription(image) == null)
 			{
-				if(CanNavigateBack && Flags.IsAccessibilityExperimentalSet())
-					toolbar.SetNavigationContentDescription(Resource.String.nav_app_bar_navigate_up_description);
+				if (Flags.IsAccessibilityExperimentalSet())
+				{
+					if(CanNavigateBack)
+						toolbar.SetNavigationContentDescription(Resource.String.nav_app_bar_navigate_up_description);
+					else
+						toolbar.SetNavigationContentDescription(Resource.String.nav_app_bar_open_drawer_description);
+				}
 				else
 					toolbar.SetNavigationContentDescription(R.String.Ok);
 			}
