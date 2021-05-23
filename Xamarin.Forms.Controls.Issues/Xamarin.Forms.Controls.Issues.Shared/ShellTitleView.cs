@@ -23,6 +23,33 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 			SetupMeasuringTest1();
+			SetupMeasuringTest2();
+			SetupMeasuringTest3();
+		}
+		void SetupMeasuringTest3()
+		{
+			ContentPage contentPage = new ContentPage();
+			AddFlyoutItem(contentPage, "Width Measure and ToolBarItem (13949)");
+
+			Grid grid = new Grid();
+			grid.ColumnDefinitions.Add(new ColumnDefinition());
+			grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
+			grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
+			grid.AddChild(new Label() { Text = "Text" }, 0, 0);
+			grid.AddChild(new Button() { Text = "B1" }, 1, 0);
+			grid.AddChild(new Button() { Text = "B2" }, 2, 0);
+
+			Shell.SetTitleView(contentPage, grid);
+
+			contentPage.Content = new StackLayout()
+			{
+				Children =
+				{
+					new Label() { Text = "TitleView should have one label and two buttons"}
+				}
+			};
+
+			contentPage.ToolbarItems.Add(new ToolbarItem() { Text = "Item" });
 		}
 
 		void SetupMeasuringTest2()
@@ -36,7 +63,7 @@ namespace Xamarin.Forms.Controls.Issues
 			grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
 			grid.AddChild(new Label() { Text = "Text" }, 0, 0);
 			grid.AddChild(new Button() { Text = "B1" }, 1, 0);
-			grid.AddChild(new Label() { Text = "B2" }, 2, 0);
+			grid.AddChild(new Button() { Text = "B2" }, 2, 0);
 
 			Shell.SetTitleView(contentPage, grid);
 
@@ -55,7 +82,7 @@ namespace Xamarin.Forms.Controls.Issues
 			AddTopTab(createContentPage(null), "page 2");
 			AddTopTab(createContentPage("title 3"), "page 3");
 			AddTopTab(createContentPage("title 4"), "page 4");
-
+			Items[0].Title = "Duplicate Test";
 			ContentPage createContentPage(string titleView)
 			{
 				Label safeArea = new Label();
@@ -103,6 +130,15 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement("B2");
 		}
 
+		[Test]
+		public void TitleWidthWithToolBarItemMeasuresCorrectly_13949()
+		{
+			this.TapInFlyout("Width Measure and ToolBarItem(13949)");
+			RunningApp.WaitForElement("Text");
+			RunningApp.WaitForElement("B1");
+			RunningApp.WaitForElement("B2");
+		}
+		
 		[Test]
 		public void TitleViewPositionsCorrectly()
 		{
