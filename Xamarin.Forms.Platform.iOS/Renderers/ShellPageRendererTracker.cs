@@ -434,11 +434,6 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				return size;
 			}
-
-			public override void LayoutSubviews()
-			{
-				base.LayoutSubviews();
-			}
 		}
 
 		#region SearchHandler
