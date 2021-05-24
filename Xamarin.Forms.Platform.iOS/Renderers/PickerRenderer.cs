@@ -179,6 +179,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void RowsCollectionChanged(object sender, EventArgs e)
 		{
+			_picker.ReloadAllComponents();
 			UpdatePicker();
 		}
 
@@ -241,7 +242,6 @@ namespace Xamarin.Forms.Platform.iOS
 			var oldText = Control.Text;
 			Control.Text = selectedIndex == -1 || items == null || selectedIndex >= items.Count ? "" : items[selectedIndex];
 			UpdatePickerNativeSize(oldText);
-			_picker.ReloadAllComponents();
 			if (items == null || items.Count == 0)
 				return;
 
