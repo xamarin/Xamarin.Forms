@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			var tmpdir = Path.Combine(Path.GetTempPath(), System.Reflection.Assembly.GetEntryAssembly().GetName().Name, "Fonts");
 			Directory.CreateDirectory(tmpdir);
-			var filePath = Path.Combine(tmpdir, font.FontName);
+			var filePath = Path.Combine(tmpdir, Path.GetRandomFileName(), font.FontName);
 			if (File.Exists(filePath))
 				return (true, filePath);
 			try
