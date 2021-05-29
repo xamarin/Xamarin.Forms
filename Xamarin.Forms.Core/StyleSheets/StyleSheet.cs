@@ -112,15 +112,27 @@ namespace Xamarin.Forms.StyleSheets
 
 		void Apply(Element styleable)
 		{
-			if (!(styleable is VisualElement visualStylable))
+			if (!(styleable is IStylable))
 				return;
+
 			foreach (var kvp in Styles)
 			{
 				var selector = kvp.Key;
 				var style = kvp.Value;
 				if (!selector.Matches(styleable))
 					continue;
-				style.Apply(visualStylable);
+
+				switch (styleable)
+				{
+					case VisualElement visualStylable:
+						style.Apply(visualStylable);
+						break;
+					case Cell cell:
+						style.Apply(cell);
+						break;
+					default:
+						return;
+				}
 			}
 		}
 

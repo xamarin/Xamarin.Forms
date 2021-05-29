@@ -82,10 +82,58 @@ namespace Xamarin.Forms.StyleSheets
 
 			foreach (var child in styleable.LogicalChildrenInternal)
 			{
-				var ve = child as VisualElement;
-				if (ve == null)
+				switch (child)
+				{
+					case VisualElement ve:
+						Apply(ve, inheriting: true);
+
+						break;
+					case Cell cell:
+						Apply(cell, inheriting: true);
+
+						break;
+					default:
+						break;
+				}
+			}
+		}
+
+		public void Apply(Cell styleable, bool inheriting = false)
+		{
+			if (styleable == null)
+				throw new ArgumentNullException(nameof(styleable));
+
+			foreach (var decl in Declarations)
+			{
+				var property = ((IStylable)styleable).GetProperty(decl.Key, inheriting);
+				if (property == null)
 					continue;
-				Apply(ve, inheriting: true);
+				if (string.Equals(decl.Value, "initial", StringComparison.OrdinalIgnoreCase))
+					styleable.ClearValue(property, fromStyle: true);
+				else
+				{
+					object value;
+					if (!convertedValues.TryGetValue(decl, out value))
+						convertedValues[decl] = (value = Convert(styleable, decl.Value, property));
+					styleable.SetValue(property, value, fromStyle: true);
+				}
+			}
+
+			foreach (var child in styleable.LogicalChildrenInternal)
+			{
+				switch (child)
+				{
+					case VisualElement ve:
+						Apply(ve, inheriting: true);
+
+						break;
+					case Cell cell:
+						Apply(cell, inheriting: true);
+
+						break;
+					default:
+						break;
+				}
 			}
 		}
 
