@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using Xamarin.Forms.Internals;
@@ -8,7 +9,7 @@ namespace Xamarin.Forms
 {
 	[ContentProperty("Text")]
 	public class Span : GestureElement, IFontElement, IStyleElement, ITextElement,
-		ILineHeightElement, IDecorableTextElement, IStylable
+		ILineHeightElement, IDecorableTextElement, IStylable, IStyleSelectable
 	{
 		internal readonly MergedStyle _mergedStyle;
 
@@ -29,6 +30,25 @@ namespace Xamarin.Forms
 			get { return (Style)GetValue(StyleProperty); }
 			set { SetValue(StyleProperty, value); }
 		}
+
+		[TypeConverter(typeof(ListStringTypeConverter))]
+		public IList<string> StyleClass
+		{
+			get { return @class; }
+			set { @class = value; }
+		}
+
+		[TypeConverter(typeof(ListStringTypeConverter))]
+		public IList<string> @class
+		{
+			get { return _mergedStyle.StyleClass; }
+			set
+			{
+				_mergedStyle.StyleClass = value;
+			}
+		}
+
+		IList<string> IStyleSelectable.Classes => StyleClass;
 
 		public static readonly BindableProperty BackgroundColorProperty
 			= BindableProperty.Create(nameof(BackgroundColor), typeof(Color), typeof(Span), default(Color), defaultBindingMode: BindingMode.OneWay);
