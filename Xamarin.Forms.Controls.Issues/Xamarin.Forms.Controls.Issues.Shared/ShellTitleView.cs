@@ -26,6 +26,7 @@ namespace Xamarin.Forms.Controls.Issues
 			SetupMeasuringTest2();
 			SetupMeasuringTest3();
 		}
+		
 		void SetupMeasuringTest3()
 		{
 			ContentPage contentPage = new ContentPage();
@@ -133,7 +134,7 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void TitleWidthWithToolBarItemMeasuresCorrectly_13949()
 		{
-			this.TapInFlyout("Width Measure and ToolBarItem(13949)");
+			this.TapInFlyout("Width Measure and ToolBarItem (13949)");
 			RunningApp.WaitForElement("Text");
 			RunningApp.WaitForElement("B1");
 			RunningApp.WaitForElement("B2");
