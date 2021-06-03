@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Controls.Issues
 			SetupMeasuringTest2();
 			SetupMeasuringTest3();
 		}
-		
+
 		void SetupMeasuringTest3()
 		{
 			ContentPage contentPage = new ContentPage();
