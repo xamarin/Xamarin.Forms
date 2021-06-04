@@ -52,9 +52,6 @@ namespace Xamarin.Forms.Platform.MacOS
 					ObserveStateChange(true);
 
 					btn.Activated += HandleActivated;
-
-					if (e.NewElement.IsChecked)
-						Control.State = NSCellStateValue.On;
 				}
 
 				UpdateContent();
