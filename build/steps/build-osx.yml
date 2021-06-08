@@ -50,14 +50,6 @@ steps:
       SourceFolder: '$(Build.ArtifactsDirectory)/nuget/$(buildConfiguration)'
       TargetFolder: '$(System.DefaultWorkingDirectory)/Nuget'
 
-  - task: NuGetCommand@2
-    displayName: 'NuGet restore'
-    inputs:
-      command: restore
-      restoreSolution: 'Xamarin.Forms.sln'
-      feedsToUse: config
-      nugetConfigPath: 'DevopsNuget.config'
-
   - task: InstallAppleCertificate@2
     displayName: 'Install an Apple certificate'
     inputs:
