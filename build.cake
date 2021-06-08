@@ -889,7 +889,7 @@ Task("cg-android")
                 Enabled  = true
             };
 
-            buildRestoreSettings.BinaryLogger = binaryLogger;
+            buildRestoreSettings.BinaryLogger = binaryRestoreLogger;
             binaryRestoreLogger.FileName = $"{artifactStagingDirectory}/android-restore-{ANDROID_RENDERERS}.binlog";
 
             MSBuild("./Xamarin.Forms.sln", buildRestoreSettings.WithTarget("restore"));
