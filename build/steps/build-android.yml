@@ -86,13 +86,13 @@ jobs:
           SourceFolder: 'Nuget/nuget/${{ parameters.buildConfiguration }}'
           TargetFolder: 'Nuget'
 
-      - bash: |
-          echo "##vso[task.setvariable variable=NUGET_RESTORE_MSBUILD_ARGS]${{ parameters.MSBuildArguments_cg_android }}"
-        displayName: 'Set NUGET_RESTORE_MSBUILD_ARGS for Nuget'
+      # - bash: |
+      #     echo "##vso[task.setvariable variable=NUGET_RESTORE_MSBUILD_ARGS]${{ parameters.MSBuildArguments_cg_android }}"
+      #   displayName: 'Set NUGET_RESTORE_MSBUILD_ARGS for Nuget'
 
-      - bash: |
-          env | grep NUGET_RESTORE_MSBUILD_ARGS
-        displayName: 'Display NUGET_RESTORE_MSBUILD_ARGS for Nuget'
+      # - bash: |
+      #     env | grep NUGET_RESTORE_MSBUILD_ARGS
+      #   displayName: 'Display NUGET_RESTORE_MSBUILD_ARGS for Nuget'
 
       # - task: NuGetCommand@2
       #   displayName: 'NuGet restore ${{ parameters.slnPath }}'

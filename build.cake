@@ -894,9 +894,6 @@ Task("cg-android")
 
             MSBuild("./Xamarin.Forms.sln", buildRestoreSettings.WithTarget("restore"));
 
-
-
-
             var buildSettings = GetMSBuildSettings();
             buildSettings = buildSettings.WithTarget("Rebuild").WithTarget("SignAndroidPackage");
             var binaryLogger = new MSBuildBinaryLogSettings {
@@ -905,6 +902,7 @@ Task("cg-android")
 
             buildSettings.BinaryLogger = binaryLogger;
             binaryLogger.FileName = $"{artifactStagingDirectory}/android-{ANDROID_RENDERERS}.binlog";
+            MSBuild("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", buildSettings);
         }
         else
         {
