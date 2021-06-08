@@ -951,6 +951,11 @@ Task("cg-ios")
         }
         else
         {
+            
+            var buildSettings = 
+                GetMSBuildSettings(null)
+                    .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
+                    
             buildSettings = buildSettings.WithRestore();
 
             MSBuild("./Xamarin.Forms.ControlGallery.iOS/Xamarin.Forms.ControlGallery.iOS.csproj", 
