@@ -94,13 +94,13 @@ jobs:
           env | grep NUGET_RESTORE_MSBUILD_ARGS
         displayName: 'Display NUGET_RESTORE_MSBUILD_ARGS for Nuget'
 
-      - task: NuGetCommand@2
-        displayName: 'NuGet restore ${{ parameters.slnPath }}'
-        inputs:
-          command: restore
-          restoreSolution: 'Xamarin.Forms.sln'
-          feedsToUse: config
-          nugetConfigPath: 'DevopsNuget.config'
+      # - task: NuGetCommand@2
+      #   displayName: 'NuGet restore ${{ parameters.slnPath }}'
+      #   inputs:
+      #     command: restore
+      #     restoreSolution: 'Xamarin.Forms.sln'
+      #     feedsToUse: config
+      #     nugetConfigPath: 'DevopsNuget.config'
 
       - task: Bash@3
         displayName: 'Build Android $(renderers)'

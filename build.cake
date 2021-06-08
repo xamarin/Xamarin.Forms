@@ -880,10 +880,24 @@ Task("cg-android")
     .IsDependentOn("BuildTasks")
     .Does(() => 
     {
-        var buildSettings = GetMSBuildSettings();
+        
 
         if(isCIBuild)
         {
+            var buildRestoreSettings = GetMSBuildSettings();
+            var binaryRestoreLogger = new MSBuildBinaryLogSettings {
+                Enabled  = true
+            };
+
+            buildRestoreSettings.BinaryLogger = binaryLogger;
+            binaryRestoreLogger.FileName = $"{artifactStagingDirectory}/android-restore-{ANDROID_RENDERERS}.binlog";
+
+            MSBuild("./Xamarin.Forms.sln", buildRestoreSettings.WithTarget("restore"));
+
+
+
+
+            var buildSettings = GetMSBuildSettings();
             buildSettings = buildSettings.WithTarget("Rebuild").WithTarget("SignAndroidPackage");
             var binaryLogger = new MSBuildBinaryLogSettings {
                 Enabled  = true
@@ -894,10 +908,10 @@ Task("cg-android")
         }
         else
         {
+            var buildSettings = GetMSBuildSettings();
             buildSettings = buildSettings.WithRestore();
+            MSBuild("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", buildSettings);
         }
-
-        MSBuild("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", buildSettings);
     });
 
 Task("cg-android-vs")
