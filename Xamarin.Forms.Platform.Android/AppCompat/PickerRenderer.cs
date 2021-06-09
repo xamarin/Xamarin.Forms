@@ -8,6 +8,7 @@ using Android.Text;
 using Android.Text.Style;
 using Android.Util;
 using Android.Widget;
+using AndroidX.Core.View;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -60,8 +61,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					var textField = CreateNativeControl();
 
 					SetNativeControl(textField);
-
-					ControlUsedForAutomation.SetAccessibilityDelegate(_pickerAccessibilityDelegate = new EntryAccessibilityDelegate(Element));
+					ViewCompat.SetAccessibilityDelegate(
+						ControlUsedForAutomation, _pickerAccessibilityDelegate = new EntryAccessibilityDelegate(Element));
 				}
 				UpdateFont();
 				UpdatePicker();
