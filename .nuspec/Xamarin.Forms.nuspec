@@ -26,6 +26,7 @@
         <dependency id="Xamarin.AndroidX.CustomView" version="[1.1.0.6,1.2)" />
         <dependency id="Xamarin.AndroidX.Preference" version="[1.1.1.8,1.2)" />
         <dependency id="Xamarin.AndroidX.RecyclerView" version="[1.1.0.8,1.2)" />
+        <dependency id="Xamarin.AndroidX.Navigation.UI" version="2.3.2.1" />
       </group>
       <group targetFramework="uap10.0.14393">
         <dependency id="NETStandard.Library" version="2.0.1"/>
