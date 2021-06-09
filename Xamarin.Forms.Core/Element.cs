@@ -497,6 +497,25 @@ namespace Xamarin.Forms
 				}
 			}
 		}
+		
+		internal IEnumerable<Element> VisibleEnabledDescendants()
+		{
+			var queue = new Queue<Element>(16);
+			queue.Enqueue(this);
+
+			while (queue.Count > 0)
+			{
+				ReadOnlyCollection<Element> children = queue.Dequeue().LogicalChildrenInternal;
+				for (var i = 0; i < children.Count; i++)
+				{
+					var child = children[i] as VisualElement;
+					if (child == null || !child.IsVisible || !child.IsEnabled)
+						continue;
+					yield return child;
+					queue.Enqueue(child);
+				}
+			}
+		}		
 
 		void AttachEffect(Effect effect)
 		{

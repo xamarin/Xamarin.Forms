@@ -21,7 +21,7 @@ namespace Xamarin.Forms
 			while (parentPage != null && !(parentPage is Page))
 				parentPage = parentPage.Parent;
 
-			var descendantsOnPage = parentPage?.VisibleDescendants();
+			var descendantsOnPage = parentPage?.VisibleEnabledDescendants();
 
 			if (parentPage is IShellController shell)
 				descendantsOnPage = shell.GetItems();
