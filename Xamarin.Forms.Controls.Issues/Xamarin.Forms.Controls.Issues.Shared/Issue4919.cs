@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 			webView.Navigating += (_, e) =>
 			{
-				e.Cancel = cancel;
+				e.OldCancel = cancel;
 				var resultText = cancel ? "[Canceled]" : "[OK]";
 				log.Text += $"{resultText} {e.Url}{System.Environment.NewLine}";
 			};

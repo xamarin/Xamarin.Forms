@@ -69,8 +69,8 @@ namespace Xamarin.Forms.Platform.Android
 			SyncNativeCookies(url);
 			ElementController.SendNavigating(args);
 			UpdateCanGoBackForward();
-			UrlCanceled = args.Cancel ? null : url;
-			return args.Cancel;
+			UrlCanceled = args.OldCancel ? null : url;
+			return args.OldCancel;
 		}
 
 		protected override void Dispose(bool disposing)

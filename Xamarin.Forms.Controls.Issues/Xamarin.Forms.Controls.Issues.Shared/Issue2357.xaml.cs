@@ -172,14 +172,14 @@ namespace Xamarin.Forms.Controls.Issues
 					}
 
 					//If it reaches here, A link could have been clicked.
-					e.Cancel = true;
+					e.OldCancel = true;
 					Debug.WriteLine("WebView_OnNavigating Same Host but different Uri");
 				}
 				else
 				{
 					//if external link is clicked
 					Debug.WriteLine("WebView_OnNavigating, DIfferent Uri, so open in Native Browser");
-					e.Cancel = true;
+					e.OldCancel = true;
 #pragma warning disable CS0618 // Type or member is obsolete
 					Device.OpenUri(new Uri(e.Url));
 #pragma warning restore CS0618 // Type or member is obsolete

@@ -22,6 +22,7 @@
 	</ItemGroup>	
 	<ItemGroup>
 	  <Folder Include="Xaml\Diagnostics\" />
+	  <Folder Include="Deferral\" />
 	</ItemGroup>
 	<PropertyGroup>
     <GitInfoReportImportance>high</GitInfoReportImportance>

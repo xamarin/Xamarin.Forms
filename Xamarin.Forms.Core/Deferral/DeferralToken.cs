@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 namespace Xamarin.Forms
 {
-	public class ShellNavigatingDeferral
+	public class DeferralToken
 	{
 		Action _completed;
 
-		internal ShellNavigatingDeferral(Action completed)
+		internal DeferralToken(Action completed)
 		{
 			_completed = completed;
 		}

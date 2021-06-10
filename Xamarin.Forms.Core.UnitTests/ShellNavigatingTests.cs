@@ -161,7 +161,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			await shell.Navigation.PushAsync(new ContentPage());
 			await shell.Navigation.PushAsync(new ContentPage());
 
-			ShellNavigatingDeferral _token = null;
+			DeferralToken _token = null;
 			shell.Navigating += async (_, args) =>
 			{
 				_token = args.GetDeferral();
@@ -202,7 +202,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Items = { CreateShellItem<FlyoutItem>() }
 			};
 
-			ShellNavigatingDeferral _token = null;
+			DeferralToken _token = null;
 			shell.Navigating += async (_, args) =>
 			{
 				_token = args.GetDeferral();
