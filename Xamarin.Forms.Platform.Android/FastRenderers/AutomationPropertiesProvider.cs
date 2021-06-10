@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		}
 
 		static bool ShoudISetImportantForAccessibilityToNoIfAutomationIdIsSet(AView control, Element element)
-		{			
+		{
 			if (!Flags.IsAccessibilityExperimentalSet())
 				return false;
 
@@ -105,7 +105,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (String.IsNullOrWhiteSpace(contentDescription))
 			{
-				if(Flags.IsAccessibilityExperimentalSet())
+				if (Flags.IsAccessibilityExperimentalSet())
 				{
 					SetAutomationId(control, element, element.AutomationId);
 					return;
@@ -148,7 +148,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				defaultFocusable = control.Focusable;
 			}
-						
+
 			if (!defaultImportantForAccessibility.HasValue)
 			{
 				// Auto is the default just use that

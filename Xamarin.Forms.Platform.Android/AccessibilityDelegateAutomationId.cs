@@ -27,14 +27,14 @@ namespace Xamarin.Forms.Platform.Android
 			if (_element == null)
 				return;
 
-			if(Flags.IsAccessibilityExperimentalSet())
+			if (Flags.IsAccessibilityExperimentalSet())
 			{
 				var value = AutomationPropertiesProvider.ConcatenateNameAndHelpText(_element);
 				if (!string.IsNullOrWhiteSpace(value))
 				{
 					host.ContentDescription = value;
 				}
-				else if(host.ContentDescription == (_element as VisualElement)?.AutomationId)
+				else if (host.ContentDescription == (_element as VisualElement)?.AutomationId)
 				{
 					host.ContentDescription = null;
 				}
