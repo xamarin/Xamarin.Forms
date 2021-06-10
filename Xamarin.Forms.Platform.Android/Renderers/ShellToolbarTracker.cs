@@ -457,7 +457,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (Flags.IsAccessibilityExperimentalSet())
 				{
-					if(CanNavigateBack)
+					if (CanNavigateBack)
 						toolbar.SetNavigationContentDescription(Resource.String.nav_app_bar_navigate_up_description);
 					else
 						toolbar.SetNavigationContentDescription(Resource.String.nav_app_bar_open_drawer_description);

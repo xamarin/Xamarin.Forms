@@ -80,7 +80,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateBackground(false);
 
-			if(!Flags.IsAccessibilityExperimentalSet())
+			if (!Flags.IsAccessibilityExperimentalSet())
 				Clickable = true;
 		}
 
