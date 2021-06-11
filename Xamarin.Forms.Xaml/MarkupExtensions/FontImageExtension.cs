@@ -4,6 +4,7 @@ namespace Xamarin.Forms.Xaml
 {
 	[AcceptEmptyServiceProvider]
 	[ContentProperty(nameof(Glyph))]
+	[Obsolete("This markup extension is deprecated. Use \"{FontImageSource}\" syntax.")]
 	public class FontImageExtension : IMarkupExtension<ImageSource>
 	{
 		public string FontFamily { get; set; }

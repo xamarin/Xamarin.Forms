@@ -1,5 +1,6 @@
 ﻿namespace Xamarin.Forms
 {
+	[ContentProperty(nameof(Glyph))]
 	public class FontImageSource : ImageSource
 	{
 		public override bool IsEmpty => string.IsNullOrEmpty(Glyph);
