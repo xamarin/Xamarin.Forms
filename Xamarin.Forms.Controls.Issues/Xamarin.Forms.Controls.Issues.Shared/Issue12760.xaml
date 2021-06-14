@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 12760" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue12760">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If tapping the Button only invoke the Button Clicked event, the test has passed."/>
+        <ListView
+            HasUnevenRows="True"
+            SeparatorVisibility="None"
+            ItemTapped="OnItemTapped">
+            <ListView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                <x:String>Item 1</x:String>
+                <x:String>Item 2</x:String>
+                <x:String>Item 3</x:String>
+                <x:String>Item 4</x:String>
+                <x:String>Item 5</x:String>
+                <x:String>Item 6</x:String>
+                <x:String>Item 7</x:String>
+                <x:String>Item 8</x:String>
+                <x:String>Item 9</x:String>
+              </x:Array>
+          </ListView.ItemsSource>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <SwipeView
+                            BackgroundColor="White">
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem
+                                        Text="SwipeItem"
+                                        BackgroundColor="Red"/>
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                            <SwipeView.Content>
+                                <Grid
+                                    BackgroundColor="White"
+                                    Padding="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackLayout
+                                        Grid.Column="0"
+                                        VerticalOptions="Center"
+                                        Padding="10"
+                                        Orientation="Horizontal">
+                                        <StackLayout>
+                                            <StackLayout
+                                                Orientation="Horizontal">
+                                                <Label
+                                                    Text="{Binding}"
+                                                    FontSize="16"
+                                                    TextColor="Black"
+                                                    FontAttributes="Bold"/>
+                                            </StackLayout>
+                                            <Label
+                                                Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+                                                FontSize="12"
+                                                TextColor="Black"/>
+                                        </StackLayout>
+                                        <StackLayout
+                                            Grid.Column="1"
+                                            Padding="0"
+                                            Margin="0">
+                                            <Button
+                                                Clicked="OnButtonClicked"
+                                                Text="Execute"
+                                                BackgroundColor="Gray"
+                                                FontSize="14"
+                                                WidthRequest="80"
+                                                Padding="0"
+                                                VerticalOptions="Center"
+                                                HorizontalOptions="Center"
+                                                HeightRequest="23"
+                                                TextColor="Black"
+                                                FontAttributes="Bold" />
+                                        </StackLayout>
+                                    </StackLayout>
+                                    <BoxView
+                                        HeightRequest="1"
+                                        BackgroundColor="Black"
+                                        Grid.Row="1"
+                                        Grid.ColumnSpan="2"
+                                        Margin="0"/>
+                                </Grid>
+                            </SwipeView.Content>
+                        </SwipeView>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+</local:TestContentPage>

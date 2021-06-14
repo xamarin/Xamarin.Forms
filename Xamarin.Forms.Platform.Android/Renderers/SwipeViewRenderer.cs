@@ -12,6 +12,7 @@ using AndroidX.RecyclerView.Widget;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+using static Xamarin.Forms.Platform.Android.ViewCellRenderer;
 using AButton = AndroidX.AppCompat.Widget.AppCompatButton;
 using APointF = Android.Graphics.PointF;
 using ARect = Android.Graphics.Rect;
@@ -344,8 +345,8 @@ namespace Xamarin.Forms.Platform.Android
 					ProcessTouchSwipeItems(touchUpPoint);
 				else
 				{
-					ResetSwipe(e);
-					PropagateParentTouch();
+					if (!_isSwiping && _isOpen && TouchInsideContent(touchUpPoint))
+						ResetSwipe();
 				}
 			}
 
@@ -354,13 +355,26 @@ namespace Xamarin.Forms.Platform.Android
 
 		void PropagateParentTouch()
 		{
-			var itemContentView = _contentView.Parent.GetParentOfType<ItemContentView>();
+			if (Element == null)
+				return;
 
-			// If the SwipeView container is ItemContentView we are using SwipeView with a CollectionView or CarouselView.
+			var isSwipeViewOpen = ((ISwipeViewController)Element).IsOpen;
+
+			// If the SwipeView container is ViewCellContainer we are using SwipeView with a ListView.
 			// When doing touch up, if the SwipeView is closed, we propagate the Touch to the parent. In this way, the parent
-			// element will manage the touch (SelectionChanged, etc.).
-			if (itemContentView != null && !((ISwipeViewController)Element).IsOpen)
-				itemContentView.ClickOn();
+			// element will manage the touch (ItemTapped, etc.).
+			if (Parent is ViewCellContainer viewCell && !isSwipeViewOpen)
+				viewCell.TriggerClick();
+			else
+			{
+				var itemContentView = _contentView.Parent.GetParentOfType<ItemContentView>();
+
+				// If the SwipeView container is ItemContentView we are using SwipeView with a CollectionView or CarouselView.
+				// When doing touch up, if the SwipeView is closed, we propagate the Touch to the parent. In this way, the parent
+				// element will manage the touch (SelectionChanged, etc.).
+				if (itemContentView != null && !isSwipeViewOpen)
+					itemContentView.ClickOn();
+			}
 		}
 
 		void UpdateContent()
@@ -451,7 +465,7 @@ namespace Xamarin.Forms.Platform.Android
 					handled = HandleTouchInteractions(GestureStatus.Started, point);
 
 					if (handled == true)
-						Parent.RequestDisallowInterceptTouchEvent(true);
+						Parent.RequestDisallowInterceptTouchEvent(false);
 
 					break;
 				case MotionEventActions.Up:
@@ -498,8 +512,10 @@ namespace Xamarin.Forms.Platform.Android
 				case GestureStatus.Running:
 					return !ProcessTouchMove(point);
 				case GestureStatus.Canceled:
+					ProcessTouchUp(false);
+					break;
 				case GestureStatus.Completed:
-					ProcessTouchUp();
+					ProcessTouchUp(true);
 					break;
 			}
 
@@ -556,9 +572,12 @@ namespace Xamarin.Forms.Platform.Android
 			return true;
 		}
 
-		bool ProcessTouchUp()
+		bool ProcessTouchUp(bool propagateParentTouch)
 		{
 			_isTouchDown = false;
+
+			if (propagateParentTouch)
+				PropagateParentTouch();
 
 			EnableParentGesture(true);
 
