@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue12609"
+    Title="Issue 12609">
+    <NavigationPage.TitleView>
+        <Grid
+            BackgroundColor="Orange">
+            <Path
+                Data="M 10,50 L 50,50 50,25Z"
+                Fill="Red"
+                Stroke="Blue"
+                StrokeThickness="4"
+                StrokeDashArray="1 1"
+                Aspect="Fill"/>
+        </Grid>
+    </NavigationPage.TitleView>
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If you can see the figure in the TitleBar, the test has passed."/>
+    </StackLayout>
+</controls:TestContentPage>
