@@ -28,13 +28,11 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 			set
 			{
 				_text = value;
-
-				if (!TestCompleted)
-					OnPropertyChanged(nameof(Text));
-
 				_textChangedCounter++;
 				if (_textChangedCounter > 100)
 					MarkTestCompleted();
+				else
+					OnPropertyChanged(nameof(Text));
 			}
 		}
 
@@ -61,7 +59,7 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 
 		public Task WaitForTestToComplete()
 		{
-			return Task.WhenAny( new Task[] { _testCompleted.Task, Task.Delay(3000) });
+			return Task.WhenAny(new Task[] { _testCompleted.Task, Task.Delay(3000) });
 		}
 	}
 }

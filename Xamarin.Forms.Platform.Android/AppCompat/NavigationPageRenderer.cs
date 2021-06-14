@@ -310,7 +310,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			RegisterToolbar();
 
 			// If there is already stuff on the stack we need to push it
-			PushCurrentPages();
+			PushCurrentPagesAsync();
 
 			UpdateToolbar();
 			_isAttachedToWindow = true;
@@ -371,7 +371,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				if (_isAttachedToWindow && Element.IsAttachedToRoot())
 				{
-					PushCurrentPages();
+					PushCurrentPagesAsync();
 				}
 			}
 		}
@@ -577,7 +577,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void InsertPageBefore(Page page, Page before)
 		{
 			if (!_isAttachedToWindow)
-				PushCurrentPages();
+				PushCurrentPagesAsync();
 
 			UpdateToolbar();
 
@@ -596,11 +596,23 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void OnPopped(object sender, NavigationRequestedEventArgs e)
 		{
+			if (_fragmentStack.Count == 0)
+			{
+				e.Task = Task.FromResult(true);
+				return;
+			}
+
 			e.Task = PopViewAsync(e.Page, e.Animated);
 		}
 
 		void OnPoppedToRoot(object sender, NavigationRequestedEventArgs e)
 		{
+			if (_fragmentStack.Count == 0)
+			{
+				e.Task = Task.FromResult(true);
+				return;
+			}
+
 			e.Task = PopToRootAsync(e.Page, e.Animated);
 		}
 
@@ -625,7 +637,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void OnPushed(object sender, NavigationRequestedEventArgs e)
 		{
-			e.Task = PushViewAsync(e.Page, e.Animated);
+			if (_fragmentStack.Count == 0)
+			{
+				e.Task = PushCurrentPagesAsync();
+			}
+			else
+				e.Task = PushViewAsync(e.Page, e.Animated);
 		}
 
 		void OnRemovePageRequested(object sender, NavigationRequestedEventArgs e)
@@ -709,7 +726,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void RemovePage(Page page)
 		{
 			if (!_isAttachedToWindow)
-				PushCurrentPages();
+				PushCurrentPagesAsync();
 
 			Fragment fragment = GetPageFragment(page);
 
@@ -1145,15 +1162,32 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			});
 		}
 
-		void PushCurrentPages()
+		Task<bool> PushCurrentPagesAsync()
 		{
 			if (_fragmentStack.Count > 0)
-				return;
+				return Task.FromResult(true);
 
+			List<Task<bool>> pagePushes = new List<Task<bool>>();
 			foreach (Page page in NavigationPageController.Pages)
 			{
-				PushViewAsync(page, false);
+				pagePushes.Add(PushViewAsync(page, false));
 			}
+
+			if (pagePushes.Count == 0)
+				return Task.FromResult(true);
+
+			return 
+				Task.WhenAll(pagePushes)
+					.ContinueWith(r =>
+					{
+						foreach (var result in r.Result)
+						{
+							if (!result)
+								return false;
+						}
+
+						return true;
+					});
 		}
 
 		class ClickListener : Object, IOnClickListener

@@ -11,6 +11,7 @@ using ASearchView = Android.Widget.SearchView;
 using System.Collections.Generic;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Xamarin.Forms.Platform.Android.AppCompat;
 using AndroidX.AppCompat.Widget;
 using AndroidX.CardView.Widget;
 
@@ -146,6 +147,12 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 			}
 
 			throw new NotImplementedException($"Don't know how to get the native control for {element}");
+		}
+
+		protected NavigationPageRenderer GetNativeControl(NavigationPage navPage)
+		{
+			var renderer = GetRenderer(navPage);
+			return renderer as NavigationPageRenderer;
 		}
 
 		protected BoxRenderer GetNativeControl(BoxView boxView)

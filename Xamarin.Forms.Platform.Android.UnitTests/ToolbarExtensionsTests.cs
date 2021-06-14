@@ -19,7 +19,6 @@ using Xamarin.Forms.Platform.Android.UnitTests;
 using AToolBar = AndroidX.AppCompat.Widget.Toolbar;
 using AView = Android.Views.View;
 
-[assembly: ExportRenderer(typeof(TestShell), typeof(TestShellRenderer))]
 namespace Xamarin.Forms.Platform.Android.UnitTests
 {
 	public class ToolbarExtensionsTests : PlatformTestFixture
