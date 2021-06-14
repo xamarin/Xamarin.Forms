@@ -9,6 +9,7 @@ using NUnit.Framework;
 using CategoryAttribute = NUnit.Framework.CategoryAttribute;
 using DescriptionAttribute = NUnit.Framework.DescriptionAttribute;
 using Xamarin.Forms.Internals;
+using System.Collections.ObjectModel;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -2269,6 +2270,21 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.DoesNotThrow(() => label.BindingContext = new { color = "" });
 			Assert.That(log.Messages.Count, Is.EqualTo(1),"No error logged");
+		}
+
+		[Test]
+		//https://github.com/xamarin/Xamarin.Forms/issues/8479
+		public void SubscribeToCollectionChanged()
+		{
+			var label = new Label();
+			label.BindingContext = new ObservableCollection<object>();
+			Assert.That(label.Text, Is.Null);
+			label.SetBinding(Label.TextProperty, "[1].Text");
+
+			((ObservableCollection<object>)label.BindingContext).Add(new { Text = "foo" });
+			((ObservableCollection<object>)label.BindingContext).Add(new { Text = "bar" });
+
+			Assert.That(label.Text, Is.EqualTo("bar"));
 		}
 	}
 }

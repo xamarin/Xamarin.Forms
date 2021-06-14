@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using Xamarin.Forms.Internals;
 using System.Runtime.CompilerServices;
+using System.Collections.Specialized;
 
 namespace Xamarin.Forms
 {
@@ -131,9 +132,18 @@ namespace Xamarin.Forms
 					break;
 				}
 
-				if (part.NextPart != null &&   (mode == BindingMode.OneWay || mode == BindingMode.TwoWay)
+				if (   part.NextPart != null
+					&& (mode == BindingMode.OneWay || mode == BindingMode.TwoWay)
 				    && current is INotifyPropertyChanged inpc)
-						part.Subscribe(inpc);
+						part.SubscribeInpc(inpc);
+
+				if (   part.NextPart != null
+					&& part.NextPart.IsIndexer
+					&& (mode == BindingMode.OneWay || mode == BindingMode.TwoWay)
+					&& current is INotifyCollectionChanged incc)
+				{
+					part.SubscribeIncc(incc);
+				}
 			}
 
 			Debug.Assert(part != null, "There should always be at least the self part in the expression.");
@@ -600,11 +610,10 @@ namespace Xamarin.Forms
 
 		internal class WeakPropertyChangedProxy
 		{
-			readonly WeakReference<INotifyPropertyChanged> _source = new WeakReference<INotifyPropertyChanged>(null);
 			readonly WeakReference<PropertyChangedEventHandler> _listener = new WeakReference<PropertyChangedEventHandler>(null);
 			readonly PropertyChangedEventHandler _handler;
 			readonly EventHandler _bchandler;
-			internal WeakReference<INotifyPropertyChanged> Source => _source;
+			internal WeakReference<INotifyPropertyChanged> Source { get; } = new WeakReference<INotifyPropertyChanged>(null);
 
 			public WeakPropertyChangedProxy()
 			{
@@ -620,23 +629,20 @@ namespace Xamarin.Forms
 			public void SubscribeTo(INotifyPropertyChanged source, PropertyChangedEventHandler listener)
 			{
 				source.PropertyChanged += _handler;
-				var bo = source as BindableObject;
-				if (bo != null)
+				if (source is BindableObject bo)
 					bo.BindingContextChanged += _bchandler;
-				_source.SetTarget(source);
+				Source.SetTarget(source);
 				_listener.SetTarget(listener);
 			}
 
 			public void Unsubscribe()
 			{
-				INotifyPropertyChanged source;
-				if (_source.TryGetTarget(out source) && source != null)
+				if (Source.TryGetTarget(out INotifyPropertyChanged source) && source != null)
 					source.PropertyChanged -= _handler;
-				var bo = source as BindableObject;
-				if (bo != null)
+				if (source is BindableObject bo)
 					bo.BindingContextChanged -= _bchandler;
 
-				_source.SetTarget(null);
+				Source.SetTarget(null);
 				_listener.SetTarget(null);
 			}
 
@@ -648,9 +654,47 @@ namespace Xamarin.Forms
 					Unsubscribe();
 			}
 
-			void OnBCChanged(object sender, EventArgs e)
+			void OnBCChanged(object sender, EventArgs e) => OnPropertyChanged(sender, new PropertyChangedEventArgs("BindingContext"));
+		}
+
+		class WeakCollectionChangedProxy
+		{
+			readonly WeakReference<NotifyCollectionChangedEventHandler> _listener = new WeakReference<NotifyCollectionChangedEventHandler>(null);
+			readonly NotifyCollectionChangedEventHandler _handler;
+			internal WeakReference<INotifyCollectionChanged> Source { get; } = new WeakReference<INotifyCollectionChanged>(null);
+
+			public WeakCollectionChangedProxy()
 			{
-				OnPropertyChanged(sender, new PropertyChangedEventArgs("BindingContext"));
+				_handler = new NotifyCollectionChangedEventHandler(OnCollectionChanged);
+			}
+
+			public WeakCollectionChangedProxy(INotifyCollectionChanged source, NotifyCollectionChangedEventHandler listener) : this()
+			{
+				SubscribeTo(source, listener);
+			}
+
+			public void SubscribeTo(INotifyCollectionChanged source, NotifyCollectionChangedEventHandler listener)
+			{
+				source.CollectionChanged += _handler;
+				Source.SetTarget(source);
+				_listener.SetTarget(listener);
+			}
+
+			public void Unsubscribe()
+			{
+				if (Source.TryGetTarget(out INotifyCollectionChanged source) && source != null)
+					source.CollectionChanged -= _handler;
+
+				Source.SetTarget(null);
+				_listener.SetTarget(null);
+			}
+
+			void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+			{
+				if (_listener.TryGetTarget(out var handler) && handler != null)
+					handler(sender, e);
+				else
+					Unsubscribe();
 			}
 		}
 
@@ -658,7 +702,9 @@ namespace Xamarin.Forms
 		{
 			readonly BindingExpression _expression;
 			readonly PropertyChangedEventHandler _changeHandler;
-			WeakPropertyChangedProxy _listener;
+			readonly NotifyCollectionChangedEventHandler _collectionHandler;
+			WeakPropertyChangedProxy _inpcListener;
+			WeakCollectionChangedProxy _inccListener;
 
 			public BindingExpressionPart(BindingExpression expression, string content, bool isIndexer = false)
 			{
@@ -668,29 +714,53 @@ namespace Xamarin.Forms
 				IsIndexer = isIndexer;
 
 				_changeHandler = PropertyChanged;
+				_collectionHandler = CollectionChanged;
 			}
 
-			public void Subscribe(INotifyPropertyChanged handler)
+			public void SubscribeInpc(INotifyPropertyChanged handler)
 			{
-				INotifyPropertyChanged source;
-				if (_listener != null && _listener.Source.TryGetTarget(out source) && ReferenceEquals(handler, source))
-					// Already subscribed
+				if (_inpcListener != null && _inpcListener.Source.TryGetTarget(out INotifyPropertyChanged source) && ReferenceEquals(handler, source))
 					return;
 
-				// Clear out the old subscription if necessary
-				Unsubscribe();
+				UnsubscribeInpc();
 
-				_listener = new WeakPropertyChangedProxy(handler, _changeHandler);
+				_inpcListener = new WeakPropertyChangedProxy(handler, _changeHandler);
+			}
+
+			public void UnsubscribeInpc()
+			{
+				var listener = _inpcListener;
+				if (listener != null)
+				{
+					listener.Unsubscribe();
+					_inpcListener = null;
+				}
+			}
+
+			public void SubscribeIncc(INotifyCollectionChanged handler)
+			{
+				if (_inccListener != null && _inccListener.Source.TryGetTarget(out INotifyCollectionChanged source) && ReferenceEquals(handler, source))
+					return;
+
+				UnsubscribeIncc();
+
+				_inccListener = new WeakCollectionChangedProxy(handler, _collectionHandler);
+			}
+
+			public void UnsubscribeIncc()
+			{
+				var listener = _inccListener;
+				if (listener != null)
+				{
+					listener.Unsubscribe();
+					_inccListener = null;
+				}
 			}
 
 			public void Unsubscribe()
 			{
-				var listener = _listener;
-				if (listener != null)
-				{
-					listener.Unsubscribe();
-					_listener = null;
-				}
+				UnsubscribeInpc();
+				UnsubscribeIncc();
 			}
 
 			public object[] Arguments { get; set; }
@@ -727,16 +797,14 @@ namespace Xamarin.Forms
 					{
 						if (name.Contains("["))
 						{
-							if (name != string.Format("{0}[{1}]", part.IndexerName, part.Content))
+							if (name != $"{part.IndexerName}[{part.Content}]")
 								return;
 						}
 						else if (name != part.IndexerName)
 							return;
 					}
 					else if (name != part.Content)
-					{
 						return;
-					}
 				}
 
 				Action action = () => _expression.Apply();
@@ -753,6 +821,22 @@ namespace Xamarin.Forms
 					action();
 				}
 
+			}
+
+			void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+			{
+				BindingExpressionPart part = NextPart ?? this;
+				if (!part.IsIndexer)
+					return;
+				if (!int.TryParse(part.Content, out var index))
+					return; //INCC shouldn't use anything but int as indexes
+
+				if (e.Action == NotifyCollectionChangedAction.Reset)
+					PropertyChanged(sender, new PropertyChangedEventArgs($"{part.IndexerName}[{part.Content}]"));
+				if (e.NewItems != null && index >= e.NewStartingIndex && index < e.NewStartingIndex + e.NewItems.Count)
+					PropertyChanged(sender, new PropertyChangedEventArgs($"{part.IndexerName}[{part.Content}]"));
+				if (e.OldItems != null && index >= e.OldStartingIndex && index < e.OldStartingIndex + e.OldItems.Count)
+					PropertyChanged(sender, new PropertyChangedEventArgs($"{part.IndexerName}[{part.Content}]"));
 			}
 
 			public bool TryGetValue(object source, out object value)
