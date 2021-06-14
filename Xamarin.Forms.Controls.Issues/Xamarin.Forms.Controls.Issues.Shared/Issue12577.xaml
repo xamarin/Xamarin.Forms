@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue12577"
+    Title="Issue 12577">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Tap on several of the Paths below, if a message appears, the test has passed."/>
+        <ScrollView>
+            <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                <Path Data="m 200.99554 0 c 44.73054 3.923731 44.73054 4.708478 44.73054 4.708478 l 0.78475 51.008509 -44.73054 -2.746613 z" StrokeThickness="0.265" Stroke="Transparent" StrokeLineJoin="Miter" Fill="Red">
+                    <Path.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPath1Tapped" />
+                    </Path.GestureRecognizers>
+                </Path>
+                <Path Data="m 246.51083 55.403743 41.59154 1.961867 0.78476 -48.654272 -42.76867 -4.316104 z" StrokeThickness="0.265" Stroke="Transparent" StrokeLineJoin="Miter" Fill="CadetBlue">
+                    <Path.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPath2Tapped" />
+                    </Path.GestureRecognizers>
+                </Path>
+                <Path Data="m 201.78029 52.65713 c 44.73054 2.746613 44.73054 2.746613 44.73054 2.746613 v 55.716987 l -44.33817 1.17712 z" StrokeThickness="0.265" Stroke="Transparent" StrokeLineJoin="Miter" Fill="AliceBlue">
+                    <Path.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPath3Tapped" />
+                    </Path.GestureRecognizers>
+                </Path>
+                <Path Data="m 201.78029 52.65713 c 44.73054 2.746613 44.73054 2.746613 44.73054 2.746613 v 55.716987 l -44.33817 1.17712 z" StrokeThickness="0.265" Stroke="Transparent" StrokeLineJoin="Miter" Fill="AliceBlue">
+                    <Path.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPath4Tapped" />
+                    </Path.GestureRecognizers>
+                </Path>
+                <Path Data="m 246.51083 55.403743 41.59154 1.961867 1.12543 53.98883 -42.71697 -0.23371 v 0" StrokeThickness="0.265" Stroke="Transparent" StrokeLineJoin="Miter" Fill="Honeydew">
+                    <Path.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPath5Tapped" />
+                    </Path.GestureRecognizers>
+                </Path>
+                <Path Data="M 133.489494 16.586019 200.75519 0.349472 201.08654 75.03541 132.49542 85.307511 Z" StrokeThickness="0.265" Stroke="Transparent" StrokeLineJoin="Miter" Fill="Pink">
+                    <Path.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPath6Tapped" />
+                    </Path.GestureRecognizers>
+                </Path>
+                <Path Data="m 201.78029 52.65713 v 0 l 0.39237 59.64072 -69.345884 3.03288 -0.662718 -52.023219 -53.348651 8.94667 0.662716 -42.745196 52.685938 -12.591608 -3e-6 46.390134" StrokeThickness="0.265" Stroke="Transparent" StrokeLineJoin="Miter" Fill="LightGray">
+                    <Path.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPath7Tapped" />
+                    </Path.GestureRecognizers>
+                </Path>
+                <Path Data="m 78.815407 72.254179 0.662715 45.396061 53.348651 -2.31951 -0.662718 -52.023219" StrokeThickness="0.265" Stroke="Transparent" StrokeLineJoin="Miter" Fill="Lime">
+                    <Path.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPath8Tapped" />
+                    </Path.GestureRecognizers>
+                </Path>
+                <Path Data="m 79.478122 29.508986 -44.070627 9.940742 0.662715 39.762972 42.745197 -6.958521 v 0" StrokeThickness="0.265" Stroke="Transparent" StrokeLineJoin="Miter" Fill="LemonChiffon">
+                    <Path.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPath9Tapped" />
+                    </Path.GestureRecognizers>
+                </Path>
+                <Path Data="m 37.92979 79.2127 -0.331356 41.0884 43.739268 -2.65086 -0.662715 -45.396061 z" StrokeThickness="0.265" Stroke="Transparent" StrokeLineJoin="Miter" Fill="Olive">
+                    <Path.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPath10Tapped" />
+                    </Path.GestureRecognizers>
+                </Path>
+                <Path Data="m 36.592505 39.449728 -34.461242 7.952594 0.662716 38.106188 34.461241 -6.29581 -0.662715 -39.762972" StrokeThickness="0.265" Stroke="Transparent" StrokeLineJoin="Miter" Fill="Orange">
+                    <Path.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPath11Tapped" />
+                    </Path.GestureRecognizers>
+                </Path>
+                <Path Data="m 2.391031 85.50851 v 36.44938 l 34.129885 -1.65679 0.331356 -41.0884 z" StrokeThickness="0.265" Stroke="Transparent" StrokeLineJoin="Miter" Fill="Black">
+                    <Path.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPath12Tapped" />
+                    </Path.GestureRecognizers>
+                </Path>
+                <Path Data="m 132.826776 122.62061 -52.35458 2.65087 0.662718 31.14766 49.372355 -1.32544 z" StrokeThickness="0.265" Stroke="Transparent" StrokeLineJoin="Miter" Fill="Blue">
+                    <Path.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPath13Tapped" />
+                    </Path.GestureRecognizers>
+                </Path>
+                    <Path Data="m 132.826776 122.62061 -52.35458 2.65087 0.662718 31.14766 49.372355 -1.32544 z" StrokeThickness="0.265" Stroke="Transparent" StrokeLineJoin="Miter" Fill="Blue">
+                    <Path.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPath14Tapped" />
+                    </Path.GestureRecognizers>
+                </Path>
+                <Path Data="m 154.033696,117.54677 -19.550128,0.87842 -2.319507,56.21864 24.189142,-0.43921 -0.415971,-10.16078 z" StrokeThickness="0.265" Stroke="Transparent" StrokeLineJoin="Miter" Fill="Green">
+                    <Path.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPath15Tapped" />
+                    </Path.GestureRecognizers>
+                </Path>
+                <Path Data="m 177.56012 113.34258 -22.53235 0.99408 2.319507 45.72742 16.899263 -0.33136 z" StrokeThickness="0.265">
+                    <Path.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPath16Tapped" />
+                    </Path.GestureRecognizers>
+                </Path>
+                <Path Data="m 177.56012 113.34258 -22.53235 0.99408 2.319507 45.72742 16.899263 -0.33136 z" StrokeThickness="0.265">
+                    <Path.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPath17Tapped" />
+                    </Path.GestureRecognizers>
+                </Path>
+            </StackLayout>
+        </ScrollView>
+    </StackLayout>
+</controls:TestContentPage>
