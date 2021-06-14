@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 11333"
+    xmlns:local="using:Xamarin.Forms.Controls"
+    xmlns:issues="using:Xamarin.Forms.Controls.Issues"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue12518">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <Style x:Key="TitleStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="TextColor" Value="Black" />
+                <Setter Property="Margin" Value="6, 0, 6, 6" />
+            </Style>
+
+            <Style x:Key="DateStyle" TargetType="Label">
+                <Setter Property="TextColor" Value="DarkGray" />
+                <Setter Property="FontSize" Value="10" />
+                <Setter Property="Margin" Value="6, 0, 6, 6" />
+            </Style>
+
+            <Style x:Key="SubTitleStyle" TargetType="Label">
+                <Setter Property="TextColor" Value="DarkGray" />
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="Margin" Value="6, 0" />
+            </Style>
+
+            <DataTemplate x:Key="ItemTemplate">
+                <SwipeView
+                    HeightRequest="80">
+                    <SwipeView.LeftItems>
+                        <SwipeItems>
+                            <SwipeItem
+                                Text="Favourite"
+                                Icon="calculator.png"
+                                BackgroundColor="Yellow"
+                                Command="{Binding Source={x:Reference SwipeCollectionView}, Path=BindingContext.FavouriteCommand}"/>
+                        </SwipeItems>
+                    </SwipeView.LeftItems>
+                    <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem
+                                    Text="Delete"
+                                    Icon="coffee.png"
+                                    BackgroundColor="Red"
+                                    Command="{Binding Source={x:Reference SwipeCollectionView}, Path=BindingContext.DeleteCommand}"/>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                    <SwipeView.Content>
+                        <Grid
+                            BackgroundColor="White"
+                            RowSpacing="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Label
+                                Grid.Column="0"
+                                Grid.Row="0"
+                                Text="{Binding Title}"
+                                Style="{StaticResource TitleStyle}"/>
+                            <Label
+                                Grid.Column="1"
+                                Grid.Row="0"
+                                Text="{Binding Date}"
+                                Style="{StaticResource DateStyle}"/>
+                            <Label
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Grid.Row="1"
+                                Text="{Binding SubTitle}"
+                                Style="{StaticResource SubTitleStyle}"/>
+                            <Label
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Grid.Row="2"
+                                Text="{Binding Description}"
+                                Style="{StaticResource SubTitleStyle}"/>
+                        </Grid>
+                    </SwipeView.Content>
+                </SwipeView>
+            </DataTemplate>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Start swiping horizontally swipe half long of the screen width). Then, keep your finger pressed on the swiped item, start scrolling up and down and release your finger. If you can scroll vertically, the test has passed." />
+        <Label
+            Text="{Binding Message}"/>
+        <CollectionView
+                x:Name="SwipeCollectionView"
+                ItemsSource="{Binding Items}"
+                ItemTemplate="{StaticResource ItemTemplate}"
+                SelectionMode="Single"/>
+    </StackLayout>
+</local:TestContentPage>
