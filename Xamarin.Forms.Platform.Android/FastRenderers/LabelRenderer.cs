@@ -147,6 +147,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			return result;
 		}
 
+		public override void Draw(Canvas canvas)
+		{
+			canvas.ClipShape(Context, Element);
+
+			base.Draw(canvas);
+		}
+
 		protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
 		{
 			base.OnLayout(changed, left, top, right, bottom);
