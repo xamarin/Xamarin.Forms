@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue11982"
+    Title="Issue 11982">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label
+                Padding="12"
+                BackgroundColor="Black"
+                TextColor="White"
+                Text="Tap the Button. If not trigger the SelectionChanged, the test has passed."/>
+            <Label
+                Text="Without using SwipeView" />
+            <CollectionView
+                x:Name="Issue11982CollectionView1"
+                SelectionMode="Single"
+                ItemsSource="{Binding Items1}"
+                SelectionChangedCommand="{Binding SelectionChangedCommand}"
+                SelectionChangedCommandParameter="{Binding SelectedItem, Source={x:Reference Issue11982CollectionView1}}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid BackgroundColor="White" ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="{Binding Name}" VerticalTextAlignment="Center" Margin="10,0,0,0" />
+                            <Button Grid.Column="1" Text="{Binding CommandName}" Command="{Binding TestCommand}" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <Label
+                Text="Using SwipeView" />
+            <CollectionView
+                x:Name="Issue11982CollectionView2"
+                SelectionMode="Single"
+                ItemsSource="{Binding Items2}"
+                SelectionChangedCommand="{Binding SelectionChangedCommand}"
+                SelectionChangedCommandParameter="{Binding SelectedItem, Source={x:Reference Issue11982CollectionView2}}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <SwipeView>
+                            <SwipeView.LeftItems>
+                                <SwipeItems>
+                                    <SwipeItem
+                                        BackgroundColor="Red"
+                                        Text="SwipeItem" />
+                                </SwipeItems>
+                            </SwipeView.LeftItems>
+                            <Grid BackgroundColor="White" ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0" Text="{Binding Name}" VerticalTextAlignment="Center" Margin="10,0,0,0" />
+                                <Button Grid.Column="1" Text="{Binding CommandName}" Command="{Binding TestCommand}" />
+                            </Grid>
+                        </SwipeView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </StackLayout>
+    </ContentPage.Content>
+</controls:TestContentPage>

@@ -279,6 +279,9 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (IsViewInBounds(child, x, y))
 				{
+					if (child is AButton)
+						return false;
+
 					if (child is AbsListView absListView)
 						return ShouldInterceptScrollChildrenTouch(absListView, isHorizontal);
 
@@ -296,6 +299,14 @@ namespace Xamarin.Forms.Platform.Android
 			return true;
 		}
 
+		bool IsViewInBounds(AView view, int x, int y)
+		{
+			ARect outRect = new ARect();
+			view.GetHitRect(outRect);
+
+			return x > outRect.Left && x < outRect.Right && y > outRect.Top && y < outRect.Bottom;
+		}
+
 		bool ShouldInterceptScrollChildrenTouch(ViewGroup scrollView, bool isHorizontal)
 		{
 			AView scrollViewContent = scrollView.GetChildAt(0);
@@ -311,18 +322,7 @@ namespace Xamarin.Forms.Platform.Android
 			return true;
 		}
 
-		bool IsViewInBounds(AView view, int x, int y)
-		{
-			ARect outRect = new ARect();
-			view.GetHitRect(outRect);
-
-			return x > outRect.Left && x < outRect.Right && y > outRect.Top && y < outRect.Bottom;
-		}
-
-		public override bool OnInterceptTouchEvent(MotionEvent e)
-		{
-			return ShouldInterceptTouch(e);
-		}
+		public override bool OnInterceptTouchEvent(MotionEvent e) => ShouldInterceptTouch(e);
 
 		public override bool DispatchTouchEvent(MotionEvent e)
 		{
@@ -344,8 +344,8 @@ namespace Xamarin.Forms.Platform.Android
 					ProcessTouchSwipeItems(touchUpPoint);
 				else
 				{
-					ResetSwipe(e);
-					PropagateParentTouch();
+					if (!_isSwiping && _isOpen && TouchInsideContent(touchUpPoint))
+						ResetSwipe();
 				}
 			}
 
@@ -560,6 +560,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			_isTouchDown = false;
 
+			PropagateParentTouch();
 			EnableParentGesture(true);
 
 			if (!_isSwiping)
