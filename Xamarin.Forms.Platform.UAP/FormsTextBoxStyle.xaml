@@ -4,6 +4,7 @@
 	xmlns:uwp="using:Xamarin.Forms.Platform.UWP">
 
 	<uwp:TextAlignmentToHorizontalAlignmentConverter x:Key="AlignmentConverter" />
+    
 	<Style x:Key="FormsTextBoxStyle" TargetType="uwp:FormsTextBox">
 		<Setter Property="MinWidth" Value="{ThemeResource TextControlThemeMinWidth}" />
 		<Setter Property="MinHeight" Value="{ThemeResource TextControlThemeMinHeight}" />
@@ -157,16 +158,11 @@
 								</VisualState>
 								<VisualState x:Name="Focused">
 									<Storyboard>
-										<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground"
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground"
 										                               Storyboard.TargetName="PlaceholderTextContentPresenter">
-											<DiscreteObjectKeyFrame KeyTime="0" Value="{Binding PlaceholderForegroundFocusBrush, RelativeSource={RelativeSource TemplatedParent}}" />
-										</ObjectAnimationUsingKeyFrames>
-										<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
-										                               Storyboard.TargetName="BackgroundElement">
-											<DiscreteObjectKeyFrame KeyTime="0"
-											                        Value="{Binding BackgroundFocusBrush, RelativeSource={RelativeSource TemplatedParent}}" />
-										</ObjectAnimationUsingKeyFrames>
-										<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{Binding PlaceholderForegroundFocusBrush, RelativeSource={RelativeSource TemplatedParent}}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
 										                               Storyboard.TargetName="BorderElement">
 											<DiscreteObjectKeyFrame KeyTime="0"
 											                        Value="{Binding BackgroundFocusBrush, RelativeSource={RelativeSource TemplatedParent}}" />
