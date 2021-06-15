@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 13417" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13417">
+    <local:TestContentPage.Resources>
+        <ResourceDictionary>
+            <LinearGradientBrush x:Key="IssueLinearGradientBrush" StartPoint="0,0" EndPoint="1,0">
+                <GradientStop Color="Purple" Offset="0.1" />
+                <GradientStop Color="LightBlue" Offset="1.0" />
+            </LinearGradientBrush>
+
+        </ResourceDictionary>
+    </local:TestContentPage.Resources>
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Tap the Button in every option, if the Background Brush changes the test has passed."/>
+        <StackLayout
+            Padding="12">
+            <Label
+                Text="Option 1"/>
+            <Frame>
+                <Frame.Style>
+                    <Style TargetType="Frame">
+                        <Setter Property="BorderColor" Value="Black" />
+                        <Setter Property="CornerRadius" Value="12" />
+                        <Setter Property="HeightRequest" Value="120" />
+                        <Setter Property="Background" Value="{StaticResource IssueLinearGradientBrush}"/>
+                        <Style.Triggers>
+                            <DataTrigger TargetType="Frame" Binding="{Binding Changed1}" Value="True">
+                                <Setter Property="Background" Value="Red"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Frame.Style>
+            </Frame>
+            <Button
+                Text="Update the Background (Option 1)"
+                Command="{Binding ChangeBackground1Command}"/>
+            <Label
+                Text="Option 2"/>
+            <Frame>
+                <Frame.Style>
+                    <Style TargetType="Frame">
+                        <Setter Property="BorderColor" Value="Black" />
+                        <Setter Property="CornerRadius" Value="12" />
+                        <Setter Property="HeightRequest" Value="120" />
+                        <Setter Property="Background" Value="{StaticResource IssueLinearGradientBrush}"/>
+                        <Style.Triggers>
+                            <DataTrigger TargetType="Frame" Binding="{Binding Changed2}" Value="True">
+                                <Setter Property="Background">
+                                    <SolidColorBrush Color="Red" />
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Frame.Style>
+            </Frame>
+            <Button
+                Text="Update the Background (Option 2)"
+                Command="{Binding ChangeBackground2Command}"/>
+            <Label
+                Text="Option 3"/>
+            <Frame>
+                <Frame.Style>
+                    <Style TargetType="Frame">
+                        <Setter Property="BorderColor" Value="Black" />
+                        <Setter Property="CornerRadius" Value="12" />
+                        <Setter Property="HeightRequest" Value="120" />
+                        <Setter Property="Background" Value="{StaticResource IssueLinearGradientBrush}"/>
+                        <Style.Triggers>
+                            <DataTrigger TargetType="Frame" Binding="{Binding Changed3}" Value="True">
+                                <Setter Property="BackgroundColor" Value="Red" />
+                                <Setter Property="Background" Value="{x:Null}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Frame.Style>
+            </Frame>
+            <Button
+                Text="Update the Background (Option 3)"
+                Command="{Binding ChangeBackground3Command}"/>
+        </StackLayout>
+    </StackLayout>
+</local:TestContentPage>
