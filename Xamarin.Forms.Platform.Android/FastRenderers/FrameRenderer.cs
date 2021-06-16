@@ -190,6 +190,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				e.NewElement.PropertyChanged += OnElementPropertyChanged;
 				UpdateShadow();
 				UpdateBackgroundColor();
+				UpdateBackground();
 				UpdateCornerRadius();
 				UpdateBorderColor();
 				UpdateClippedToBounds();
