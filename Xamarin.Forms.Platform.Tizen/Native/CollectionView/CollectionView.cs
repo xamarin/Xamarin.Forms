@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using ElmSharp;
 using ElmSharp.Wearable;
+using Xamarin.Forms.Core.PlatformConfiguration.TizenSpecific;
 using EBox = ElmSharp.Box;
 using EPoint = ElmSharp.Point;
 using ERect = ElmSharp.Rect;
@@ -34,6 +35,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		SmartEvent _scrollAnimationStop;
 		SmartEvent _scrollAnimationStart;
 		bool _isScrollAnimationStarted;
+		bool _allowFocusOnItem;
 
 		public event EventHandler<ItemsViewScrolledEventArgs> Scrolled;
 
@@ -51,6 +53,9 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 			_scrollAnimationStop = new SmartEvent(Scroller, ThemeConstants.Scroller.Signals.StopScrollAnimation);
 			_scrollAnimationStop.On += OnScrollStopped;
+
+			Scroller.DragStart += OnDragStart;
+			Scroller.KeyDown += OnKeyDown;
 
 			_innerLayout = new EBox(parent);
 			_innerLayout.SetLayoutCallback(OnInnerLayout);
@@ -306,6 +311,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				_innerLayout.PackEnd(holder);
 			}
 
+			holder.AllowItemFocus = _allowFocusOnItem;
+
 			Adaptor.SetBinding(holder.Content, index);
 			_viewHolderIndexTable[holder] = index;
 			if (index == SelectedItemIndex)
@@ -325,6 +332,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 			if (holder.State == ViewHolderState.Focused && FocusedItemScrollPosition != ScrollToPosition.MakeVisible)
 			{
+
 				Device.BeginInvokeOnMainThread(() =>
 				{
 					if (holder.State == ViewHolderState.Focused && _viewHolderIndexTable.TryGetValue(holder, out int itemIndex))
@@ -363,6 +371,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			Adaptor.UnBinding(view.Content);
 			view.ResetState();
 			view.Hide();
+
 			_pool.AddRecyclerView(view);
 			if (_lastSelectedViewHolder == view)
 			{
@@ -468,6 +477,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				(Adaptor as INotifyCollectionChanged).CollectionChanged -= OnCollectionChanged;
 				Adaptor.CollectionView = null;
 			}
+			_innerLayout.UnPackAll();
 		}
 
 		void OnAdaptorChanged()
@@ -605,7 +615,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				Scroller.HorizontalStepSize = _layoutManager.GetScrollBlockSize();
 				Scroller.VerticalStepSize = _layoutManager.GetScrollBlockSize();
 				UpdateSnapPointsType(SnapPointsType);
-				Device.BeginInvokeOnMainThread(SendScrolledEvent);
+				if (Geometry.Width > 0 && Geometry.Height > 0)
+					Device.BeginInvokeOnMainThread(SendScrolledEvent);
 			}
 		}
 
@@ -661,16 +672,29 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			}
 		}
 
+		void OnKeyDown(object sender, EvasKeyEventArgs e)
+		{
+			_allowFocusOnItem = true;
+			UpdateAllowFocusOnItem(_allowFocusOnItem);
+		}
+
+		void OnDragStart(object sender, EventArgs e)
+		{
+			_allowFocusOnItem = false;
+			UpdateAllowFocusOnItem(_allowFocusOnItem);
+		}
+
 		void SendScrolledEvent()
 		{
-			var args = new ItemsViewScrolledEventArgs();
+			var args = new ItemsViewScrolledExtendedEventArgs();
 			args.FirstVisibleItemIndex = _layoutManager.GetVisibleItemIndex(ViewPort.X, ViewPort.Y);
 			args.CenterItemIndex = _layoutManager.GetVisibleItemIndex(ViewPort.X + (ViewPort.Width / 2), ViewPort.Y + (ViewPort.Height / 2));
 			args.LastVisibleItemIndex = _layoutManager.GetVisibleItemIndex(ViewPort.X + ViewPort.Width, ViewPort.Y + ViewPort.Height);
-			args.HorizontalOffset = ViewPort.X;
-			args.HorizontalDelta = ViewPort.X - _previousHorizontalOffset;
-			args.VerticalOffset = ViewPort.Y;
-			args.VerticalDelta = ViewPort.Y - _previousVerticalOffset;
+			args.HorizontalOffset = Forms.ConvertToScaledDP(ViewPort.X);
+			args.HorizontalDelta = Forms.ConvertToScaledDP(ViewPort.X - _previousHorizontalOffset);
+			args.VerticalOffset = Forms.ConvertToScaledDP(ViewPort.Y);
+			args.VerticalDelta = Forms.ConvertToScaledDP(ViewPort.Y - _previousVerticalOffset);
+			args.CanvasSize = _layoutManager.GetScrollCanvasSize().ToDP();
 
 			Scrolled?.Invoke(this, args);
 
@@ -732,6 +756,14 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			Scroller.SetContent(_innerLayout, true);
 			Adaptor.RemoveNativeView(_emptyView);
 			_emptyView = null;
+		}
+
+		void UpdateAllowFocusOnItem(bool allowFocus)
+		{
+			foreach (var holer in _viewHolderIndexTable)
+			{
+				holer.Key.AllowItemFocus = allowFocus;
+			}
 		}
 	}
 
