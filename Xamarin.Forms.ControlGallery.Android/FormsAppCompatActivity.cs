@@ -49,7 +49,10 @@ namespace Xamarin.Forms.ControlGallery.Android
 #else
 			Forms.SetFlags("UseLegacyRenderers");
 #endif
+			// Forms.SetFlags("AccessibilityExperimental");
 			Forms.Init(this, bundle);
+
+
 
 			// null out the assembly on the Resource Manager
 			// so all of our tests run without using the reflection APIs
