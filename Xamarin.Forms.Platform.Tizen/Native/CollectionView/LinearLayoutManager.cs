@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		public void SizeAllocated(ESize size)
 		{
-			Reset();
+			_scrollCanvasSize = new ESize(0, 0);
 			_allocatedSize = size;
 			InitializeMeasureCache();
 		}
@@ -322,14 +322,21 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		public void ItemMeasureInvalidated(int index)
 		{
-			if (_realizedItem.ContainsKey(index))
-			{
-				CollectionView.RequestLayoutItems();
-			}
 			if (_hasUnevenRows)
 			{
 				if (_cached.Count > index)
 					_cached[index] = false;
+
+				if (_realizedItem.ContainsKey(index))
+				{
+					CollectionView.RequestLayoutItems();
+				}
+			}
+			else if (index == 0)
+			{
+				// Reset item size to measure updated size
+				InitializeMeasureCache();
+				CollectionView.RequestLayoutItems();
 			}
 		}
 

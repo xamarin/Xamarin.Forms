@@ -69,6 +69,7 @@
     <Compile Include="BackgroundTests.cs" />
     <Compile Include="TimePickerTests.cs" />
     <Compile Include="TransformationTests.cs" />
+    <Compile Include="LabelTests.cs" />
     <Compile Include="ShapeTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -85,7 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NUnit">
-      <Version>3.12.0</Version>
+      <Version>3.13.1</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

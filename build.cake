@@ -8,11 +8,11 @@
 
 Windows CMD:
 build.cmd -Target NugetPack
-build.cmd -Target NugetPack -ScriptArgs '-packageVersion="9.9.9-custom"','-configuration="Release"'
+build.cmd -Target NugetPack -ScriptArgs '--packageVersion="9.9.9-custom"','--configuration="Release"'
 
 PowerShell:
 ./build.ps1 -Target NugetPack
-./build.ps1 -Target NugetPack -ScriptArgs '-packageVersion="9.9.9-custom"'
+./build.ps1 -Target NugetPack -ScriptArgs '--packageVersion="9.9.9-custom"'
 
  */
 //////////////////////////////////////////////////////////////////////
@@ -86,7 +86,7 @@ MSBuildArguments = $"{MSBuildArgumentsENV} {MSBuildArgumentsARGS}";
     
 Information("MSBuildArguments: {0}", MSBuildArguments);
 
-string androidSdks = EnvironmentVariable("ANDROID_API_SDKS", "platform-tools,platforms;android-28,platforms;android-29,build-tools;29.0.3,platforms;android-30,build-tools;30.0.2");
+string androidSdks = EnvironmentVariable("ANDROID_API_SDKS", "platform-tools,platforms;android-26,platforms;android-27,platforms;android-28,platforms;android-29,build-tools;29.0.3,platforms;android-30,build-tools;30.0.2");
 
 Information("ANDROID_API_SDKS: {0}", androidSdks);
 string[] androidSdkManagerInstalls = androidSdks.Split(',');
@@ -135,6 +135,7 @@ Information ("isCIBuild: {0}", isCIBuild);
 Information ("artifactStagingDirectory: {0}", artifactStagingDirectory);
 Information("workingDirectory: {0}", workingDirectory);
 Information("NUNIT_TEST_WHERE: {0}", NUNIT_TEST_WHERE);
+Information("TARGET: {0}", target);
 
 var releaseChannel = ReleaseChannel.Stable;
 if(releaseChannelArg == "Preview")
@@ -597,6 +598,15 @@ Task("NuGetPack")
     .IsDependentOn("BuildForNuget")
     .IsDependentOn("_NuGetPack");
 
+Task("provision-powershell").Does(()=> {
+    var settings = new DotNetCoreToolSettings
+    {
+        DiagnosticOutput = true,
+        ArgumentCustomization = args=>args.Append("install --global PowerShell")
+    };
+
+    DotNetCoreTool("tool", settings);
+});
 
 Task("_NuGetPack")
     .WithCriteria(IsRunningOnWindows())
@@ -870,10 +880,19 @@ Task("cg-android")
     .IsDependentOn("BuildTasks")
     .Does(() => 
     {
-        var buildSettings = GetMSBuildSettings();
-
         if(isCIBuild)
         {
+            var buildRestoreSettings = GetMSBuildSettings();
+            var binaryRestoreLogger = new MSBuildBinaryLogSettings {
+                Enabled  = true
+            };
+
+            buildRestoreSettings.BinaryLogger = binaryRestoreLogger;
+            binaryRestoreLogger.FileName = $"{artifactStagingDirectory}/android-restore-{ANDROID_RENDERERS}.binlog";
+
+            MSBuild("./Xamarin.Forms.sln", buildRestoreSettings.WithTarget("restore"));
+
+            var buildSettings = GetMSBuildSettings();
             buildSettings = buildSettings.WithTarget("Rebuild").WithTarget("SignAndroidPackage");
             var binaryLogger = new MSBuildBinaryLogSettings {
                 Enabled  = true
@@ -881,13 +900,14 @@ Task("cg-android")
 
             buildSettings.BinaryLogger = binaryLogger;
             binaryLogger.FileName = $"{artifactStagingDirectory}/android-{ANDROID_RENDERERS}.binlog";
+            MSBuild("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", buildSettings);
         }
         else
         {
+            var buildSettings = GetMSBuildSettings();
             buildSettings = buildSettings.WithRestore();
+            MSBuild("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", buildSettings);
         }
-
-        MSBuild("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", buildSettings);
     });
 
 Task("cg-android-vs")
@@ -903,26 +923,44 @@ Task("cg-ios")
     .IsDependentOn("BuildTasks")
     .Does(() =>
     {
-        var buildSettings = 
-            GetMSBuildSettings(null)
-                .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
-
         if(isCIBuild)
         {
+            var buildRestoreSettings = GetMSBuildSettings();
+            var binaryRestoreLogger = new MSBuildBinaryLogSettings {
+                Enabled  = true
+            };
+
+            buildRestoreSettings.BinaryLogger = binaryRestoreLogger;
+            binaryRestoreLogger.FileName = $"{artifactStagingDirectory}/ios-restore-cg.binlog";
+
+            MSBuild("./Xamarin.Forms.sln", buildRestoreSettings.WithTarget("restore"));
+            
+            var buildSettings = 
+                GetMSBuildSettings(null)
+                    .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
+
             var binaryLogger = new MSBuildBinaryLogSettings {
                 Enabled  = true
             };
 
             buildSettings.BinaryLogger = binaryLogger;
             binaryLogger.FileName = $"{artifactStagingDirectory}/ios-cg.binlog";
+
+            MSBuild("./Xamarin.Forms.ControlGallery.iOS/Xamarin.Forms.ControlGallery.iOS.csproj", 
+                buildSettings);
         }
         else
         {
+            
+            var buildSettings = 
+                GetMSBuildSettings(null)
+                    .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
+                    
             buildSettings = buildSettings.WithRestore();
-        }
 
-        MSBuild("./Xamarin.Forms.ControlGallery.iOS/Xamarin.Forms.ControlGallery.iOS.csproj", 
-            buildSettings);
+            MSBuild("./Xamarin.Forms.ControlGallery.iOS/Xamarin.Forms.ControlGallery.iOS.csproj", 
+                buildSettings);
+        }
     });
 
 Task("cg-ios-vs")
