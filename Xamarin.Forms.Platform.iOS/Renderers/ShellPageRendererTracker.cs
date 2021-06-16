@@ -195,17 +195,6 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 			{
 				var view = new TitleViewContainer(titleView);
-
-				if (Forms.IsiOS11OrNewer)
-				{
-					view.TranslatesAutoresizingMaskIntoConstraints = false;
-				}
-				else
-				{
-					view.TranslatesAutoresizingMaskIntoConstraints = true;
-					view.AutoresizingMask = UIViewAutoresizing.FlexibleHeight | UIViewAutoresizing.FlexibleWidth;
-				}
-
 				NavigationItem.TitleView = view;
 			}
 		}
@@ -399,6 +388,16 @@ namespace Xamarin.Forms.Platform.iOS
 			public TitleViewContainer(View view) : base(view)
 			{
 				MatchHeight = true;
+
+				if (Forms.IsiOS11OrNewer)
+				{
+					TranslatesAutoresizingMaskIntoConstraints = false;
+				}
+				else
+				{
+					TranslatesAutoresizingMaskIntoConstraints = true;
+					AutoresizingMask = UIViewAutoresizing.FlexibleHeight | UIViewAutoresizing.FlexibleWidth;
+				}
 			}
 
 			public override CGRect Frame
@@ -424,7 +423,6 @@ namespace Xamarin.Forms.Platform.iOS
 						Frame = new CGRect(Frame.X, newSuper.Bounds.Y, Frame.Width, newSuper.Bounds.Height);
 
 					Height = newSuper.Bounds.Height;
-					Width = newSuper.Bounds.Width;
 				}
 
 				base.WillMoveToSuperview(newSuper);
