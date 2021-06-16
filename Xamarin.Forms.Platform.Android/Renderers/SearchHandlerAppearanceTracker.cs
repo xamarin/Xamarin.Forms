@@ -117,8 +117,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			FastRenderers
 				.AutomationPropertiesProvider
-				.SetAutomationId(_editText, _searchHandler?.AutomationId);
-
+				.SetAutomationId(_editText, null, _searchHandler?.AutomationId);
 		}
 
 		void UpdateFont()
