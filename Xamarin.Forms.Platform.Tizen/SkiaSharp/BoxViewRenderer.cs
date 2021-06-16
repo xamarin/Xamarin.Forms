@@ -53,6 +53,7 @@ namespace Xamarin.Forms.Platform.Tizen.SkiaSharp
 			int topRight = Forms.ConvertToScaledPixel(Element.CornerRadius.TopRight);
 			int bottomLeft = Forms.ConvertToScaledPixel(Element.CornerRadius.BottomLeft);
 			int bottomRight = Forms.ConvertToScaledPixel(Element.CornerRadius.BottomRight);
+			RealControl.SetRadius(topLeft, topRight, bottomLeft, bottomRight);
 
 			if (!init)
 			{

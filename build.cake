@@ -880,10 +880,19 @@ Task("cg-android")
     .IsDependentOn("BuildTasks")
     .Does(() => 
     {
-        var buildSettings = GetMSBuildSettings();
-
         if(isCIBuild)
         {
+            var buildRestoreSettings = GetMSBuildSettings();
+            var binaryRestoreLogger = new MSBuildBinaryLogSettings {
+                Enabled  = true
+            };
+
+            buildRestoreSettings.BinaryLogger = binaryRestoreLogger;
+            binaryRestoreLogger.FileName = $"{artifactStagingDirectory}/android-restore-{ANDROID_RENDERERS}.binlog";
+
+            MSBuild("./Xamarin.Forms.sln", buildRestoreSettings.WithTarget("restore"));
+
+            var buildSettings = GetMSBuildSettings();
             buildSettings = buildSettings.WithTarget("Rebuild").WithTarget("SignAndroidPackage");
             var binaryLogger = new MSBuildBinaryLogSettings {
                 Enabled  = true
@@ -891,13 +900,14 @@ Task("cg-android")
 
             buildSettings.BinaryLogger = binaryLogger;
             binaryLogger.FileName = $"{artifactStagingDirectory}/android-{ANDROID_RENDERERS}.binlog";
+            MSBuild("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", buildSettings);
         }
         else
         {
+            var buildSettings = GetMSBuildSettings();
             buildSettings = buildSettings.WithRestore();
+            MSBuild("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", buildSettings);
         }
-
-        MSBuild("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", buildSettings);
     });
 
 Task("cg-android-vs")
@@ -913,26 +923,44 @@ Task("cg-ios")
     .IsDependentOn("BuildTasks")
     .Does(() =>
     {
-        var buildSettings = 
-            GetMSBuildSettings(null)
-                .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
-
         if(isCIBuild)
         {
+            var buildRestoreSettings = GetMSBuildSettings();
+            var binaryRestoreLogger = new MSBuildBinaryLogSettings {
+                Enabled  = true
+            };
+
+            buildRestoreSettings.BinaryLogger = binaryRestoreLogger;
+            binaryRestoreLogger.FileName = $"{artifactStagingDirectory}/ios-restore-cg.binlog";
+
+            MSBuild("./Xamarin.Forms.sln", buildRestoreSettings.WithTarget("restore"));
+            
+            var buildSettings = 
+                GetMSBuildSettings(null)
+                    .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
+
             var binaryLogger = new MSBuildBinaryLogSettings {
                 Enabled  = true
             };
 
             buildSettings.BinaryLogger = binaryLogger;
             binaryLogger.FileName = $"{artifactStagingDirectory}/ios-cg.binlog";
+
+            MSBuild("./Xamarin.Forms.ControlGallery.iOS/Xamarin.Forms.ControlGallery.iOS.csproj", 
+                buildSettings);
         }
         else
         {
+            
+            var buildSettings = 
+                GetMSBuildSettings(null)
+                    .WithProperty("BuildIpa", $"{IOS_BUILD_IPA}");
+                    
             buildSettings = buildSettings.WithRestore();
-        }
 
-        MSBuild("./Xamarin.Forms.ControlGallery.iOS/Xamarin.Forms.ControlGallery.iOS.csproj", 
-            buildSettings);
+            MSBuild("./Xamarin.Forms.ControlGallery.iOS/Xamarin.Forms.ControlGallery.iOS.csproj", 
+                buildSettings);
+        }
     });
 
 Task("cg-ios-vs")
