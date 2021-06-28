@@ -237,7 +237,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void HandleDrop(View element, DataPackage datapackage)
 		{
-			var args = new DropEventArgs(datapackage?.View);
+			var args = new DropEventArgs(datapackage?.View)
+			{
+				DropX = element.X,
+				DropY = element.Y
+			};
+
 			SendEventArgs<DropGestureRecognizer>(async rec =>
 			{
 				if (!rec.AllowDrop)
