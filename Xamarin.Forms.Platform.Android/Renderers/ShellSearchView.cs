@@ -209,6 +209,7 @@ namespace Xamarin.Forms.Platform.Android
 			_textBlock.Adapter = new ShellSearchViewAdapter(SearchHandler, _shellContext);
 			_textBlock.ItemClick += OnTextBlockItemClicked;
 			_textBlock.SetDropDownBackgroundDrawable(new ClipDrawableWrapper(_textBlock.DropDownBackground));
+			_textBlock.FocusChange += (sender, eventArgs) => { OnSearchHandlerFocusChange(sender, eventArgs, searchHandler); };
 
 			// A note on accessibility. The _textBlocks hint is what android defaults to reading in the screen
 			// reader. Therefore, we do not need to set something else.
@@ -234,6 +235,11 @@ namespace Xamarin.Forms.Platform.Android
 			AddView(_cardView);
 
 			linearLayout.Dispose();
+		}
+
+		void OnSearchHandlerFocusChange(object sender, FocusChangeEventArgs e, SearchHandler searchHandler)
+		{
+			searchHandler.SetValue(SearchHandler.IsFocusedPropertyKey, e.HasFocus);			
 		}
 
 		protected virtual void OnSearchHandlerPropertyChanged(object sender, PropertyChangedEventArgs e)
