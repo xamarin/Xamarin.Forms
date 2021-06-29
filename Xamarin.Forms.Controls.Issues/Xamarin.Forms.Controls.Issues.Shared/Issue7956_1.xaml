@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestShell xmlns="http://xamarin.com/schemas/2014/forms"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            mc:Ignorable="d"
+            xmlns:local="clr-namespace:Xamarin.Forms.Controls"
+            xmlns:issues="clr-namespace:Xamarin.Forms.Controls.Issues"
+            x:Class="Xamarin.Forms.Controls.Issues.Issue7956_1">
+
+    <ShellContent Title="SearchHandler Focus">
+        <ContentPage>
+            <StackLayout>
+                <Label Text="Please, click on the Shell SearchHandler search box above, in order to fire the Focus EventHandler. This test will pass if: on focus, you see another text below saying 'Focus EventHandler triggered!'; on unfocus, you see another text below saying 'Focus EventHandler triggered!'. If nothing happens, or only one of the two previous cases happen, this test would have failed." 
+                       Padding="10"/>
+                <Label x:Name="lblFocus" Text="Focus EventHandler triggered!'" IsVisible="false" />
+                <Label x:Name="lblUnfocus" Text="Unfocus EventHandler triggered!'" IsVisible="false" />
+            </StackLayout>
+            <Shell.SearchHandler>
+                <issues:InheritedSearchHandler Focused="SearchHandler_Focused" Unfocused="SearchHandler_Unfocused"/>
+            </Shell.SearchHandler>
+        </ContentPage>
+    </ShellContent>
+
+</local:TestShell>
