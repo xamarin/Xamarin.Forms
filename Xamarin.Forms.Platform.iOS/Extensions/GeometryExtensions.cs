@@ -92,9 +92,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
                             lastPoint = points[points.Count - 1];
                         }
-
                         // BezierSegment
-                        if (pathSegment is BezierSegment)
+                        else if (pathSegment is BezierSegment)
                         {
                             BezierSegment bezierSegment = pathSegment as BezierSegment;
 
@@ -126,9 +125,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
                             lastPoint = points[points.Count - 1];
                         }
-
                         // QuadraticBezierSegment
-                        if (pathSegment is QuadraticBezierSegment)
+                        else if (pathSegment is QuadraticBezierSegment)
                         {
                             QuadraticBezierSegment bezierSegment = pathSegment as QuadraticBezierSegment;
 
@@ -180,14 +178,15 @@ namespace Xamarin.Forms.Platform.MacOS
                                 arcSegment.SweepDirection == SweepDirection.CounterClockwise,
                                 1);
 
-                            CGPoint[] cgpoints = new CGPoint[points.Count];
-
                             for (int i = 0; i < points.Count; i++)
-                                cgpoints[i] = transform.TransformPoint(points[i].ToPointF());
+                            {
+                                pathData.Data.AddLineToPoint(
+                                    (nfloat)points[i].X,
+                                    (nfloat)points[i].Y);
+                            }
 
-                            pathData.Data.AddLines(cgpoints);
-
-                            lastPoint = points.Count > 0 ? points[points.Count - 1] : Point.Zero;
+                            if (points.Count > 0)
+                                lastPoint = points[points.Count - 1];
                         }
                     }
 

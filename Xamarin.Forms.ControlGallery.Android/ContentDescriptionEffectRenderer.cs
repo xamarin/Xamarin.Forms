@@ -4,8 +4,8 @@ using Xamarin.Forms;
 using Xamarin.Forms.ControlGallery.Android;
 using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Platform.Android;
-using AndroidX.Core.View.Accessibiity;
 using AndroidX.Core.View;
+using AndroidX.Core.View.Accessibility;
 
 [assembly: ExportEffect(typeof(ContentDescriptionEffectRenderer), ContentDescriptionEffect.EffectName)]
 namespace Xamarin.Forms.ControlGallery.Android

@@ -4,12 +4,15 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class StructuredItemsViewController<TItemsView> : ItemsViewController<TItemsView>
-		where TItemsView : StructuredItemsView
+	public class ItemsViewTags
 	{
 		public const int HeaderTag = 111;
 		public const int FooterTag = 222;
+	}
 
+	public class StructuredItemsViewController<TItemsView> : ItemsViewController<TItemsView>
+		where TItemsView : StructuredItemsView
+	{
 		bool _disposed;
 
 		UIView _headerUIView;
@@ -58,13 +61,13 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override CGRect DetermineEmptyViewFrame()
 		{
 			nfloat headerHeight = 0;
-			var headerView = CollectionView.ViewWithTag(HeaderTag);
+			var headerView = CollectionView.ViewWithTag(ItemsViewTags.HeaderTag);
 
 			if (headerView != null)
 				headerHeight = headerView.Frame.Height;
 
 			nfloat footerHeight = 0;
-			var footerView = CollectionView.ViewWithTag(FooterTag);
+			var footerView = CollectionView.ViewWithTag(ItemsViewTags.FooterTag);
 
 			if (footerView != null)
 				footerHeight = footerView.Frame.Height;
@@ -100,14 +103,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal void UpdateFooterView()
 		{
-			UpdateSubview(ItemsView?.Footer, ItemsView?.FooterTemplate, FooterTag,
+			UpdateSubview(ItemsView?.Footer, ItemsView?.FooterTemplate, ItemsViewTags.FooterTag,
 				ref _footerUIView, ref _footerViewFormsElement);
 			UpdateHeaderFooterPosition();
 		}
 
 		internal void UpdateHeaderView()
 		{
-			UpdateSubview(ItemsView?.Header, ItemsView?.HeaderTemplate, HeaderTag,
+			UpdateSubview(ItemsView?.Header, ItemsView?.HeaderTemplate, ItemsViewTags.HeaderTag,
 				ref _headerUIView, ref _headerViewFormsElement);
 			UpdateHeaderFooterPosition();
 		}
