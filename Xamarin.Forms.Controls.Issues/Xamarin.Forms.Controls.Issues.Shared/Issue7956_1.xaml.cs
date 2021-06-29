@@ -42,6 +42,13 @@ namespace Xamarin.Forms.Controls.Issues
 
 	public class InheritedSearchHandler : SearchHandler
 	{
-
+		protected override void OnFocused()
+		{
+			base.OnFocused();
+		}
+		protected override void OnUnfocus()
+		{
+			base.OnUnfocus();
+		}
 	}
 }
