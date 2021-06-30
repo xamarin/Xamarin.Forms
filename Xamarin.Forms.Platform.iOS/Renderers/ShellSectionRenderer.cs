@@ -68,11 +68,23 @@ namespace Xamarin.Forms.Platform.iOS
 		ShellSection _shellSection;
 		bool _ignorePopCall;
 
+		// When setting base.ViewControllers iOS doesn't modify the property right away. 
+		// if you set base.ViewControllers to a new array and then retrieve base.ViewControllers
+		// iOS will return the previous array until the new array has been processed
+		// This means if you try to remove one VC and then try to remove a second VC before the first one is processed
+		// you'll end up re-adding back the first VC
+		// ViewControllers = ViewControllers.Remove(vc1)
+		// ViewControllers = ViewControllers.Remove(vc2)  
+		// You've now added vc1 back because the second call to ViewControllers will still return a ViewControllers list with vc1 in it
+		UIViewController[] _pendingViewControllers;
+
 		public ShellSectionRenderer(IShellContext context) : base()
 		{
 			Delegate = new NavDelegate(this);
 			_context = context;
 			_context.Shell.PropertyChanged += HandleShellPropertyChanged;
+			_context.Shell.Navigated += OnNavigated;
+			_context.Shell.Navigating += OnNavigating;
 		}
 
 		public ShellSectionRenderer(IShellContext context, Type navigationBarType, Type toolbarType)
@@ -81,6 +93,8 @@ namespace Xamarin.Forms.Platform.iOS
 			Delegate = new NavDelegate(this);
 			_context = context;
 			_context.Shell.PropertyChanged += HandleShellPropertyChanged;
+			_context.Shell.Navigated += OnNavigated;
+			_context.Shell.Navigating += OnNavigating;
 		}
 
 		[Export("navigationBar:shouldPopItem:")]
@@ -202,6 +216,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_context.Shell != null)
 			{
 				_context.Shell.PropertyChanged -= HandleShellPropertyChanged;
+				_context.Shell.Navigated -= OnNavigated;
+				_context.Shell.Navigating -= OnNavigating;
 				((IShellController)_context.Shell).RemoveAppearanceObserver(this);
 			}
 
@@ -503,24 +519,68 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateNavigationBarHasShadow();
 		}
 
-		UIViewController[] _internalViewControllers;
+		// We only care about using pendingViewControllers when we are setting the ViewControllers array directly
+		// So, once navigation starts again (or ends) we can just clear the pendingViewControllers
+		void OnNavigating(object sender, ShellNavigatingEventArgs e)
+		{
+			_pendingViewControllers = null;
+		}
+
+		void OnNavigated(object sender, ShellNavigatedEventArgs e)
+		{
+			_pendingViewControllers = null;
+		}
+
+		// These are all just safety nets to ensure that _pendingViewControllers doesn't for some reason get out of sync
+		// and start causing issues. In theory we could just override ViewControllers here to make sure _pendingViewControllers
+		// stays in sync but I don't trust that `ViewControllers.set` is reliably called with every modification
+		public override UIViewController[] ViewControllers
+		{
+			get => base.ViewControllers;
+			set
+			{
+				if (_pendingViewControllers != null)
+					_pendingViewControllers = value;
+
+				base.ViewControllers = value;
+			}
+		}
+
+		public override UIViewController[] PopToViewController(UIViewController viewController, bool animated)
+		{
+			_pendingViewControllers = null;
+			return base.PopToViewController(viewController, animated);
+		}
+
+		public override void PushViewController(UIViewController viewController, bool animated)
+		{
+			_pendingViewControllers = null;
+			base.PushViewController(viewController, animated);
+		}
+
+		public override UIViewController PopViewController(bool animated)
+		{
+			_pendingViewControllers = null;
+			return base.PopViewController(animated);
+		}
+
 		UIViewController[] ActiveViewControllers() =>
-			_internalViewControllers ??= base.ViewControllers;
+			_pendingViewControllers ?? base.ViewControllers;
 
 		void RemoveViewController(UIViewController viewController)
 		{
-			_internalViewControllers ??= base.ViewControllers;
-			if (_internalViewControllers.Contains(viewController))
-				_internalViewControllers = _internalViewControllers.Remove(viewController);
+			_pendingViewControllers = _pendingViewControllers ?? base.ViewControllers;
+			if (_pendingViewControllers.Contains(viewController))
+				_pendingViewControllers = _pendingViewControllers.Remove(viewController);
 
-			ViewControllers = _internalViewControllers;
+			ViewControllers = _pendingViewControllers;
 		}
 
 		void InsertViewController(int index, UIViewController viewController)
 		{
-			_internalViewControllers ??= base.ViewControllers;
-			_internalViewControllers = _internalViewControllers.Insert(index, viewController);
-			ViewControllers = _internalViewControllers;
+			_pendingViewControllers = _pendingViewControllers ?? base.ViewControllers;
+			_pendingViewControllers = _pendingViewControllers.Insert(index, viewController);
+			ViewControllers = _pendingViewControllers;
 		}
 
 		void PushPage(Page page, bool animated, TaskCompletionSource<bool> completionSource = null)
