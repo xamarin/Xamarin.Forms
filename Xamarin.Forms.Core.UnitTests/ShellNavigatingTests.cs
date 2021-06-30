@@ -294,6 +294,38 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public async Task RemoveInnerPagesNavigatingArgs()
+		{
+			Routing.RegisterRoute("SecondPageView", typeof(ContentPage));
+			Routing.RegisterRoute("ThirdPageView", typeof(ContentPage));
+			Routing.RegisterRoute("FourthPage", typeof(ContentPage));
+
+			var shell = new TestShell(
+				new FlyoutItem
+				{
+					Items =
+					{
+						new ShellContent()
+						{
+							Route = "HomePageView"
+						}
+					}
+				}
+			);
+
+			await shell.GoToAsync("//HomePageView/SecondPageView/ThirdPageView");
+			await shell.GoToAsync("//HomePageView/FourthPage");
+
+			Assert.That(shell.CurrentState.Location.ToString(),
+				Is.EqualTo("//HomePageView/FourthPage"));
+
+			Assert.That(shell.LastShellNavigatedEventArgs.Current.Location.ToString(),
+				Is.EqualTo("//HomePageView/FourthPage"));
+
+			Assert.AreEqual(2, shell.NavigatedCount);
+		}
+
+		[Test]
 		public async Task NavigationPushAndPopBasic()
 		{
 			var flyoutItem =

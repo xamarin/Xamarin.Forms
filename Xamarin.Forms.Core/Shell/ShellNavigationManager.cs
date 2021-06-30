@@ -166,6 +166,7 @@ namespace Xamarin.Forms
 				await _shell.CurrentItem.CurrentItem.GoToAsync(navigationRequest, queryData, animate, isRelativePopping);
 			}
 
+			(_shell as IShellController).UpdateCurrentState(source);
 			_accumulateNavigatedEvents = false;
 
 			// this can be null in the event that no navigation actually took place!
