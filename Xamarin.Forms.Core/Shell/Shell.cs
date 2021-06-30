@@ -474,6 +474,7 @@ namespace Xamarin.Forms
 				_navigationManager.HandleNavigated(new ShellNavigatedEventArgs(oldState, CurrentState, source));
 			}
 		}
+
 		ReadOnlyCollection<ShellItem> IShellController.GetItems() =>
 			new ReadOnlyCollection<ShellItem>(((ShellItemCollection)Items).VisibleItemsReadOnly.ToList());
 

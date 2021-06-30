@@ -11,7 +11,7 @@ namespace Xamarin.Forms
 		readonly Shell _shell;
 		ShellNavigatedEventArgs _accumulatedEvent;
 		bool _accumulateNavigatedEvents;
-
+		public bool AccumulateNavigatedEvents => _accumulateNavigatedEvents;
 		public event EventHandler<ShellNavigatedEventArgs> Navigated;
 		public event EventHandler<ShellNavigatingEventArgs> Navigating;
 

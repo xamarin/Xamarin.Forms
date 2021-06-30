@@ -1051,8 +1051,6 @@ namespace Xamarin.Forms
 
 			protected override IReadOnlyList<Page> GetNavigationStack() => _owner.GetNavigationStack();
 
-			protected override void OnInsertPageBefore(Page page, Page before) => _owner.OnInsertPageBefore(page, before);
-
 			protected override async Task<Page> OnPopAsync(bool animated)
 			{
 				if (!_owner.IsVisibleSection)
@@ -1116,7 +1114,64 @@ namespace Xamarin.Forms
 				return _owner.Shell.NavigationManager.GoToAsync(navigationParameters);
 			}
 
-			protected override void OnRemovePage(Page page) => _owner.OnRemovePage(page);
+			protected override void OnRemovePage(Page page)
+			{
+				if (!_owner.IsVisibleSection || _owner.Shell.NavigationManager.AccumulateNavigatedEvents)
+				{
+					_owner.OnRemovePage(page);
+					return;
+				}
+
+				var stack = _owner.Stack.ToList();
+				stack.Remove(page);
+				var navigationState = GetUpdatedStatus(stack);
+
+				ShellNavigatingEventArgs shellNavigatingEventArgs = new ShellNavigatingEventArgs(
+					_owner.Shell.CurrentState,
+					navigationState.Location,
+					ShellNavigationSource.Remove,
+					false);
+
+				_owner.Shell.NavigationManager.HandleNavigating(shellNavigatingEventArgs);
+				_owner.OnRemovePage(page);
+				(_owner.Shell as IShellController).UpdateCurrentState(ShellNavigationSource.Remove);
+			}
+
+			protected override void OnInsertPageBefore(Page page, Page before)
+			{
+				if (!_owner.IsVisibleSection || _owner.Shell.NavigationManager.AccumulateNavigatedEvents)
+				{
+					_owner.OnInsertPageBefore(page, before);
+					return;
+				}
+
+				var stack = _owner.Stack.ToList();
+				var index = stack.IndexOf(before);
+				if (index == -1)
+					throw new ArgumentException("Page not found in nav stack");
+
+				stack.Insert(index, page);
+				var navigationState = GetUpdatedStatus(stack);
+
+				ShellNavigatingEventArgs shellNavigatingEventArgs = new ShellNavigatingEventArgs(
+					_owner.Shell.CurrentState,
+					navigationState.Location,
+					ShellNavigationSource.Insert,
+					false);
+
+				_owner.Shell.NavigationManager.HandleNavigating(shellNavigatingEventArgs);
+				_owner.OnInsertPageBefore(page, before);
+				(_owner.Shell as IShellController).UpdateCurrentState(ShellNavigationSource.Insert);
+			}
+
+			ShellNavigationState GetUpdatedStatus(IReadOnlyList<Page> stack)
+			{
+				var shellItem = _owner.Shell.CurrentItem;
+				var shellSection = shellItem?.CurrentItem;
+				var shellContent = shellSection?.CurrentItem;
+				var modalStack = shellSection?.Navigation?.ModalStack;
+				return ShellNavigationManager.GetNavigationState(shellItem, shellSection, shellContent, stack, modalStack);
+			}
 		}
 	}
 }
