@@ -1,8 +1,8 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Controls.Issues
 		int _item = 0;
 		readonly int _changeFocusDelay = 1000;
 		View _lastFocus;
-#endif 
+#endif
 
 		const string Success = "Success";
 
@@ -56,7 +56,8 @@ namespace Xamarin.Forms.Controls.Issues
 					_item++;
 				}
 
-				Device.BeginInvokeOnMainThread(() => {
+				Device.BeginInvokeOnMainThread(() =>
+				{
 					Result.Text = Success;
 				});
 			});
