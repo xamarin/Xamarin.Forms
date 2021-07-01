@@ -240,7 +240,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnSearchHandlerFocusChange(object sender, FocusChangeEventArgs e)
 		{
-			       SearchHandler?.SetValue(SearchHandler.IsFocusedPropertyKey, e.HasFocus);
+			SearchHandler?.SetValue(SearchHandler.IsFocusedPropertyKey, e.HasFocus);
 		}
 
 		protected virtual void OnSearchHandlerPropertyChanged(object sender, PropertyChangedEventArgs e)
