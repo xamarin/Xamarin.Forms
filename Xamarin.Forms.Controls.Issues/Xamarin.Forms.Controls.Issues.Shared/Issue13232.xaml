@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="using:Xamarin.Forms.Controls"
+    xmlns:issues="using:Xamarin.Forms.Controls.Issues"
+    mc:Ignorable="d"
+    Title="Test 13232"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13232">
+    <local:TestContentPage.Resources>
+        <ResourceDictionary>
+
+            <DataTemplate x:Key="SwipeItemDataTemplate" x:DataType="issues:Issue13232Model">
+                <SwipeView>
+                    <SwipeView.RightItems>
+                        <SwipeItems>
+                            <SwipeItem
+                                BackgroundColor="Red"
+                                Text="Delete"
+                                Command="{Binding DeleteCommand, Source={RelativeSource AncestorType={x:Type issues:Issue13232ViewModel}}}"
+                                CommandParameter="{Binding .}" />
+                        </SwipeItems>
+                    </SwipeView.RightItems>
+                    <StackLayout
+                        BackgroundColor="White">
+                        <StackLayout
+                            Orientation="Horizontal">
+                            <Label
+                                Text="Swipe to Left"
+                                FontSize="Subtitle"/>
+                        </StackLayout>
+                        <Label
+                            Text="{Binding Title}"
+                            FontSize="Micro" />
+                        <Label
+                            Text="{Binding SubTitle}"
+                            FontSize="Micro" />
+                    </StackLayout>
+                </SwipeView>
+            </DataTemplate>
+
+        </ResourceDictionary>
+    </local:TestContentPage.Resources>
+    <Grid
+        RowSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Swipe to delete the message, if the Command is working, the test has passed."/>
+        <CollectionView
+            Grid.Row="1"
+            ItemsSource="{Binding Items}"
+            ItemTemplate="{StaticResource SwipeItemDataTemplate}"
+            BackgroundColor="LightGray"
+            ItemSizingStrategy="MeasureAllItems"
+            ItemsUpdatingScrollMode="KeepLastItemInView" />
+    </Grid>
+</local:TestContentPage>

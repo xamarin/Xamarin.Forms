@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -115,6 +114,23 @@ namespace Xamarin.Forms
 
 			if (BottomItems != null)
 				SetInheritedBindingContext(BottomItems, bc);
+		}
+
+		protected override void OnParentSet()
+		{
+			base.OnParentSet();
+
+			if (LeftItems != null)
+				UpdateSwipeItemsParent(LeftItems);
+
+			if (RightItems != null)
+				UpdateSwipeItemsParent(RightItems);
+
+			if (TopItems != null)
+				UpdateSwipeItemsParent(TopItems);
+
+			if (BottomItems != null)
+				UpdateSwipeItemsParent(BottomItems);
 		}
 
 		SwipeItems SwipeItemsDefaultValueCreator() => new SwipeItems();
