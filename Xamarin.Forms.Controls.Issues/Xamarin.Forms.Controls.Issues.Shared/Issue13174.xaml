@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13174"
+    Title="Issue 13174">
+	<StackLayout>
+		<Label
+			Padding="12"
+			BackgroundColor="Black"
+			TextColor="White"
+			Text="If the result is the same on Android and iOS, the test has passed." />
+		<Label Text="#FF0000" />
+		<Line X1="0" X2="{Binding Source={RelativeSource Mode=Self}, Path=Width}" Stroke="#FF0000" StrokeThickness="12" HorizontalOptions="FillAndExpand" />
+		<Label Text="#99FF0000" />
+		<Line X1="0" X2="{Binding Source={RelativeSource Mode=Self}, Path=Width}" Stroke="#99FF0000" StrokeThickness="12" HorizontalOptions="FillAndExpand" />
+		<Label Text="#33FF0000" />
+		<Line X1="0" X2="{Binding Source={RelativeSource Mode=Self}, Path=Width}" Stroke="#33FF0000" StrokeThickness="12" HorizontalOptions="FillAndExpand" />
+	</StackLayout>
+</controls:TestContentPage>

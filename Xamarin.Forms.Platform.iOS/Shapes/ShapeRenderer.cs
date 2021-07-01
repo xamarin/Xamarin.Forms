@@ -123,28 +123,28 @@ namespace Xamarin.Forms.Platform.MacOS
                 Control.ShapeLayer.UpdateStrokeDash(new nfloat[0]);
             else
             {
-				nfloat[] dashArray;
-				double[] array;
+                nfloat[] dashArray;
+                double[] array;
 
-				if (Element.StrokeDashArray.Count % 2 == 0)
-				{
-					array = new double[Element.StrokeDashArray.Count];
+                if (Element.StrokeDashArray.Count % 2 == 0)
+                {
+                    array = new double[Element.StrokeDashArray.Count];
                     dashArray = new nfloat[Element.StrokeDashArray.Count];
-					Element.StrokeDashArray.CopyTo(array, 0);
-				}
-				else
-				{
-					array = new double[2 * Element.StrokeDashArray.Count];
+                    Element.StrokeDashArray.CopyTo(array, 0);
+                }
+                else
+                {
+                    array = new double[2 * Element.StrokeDashArray.Count];
                     dashArray = new nfloat[2 * Element.StrokeDashArray.Count];
-					Element.StrokeDashArray.CopyTo(array, 0);
-					Element.StrokeDashArray.CopyTo(array, Element.StrokeDashArray.Count);
-				}
+                    Element.StrokeDashArray.CopyTo(array, 0);
+                    Element.StrokeDashArray.CopyTo(array, Element.StrokeDashArray.Count);
+                }
 
-				double thickness = Element.StrokeThickness;
+                double thickness = Element.StrokeThickness;
 
                 for (int i = 0; i < array.Length; i++)
                     dashArray[i] = new nfloat(thickness * array[i]);
-                
+
                 Control.ShapeLayer.UpdateStrokeDash(dashArray);
             }
         }
@@ -154,8 +154,8 @@ namespace Xamarin.Forms.Platform.MacOS
             Control.ShapeLayer.UpdateStrokeDashOffset((nfloat)Element.StrokeDashOffset);
         }
 
-		void UpdateStrokeLineCap()
-		{
+        void UpdateStrokeLineCap()
+        {
             PenLineCap lineCap = Element.StrokeLineCap;
             CGLineCap iLineCap = CGLineCap.Butt;
 
@@ -204,7 +204,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
     public class ShapeView
 #if __MOBILE__
-	: UIView
+    : UIView
 #else
     : NSView
 #endif
@@ -253,7 +253,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
         Stretch _stretch;
 
-		CGLineCap _strokeLineCap;
+        CGLineCap _strokeLineCap;
         CGLineJoin _strokeLineJoin;
         nfloat _strokeMiterLimit;
 
@@ -480,54 +480,60 @@ namespace Xamarin.Forms.Platform.MacOS
             graphics.SetLineJoin(_strokeLineJoin);
             graphics.SetMiterLimit(_strokeMiterLimit * _strokeWidth / 4);
 
-            if (_fill is GradientBrush fillGradientBrush)
+            if (!Brush.IsNullOrEmpty(_fill))
             {
-                graphics.AddPath(_renderPath);
+                if (_fill is GradientBrush fillGradientBrush)
+                {
+                    graphics.AddPath(_renderPath);
 
-                if (_fillMode)
-                    graphics.Clip();
+                    if (_fillMode)
+                        graphics.Clip();
+                    else
+                        graphics.EOClip();
+
+                    RenderBrush(graphics, _renderPathFill, fillGradientBrush);
+                }
                 else
-                    graphics.EOClip();
-
-                RenderBrush(graphics, _renderPathFill, fillGradientBrush);
-            }
-            else
-            {
-                CGColor fillColor =
+                {
+                    CGColor fillColor =
 #if __MOBILE__
                     UIColor.Clear.CGColor;
 #else
                     NSColor.Clear.CGColor;
 #endif
-                if (_fill is SolidColorBrush solidColorBrush && solidColorBrush.Color != Color.Default)
-                    fillColor = solidColorBrush.Color.ToCGColor();
+                    if (_fill is SolidColorBrush solidColorBrush && solidColorBrush.Color != Color.Default)
+                        fillColor = solidColorBrush.Color.ToCGColor();
 
-                graphics.AddPath(_renderPath);
-                graphics.SetFillColor(fillColor);
-                graphics.DrawPath(_fillMode ? CGPathDrawingMode.FillStroke : CGPathDrawingMode.EOFillStroke);
+                    graphics.AddPath(_renderPath);
+                    graphics.SetFillColor(fillColor);
+                    graphics.DrawPath(_fillMode ? CGPathDrawingMode.FillStroke : CGPathDrawingMode.EOFillStroke);
+                }
             }
 
-            if (_stroke is GradientBrush strokeGradientBrush)
+            if (!Brush.IsNullOrEmpty(_stroke))
             {
-                graphics.AddPath(_renderPath);
-                graphics.ReplacePathWithStrokedPath();
-                graphics.Clip();
-                RenderBrush(graphics, _renderPathStroke, strokeGradientBrush);
-            }
-            else
-            {
-                CGColor strokeColor =
+                if (_stroke is GradientBrush strokeGradientBrush)
+                {
+                    graphics.AddPath(_renderPath);
+                    graphics.ReplacePathWithStrokedPath();
+                    graphics.Clip();
+                    RenderBrush(graphics, _renderPathStroke, strokeGradientBrush);
+                }
+                else
+                {
+                    CGColor strokeColor =
 #if __MOBILE__
                     UIColor.Clear.CGColor;
 #else
                     NSColor.Clear.CGColor;
 #endif
-                if (_stroke is SolidColorBrush solidColorBrush && solidColorBrush.Color != Color.Default)
-                    strokeColor = solidColorBrush.Color.ToCGColor();
+                    if (_stroke is SolidColorBrush solidColorBrush && solidColorBrush.Color != Color.Default)
+                        strokeColor = solidColorBrush.Color.ToCGColor();
 
-                graphics.AddPath(_renderPath);
-                graphics.SetStrokeColor(strokeColor);
-                graphics.DrawPath(CGPathDrawingMode.Stroke);
+                    graphics.AddPath(_renderPath);
+                    graphics.SetStrokeColor(strokeColor);
+                    graphics.DrawPath(CGPathDrawingMode.Stroke);
+                }
             }
 
             CATransaction.Commit();

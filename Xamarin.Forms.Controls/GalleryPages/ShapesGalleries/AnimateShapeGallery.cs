@@ -43,8 +43,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.ShapesGalleries
 			Point center = new Point(Width / 2, Height / 2);
 
 			PointCollection points = polyline.Points;
-			polyline.Points = null;
-
+	
 			for (double angle = 0; angle < 3600; angle += 1)
 			{
 				double scaledRadius = radius * angle / 3600;
