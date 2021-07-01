@@ -109,17 +109,13 @@ namespace Xamarin.Forms.Controls
 
 		public Page CreateDefaultMainPage()
 		{
-			var layout = new StackLayout { BackgroundColor = Color.Red };
-			layout.Children.Add(new Label { Text = "This is master Page" });
-			var master = new ContentPage { Title = "Flyout", Content = layout, BackgroundColor = Color.SkyBlue, IconImageSource = "menuIcon" };
-			master.On<iOS>().SetUseSafeArea(true);
 			var mdp = new FlyoutPage
 			{
 				AutomationId = DefaultMainPageId,
-				Flyout = master,
+				Flyout = CoreGallery.GetFlyoutPage(),
 				Detail = CoreGallery.GetMainPage()
 			};
-			master.IconImageSource.AutomationId = "btnMDPAutomationID";
+		
 			mdp.SetAutomationPropertiesName("Main page");
 			mdp.SetAutomationPropertiesHelpText("Main page help text");
 			mdp.Flyout.IconImageSource.SetAutomationPropertiesHelpText("This as MDP icon");

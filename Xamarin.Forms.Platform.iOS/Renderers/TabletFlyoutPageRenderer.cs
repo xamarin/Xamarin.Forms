@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Linq;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -12,6 +13,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			foreach (var vc in ChildViewControllers)
 				vc.View.Frame = View.Bounds;
+		}
+
+		public override UIViewController ChildViewControllerForStatusBarStyle()
+		{
+			return ChildViewControllers.Length > 0 ? ChildViewControllers[0] : base.ChildViewControllerForStatusBarStyle();
 		}
 	}
 

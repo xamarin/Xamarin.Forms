@@ -9,6 +9,7 @@ using Foundation;
 using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.ControlGallery.iOS;
+using Xamarin.Forms.ControlGallery.iOS.CustomRenderers;
 using Xamarin.Forms.Controls;
 using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Platform.iOS;
@@ -17,6 +18,8 @@ using IOPath = System.IO.Path;
 [assembly: Dependency(typeof(TestCloudService))]
 [assembly: Dependency(typeof(CacheService))]
 [assembly: ExportRenderer(typeof(DisposePage), typeof(DisposePageRenderer))]
+[assembly: ExportRenderer(typeof(CoreFlyoutView), typeof(FlyoutPageStatusRenderer))]
+[assembly: ExportRenderer(typeof(CoreNavigationPage), typeof(DetailPageStatusBarRenderer))]
 [assembly: ExportRenderer(typeof(DisposeLabel), typeof(DisposeLabelRenderer))]
 [assembly: ExportEffect(typeof(BorderEffect), nameof(BorderEffect))]
 namespace Xamarin.Forms.ControlGallery.iOS
