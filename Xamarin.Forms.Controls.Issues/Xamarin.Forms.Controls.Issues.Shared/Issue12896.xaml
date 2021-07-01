@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+	xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+	xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue12896"
+    Title="Issue 12896">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If the SwipeView content maintains margin and padding, the test has passed." />
+        <Label
+            Text="Without using SwipeView"/>
+        <ListView
+            HasUnevenRows="True" 
+            BackgroundColor="Transparent">
+            <ListView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Item 1</x:String>
+                    <x:String>Item 2</x:String>
+                    <x:String>Item 3</x:String>
+                </x:Array>
+            </ListView.ItemsSource>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid
+                            ColumnDefinitions="*,125"
+                            RowSpacing="0"
+                            RowDefinitions="30,30,25,30"
+                            Padding="5"
+                            Margin="25"
+                            BackgroundColor="Gray">
+                            <Label
+                                Text="{Binding}"/>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Label
+            Text="Using SwipeView"/>
+        <ListView
+            HasUnevenRows="True" 
+            BackgroundColor="Transparent">
+            <ListView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Item 1</x:String>
+                    <x:String>Item 2</x:String>
+                    <x:String>Item 3</x:String>
+                </x:Array>
+            </ListView.ItemsSource>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <SwipeView
+                            BackgroundColor="Transparent">
+                            <SwipeView.RightItems>
+                                <SwipeItem
+                                    Text="Add Hours"
+                                    BackgroundColor="LightGreen"/>
+                                <SwipeItem
+                                    Text="Remove"
+                                    BackgroundColor="LightPink"/>
+                            </SwipeView.RightItems>
+                            <Grid
+                                ColumnDefinitions="*,125"
+                                RowSpacing="0"
+                                RowDefinitions="30,30,25,30"
+                                Padding="5"
+                                Margin="25"
+                                BackgroundColor="Gray">
+                                <Label
+                                    Text="{Binding}"/>
+                            </Grid>
+                        </SwipeView>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+</controls:TestContentPage>

@@ -352,7 +352,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnContentPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+			if (e.IsOneOf(VisualElement.HeightProperty, VisualElement.WidthProperty, View.MarginProperty, Layout.PaddingProperty))
+				UpdateContentLayout();
+			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateIsSwipeEnabled();
 		}
 
@@ -426,6 +428,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			return emptyContentView;
 		}
+
+		void UpdateContentLayout() => ResetSwipe();
 
 		void UpdateIsSwipeEnabled()
 		{
@@ -560,8 +564,9 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var swipeItems = new List<UIView>();
 
-			foreach (var view in _actionView.Subviews)
-				swipeItems.Add(view);
+			if (_actionView != null)
+				foreach (var view in _actionView.Subviews)
+					swipeItems.Add(view);
 
 			return swipeItems;
 		}
