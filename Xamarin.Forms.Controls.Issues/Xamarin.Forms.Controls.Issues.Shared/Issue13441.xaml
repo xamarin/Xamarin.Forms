@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 13441" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13441">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Scroll to the end, without exceptions the test has passed."/>
+        <StackLayout>
+            <ListView
+                AutomationId="ListViewId"
+                CachingStrategy="RecycleElement"
+                HasUnevenRows="True"
+                SelectionMode="None"
+                SeparatorVisibility="None"
+                x:Name="listView">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout
+                                Padding="0,15,0,0"
+                                BackgroundColor="White"
+                                HeightRequest="300">
+                                <Grid
+                                    HeightRequest="{Binding Width, Source={x:Reference listView}}">
+                                    <CarouselView
+                                        ItemsSource="{Binding Items}"
+                                        HorizontalScrollBarVisibility="Never"
+                                        Loop="False"
+                                        x:Name="carousel">
+                                        <CarouselView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Image
+                                                    Source="{Binding Text}"
+                                                    Aspect="AspectFill" />
+                                            </DataTemplate>
+                                        </CarouselView.ItemTemplate>
+                                    </CarouselView>
+                                </Grid>
+                                <BoxView
+                                    Color="LightGray"
+                                    HeightRequest="5"
+                                    Margin="0,15,0,0" />
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+    </StackLayout>
+</local:TestContentPage>

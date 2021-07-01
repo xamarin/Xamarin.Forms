@@ -508,6 +508,10 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateFromCurrentItem()
 		{
 			var currentItemPosition = ItemsViewAdapter.ItemsSource.GetPosition(Carousel.CurrentItem);
+
+			if (currentItemPosition == -1)
+				return;
+
 			var carouselPosition = Carousel.Position;
 
 			if (_gotoPosition == -1 && currentItemPosition != carouselPosition)
