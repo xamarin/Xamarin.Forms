@@ -142,8 +142,14 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Bounds.X < 0 || Bounds.Y < 0)
 				Bounds = new CGRect(0, 0, Bounds.Width, Bounds.Height);
 
-			if (_contentView != null && _contentView.Frame.IsEmpty)
-				_contentView.Frame = Bounds;
+			if (_contentView != null)
+			{
+				if (_contentView.Frame.IsEmpty)
+					_contentView.Frame = Bounds;
+
+				if (_originalBounds == CGRect.Empty)
+					_originalBounds = _contentView.Frame;
+			}
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -509,9 +515,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (items == null || items.Count == 0)
 				return;
-
-			if (_originalBounds == CGRect.Empty)
-				_originalBounds = _contentView.Frame;
 
 			int i = 0;
 			float previousWidth = 0;
@@ -1026,7 +1029,6 @@ namespace Xamarin.Forms.Platform.iOS
 			_swipeItems.Clear();
 			_swipeThreshold = 0;
 			_swipeOffset = 0;
-			_originalBounds = CGRect.Empty;
 
 			if (_actionView != null)
 			{
