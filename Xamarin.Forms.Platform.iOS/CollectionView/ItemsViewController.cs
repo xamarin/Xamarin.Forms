@@ -618,6 +618,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (CollectionView.Hidden)
 				{
+					CollectionView.ReloadData();
 					CollectionView.Hidden = false;
 					Layout.InvalidateLayout();
 					CollectionView.LayoutIfNeeded();
