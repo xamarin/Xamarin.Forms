@@ -102,6 +102,7 @@
     <Compile Include="CheckBoxUnitTests.cs" />
     <Compile Include="StyleSheets\BaseClassSelectorTests.cs" />
     <Compile Include="StateTriggerTests.cs" />
+    <Compile Include="TimerUnitTest.cs" />
     <Compile Include="VisualTests.cs" />
     <Compile Include="FlowDirectionTests.cs" />
     <Compile Include="ImageButtonUnitTest.cs" />
