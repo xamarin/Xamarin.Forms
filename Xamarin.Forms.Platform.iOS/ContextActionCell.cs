@@ -416,7 +416,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		UIButton GetButton(MenuItem item)
 		{
-			var button = new UIButton(new RectangleF(0, 0, 1, 1));
+			var button = new ContextActionButton(new RectangleF(0, 0, 1, 1));
 
 			if (!item.IsDestructive)
 				button.SetBackgroundImage(NormalBackground, UIControlState.Normal);
@@ -727,6 +727,24 @@ namespace Xamarin.Forms.Platform.iOS
 				// do not activate a -1 index when dismissing by clicking outside the popover
 				if (buttonIndex >= 0)
 					((IMenuItemController)Items[(int)buttonIndex]).Activate();
+			}
+		}
+
+		class ContextActionButton : UIButton
+		{
+			public ContextActionButton(RectangleF frame) : base(frame)
+			{
+			}
+
+			public override UIView HitTest(PointF point, UIEvent uievent)
+			{
+				if (!Enabled)
+				{
+					if (PointInside(point, uievent))
+						return this;
+				}
+
+				return base.HitTest(point, uievent);
 			}
 		}
 	}
