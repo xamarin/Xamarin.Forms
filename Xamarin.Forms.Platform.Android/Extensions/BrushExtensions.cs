@@ -146,7 +146,15 @@ namespace Xamarin.Forms.Platform.Android
 					return;
 
 				gradientDrawable.SetGradientType(GradientType.LinearGradient);
-				gradientDrawable.SetColors(colors);
+
+				if (Forms.Is29OrNewer)
+				{
+					var offsets = gradientBrushData.Item2;
+					gradientDrawable.SetColors(colors, offsets);
+				}
+				else
+					gradientDrawable.SetColors(colors);
+
 				SetGradientOrientation(gradientDrawable, angle);
 			}
 
@@ -166,7 +174,14 @@ namespace Xamarin.Forms.Platform.Android
 				gradientDrawable.SetGradientType(GradientType.RadialGradient);
 				gradientDrawable.SetGradientCenter(centerX, centerY);
 				gradientDrawable.SetGradientRadius(Math.Max(height, width) * radius);
-				gradientDrawable.SetColors(colors);
+
+				if (Forms.Is29OrNewer)
+				{
+					var offsets = gradientBrushData.Item2;
+					gradientDrawable.SetColors(colors, offsets);
+				}
+				else
+					gradientDrawable.SetColors(colors);
 			}
 		}
 
