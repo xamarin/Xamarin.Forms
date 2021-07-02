@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -9,16 +9,19 @@ namespace Xamarin.Forms.Platform.iOS
 	public abstract class TemplatedCell : ItemsViewCell
 	{
 		public event EventHandler<EventArgs> ContentSizeChanged;
+		public event EventHandler<LayoutAttributesChangedEventArgs> LayoutAttributesChanged;
 
 		protected CGSize ConstrainedSize;
 
 		protected nfloat ConstrainedDimension;
 
-		DataTemplate _currentTemplate;
+		public DataTemplate CurrentTemplate { get; private set; }
 
 		// Keep track of the cell size so we can verify whether a measure invalidation 
 		// actually changed the size of the cell
 		Size _size;
+
+		internal CGSize CurrentSize => _size.ToSizeF();
 
 		[Export("initWithFrame:")]
 		[Internals.Preserve(Conditional = true)]
@@ -39,7 +42,7 @@ namespace Xamarin.Forms.Platform.iOS
 			ClearConstraints();
 			ConstrainedDimension = constant;
 		}
-		
+
 		protected void ClearConstraints()
 		{
 			ConstrainedSize = default;
@@ -51,8 +54,30 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var preferredAttributes = base.PreferredLayoutAttributesFittingAttributes(layoutAttributes);
 
+			var preferredSize = preferredAttributes.Frame.Size;
+
+			if (SizesAreSame(preferredSize, _size)
+				&& AttributesConsistentWithConstrainedDimension(preferredAttributes))
+			{
+				return preferredAttributes;
+			}
+
+			var size = UpdateCellSize();
+
+			// Adjust the preferred attributes to include space for the Forms element
+			preferredAttributes.Frame = new CGRect(preferredAttributes.Frame.Location, size);
+
+			OnLayoutAttributesChanged(preferredAttributes);
+
+			//_isMeasured = true;
+
+			return preferredAttributes;
+		}
+
+		CGSize UpdateCellSize() 
+		{
 			// Measure this cell (including the Forms element) if there is no constrained size
-			var	size = ConstrainedSize == default(CGSize) ? Measure() : ConstrainedSize;
+			var size = ConstrainedSize == default ? Measure() : ConstrainedSize;
 
 			// Update the size of the root view to accommodate the Forms element
 			var nativeView = VisualElementRenderer.NativeView;
@@ -63,10 +88,7 @@ namespace Xamarin.Forms.Platform.iOS
 			VisualElementRenderer.Element.Layout(nativeBounds);
 			_size = nativeBounds.Size;
 
-			// Adjust the preferred attributes to include space for the Forms element
-			preferredAttributes.Frame = new CGRect(preferredAttributes.Frame.Location, size);
-
-			return preferredAttributes;
+			return size;
 		}
 
 		public void Bind(DataTemplate template, object bindingContext, ItemsView itemsView)
@@ -76,12 +98,13 @@ namespace Xamarin.Forms.Platform.iOS
 			// Run this through the extension method in case it's really a DataTemplateSelector
 			var itemTemplate = template.SelectDataTemplate(bindingContext, itemsView);
 
-			if (itemTemplate != _currentTemplate)
+			if (itemTemplate != CurrentTemplate)
 			{
 				// Remove the old view, if it exists
 				if (oldElement != null)
 				{
 					oldElement.MeasureInvalidated -= MeasureInvalidated;
+					oldElement.BindingContext = null;
 					itemsView.RemoveLogicalChild(oldElement);
 					ClearSubviews();
 					_size = Size.Zero;
@@ -101,23 +124,48 @@ namespace Xamarin.Forms.Platform.iOS
 				// if we do it before, the element briefly inherits the ItemsView's bindingcontext and we 
 				// emit a bunch of needless binding errors
 				itemsView.AddLogicalChild(view);
+
+				// Prevents the use of default color when there are VisualStateManager with Selected state setting the background color
+				// First we check whether the cell has the default selected background color; if it does, then we should check
+				// to see if the cell content is the VSM to set a selected color 
+				if (SelectedBackgroundView.BackgroundColor == ColorExtensions.Gray && IsUsingVSMForSelectionColor(view))
+				{
+					SelectedBackgroundView = new UIView
+					{
+						BackgroundColor = UIColor.Clear
+					};
+				}
 			}
-			else 
+			else
 			{
-				// Same template, different data
-				var currentElement = VisualElementRenderer?.Element;
+				// Same template
+				if (oldElement != null)
+				{
+					if (oldElement.BindingContext == null || !(oldElement.BindingContext.Equals(bindingContext)))
+					{
+						// If the data is different, update it
 
-				if (currentElement != null)
-					currentElement.BindingContext = bindingContext;
+						// Unhook the MeasureInvalidated handler, otherwise it'll fire for every invalidation during the 
+						// BindingContext change
+						oldElement.MeasureInvalidated -= MeasureInvalidated;
+						oldElement.BindingContext = bindingContext;
+						oldElement.MeasureInvalidated += MeasureInvalidated;
+
+						UpdateCellSize();
+					}
+				}
 			}
 
-			_currentTemplate = itemTemplate;
+			CurrentTemplate = itemTemplate;
 		}
 
 		void SetRenderer(IVisualElementRenderer renderer)
 		{
 			VisualElementRenderer = renderer;
 			var nativeView = VisualElementRenderer.NativeView;
+
+			// Clear out any old views if this cell is being reused
+			ClearSubviews();
 
 			InitializeContentConstraints(nativeView);
 
@@ -135,7 +183,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			nativeView.Frame = new CGRect(0, 0, width, height);
 
-			VisualElementRenderer.Element.Layout(nativeView.Frame.ToRectangle());
+			var rectangle = nativeView.Frame.ToRectangle();
+			VisualElementRenderer.Element.Layout(rectangle);
+			_size = rectangle.Size;
 		}
 
 		void ClearSubviews()
@@ -144,6 +194,44 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				ContentView.Subviews[n].RemoveFromSuperview();
 			}
+		}
+
+		internal void UseContent(TemplatedCell measurementCell)
+		{
+			// Copy all the content and values from the measurement cell 
+			ConstrainedDimension = measurementCell.ConstrainedDimension;
+			ConstrainedSize = measurementCell.ConstrainedSize;
+			CurrentTemplate = measurementCell.CurrentTemplate;
+			_size = measurementCell._size;
+			SetRenderer(measurementCell.VisualElementRenderer);
+		}
+
+		bool IsUsingVSMForSelectionColor(View view)
+		{
+			var groups = VisualStateManager.GetVisualStateGroups(view);
+			for (var groupIndex = 0; groupIndex < groups.Count; groupIndex++)
+			{
+				var group = groups[groupIndex];
+				for (var stateIndex = 0; stateIndex < group.States.Count; stateIndex++)
+				{
+					var state = group.States[stateIndex];
+					if (state.Name != VisualStateManager.CommonStates.Selected)
+					{
+						continue;
+					}
+
+					for (var setterIndex = 0; setterIndex < state.Setters.Count; setterIndex++)
+					{
+						var setter = state.Setters[setterIndex];
+						if (setter.Property.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+						{
+							return true;
+						}
+					}
+				}
+			}
+
+			return false;
 		}
 
 		public override bool Selected
@@ -185,6 +273,30 @@ namespace Xamarin.Forms.Platform.iOS
 		protected void OnContentSizeChanged()
 		{
 			ContentSizeChanged?.Invoke(this, EventArgs.Empty);
+		}
+
+		protected void OnLayoutAttributesChanged(UICollectionViewLayoutAttributes newAttributes)
+		{
+			LayoutAttributesChanged?.Invoke(this, new LayoutAttributesChangedEventArgs(newAttributes));
+		}
+
+		protected abstract bool AttributesConsistentWithConstrainedDimension(UICollectionViewLayoutAttributes attributes);
+
+		bool SizesAreSame(CGSize preferredSize, Size elementSize)
+		{
+			const double tolerance = 0.000001;
+
+			if (Math.Abs(preferredSize.Height - elementSize.Height) > tolerance)
+			{
+				return false;
+			}
+
+			if (Math.Abs(preferredSize.Width - elementSize.Width) > tolerance)
+			{
+				return false;
+			}
+
+			return true;
 		}
 	}
 }

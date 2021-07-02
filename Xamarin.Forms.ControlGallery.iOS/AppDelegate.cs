@@ -2,6 +2,8 @@
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -151,12 +153,10 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			App.IOSVersion = int.Parse(versionPart[0]);
 
 			Xamarin.Calabash.Start();
-			Forms.SetFlags("SwipeView_Experimental", "MediaElement_Experimental");
+
 			Forms.Init();
 			FormsMaps.Init();
-#if __XCODE11__
 			FormsMaterial.Init();
-#endif
 
 			Forms.ViewInitialized += (object sender, ViewInitializedEventArgs e) =>
 			{
@@ -406,6 +406,27 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		public int iOSVersion()
 		{
 			return App.IOSVersion;
+		}
+
+		[Export("hasInternetAccess")]
+		public bool HasInternetAccess()
+		{
+			try
+			{
+				using (var httpClient = new HttpClient())
+				using (var httpResponse = httpClient.GetAsync(@"https://www.github.com"))
+				{
+					httpResponse.Wait();
+					if (httpResponse.Result.StatusCode == System.Net.HttpStatusCode.OK)
+						return true;
+					else
+						return false;
+				}
+			}
+			catch
+			{
+				return false;
+			}
 		}
 	}
 

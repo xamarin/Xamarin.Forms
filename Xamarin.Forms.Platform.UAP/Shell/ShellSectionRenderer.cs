@@ -1,10 +1,16 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
+using Windows.ApplicationModel.Contacts;
 using Windows.Foundation.Metadata;
+using Windows.Media.Devices.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -17,7 +23,9 @@ namespace Xamarin.Forms.Platform.UWP
 		ShellContent CurrentContent;
 		ShellSection ShellSection;
 		IShellSectionController ShellSectionController => ShellSection;
+		List<Page> FormsNavigationStack;
 
+		ObservableCollection<ShellContent> ShellContentMenuItems;
 		public ShellSectionRenderer()
 		{
 			Xamarin.Forms.Shell.VerifyShellUWPFlagEnabled(nameof(ShellSectionRenderer));
@@ -27,7 +35,8 @@ namespace Xamarin.Forms.Platform.UWP
 			AlwaysShowHeader = false;
 			PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.Top;
 			ItemInvoked += OnMenuItemInvoked;
-
+			ShellContentMenuItems = new ObservableCollection<ShellContent>();
+			MenuItemsSource = ShellContentMenuItems;
 			AutoSuggestBox = new Windows.UI.Xaml.Controls.AutoSuggestBox() { Width = 300 };
 			AutoSuggestBox.TextChanged += OnSearchBoxTextChanged;
 			AutoSuggestBox.QuerySubmitted += OnSearchBoxQuerySubmitted;
@@ -40,11 +49,12 @@ namespace Xamarin.Forms.Platform.UWP
 			Resources["TopNavigationViewItemForeground"] = new Windows.UI.Xaml.Media.SolidColorBrush(ShellRenderer.DefaultForegroundColor);
 			Resources["TopNavigationViewItemForegroundSelected"] = new Windows.UI.Xaml.Media.SolidColorBrush(ShellRenderer.DefaultForegroundColor);
 			Resources["NavigationViewSelectionIndicatorForeground"] = new Windows.UI.Xaml.Media.SolidColorBrush(ShellRenderer.DefaultForegroundColor);
+			FormsNavigationStack = new List<Page>();
 		}
 
 		void OnShellSectionRendererSizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
 		{
-			if(Page != null)
+			if (Page != null)
 				Page.ContainerArea = new Rectangle(0, 0, e.NewSize.Width, e.NewSize.Height);
 		}
 
@@ -53,9 +63,13 @@ namespace Xamarin.Forms.Platform.UWP
 			var shellContent = args.InvokedItemContainer?.DataContext as ShellContent;
 			var shellItem = ShellSection.RealParent as ShellItem;
 
-			if(shellItem.RealParent is IShellController controller)
+			if (shellContent == null)
+				return;
+
+			if (shellItem.RealParent is Shell shell &&
+				shellItem.RealParent is IShellController controller)
 			{
-				var result = controller.ProposeNavigation(ShellNavigationSource.Pop, shellItem, ShellSection, shellContent, null, true);
+				var result = controller.ProposeNavigation(ShellNavigationSource.ShellContentChanged, shellItem, ShellSection, shellContent, null, true);
 				if (result)
 				{
 					ShellSection.SetValueFromRenderer(ShellSection.CurrentItemProperty, shellContent);
@@ -63,7 +77,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		internal void NavigateToShellSection(ShellNavigationSource source, ShellSection section, Page page, bool animate = true)
+		internal void NavigateToShellSection(ShellSection section)
 		{
 			_ = section ?? throw new ArgumentNullException(nameof(section));
 
@@ -74,7 +88,6 @@ namespace Xamarin.Forms.Platform.UWP
 					ShellSection.PropertyChanged -= OnShellSectionPropertyChanged;
 					ShellSectionController.ItemsCollectionChanged -= OnShellSectionRendererCollectionChanged;
 					ShellSection = null;
-					MenuItemsSource = null;
 				}
 
 				ShellSection = section;
@@ -84,35 +97,80 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (section.CurrentItem != SelectedItem)
 			{
-				SelectedItem = null;
 				IsPaneVisible = ShellSectionController.GetItems().Count > 1;
-				MenuItemsSource = ShellSectionController.GetItems();
-				SelectedItem = section.CurrentItem;
 			}
 
-			NavigateToContent(source, section.CurrentItem, page, animate);
+			SyncMenuItems();
+
+			var shellContent = ShellSection.CurrentItem;
+			Page nextPage = (ShellSection as IShellSectionController)
+					.PresentedPage ?? ((IShellContentController)shellContent)?.GetOrCreateContent();
+
+			int currentIndex = Frame.BackStackDepth;
+
+			// Build up current stack
+			Frame.Navigate(typeof(ShellPageWrapper), GetTransitionInfo(ShellNavigationSource.ShellSectionChanged));
+
+			for (int i = 0; i < ShellSection.Stack.Count - 1; i++)
+				Frame.Navigate(typeof(ShellPageWrapper));
+
+			// remove old stack
+			for (int i = currentIndex - 1; i >= 0; i--)
+			{
+				Frame.BackStack.RemoveAt(i);
+			}
+
+			NavigateToContent(new NavigationRequestedEventArgs(nextPage, true), ShellSection);
+			OnShellSectionChanged();
+		}
+
+		void SyncMenuItems()
+		{
+			var newItems = ShellSectionController.GetItems();
+			foreach (var item in newItems)
+			{
+				if (!ShellContentMenuItems.Contains(item))
+					ShellContentMenuItems.Add(item);
+			}
+
+			SelectedItem = ShellSection?.CurrentItem;
+
+			for (var i = ShellContentMenuItems.Count - 1; i >= 0; i--)
+			{
+				var item = ShellContentMenuItems[i];
+				if (!newItems.Contains(item))
+					ShellContentMenuItems.RemoveAt(i);
+			}
+
+			IsPaneVisible = ShellSectionController.GetItems().Count > 1;
 		}
 
 		void OnShellSectionRendererCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
-			// This shouldn't be necessary, but MenuItemsSource doesn't appear to be listening for INCC
-			// Revisit once using WinUI instead.
-			MenuItemsSource = null;
-			MenuItemsSource = ShellSectionController?.GetItems();
+			SyncMenuItems();
 		}
 
 		void OnShellSectionPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == ShellSection.CurrentItemProperty.PropertyName)
 			{
-				NavigateToContent(ShellNavigationSource.ShellSectionChanged, ShellSection.CurrentItem, null);
+				NavigateToShellSection(ShellSection);
 			}
 		}
 
-		internal void NavigateToContent(ShellNavigationSource source, ShellContent shellContent, Page page, bool animate = true)
+		public virtual void NavigateToContent(NavigationRequestedEventArgs args, ShellSection shellSection)
 		{
-			Page nextPage = (ShellSection as IShellSectionController)
-				.PresentedPage ?? ((IShellContentController)shellContent)?.GetOrCreateContent();
+			Page nextPage = null;
+			ShellContent shellContent = shellSection.CurrentItem;
+			if (args.RequestType == NavigationRequestType.PopToRoot)
+			{
+				nextPage = (shellContent as IShellContentController).GetOrCreateContent();
+			}
+			else
+			{
+				nextPage = (ShellSection as IShellSectionController)
+					.PresentedPage ?? ((IShellContentController)shellContent)?.GetOrCreateContent();
+			}
 
 			if (CurrentContent != null && Page != null)
 			{
@@ -125,30 +183,24 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				Page = nextPage;
 				Page.PropertyChanged += OnPagePropertyChanged;
-				switch (source)
+				switch (args.RequestType)
 				{
-					case ShellNavigationSource.Insert:
+					case NavigationRequestType.Insert:
+						OnInsertRequested(args);
 						break;
-					case ShellNavigationSource.Pop:
-						Frame.GoBack(GetTransitionInfo(source));
+					case NavigationRequestType.Pop:
+						OnPopRequested(args);
 						break;
-					case ShellNavigationSource.Unknown:
+					case NavigationRequestType.Unknown:
 						break;
-					case ShellNavigationSource.Push:
-						Frame.Navigate(typeof(ShellPageWrapper), GetTransitionInfo(source));
+					case NavigationRequestType.Push:
+						OnPushRequested(args);
 						break;
-					case ShellNavigationSource.PopToRoot:
-						while(Frame.BackStackDepth > 1)
-							Frame.GoBack(GetTransitionInfo(source));
+					case NavigationRequestType.PopToRoot:
+						OnPopToRootRequested(args);
 						break;
-					case ShellNavigationSource.Remove:
-						break;
-					case ShellNavigationSource.ShellItemChanged:
-						break;
-					case ShellNavigationSource.ShellSectionChanged:
-						Frame.Navigate(typeof(ShellPageWrapper), GetTransitionInfo(source));
-						break;
-					case ShellNavigationSource.ShellContentChanged:
+					case NavigationRequestType.Remove:
+						OnRemoveRequested(args);
 						break;
 				}
 
@@ -160,10 +212,58 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 
 				wrapper.LoadPage();
+				FormsNavigationStack = ShellSection.Stack.ToList();
 			}
 		}
 
-		NavigationTransitionInfo GetTransitionInfo(ShellNavigationSource navSource)
+		protected virtual void OnPopRequested(NavigationRequestedEventArgs e)
+		{
+			Frame.GoBack(GetTransitionInfo(e));
+		}
+
+		protected virtual void OnPopToRootRequested(NavigationRequestedEventArgs e)
+		{
+			while (Frame.BackStackDepth > 2)
+			{
+				Frame.BackStack.RemoveAt(1);
+			}
+			Frame.GoBack(GetTransitionInfo(e));
+		}
+
+		protected virtual void OnPushRequested(NavigationRequestedEventArgs e)
+		{
+			Frame.Navigate(typeof(ShellPageWrapper), GetTransitionInfo(e));
+		}
+
+		protected virtual void OnInsertRequested(NavigationRequestedEventArgs e)
+		{
+			var pageIndex = ShellSection.Stack.ToList().IndexOf(e.Page);
+			var transition = GetTransitionInfo(e);
+			if (pageIndex == Frame.BackStack.Count - 1)
+				Frame.Navigate(typeof(ShellPageWrapper), transition);
+			else
+				Frame.BackStack.Insert(pageIndex, new PageStackEntry(typeof(ShellPageWrapper), null, transition));
+		}
+
+		protected virtual void OnRemoveRequested(NavigationRequestedEventArgs e)
+		{
+			var pageIndex = FormsNavigationStack.IndexOf(e.Page);
+			if (pageIndex == Frame.BackStack.Count - 1)
+				Frame.GoBack(GetTransitionInfo(e));
+			else
+				Frame.BackStack.RemoveAt(pageIndex);
+		}
+
+		protected virtual void OnShellSectionChanged()
+		{
+		}
+
+		protected virtual NavigationTransitionInfo GetTransitionInfo(NavigationRequestedEventArgs e)
+		{
+			return GetTransitionInfo((ShellNavigationSource)e.RequestType);
+		}
+
+		protected virtual NavigationTransitionInfo GetTransitionInfo(ShellNavigationSource navSource)
 		{
 			switch (navSource)
 			{
@@ -175,6 +275,7 @@ namespace Xamarin.Forms.Platform.UWP
 				case ShellNavigationSource.ShellSectionChanged:
 					return null;
 			}
+
 			return null;
 		}
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -82,6 +83,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return shellSection;
 		}
 
+		[QueryProperty("DoubleQueryParameter", "DoubleQueryParameter")]
 		[QueryProperty("SomeQueryParameter", "SomeQueryParameter")]
 		[QueryProperty("CancelNavigationOnBackButtonPressed", "CancelNavigationOnBackButtonPressed")]
 		public class ShellTestPage : ContentPage
@@ -92,6 +94,12 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 
 			public string SomeQueryParameter
+			{
+				get;
+				set;
+			}
+
+			public double DoubleQueryParameter
 			{
 				get;
 				set;
@@ -167,17 +175,17 @@ namespace Xamarin.Forms.Core.UnitTests
 			bool templated = false)
 		{
 			return CreateShellSection<ShellSection>(
-				page, 
-				asImplicit, 
+				page,
+				asImplicit,
 				shellContentRoute,
-				shellSectionRoute, 
+				shellSectionRoute,
 				templated);
 		}
 
 		protected T CreateShellSection<T>(
-			TemplatedPage page = null, 
-			bool asImplicit = false, 
-			string shellContentRoute = null, 
+			TemplatedPage page = null,
+			bool asImplicit = false,
+			string shellContentRoute = null,
 			string shellSectionRoute = null,
 			bool templated = false) where T : ShellSection
 		{
@@ -216,7 +224,9 @@ namespace Xamarin.Forms.Core.UnitTests
 				content.Route = shellContentRoute;
 			}
 			else if (asImplicit)
-				content = (ShellContent)page;
+			{
+				content = (ShellContent)(page ?? new ContentPage());
+			}
 			else
 			{
 				if (templated)
@@ -244,6 +254,41 @@ namespace Xamarin.Forms.Core.UnitTests
 			return (item as IShellController).GetItems();
 		}
 
+
+		public class TestFlyoutItem : FlyoutItem
+		{
+			public TestFlyoutItem()
+			{
+
+			}
+
+			public TestFlyoutItem(ShellSection shellSection)
+			{
+				Items.Add(shellSection);
+			}
+		}
+
+		public class TestShellSection : ShellSection
+		{
+			public TestShellSection()
+			{
+
+			}
+
+			public TestShellSection(ShellContent shellContent)
+			{
+				Items.Add(shellContent);
+			}
+
+			public bool? LastPopWasAnimated { get; private set; }
+
+			protected override Task<Page> OnPopAsync(bool animated)
+			{
+				LastPopWasAnimated = animated;
+				return base.OnPopAsync(animated);
+			}
+		}
+
 		public class TestShell : Shell
 		{
 			public int OnNavigatedCount;
@@ -251,16 +296,72 @@ namespace Xamarin.Forms.Core.UnitTests
 			public int NavigatedCount;
 			public int NavigatingCount;
 			public int OnBackButtonPressedCount;
+			public ShellNavigatedEventArgs LastShellNavigatedEventArgs;
+			public ShellNavigatingEventArgs LastShellNavigatingEventArgs;
+
+			public IShellController Controller => this;
+
+			public List<List<Element>> GenerateTestFlyoutItems()
+			{
+				List<List<Element>> returnValue = new List<List<Element>>();
+
+
+				FlyoutItems
+					.OfType<IEnumerable>()
+					.ForEach(l => returnValue.Add(l.OfType<Element>().ToList()));
+
+				return returnValue;
+			}
 
 			public TestShell()
 			{
+				Routing.RegisterRoute(nameof(TestPage1), typeof(TestPage1));
+				Routing.RegisterRoute(nameof(TestPage2), typeof(TestPage2));
+				Routing.RegisterRoute(nameof(TestPage3), typeof(TestPage3));
+
 				this.Navigated += (_, __) => NavigatedCount++;
 				this.Navigating += (_, __) => NavigatingCount++;
+			}
+
+			public TestShell(params ShellItem[] shellItems) : this()
+			{
+				shellItems.ForEach(x => Items.Add(x));
+			}
+
+			public ContentPage RegisterPage(string route)
+			{
+				ContentPage page = new ContentPage();
+				RegisterPage(route, page);
+				return page;
+			}
+
+			public void RegisterPage(string route, ContentPage contentPage)
+			{
+				Routing.SetRoute(contentPage, route);
+				Routing.RegisterRoute(route, new ConcretePageFactory(contentPage));
+			}
+
+			public void AssertCurrentStateEquals(string expectedState)
+			{
+				Assert.AreEqual(expectedState, CurrentState.Location.ToString());
+			}
+
+			public class ConcretePageFactory : RouteFactory
+			{
+				ContentPage _contentPage;
+
+				public ConcretePageFactory(ContentPage contentPage)
+				{
+					_contentPage = contentPage;
+				}
+
+				public override Element GetOrCreate() => _contentPage;
 			}
 
 			public Action<ShellNavigatedEventArgs> OnNavigatedHandler { get; set; }
 			protected override void OnNavigated(ShellNavigatedEventArgs args)
 			{
+				LastShellNavigatedEventArgs = args;
 				base.OnNavigated(args);
 				OnNavigatedHandler?.Invoke(args);
 				OnNavigatedCount++;
@@ -268,8 +369,41 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			protected override void OnNavigating(ShellNavigatingEventArgs args)
 			{
+				LastShellNavigatingEventArgs = args;
 				base.OnNavigating(args);
 				OnNavigatingCount++;
+			}
+
+
+
+			public void TestNavigationArgs(ShellNavigationSource source, string from, string to)
+			{
+				TestNavigatingArgs(source, from, to);
+				TestNavigatedArgs(source, from, to);
+			}
+
+			public void TestNavigatedArgs(ShellNavigationSource source, string from, string to)
+			{
+				Assert.AreEqual(source, this.LastShellNavigatedEventArgs.Source);
+
+				if (from == null)
+					Assert.AreEqual(LastShellNavigatedEventArgs.Previous, null);
+				else
+					Assert.AreEqual(from, this.LastShellNavigatedEventArgs.Previous.Location.ToString());
+
+				Assert.AreEqual(to, this.LastShellNavigatedEventArgs.Current.Location.ToString());
+			}
+
+			public void TestNavigatingArgs(ShellNavigationSource source, string from, string to)
+			{
+				Assert.AreEqual(source, this.LastShellNavigatingEventArgs.Source);
+
+				if (from == null)
+					Assert.AreEqual(LastShellNavigatingEventArgs.Current, null);
+				else
+					Assert.AreEqual(from, this.LastShellNavigatingEventArgs.Current.Location.ToString());
+
+				Assert.AreEqual(to, this.LastShellNavigatingEventArgs.Target.Location.ToString());
 			}
 
 			public Func<bool> OnBackButtonPressedFunc;
@@ -279,7 +413,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 				OnBackButtonPressedCount++;
 
-				if(!result)
+				if (!result)
 					result = base.OnBackButtonPressed();
 
 				return result;
@@ -287,9 +421,9 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			public void Reset()
 			{
-				OnNavigatedCount = 
-					OnNavigatingCount = 
-					NavigatedCount = 
+				OnNavigatedCount =
+					OnNavigatingCount =
+					NavigatedCount =
 					NavigatingCount =
 					OnBackButtonPressedCount = 0;
 			}
@@ -301,6 +435,41 @@ namespace Xamarin.Forms.Core.UnitTests
 				Assert.AreEqual(count, OnNavigatingCount, $"OnNavigatingCount: {message}");
 				Assert.AreEqual(count, NavigatedCount, $"NavigatedCount: {message}");
 			}
+
+
+			public bool? LastPopWasAnimated
+			{
+				get
+				{
+					return (CurrentItem.CurrentItem as TestShellSection)?.LastPopWasAnimated;
+				}
+			}
 		}
+
+
+		public class TestShellViewModel : INotifyPropertyChanged
+		{
+			private string _text;
+
+			public event PropertyChangedEventHandler PropertyChanged;
+
+			public TestShellViewModel SubViewModel { get; set; }
+
+			public TestShellViewModel SubViewModel2 { get; set; }
+
+			public string Text
+			{
+				get => _text;
+				set
+				{
+					_text = value;
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Text)));
+				}
+			}
+		}
+
+		public class TestPage1 : ContentPage { }
+		public class TestPage2 : ContentPage { }
+		public class TestPage3 : ContentPage { }
 	}
 }

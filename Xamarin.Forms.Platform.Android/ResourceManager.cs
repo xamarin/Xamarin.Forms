@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -9,13 +10,8 @@ using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Xamarin.Forms.Internals;
-using IOPath = System.IO.Path;
-#if __ANDROID_29__
 using AndroidAppCompat = AndroidX.AppCompat.Content.Res.AppCompatResources;
-#else
-using AndroidAppCompat = Android.Support.V7.Content.Res.AppCompatResources;
-#endif
-using System.ComponentModel;
+using IOPath = System.IO.Path;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -29,15 +25,17 @@ namespace Xamarin.Forms.Platform.Android
 		static Assembly _assembly;
 		static Type FindType(string name, string altName)
 		{
-			return _assembly.GetTypes().FirstOrDefault(x => x.Name == name || x.Name == altName);
+			return _assembly?.GetTypes().FirstOrDefault(x => x.Name == name || x.Name == altName);
 		}
 		static Type _drawableClass;
 		static Type _resourceClass;
 		static Type _styleClass;
 		static Type _layoutClass;
 
-		public static Type DrawableClass { 
-			get { 
+		public static Type DrawableClass
+		{
+			get
+			{
 				if (_drawableClass == null)
 					_drawableClass = FindType("Drawable", "Resource_Drawable");
 				return _drawableClass;
@@ -48,8 +46,10 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		public static Type ResourceClass { 
-			get { 
+		public static Type ResourceClass
+		{
+			get
+			{
 				if (_resourceClass == null)
 					_resourceClass = FindType("Id", "Resource_Id");
 				return _resourceClass;
@@ -60,8 +60,10 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		public static Type StyleClass { 
-			get { 
+		public static Type StyleClass
+		{
+			get
+			{
 				if (_styleClass == null)
 					_styleClass = FindType("Style", "Resource_Style");
 				return _styleClass;
@@ -72,8 +74,10 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		public static Type LayoutClass { 
-			get { 
+		public static Type LayoutClass
+		{
+			get
+			{
 				if (_layoutClass == null)
 					_layoutClass = FindType("Layout", "Resource_Layout");
 				return _layoutClass;
@@ -93,7 +97,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (imageSource is FileImageSource fileImageSource)
 			{
 				var file = fileImageSource.File;
-				var id = IdFromTitle(file, DrawableClass);
+				var id = IdFromTitle(file, DrawableClass, "drawable", context);
 
 				// try the drawables via id
 				if (id != 0)
@@ -353,19 +357,35 @@ namespace Xamarin.Forms.Platform.Android
 			return AndroidAppCompat.GetDrawable(context, id);
 		}
 
+		public static int GetDrawableId(this Context context, string title)
+		{
+			return IdFromTitle(title, DrawableClass, _drawableDefType, context);
+		}
+
+		[Obsolete("GetDrawableByName(string) is obsolete as of version 4.8. "
+			+ "Please use GetDrawableId(string, context) instead.")]
 		public static int GetDrawableByName(string name)
 		{
-			return IdFromTitle(name, DrawableClass);
+			return IdFromTitle(name, DrawableClass, _drawableDefType, Forms.ApplicationContext);
 		}
 
+		[Obsolete("GetResourceByName(string) is obsolete as of version 4.8. "
+			+ "Please use GetResource(string, context) instead.")]
 		public static int GetResourceByName(string name)
 		{
-			return IdFromTitle(name, ResourceClass);
+			return IdFromTitle(name, ResourceClass, "id", Forms.ApplicationContext);
 		}
 
+		public static int GetResource(this Context context, string title)
+		{
+			return IdFromTitle(title, ResourceClass, "id", context);
+		}
+
+		[Obsolete("GetLayoutByName(string) is obsolete as of version 4.8. "
+			+ "Please use GetLayout(string, context) instead.")]
 		public static int GetLayoutByName(string name)
 		{
-			return IdFromTitle(name, LayoutClass);
+			return IdFromTitle(name, LayoutClass, "layout", Forms.ApplicationContext);
 		}
 
 		public static int GetLayout(this Context context, string name)
@@ -373,9 +393,11 @@ namespace Xamarin.Forms.Platform.Android
 			return IdFromTitle(name, LayoutClass, "layout", context);
 		}
 
+		[Obsolete("GetStyleByName(string) is obsolete as of version 4.8. "
+			+ "Please use GetStyle(string, context) instead.")]
 		public static int GetStyleByName(string name)
 		{
-			return IdFromTitle(name, StyleClass);
+			return IdFromTitle(name, StyleClass, "style", Forms.ApplicationContext);
 		}
 
 		public static int GetStyle(this Context context, string name)
@@ -383,19 +405,9 @@ namespace Xamarin.Forms.Platform.Android
 			return IdFromTitle(name, StyleClass, "style", context);
 		}
 
-		public static void Init(Assembly masterAssembly)
+		public static void Init(Assembly mainAssembly)
 		{
-			_assembly = masterAssembly;
-		}
-
-		static int IdFromTitle(string title, Type type)
-		{
-			if (title == null)
-				return 0;
-
-			string name = IOPath.GetFileNameWithoutExtension(title);
-			int id = GetId(type, name);
-			return id;
+			_assembly = mainAssembly;
 		}
 
 		static int IdFromTitle(string title, Type resourceType, string defType, Resources resource)
@@ -405,7 +417,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		static int IdFromTitle(string title, Type resourceType, string defType, Context context)
 		{
-			return IdFromTitle(title, resourceType, defType, context.Resources, context.PackageName);
+			return IdFromTitle(title, resourceType, defType, context?.Resources, context?.PackageName);
 		}
 
 		static int IdFromTitle(string title, Type resourceType, string defType, Resources resource, string packageName)
@@ -414,24 +426,38 @@ namespace Xamarin.Forms.Platform.Android
 			if (title == null)
 				return id;
 
-			string name = IOPath.GetFileNameWithoutExtension(title);
+			string name;
 
-			id = GetId(resourceType, name);
+			if (defType == "style" || (resourceType != null && resourceType == StyleClass))
+				name = title;
+			else
+				name = title.ToLower();
 
-			if (id > 0)
+			if (defType == _drawableDefType || (resourceType != null && resourceType == DrawableClass))
+				name = IOPath.GetFileNameWithoutExtension(name);
+
+			if ((id = SearchByIdentifier(name, defType, resource, packageName)) > 0)
 				return id;
 
-			if (packageName != null)
-			{
-				id = resource.GetIdentifier(name, defType, packageName);
+			// When searching by reflection you would use a "_" instead of a "."
+			// So this accounts for cases where users were searching with an "_"
+			if ((id = SearchByIdentifier(name.Replace("_", "."), defType, resource, packageName)) > 0)
+				return id;
 
-				if (id > 0)
-					return id;
+			int SearchByIdentifier(string n, string d, Resources r, string p)
+			{
+				int returnValue = 0;
+
+				if (p != null)
+					returnValue = r.GetIdentifier(n, d, p);
+
+				if (returnValue == 0)
+					returnValue = r.GetIdentifier(n, d, null);
+
+				return returnValue;
 			}
 
-			id = resource.GetIdentifier(name, defType, null);
-
-			return id;
+			return GetId(resourceType, name);
 		}
 
 		static int GetId(Type type, string memberName)

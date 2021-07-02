@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 			else
 			{
-				
+
 				(Content as StackLayout).Children.Add(GetWebView());
 				button.Text = "Reload the page";
 			}
@@ -113,6 +113,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
+		[NUnit.Framework.Category(UITestCategories.RequiresInternetConnection)]
 		public void CookiesCorrectlyLoadWithMultipleWebViews()
 		{
 			for (int i = 0; i < 10; i++)

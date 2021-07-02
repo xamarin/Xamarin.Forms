@@ -6,7 +6,7 @@
     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    x:Class="Xamarin.Forms.Controls.Issue10735"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue10735"
     Title="Issue 10735">
    <StackLayout>
        <Label
@@ -14,6 +14,10 @@
            BackgroundColor="Black"
            TextColor="White"
            Text="If this sample works without exceptions, the test has passed."/>
+        <Label
+           x:Name="Result"
+           Padding="12"
+           Text="running..."/>
 		<CollectionView
             x:Name="_collectionView"
 		    ItemsSource="{Binding Items}"

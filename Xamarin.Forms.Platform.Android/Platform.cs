@@ -10,20 +10,15 @@ using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.OS;
-#if __ANDROID_29__
-using AndroidX.Fragment.App;
-using FragmentManager = AndroidX.Fragment.App.FragmentManager;
-using AndroidX.Legacy.App;
-#else
-using Android.Support.V4.App;
-using FragmentManager = Android.Support.V4.App.FragmentManager;
-#endif
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using Xamarin.Forms.Platform.Android.AppCompat;
+using AndroidX.DrawerLayout.Widget;
+using AndroidX.Legacy.App;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Platform.Android.AppCompat;
 using AView = Android.Views.View;
+using FragmentManager = AndroidX.Fragment.App.FragmentManager;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -46,7 +41,7 @@ namespace Xamarin.Forms.Platform.Android
 					view.IsPlatformEnabled = newvalue != null;
 			});
 
-		IMasterDetailPageController MasterDetailPageController => CurrentMasterDetailPage as IMasterDetailPageController;
+		IFlyoutPageController FlyoutPageController => CurrentFlyoutPage as IFlyoutPageController;
 
 		readonly Context _context;
 		readonly Activity _activity;
@@ -111,7 +106,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		ActionBar ActionBar => _activity?.ActionBar;
 
-		MasterDetailPage CurrentMasterDetailPage { get; set; }
+		FlyoutPage CurrentFlyoutPage { get; set; }
 
 		NavigationPage CurrentNavigationPage
 		{
@@ -177,7 +172,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 #pragma warning disable 618 // Eventually we will need to determine how to handle the v7 ActionBarDrawerToggle for AppCompat
-		ActionBarDrawerToggle MasterDetailPageToggle { get; set; }
+		ActionBarDrawerToggle FlyoutPageToggle { get; set; }
 #pragma warning restore 618
 
 		void IDisposable.Dispose()
@@ -198,7 +193,7 @@ namespace Xamarin.Forms.Platform.Android
 			_toolbarTracker.Target = null;
 
 			CurrentNavigationPage = null;
-			CurrentMasterDetailPage = null;
+			CurrentFlyoutPage = null;
 			CurrentTabbedPage = null;
 		}
 
@@ -344,11 +339,23 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal static IVisualElementRenderer CreateRenderer(VisualElement element, Context context)
 		{
-			IVisualElementRenderer renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element, context)
-				?? new DefaultRenderer(context);
+			IVisualElementRenderer renderer = null;
+
+			// temporary hack to fix the following issues
+			// https://github.com/xamarin/Xamarin.Forms/issues/13261
+			// https://github.com/xamarin/Xamarin.Forms/issues/12484
+			if (element is RadioButton tv && tv.ResolveControlTemplate() != null)
+			{
+				renderer = new DefaultRenderer(context);
+			}
+
+			if (renderer == null)
+			{
+				renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element, context)
+					?? new DefaultRenderer(context);
+			}
 
 			renderer.SetElement(element);
-
 			return renderer;
 		}
 
@@ -456,11 +463,11 @@ namespace Xamarin.Forms.Platform.Android
 				await CurrentNavigationPage.PopAsync();
 				NavAnimationInProgress = false;
 			}
-			else if (CurrentMasterDetailPage != null)
+			else if (CurrentFlyoutPage != null)
 			{
-				if (MasterDetailPageController.ShouldShowSplitMode && CurrentMasterDetailPage.IsPresented)
+				if (FlyoutPageController.ShouldShowSplitMode && CurrentFlyoutPage.IsPresented)
 					return;
-				CurrentMasterDetailPage.IsPresented = !CurrentMasterDetailPage.IsPresented;
+				CurrentFlyoutPage.IsPresented = !CurrentFlyoutPage.IsPresented;
 			}
 		}
 
@@ -536,7 +543,7 @@ namespace Xamarin.Forms.Platform.Android
 				throw new Exception("Android only allows one tabbed page on screen at a time");
 			TabbedPage tabbedPage = tabbedPages.FirstOrDefault();
 
-			CurrentMasterDetailPage = relevantAncestors.OfType<MasterDetailPage>().FirstOrDefault();
+			CurrentFlyoutPage = relevantAncestors.OfType<FlyoutPage>().FirstOrDefault();
 			CurrentNavigationPage = navPage;
 			CurrentTabbedPage = tabbedPage;
 
@@ -550,7 +557,7 @@ namespace Xamarin.Forms.Platform.Android
 			else
 				HideActionBar();
 
-			UpdateMasterDetailToggle();
+			UpdateFlyoutPageToggle();
 		}
 
 		internal void UpdateActionBarBackgroundColor()
@@ -577,28 +584,28 @@ namespace Xamarin.Forms.Platform.Android
 				ActionBar.SetBackgroundDrawable(drawable);
 		}
 
-		internal void UpdateMasterDetailToggle(bool update = false)
+		internal void UpdateFlyoutPageToggle(bool update = false)
 		{
-			if (CurrentMasterDetailPage == null)
+			if (CurrentFlyoutPage == null)
 			{
-				if (MasterDetailPageToggle == null)
+				if (FlyoutPageToggle == null)
 					return;
 				// clear out the icon
-				ClearMasterDetailToggle();
+				ClearFlyoutPageToggle();
 				return;
 			}
-			if (!CurrentMasterDetailPage.ShouldShowToolbarButton() || (CurrentMasterDetailPage.Master.IconImageSource?.IsEmpty ?? true) ||
-				(MasterDetailPageController.ShouldShowSplitMode && CurrentMasterDetailPage.IsPresented))
+			if (!CurrentFlyoutPage.ShouldShowToolbarButton() || (CurrentFlyoutPage.Flyout.IconImageSource?.IsEmpty ?? true) ||
+				(FlyoutPageController.ShouldShowSplitMode && CurrentFlyoutPage.IsPresented))
 			{
 				//clear out existing icon;
-				ClearMasterDetailToggle();
+				ClearFlyoutPageToggle();
 				return;
 			}
 
-			if (MasterDetailPageToggle == null || update)
+			if (FlyoutPageToggle == null || update)
 			{
-				ClearMasterDetailToggle();
-				GetNewMasterDetailToggle();
+				ClearFlyoutPageToggle();
+				GetNewFlyoutPageToggle();
 			}
 
 			bool state;
@@ -606,10 +613,10 @@ namespace Xamarin.Forms.Platform.Android
 				state = true;
 			else
 				state = !UpButtonShouldNavigate();
-			if (state == MasterDetailPageToggle.DrawerIndicatorEnabled)
+			if (state == FlyoutPageToggle.DrawerIndicatorEnabled)
 				return;
-			MasterDetailPageToggle.DrawerIndicatorEnabled = state;
-			MasterDetailPageToggle.SyncState();
+			FlyoutPageToggle.DrawerIndicatorEnabled = state;
+			FlyoutPageToggle.SyncState();
 		}
 
 		void AddChild(VisualElement view, bool layout = false)
@@ -640,7 +647,7 @@ namespace Xamarin.Forms.Platform.Android
 			TabbedPage currentTabs = CurrentTabbedPage;
 
 			var atab = actionBar.NewTab();
-			
+
 			atab.SetText(new Java.Lang.String(page.Title));
 			atab.TabSelected += (sender, e) =>
 			{
@@ -664,8 +671,8 @@ namespace Xamarin.Forms.Platform.Android
 				var navPage = (IPageContainer<Page>)root;
 				result.AddRange(AncestorPagesOfPage(navPage.CurrentPage));
 			}
-			else if (root is MasterDetailPage)
-				result.AddRange(AncestorPagesOfPage(((MasterDetailPage)root).Detail));
+			else if (root is FlyoutPage)
+				result.AddRange(AncestorPagesOfPage(((FlyoutPage)root).Detail));
 			else
 			{
 				foreach (Page page in ((IPageController)root).InternalChildren.OfType<Page>())
@@ -676,15 +683,15 @@ namespace Xamarin.Forms.Platform.Android
 			return result;
 		}
 
-		void ClearMasterDetailToggle()
+		void ClearFlyoutPageToggle()
 		{
-			if (MasterDetailPageToggle == null)
+			if (FlyoutPageToggle == null)
 				return;
 
-			MasterDetailPageToggle.DrawerIndicatorEnabled = false;
-			MasterDetailPageToggle.SyncState();
-			MasterDetailPageToggle.Dispose();
-			MasterDetailPageToggle = null;
+			FlyoutPageToggle.DrawerIndicatorEnabled = false;
+			FlyoutPageToggle.SyncState();
+			FlyoutPageToggle.Dispose();
+			FlyoutPageToggle = null;
 		}
 
 		void CurrentNavigationPageOnPopped(object sender, NavigationEventArgs eventArg)
@@ -787,9 +794,9 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		void GetNewMasterDetailToggle()
+		void GetNewFlyoutPageToggle()
 		{
-			var drawer = GetRenderer(CurrentMasterDetailPage) as MasterDetailRenderer;
+			var drawer = GetRenderer(CurrentFlyoutPage) as DrawerLayout;
 			if (drawer == null)
 				return;
 
@@ -799,19 +806,19 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			// TODO: this must be changed to support the other image source types
-			var fileImageSource = CurrentMasterDetailPage.Master.IconImageSource as FileImageSource;
+			var fileImageSource = CurrentFlyoutPage.Flyout.IconImageSource as FileImageSource;
 			if (fileImageSource == null)
-					throw new InvalidOperationException("Icon property must be a FileImageSource on Master page");
+				throw new InvalidOperationException("Icon property must be a FileImageSource on Flyout page");
 
-			int icon = ResourceManager.GetDrawableByName(fileImageSource);
+			int icon = _activity.GetDrawableId(fileImageSource);
 
-			FastRenderers.AutomationPropertiesProvider.GetDrawerAccessibilityResources(_activity, CurrentMasterDetailPage, out int resourceIdOpen, out int resourceIdClose);
+			FastRenderers.AutomationPropertiesProvider.GetDrawerAccessibilityResources(_activity, CurrentFlyoutPage, out int resourceIdOpen, out int resourceIdClose);
 #pragma warning disable 618 // Eventually we will need to determine how to handle the v7 ActionBarDrawerToggle for AppCompat
-			MasterDetailPageToggle = new ActionBarDrawerToggle(_activity, drawer, icon,
-			                                                   resourceIdOpen == 0 ? global::Android.Resource.String.Ok : resourceIdOpen,
-													  		   resourceIdClose == 0 ? global::Android.Resource.String.Ok : resourceIdClose);
+			FlyoutPageToggle = new ActionBarDrawerToggle(_activity, drawer, icon,
+															   resourceIdOpen == 0 ? global::Android.Resource.String.Ok : resourceIdOpen,
+																 resourceIdClose == 0 ? global::Android.Resource.String.Ok : resourceIdClose);
 #pragma warning restore 618
-			MasterDetailPageToggle.SyncState();
+			FlyoutPageToggle.SyncState();
 		}
 
 
@@ -1024,22 +1031,22 @@ namespace Xamarin.Forms.Platform.Android
 			if (_activity.Window.Attributes.Flags.HasFlag(WindowManagerFlags.Fullscreen))
 				return false;
 
-			bool hasMasterDetailPage = CurrentMasterDetailPage != null;
+			bool hasFlyoutPage = CurrentFlyoutPage != null;
 			bool navigated = CurrentNavigationPage != null && ((INavigationPageController)CurrentNavigationPage).StackDepth > 1;
 			bool navigationPageHasNavigationBar = CurrentNavigationPage != null && NavigationPage.GetHasNavigationBar(CurrentNavigationPage.CurrentPage);
-			//if we have MDP and Navigation , we let navigation choose
-			if (CurrentNavigationPage != null && hasMasterDetailPage)
+			//if we have FP and Navigation , we let navigation choose
+			if (CurrentNavigationPage != null && hasFlyoutPage)
 			{
 				return NavigationPage.GetHasNavigationBar(CurrentNavigationPage.CurrentPage);
 			}
-			return navigationPageHasNavigationBar || (hasMasterDetailPage && !navigated);
+			return navigationPageHasNavigationBar || (hasFlyoutPage && !navigated);
 		}
 
 		bool ShouldUpdateActionBarUpColor()
 		{
-			bool hasMasterDetailPage = CurrentMasterDetailPage != null;
+			bool hasFlyoutPage = CurrentFlyoutPage != null;
 			bool navigated = CurrentNavigationPage != null && ((INavigationPageController)CurrentNavigationPage).StackDepth > 1;
-			return (hasMasterDetailPage && navigated) || !hasMasterDetailPage;
+			return (hasFlyoutPage && navigated) || !hasFlyoutPage;
 		}
 
 		void ShowActionBar()
@@ -1069,7 +1076,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateActionBarHomeAsUp(ActionBar actionBar)
 		{
-			bool showHomeAsUp = ShouldShowActionBarTitleArea() && (CurrentMasterDetailPage != null || UpButtonShouldNavigate());
+			bool showHomeAsUp = ShouldShowActionBarTitleArea() && (CurrentFlyoutPage != null || UpButtonShouldNavigate());
 			actionBar.SetDisplayHomeAsUpEnabled(showHomeAsUp);
 		}
 
@@ -1202,7 +1209,7 @@ namespace Xamarin.Forms.Platform.Android
 		internal class DefaultRenderer : VisualElementRenderer<View>, ILayoutChanges
 		{
 			public bool NotReallyHandled { get; private set; }
-			
+
 			IOnTouchListener _touchListener;
 			bool _disposed;
 			bool _hasLayoutOccurred;
@@ -1301,7 +1308,7 @@ namespace Xamarin.Forms.Platform.Android
 				_disposed = true;
 
 				if (disposing)
-					SetOnTouchListener(null); 
+					SetOnTouchListener(null);
 
 				base.Dispose(disposing);
 			}

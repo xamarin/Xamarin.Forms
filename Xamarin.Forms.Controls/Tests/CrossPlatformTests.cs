@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Controls.Tests
 		[Description("isPresentedChanged raises multiple times")]
 		public void Bugzilla32230()
 		{
-			var mdp = new MasterDetailPage();
+			var mdp = new FlyoutPage();
 			var count = 0;
 			mdp.IsPresentedChanged += (sender, args) => { count += 1; };
 
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Controls.Tests
 
 		[Test]
 		[Description("ButtonRenderer UpdateTextColor function crash")]
-		public async Task Bugzilla35738() 
+		public async Task Bugzilla35738()
 		{
 			var customButton = new TestClasses.CustomButton() { Text = "This is a custom button", TextColor = Color.Fuchsia };
 			await TestingPlatform.CreateRenderer(customButton);
@@ -58,7 +58,7 @@ namespace Xamarin.Forms.Controls.Tests
 
 		[Test]
 		[Description("[Bug] CollectionView exception when IsGrouped=true and null ItemSource")]
-		public async Task GitHub8269() 
+		public async Task GitHub8269()
 		{
 			var collectionView = new CollectionView { ItemsSource = null, IsGrouped = true };
 			await TestingPlatform.CreateRenderer(collectionView);

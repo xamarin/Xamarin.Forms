@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Threading.Tasks;
 
 
 #if UITEST
@@ -91,7 +91,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Assert.AreEqual(0, label[0].Rect.Height);
 			Assert.AreEqual(0, label[0].Rect.Width);
 #else
-			RunningApp.WaitForNoElement(_failedText);
+			var result = RunningApp.QueryUntilNotPresent(() => RunningApp.Query(_failedText));
 #endif
 		}
 #endif

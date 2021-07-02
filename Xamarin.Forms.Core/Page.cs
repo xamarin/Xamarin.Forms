@@ -129,8 +129,8 @@ namespace Xamarin.Forms
 
 		public IList<ToolbarItem> ToolbarItems { get; internal set; }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public Rectangle ContainerArea
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public Rectangle ContainerArea
 		{
 			get { return _containerArea; }
 			set
@@ -143,15 +143,15 @@ namespace Xamarin.Forms
 			}
 		}
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public bool IgnoresContainerArea
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public bool IgnoresContainerArea
 		{
 			get { return (bool)GetValue(IgnoresContainerAreaProperty); }
 			set { SetValue(IgnoresContainerAreaProperty, value); }
 		}
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
 
 		internal override IEnumerable<Element> ChildrenNotDrawnByThisElement
 		{
@@ -165,7 +165,6 @@ namespace Xamarin.Forms
 
 				if (titleViewPart2TheNavBar != null)
 					yield return titleViewPart2TheNavBar;
-
 			}
 		}
 
@@ -180,7 +179,14 @@ namespace Xamarin.Forms
 
 		public Task<string> DisplayActionSheet(string title, string cancel, string destruction, params string[] buttons)
 		{
+			return DisplayActionSheet(title, cancel, destruction, FlowDirection.MatchParent, buttons);
+		}
+
+		public Task<string> DisplayActionSheet(string title, string cancel, string destruction, FlowDirection flowDirection, params string[] buttons)
+		{
 			var args = new ActionSheetArguments(title, cancel, destruction, buttons);
+
+			args.FlowDirection = flowDirection;
 
 			if (IsPlatformEnabled)
 				MessagingCenter.Send(this, ActionSheetSignalName, args);
@@ -192,15 +198,27 @@ namespace Xamarin.Forms
 
 		public Task DisplayAlert(string title, string message, string cancel)
 		{
-			return DisplayAlert(title, message, null, cancel);
+			return DisplayAlert(title, message, null, cancel, FlowDirection.MatchParent);
 		}
 
 		public Task<bool> DisplayAlert(string title, string message, string accept, string cancel)
+		{
+			return DisplayAlert(title, message, accept, cancel, FlowDirection.MatchParent);
+		}
+
+		public Task DisplayAlert(string title, string message, string cancel, FlowDirection flowDirection)
+		{
+			return DisplayAlert(title, message, null, cancel, flowDirection);
+		}
+
+		public Task<bool> DisplayAlert(string title, string message, string accept, string cancel, FlowDirection flowDirection)
 		{
 			if (string.IsNullOrEmpty(cancel))
 				throw new ArgumentNullException("cancel");
 
 			var args = new AlertArguments(title, message, accept, cancel);
+			args.FlowDirection = flowDirection;
+
 			if (IsPlatformEnabled)
 				MessagingCenter.Send(this, AlertSignalName, args);
 			else
@@ -231,11 +249,11 @@ namespace Xamarin.Forms
 		internal override void OnIsPlatformEnabledChanged()
 		{
 			base.OnIsPlatformEnabledChanged();
-			if(IsPlatformEnabled && _pendingActions.Count > 0)
+			if (IsPlatformEnabled && _pendingActions.Count > 0)
 			{
 				var actionsToProcess = _pendingActions.ToList();
 				_pendingActions.Clear();
-				foreach(var pendingAction in actionsToProcess)
+				foreach (var pendingAction in actionsToProcess)
 					pendingAction();
 			}
 		}
@@ -309,7 +327,7 @@ namespace Xamarin.Forms
 				SetInheritedBindingContext(toolbarItem, BindingContext);
 			}
 
-			if(_titleView != null)
+			if (_titleView != null)
 				SetInheritedBindingContext(_titleView, BindingContext);
 		}
 
@@ -361,7 +379,7 @@ namespace Xamarin.Forms
 				var element = LogicalChildren[i];
 				if (element is VisualElement c)
 				{
-					if (c.Bounds != startingLayout[i])
+					if (startingLayout.Count <= i || c.Bounds != startingLayout[i])
 					{
 						LayoutChanged?.Invoke(this, EventArgs.Empty);
 						return;
@@ -416,7 +434,7 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-        public void SendAppearing()
+		public void SendAppearing()
 		{
 			if (_hasAppeared)
 				return;
@@ -440,8 +458,8 @@ namespace Xamarin.Forms
 			FindApplication(this)?.OnPageAppearing(this);
 		}
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public void SendDisappearing()
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendDisappearing()
 		{
 			if (!_hasAppeared)
 				return;

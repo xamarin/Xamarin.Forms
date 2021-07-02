@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			get
 			{
-				if (Element.IsSet(PlatformConfiguration.iOSSpecific.VisualElement.CanBecomeFirstResponderProperty))
+				if (Element != null && Element.IsSet(PlatformConfiguration.iOSSpecific.VisualElement.CanBecomeFirstResponderProperty))
 					return PlatformConfiguration.iOSSpecific.VisualElement.GetCanBecomeFirstResponder(Element);
 
 				return base.CanBecomeFirstResponder;
@@ -312,18 +312,30 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 #if __MOBILE__
+
+		void ResolveLayoutChanges()
+		{
+			if (Element is Layout layout)
+			{
+				layout.ResolveLayoutChanges();
+			}
+		}
+
 		public override SizeF SizeThatFits(SizeF size)
 		{
+			ResolveLayoutChanges();
 			return new SizeF(0, 0);
 		}
 
 		public override void LayoutSubviews()
 		{
+			ResolveLayoutChanges();
+
 			base.LayoutSubviews();
 
 			if (_blur != null && Superview != null)
 			{
-				_blur.Frame = Bounds;
+				_blur.Frame = Frame;
 				if (_blur.Superview == null)
 					Superview.Add(_blur);
 			}

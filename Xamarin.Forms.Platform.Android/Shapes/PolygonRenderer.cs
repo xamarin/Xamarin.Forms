@@ -8,109 +8,115 @@ using APath = Android.Graphics.Path;
 namespace Xamarin.Forms.Platform.Android
 {
 	public class PolygonRenderer : ShapeRenderer<Polygon, PolygonView>
-    {
-        public PolygonRenderer(Context context) : base(context)
-        {
+	{
+		PointCollection _points;
 
-        }
+		public PolygonRenderer(Context context) : base(context)
+		{
 
-        protected override void OnElementChanged(ElementChangedEventArgs<Polygon> args)
-        {
-            if (Control == null)
-            {
-                SetNativeControl(new PolygonView(Context));
-            }
+		}
 
-            base.OnElementChanged(args);
+		protected override void OnElementChanged(ElementChangedEventArgs<Polygon> args)
+		{
+			if (Control == null && args.NewElement != null)
+			{
+				SetNativeControl(new PolygonView(Context));
+			}
 
-            if (args.NewElement != null)
-            {
-                var points = args.NewElement.Points;
-                points.CollectionChanged += OnCollectionChanged;
+			base.OnElementChanged(args);
 
-                UpdatePoints();
-                UpdateFillRule();
-            }
-        }
+			if (args.NewElement != null)
+			{
+				UpdatePoints();
+				UpdateFillRule();
+			}
+		}
 
-        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs args)
-        {
-            base.OnElementPropertyChanged(sender, args);
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs args)
+		{
+			base.OnElementPropertyChanged(sender, args);
 
-            if (args.PropertyName == Polyline.PointsProperty.PropertyName)
-                UpdatePoints();
-            else if (args.PropertyName == Polyline.FillRuleProperty.PropertyName)
-                UpdateFillRule();
-        }
+			if (args.PropertyName == Polyline.PointsProperty.PropertyName)
+				UpdatePoints();
+			else if (args.PropertyName == Polyline.FillRuleProperty.PropertyName)
+				UpdateFillRule();
+		}
 
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
 
-            if (disposing)
-            {
-                if (Element != null)
-                {
-                    var points = Element.Points;
-                    points.CollectionChanged -= OnCollectionChanged;
-                }
-            }
-        }
+			if (disposing)
+			{
+				if (_points != null)
+				{
+					_points.CollectionChanged -= OnCollectionChanged;
+					_points = null;
+				}
+			}
+		}
 
-        void UpdatePoints()
-        {
-            Control.UpdatePoints(Element.Points);
-        }
+		void UpdatePoints()
+		{
+			if (_points != null)
+				_points.CollectionChanged -= OnCollectionChanged;
 
-        void UpdateFillRule()
-        {
-            Control.UpdateFillMode(Element.FillRule == FillRule.Nonzero);
-        }
+			_points = Element.Points;
 
-        void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            UpdatePoints();
-        }
-    }
+			_points.CollectionChanged += OnCollectionChanged;
 
-    public class PolygonView : ShapeView
-    {
-        PointCollection _points;
-        bool _fillMode;
+			Control.UpdatePoints(_points);
+		}
 
-        public PolygonView(Context context) : base(context)
-        {
+		void UpdateFillRule()
+		{
+			Control.UpdateFillMode(Element.FillRule == FillRule.Nonzero);
+		}
 
-        }
+		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			UpdatePoints();
+		}
+	}
 
-        void UpdateShape()
-        {
-            if (_points != null && _points.Count > 1)
-            {
-                APath path = new APath();
-                path.SetFillType(_fillMode ? FillType.Winding : FillType.EvenOdd);
+	public class PolygonView : ShapeView
+	{
+		PointCollection _points;
+		bool _fillMode;
 
-                path.MoveTo(_density * (float)_points[0].X, _density * (float)_points[0].Y);
+		public PolygonView(Context context) : base(context)
+		{
 
-                for (int index = 1; index < _points.Count; index++)
-                    path.LineTo(_density * (float)_points[index].X, _density * (float)_points[index].Y);
+		}
 
-                path.Close();
+		void UpdateShape()
+		{
+			if (_points != null && _points.Count > 1)
+			{
+				APath path = new APath();
+				path.SetFillType(_fillMode ? FillType.Winding : FillType.EvenOdd);
 
-                UpdateShape(path);
-            }
-        }
+				path.MoveTo(_density * (float)_points[0].X, _density * (float)_points[0].Y);
 
-        public void UpdatePoints(PointCollection points)
-        {
-            _points = points;
-            UpdateShape();
-        }
+				for (int index = 1; index < _points.Count; index++)
+					path.LineTo(_density * (float)_points[index].X, _density * (float)_points[index].Y);
 
-        public void UpdateFillMode(bool fillMode)
-        {
-            _fillMode = fillMode;
-            UpdateShape();
-        }
-    }
+				path.Close();
+
+				UpdateShape(path);
+			}
+		}
+
+		public void UpdatePoints(PointCollection points)
+		{
+			_points = points;
+			UpdateShape();
+		}
+
+		public void UpdateFillMode(bool fillMode)
+		{
+			_fillMode = fillMode;
+			UpdateShape();
+		}
+	}
 }

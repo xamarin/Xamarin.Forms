@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Linq;
 
 namespace Xamarin.Forms
 {
@@ -22,19 +22,9 @@ namespace Xamarin.Forms
 
 		}
 
-		public static readonly new BindableProperty IsVisibleProperty =
-			BindableProperty.CreateAttached(nameof(IsVisible), typeof(bool), typeof(FlyoutItem), true, propertyChanged: OnFlyoutItemIsVisibleChanged);
-
+		public static readonly new BindableProperty IsVisibleProperty = BaseShellItem.IsVisibleProperty;
 		public static bool GetIsVisible(BindableObject obj) => (bool)obj.GetValue(IsVisibleProperty);
 		public static void SetIsVisible(BindableObject obj, bool isVisible) => obj.SetValue(IsVisibleProperty, isVisible);
-
-		static void OnFlyoutItemIsVisibleChanged(BindableObject bindable, object oldValue, object newValue)
-		{
-			if (bindable is Element element)
-				element
-					.FindParentOfType<Shell>()
-					?.SendStructureChanged();
-		}
 	}
 
 	[EditorBrowsable(EditorBrowsableState.Always)]
@@ -60,21 +50,6 @@ namespace Xamarin.Forms
 		#region IShellItemController
 
 		IShellItemController ShellItemController => this;
-
-		internal Task GoToPart(NavigationRequest request, Dictionary<string, string> queryData)
-		{
-			var shellSection = request.Request.Section;
-
-			if (shellSection == null)
-				shellSection = ShellItemController.GetItems()[0];
-
-			Shell.ApplyQueryAttributes(shellSection, queryData, request.Request.Content == null);
-
-			if (CurrentItem != shellSection)
-				SetValueFromRenderer(CurrentItemProperty, shellSection);
-
-			return shellSection.GoToPart(request, queryData);
-		}
 
 		bool IShellItemController.ProposeSection(ShellSection shellSection, bool setValue)
 		{
@@ -158,7 +133,7 @@ namespace Xamarin.Forms
 					}
 				}
 
-				if(args.NewItems != null)
+				if (args.NewItems != null)
 				{
 					foreach (Element item in args.NewItems)
 					{
@@ -189,9 +164,12 @@ namespace Xamarin.Forms
 
 		internal void SendStructureChanged()
 		{
-			if (Parent is Shell shell && IsVisibleItem)
+			if (Parent is Shell shell)
 			{
-				shell.SendStructureChanged();
+				if (IsVisibleItem)
+					shell.SendStructureChanged();
+
+				shell.SendFlyoutItemsChanged();
 			}
 		}
 
@@ -199,7 +177,12 @@ namespace Xamarin.Forms
 		{
 			if (shellSection.Parent != null)
 			{
-				return (ShellItem)shellSection.Parent;
+				var current = (ShellItem)shellSection.Parent;
+
+				if (current.Items.Contains(shellSection))
+					current.CurrentItem = shellSection;
+
+				return current;
 			}
 
 			ShellItem result = null;
@@ -223,21 +206,6 @@ namespace Xamarin.Forms
 		public static implicit operator ShellItem(ShellSection shellSection)
 		{
 			return CreateFromShellSection(shellSection);
-		}
-
-		internal static ShellItem GetShellItemFromRouteName(string route)
-		{
-			var shellContent = new ShellContent { Route = route, Content = Routing.GetOrCreateContent(route) };
-			var result = new ShellItem();
-			var shellSection = new ShellSection();
-			shellSection.Items.Add(shellContent);
-			result.Route = Routing.GenerateImplicitRoute(shellSection.Route);
-			result.Items.Add(shellSection);
-			result.SetBinding(TitleProperty, new Binding(nameof(Title), BindingMode.OneWay, source: shellSection));
-			result.SetBinding(IconProperty, new Binding(nameof(Icon), BindingMode.OneWay, source: shellSection));
-			result.SetBinding(FlyoutDisplayOptionsProperty, new Binding(nameof(FlyoutDisplayOptions), BindingMode.OneTime, source: shellSection));
-			result.SetBinding(FlyoutIconProperty, new Binding(nameof(FlyoutIcon), BindingMode.OneWay, source: shellSection));
-			return result;
 		}
 
 		public static implicit operator ShellItem(ShellContent shellContent) => (ShellSection)shellContent;
@@ -306,7 +274,7 @@ namespace Xamarin.Forms
 
 			shellItem.SendStructureChanged();
 
-			if(shellItem.IsVisibleItem)
+			if (shellItem.IsVisibleItem)
 				((IShellController)shellItem?.Parent)?.AppearanceChanged(shellItem, false);
 		}
 

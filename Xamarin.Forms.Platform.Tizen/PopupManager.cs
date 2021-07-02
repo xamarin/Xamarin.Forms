@@ -142,10 +142,12 @@ namespace Xamarin.Forms.Platform.Tizen
 				var destruction = new Native.Button(alert)
 				{
 					Text = arguments.Destruction,
-					Style = ButtonStyle.Text,
-					TextColor = EColor.Red,
 					AlignmentX = -1
 				};
+				destruction.SetWatchTextStyle();
+				//TextColor should be set after applying style
+				destruction.TextColor = EColor.Red;
+
 				destruction.Clicked += (s, evt) =>
 				{
 					arguments.SetResult(arguments.Destruction);
@@ -160,9 +162,10 @@ namespace Xamarin.Forms.Platform.Tizen
 				var button = new Native.Button(alert)
 				{
 					Text = buttonName,
-					Style = ButtonStyle.Text,
 					AlignmentX = -1
 				};
+				button.SetWatchTextStyle();
+
 				button.Clicked += (s, evt) =>
 				{
 					arguments.SetResult(buttonName);
@@ -245,7 +248,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			var layoutrenderer = Platform.GetOrCreateRenderer(layout);
 
 			var request = layout.Measure(Device.Idiom == TargetIdiom.Watch ? sender.Width * 0.7 : sender.Width, sender.Height);
-			(layoutrenderer as LayoutRenderer).RegisterOnLayoutUpdated();
+			(layoutrenderer as ILayoutRenderer).RegisterOnLayoutUpdated();
 			layoutrenderer.NativeView.MinimumHeight = Forms.ConvertToScaledPixel(request.Request.Height);
 			layoutrenderer.NativeView.MinimumWidth = Forms.ConvertToScaledPixel(request.Request.Width);
 

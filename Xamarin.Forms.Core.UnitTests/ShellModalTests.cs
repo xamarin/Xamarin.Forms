@@ -243,7 +243,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			await shell.GoToAsync("ModalTestPage");
 			Assert.AreEqual("//NewRoute/Section/Content/ModalTestPage", shell.CurrentState.Location.ToString());
-			
+
 			await shell.GoToAsync("ModalTestPage");
 			Assert.AreEqual("//NewRoute/Section/Content/ModalTestPage/ModalTestPage", shell.CurrentState.Location.ToString());
 		}
@@ -262,7 +262,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				{
 					action();
 				}
-				catch(InvalidOperationException) 
+				catch (InvalidOperationException)
 				{
 					invalidOperationThrown = true;
 				}
@@ -316,6 +316,24 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("1234", testPage.SomeQueryParameter);
 		}
 
+
+		[TestCase("..")]
+		[TestCase("../")]
+		public async Task PoppingWithQueryString(string input)
+		{
+			Routing.RegisterRoute("details", typeof(ShellTestPage));
+			var shell = new TestShell(CreateShellItem());
+
+			await shell.GoToAsync("details");
+			await shell.GoToAsync("ModalTestPage");
+
+			await shell.GoToAsync(new ShellNavigationState($"{input}?{nameof(ShellTestPage.SomeQueryParameter)}=1234"));
+			shell.AssertCurrentStateEquals($"//{shell.CurrentItem.CurrentItem.CurrentItem.Route}/details");
+
+			var testPage = shell.CurrentPage as ShellTestPage;
+			Assert.AreEqual("1234", testPage.SomeQueryParameter);
+		}
+
 		[Test]
 		public async Task NavigatingAndNavigatedFiresForShellModal()
 		{
@@ -345,6 +363,24 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
+		[Test]
+		public async Task GetCurrentPageInModalNavigation()
+		{
+			Shell shell = new Shell();
+			shell.Items.Add(CreateShellItem(shellItemRoute: "NewRoute", shellSectionRoute: "Section", shellContentRoute: "Content"));
+
+			Page page = null;
+
+			shell.Navigated += (_, __) =>
+			{
+				page = shell.CurrentPage;
+			};
+
+			await shell.GoToAsync("ModalTestPage");
+			Assert.IsNotNull(page);
+			Assert.AreEqual(page.GetType(), typeof(ModalTestPage));
+		}
+
 
 		[QueryProperty("SomeQueryParameter", "SomeQueryParameter")]
 		public class ModalTestPageBase : ShellLifeCycleTests.LifeCyclePage
@@ -364,7 +400,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			{
 				base.OnAppearing();
 			}
-			
+
 
 			protected override void OnParentSet()
 			{

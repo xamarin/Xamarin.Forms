@@ -3,17 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics.Drawables;
-#if __ANDROID_29__
-using AndroidX.Core.Content;
-#else
-using Android.Support.V4.Content;
-#endif
 using Android.Text;
 using Android.Text.Method;
 using Android.Util;
 using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
+using AndroidX.Core.Content;
 using Java.Lang;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
@@ -209,12 +205,20 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
-				if (EditText != null && EditText is IFormsEditText formsEditContext)
+				if (EditText != null)
 				{
-					formsEditContext.OnKeyboardBackPressed -= OnKeyboardBackPressed;
-					formsEditContext.SelectionChanged -= SelectionChanged;
-					ListenForCloseBtnTouch(false);
+					EditText.RemoveTextChangedListener(this);
+					EditText.SetOnEditorActionListener(null);
+
+					if (EditText is IFormsEditText formsEditContext)
+					{
+						formsEditContext.OnKeyboardBackPressed -= OnKeyboardBackPressed;
+						formsEditContext.SelectionChanged -= SelectionChanged;
+
+						ListenForCloseBtnTouch(false);
+					}
 				}
+
 				_clearBtn = null;
 			}
 
@@ -535,10 +539,10 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateText()
 		{
 			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
-			
+
 			if (EditText.Text == text)
 				return;
-			
+
 			EditText.Text = text;
 			if (EditText.IsFocused)
 			{
@@ -575,10 +579,16 @@ namespace Xamarin.Forms.Platform.Android
 				var x = me.GetX();
 				var y = me.GetY();
 				if (me.Action == MotionEventActions.Up
-					&& x >= (EditText.Right - rBounds.Width())
+					&& ((x >= (EditText.Right - rBounds.Width())
 					&& x <= (EditText.Right - EditText.PaddingRight)
 					&& y >= EditText.PaddingTop
-					&& y <= (EditText.Height - EditText.PaddingBottom))
+					&& y <= (EditText.Height - EditText.PaddingBottom)
+					&& (Element as IVisualElementController).EffectiveFlowDirection.IsLeftToRight())
+					|| (x >= (EditText.Left + EditText.PaddingLeft)
+					&& x <= (EditText.Left + rBounds.Width())
+					&& y >= EditText.PaddingTop
+					&& y <= (EditText.Height - EditText.PaddingBottom)
+					&& (Element as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())))
 				{
 					EditText.Text = null;
 					e.Handled = true;
@@ -627,7 +637,14 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateClearBtn(bool showClearButton)
 		{
 			Drawable d = showClearButton && (Element.Text?.Length > 0) ? GetCloseButtonDrawable() : null;
-			EditText.SetCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+			if ((Element as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
+			{
+				EditText.SetCompoundDrawablesWithIntrinsicBounds(d, null, null, null);
+			}
+			else
+			{
+				EditText.SetCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
+			}
 			_clearBtn = d;
 		}
 

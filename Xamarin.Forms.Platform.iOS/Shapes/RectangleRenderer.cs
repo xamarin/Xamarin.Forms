@@ -9,8 +9,11 @@ namespace Xamarin.Forms.Platform.iOS
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
-    public class RectangleRenderer : ShapeRenderer<FormsRectangle, RectView>
+    public class RectangleRenderer : ShapeRenderer<FormsRectangle, RectangleView>
     {
+        // Each corner of the rounded rectangle is one-quarter of an ellipse with axes equal to the RadiusX and Radius parameters.
+        const double MaximumRadius = 0.5d;
+
         [Internals.Preserve(Conditional = true)]
         public RectangleRenderer()
         {
@@ -19,44 +22,62 @@ namespace Xamarin.Forms.Platform.MacOS
 
         protected override void OnElementChanged(ElementChangedEventArgs<FormsRectangle> args)
         {
-            if (Control == null)
+            if (Control == null && args.NewElement != null)
             {
-                SetNativeControl(new RectView());
+                SetNativeControl(new RectangleView());
             }
 
             base.OnElementChanged(args);
-
-            if (args.NewElement != null)
-            {
-                UpdateRadiusX();
-                UpdateRadiusY();
-            }
         }
 
         protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
             base.OnElementPropertyChanged(sender, args);
 
+            if (args.PropertyName == VisualElement.HeightProperty.PropertyName || args.PropertyName == VisualElement.WidthProperty.PropertyName)
+                UpdateRadius();
             if (args.PropertyName == FormsRectangle.RadiusXProperty.PropertyName)
                 UpdateRadiusX();
             else if (args.PropertyName == FormsRectangle.RadiusYProperty.PropertyName)
                 UpdateRadiusY();
         }
 
+        void UpdateRadius()
+        {
+            UpdateRadiusX();
+            UpdateRadiusY();
+        }
+
         void UpdateRadiusX()
         {
-            Control.UpdateRadiusX(Element.RadiusX / Element.WidthRequest);
+            if (Element.Width > 0)
+            {
+                var radiusX = ValidateRadius(Element.RadiusX / Element.Width);
+                Control.UpdateRadiusX(radiusX);
+            }
         }
 
         void UpdateRadiusY()
         {
-            Control.UpdateRadiusY(Element.RadiusY / Element.HeightRequest);
+            if (Element.Height > 0)
+            {
+                var radiusY = ValidateRadius(Element.RadiusY / Element.Height);
+                Control.UpdateRadiusY(radiusY);
+            }
+        }
+
+        double ValidateRadius(double radius)
+        {
+            if (radius > MaximumRadius)
+                radius = MaximumRadius;
+
+            return radius;
         }
     }
 
-    public class RectView : ShapeView
+    public class RectangleView : ShapeView
     {
-        public RectView()
+        public RectangleView()
         {
             UpdateShape();
         }

@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Controls;
+using Xamarin.Forms.Core.UITests;
 #if __IOS__
 using Xamarin.UITest.iOS;
 #endif
@@ -58,6 +59,25 @@ namespace Xamarin.UITest
 
 			int counter = 0;
 			while ((results == null || results.Length == 0) && counter < retryCount)
+			{
+				Thread.Sleep(delayInMs);
+				results = func();
+				counter++;
+			}
+
+			return results;
+		}
+
+		public static T[] QueryUntilNotPresent<T>(
+			this IApp app,
+			Func<T[]> func,
+			int retryCount = 10,
+			int delayInMs = 2000)
+		{
+			var results = func();
+
+			int counter = 0;
+			while ((results != null || results.Length > 0) && counter < retryCount)
 			{
 				Thread.Sleep(delayInMs);
 				results = func();
@@ -134,13 +154,31 @@ namespace Xamarin.UITest
 #if __IOS__
 		public static void SendAppToBackground(this IApp app, TimeSpan timeSpan)
 		{
-			if(app is Xamarin.Forms.Controls.ScreenshotConditionalApp sca)
+			if (app is Xamarin.Forms.Controls.ScreenshotConditionalApp sca)
 			{
 				sca.SendAppToBackground(timeSpan);
 				Thread.Sleep(timeSpan.Add(TimeSpan.FromSeconds(2)));
 			}
 		}
 #endif
+
+		public static string ReadDatePicker(this IApp app, string marked)
+		{
+#if __WINDOWS__
+			return ((ScreenshotConditionalApp)app).ReadDatePicker(marked).ToString();
+#else
+			return app.WaitForElement(marked)[0].ReadText();
+#endif
+		}
+
+		public static string ReadTimePicker(this IApp app, string marked)
+		{
+#if __WINDOWS__
+			return ((ScreenshotConditionalApp)app).ReadTimePicker(marked).ToString();
+#else
+			return app.WaitForElement(marked)[0].ReadText();
+#endif
+		}
 	}
 }
 

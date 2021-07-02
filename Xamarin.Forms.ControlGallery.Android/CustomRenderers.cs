@@ -3,7 +3,6 @@ using Android.Widget;
 using Android.App;
 using System.Collections.Generic;
 using Android.Views;
-using System.Collections;
 using System.ComponentModel;
 using System.Linq;
 using Xamarin.Forms.Controls;
@@ -17,21 +16,14 @@ using Android.Runtime;
 using Android.Util;
 using AButton = Android.Widget.Button;
 using AView = Android.Views.View;
-using AViewGroup = Android.Views.ViewGroup;
 using Android.OS;
 using System.Reflection;
 using Android.Text;
 using Android.Text.Method;
 using Xamarin.Forms.Controls.Issues;
-#if __ANDROID_29__
 using FragmentTransaction = AndroidX.Fragment.App.FragmentTransaction;
 using NestedScrollView = global::AndroidX.Core.Widget.NestedScrollView;
-#else
-using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
-using NestedScrollView = global::Android.Support.V4.Widget.NestedScrollView;
-#endif
-using AMenuItemCompat = global::Android.Support.V4.View.MenuItemCompat;
-using Android.Support.V4.Content;
+using AMenuItemCompat = global::AndroidX.Core.View.MenuItemCompat;
 using IOPath = System.IO.Path;
 
 [assembly: ExportRenderer(typeof(Issue5461.ScrollbarFadingEnabledFalseScrollView), typeof(ScrollbarFadingEnabledFalseScrollViewRenderer))]
@@ -60,13 +52,39 @@ using IOPath = System.IO.Path;
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.Tests.TestClasses.CustomButton), typeof(CustomButtonRenderer))]
 [assembly: ExportRenderer(typeof(ScrolView11185), typeof(ScrollViewFadeRenderer))]
 
+[assembly: ExportRenderer(typeof(ShellWithCustomRendererDisabledAnimations), typeof(ShellWithCustomRendererDisabledAnimationsRenderer))]
+
 #if PRE_APPLICATION_CLASS
 #elif FORMS_APPLICATION_ACTIVITY
 #else
-[assembly: ExportRenderer(typeof(MasterDetailPage), typeof(NativeDroidMasterDetail))]
+[assembly: ExportRenderer(typeof(FlyoutPage), typeof(NativeDroidFlyoutPage))]
 #endif
 namespace Xamarin.Forms.ControlGallery.Android
 {
+	public class ShellWithCustomRendererDisabledAnimationsRenderer : ShellRenderer
+	{
+		public ShellWithCustomRendererDisabledAnimationsRenderer(Context context) : base(context)
+		{
+		}
+
+		protected override IShellItemRenderer CreateShellItemRenderer(ShellItem shellItem)
+		{
+			return new ShellWithCustomRendererDisabledAnimationsShellItemRenderer(this);
+		}
+
+		public class ShellWithCustomRendererDisabledAnimationsShellItemRenderer : ShellItemRenderer
+		{
+			public ShellWithCustomRendererDisabledAnimationsShellItemRenderer(IShellContext shellContext) : base(shellContext)
+			{
+			}
+
+			protected override void SetupAnimation(ShellNavigationSource navSource, AndroidX.Fragment.App.FragmentTransaction t, Page page)
+			{
+				// Don't setup any animations
+			}
+		}
+	}
+
 	public sealed class ScrollViewFadeRenderer : ScrollViewRenderer
 	{
 		public ScrollViewFadeRenderer(Context context) : base(context)
@@ -115,7 +133,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 				if (toolBarItem.IconImageSource is FileImageSource fileImageSource)
 				{
 					var name = IOPath.GetFileNameWithoutExtension(fileImageSource.File);
-					var id = Xamarin.Forms.Platform.Android.ResourceManager.GetDrawableByName(name);
+					var id = context.GetDrawableId(name);
 					if (id != 0)
 					{
 						if ((int)Build.VERSION.SdkInt >= 21)
@@ -156,7 +174,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 	}
 
 	public class AttachedStateEffectLabelRenderer :
-#if TEST_EXPERIMENTAL_RENDERERS
+#if !LEGACY_RENDERERS
 		Platform.Android.FastRenderers.LabelRenderer
 #else
 		LabelRenderer
@@ -167,13 +185,13 @@ namespace Xamarin.Forms.ControlGallery.Android
 		}
 	}
 
-	public class NativeDroidMasterDetail : Xamarin.Forms.Platform.Android.AppCompat.MasterDetailPageRenderer
+	public class NativeDroidFlyoutPage : Xamarin.Forms.Platform.Android.AppCompat.MasterDetailPageRenderer
 	{
-		MasterDetailPage _page;
+		FlyoutPage _page;
 		bool _disposed;
 
 #pragma warning disable 618
-		public NativeDroidMasterDetail()
+		public NativeDroidFlyoutPage()
 #pragma warning restore 618
 		{
 			System.Diagnostics.Debug.WriteLine($">>>>> NativeDroidMasterDetail NativeDroidMasterDetail 53: This is the obsolete constructor being selected");
@@ -188,7 +206,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 				return;
 			}
 
-			_page = newElement as MasterDetailPage;
+			_page = newElement as FlyoutPage;
 			_page.PropertyChanged += Page_PropertyChanged;
 			_page.LayoutChanged += Page_LayoutChanged;
 		}

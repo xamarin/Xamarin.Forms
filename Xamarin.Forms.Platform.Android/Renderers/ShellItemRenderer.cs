@@ -1,27 +1,19 @@
-﻿using Android.Content;
-using Android.Graphics.Drawables;
-using Android.OS;
-#if __ANDROID_29__
-using Google.Android.Material.BottomNavigation;
-using Google.Android.Material.BottomSheet;
-#else
-using Android.Support.Design.Widget;
-#endif
-using Android.Views;
-using Android.Widget;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Threading.Tasks;
+using Android.Content;
+using Android.Graphics.Drawables;
+using Android.OS;
+using Android.Views;
+using Android.Widget;
+using Google.Android.Material.BottomNavigation;
+using Google.Android.Material.BottomSheet;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
-using ColorStateList = Android.Content.Res.ColorStateList;
 using IMenu = Android.Views.IMenu;
 using LP = Android.Views.ViewGroup.LayoutParams;
 using Orientation = Android.Widget.Orientation;
-using Typeface = Android.Graphics.Typeface;
-using TypefaceStyle = Android.Graphics.TypefaceStyle;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -415,7 +407,7 @@ namespace Xamarin.Forms.Platform.Android
 				SetupMenu(menu, _bottomView.MaxItemCount, ShellItem);
 		}
 
-		void UpdateTabBarVisibility()
+		protected virtual void UpdateTabBarVisibility()
 		{
 			if (DisplayedPage == null)
 				return;

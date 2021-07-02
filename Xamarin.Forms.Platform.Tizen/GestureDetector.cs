@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ElmSharp;
@@ -65,6 +66,11 @@ namespace Xamarin.Forms.Platform.Tizen
 				}
 			}
 			_handlerCache.Clear();
+
+			if (Device.Idiom == TargetIdiom.TV)
+			{
+				_renderer.NativeView.KeyDown -= OnKeyDown;
+			}
 		}
 
 		public void AddGestures(IEnumerable<IGestureRecognizer> recognizers)
@@ -94,6 +100,11 @@ namespace Xamarin.Forms.Platform.Tizen
 				Clear();
 			};
 			UpdateGestureLayerEnabled();
+
+			if (Device.Idiom == TargetIdiom.TV)
+			{
+				_renderer.NativeView.KeyDown += OnKeyDown;
+			}
 		}
 
 		void UpdateGestureLayerEnabled()
@@ -162,6 +173,11 @@ namespace Xamarin.Forms.Platform.Tizen
 					default:
 						break;
 				}
+			}
+
+			if (handler is DropGestureHandler dropGestureHandler)
+			{
+				dropGestureHandler.AddDropGesture();
 			}
 		}
 
@@ -250,6 +266,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				_gestureLayer.LongTapTimeout = timeout;
 
 			_gestureLayer.SetTapCallback(type, GestureLayer.GestureState.Start, (data) => { OnLongTapStarted(type, data); });
+			_gestureLayer.SetTapCallback(type, GestureLayer.GestureState.Move, (data) => { OnLongTapMoved(type, data); });
 			_gestureLayer.SetTapCallback(type, GestureLayer.GestureState.End, (data) => { OnLongTapCompleted(type, data); });
 			_gestureLayer.SetTapCallback(type, GestureLayer.GestureState.Abort, (data) => { OnGestureCanceled(type, data); });
 		}
@@ -448,6 +465,11 @@ namespace Xamarin.Forms.Platform.Tizen
 			OnGestureStarted(type, data);
 		}
 
+		void OnLongTapMoved(EGestureType type, object data)
+		{
+			OnGestureMoved(type, data);
+		}
+
 		void OnLongTapCompleted(EGestureType type, object data)
 		{
 			_longTapTime = ((GestureLayer.TapData)data).Timestamp - _longTapTime;
@@ -484,6 +506,14 @@ namespace Xamarin.Forms.Platform.Tizen
 			else if (recognizer is SwipeGestureRecognizer)
 			{
 				return new SwipeGestureHandler(recognizer);
+			}
+			else if (recognizer is DragGestureRecognizer)
+			{
+				return new DragGestureHandler(recognizer, _renderer);
+			}
+			else if (recognizer is DropGestureRecognizer)
+			{
+				return new DropGestureHandler(recognizer, _renderer);
 			}
 			return Forms.GetHandlerForObject<GestureHandler>(recognizer, recognizer);
 		}
@@ -547,6 +577,22 @@ namespace Xamarin.Forms.Platform.Tizen
 
 					default:
 						break;
+				}
+			}
+		}
+
+		void OnKeyDown(object sender, EvasKeyEventArgs e)
+		{
+			if (e.KeyName == "Return" && _gestureLayer.IsEnabled)
+			{
+				var cache = _handlerCache;
+				if (cache.ContainsKey(EGestureType.Tap))
+				{
+					foreach (var handler in cache[EGestureType.Tap])
+					{
+						(handler as IGestureController)?.SendStarted(View, null);
+						(handler as IGestureController)?.SendCompleted(View, null);
+					}
 				}
 			}
 		}

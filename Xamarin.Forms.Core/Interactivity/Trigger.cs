@@ -9,7 +9,7 @@ namespace Xamarin.Forms
 	[AcceptEmptyServiceProvider]
 	public sealed class Trigger : TriggerBase, IValueProvider
 	{
-		public Trigger([TypeConverter(typeof(TypeTypeConverter))] [Parameter("TargetType")] Type targetType) : base(new PropertyCondition(), targetType)
+		public Trigger([TypeConverter(typeof(TypeTypeConverter))][Parameter("TargetType")] Type targetType) : base(new PropertyCondition(), targetType)
 		{
 		}
 
@@ -21,7 +21,7 @@ namespace Xamarin.Forms
 				if (((PropertyCondition)Condition).Property == value)
 					return;
 				if (IsSealed)
-					throw new InvalidOperationException("Can not change Property once the Trigger has been applied.");
+					throw new InvalidOperationException("Cannot change Property once the Trigger has been applied.");
 				OnPropertyChanging();
 				((PropertyCondition)Condition).Property = value;
 				OnPropertyChanged();
@@ -41,7 +41,7 @@ namespace Xamarin.Forms
 				if (((PropertyCondition)Condition).Value == value)
 					return;
 				if (IsSealed)
-					throw new InvalidOperationException("Can not change Value once the Trigger has been applied.");
+					throw new InvalidOperationException("Cannot change Value once the Trigger has been applied.");
 				OnPropertyChanging();
 				((PropertyCondition)Condition).Value = value;
 				OnPropertyChanged();

@@ -1,7 +1,8 @@
-﻿using Xamarin.Forms.Internals;
-using Xamarin.Forms.CustomAttributes;
-using System.Threading.Tasks;
+﻿using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -9,7 +10,7 @@ using Xamarin.UITest;
 using NUnit.Framework;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.CollectionView)]
@@ -17,61 +18,77 @@ namespace Xamarin.Forms.Controls
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 10735, "[Bug] [Fatal] [Android] CollectionView Causes Application Crash When Keyboard Opens", PlatformAffected.Android)]
 	public partial class Issue10735 : TestContentPage
-    {
-        readonly int _addItemDelay = 300;
-        int _item = 0;
+	{
 #if APP
-        readonly int _changeFocusDelay = 1000;
-        View _lastFocus;
+		readonly int _addItemDelay = 300;
+		int _item = 0;
+		readonly int _changeFocusDelay = 1000;
+		View _lastFocus;
 #endif
 
-        public Issue10735()
+		const string Success = "Success";
+
+		public Issue10735()
 		{
 #if APP
 			InitializeComponent();
-            BindingContext = this;
-            StartAddingMessages();
+			BindingContext = this;
+			StartAddingMessages();
 #endif
-        }
+		}
 
-        public ObservableCollection<string> Items { get; } = new ObservableCollection<string>();
+		public ObservableCollection<string> Items { get; } = new ObservableCollection<string>();
 
-        protected override void Init()
+		protected override void Init()
 		{
 
-        }
+		}
 
-		void StartAddingMessages()
-        {
-            Task.Run(async () =>
-            {
-                while (true)
-                {
-                    await Task.Delay(_addItemDelay);
-                    Items.Add(_item.ToString());
-                    _item++;
-                }
-            });
 #if APP
-            Task.Run(async () =>
-            {
-                while (true)
-                {
-                    await Task.Delay(_changeFocusDelay);
-                    Device.BeginInvokeOnMainThread(() =>
-                    {
-                        _lastFocus?.Unfocus();
+		void StartAddingMessages()
+		{
+			Task.Run(async () =>
+			{
+				while (_item < 30)
+				{
+					await Task.Delay(_addItemDelay);
+					Items.Add(_item.ToString());
+					_item++;
+				}
 
-                        if (_lastFocus == _editor)
-                            _lastFocus = _button;
-                        else
-                            _lastFocus = _editor;
-                        
-                        _lastFocus.Focus();
-                    });
-                }
-            });
+				Device.BeginInvokeOnMainThread(() =>
+				{
+					Result.Text = Success;
+				});
+			});
+
+			Task.Run(async () =>
+			{
+				while (_item < 30)
+				{
+					await Task.Delay(_changeFocusDelay);
+					Device.BeginInvokeOnMainThread(() =>
+					{
+						_lastFocus?.Unfocus();
+
+						if (_lastFocus == _editor)
+							_lastFocus = _button;
+						else
+							_lastFocus = _editor;
+
+						_lastFocus.Focus();
+					});
+				}
+			});
+		}
 #endif
-        }
-    }
+
+#if UITEST
+		[Test]
+		public void KeyboardOpeningDuringCollectionViewAnimationShouldNotCrash()
+		{
+			RunningApp.WaitForElement(Success, timeout: TimeSpan.FromSeconds(15));
+		}
+#endif
+	}
 }

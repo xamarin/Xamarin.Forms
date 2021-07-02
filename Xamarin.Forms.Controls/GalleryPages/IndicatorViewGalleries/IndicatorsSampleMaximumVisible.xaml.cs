@@ -1,7 +1,7 @@
 ﻿using System;
 using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries;
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.GalleryPages
 {
 	public partial class IndicatorsSampleMaximumVisible : ContentPage
 	{
@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Controls
 		readonly CarouselItemsGalleryViewModel _vm = new CarouselItemsGalleryViewModel(false, false);
 
 		public IndicatorsSampleMaximumVisible()
-		{			
+		{
 			InitializeComponent();
 			BindingContext = _vm;
 			indicators.MaximumVisible = indicatorsForms.MaximumVisible = _maxVisible;

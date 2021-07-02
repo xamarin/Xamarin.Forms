@@ -78,7 +78,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 			if (IsHorizontal)
 			{
-				_scrollCanvasSize = new ESize(totalItemSize , _allocatedSize.Height);
+				_scrollCanvasSize = new ESize(totalItemSize, _allocatedSize.Height);
 			}
 			else
 			{
@@ -178,6 +178,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			{
 				return;
 			}
+
 			_isLayouting = true;
 			_last = bound;
 
@@ -382,14 +383,21 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		public void ItemMeasureInvalidated(int index)
 		{
-			if (_realizedItem.ContainsKey(index))
-			{
-				CollectionView.RequestLayoutItems();
-			}
 			if (_hasUnevenRows)
 			{
 				if (_cached.Count > index)
 					_cached[index] = false;
+
+				if (_realizedItem.ContainsKey(index))
+				{
+					CollectionView.RequestLayoutItems();
+				}
+			}
+			else if (index == 0) // MeasureFirstItem
+			{
+				// Reset item size to measure updated size
+				InitializeMeasureCache();
+				CollectionView.RequestLayoutItems();
 			}
 		}
 
@@ -401,9 +409,17 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			if (_scrollCanvasSize.Width < x || _scrollCanvasSize.Height < y)
 				return CollectionView.Count - 1;
 
-			int first = (IsHorizontal ? x : y) / (BaseItemSize + ItemSpacing);
-			if (_hasUnevenRows)
+			int first = 0;
+			if (!_hasUnevenRows)
+			{
+				first = Math.Min(Math.Max(0, ((IsHorizontal ? x : y) - ItemStartPoint) / (BaseItemSize + ItemSpacing)), ((CollectionView.Count - 1) / Span));
+			}
+			else
+			{
 				first = _accumulatedItemSizes.FindIndex(current => (IsHorizontal ? x : y) <= current);
+				if (first == -1)
+					first = (CollectionView.Count - 1) / Span;
+			}
 
 			int second = (IsHorizontal ? y : x) / (ColumnSize + ColumnSpacing);
 			if (second == Span)

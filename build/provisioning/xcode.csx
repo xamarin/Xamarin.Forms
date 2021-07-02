@@ -5,7 +5,11 @@ using static Xamarin.Provisioning.ProvisioningScript;
 using System;
 using System.Linq;
 
-var desiredXcode = "11.7";
+var desiredXcode = Environment.GetEnvironmentVariable ("REQUIRED_XCODE");
+if (string.IsNullOrEmpty (desiredXcode)) {
+	Console.WriteLine ("The environment variable 'REQUIRED_XCODE' must be exported and the value must be a valid value from the 'XreItem' enumeration.");
+	return;
+}
 
 desiredXcode = desiredXcode.Replace("Xcode_", "").Replace("_", ".");
 

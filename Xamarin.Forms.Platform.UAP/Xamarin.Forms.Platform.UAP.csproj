@@ -5,7 +5,6 @@
     <SkipMicrosoftUIXamlCheckTargetPlatformVersion>true</SkipMicrosoftUIXamlCheckTargetPlatformVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <GenerateLibraryLayout Condition="'$(Use2017)' == 'true'">true</GenerateLibraryLayout>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -61,6 +60,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MasterDetailControlStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlyoutPageControlStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -122,7 +125,7 @@
     <!-- Conditions duplicated on PackageReference to make VS Mac happy -->
     <PackageReference Include="Microsoft.UI.Xaml" Condition="'$(OS)' == 'Windows_NT' AND $(TargetPlatformMinVersion) &lt; '10.0.16299.0'" Version="2.1.190606001">
     </PackageReference>
-    <PackageReference Include="Microsoft.UI.Xaml" Condition="'$(OS)' == 'Windows_NT' AND $(TargetPlatformMinVersion) &gt;= '10.0.16299.0'" Version="2.4.2">
+    <PackageReference Include="Microsoft.UI.Xaml" Condition="'$(OS)' == 'Windows_NT' AND $(TargetPlatformMinVersion) &gt;= '10.0.16299.0'" Version="2.4.3">
     </PackageReference>
     <PackageReference Include="Win2D.uwp" Condition="'$(OS)' == 'Windows_NT'" Version="1.20.0">
     </PackageReference>
