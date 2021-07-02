@@ -77,6 +77,24 @@ namespace Xamarin.Forms.Controls.Issues
 			collectionView.ItemsSource = null;
 		}
 #endif
+
+#if UITEST
+		[Test]
+		public void ClearingItemsSourceWithEmptyViewShouldNotCrash()
+		{
+			RunningApp.WaitForElement("ChangeTemplate");
+			RunningApp.Tap("ChangeTemplate");
+
+			RunningApp.WaitForElement("ChangeItemsSource");
+			RunningApp.Tap("ChangeItemsSource");
+
+			RunningApp.WaitForElement("ClearItemsSource");
+			RunningApp.Tap("ClearItemsSource");
+
+			// If we made all these changes and the button's still here, then we haven't crashed
+			RunningApp.WaitForElement("ChangeTemplate");
+		}
+#endif
 	}
 
 	[Preserve(AllMembers = true)]
