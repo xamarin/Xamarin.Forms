@@ -116,7 +116,6 @@ namespace Xamarin.Forms
 			await poppingCompleted;
 
 			RemovePage(page);
-			//SendUpdateCurrentState(ShellNavigationSource.Pop);
 		}
 
 		async void IShellSectionController.SendPoppingToRoot(Task finishedPopping)
@@ -135,8 +134,6 @@ namespace Xamarin.Forms
 
 			for (int i = 1; i < oldStack.Count; i++)
 				RemovePage(oldStack[i]);
-
-			//SendUpdateCurrentState(ShellNavigationSource.PopToRoot);
 		}
 
 		[Obsolete]
@@ -151,8 +148,6 @@ namespace Xamarin.Forms
 			_navStack.Remove(last);
 
 			RemovePage(last);
-
-			//SendUpdateCurrentState(ShellNavigationSource.Pop);
 		}
 
 		// we want the list returned from here to remain point in time accurate
@@ -178,7 +173,6 @@ namespace Xamarin.Forms
 				_navStack.Remove(page);
 
 			RemovePage(page);
-			//SendUpdateCurrentState(ShellNavigationSource.Pop);
 		}
 
 
@@ -724,8 +718,6 @@ namespace Xamarin.Forms
 			};
 
 			_navigationRequested?.Invoke(this, args);
-
-			//SendUpdateCurrentState(ShellNavigationSource.Insert);
 		}
 
 		protected async virtual Task<Page> OnPopAsync(bool animated)
@@ -761,8 +753,6 @@ namespace Xamarin.Forms
 			if (args.Task != null)
 				await args.Task;
 			RemovePage(page);
-
-			//SendUpdateCurrentState(ShellNavigationSource.Pop);
 
 			return page;
 		}
@@ -804,7 +794,6 @@ namespace Xamarin.Forms
 			}
 
 			PresentedPageAppearing();
-			//SendUpdateCurrentState(ShellNavigationSource.PopToRoot);
 		}
 
 		protected virtual Task OnPushAsync(Page page, bool animated)
@@ -833,8 +822,6 @@ namespace Xamarin.Forms
 			PresentedPageAppearing();
 			AddPage(page);
 			_navigationRequested?.Invoke(this, args);
-
-			////SendUpdateCurrentState(ShellNavigationSource.Push);
 
 			if (args.Task == null)
 				return Task.FromResult(true);
@@ -867,8 +854,6 @@ namespace Xamarin.Forms
 					bool isAnimated = animated ?? (Shell.GetPresentationMode(pageToPop) & PresentationMode.NotAnimated) != PresentationMode.NotAnimated;
 					await Navigation.PopModalAsync(isAnimated);
 				}
-
-				//((IShellController)Shell).UpdateCurrentState(ShellNavigationSource.ShellSectionChanged);
 			}
 			finally
 			{
@@ -911,8 +896,6 @@ namespace Xamarin.Forms
 				RequestType = NavigationRequestType.Remove
 			};
 			_navigationRequested?.Invoke(this, args);
-
-			//SendUpdateCurrentState(ShellNavigationSource.Remove);
 		}
 
 		internal bool IsVisibleSection => Parent?.Parent is Shell shell && shell.CurrentItem?.CurrentItem == this;
@@ -1012,14 +995,6 @@ namespace Xamarin.Forms
 		}
 
 		void SendAppearanceChanged() => ((IShellController)Parent?.Parent)?.AppearanceChanged(this, false);
-
-		//void SendUpdateCurrentState(ShellNavigationSource source)
-		//{
-		//	if (Parent?.Parent is IShellController shell)
-		//	{
-		//		shell.UpdateCurrentState(source);
-		//	}
-		//}
 
 		protected override void OnBindingContextChanged()
 		{
