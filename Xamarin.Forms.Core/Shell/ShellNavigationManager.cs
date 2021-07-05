@@ -11,7 +11,7 @@ namespace Xamarin.Forms
 		readonly Shell _shell;
 		ShellNavigatedEventArgs _accumulatedEvent;
 		bool _accumulateNavigatedEvents;
-
+		public bool AccumulateNavigatedEvents => _accumulateNavigatedEvents;
 		public event EventHandler<ShellNavigatedEventArgs> Navigated;
 		public event EventHandler<ShellNavigatingEventArgs> Navigating;
 
@@ -166,6 +166,7 @@ namespace Xamarin.Forms
 				await _shell.CurrentItem.CurrentItem.GoToAsync(navigationRequest, queryData, animate, isRelativePopping);
 			}
 
+			(_shell as IShellController).UpdateCurrentState(source);
 			_accumulateNavigatedEvents = false;
 
 			// this can be null in the event that no navigation actually took place!
