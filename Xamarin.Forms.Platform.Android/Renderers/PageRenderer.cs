@@ -80,7 +80,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateBackground(false);
 
-			Clickable = true;
+			if (!Flags.IsAccessibilityExperimentalSet())
+				Clickable = true;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)

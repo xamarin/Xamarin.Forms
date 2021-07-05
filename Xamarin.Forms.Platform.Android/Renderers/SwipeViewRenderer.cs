@@ -113,9 +113,19 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void UpdateBackgroundColor()
 		{
 			if (Element.BackgroundColor != Color.Default)
-				SetBackgroundColor(Element.BackgroundColor.ToAndroid());
+			{
+				var backgroundColor = Element.BackgroundColor.ToAndroid();
+
+				SetBackgroundColor(backgroundColor);
+
+				if (_contentView != null && (Element.Content == null || (Element.Content != null && Element.Content.BackgroundColor == Color.Default)))
+					_contentView.SetBackgroundColor(backgroundColor);
+			}
 			else
-				Control?.SetWindowBackground();
+				Control.SetWindowBackground();
+
+			if (_contentView != null && _contentView.Background == null)
+				_contentView.SetWindowBackground();
 		}
 
 		protected override void UpdateBackground()
@@ -126,6 +136,9 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			this.UpdateBackground(background);
+
+			if (_contentView != null && Element.Content == null)
+				_contentView.UpdateBackground(background);
 		}
 
 		protected override void OnAttachedToWindow()
@@ -365,6 +378,9 @@ namespace Xamarin.Forms.Platform.Android
 				_contentView = CreateContent();
 
 			AddView(_contentView);
+
+			UpdateBackgroundColor();
+			UpdateBackground();
 		}
 
 		AView CreateEmptyContent()
