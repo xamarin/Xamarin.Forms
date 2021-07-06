@@ -6,7 +6,7 @@ variables:
 - name: BuildVersion
   value: $[counter('nuget-counter', 126)]
 - name: NUGET_VERSION
-  value: 5.10.0
+  value: 5.8.1
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
   value: true
 - name: DOTNET_VERSION
