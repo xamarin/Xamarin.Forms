@@ -66,7 +66,7 @@ namespace Xamarin.Forms
 
 			Routing.RegisterImplicitPageRoutes(_shell);
 
-			AccumulateNavigatedEvents = true;
+			_accumulateNavigatedEvents = true;
 
 			var uri = navigationRequest.Request.FullUri;
 			var queryString = navigationRequest.Query;
