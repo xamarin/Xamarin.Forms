@@ -1161,7 +1161,7 @@ namespace Xamarin.Forms.Platform.iOS
 				header.Cell = cell;
 
 				var renderer = (CellRenderer)Internals.Registrar.Registered.GetHandlerForObject<IRegisterable>(cell);
-				header.SetTableViewCell(renderer.GetCell(cell, null, tableView));
+				header.SetTableViewCell(renderer.GetCell(cell, header.GetTableViewCell(), tableView));
 
 				return header;
 			}
@@ -1173,8 +1173,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (headerView is HeaderWrapperView wrapper)
 				{
-					wrapper.Cell?.SendDisappearing();
-					wrapper.Cell = null;
+					if (wrapper.Cell != null)
+					{
+						wrapper.Cell.SendDisappearing();
+						wrapper.SetTableViewCell(null);
+						wrapper.Cell.DisposeModalAndChildRenderers();
+						wrapper.Cell = null;
+					}
 				}
 			}
 
@@ -1514,10 +1519,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public void SetTableViewCell(UITableViewCell value)
 		{
-			if (ReferenceEquals(_tableViewCell, value)) return;
+			if (ReferenceEquals(_tableViewCell, value)) 
+				return;
+			
 			_tableViewCell?.RemoveFromSuperview();
 			_tableViewCell = value;
-			AddSubview(value);
+			if (value != null)
+				AddSubview(value);
+		}
+
+		public UITableViewCell GetTableViewCell()
+		{
+			return _tableViewCell;
 		}
 
 		public override void LayoutSubviews()

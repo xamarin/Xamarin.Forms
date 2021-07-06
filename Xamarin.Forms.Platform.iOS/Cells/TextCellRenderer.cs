@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.iOS
 			SetRealCell(item, tvc);
 
 			tvc.Cell = textCell;
-			tvc.PropertyChanged = HandleCellPropertyChanged;
+			tvc.PropertyChanged += HandleCellPropertyChanged;
 
 			tvc.TextLabel.Text = textCell.Text;
 			tvc.DetailTextLabel.Text = textCell.Detail;
