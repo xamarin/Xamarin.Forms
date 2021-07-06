@@ -262,4 +262,4 @@ stages:
             preSignSteps:
               - task: NuGetToolInstaller@1
                 inputs:
-                versionSpec: $(NUGET_VERSION)
+                  versionSpec: $(NUGET_VERSION)
