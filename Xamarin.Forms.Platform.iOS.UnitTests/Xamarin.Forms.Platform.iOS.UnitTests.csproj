@@ -48,6 +48,7 @@
     </Compile>
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="BackgroundColorTests.cs" />
+    <Compile Include="ItemsViewControllerLeakTest.cs" />
     <Compile Include="ColorComparison.cs" />
     <Compile Include="CornerRadiusTests.cs" />
     <Compile Include="DatePickerTests.cs" />
