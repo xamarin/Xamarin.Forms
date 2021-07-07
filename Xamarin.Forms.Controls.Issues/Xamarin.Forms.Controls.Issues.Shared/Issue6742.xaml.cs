@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
-using System.ComponentModel;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Controls.Issues
 		private void CleanWeakList(IList<WeakReference<ModelIssue6742>> weakList)
 		{
 			ModelIssue6742 item;
-			for (int i = weakList.Count-1; i >= 0; i--)
+			for (int i = weakList.Count - 1; i >= 0; i--)
 			{
 				if (!weakList[i].TryGetTarget(out item))
 				{
@@ -108,7 +108,7 @@ namespace Xamarin.Forms.Controls.Issues
 		string _DisposeString;
 		public string DisposeString
 		{
-			get { return _DisposeString; } 
+			get { return _DisposeString; }
 			set
 			{
 				_DisposeString = value;
@@ -117,7 +117,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		string _totalMemory;
-		public string TotalMemory 
+		public string TotalMemory
 		{
 			get => _totalMemory;
 			set
