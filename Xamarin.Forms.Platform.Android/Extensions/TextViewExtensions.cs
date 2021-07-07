@@ -90,8 +90,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			int next = 0;
 			int count = 0;
-			IList<int> totalLineHeights = new List<int>();
 
+			var padding = element.Padding;
+			var padLeft = (int)textView.Context.ToPixels(padding.Left);
+			var padTop = (int)textView.Context.ToPixels(padding.Top);
+			
 			for (int i = 0; i < spannableString.Length(); i = next)
 			{
 				var type = Java.Lang.Class.FromType(typeof(Java.Lang.Object));
@@ -108,47 +111,50 @@ namespace Xamarin.Forms.Platform.Android
 
 				// get all spans in the range - Android can have overlapping spans				
 				var spans = spannableString.GetSpans(i, next, type);
-
+				
 				var startSpan = spans[0];
 				var endSpan = spans[spans.Length - 1];
 
-				var startSpanOffset = spannableString.GetSpanStart(startSpan);
-				var endSpanOffset = spannableString.GetSpanEnd(endSpan);
+				var spanStartOffset = spannableString.GetSpanStart(startSpan);
+				var spanEndOffset = spannableString.GetSpanEnd(endSpan);
 
-				var thisLine = layout.GetLineForOffset(endSpanOffset);
-				var lineStart = layout.GetLineStart(thisLine);
-				var lineEnd = layout.GetLineEnd(thisLine);
-
-				//If this is true, endSpanOffset has the value for another line that belong to the next span and not it self. 
-				//So it should be rearranged to value not pass the lineEnd.
-				if (endSpanOffset > (lineEnd - lineStart))
-					endSpanOffset = lineEnd;
-
-				var startX = layout.GetPrimaryHorizontal(startSpanOffset);
-				var endX = layout.GetPrimaryHorizontal(endSpanOffset);
-
-				var startLine = layout.GetLineForOffset(startSpanOffset);
-				var endLine = layout.GetLineForOffset(endSpanOffset);
-
-				double[] lineHeights = new double[endLine - startLine + 1];
-
-				// calculate all the different line heights
-				for (var lineCount = startLine; lineCount <= endLine; lineCount++)
+				var spanStartLine = layout.GetLineForOffset(spanStartOffset);
+				var spanEndLine = layout.GetLineForOffset(spanEndOffset);
+				
+				// go through all lines that are affected by the span and calculate a rectangle for each
+				var spanRectangles = new List<Rectangle>();
+				for (var curLine = spanStartLine; curLine <= spanEndLine; curLine++)
 				{
-					var lineHeight = layout.GetLineBottom(lineCount) - layout.GetLineTop(lineCount);
-					lineHeights[lineCount - startLine] = lineHeight;
+					global::Android.Graphics.Rect bounds = new global::Android.Graphics.Rect();
+					layout.GetLineBounds(curLine, bounds);
+					
+					var lineHeight = bounds.Height();
+					var lineStartOffset = layout.GetLineStart(curLine);
+					var lineVisibleEndOffset = layout.GetLineVisibleEnd(curLine);
+					
+					var startOffset = (curLine == spanStartLine) ? spanStartOffset : lineStartOffset;
+					var spanStartX = (int)layout.GetPrimaryHorizontal(startOffset);
 
-					if (totalLineHeights.Count <= lineCount)
-						totalLineHeights.Add(lineHeight);
+					var endOffset = (curLine == spanEndLine) ? spanEndOffset : lineVisibleEndOffset;;
+					var spanEndX = (int)layout.GetSecondaryHorizontal(endOffset);
+
+					var spanWidth = spanEndX - spanStartX;
+					var spanLeftX = spanStartX;
+					// if rtl is used, startX would be bigger than endX
+					if (spanStartX > spanEndX)
+					{
+						spanWidth = spanStartX - spanEndX;
+						spanLeftX = spanEndX;
+					}
+
+					if (spanWidth > 1)
+					{
+						var rectangle = new Rectangle(spanLeftX + padLeft, bounds.Top + padTop, spanWidth, lineHeight);
+						spanRectangles.Add(rectangle);
+					}
 				}
 
-				var yaxis = 0.0;
-
-
-				for (var line = startLine; line > 0; line--)
-					yaxis += totalLineHeights[line];
-
-				((ISpatialElement)span).Region = Region.FromLines(lineHeights, labelWidth, startX, endX, yaxis).Inflate(10);
+				((ISpatialElement)span).Region = Region.FromRectangles(spanRectangles).Inflate(10);
 			}
 		}
 	}
