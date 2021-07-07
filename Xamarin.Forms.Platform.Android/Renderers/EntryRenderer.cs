@@ -653,7 +653,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				EditText.SetCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
 			}
-      
+
 			_clearBtn = d;
 		}
 
