@@ -284,12 +284,16 @@ namespace Xamarin.Forms
 					continue;
 
 				var url = possibleRoutePath.PathFull;
+				var currentLocation = possibleRoutePath.GetNodeLocation();
+
+				if (currentLocation.Content == null)
+					continue;
 
 				var globalRouteMatches =
 					SearchForGlobalRoutes(
 						possibleRoutePath.RemainingSegments,
 						new ShellNavigationState(url, false).FullLocation,
-						possibleRoutePath.GetNodeLocation(),
+						currentLocation,
 						routeKeys);
 
 				if (globalRouteMatches.Count != 1)
