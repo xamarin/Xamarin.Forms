@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
 using Xamarin.Forms;
 using Xamarin.Forms.Core.UnitTests;
+using Xamarin.Forms.StyleSheets;
 
 [assembly: TestHandler(typeof(Button), typeof(ButtonTarget))]
 [assembly: TestHandler(typeof(Slider), typeof(SliderTarget))]
@@ -12,6 +12,12 @@ using Xamarin.Forms.Core.UnitTests;
 [assembly: TestHandler(typeof(Slider), typeof(VisualSliderTarget), new[] { typeof(VisualMarkerUnitTests) })]
 [assembly: TestHandler(typeof(ButtonPriority), typeof(ButtonHigherPriorityTarget), Priority = 1)]
 [assembly: TestHandlerLowerPriority(typeof(ButtonPriority), typeof(ButtonLowerPriorityTarget), Priority = 0)]
+
+//For Testing StyleSheetProperties
+[assembly: StyleProperty("custom-anchor", typeof(Button), nameof(Button.AnchorY))]
+[assembly: StyleProperty("-xf-super-batched", typeof(VisualElement), nameof(VisualElement.Batched))]
+[assembly: StyleProperty("maybe", typeof(Grid), nameof(Grid.ColumnSpacing))]
+
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -363,5 +369,53 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(renderer, Is.InstanceOf<MockRenderer>());
 		}
 
+	}
+
+	[TestFixture]
+	public class StylePropertiesRegistrarUnitTests : BaseTestFixture
+	{
+		[SetUp]
+		public override void Setup()
+		{
+			base.Setup();
+			Internals.Registrar.RegisterAll(new Type[0]);
+		}
+
+		[TearDown]
+		public override void TearDown()
+		{
+			base.TearDown();
+			Internals.Registrar.StyleProperties.Clear();
+		}
+
+		[Test]
+		public void StyleProperties_ShouldBeRegisteredUnderRegisterStylesheets()
+		{
+			// Arrange
+			var customStyles = new[] { "custom-anchor", "-xf-super-batched", "maybe" };
+
+			// Act
+			Internals.Registrar.RegisterStylesheets(default(InitializationFlags), typeof(StylePropertiesRegistrarUnitTests).GetTypeInfo().Assembly);
+			var styleProperties = Internals.Registrar.StyleProperties;
+
+			// Assert
+			Assert.IsNotNull(styleProperties);
+
+			Assert.Multiple(() =>
+			{
+				//Predefined Styles from Xamarin.Forms.Core
+				var x = styleProperties.ContainsKey("background-color");
+				Assert.IsTrue(styleProperties.ContainsKey("background-color"));
+				Assert.AreEqual(1, styleProperties["background-color"].Count);
+
+				//Check Custom Styles from Unit Tests
+				foreach (var customStyle in customStyles)
+				{
+					x = styleProperties.ContainsKey(customStyle);
+					Assert.IsTrue(styleProperties.ContainsKey(customStyle));
+					Assert.AreEqual(1, styleProperties[customStyle].Count);
+				}
+			});
+		}
 	}
 }

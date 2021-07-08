@@ -257,6 +257,7 @@ namespace Xamarin.Forms.Internals
 		internal static Dictionary<string, IList<StylePropertyAttribute>> StyleProperties => LazyStyleProperties.Value;
 
 		static bool DisableCSS = false;
+		static Assembly CssAssembly = null;
 		static readonly Lazy<Dictionary<string, IList<StylePropertyAttribute>>> LazyStyleProperties = new Lazy<Dictionary<string, IList<StylePropertyAttribute>>>(LoadStyleSheets);
 
 		public static IEnumerable<Assembly> ExtraAssemblies { get; set; }
@@ -278,10 +279,32 @@ namespace Xamarin.Forms.Internals
 			}
 		}
 
-		public static void RegisterStylesheets(InitializationFlags flags)
+		public static void RegisterStylesheets(InitializationFlags flags, Assembly assembly = null)
 		{
 			if ((flags & InitializationFlags.DisableCss) == InitializationFlags.DisableCss)
 				DisableCSS = true;
+			CssAssembly = assembly;
+		}
+
+		public static bool AddStylesheetDefinition(string cssPropertyName, Type targetType, string bindablePropertyName)
+		{
+			if (DisableCSS)
+				return false;
+
+			if (string.IsNullOrWhiteSpace(cssPropertyName) || targetType == null ||
+				string.IsNullOrWhiteSpace(bindablePropertyName))
+				return false;
+
+			if (StyleProperties.Count == 0)
+				LoadStyleSheets();
+
+			var attribute = new StylePropertyAttribute(cssPropertyName, targetType, bindablePropertyName);
+
+			if (StyleProperties.TryGetValue(cssPropertyName, out var attrList))
+				attrList.Add(attribute);
+			else
+				StyleProperties[cssPropertyName] = new List<StylePropertyAttribute> { attribute };
+			return true;
 		}
 
 		static Dictionary<string, IList<StylePropertyAttribute>> LoadStyleSheets()
@@ -289,12 +312,25 @@ namespace Xamarin.Forms.Internals
 			var properties = new Dictionary<string, IList<StylePropertyAttribute>>();
 			if (DisableCSS)
 				return properties;
-			var assembly = typeof(StylePropertyAttribute).GetTypeInfo().Assembly;
-			var styleAttributes = assembly.GetCustomAttributesSafe(typeof(StylePropertyAttribute));
-			var stylePropertiesLength = styleAttributes?.Length ?? 0;
+
+			List<StylePropertyAttribute> styleAttributes = null;
+
+			var internalAssembly = typeof(StylePropertyAttribute).GetTypeInfo().Assembly;
+			styleAttributes = internalAssembly.GetCustomAttributesSafe(typeof(StylePropertyAttribute)).Select(x => (StylePropertyAttribute)x).ToList();
+
+			if (CssAssembly != null)
+			{
+				var customAttributes = CssAssembly.GetCustomAttributesSafe(typeof(StylePropertyAttribute));
+				if (customAttributes != null && customAttributes.Any())
+				{
+					styleAttributes.AddRange(customAttributes.Select(x => (StylePropertyAttribute)x));
+				}
+			}
+
+			var stylePropertiesLength = styleAttributes?.Count ?? 0;
 			for (var i = 0; i < stylePropertiesLength; i++)
 			{
-				var attribute = (StylePropertyAttribute)styleAttributes[i];
+				var attribute = styleAttributes[i];
 				if (properties.TryGetValue(attribute.CssPropertyName, out var attrList))
 					attrList.Add(attribute);
 				else
