@@ -1150,7 +1150,7 @@ namespace Xamarin.Forms
 				await _owner.Shell.GoToAsync("..", animated);
 				return page;
 			}
-      
+
 			protected override void OnRemovePage(Page page)
 			{
 				if (!_owner.IsVisibleSection || _owner.Shell.NavigationManager.AccumulateNavigatedEvents)

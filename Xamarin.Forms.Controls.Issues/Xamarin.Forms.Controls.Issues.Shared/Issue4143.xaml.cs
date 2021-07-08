@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 4143, "Span inaccuracies", PlatformAffected.Android)]
 	public partial class Issue4143 : TestContentPage
 	{
-		Color[] _colors = new Color[]{ Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Brown, Color.Purple, Color.Orange, Color.Gray };
+		Color[] _colors = new Color[] { Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Brown, Color.Purple, Color.Orange, Color.Gray };
 		Random _rand = new Random();
 
 		protected override void Init()
@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 		}
 
-#if APP		
+#if APP
 		void OnLink1Tapped(object sender, EventArgs e)
 		{
 			SetRandomBackgroundColor(Link1);
@@ -53,7 +53,7 @@ namespace Xamarin.Forms.Controls.Issues
 			do
 			{
 				newColor = _colors[_rand.Next(_colors.Length)];
-			} while(oldColor == newColor);
+			} while (oldColor == newColor);
 
 			span.BackgroundColor = newColor;
 		}
