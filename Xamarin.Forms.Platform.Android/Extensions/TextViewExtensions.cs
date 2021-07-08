@@ -94,7 +94,7 @@ namespace Xamarin.Forms.Platform.Android
 			var padding = element.Padding;
 			var padLeft = (int)textView.Context.ToPixels(padding.Left);
 			var padTop = (int)textView.Context.ToPixels(padding.Top);
-			
+
 			for (int i = 0; i < spannableString.Length(); i = next)
 			{
 				var type = Java.Lang.Class.FromType(typeof(Java.Lang.Object));
@@ -111,7 +111,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				// get all spans in the range - Android can have overlapping spans				
 				var spans = spannableString.GetSpans(i, next, type);
-				
+
 				var startSpan = spans[0];
 				var endSpan = spans[spans.Length - 1];
 
@@ -120,22 +120,23 @@ namespace Xamarin.Forms.Platform.Android
 
 				var spanStartLine = layout.GetLineForOffset(spanStartOffset);
 				var spanEndLine = layout.GetLineForOffset(spanEndOffset);
-				
+
 				// go through all lines that are affected by the span and calculate a rectangle for each
 				var spanRectangles = new List<Rectangle>();
 				for (var curLine = spanStartLine; curLine <= spanEndLine; curLine++)
 				{
 					global::Android.Graphics.Rect bounds = new global::Android.Graphics.Rect();
 					layout.GetLineBounds(curLine, bounds);
-					
+
 					var lineHeight = bounds.Height();
 					var lineStartOffset = layout.GetLineStart(curLine);
 					var lineVisibleEndOffset = layout.GetLineVisibleEnd(curLine);
-					
+
 					var startOffset = (curLine == spanStartLine) ? spanStartOffset : lineStartOffset;
 					var spanStartX = (int)layout.GetPrimaryHorizontal(startOffset);
 
-					var endOffset = (curLine == spanEndLine) ? spanEndOffset : lineVisibleEndOffset;;
+					var endOffset = (curLine == spanEndLine) ? spanEndOffset : lineVisibleEndOffset;
+					;
 					var spanEndX = (int)layout.GetSecondaryHorizontal(endOffset);
 
 					var spanWidth = spanEndX - spanStartX;

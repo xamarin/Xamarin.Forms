@@ -22,7 +22,7 @@ namespace Xamarin.Forms
 		{
 			_inflation = inflation;
 		}
-		
+
 		public static Region FromRectangles(IEnumerable<Rectangle> rectangles)
 		{
 			var list = rectangles.ToList();
