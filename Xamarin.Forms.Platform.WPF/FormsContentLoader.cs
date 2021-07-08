@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -57,7 +58,7 @@ namespace Xamarin.Forms.Platform.WPF
 			var contentPage = visualElement as ContentPage;
 			if (contentPage?.ControlTemplate != null)
 			{
-				contentPage.Content?.Layout(actualRect);
+				(contentPage.LogicalChildren.OfType<VisualElement>().FirstOrDefault() ?? contentPage.Content)?.Layout(actualRect);
 			}
 			else
 			{
