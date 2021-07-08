@@ -539,15 +539,18 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateText()
 		{
-			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
-
-			if (EditText.Text == text)
+			if (EditText == null || Element == null)
 				return;
-
+				
+			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
+			
+	        if (EditText.Text == text)
+		        return;
+			
 			EditText.Text = text;
 			if (EditText.IsFocused)
 			{
-				EditText.SetSelection(text.Length);
+				EditText.SetSelection(EditText.Text.Length);
 				EditText.ShowKeyboard();
 			}
 		}
