@@ -129,7 +129,8 @@ namespace Xamarin.Forms.Controls.GalleryPages
 				return new Place(
 					$"Pin {_pinCreatedCount}",
 					$"Desc {_pinCreatedCount}",
-					RandomPosition.Next(startPosition, 8, 19));
+					RandomPosition.Next(startPosition, 8, 19),
+					true);
 			}
 		}
 
@@ -144,6 +145,8 @@ namespace Xamarin.Forms.Controls.GalleryPages
 
 			public string Description { get; }
 
+			public bool Draggable { get; }
+
 			public Position Position
 			{
 				get => _position;
@@ -157,11 +160,12 @@ namespace Xamarin.Forms.Controls.GalleryPages
 				}
 			}
 
-			public Place(string address, string description, Position position)
+			public Place(string address, string description, Position position, bool draggable = false)
 			{
 				Address = address;
 				Description = description;
 				Position = position;
+				Draggable = draggable;
 			}
 		}
 	}

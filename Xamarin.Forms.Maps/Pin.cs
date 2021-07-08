@@ -12,6 +12,9 @@ namespace Xamarin.Forms.Maps
 		public static readonly BindableProperty AddressProperty = BindableProperty.Create("Address", typeof(string), typeof(Pin), default(string));
 
 		public static readonly BindableProperty LabelProperty = BindableProperty.Create("Label", typeof(string), typeof(Pin), default(string));
+
+		public static readonly BindableProperty IsDraggableProperty = BindableProperty.Create("IsDraggable", typeof(bool), typeof(Pin), false);
+
 		private object _markerId;
 		private object _id;
 
@@ -39,6 +42,11 @@ namespace Xamarin.Forms.Maps
 			set { SetValue(TypeProperty, value); }
 		}
 
+		public bool IsDraggable
+		{
+			get { return (bool)GetValue(IsDraggableProperty); }
+			set { SetValue(IsDraggableProperty, value); }
+		}
 
 		// introduced to store the unique id for Android markers
 		[Obsolete("This property is obsolete as of 4.0.0. Please use MarkerId instead.")]

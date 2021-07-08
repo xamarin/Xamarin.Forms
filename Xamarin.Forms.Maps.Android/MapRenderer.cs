@@ -104,6 +104,7 @@ namespace Xamarin.Forms.Maps.Android
 					NativeMap.MarkerClick -= OnMarkerClick;
 					NativeMap.InfoWindowClick -= OnInfoWindowClick;
 					NativeMap.MapClick -= OnMapClick;
+					NativeMap.MarkerDragEnd -= OnMarkerDrag;
 					NativeMap.Dispose();
 					NativeMap = null;
 				}
@@ -149,6 +150,7 @@ namespace Xamarin.Forms.Maps.Android
 					NativeMap.MarkerClick -= OnMarkerClick;
 					NativeMap.InfoWindowClick -= OnInfoWindowClick;
 					NativeMap.MapClick -= OnMapClick;
+					NativeMap.MarkerDragEnd -= OnMarkerDrag;
 					NativeMap = null;
 				}
 
@@ -236,6 +238,7 @@ namespace Xamarin.Forms.Maps.Android
 			map.MarkerClick += OnMarkerClick;
 			map.InfoWindowClick += OnInfoWindowClick;
 			map.MapClick += OnMapClick;
+			map.MarkerDragEnd += OnMarkerDrag;
 
 			map.TrafficEnabled = Map.TrafficEnabled;
 			map.UiSettings.ZoomControlsEnabled = Map.HasZoomEnabled;
@@ -244,13 +247,14 @@ namespace Xamarin.Forms.Maps.Android
 			SetUserVisible();
 			SetMapType();
 		}
-
+		
 		protected virtual MarkerOptions CreateMarker(Pin pin)
 		{
 			var opts = new MarkerOptions();
 			opts.SetPosition(new LatLng(pin.Position.Latitude, pin.Position.Longitude));
 			opts.SetTitle(pin.Label);
 			opts.SetSnippet(pin.Address);
+			opts.Draggable(pin.IsDraggable);
 
 			return opts;
 		}
@@ -303,6 +307,10 @@ namespace Xamarin.Forms.Maps.Android
 			else if (e.PropertyName == Pin.PositionProperty.PropertyName)
 			{
 				marker.Position = new LatLng(pin.Position.Latitude, pin.Position.Longitude);
+			}
+			else if(e.PropertyName == Pin.IsDraggableProperty.PropertyName)
+			{
+				marker.Draggable = pin.IsDraggable;
 			}
 		}
 
@@ -383,6 +391,12 @@ namespace Xamarin.Forms.Maps.Android
 		void OnMapClick(object sender, GoogleMap.MapClickEventArgs e)
 		{
 			Map.SendMapClicked(new Position(e.Point.Latitude, e.Point.Longitude));
+		}
+
+		void OnMarkerDrag(object sender, GoogleMap.MarkerDragEndEventArgs e)
+		{
+			var pin = GetPinForMarker(e.Marker);
+			pin?.SetValueFromRenderer(Pin.PositionProperty, new Position(e.Marker.Position.Latitude, e.Marker.Position.Longitude));
 		}
 
 		void MoveToRegion(MapSpan span, bool animate)

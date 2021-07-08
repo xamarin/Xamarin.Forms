@@ -72,8 +72,9 @@ namespace Xamarin.Forms.Maps.MacOS
 				var mkMapView = (MKMapView)Control;
 				mkMapView.DidSelectAnnotationView -= MkMapViewOnAnnotationViewSelected;
 				mkMapView.RegionChanged -= MkMapViewOnRegionChanged;
+				mkMapView.ChangedDragState -= MkMapViewOnChangedDragState;
 				mkMapView.GetViewForAnnotation = null;
-				mkMapView.OverlayRenderer = null; 
+				mkMapView.OverlayRenderer = null;
 				if (mkMapView.Delegate != null)
 				{
 					mkMapView.Delegate.Dispose();
@@ -156,6 +157,8 @@ namespace Xamarin.Forms.Maps.MacOS
 					mapView.OverlayRenderer = GetViewForOverlay;
 					mapView.DidSelectAnnotationView += MkMapViewOnAnnotationViewSelected;
 					mapView.RegionChanged += MkMapViewOnRegionChanged;
+					mapView.ChangedDragState += MkMapViewOnChangedDragState;
+
 #if __MOBILE__
 					mapView.AddGestureRecognizer(_mapClickedGestureRecognizer = new UITapGestureRecognizer(OnMapClicked));
 #endif
@@ -194,7 +197,7 @@ namespace Xamarin.Forms.Maps.MacOS
 			else if (e.PropertyName == Map.TrafficEnabledProperty.PropertyName)
 				UpdateTrafficEnabled();
 			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName && ((Map)Element).LastMoveToRegion != null)
-				_shouldUpdateRegion = ((Map)Element).MoveToLastRegionOnLayoutChange; 
+				_shouldUpdateRegion = ((Map)Element).MoveToLastRegionOnLayoutChange;
 		}
 
 #if __MOBILE__
@@ -240,6 +243,12 @@ namespace Xamarin.Forms.Maps.MacOS
 
 			mapPin.Annotation = annotation;
 			AttachGestureToPin(mapPin, annotation);
+
+			var pin = GetPinForAnnotation(annotation);
+			if (pin != null)
+			{
+				mapPin.Draggable = pin.IsDraggable;
+			}
 
 			return mapPin;
 		}
@@ -333,6 +342,16 @@ namespace Xamarin.Forms.Maps.MacOS
 			}
 		}
 
+		void MkMapViewOnChangedDragState(object sender, MKMapViewDragStateEventArgs e)
+		{
+			if (e.NewState == MKAnnotationViewDragState.Ending)
+			{
+				var annotation = e.AnnotationView.Annotation;
+				var pin = GetPinForAnnotation(annotation);
+				pin?.SetValueFromRenderer(Pin.PositionProperty, new Position(annotation.Coordinate.Latitude, annotation.Coordinate.Longitude));
+			}
+		}
+
 #if __MOBILE__
 		void OnMapClicked(UITapGestureRecognizer recognizer)
 		{
@@ -390,7 +409,11 @@ namespace Xamarin.Forms.Maps.MacOS
 			{
 				annotation.Coordinate = new CLLocationCoordinate2D(pin.Position.Latitude, pin.Position.Longitude);
 			}
-
+			else if (e.PropertyName == Pin.IsDraggableProperty.PropertyName)
+			{
+				var annotationView = ((MKMapView)Control).ViewForAnnotation(annotation);
+				annotationView.Draggable = pin.IsDraggable;
+			}
 		}
 
 		void MkMapViewOnRegionChanged(object sender, MKMapViewChangeEventArgs e)

@@ -11,7 +11,8 @@
                     <DataTemplate>
                         <map:Pin Position="{Binding Position}"
                                  Address="{Binding Address}"
-                                 Label="{Binding Description}" />
+                                 Label="{Binding Description}" 
+                                 IsDraggable="{Binding Draggable}"/>
                     </DataTemplate>
                 </local:MapItemTemplateSelector.DataTemplate>
             </local:MapItemTemplateSelector>
