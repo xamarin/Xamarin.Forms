@@ -15,16 +15,23 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			if (e.NewElement != null)
 			{
-				if (Control == null) // construct and SetNativeControl and suscribe control event
+				if (Control == null) // construct and SetNativeControl and subscribe to value changed event
 				{
-					SetNativeControl(new WSlider());
+					SetNativeControl(new WSlider
+					{
+						Value = Element.Value,
+						Minimum = Element.Minimum,
+						Maximum = Element.Maximum
+					});
 					Control.ValueChanged += HandleValueChanged;
 				}
-
-				// Update control property 
-				UpdateMinimum();
-				UpdateMaximum();
-				UpdateValue();
+				else
+				{
+					// Update control property  
+					UpdateValue();
+					UpdateMinimum();
+					UpdateMaximum();
+				} 
 			}
 
 			base.OnElementChanged(e);
