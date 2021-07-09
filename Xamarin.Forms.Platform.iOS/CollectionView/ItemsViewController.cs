@@ -12,8 +12,8 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		public const int EmptyTag = 333;
 
-
-		public IItemsViewSource ItemsSource { get; set; }
+		public IItemsViewSource ItemsSource { get; protected set; }
+		
 		public TItemsView ItemsView { get; }
 		protected ItemsViewLayout ItemsViewLayout { get; set; }
 		bool _initialized;
