@@ -192,7 +192,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (e.PropertyName == FlyoutPage.IsPresentedProperty.PropertyName || e.PropertyName == FlyoutPage.FlyoutLayoutBehaviorProperty.PropertyName)
 				UpdateIsPresented();
-			else if (e.PropertyName == "Master")
+			else if (e.PropertyName == "Flyout")
 				UpdateMaster();
 			else if (e.PropertyName == "Detail")
 				UpdateDetail();
