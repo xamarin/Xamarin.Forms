@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				name.NameValue = InputScopeNameValue.Url;
 			}
-			else
+			else if (self is CustomKeyboard)
 			{
 				var custom = (CustomKeyboard)self;
 				var capitalizedSentenceEnabled = (custom.Flags & KeyboardFlags.CapitalizeSentence) == KeyboardFlags.CapitalizeSentence;
@@ -76,6 +76,11 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 
 				name.NameValue = nameValue;
+			}
+			else
+			{
+				// Should never happens
+				name.NameValue = InputScopeNameValue.Default;
 			}
 
 			result.Names.Add(name);
