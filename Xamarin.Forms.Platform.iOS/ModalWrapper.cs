@@ -84,6 +84,8 @@ namespace Xamarin.Forms.Platform.iOS
 			return base.GetSupportedInterfaceOrientations();
 		}
 
+		public override bool ModalPresentationCapturesStatusBarAppearance => true;
+
 		public override UIInterfaceOrientation PreferredInterfaceOrientationForPresentation()
 		{
 			if ((ChildViewControllers != null) && (ChildViewControllers.Length > 0))
