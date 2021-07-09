@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Xamarin.Forms.Controls.GalleryPages.ShapesGalleries.ShapeIsVisibleGallery">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <Style TargetType="Ellipse">
+                <Setter Property="HorizontalOptions" Value="Start" />
+            </Style>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <ScrollView>
+                <StackLayout
+                    Padding="12">
+                    <Ellipse
+                        x:Name="ellipse1"
+                        Fill ="Red"
+                        WidthRequest ="150"
+                        HeightRequest ="50"/>
+                    <Ellipse
+                        x:Name="ellipse2"
+                        Stroke ="Red"
+                        StrokeThickness="4"
+                        WidthRequest ="150"
+                        HeightRequest ="150"/>
+                    <Ellipse
+                        x:Name="ellipse3"
+                        Stroke ="Red"
+                        StrokeThickness="4"
+                        WidthRequest ="150"
+                        HeightRequest ="50"/>
+                </StackLayout>
+            </ScrollView>
+            <StackLayout
+                Grid.Row="1">
+                <Button
+                    Text="Toggle IsVisible Ellipse 1"
+                    Clicked="ToggleEllipse1Clicked"/>
+                <Button
+                    Text="Toggle IsVisible Ellipse 2"
+                    Clicked="ToggleEllipse2Clicked"/>
+                <Button
+                    Text="Toggle IsVisible Ellipse 3"
+                    Clicked="ToggleEllipse3Clicked"/>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

@@ -52,16 +52,10 @@ namespace Xamarin.Forms.Platform.MacOS
         {
             base.OnElementPropertyChanged(sender, args);
 
-            if (args.PropertyName == VisualElement.HeightProperty.PropertyName)
-            {
-                _height = Element.Height;
+            if (args.PropertyName == VisualElement.HeightProperty.PropertyName ||
+                args.PropertyName == VisualElement.WidthProperty.PropertyName ||
+                args.PropertyName == Platform.RendererProperty.PropertyName)
                 UpdateSize();
-            }
-            else if (args.PropertyName == VisualElement.WidthProperty.PropertyName)
-            {
-                _width = Element.Width;
-                UpdateSize();
-            }
             else if (args.PropertyName == Shape.AspectProperty.PropertyName)
                 UpdateAspect();
             else if (args.PropertyName == Shape.FillProperty.PropertyName)
@@ -99,6 +93,21 @@ namespace Xamarin.Forms.Platform.MacOS
 
         void UpdateSize()
         {
+            if (Control == null)
+                return;
+
+            if (Element.IsVisible)
+            {
+                _height = Math.Max(0, Element.Height);
+                _width = Math.Max(0, Element.Width);
+            }
+            else
+            {
+                var shapeSizeRequest = Element.Measure(double.PositiveInfinity, double.PositiveInfinity, MeasureFlags.IncludeMargins);
+                _height = shapeSizeRequest.Request.Height;
+                _width = shapeSizeRequest.Request.Width;
+            }
+
             Control.ShapeLayer.UpdateSize(new CGSize(new nfloat(_width), new nfloat(_height)));
         }
 

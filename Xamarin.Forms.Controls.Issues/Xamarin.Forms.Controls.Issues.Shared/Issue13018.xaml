@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13018"
+    Title="Issue 13018"
+    x:Name="Issue13018Page">
+    <Grid
+        RowDefinitions="Auto,*">
+        <Label
+            Grid.Row="0"
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Select one of the ellipses. If render the border shape without any animation, the test has passed."/>
+        <CollectionView
+            Grid.Row="1"
+            HeightRequest="65"
+            VerticalOptions="Center"
+            ItemsSource="{Binding Colors}"
+            ItemsLayout="HorizontalList">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid
+                        RowSpacing="0"
+                        ColumnSpacing="0"
+                        WidthRequest="65"
+                        HeightRequest="65">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                Command="{Binding SelectColorCommand, Source={x:Reference Issue13018Page}}"
+                                CommandParameter="{Binding}" />
+                        </Grid.GestureRecognizers>
+                        <Ellipse
+                            InputTransparent="True"
+                            Fill="Transparent"
+                            Stroke="Gray"
+                            StrokeThickness="2"
+                            IsVisible="{Binding IsSelected}"
+                            WidthRequest="62"
+                            HeightRequest="62"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center" />
+                        <Ellipse
+                            InputTransparent="True"
+                            Fill="Red"
+                            WidthRequest="50"
+                            HeightRequest="50"
+                            Stroke="Transparent"
+                            StrokeThickness="0"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"/>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</controls:TestContentPage>

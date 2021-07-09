@@ -22,6 +22,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.ShapesGalleries
 						GalleryBuilder.NavButton("Rectangle Gallery", () => new RectangleGallery(), Navigation),
 						GalleryBuilder.NavButton("LineCap Gallery", () => new LineCapGallery(), Navigation),
 						GalleryBuilder.NavButton("LineJoin Gallery", () => new LineJoinGallery(), Navigation),
+						GalleryBuilder.NavButton("IsVisible Gallery", () => new ShapeIsVisibleGallery(), Navigation),
 						GalleryBuilder.NavButton("AutoSize Shapes Gallery", () => new AutoSizeShapesGallery(), Navigation),
 						GalleryBuilder.NavButton("Path Gallery", () => new PathGallery(), Navigation),
 						GalleryBuilder.NavButton("Path Aspect Gallery", () => new PathAspectGallery(), Navigation),
