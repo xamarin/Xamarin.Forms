@@ -78,6 +78,12 @@ namespace Xamarin.Forms
 				}
 				ApplyStyleSheets(mergedSheets, child);
 			}
+
+			if (element is Label label && label.FormattedText?.Spans?.Count > 0)
+			{
+				foreach (var child in label.FormattedText.Spans)
+					ApplyStyleSheets(sheets, child);
+			}
 		}
 	}
 }
