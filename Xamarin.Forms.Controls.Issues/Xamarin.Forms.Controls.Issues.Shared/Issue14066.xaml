@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue14066"
+    Title="Issue 14066">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Swipe any SwipeView, without exceptions, the test has passed." /> 
+        <StackLayout
+            Margin="30"
+            Orientation="Vertical">
+            <Button
+                Text="Add Items to the List"
+                Command="{Binding AddCommand}"
+                TextColor="White"
+                BackgroundColor="Black" />
+            <StackLayout
+                x:Name="MyList"
+                BindableLayout.ItemsSource="{Binding CollectionsList}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate>
+                        <SwipeView>
+                            <Grid
+                                HeightRequest="40"
+                                BackgroundColor="White"
+                                Margin="10">
+                                <Label
+                                    VerticalOptions="CenterAndExpand"
+                                    Text="{Binding Name}" />
+                            </Grid>
+                            <SwipeView.LeftItems>
+                                <SwipeItems Mode="Execute">
+                                    <SwipeItemView
+                                        BackgroundColor="Red"
+                                        Command="{Binding Path=BindingContext.DeleteCommand, Source={x:Reference MyList}}"
+                                        CommandParameter="{Binding .}" />
+                                </SwipeItems>
+                            </SwipeView.LeftItems>
+                            <SwipeView.RightItems>
+                                <SwipeItems Mode="Execute">
+                                    <SwipeItemView
+                                        BackgroundColor="Red"
+                                        Command="{Binding Path=BindingContext.DeleteCommand, Source={x:Reference MyList}}"
+                                        CommandParameter="{Binding .}" />
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                        </SwipeView>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </StackLayout>
+        </StackLayout>
+    </StackLayout>
+</local:TestContentPage>

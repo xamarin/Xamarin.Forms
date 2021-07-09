@@ -457,7 +457,7 @@ namespace Xamarin.Forms.Platform.Android
 				case MotionEventActions.Up:
 					handled = HandleTouchInteractions(GestureStatus.Completed, point);
 
-					if (Parent == null)
+					if (_isDisposed || Parent == null)
 						break;
 
 					Parent.RequestDisallowInterceptTouchEvent(false);
@@ -473,7 +473,7 @@ namespace Xamarin.Forms.Platform.Android
 				case MotionEventActions.Cancel:
 					handled = HandleTouchInteractions(GestureStatus.Canceled, point);
 
-					if (Parent == null)
+					if (_isDisposed || Parent == null)
 						break;
 
 					Parent.RequestDisallowInterceptTouchEvent(false);
