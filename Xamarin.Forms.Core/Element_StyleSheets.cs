@@ -68,16 +68,32 @@ namespace Xamarin.Forms
 
 			foreach (Element child in element.AllChildren)
 			{
-				var mergedSheets = sheets;
-				var resourceProvider = child as IResourcesProvider;
-				var childSheets = resourceProvider?.GetStyleSheets();
-				if (childSheets?.Any() ?? false)
-				{
-					mergedSheets = new List<StyleSheet>(childSheets);
-					mergedSheets.AddRange(sheets);
-				}
-				ApplyStyleSheets(mergedSheets, child);
+				ApplyStyleSheetsToChildElement(sheets, child);
 			}
+
+			if (element is TableView tableView && tableView.Root != null)
+			{
+				foreach (var section in tableView.Root)
+				{
+					foreach (var cell in section)
+					{
+						ApplyStyleSheetsToChildElement(sheets, cell);
+					}
+				}
+			}
+		}
+
+		private void ApplyStyleSheetsToChildElement(List<StyleSheet> sheets, Element child)
+		{
+			var mergedSheets = sheets;
+			var resourceProvider = child as IResourcesProvider;
+			var childSheets = resourceProvider?.GetStyleSheets();
+			if (childSheets?.Any() ?? false)
+			{
+				mergedSheets = new List<StyleSheet>(childSheets);
+				mergedSheets.AddRange(sheets);
+			}
+			ApplyStyleSheets(mergedSheets, child);
 		}
 	}
 }
