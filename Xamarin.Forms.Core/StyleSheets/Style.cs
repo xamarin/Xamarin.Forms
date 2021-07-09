@@ -21,6 +21,13 @@ namespace Xamarin.Forms.StyleSheets
 			Style style = new Style();
 			string propertyName = null, propertyValue = null;
 
+			void AddAndClearLastDeclaration()
+			{
+				if (!string.IsNullOrEmpty(propertyName) && !string.IsNullOrEmpty(propertyValue))
+					style.Declarations.Add(propertyName, propertyValue);
+				propertyName = propertyValue = null;
+			}
+
 			int p;
 			reader.SkipWhiteSpaces();
 			bool readingName = true;
@@ -35,15 +42,17 @@ namespace Xamarin.Forms.StyleSheets
 						break;
 					case ';':
 						reader.Read();
-						if (!string.IsNullOrEmpty(propertyName) && !string.IsNullOrEmpty(propertyValue))
-							style.Declarations.Add(propertyName, propertyValue);
-						propertyName = propertyValue = null;
+						AddAndClearLastDeclaration();
 						readingName = true;
 						reader.SkipWhiteSpaces();
 						break;
 					default:
 						if ((char)p == stopChar)
+						{
+							AddAndClearLastDeclaration();
+
 							return style;
+						}
 
 						if (readingName)
 						{
@@ -52,10 +61,22 @@ namespace Xamarin.Forms.StyleSheets
 								throw new Exception();
 						}
 						else
-							propertyValue = reader.ReadUntil(stopChar, ';', ':');
+						{
+							propertyValue = reader.ReadUntil(out var limitedBy, stopChar, ';', ':');
+
+							if (limitedBy.HasValue && limitedBy == ':')
+							{
+								style.Declarations.Clear();
+								return style;
+							}
+						}
+
 						break;
 				}
 			}
+
+			AddAndClearLastDeclaration();
+
 			return style;
 		}
 
