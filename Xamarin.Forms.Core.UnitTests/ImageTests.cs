@@ -142,7 +142,63 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public void TestSourceDoubleSet()
+		public void TestErrorSource()
+		{
+			var image = new Image
+			{
+				Source = "File.png",
+				ErrorSource = null
+			};
+
+			Assert.IsNotNull(image.Source);
+			Assert.IsNull(image.ErrorSource);
+			bool signaled = false;
+			
+			image.PropertyChanged += (_, e) =>
+			{
+				if (e.PropertyName == Image.ErrorSourceProperty.PropertyName)
+					signaled = true;
+			};
+
+			var errorSource = ImageSource.FromFile("error.png");
+
+			image.ErrorSource = errorSource;
+
+			Assert.IsNotNull(image.ErrorSource);
+			Assert.AreEqual(image.ErrorSource, errorSource);
+			Assert.IsTrue(signaled);
+		}
+
+		[Test]
+		public void TestLoadingSource()
+		{
+			var image = new Image
+			{
+				Source = "File.png",
+				PlaceholderSource = null
+			};
+
+			Assert.IsNotNull(image.Source);
+			Assert.IsNull(image.PlaceholderSource);
+			bool signaled = false;
+
+			image.PropertyChanged += (_, e) =>
+			{
+				if (e.PropertyName == Image.LoadingSourceProperty.PropertyName)
+					signaled = true;
+			};
+
+			var errorSource = ImageSource.FromFile("error.png");
+
+			image.PlaceholderSource = errorSource;
+
+			Assert.IsNotNull(image.PlaceholderSource);
+			Assert.AreEqual(image.PlaceholderSource, errorSource);
+			Assert.IsTrue(signaled);
+		}
+
+		[Test]
+		public void TestSourceDoubleSet ()
 		{
 			var image = new Image { Source = ImageSource.FromFile("File.png") };
 

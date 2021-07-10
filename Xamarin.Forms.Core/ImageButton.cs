@@ -25,6 +25,10 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty SourceProperty = ImageElement.SourceProperty;
 
+		public static readonly BindableProperty ErrorSourceProperty = ImageElement.ErrorSourceProperty;
+
+		public static readonly BindableProperty PlaceholderSourceProperty = ImageElement.PlaceholderSourceProperty;
+
 		public static readonly BindableProperty AspectProperty = ImageElement.AspectProperty;
 
 		public static readonly BindableProperty IsOpaqueProperty = ImageElement.IsOpaqueProperty;
@@ -101,6 +105,20 @@ namespace Xamarin.Forms
 		{
 			get { return (ImageSource)GetValue(SourceProperty); }
 			set { SetValue(SourceProperty, value); }
+		}
+
+		[TypeConverter(typeof(ImageSourceConverter))]
+		public ImageSource PlaceholderSource
+		{
+			get { return (ImageSource)GetValue(PlaceholderSourceProperty); }
+			set { SetValue(PlaceholderSourceProperty, value); }
+		}
+
+		[TypeConverter(typeof(ImageSourceConverter))]
+		public ImageSource ErrorSource
+		{
+			get { return (ImageSource)GetValue(ErrorSourceProperty); }
+			set { SetValue(ErrorSourceProperty, value); }
 		}
 
 		bool IButtonElement.IsEnabledCore
