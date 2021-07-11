@@ -141,6 +141,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CollectionChanged(NotifyCollectionChangedEventArgs args)
 		{
+			if (_collectionView.Hidden)
+				return;
+
 			switch (args.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
@@ -199,7 +202,7 @@ namespace Xamarin.Forms.Platform.iOS
 			ResetGroupTracking();
 
 			// Queue up the updates to the UICollectionView
-			Update(() => _collectionView.InsertSections(CreateIndexSetFrom(startIndex, count)));
+			_collectionView.InsertSections(CreateIndexSetFrom(startIndex, count));
 		}
 
 		void Remove(NotifyCollectionChangedEventArgs args)
@@ -228,7 +231,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var count = args.OldItems.Count;
 
 			// Queue up the updates to the UICollectionView
-			Update(() => _collectionView.DeleteSections(CreateIndexSetFrom(startIndex, count)));
+			_collectionView.DeleteSections(CreateIndexSetFrom(startIndex, count));
 		}
 
 		void Replace(NotifyCollectionChangedEventArgs args)
@@ -242,7 +245,7 @@ namespace Xamarin.Forms.Platform.iOS
 				var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _groupSource.IndexOf(args.NewItems[0]);
 
 				// We are replacing one set of items with a set of equal size; we can do a simple item range update
-				Update(() => _collectionView.ReloadSections(CreateIndexSetFrom(startIndex, newCount)));
+				_collectionView.ReloadSections(CreateIndexSetFrom(startIndex, newCount));
 				return;
 			}
 
@@ -260,14 +263,14 @@ namespace Xamarin.Forms.Platform.iOS
 			if (count == 1)
 			{
 				// For a single item, we can use MoveSection and get the animation
-				Update(() => _collectionView.MoveSection(args.OldStartingIndex, args.NewStartingIndex));
+				_collectionView.MoveSection(args.OldStartingIndex, args.NewStartingIndex);
 				return;
 			}
 
 			var start = Math.Min(args.OldStartingIndex, args.NewStartingIndex);
 			var end = Math.Max(args.OldStartingIndex, args.NewStartingIndex) + count;
 
-			Update(() => _collectionView.ReloadSections(CreateIndexSetFrom(start, end)));
+			_collectionView.ReloadSections(CreateIndexSetFrom(start, end));
 		}
 
 		int GetGroupCount(int groupIndex)
@@ -341,16 +344,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			return NotLoadedYet()
 				|| _collectionView.NumberOfSections() == 0;
-		}
-
-		void Update(Action update) 
-		{
-			if (_collectionView.Hidden)
-			{
-				return;
-			}
-
-			update();
 		}
 	}
 }
