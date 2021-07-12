@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"      
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    mc:Ignorable="d"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13037"
+    Title="Issue 13037">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label
+                Padding="12"
+                BackgroundColor="Black"
+                TextColor="White"
+                Text="If a long text in the Editor Placeholder wraps (as in other platforms), the test has passed."/>
+            <Editor
+                VerticalOptions="FillAndExpand" 
+                HorizontalOptions="FillAndExpand"
+                MaxLength="4000"
+                Placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+                PlaceholderColor="Gray" />
+        </StackLayout>
+    </ContentPage.Content>
+</controls:TestContentPage>
