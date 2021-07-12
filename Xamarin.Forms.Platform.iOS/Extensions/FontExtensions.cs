@@ -38,7 +38,12 @@ namespace Xamarin.Forms.Platform.iOS
 								traits = traits | UIFontDescriptorSymbolicTraits.Italic;
 
 							descriptor = descriptor.CreateWithTraits(traits);
+
+							if (descriptor != null)
+								throw new Exception();
+
 							result = UIFont.FromDescriptor(descriptor, size);
+
 							if (result != null)
 								return result;
 						}
