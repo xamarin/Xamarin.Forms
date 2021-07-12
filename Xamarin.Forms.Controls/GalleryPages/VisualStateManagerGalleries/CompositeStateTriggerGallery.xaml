@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries.CompositeStateTriggerGallery"
+    Title="CompositeStateTrigger Gallery">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <Style TargetType="CheckBox">
+                <Setter Property="VerticalOptions" Value="Center" />
+            </Style>
+
+            <Style TargetType="Label">
+                <Setter Property="VerticalOptions" Value="Center" />
+            </Style>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <Grid>
+            <VisualStateManager.VisualStateGroups>
+			    <VisualStateGroup>
+				    <VisualState x:Name="AndFalse">
+					    <VisualState.StateTriggers>
+						    <CompositeStateTrigger Operator="And">
+							    <CompareStateTrigger Property="{Binding IsChecked, Source={x:Reference CheckBox1}}" Value="False" />
+							    <CompareStateTrigger Property="{Binding IsChecked, Source={x:Reference CheckBox2}}" Value="False" />
+                            </CompositeStateTrigger>
+					    </VisualState.StateTriggers>
+					    <VisualState.Setters>
+                            <Setter TargetName="InfoLabel" Property="Label.Text" Value="No CheckBox checked (And)"/>
+					    </VisualState.Setters>
+				    </VisualState>
+                    <VisualState x:Name="AndTrue">
+					    <VisualState.StateTriggers>
+						    <CompositeStateTrigger Operator="And">
+							    <CompareStateTrigger Property="{Binding IsChecked, Source={x:Reference CheckBox1}}" Value="True" />
+							    <CompareStateTrigger Property="{Binding IsChecked, Source={x:Reference CheckBox2}}" Value="True" />
+                            </CompositeStateTrigger>
+					    </VisualState.StateTriggers>
+					    <VisualState.Setters>
+                            <Setter TargetName="InfoLabel" Property="Label.Text" Value="All CheckBoxes are checked (And)"/>
+					    </VisualState.Setters>
+				    </VisualState>
+				    <VisualState x:Name="Or">
+					    <VisualState.StateTriggers>
+						    <CompositeStateTrigger Operator="Or">
+							    <CompareStateTrigger Property="{Binding IsChecked, Source={x:Reference CheckBox1}}" Value="True" />
+							    <CompareStateTrigger Property="{Binding IsChecked, Source={x:Reference CheckBox2}}" Value="True" />
+						    </CompositeStateTrigger>
+					    </VisualState.StateTriggers>
+					    <VisualState.Setters>
+                            <Setter TargetName="InfoLabel" Property="Label.Text" Value="At least 1 CheckBox is checked (Or)"/>
+					    </VisualState.Setters>
+				    </VisualState>
+			    </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+		    <StackLayout
+                Padding="12">
+                <StackLayout
+                    Orientation="Horizontal">
+			        <CheckBox
+                        x:Name="CheckBox1" />
+                    <Label
+                        Text="CheckBox1"/>
+                </StackLayout>
+                <StackLayout
+                    Orientation="Horizontal">
+			        <CheckBox
+                        x:Name="CheckBox2" />
+                    <Label
+                        Text="CheckBox2"/>
+                </StackLayout>
+			    <Label
+                    x:Name="InfoLabel"
+                    Text="No CheckBox checked (And)" />
+		    </StackLayout>
+	    </Grid>
+    </ContentPage.Content>
+</ContentPage>
