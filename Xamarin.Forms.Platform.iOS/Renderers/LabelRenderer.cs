@@ -174,9 +174,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				UpdateLineBreakMode();
 				UpdateText();
-				UpdateTextDecorations();
 				UpdateTextColor();
 				UpdateFont();
+				UpdateTextDecorations();
 				UpdateMaxLines();
 				UpdateCharacterSpacing();
 				UpdatePadding();
@@ -218,7 +218,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateHorizontalTextAlignment();
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
+			{
 				UpdateText();
+				UpdateTextDecorations();
+			}
 			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
 				UpdateMaxLines();
 			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
