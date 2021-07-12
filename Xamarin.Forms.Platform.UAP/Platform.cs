@@ -13,6 +13,8 @@ using Xamarin.Forms.Internals;
 using NativeAutomationProperties = Windows.UI.Xaml.Automation.AutomationProperties;
 using WImage = Windows.UI.Xaml.Controls.Image;
 using WFlowDirection = Windows.UI.Xaml.FlowDirection;
+using Windows.UI.Xaml.Media;
+using Xamarin.Forms.Platform.UAP.Extensions;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -23,6 +25,7 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		static Task<bool> s_currentAlert;
 		static Task<string> s_currentPrompt;
+		static int DialogDisplayCount;
 
 		internal static readonly BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer",
 			typeof(IVisualElementRenderer), typeof(Windows.Foundation.Metadata.Platform), default(IVisualElementRenderer));
@@ -656,10 +659,15 @@ namespace Xamarin.Forms.Platform.UWP
 
 		static async Task<string> ShowPrompt(PromptDialog prompt)
 		{
-			ContentDialogResult result = await prompt.ShowAsync();
+			DialogDisplayCount++;
+
+			ContentDialogResult result = await prompt.EnqueueAndShowAsync(() => DialogDisplayCount);
+
+			DialogDisplayCount = 0;
 
 			if (result == ContentDialogResult.Primary)
 				return prompt.Input;
+
 			return null;
 		}
 
@@ -715,8 +723,12 @@ namespace Xamarin.Forms.Platform.UWP
 
 		static async Task<bool> ShowAlert(ContentDialog alert)
 		{
-			ContentDialogResult result = await alert.ShowAsync();
+			DialogDisplayCount++;
 
+			ContentDialogResult result = await alert.EnqueueAndShowAsync(() => DialogDisplayCount);
+
+			DialogDisplayCount = 0;
+			
 			return result == ContentDialogResult.Primary;
 		}
 
