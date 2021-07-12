@@ -433,7 +433,9 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				using (APath fillPath = new APath())
 				{
-					_drawable.Paint.StrokeWidth = 0.01f;
+					if (_strokeWidth != 0)
+						_drawable.Paint.StrokeWidth = 0.01f;
+
 					_drawable.Paint.SetStyle(Paint.Style.Stroke);
 					_drawable.Paint.GetFillPath(_path, fillPath);
 					fillPath.ComputeBounds(_pathFillBounds, false);
