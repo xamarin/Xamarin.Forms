@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue12672"
+    Title="Issue 12672">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If the Path is rendered in the same way on Android and iOS, the test has passed."/>
+        <Grid
+            BackgroundColor="Red"
+            VerticalOptions="Start">
+            <Path Data="M0,37 V0 H193.86 L179.575,26.261 A19.5,19.5,0,0,1,162.148,37 Z"
+                  Fill="Yellow"
+                  Stroke="Green"
+                  StrokeDashArray="1 1">
+                <!--<Path.Fill>
+                    <LinearGradientBrush>
+                        <GradientStop Offset="0" Color="White" />
+                        <GradientStop Offset="1" Color="Orange" />
+                    </LinearGradientBrush>
+                </Path.Fill>-->
+            </Path>
+        </Grid>
+    </StackLayout>
+</local:TestContentPage>
