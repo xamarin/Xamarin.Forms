@@ -823,6 +823,7 @@ namespace Xamarin.Forms
 		protected override void OnBindingContextChanged()
 		{
 			PropagateBindingContextToStateTriggers();
+			PropagateBindingContextToBrush();
 
 			base.OnBindingContextChanged();
 		}
@@ -985,6 +986,13 @@ namespace Xamarin.Forms
 				foreach (var state in group.States)
 					foreach (var stateTrigger in state.StateTriggers)
 						SetInheritedBindingContext(stateTrigger, BindingContext);
+		}
+
+		void PropagateBindingContextToBrush()
+		{
+			var brush = (Brush)GetValue(BackgroundProperty);
+
+			SetInheritedBindingContext(brush, BindingContext);
 		}
 
 		void OnFocused() => Focused?.Invoke(this, new FocusEventArgs(this, true));
