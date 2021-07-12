@@ -61,6 +61,7 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.TouchUpInside -= OnButtonTouchUpInside;
 					Control.TouchUpOutside -= OnButtonTouchUpOutside;
 					Control.TouchDown -= OnButtonTouchDown;
+					Control.TouchCancel -= OnButtonTouchCancel;
 					BorderElementManager.Dispose(this);
 					_buttonLayoutManager?.Dispose();
 					_buttonLayoutManager = null;
@@ -115,6 +116,7 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.TouchUpInside += OnButtonTouchUpInside;
 					Control.TouchUpOutside += OnButtonTouchUpOutside;
 					Control.TouchDown += OnButtonTouchDown;
+					Control.TouchCancel += OnButtonTouchCancel;
 				}
 
 				UpdateFont();
@@ -197,6 +199,11 @@ namespace Xamarin.Forms.Platform.iOS
 		void OnButtonTouchDown(object sender, EventArgs eventArgs)
 		{
 			ButtonElementManager.OnButtonTouchDown(this.Element);
+		}
+
+		void OnButtonTouchCancel(object sender, EventArgs e)
+		{
+			ButtonElementManager.OnButtonTouchCancel(this.Element);
 		}
 
 		void UpdateFont()

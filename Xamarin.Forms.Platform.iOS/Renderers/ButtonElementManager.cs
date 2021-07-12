@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-
-using Foundation;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -31,11 +26,12 @@ namespace Xamarin.Forms.Platform.iOS
 				control.SetBackgroundImage(UIButton.Appearance.BackgroundImageForState(uiControlState), uiControlState);
 			}
 
-
 			control.TouchUpInside -= TouchUpInside;
 			control.TouchDown -= TouchDown;
+			control.TouchCancel -= TouchCancel;
 			control.TouchUpInside += TouchUpInside;
 			control.TouchDown += TouchDown;
+			control.TouchCancel += TouchCancel;
 		}
 
 		static void TouchUpInside(object sender, EventArgs eventArgs)
@@ -52,18 +48,25 @@ namespace Xamarin.Forms.Platform.iOS
 			OnButtonTouchDown(renderer.Element as IButtonController);
 		}
 
+		static void TouchCancel(object sender, EventArgs e)
+		{
+			var button = sender as UIButton;
+			var renderer = button.Superview as IVisualNativeElementRenderer;
+			OnButtonTouchCancel(renderer.Element as IButtonController);
+		}
+
 		public static void Dispose(IVisualNativeElementRenderer renderer)
 		{
 			var control = (UIButton)renderer.Control;
 			renderer.ElementPropertyChanged -= OnElementPropertyChanged;
 			control.TouchUpInside -= TouchUpInside;
 			control.TouchDown -= TouchDown;
+			control.TouchCancel -= TouchCancel;
 		}
 
 		static void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 		}
-
 
 		static void SetControlPropertiesFromProxy(UIButton control)
 		{
@@ -87,6 +90,11 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		internal static void OnButtonTouchUpOutside(IButtonController element)
+		{
+			element?.SendReleased();
+		}
+
+		internal static void OnButtonTouchCancel(IButtonController element)
 		{
 			element?.SendReleased();
 		}

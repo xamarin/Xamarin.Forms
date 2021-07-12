@@ -35,7 +35,10 @@ namespace Xamarin.Forms.Material.iOS
 			if (Control != null)
 			{
 				Control.TouchUpInside -= OnButtonTouchUpInside;
+				Control.TouchUpOutside -= OnButtonTouchUpOutside;
 				Control.TouchDown -= OnButtonTouchDown;
+				Control.TouchCancel -= OnButtonTouchCancel;
+
 				_buttonLayoutManager?.Dispose();
 				_buttonLayoutManager = null;
 			}
@@ -68,7 +71,9 @@ namespace Xamarin.Forms.Material.iOS
 					SetNativeControl(CreateNativeControl());
 
 					Control.TouchUpInside += OnButtonTouchUpInside;
+					Control.TouchUpOutside += OnButtonTouchUpOutside;
 					Control.TouchDown += OnButtonTouchDown;
+					Control.TouchCancel += OnButtonTouchCancel;
 				}
 
 				UpdateFont();
@@ -178,7 +183,17 @@ namespace Xamarin.Forms.Material.iOS
 			Element?.SendClicked();
 		}
 
+		void OnButtonTouchUpOutside(object sender, EventArgs eventArgs)
+		{
+			Element?.SendReleased();
+		}
+
 		void OnButtonTouchDown(object sender, EventArgs eventArgs) => Element?.SendPressed();
+
+		void OnButtonTouchCancel(object sender, EventArgs eventArgs)
+		{
+			Element?.SendReleased();
+		}
 
 		protected override void SetBackgroundColor(Color color)
 		{
