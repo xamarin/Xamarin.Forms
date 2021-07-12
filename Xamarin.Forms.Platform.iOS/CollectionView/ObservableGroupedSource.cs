@@ -156,18 +156,27 @@ namespace Xamarin.Forms.Platform.iOS
 					Move(args);
 					break;
 				case NotifyCollectionChangedAction.Reset:
-					Reload();
+					Reload(true);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
 		}
 
-		void Reload()
+		void Reload(bool collectionWasReset = false)
 		{
 			ResetGroupTracking();
 
 			_collectionView.ReloadData();
+
+			// I'm trying to modify as little as possible
+			// due to possible unpredictable consequences including perf. degradation
+			// https://github.com/xamarin/Xamarin.Forms/issues/13268
+			if (collectionWasReset)
+			{
+				_collectionView.LayoutIfNeeded();
+			}
+
 			_collectionView.CollectionViewLayout.InvalidateLayout();
 		}
 
@@ -343,7 +352,7 @@ namespace Xamarin.Forms.Platform.iOS
 				|| _collectionView.NumberOfSections() == 0;
 		}
 
-		void Update(Action update) 
+		void Update(Action update)
 		{
 			if (_collectionView.Hidden)
 			{
