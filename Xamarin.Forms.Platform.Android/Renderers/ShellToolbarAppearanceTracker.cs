@@ -3,7 +3,6 @@ using AndroidX.AppCompat.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
-
 	public class ShellToolbarAppearanceTracker : IShellToolbarAppearanceTracker
 	{
 		bool _disposed;
@@ -18,15 +17,18 @@ namespace Xamarin.Forms.Platform.Android
 		public virtual void SetAppearance(Toolbar toolbar, IShellToolbarTracker toolbarTracker, ShellAppearance appearance)
 		{
 			var foreground = appearance.ForegroundColor;
-			var background = appearance.BackgroundColor;
+			var backgroundColor = appearance.BackgroundColor;
+			var background = appearance.Background;
 			var titleColor = appearance.TitleColor;
 
-			SetColors(toolbar, toolbarTracker, foreground, background, titleColor);
+			SetColors(toolbar, toolbarTracker, foreground, backgroundColor, titleColor);
+			SetBrushes(toolbar, background);
 		}
 
 		public virtual void ResetAppearance(Toolbar toolbar, IShellToolbarTracker toolbarTracker)
 		{
 			SetColors(toolbar, toolbarTracker, ShellRenderer.DefaultForegroundColor, ShellRenderer.DefaultBackgroundColor, ShellRenderer.DefaultTitleColor);
+			SetBrushes(toolbar, ShellRenderer.DefaultBackground);
 		}
 
 		protected virtual void SetColors(Toolbar toolbar, IShellToolbarTracker toolbarTracker, Color foreground, Color background, Color title)
@@ -50,6 +52,15 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (toolbarTracker.TintColor != newTintColor)
 				toolbarTracker.TintColor = newTintColor;
+		}
+
+		protected virtual void SetBrushes(Toolbar toolbar, Brush background)
+		{
+			bool isDefaultBackground = Brush.IsNullOrEmpty(background);
+			var newBackground = isDefaultBackground ? ShellRenderer.DefaultBackground : background;
+
+			if (!isDefaultBackground || (isDefaultBackground && (!(toolbar.Background is ColorDrawable))))
+				toolbar.UpdateBackground(newBackground);
 		}
 
 		#region IDisposable

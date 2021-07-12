@@ -133,6 +133,10 @@ namespace Xamarin.Forms
 			BindableProperty.CreateAttached("BackgroundColor", typeof(Color), typeof(Shell), Color.Default,
 				propertyChanged: OnShellAppearanceValueChanged);
 
+		public static readonly new BindableProperty BackgroundProperty =
+			BindableProperty.CreateAttached("Background", typeof(Brush), typeof(Shell), Brush.Default,
+				propertyChanged: OnShellAppearanceValueChanged);
+
 		public static readonly BindableProperty DisabledColorProperty =
 			BindableProperty.CreateAttached("DisabledColor", typeof(Color), typeof(Shell), Color.Default,
 				propertyChanged: OnShellAppearanceValueChanged);
@@ -183,6 +187,9 @@ namespace Xamarin.Forms
 
 		public static Color GetBackgroundColor(BindableObject obj) => (Color)obj.GetValue(BackgroundColorProperty);
 		public static void SetBackgroundColor(BindableObject obj, Color value) => obj.SetValue(BackgroundColorProperty, value);
+
+		public static Brush GetBackground(BindableObject obj) => (Brush)obj.GetValue(BackgroundProperty);
+		public static void SetBackground(BindableObject obj, Brush value) => obj.SetValue(BackgroundProperty, value);
 
 		public static Color GetDisabledColor(BindableObject obj) => (Color)obj.GetValue(DisabledColorProperty);
 		public static void SetDisabledColor(BindableObject obj, Color value) => obj.SetValue(DisabledColorProperty, value);

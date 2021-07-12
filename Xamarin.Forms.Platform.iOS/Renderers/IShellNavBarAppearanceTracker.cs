@@ -3,7 +3,6 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-
 	public interface IShellNavBarAppearanceTracker : IDisposable
 	{
 		void ResetAppearance(UINavigationController controller);
