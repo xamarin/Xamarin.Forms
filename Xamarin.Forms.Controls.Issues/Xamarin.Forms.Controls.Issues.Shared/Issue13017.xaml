@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13017">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Switch between both Backgrounds several times. If the change works as expected, the test has passed."/>
+        <StackLayout>
+            <Frame
+                WidthRequest="50"
+			    HeightRequest="100"
+			    Padding="0">
+                <Frame.Style>
+                    <Style TargetType="Frame">
+                        <Style.Triggers>
+                            <DataTrigger TargetType="Frame"
+									 Binding="{Binding BackgroundNumber}"
+									 Value="1">
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush
+                                            StartPoint="0,0"
+                                            EndPoint="1,0.5">
+                                            <GradientStop Color="#00FFD1" Offset="0"/>
+                                            <GradientStop Color="#5263FF" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Frame"
+									 Binding="{Binding BackgroundNumber}"
+									 Value="2">
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <SolidColorBrush Color="Red"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Frame.Style>
+            </Frame>
+            <Button
+                Text="Use Gradient"
+				Command="{Binding SelectGradient}"/>
+            <Button
+                Text="Use SolidColorBrush"
+				Command="{Binding SelectSolidBrushGradient}"/>
+        </StackLayout>
+    </StackLayout>
+</controls:TestContentPage>

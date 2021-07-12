@@ -291,23 +291,18 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (_disposed)
 				return;
 
+			_backgroundDrawable.Dispose();
+			_backgroundDrawable = null;
+			this.SetBackground(null);
+
+			_backgroundDrawable = new GradientDrawable();
+			_backgroundDrawable.SetShape(ShapeType.Rectangle);
+			this.SetBackground(_backgroundDrawable);
+
 			Brush background = Element.Background;
 
 			if (Brush.IsNullOrEmpty(background))
-			{
-				if (_backgroundDrawable.UseGradients())
-				{
-					_backgroundDrawable.Dispose();
-					_backgroundDrawable = null;
-					this.SetBackground(null);
-
-					_backgroundDrawable = new GradientDrawable();
-					_backgroundDrawable.SetShape(ShapeType.Rectangle);
-					this.SetBackground(_backgroundDrawable);
-				}
-
 				UpdateBackgroundColor();
-			}
 			else
 			{
 				_height = Control.Height;
