@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
-using WShape = Windows.UI.Xaml.Shapes.Shape;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -59,13 +58,13 @@ namespace Xamarin.Forms.Platform.UWP
 			// as the background would be applied to the renderer's FrameworkElement
 			if (Control == null)
 				return;
-			Color backgroundColor = Element.Color;
-			if (backgroundColor.IsDefault)
-			{
-				backgroundColor = Element.BackgroundColor;
-			}
 
-			Control.Background = backgroundColor.IsDefault ? null : backgroundColor.ToBrush();
+			Color backgroundColor = Element.Color;
+
+			if (backgroundColor.IsDefault)
+				backgroundColor = Element.BackgroundColor;
+			
+			Control.Background = backgroundColor.IsDefault ? Color.Default.ToBrush() : backgroundColor.ToBrush();
 		}
 
 		protected override void UpdateBackground()
@@ -84,7 +83,7 @@ namespace Xamarin.Forms.Platform.UWP
 				else
 				{
 					if (Element.Color.IsDefault)
-						Control.Background = null;
+						Control.Background = Color.Default.ToBrush();
 				}
 			}
 			else

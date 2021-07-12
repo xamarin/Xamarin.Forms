@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage 
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    x:Class="Xamarin.Forms.Controls.Issues.Issue12755"
+    Title="Issue 12755">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Press the Button and then tap the BoxView that has just changed color. If a dialog appears, the test has passed."/>
+        <StackLayout>
+            <BoxView
+                x:Name="boxView"
+                WidthRequest="500" 
+                HeightRequest="500"
+                BackgroundColor="Pink">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Tapped="OnBoxViewTapped"/>
+                </BoxView.GestureRecognizers>
+            </BoxView>
+            <Button 
+                Text="Clear Color" 
+                Clicked="OnClearButtonClicked"/>
+        </StackLayout>
+    </StackLayout>
+</ContentPage>
