@@ -39,7 +39,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			_motionEventHelper.UpdateElement(e.NewElement);
 
-			UpdateBoxView();
+			UpdateCornerRadius();
+			UpdateColor();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -51,10 +52,15 @@ namespace Xamarin.Forms.Platform.Android
 
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.IsOneOf(VisualElement.BackgroundColorProperty, VisualElement.BackgroundProperty, BoxView.ColorProperty))
-				UpdateBoxView();
-			else if (e.PropertyName == BoxView.CornerRadiusProperty.PropertyName)
+			if (e.IsOneOf(
+				VisualElement.BackgroundColorProperty,
+				VisualElement.BackgroundProperty,
+				BoxView.ColorProperty,
+				BoxView.CornerRadiusProperty))
+			{
 				UpdateCornerRadius();
+				UpdateColor();
+			}
 		}
 
 		protected override void UpdateBackgroundColor()
@@ -67,13 +73,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		}
 
-		void UpdateBoxView()
-		{
-			UpdateCornerRadius();
-			UpdateBoxBackground();
-		}
-
-		void UpdateBoxBackground()
+		void UpdateColor()
 		{
 			Brush brushToSet = Element.Background;
 
@@ -156,24 +156,22 @@ namespace Xamarin.Forms.Platform.Android
 				if (Background is GradientDrawable backgroundGradient)
 				{
 					var cornerRadii = new[] {
-						(float)(Context.ToPixels(cornerRadius.TopLeft)),
-						(float)(Context.ToPixels(cornerRadius.TopLeft)),
+						Context.ToPixels(cornerRadius.TopLeft),
+						Context.ToPixels(cornerRadius.TopLeft),
 
-						(float)(Context.ToPixels(cornerRadius.TopRight)),
-						(float)(Context.ToPixels(cornerRadius.TopRight)),
+						Context.ToPixels(cornerRadius.TopRight),
+						Context.ToPixels(cornerRadius.TopRight),
 
-						(float)(Context.ToPixels(cornerRadius.BottomRight)),
-						(float)(Context.ToPixels(cornerRadius.BottomRight)),
+						Context.ToPixels(cornerRadius.BottomRight),
+						Context.ToPixels(cornerRadius.BottomRight),
 
-						(float)(Context.ToPixels(cornerRadius.BottomLeft)),
-						(float)(Context.ToPixels(cornerRadius.BottomLeft))
+						Context.ToPixels(cornerRadius.BottomLeft),
+						Context.ToPixels(cornerRadius.BottomLeft)
 					};
 
 					backgroundGradient.SetCornerRadii(cornerRadii);
 				}
 			}
-
-			UpdateBackgroundColor();
 		}
 	}
 }
