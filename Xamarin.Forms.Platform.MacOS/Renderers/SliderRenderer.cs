@@ -113,6 +113,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateMinimumTrackColor();
 				UpdateMaximumTrackColor();
 				UpdateThumbColor();
+				UpdateRotation();
 			}
 
 			base.OnElementChanged(e);
@@ -136,6 +137,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				UpdateThumbColor();
 			}
+			else if (e.PropertyName == VisualElement.RotationProperty.PropertyName)
+				UpdateRotation();
 		}
 
 		void UpdateMaximumTrackColor()
@@ -211,6 +214,11 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (Math.Abs(Element.Value - Control.DoubleValue) > 0)
 				Control.DoubleValue = (float)Element.Value;
+		}
+
+		void UpdateRotation()
+		{
+			Control.BoundsRotation = (float)Element.Rotation;
 		}
 	}
 }
