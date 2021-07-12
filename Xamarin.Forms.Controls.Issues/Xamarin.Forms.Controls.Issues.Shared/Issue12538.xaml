@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue12538"
+    Title="Issue 12538">
+    <controls:TestContentPage.Resources>
+        <ResourceDictionary>
+
+            <SolidColorBrush x:Key="TestSolidColor">#27ae61</SolidColorBrush>
+
+        </ResourceDictionary>
+    </controls:TestContentPage.Resources>
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If Ellipses are rendered below using static and dynamic SolidColorBrush, the test has passed."/>
+        <Label
+            Text="Using StaticResource"/>
+        <Ellipse
+            Fill="{StaticResource TestSolidColor}"
+            HorizontalOptions="Start"
+            StrokeThickness="0"
+            WidthRequest="100"
+            HeightRequest="100" />
+        <Label
+            Text="Using DynamicResource"/>
+        <Ellipse
+            Fill="{DynamicResource TestSolidColor}"
+            HorizontalOptions="Start"
+            StrokeThickness="0"
+            WidthRequest="100"
+            HeightRequest="100" />
+    </StackLayout>
+</controls:TestContentPage>
