@@ -216,7 +216,9 @@ namespace Xamarin.Forms
 		{
 			if (Background != null)
 			{
-				Background.Parent = this;
+				if (Background.Parent == null)
+					Background.Parent = this;
+
 				Background.PropertyChanged += OnBackgroundChanged;
 
 				if (Background is GradientBrush gradientBrush)

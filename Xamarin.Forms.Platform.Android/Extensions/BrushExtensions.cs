@@ -115,8 +115,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (brush is SolidColorBrush solidColorBrush)
 			{
-				Color bgColor = solidColorBrush.Color;
-				gradientDrawable.SetColor(bgColor.IsDefault ? Color.Default.ToAndroid() : bgColor.ToAndroid());
+				Color backgroundColor = solidColorBrush.Color;
+				gradientDrawable.SetColor(backgroundColor.IsDefault ? Color.Default.ToAndroid() : backgroundColor.ToAndroid());
 			}
 
 			if (brush is LinearGradientBrush linearGradientBrush)
@@ -198,8 +198,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (brush is SolidColorBrush solidColorBrush)
 			{
-				var color = solidColorBrush.Color.IsDefault ? Color.Default.ToAndroid() : solidColorBrush.Color.ToAndroid();
-				gradientStrokeDrawable.SetColor(color);
+				Color backgroundColor = solidColorBrush.Color;
+				gradientStrokeDrawable.SetColor(backgroundColor.IsDefault ? Color.Default.ToAndroid() : backgroundColor.ToAndroid());
+
+				int alpha = (int)(255 * backgroundColor.A);
+				gradientStrokeDrawable.SetAlpha(alpha);
 			}
 			else
 				gradientStrokeDrawable.SetGradient(brush);

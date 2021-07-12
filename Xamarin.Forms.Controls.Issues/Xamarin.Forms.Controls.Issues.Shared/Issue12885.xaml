@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"      
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    mc:Ignorable="d"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue12885"
+    Title="Issue 12885">
+    <controls:TestContentPage.Resources>
+        <ResourceDictionary>
+
+            <SolidColorBrush x:Key="SemiTransparentRedBrush">#22990000</SolidColorBrush>
+
+        </ResourceDictionary>
+    </controls:TestContentPage.Resources>
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Label
+                Padding="12"
+                BackgroundColor="Black"
+                TextColor="White"
+                Text="If all the Views below use a red background color with opacity, the test has passed."/>
+            <ScrollView
+                Grid.Row="1">
+                <StackLayout
+                    Padding="12">
+                    <Label
+                        FontAttributes="Bold"
+                        Text="Using #22990000"/>
+                    <Label
+                        Text="BoxView"/>
+                    <BoxView
+                        Background="{StaticResource SemiTransparentRedBrush}"
+                        HeightRequest="100"
+                        WidthRequest="100"/>
+                    <Label
+                        Text="ContentView"/>
+                    <ContentView
+                        Background="{StaticResource SemiTransparentRedBrush}"
+                        HeightRequest="100"
+                        WidthRequest="100"/>
+                    <Label
+                        Text="Grid"/>
+                    <Grid
+                        Background="{StaticResource SemiTransparentRedBrush}"
+                        HeightRequest="100"
+                        WidthRequest="100">
+                        <Label
+                            Text="Grid"/>
+                    </Grid>
+                    <Label
+                        Text="StackLayout"/>
+                    <StackLayout
+                        Background="{StaticResource SemiTransparentRedBrush}"
+                        HeightRequest="100"
+                        WidthRequest="100">
+                        <Label
+                            Text="StackLayout"/>
+                    </StackLayout>
+                </StackLayout>
+            </ScrollView>
+        </Grid>
+    </ContentPage.Content>
+</controls:TestContentPage>
