@@ -19,8 +19,9 @@ namespace Xamarin.Forms.Platform.MacOS
         where TShape : Shape
         where TNativeShape : ShapeView
     {
-        double _height;
-        double _width;
+        nfloat _height;
+        nfloat _width;
+        nfloat _scale;
 
         protected override void OnElementChanged(ElementChangedEventArgs<TShape> args)
         {
@@ -52,16 +53,8 @@ namespace Xamarin.Forms.Platform.MacOS
         {
             base.OnElementPropertyChanged(sender, args);
 
-            if (args.PropertyName == VisualElement.HeightProperty.PropertyName)
-            {
-                _height = Element.Height;
+            if (args.PropertyName == VisualElement.HeightProperty.PropertyName || args.PropertyName == VisualElement.WidthProperty.PropertyName)
                 UpdateSize();
-            }
-            else if (args.PropertyName == VisualElement.WidthProperty.PropertyName)
-            {
-                _width = Element.Width;
-                UpdateSize();
-            }
             else if (args.PropertyName == Shape.AspectProperty.PropertyName)
                 UpdateAspect();
             else if (args.PropertyName == Shape.FillProperty.PropertyName)
@@ -99,7 +92,11 @@ namespace Xamarin.Forms.Platform.MacOS
 
         void UpdateSize()
         {
-            Control.ShapeLayer.UpdateSize(new CGSize(new nfloat(_width), new nfloat(_height)));
+            _height = (nfloat) Element.Height;
+            _width = (nfloat)Element.Width;
+            _scale = (nfloat)Element.Scale;
+
+            Control.ShapeLayer.UpdateSize(new CGSize(_width, _height), _scale);
         }
 
         void UpdateFill()
@@ -259,11 +256,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
         public ShapeLayer()
         {
-#if __MOBILE__
-            ContentsScale = UIScreen.MainScreen.Scale;
-#else
-            ContentsScale = NSScreen.MainScreen.BackingScaleFactor;
-#endif
             _fillMode = false;
             _stretch = Stretch.None;
             _strokeLineCap = CGLineCap.Butt;
@@ -302,8 +294,14 @@ namespace Xamarin.Forms.Platform.MacOS
                 Math.Max(0, nfloat.IsNaN(_pathStrokeBounds.Bottom) ? 0 : _pathStrokeBounds.Bottom)));
         }
 
-        public void UpdateSize(CGSize size)
+        public void UpdateSize(CGSize size, nfloat scale)
         {
+#if __MOBILE__
+            ContentsScale = UIScreen.MainScreen.Scale * scale;
+#else
+            ContentsScale = NSScreen.MainScreen.BackingScaleFactor * scale;
+#endif
+
             Bounds = new CGRect(new CGPoint(), size);
             BuildRenderPath();
         }
