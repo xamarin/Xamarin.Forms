@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using CoreGraphics;
@@ -123,6 +124,10 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_scrollParent is ListView listView)
 				{
 					listView.Scrolled += OnParentScrolled;
+
+					if (listView.ItemsSource is INotifyCollectionChanged notifyListView)
+						notifyListView.CollectionChanged += OnParentCollectionChanged;
+
 					return;
 				}
 
@@ -131,6 +136,9 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_scrollParent is CollectionView collectionView)
 				{
 					collectionView.Scrolled += OnParentScrolled;
+
+					if(collectionView.ItemsSource is INotifyCollectionChanged notifyCollectionView)
+						notifyCollectionView.CollectionChanged += OnParentCollectionChanged;
 				}
 			}
 		}
@@ -239,10 +247,20 @@ namespace Xamarin.Forms.Platform.iOS
 						scrollView.Scrolled -= OnParentScrolled;
 
 					if (_scrollParent is ListView listView)
+					{
 						listView.Scrolled -= OnParentScrolled;
 
+						if (listView.ItemsSource is INotifyCollectionChanged notifyListView)
+							notifyListView.CollectionChanged += OnParentCollectionChanged;
+					}
+
 					if (_scrollParent is CollectionView collectionView)
+					{
 						collectionView.Scrolled -= OnParentScrolled;
+
+						if (collectionView.ItemsSource is INotifyCollectionChanged notifyCollectionView)
+							notifyCollectionView.CollectionChanged -= OnParentCollectionChanged;
+					}
 				}
 
 				if (_tapGestureRecognizer != null)
@@ -1526,6 +1544,12 @@ namespace Xamarin.Forms.Platform.iOS
 				ResetSwipe();
 
 			_previousFirstVisibleIndex = e.FirstVisibleItemIndex;
+		}
+
+		void OnParentCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.Action == NotifyCollectionChangedAction.Reset)
+				ResetSwipe();
 		}
 
 		void OnOpenRequested(object sender, OpenRequestedEventArgs e)

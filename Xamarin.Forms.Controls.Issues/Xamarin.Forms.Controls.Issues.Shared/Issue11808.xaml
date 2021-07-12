@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue11808">
+    <Grid
+        RowSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Swipe on some items and tap the Refresh Button. If the list is refreshed and the SwipeViews are automatically closed, the test has passed."/>
+        <Grid
+            Grid.Row="1">
+            <CollectionView
+                VerticalOptions="FillAndExpand"
+                HorizontalOptions="FillAndExpand"
+                ItemsSource="{Binding Items}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItemView>
+                                        <Grid
+                                            BackgroundColor="Black">
+                                            <Label
+                                                Text="SwipeItem"
+                                                TextColor="White"
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Center"/>
+                                        </Grid>
+                                    </SwipeItemView>
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                            <Grid
+                                HeightRequest="50"
+                                BackgroundColor="LightGray">
+                                <BoxView
+                                    VerticalOptions="End"
+                                    HeightRequest="2"
+                                    BackgroundColor="Black" />
+                                <Label
+                                    Text="{Binding}"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center"/>
+                            </Grid>
+                        </SwipeView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+        <Button
+            Grid.Row="2"
+            Text="Refresh"
+            Command="{Binding RefreshCommand}"/>
+    </Grid>
+</controls:TestContentPage>
