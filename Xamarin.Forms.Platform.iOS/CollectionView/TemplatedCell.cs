@@ -159,6 +159,12 @@ namespace Xamarin.Forms.Platform.iOS
 			CurrentTemplate = itemTemplate;
 		}
 
+		public void Unbind()
+		{
+			if (VisualElementRenderer?.Element != null)
+				VisualElementRenderer.Element.MeasureInvalidated -= MeasureInvalidated;
+		}
+
 		void SetRenderer(IVisualElementRenderer renderer)
 		{
 			VisualElementRenderer = renderer;

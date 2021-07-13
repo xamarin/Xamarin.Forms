@@ -2,6 +2,8 @@
 {
 	internal class PropagateCodeGallery : ContentPage
 	{
+		ItemsSourceGenerator generator;
+
 		public PropagateCodeGallery(IItemsLayout itemsLayout, int itemsCount = 2)
 		{
 			Title = $"Propagate FlowDirection=RTL";
@@ -31,7 +33,7 @@
 				EmptyView = emptyView
 			};
 
-			var generator = new ItemsSourceGenerator(collectionView, initialItems: itemsCount);
+			generator = new ItemsSourceGenerator(collectionView, initialItems: itemsCount);
 			layout.Children.Add(generator);
 			var instructions = new Label();
 			UpdateInstructions(layout, instructions, itemsCount == 0);
@@ -64,6 +66,21 @@
 			Content = layout;
 
 			generator.GenerateItems();
+		}
+
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			generator.SubscribeEvents();
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			generator.UnsubscribeEvents();
 		}
 
 		static void UpdateInstructions(Layout layout, Label instructions, bool isEmpty)

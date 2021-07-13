@@ -2,6 +2,8 @@
 {
 	internal class SpacingGallery : ContentPage
 	{
+		ItemsSourceGenerator generator;
+
 		public SpacingGallery(IItemsLayout itemsLayout)
 		{
 			var layout = new Grid
@@ -35,7 +37,7 @@
 				Margin = 10
 			};
 
-			var generator = new ItemsSourceGenerator(collectionView, initialItems: 20);
+			generator = new ItemsSourceGenerator(collectionView, initialItems: 20);
 			var spacingModifier = new SpacingModifier(collectionView.ItemsLayout, "Update_Spacing");
 
 			layout.Children.Add(generator);
@@ -50,6 +52,20 @@
 			Content = layout;
 
 			generator.GenerateItems();
+		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			generator.SubscribeEvents();
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			generator.UnsubscribeEvents();
 		}
 	}
 }

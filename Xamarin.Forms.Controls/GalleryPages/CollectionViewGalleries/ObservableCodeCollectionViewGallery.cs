@@ -2,6 +2,8 @@
 {
 	internal class ObservableCodeCollectionViewGallery : ContentPage
 	{
+		ItemsSourceGenerator generator;
+
 		public ObservableCodeCollectionViewGallery(ItemsLayoutOrientation orientation = ItemsLayoutOrientation.Vertical,
 			bool grid = true, int initialItems = 1000, bool addItemsWithTimer = false, ItemsUpdatingScrollMode scrollMode = ItemsUpdatingScrollMode.KeepItemsInView)
 		{
@@ -34,7 +36,7 @@
 				ItemsUpdatingScrollMode = scrollMode
 			};
 
-			var generator = new ItemsSourceGenerator(collectionView, initialItems, ItemsSourceType.ObservableCollection);
+			generator = new ItemsSourceGenerator(collectionView, initialItems, ItemsSourceType.ObservableCollection);
 
 			var remover = new ItemRemover(collectionView);
 			var adder = new ItemAdder(collectionView);
@@ -68,6 +70,23 @@
 				generator.GenerateEmptyObservableCollectionAndAddItemsEverySecond();
 			else
 				generator.GenerateItems();
+		}
+
+
+
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			generator.SubscribeEvents();
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			generator.UnsubscribeEvents();
 		}
 	}
 }

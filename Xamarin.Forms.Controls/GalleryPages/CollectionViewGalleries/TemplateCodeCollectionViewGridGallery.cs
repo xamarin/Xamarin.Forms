@@ -2,6 +2,8 @@
 {
 	internal class TemplateCodeCollectionViewGridGallery : ContentPage
 	{
+		ItemsSourceGenerator generator;
+
 		public TemplateCodeCollectionViewGridGallery(ItemsLayoutOrientation orientation = ItemsLayoutOrientation.Vertical)
 		{
 			var layout = new Grid
@@ -20,7 +22,7 @@
 
 			var collectionView = new CollectionView { ItemsLayout = itemsLayout, ItemTemplate = itemTemplate, AutomationId = "collectionview" };
 
-			var generator = new ItemsSourceGenerator(collectionView, 100);
+			generator = new ItemsSourceGenerator(collectionView, 100);
 			var spanSetter = new SpanSetter(collectionView);
 
 			layout.Children.Add(generator);
@@ -33,6 +35,20 @@
 
 			spanSetter.UpdateSpan();
 			generator.GenerateItems();
+		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			generator.SubscribeEvents();
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			generator.UnsubscribeEvents();
 		}
 	}
 }

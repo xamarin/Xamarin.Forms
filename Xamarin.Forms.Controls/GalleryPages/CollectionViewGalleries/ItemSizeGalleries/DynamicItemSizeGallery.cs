@@ -2,6 +2,8 @@
 {
 	internal class DynamicItemSizeGallery : ContentPage
 	{
+		ItemsSourceGenerator generator;
+
 		public DynamicItemSizeGallery(IItemsLayout itemsLayout)
 		{
 			var layout = new Grid
@@ -28,7 +30,7 @@
 				AutomationId = "collectionview"
 			};
 
-			var generator = new ItemsSourceGenerator(collectionView, initialItems: 20);
+			generator = new ItemsSourceGenerator(collectionView, initialItems: 20);
 
 			layout.Children.Add(generator);
 			layout.Children.Add(instructions);
@@ -40,6 +42,20 @@
 			Content = layout;
 
 			generator.GenerateItems();
+		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			generator.SubscribeEvents();
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			generator.UnsubscribeEvents();
 		}
 	}
 }

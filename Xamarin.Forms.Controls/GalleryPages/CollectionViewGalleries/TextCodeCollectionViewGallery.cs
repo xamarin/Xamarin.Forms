@@ -2,6 +2,8 @@
 {
 	internal class TextCodeCollectionViewGallery : ContentPage
 	{
+		ItemsSourceGenerator generator;
+
 		public TextCodeCollectionViewGallery(IItemsLayout itemsLayout)
 		{
 			var layout = new Grid
@@ -20,7 +22,7 @@
 				AutomationId = "collectionview"
 			};
 
-			var generator = new ItemsSourceGenerator(collectionView);
+			generator = new ItemsSourceGenerator(collectionView);
 
 			layout.Children.Add(generator);
 			layout.Children.Add(collectionView);
@@ -29,6 +31,20 @@
 			Content = layout;
 
 			generator.GenerateItems();
+		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			generator.SubscribeEvents();
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			generator.UnsubscribeEvents();
 		}
 	}
 }

@@ -2,6 +2,9 @@
 {
 	internal class ObservableCollectionResetGallery : ContentPage
 	{
+		ItemsSourceGenerator generator;
+
+
 		public ObservableCollectionResetGallery()
 		{
 			var layout = new Grid
@@ -20,7 +23,7 @@
 
 			var collectionView = new CollectionView { ItemsLayout = itemsLayout, ItemTemplate = itemTemplate };
 
-			var generator = new ItemsSourceGenerator(collectionView, 100, ItemsSourceType.MultiTestObservableCollection);
+			generator = new ItemsSourceGenerator(collectionView, 100, ItemsSourceType.MultiTestObservableCollection);
 
 			layout.Children.Add(generator);
 
@@ -34,6 +37,20 @@
 			Content = layout;
 
 			generator.GenerateItems();
+		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			generator.SubscribeEvents();
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			generator.UnsubscribeEvents();
 		}
 	}
 }
