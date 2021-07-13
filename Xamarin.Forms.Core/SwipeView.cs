@@ -9,6 +9,9 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_SwipeViewRenderer))]
 	public class SwipeView : ContentView, IElementConfiguration<SwipeView>, ISwipeViewController
 	{
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public const string AutoCloseSwipeViewSignalName = "Xamarin.CloseSwipeView";
+
 		readonly Lazy<PlatformConfigurationRegistry<SwipeView>> _platformConfigurationRegistry;
 
 		public SwipeView()
@@ -34,6 +37,9 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty BottomItemsProperty =
 			BindableProperty.Create(nameof(BottomItems), typeof(SwipeItems), typeof(SwipeView), null, BindingMode.OneWay, null, defaultValueCreator: SwipeItemsDefaultValueCreator,
 				propertyChanged: OnSwipeItemsChanged);
+
+		public static readonly BindableProperty AutoCloseProperty =
+			BindableProperty.Create(nameof(AutoClose), typeof(bool), typeof(SwipeView), true);
 
 		public double Threshold
 		{
@@ -63,6 +69,12 @@ namespace Xamarin.Forms
 		{
 			get { return (SwipeItems)GetValue(BottomItemsProperty); }
 			set { SetValue(BottomItemsProperty, value); }
+		}
+
+		public bool AutoClose
+		{
+			get { return (bool)GetValue(AutoCloseProperty); }
+			set { SetValue(AutoCloseProperty, value); }
 		}
 
 		bool ISwipeViewController.IsOpen { get; set; }
