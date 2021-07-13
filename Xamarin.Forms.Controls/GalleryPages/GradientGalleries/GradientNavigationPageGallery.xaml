@@ -24,7 +24,7 @@
     <FlyoutPage.Flyout>
         <ContentPage
             Title="Flyout"
-            BackgroundColor="White"
+            BackgroundColor="Transparent"
             Background="{StaticResource HorizontalLinearGradient}">
             <Label
                 FontSize="24"
@@ -36,6 +36,7 @@
     </FlyoutPage.Flyout>
     <FlyoutPage.Detail>
         <NavigationPage
+            BarBackgroundColor="Transparent"
             BarBackground="{StaticResource HorizontalLinearGradient}"
             Title="Gradient NavigationPage">
         <x:Arguments>
