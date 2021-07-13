@@ -275,7 +275,7 @@ namespace Xamarin.Forms.Platform.UWP
 		readonly Windows.UI.Xaml.Controls.Page _page;
 		Windows.UI.Xaml.Controls.ProgressBar _busyIndicator;
 		Page _currentPage;
-		Page _modalBackgroundPage;
+		readonly Stack<Page> _modalBackgroundPages = new Stack<Page>();
 		readonly NavigationModel _navModel = new NavigationModel();
 		readonly ToolbarTracker _toolbarTracker = new ToolbarTracker();
 		readonly ImageConverter _imageConverter = new ImageConverter();
@@ -345,19 +345,23 @@ namespace Xamarin.Forms.Platform.UWP
 					Page previousPage = _currentPage;
 
 					if (modal && !popping && !newPage.BackgroundColor.IsDefault)
-						_modalBackgroundPage = previousPage;
+					{
+						_modalBackgroundPages.Push(previousPage);
+					}
 					else
 					{
 						RemovePage(previousPage);
 
-						if(!modal && _modalBackgroundPage != null)
+						if(!modal && _modalBackgroundPages.Count != 0)
 						{
-							RemovePage(_modalBackgroundPage);
-							_modalBackgroundPage.Cleanup();
-							_modalBackgroundPage.Parent = null;
+							var modalBackgroundPage = _modalBackgroundPages.Peek();
+							RemovePage(modalBackgroundPage);
+							modalBackgroundPage.Cleanup();
+							modalBackgroundPage.Parent = null;
 						}
-						
-						_modalBackgroundPage = null;
+
+						if(_modalBackgroundPages.Count > 0)
+							_modalBackgroundPages.Pop();	
 					}
 
 					if (popping)
@@ -398,8 +402,8 @@ namespace Xamarin.Forms.Platform.UWP
 			if (_container == null || page == null)
 				return;
 
-			if (_modalBackgroundPage != null)
-				_modalBackgroundPage.GetCurrentPage()?.SendAppearing();
+			if (_modalBackgroundPages.Count != 0)
+				_modalBackgroundPages.Peek().GetCurrentPage()?.SendAppearing();
 
 			IVisualElementRenderer pageRenderer = GetRenderer(page);
 
@@ -411,9 +415,9 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (_container == null || page == null)
 				return;
-
-			if (_modalBackgroundPage != null)
-				_modalBackgroundPage.GetCurrentPage()?.SendDisappearing();
+			
+			if (_modalBackgroundPages.Count != 0)
+				_modalBackgroundPages.Peek().GetCurrentPage()?.SendDisappearing();
 
 			IVisualElementRenderer pageRenderer = page.GetOrCreateRenderer();
 
