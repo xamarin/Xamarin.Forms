@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:Xamarin.Forms.Controls.GalleryPages.ShapesGalleries"
+    x:Class="Xamarin.Forms.Controls.GalleryPages.ShapesGalleries.PathTransformBindingContextGallery"
+    Title="Path Transform BindingContext Gallery">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <Style x:Key="PathContainerStyle" TargetType="Grid">
+                <Setter Property="HeightRequest" Value="200" />
+                <Setter Property="WidthRequest" Value="200" />
+                <Setter Property="BackgroundColor" Value="#e5e5e5" />
+                <Setter Property="HorizontalOptions" Value="Start" />
+                <Setter Property="VerticalOptions" Value="Start" />
+            </Style>
+
+            <Style x:Key="PathStyle" TargetType="Path">
+                <Setter Property="HeightRequest" Value="200" />
+                <Setter Property="WidthRequest" Value="200" />
+                <Setter Property="Fill" Value="Red" />
+                <Setter Property="Stroke" Value="Blue" />
+                <Setter Property="StrokeThickness" Value="4" />
+            </Style>
+
+            <Style x:Key="HeaderStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="Margin" Value="6, 12, 0, 0" />
+            </Style>
+
+            <Style x:Key="ValueStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="10" />
+                <Setter Property="Margin" Value="12, 0" />
+            </Style>
+
+            <Style TargetType="Slider">
+                <Setter Property="ThumbColor" Value="Black" />
+                <Setter Property="MinimumTrackColor" Value="LightGray" />
+                <Setter Property="MaximumTrackColor" Value="Gray" />
+            </Style>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.BindingContext>
+        <vm:PathTransformBindingContextViewModel />
+    </ContentPage.BindingContext>
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <!-- PATH -->
+            <Grid
+                Style="{StaticResource PathContainerStyle}">
+                <Path
+                    Style="{StaticResource PathStyle}">
+                    <Path.Data>
+                        <RectangleGeometry
+                            Rect="0, 0, 50, 50" />
+                    </Path.Data>
+                    <Path.RenderTransform>
+                        <TransformGroup>
+                            <RotateTransform
+                                Angle="{Binding Rotation}"
+                                CenterX="{Binding CenterX}"
+                                CenterY="{Binding CenterY}" />
+                            <ScaleTransform
+                                ScaleX="{Binding ScaleX}"
+                                ScaleY="{Binding ScaleY}"
+                                CenterX="{Binding CenterX}"   
+                                CenterY="{Binding CenterY}" />
+                            <SkewTransform
+                                AngleX="{Binding SkewX}"
+                                AngleY="{Binding SkewY}"
+                                CenterX="{Binding CenterX}"
+                                CenterY="{Binding CenterY}" />
+                            <TranslateTransform
+                                X="{Binding TranslateX}"
+                                Y="{Binding TranslateY}"/>
+                        </TransformGroup>
+                    </Path.RenderTransform>
+                </Path>
+            </Grid>
+            <!-- TRANSFORMS -->
+            <ScrollView
+                Grid.Row="1"
+                Padding="12">
+                <StackLayout>
+                    <!-- ROTATE -->
+                    <Label
+                        Text="RotateTransform"
+                        Style="{StaticResource HeaderStyle}"/>
+                    <Label
+                        Text="{Binding Rotation, StringFormat='Rotation: {0:F0}'}"
+                        Style="{StaticResource ValueStyle}"/>
+                    <Slider
+                        x:Name="Rotation"
+                        Minimum="0"
+                        Maximum="200"
+                        Value="{Binding Rotation, Mode=TwoWay}"/>
+                    <Label
+                        Text="{Binding CenterX, StringFormat='CenterX: {0:F0}'}"
+                        Style="{StaticResource ValueStyle}"/>
+                    <Slider
+                        x:Name="CenterX"
+                        Minimum="0"
+                        Maximum="100"
+                        Value="{Binding CenterX}"/>
+                    <Label
+                        Text="{Binding  CenterY, StringFormat='CenterY: {0:F0}'}"
+                        Style="{StaticResource ValueStyle}"/>
+                    <Slider
+                        x:Name="CenterY"
+                        Minimum="0"
+                        Maximum="100"
+                        Value="{Binding CenterY}"/>
+                    <!-- SCALE -->
+                    <Label
+                        Text="ScaleTransform"
+                        Style="{StaticResource HeaderStyle}"/>
+                    <Label
+                        Text="{Binding ScaleX, StringFormat='ScaleX: {0:F2}'}"
+                        Style="{StaticResource ValueStyle}" />
+                    <Slider
+                        x:Name="ScaleX"
+                        Minimum="0.5"
+                        Maximum="2"
+                        Value="{Binding ScaleX}" />
+                    <Label
+                        Text="{Binding ScaleY, StringFormat='ScaleY: {0:F2}'}"
+                        Style="{StaticResource ValueStyle}" />
+                    <Slider
+                        x:Name="ScaleY"
+                        Minimum="0.5"
+                        Maximum="2"
+                        Value="{Binding ScaleY}" />
+                    <!-- SKEW -->
+                    <Label
+                        Text="SkewTransform"
+                        Style="{StaticResource HeaderStyle}"/>
+                    <Label
+                        Text="{Binding SkewX, StringFormat='SkewX: {0:F0}'}"
+                        Style="{StaticResource ValueStyle}" />
+                    <Slider
+                        x:Name="SkewX"
+                        Minimum="0"
+                        Maximum="100"
+                        Value="{Binding SkewX}"/>
+                    <Label
+                        Text="{Binding SkewY, StringFormat='SkewY: = {0:F0}'}"
+                        Style="{StaticResource ValueStyle}"/>
+                    <Slider
+                        x:Name="SkewY"
+                        Minimum="0"
+                        Maximum="100"
+                        Value="{Binding SkewY}" />
+                    <!-- TRANSLATE -->
+                    <Label
+                        Text="TranslateTransform"
+                        Style="{StaticResource HeaderStyle}"/>
+                    <Label
+                        Text="{Binding TranslateX, StringFormat='X: {0:F0}'}"
+                        Style="{StaticResource ValueStyle}"/>
+                    <Slider
+                        x:Name="TranslateX"
+                        Minimum="0"
+                        Maximum="200"
+                        Value="{Binding TranslateX}"/>
+                    <Label
+                        Text="{Binding TranslateY, StringFormat='Y: {0:F0}'}"
+                        Style="{StaticResource ValueStyle}"/>
+                    <Slider
+                        x:Name="TranslateY"
+                        Minimum="0"
+                        Maximum="200"
+                        Value="{Binding TranslateY}"/>
+                </StackLayout>
+            </ScrollView>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

@@ -22,8 +22,7 @@
                 Padding="12">
                 <Label
                     Text="Without RenderTransform"/>
-                <Path
-                    RenderTransform="0.75 0 0 0.75 0 0">
+                <Path>
                     <Path.Data>
                       <PathGeometry>
                         <PathGeometry.Figures>
@@ -59,7 +58,8 @@
                 </Path>
                 <Label
                     Text="With RenderTransform"/>
-                <Path>
+                <Path
+                    RenderTransform="0 1 1 0 0 0">
                     <Path.Data>
                       <PathGeometry>
                         <PathGeometry.Figures>

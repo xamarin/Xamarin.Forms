@@ -36,6 +36,14 @@ namespace Xamarin.Forms.Shapes
 			(bindable as TransformGroup).UpdateTransformMatrix();
 		}
 
+		protected override void OnBindingContextChanged()
+		{
+			base.OnBindingContextChanged();
+
+			foreach(var children in Children)
+				SetInheritedBindingContext(children, BindingContext);
+		}
+
 		void OnChildrenCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
 			if (args.NewItems != null)

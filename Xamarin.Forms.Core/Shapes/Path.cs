@@ -53,6 +53,13 @@ namespace Xamarin.Forms.Shapes
 			}
 		}
 
+		protected override void OnBindingContextChanged()
+		{
+			base.OnBindingContextChanged();
+
+			SetInheritedBindingContext(RenderTransform, BindingContext);
+		}
+
 		void OnGeometryPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
 			OnPropertyChanged(nameof(Geometry));
