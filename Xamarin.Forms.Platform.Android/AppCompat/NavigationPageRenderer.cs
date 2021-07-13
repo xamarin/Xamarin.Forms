@@ -381,18 +381,17 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
+			if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName
+				|| e.PropertyName == NavigationPage.BarBackgroundProperty.PropertyName
+				|| e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName
+				|| e.PropertyName == BarHeightProperty.PropertyName
+				|| e.PropertyName == AutomationProperties.NameProperty.PropertyName
+				|| e.PropertyName == AutomationProperties.HelpTextProperty.PropertyName)
 				UpdateToolbar();
-			else if (e.PropertyName == NavigationPage.BarBackgroundProperty.PropertyName)
-				UpdateToolbar();
-			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName)
-				UpdateToolbar();
-			else if (e.PropertyName == BarHeightProperty.PropertyName)
-				UpdateToolbar();
-			else if (e.PropertyName == AutomationProperties.NameProperty.PropertyName)
-				UpdateToolbar();
-			else if (e.PropertyName == AutomationProperties.HelpTextProperty.PropertyName)
-				UpdateToolbar();
+			else if (e.PropertyName == NavigationPage.BarFontAttributesProperty.PropertyName
+				|| e.PropertyName == NavigationPage.BarFontFamilyProperty.PropertyName
+				|| e.PropertyName == NavigationPage.BarFontSizeProperty.PropertyName)
+				UpdateTitelFont();
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
@@ -1034,6 +1033,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					icon.Color = textColor.ToAndroid().ToArgb();
 			}
 
+			UpdateTitelFont();
+
 			UpdateTitleIcon();
 
 			UpdateTitleView();
@@ -1073,6 +1074,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					FastRenderers.AutomationPropertiesProvider.AccessibilitySettingsChanged(_titleIconView, source);
 				});
 			}
+		}
+
+		void UpdateTitelFont()
+		{
+			if (_toolbar == null || Element == null || Element.CurrentPage == null || NavigationPage.GetTitleView(Element.CurrentPage) != null)
+				return;
+
+			_toolbar.SetChildrenTextViewsFont(Element.Font);
 		}
 
 		void UpdateTitleView()

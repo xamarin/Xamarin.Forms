@@ -228,7 +228,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateTint();
 			UpdateBarBackground();
-			UpdateBarTextColor();
+			UpdateBarTextProperties();
 			UpdateHideNavigationBarSeparator();
 			UpdateUseLargeTitles();
 
@@ -450,9 +450,12 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateBarBackground();
 			}
 			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName
-				  || e.PropertyName == StatusBarTextColorModeProperty.PropertyName)
+				  || e.PropertyName == StatusBarTextColorModeProperty.PropertyName
+				  || e.PropertyName == NavigationPage.BarFontAttributesProperty.PropertyName
+				  || e.PropertyName == NavigationPage.BarFontFamilyProperty.PropertyName
+				  || e.PropertyName == NavigationPage.BarFontSizeProperty.PropertyName)
 			{
-				UpdateBarTextColor();
+				UpdateBarTextProperties();
 				SetStatusBarStyle();
 			}
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
@@ -702,7 +705,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void UpdateBarTextColor()
+		void UpdateBarTextProperties()
 		{
 			var barTextColor = NavPage.BarTextColor;
 
@@ -711,7 +714,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var titleTextAttributes = new UIStringAttributes
 			{
 				ForegroundColor = barTextColor == Color.Default ? globalTitleTextAttributes?.ForegroundColor : barTextColor.ToUIColor(),
-				Font = globalTitleTextAttributes?.Font
+				Font = NavPage.Font.ToUIFont()
 			};
 
 			// Determine new large title text attributes via global static data
@@ -723,7 +726,7 @@ namespace Xamarin.Forms.Platform.iOS
 				largeTitleTextAttributes = new UIStringAttributes
 				{
 					ForegroundColor = barTextColor == Color.Default ? globalLargeTitleTextAttributes?.ForegroundColor : barTextColor.ToUIColor(),
-					Font = globalLargeTitleTextAttributes?.Font
+					Font = NavPage.Font.ToUIFont()
 				};
 			}
 
@@ -1308,7 +1311,7 @@ namespace Xamarin.Forms.Platform.iOS
 			void UpdateIconColor()
 			{
 				if (_navigation.TryGetTarget(out NavigationRenderer navigationRenderer))
-					navigationRenderer.UpdateBarTextColor();
+					navigationRenderer.UpdateBarTextProperties();
 			}
 
 			async void UpdateTitleImage(Container titleViewContainer, ImageSource titleIcon)

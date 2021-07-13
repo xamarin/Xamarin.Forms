@@ -95,6 +95,8 @@ namespace Xamarin.Forms.Controls
 			{
 				BarBackgroundColor = Color.Default;
 				BarTextColor = Color.Default;
+				BarFontAttributes = FontAttributes.Italic;
+				BarFontSize = 32;
 
 				return false;
 			});
@@ -127,6 +129,8 @@ namespace Xamarin.Forms.Controls
 		{
 		}
 #if APP
+
+
 		public CoreTabbedPageBase()
 		{
 			AutomationId = "TabbedPageRoot";
@@ -139,8 +143,12 @@ namespace Xamarin.Forms.Controls
 
 				Device.StartTimer(TimeSpan.FromSeconds(6), () =>
 				{
-					BarBackgroundColor = Color.Default;
+					BarBackgroundColor = Color.Gray;
 					BarTextColor = Color.Default;
+					SelectedTabColor = Color.Red;
+					BarFontFamily = "Foo";
+					BarFontSize = 23;
+					BarFontAttributes = FontAttributes.Italic;
 
 					return false;
 				});
@@ -186,6 +194,7 @@ namespace Xamarin.Forms.Controls
 				});
 			}
 		}
+
 #endif
 
 #if UITest
