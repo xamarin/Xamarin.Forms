@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 		public string Language { get; set; }
 		public string AssemblyName { get; set; }
-		public string References { get; set; }
+		public string[] References { get; set; }
 
 		public override bool Execute()
 		{
@@ -37,6 +37,7 @@ namespace Xamarin.Forms.Build.Tasks
 				return false;
 			}
 
+			using var xmlnsCache = new XmlnsCache(References);
 			for (int i = 0; i < XamlFiles.Length; i++)
 			{
 				var xamlFile = XamlFiles[i];
@@ -46,7 +47,8 @@ namespace Xamarin.Forms.Build.Tasks
 				else if (IOPath.DirectorySeparatorChar == '\\' && outputFile.Contains(@"/"))
 					outputFile = outputFile.Replace('/', '\\');
 
-				var generator = new XamlGenerator(xamlFile, Language, AssemblyName, outputFile, References, Log);
+				// NOTE: do not Dispose() each generator, so we can reuse a single xmlnsCache
+				var generator = new XamlGenerator(xamlFile, Language, AssemblyName, outputFile, References, Log, xmlnsCache);
 				try
 				{
 					if (!generator.Execute())

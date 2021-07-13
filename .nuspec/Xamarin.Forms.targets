@@ -83,14 +83,11 @@
 		DependsOnTargets="_FindXamlGFiles; PrepareResourceNames; AfterResolveReferences"
 		Inputs="@(_XamlGInputs)"
 		Outputs="@(_XamlGOutputs)">
-		<PropertyGroup>
-			<ReferencedAssemblies>@(ReferencePath)</ReferencedAssemblies>
-		</PropertyGroup>
 		<XamlGTask
 			XamlFiles="@(_XamlGInputs)"
 			OutputFiles="@(_XamlGOutputs)"
 			Language="$(Language)"
-			References = "$(ReferencedAssemblies)"
+			References="@(ReferencePath)"
 			AssemblyName="$(AssemblyName)" />
 		<ItemGroup>
 			<FileWrites Include="@(_XamlGOutputs)" />

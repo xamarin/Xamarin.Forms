@@ -15,7 +15,7 @@ using IOPath = System.IO.Path;
 
 namespace Xamarin.Forms.Build.Tasks
 {
-	class XamlGenerator
+	class XamlGenerator : IDisposable
 	{
 		internal XamlGenerator()
 		{
@@ -26,8 +26,9 @@ namespace Xamarin.Forms.Build.Tasks
 			string language,
 			string assemblyName,
 			string outputFile,
-			string references,
-			TaskLoggingHelper logger)
+			string[] references,
+			TaskLoggingHelper logger,
+			XmlnsCache xmlnsCache)
 			: this(
 				taskItem.ItemSpec,
 				language,
@@ -36,12 +37,12 @@ namespace Xamarin.Forms.Build.Tasks
 				assemblyName,
 				outputFile,
 				references,
-				logger)
+				logger,
+				xmlnsCache)
 		{
 		}
 
-		List<XmlnsDefinitionAttribute> _xmlnsDefinitions;
-		Dictionary<string, ModuleDefinition> _xmlnsModules;
+		readonly XmlnsCache _xmlnsCache;
 		internal static CodeDomProvider Provider = new CSharpCodeProvider();
 
 		public string XamlFile { get; }
@@ -53,7 +54,7 @@ namespace Xamarin.Forms.Build.Tasks
 		public TaskLoggingHelper Logger { get; }
 		public string RootClrNamespace { get; private set; }
 		public string RootType { get; private set; }
-		public string References { get; }
+		public string[] References { get; }
 		bool GenerateDefaultCtor { get; set; }
 		bool AddXamlCompilationAttribute { get; set; }
 		bool HideFromIntellisense { get; set; }
@@ -68,8 +69,9 @@ namespace Xamarin.Forms.Build.Tasks
 			string targetPath,
 			string assemblyName,
 			string outputFile,
-			string references,
-			TaskLoggingHelper logger = null)
+			string[] references,
+			TaskLoggingHelper logger = null,
+			XmlnsCache xmlnsCache = null)
 		{
 			XamlFile = xamlFile;
 			Language = language;
@@ -79,6 +81,7 @@ namespace Xamarin.Forms.Build.Tasks
 			OutputFile = outputFile;
 			References = references;
 			Logger = logger;
+			_xmlnsCache = xmlnsCache ?? new XmlnsCache(references);
 		}
 
 		//returns true if a file is generated
@@ -95,14 +98,7 @@ namespace Xamarin.Forms.Build.Tasks
 				if (!ParseXaml(reader))
 					return false;
 
-			try
-			{
-				GenerateCode();
-			}
-			finally
-			{
-				CleanupXmlnsAssemblyData();
-			}
+			GenerateCode();
 
 			return true;
 		}
@@ -395,66 +391,17 @@ namespace Xamarin.Forms.Build.Tasks
 			return null;
 		}
 
-		void GatherXmlnsDefinitionAttributes()
-		{
-			_xmlnsDefinitions = new List<XmlnsDefinitionAttribute>();
-			_xmlnsModules = new Dictionary<string, ModuleDefinition>();
-
-			var paths = References?.Split(';').Distinct().ToList() ?? new List<string>();
-			//Load xmlnsdef from Core and Xaml
-			paths.Add(typeof(Label).Assembly.Location);
-			paths.Add(typeof(Xamarin.Forms.Xaml.Extensions).Assembly.Location);
-
-			foreach (var path in paths)
-			{
-				string asmName = IOPath.GetFileName(path);
-				if (AssemblyIsSystem(asmName))
-					// Skip the myriad "System." assemblies and others
-					continue;
-
-				using (var asmDef = AssemblyDefinition.ReadAssembly(path))
-				{
-					foreach (var ca in asmDef.CustomAttributes)
-					{
-						if (ca.AttributeType.FullName == typeof(XmlnsDefinitionAttribute).FullName)
-						{
-							_xmlnsDefinitions.Add(ca.GetXmlnsDefinition(asmDef));
-							_xmlnsModules[asmDef.FullName] = asmDef.MainModule;
-						}
-					}
-				}
-			}
-		}
-
-		bool AssemblyIsSystem(string name)
-		{
-			if (name.StartsWith("System.Maui", StringComparison.CurrentCultureIgnoreCase))
-				return false;
-			if (name.StartsWith("System.", StringComparison.CurrentCultureIgnoreCase))
-				return true;
-			else if (name.Equals("mscorlib.dll", StringComparison.CurrentCultureIgnoreCase))
-				return true;
-			else if (name.Equals("netstandard.dll", StringComparison.CurrentCultureIgnoreCase))
-				return true;
-			else
-				return false;
-		}
-
 		CodeTypeReference GetCustomNamespaceUrlType(XmlType xmlType)
 		{
-			if (_xmlnsDefinitions == null)
-				GatherXmlnsDefinitionAttributes();
-
 			IList<XamlLoader.FallbackTypeInfo> potentialTypes;
 			TypeReference typeReference = xmlType.GetTypeReference<TypeReference>(
-				_xmlnsDefinitions,
+				_xmlnsCache.XmlnsDefinitions,
 				null,
 				(typeInfo) =>
 				{
-					if (typeInfo.AssemblyName == null || !_xmlnsModules.TryGetValue(typeInfo.AssemblyName, out ModuleDefinition module))
+					if (typeInfo.AssemblyName == null || !_xmlnsCache.XmlnsModules.TryGetValue(typeInfo.AssemblyName, out ModuleDefinition module))
 						return null;
 
-					string typeName = typeInfo.TypeName.Replace('+', '/'); //Nested types
 					string fullName = $"{typeInfo.ClrNamespace}.{typeInfo.TypeName}";
 					return module.Types.Where(t => t.FullName == fullName).FirstOrDefault();
 				},
@@ -466,15 +413,6 @@ namespace Xamarin.Forms.Build.Tasks
 			return new CodeTypeReference(typeReference.FullName);
 		}
 
-		void CleanupXmlnsAssemblyData()
-		{
-			if (_xmlnsModules != null)
-			{
-				foreach (var moduleDef in _xmlnsModules.Values)
-				{
-					moduleDef.Dispose();
-				}
-			}
-		}
+		public void Dispose() => _xmlnsCache.Dispose();
 	}
 }

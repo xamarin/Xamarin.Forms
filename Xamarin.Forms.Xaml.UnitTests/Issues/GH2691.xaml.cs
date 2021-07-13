@@ -113,14 +113,14 @@ namespace Xamarin.Forms.Xaml.UnitTests
 					"Release";
 #endif
 
-				var references = string.Join(";",
+				var references = new[] {
 					IOPath.GetFullPath(
 						IOPath.Combine(
 							TestContext.CurrentContext.TestDirectory, "Xamarin.Forms.Controls.dll")),
 					IOPath.GetFullPath(
 						IOPath.Combine(
 							TestContext.CurrentContext.TestDirectory, "Xamarin.Forms.Core.dll"))
-					);
+				};
 				var xamlg = new XamlGTask()
 				{
 					BuildEngine = new DummyBuildEngine(),
@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 					References = references
 				};
 
-				var generator = new XamlGenerator(item, xamlg.Language, xamlg.AssemblyName, xamlOutputFile, xamlg.References, null);
+				using var generator = new XamlGenerator(item, xamlg.Language, xamlg.AssemblyName, xamlOutputFile, xamlg.References, logger: null, xmlnsCache: null);
 				Assert.IsTrue(generator.Execute());
 
 				Assert.IsTrue(xamlg.Execute());
