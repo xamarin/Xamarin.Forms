@@ -12,6 +12,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -29,9 +30,11 @@
             <Button Command="{Binding RemoveCommand}"  AutomationId="btnRemove" Text="{Binding Path=Selected.Index, StringFormat='Remove {0}'}" BackgroundColor="LightGray" TextColor="Black" />
             <Button Command="{Binding NextCommand}"  AutomationId="btnNext" Text="&gt;" FontAttributes="Bold" BackgroundColor="LightGray" TextColor="Black" />
         </StackLayout>
+        <Button Grid.Row="5" Text="Clear" Command="{Binding ClearCommand}" AutomationId="btnClear"/>
+        <Button Grid.Row="5" Grid.Column="1" Text="Set" Command="{Binding SetCommand}" AutomationId="btnSet"/>
         <CarouselView
             x:Name="carousel"
-            Grid.Row="5" Grid.ColumnSpan="2"
+            Grid.Row="6" Grid.ColumnSpan="2"
             Loop="{Binding IsLoop}"
             AutomationId="TheCarouselView"
             ItemsSource="{Binding Items}"
