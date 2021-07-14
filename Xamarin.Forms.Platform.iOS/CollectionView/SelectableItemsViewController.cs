@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Foundation;
 using UIKit;
@@ -161,7 +162,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		bool ShouldNotBeSelected(object item, IList<object> selectedItems)
+		bool ShouldNotBeSelected(object item, IList selectedItems)
 		{
 			for (int n = 0; n < selectedItems.Count; n++)
 			{

@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue8155">
+     <StackLayout>
+         <Label
+             BackgroundColor="Black"
+             TextColor="White"
+             Text="If the cell 'Option 2' is selected (BackgroundColor), the test has passed."/>
+        <CollectionView ItemsSource="{Binding Options}" HeightRequest="350" SelectionMode="Multiple"
+                        SelectedItems="{Binding SelectedOptions}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Label Text="{Binding Title}" Margin="20" VerticalTextAlignment="Center" />
+                        <CheckBox Margin="20" Grid.Column="1" IsChecked="{Binding IsSelected}" />
+                        <BoxView HeightRequest="1" BackgroundColor="Black" VerticalOptions="EndAndExpand" Grid.Row="1" Grid.ColumnSpan="2" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</controls:TestContentPage>

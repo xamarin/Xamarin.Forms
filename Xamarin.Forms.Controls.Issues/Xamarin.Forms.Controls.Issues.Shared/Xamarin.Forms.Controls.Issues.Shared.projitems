@@ -1450,6 +1450,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue8647.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue7510.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue8155.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8557.xaml.cs">
       <DependentUpon>Issue8557.xaml</DependentUpon>
     </Compile>
@@ -1903,6 +1904,7 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue6932_emptyviewtemplate.xaml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue6932_emptyviewstring.xaml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8417.xaml" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8155.xaml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8557.xaml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue7813.xaml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8638.xaml" />

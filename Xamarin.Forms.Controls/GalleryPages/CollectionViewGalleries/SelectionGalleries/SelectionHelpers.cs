@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using System.Collections;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SelectionGalleries
 {
 	internal static class SelectionHelpers
 	{
-		public static string ToCommaSeparatedList(this IEnumerable<object> items)
+		public static string ToCommaSeparatedList(this IEnumerable items)
 		{
 			if (items == null)
 			{
