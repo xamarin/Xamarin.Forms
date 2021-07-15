@@ -30,18 +30,29 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_scalingFactor = UIScreen.MainScreen.Scale;
 
-			var boundsWidth = UIScreen.MainScreen.Bounds.Width;
 			var boundsHeight = UIScreen.MainScreen.Bounds.Height;
+			var boundsWidth = UIScreen.MainScreen.Bounds.Width;
+
+			double height;
+			double width;
 
 			// We can't rely directly on the MainScreen bounds because they may not have been updated yet
 			// But CurrentOrientation is up-to-date, so we can use it to work out the dimensions
-			var width = CurrentOrientation.IsLandscape()
-				? Math.Max(boundsHeight, boundsWidth)
-				: Math.Min(boundsHeight, boundsWidth);
+			if (CurrentOrientation == DeviceOrientation.Other)
+			{
+				height = boundsHeight;
+				width = boundsWidth;
+			}
+			else
+			{
+				width = CurrentOrientation.IsLandscape()
+					? Math.Max(boundsHeight, boundsWidth)
+					: Math.Min(boundsHeight, boundsWidth);
 
-			var height = CurrentOrientation.IsPortrait()
-				? Math.Max(boundsHeight, boundsWidth)
-				: Math.Min(boundsHeight, boundsWidth);
+				height = CurrentOrientation.IsPortrait()
+					? Math.Max(boundsHeight, boundsWidth)
+					: Math.Min(boundsHeight, boundsWidth);
+			}
 
 			_scaledScreenSize = new Size(width, height);
 			_pixelScreenSize = new Size(_scaledScreenSize.Width * _scalingFactor, _scaledScreenSize.Height * _scalingFactor);
