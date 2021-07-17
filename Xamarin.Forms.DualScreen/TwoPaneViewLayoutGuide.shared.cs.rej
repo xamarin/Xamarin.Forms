@@ -1,0 +1,20 @@
+diff a/Xamarin.Forms.DualScreen/TwoPaneViewLayoutGuide.shared.cs b/Xamarin.Forms.DualScreen/TwoPaneViewLayoutGuide.shared.cs	(rejected hunks)
+@@ -98,18 +98,9 @@
+ 				return;
+ 			}
+ 
+-			if(_layout != null && _watchHandle == null)
+-			{
+-				StopWatchingForChanges();
+-				return;
+-			}
+-
+ 			var screenPosition = DualScreenService.GetLocationOnScreen(_layout);
+ 			if (screenPosition == null)
+-			{
+-				UpdateLayouts();
+ 				return;
+-			}
+ 
+ 			var newPosition = new Rectangle(screenPosition.Value, _layout.Bounds.Size);
+ 
