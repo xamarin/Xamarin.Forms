@@ -22,6 +22,8 @@ namespace Xamarin.Forms.DualScreen.UnitTests
 
 		public Size ScaledScreenSize => DeviceInfo.ScaledScreenSize;
 
+		public bool IsDuo { get; set; }
+
 		public event EventHandler OnScreenChanged;
 
 		public void Dispose()

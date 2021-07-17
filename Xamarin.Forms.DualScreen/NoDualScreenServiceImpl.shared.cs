@@ -18,11 +18,13 @@ namespace Xamarin.Forms.DualScreen
 
 		}
 
+		public bool IsDuo => false;
+
 		public Task<int> GetHingeAngleAsync() => Task.FromResult(0);
 
-		public bool IsSpanned => false;
+		public bool IsSpanned => Device.Idiom != TargetIdiom.Phone;
 
-        public bool IsLandscape => Device.info.CurrentOrientation.IsLandscape();
+		public bool IsLandscape => Device.info.CurrentOrientation.IsLandscape();
 
 		public DeviceInfo DeviceInfo => Device.info;
 

@@ -26,12 +26,11 @@ namespace Xamarin.Forms.DualScreen
 		public event PropertyChangedEventHandler PropertyChanged;
 		List<string> _pendingPropertyChanges = new List<string>();
 		Rectangle _absoluteLayoutPosition;
-		object _watchHandle;
-		Action _layoutChangedReference;
+		object _watchHandle = null;
 
 		TwoPaneViewLayoutGuide()
 		{
-			
+
 		}
 
 		public TwoPaneViewLayoutGuide(VisualElement layout) : this(layout, null)
@@ -44,7 +43,7 @@ namespace Xamarin.Forms.DualScreen
 			_layout = layout;
 			_dualScreenService = dualScreenService;
 
-			if(_layout != null)
+			if (_layout != null)
 			{
 				UpdateLayouts();
 				_layout.PropertyChanged += OnLayoutPropertyChanged;
@@ -56,63 +55,39 @@ namespace Xamarin.Forms.DualScreen
 		void OnLayoutPropertyChanging(object sender, PropertyChangingEventArgs e)
 		{
 			if (e.PropertyName == "Renderer")
-			{
 				StopWatchingForChanges();
-			}
 		}
 
 		void OnLayoutPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == "Renderer")
-			{
 				WatchForChanges();
-			}
 		}
 
 		public void WatchForChanges()
 		{
-			if (_layout != null && _watchHandle == null)
-			{
-				_layoutChangedReference = OnLayoutChanged;
-				var layoutHandle = DualScreenService.WatchForChangesOnLayout(_layout, _layoutChangedReference);
+			StopWatchingForChanges();
 
-				if (layoutHandle == null)
-				{
-					_layoutChangedReference = null;
+			if (_layout != null)
+			{
+				_watchHandle = DualScreenService.WatchForChangesOnLayout(_layout, () => OnScreenChanged(DualScreenService, EventArgs.Empty));
+
+				if (_watchHandle == null)
 					return;
-				}
+			}
 
-				_watchHandle = layoutHandle;
-				OnScreenChanged(DualScreenService, EventArgs.Empty);
-				DualScreenService.OnScreenChanged += OnScreenChanged;
-			}
-			else
-			{
-				DualScreenService.OnScreenChanged += OnScreenChanged;
-			}
+			DualScreenService.OnScreenChanged += OnScreenChanged;
 		}
 
 		public void StopWatchingForChanges()
 		{
 			DualScreenService.OnScreenChanged -= OnScreenChanged;
+
 			if (_layout != null)
 			{
 				DualScreenService.StopWatchingForChangesOnLayout(_layout, _watchHandle);
+				_watchHandle = null;
 			}
-
-			_layoutChangedReference = null;
-			_watchHandle = null;
-		}
-
-		void OnLayoutChanged()
-		{
-			if (_watchHandle == null)
-			{
-				StopWatchingForChanges();
-				return;
-			}
-
-			OnScreenChanged(DualScreenService, EventArgs.Empty);
 		}
 
 		void OnScreenChanged(object sender, EventArgs e)
@@ -123,18 +98,9 @@ namespace Xamarin.Forms.DualScreen
 				return;
 			}
 
-			if(_layout != null && _watchHandle == null)
-			{
-				StopWatchingForChanges();
-				return;
-			}
-
 			var screenPosition = DualScreenService.GetLocationOnScreen(_layout);
 			if (screenPosition == null)
-			{
-				UpdateLayouts();
 				return;
-			}
 
 			var newPosition = new Rectangle(screenPosition.Value, _layout.Bounds.Size);
 
@@ -204,11 +170,25 @@ namespace Xamarin.Forms.DualScreen
 			Rectangle containerArea;
 			if (_layout == null)
 			{
-				containerArea = new Rectangle(Point.Zero, DualScreenService.ScaledScreenSize);
+				if (!DualScreenService.IsDuo & (Device.Idiom == TargetIdiom.Tablet | Device.Idiom == TargetIdiom.Desktop))
+				{
+					containerArea = new Rectangle(Point.Zero, Device.info.ScaledScreenSize);
+				}
+				else
+				{
+					containerArea = new Rectangle(Point.Zero, DualScreenService.ScaledScreenSize);
+				}
 			}
 			else
 			{
-				containerArea = _layout.Bounds;
+				if (!DualScreenService.IsDuo & (Device.Idiom == TargetIdiom.Tablet | Device.Idiom == TargetIdiom.Desktop))
+				{
+					containerArea = new Rectangle(Point.Zero, Device.info.ScaledScreenSize);
+				}
+				else
+				{
+					containerArea = _layout.Bounds;
+				}
 			}
 
 			return containerArea;
@@ -219,17 +199,34 @@ namespace Xamarin.Forms.DualScreen
 			Rectangle containerArea;
 			if (_layout == null)
 			{
-				containerArea = new Rectangle(Point.Zero, DualScreenService.ScaledScreenSize);
+				if (!DualScreenService.IsDuo & (Device.Idiom == TargetIdiom.Tablet | Device.Idiom == TargetIdiom.Desktop))
+				{
+					containerArea = new Rectangle(Point.Zero, Device.info.ScaledScreenSize);
+				}
+				else
+				{
+					containerArea = new Rectangle(Point.Zero, DualScreenService.ScaledScreenSize);
+				}
 			}
 			else
 			{
 				var locationOnScreen = DualScreenService.GetLocationOnScreen(_layout);
 				if (!locationOnScreen.HasValue)
-					return Rectangle.Zero;
-
-				containerArea = new Rectangle(locationOnScreen.Value, _layout.Bounds.Size);
+				{
+					if (DualScreenService.IsDuo)
+					{
+						return Rectangle.Zero;
+					}
+					else
+					{
+						containerArea = new Rectangle(Point.Zero, Device.info.ScaledScreenSize);
+					}
+				}
+				else
+				{
+					containerArea = new Rectangle(locationOnScreen.Value, _layout.Bounds.Size);
+				}
 			}
-
 			return containerArea;
 
 		}
@@ -249,7 +246,7 @@ namespace Xamarin.Forms.DualScreen
 			if (locationOnScreen == Rectangle.Zero && Hinge == Rectangle.Zero)
 				locationOnScreen = containerArea;
 
-			bool isSpanned = IsInMultipleRegions(locationOnScreen);
+			bool isSpanned = IsInMultipleRegions(locationOnScreen) | (!DualScreenService.IsDuo & (Device.Idiom == TargetIdiom.Tablet | Device.Idiom == TargetIdiom.Desktop));
 
 			if (!DualScreenService.IsLandscape)
 			{
@@ -259,8 +256,16 @@ namespace Xamarin.Forms.DualScreen
 					var containerRightX = locationOnScreen.X + locationOnScreen.Width;
 					var pane2Width = containerRightX - pane2X;
 
-					_newPane1 = new Rectangle(0, 0, Hinge.X - locationOnScreen.X, locationOnScreen.Height);
-					_newPane2 = new Rectangle(_newPane1.Width + Hinge.Width, 0, pane2Width, locationOnScreen.Height);
+					if (!DualScreenService.IsDuo | Device.Idiom != TargetIdiom.Phone)
+					{
+						_newPane1 = new Rectangle(0, 0, Hinge.X - locationOnScreen.X, locationOnScreen.Height / 2);
+						_newPane2 = new Rectangle(_newPane1.Width + Hinge.Width, locationOnScreen.Height / 2, pane2Width, locationOnScreen.Height / 2);
+					}
+					else
+					{
+						_newPane1 = new Rectangle(0, 0, Hinge.X - locationOnScreen.X, locationOnScreen.Height);
+						_newPane2 = new Rectangle(_newPane1.Width + Hinge.Width, 0, pane2Width, locationOnScreen.Height);
+					}
 				}
 				else
 				{
@@ -292,9 +297,16 @@ namespace Xamarin.Forms.DualScreen
 					var pane2Y = Hinge.Y + Hinge.Height;
 					var containerBottomY = locationOnScreen.Y + locationOnScreen.Height;
 					var pane2Height = containerBottomY - pane2Y;
-
-					_newPane1 = new Rectangle(0, 0, locationOnScreen.Width, Hinge.Y - locationOnScreen.Y);
-					_newPane2 = new Rectangle(0, _newPane1.Height + Hinge.Height, locationOnScreen.Width, pane2Height);
+					if (DualScreenService.IsDuo | Device.Idiom == TargetIdiom.Phone)
+					{
+						_newPane1 = new Rectangle(0, 0, locationOnScreen.Width, Hinge.Y - locationOnScreen.Y);
+						_newPane2 = new Rectangle(0, _newPane1.Height + Hinge.Height, locationOnScreen.Width, pane2Height);
+					}
+					else
+					{
+						_newPane1 = new Rectangle(0, 0, locationOnScreen.Width / 2, containerBottomY);
+						_newPane2 = new Rectangle(_newPane1.Width + Hinge.Width, _newPane1.Height + Hinge.Height, locationOnScreen.Width / 2, pane2Height);
+					}
 				}
 				else
 				{
@@ -370,17 +382,36 @@ namespace Xamarin.Forms.DualScreen
 
 		TwoPaneViewMode GetTwoPaneViewMode()
 		{
-			if (!IsInMultipleRegions(GetScreenRelativeBounds()))
-				return TwoPaneViewMode.SinglePane;
+			if (DualScreenService.IsDuo)
+			{
+				if (!IsInMultipleRegions(GetScreenRelativeBounds()))
+					return TwoPaneViewMode.SinglePane;
 
-			if (DualScreenService.IsLandscape)
-				return TwoPaneViewMode.Tall;
+				if (DualScreenService.IsLandscape)
+					return TwoPaneViewMode.Tall;
 
-			return TwoPaneViewMode.Wide;
+				return TwoPaneViewMode.Wide;
+			}
+			else
+			{
+				if (Device.Idiom == TargetIdiom.Tablet | Device.Idiom == TargetIdiom.Desktop)
+				{
+					GetScreenRelativeBounds();
+					if (!DualScreenService.IsLandscape)
+						return TwoPaneViewMode.Tall;
+
+					return TwoPaneViewMode.Wide;
+				}
+				else
+				{
+					return TwoPaneViewMode.SinglePane;
+				}
+
+			}
 		}
 
 		protected bool SetProperty<T>(ref T backingStore, T value,
-			[CallerMemberName]string propertyName = "",
+			[CallerMemberName] string propertyName = "",
 			Action onChanged = null)
 		{
 			if (EqualityComparer<T>.Default.Equals(backingStore, value))

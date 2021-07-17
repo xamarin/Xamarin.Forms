@@ -80,6 +80,19 @@ namespace Xamarin.Forms.DualScreen
             }
 		}
 
+		private bool _IsDuo;
+		public bool IsDuo
+		{
+			get
+			{
+				return _IsDuo;
+			}
+			set
+			{
+				_IsDuo = value;
+			}
+		}
+
 		public DeviceInfo DeviceInfo => Device.info;
 
 		public bool IsLandscape

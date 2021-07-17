@@ -32,7 +32,7 @@ namespace Xamarin.Forms.DualScreen
 		{
 			ScreenHelper _helper;
 			bool _isDuo = false;
-			bool IsDuo => (_helper == null || _HingeService == null || _mainActivity == null || _singleUseHingeSensor == null) ? false : _isDuo;
+			public bool IsDuo => (_helper == null || _HingeService == null || _mainActivity == null || _singleUseHingeSensor == null) ? false : _isDuo;
 			HingeSensor _singleUseHingeSensor;
 			static Activity _mainActivity;
 			static DualScreenServiceImpl _HingeService;

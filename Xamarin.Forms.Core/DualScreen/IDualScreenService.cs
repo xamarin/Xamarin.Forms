@@ -9,6 +9,7 @@ namespace Xamarin.Forms.DualScreen
 	internal interface IDualScreenService
 	{
 		event EventHandler OnScreenChanged;
+		bool IsDuo { get; }
 		bool IsSpanned { get; }
 		bool IsLandscape { get; }
 		Rectangle GetHinge();
