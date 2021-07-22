@@ -111,9 +111,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CollectionChanged(NotifyCollectionChangedEventArgs args)
 		{
-			if (CollectionView.Hidden)
-				return;
-
 			// Force UICollectionView to get the internal accounting straight 
 			CollectionView.NumberOfItemsInSection(_section);
 
@@ -271,6 +268,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void Update(Action update, NotifyCollectionChangedEventArgs args)
 		{
+			if (CollectionView.Hidden)
+			{
+				return;
+			}
+
 			OnCollectionViewUpdating(args); 
 			update(); 
 			OnCollectionViewUpdated(args); 
