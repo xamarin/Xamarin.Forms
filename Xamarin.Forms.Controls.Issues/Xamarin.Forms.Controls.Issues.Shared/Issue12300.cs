@@ -81,16 +81,5 @@ namespace Xamarin.Forms.Controls.Issues
 				Navigation.PopModalAsync();
 			}
 		}
-
-#if UITEST && __IOS__
-		[Test]
-		public void RefreshControlTurnsOffSuccessfully()
-		{
-			RunningApp.WaitForElement(_testReady);
-
-			RunningApp.WaitForNoElement("RefreshControl");
-		}
-#endif
-
 	}
 }
