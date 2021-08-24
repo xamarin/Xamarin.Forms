@@ -9,16 +9,17 @@ using Xamarin.Forms.Core.UITests;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 9833, "[Bug] [UWP] Propagate CollectionView BindingContext to EmptyView",
 		PlatformAffected.UWP)]
 #if UITEST
 	[Category(UITestCategories.CollectionView)]
+	[Category(UITestCategories.UwpIgnore)] // CollectionView contents aren't currently visible to test automation
 #endif
 	public class Issue9833 : TestContentPage
 	{
 		readonly CollectionView _collectionView;
 		readonly Label _emptyLabel;
+		const string Success = "Success";
 
 		public Issue9833()
 		{
@@ -33,7 +34,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var instructions = new Label
 			{
-				Text = "If the EmptyView BindingContext is not null, the test has passed.",
+				Text = $"If the EmptyView BindingContext is not null, EmptyView will display a Label with the text {Success}, and this test will pass.",
 				BackgroundColor = Color.Black,
 				TextColor = Color.White
 			};
@@ -71,11 +72,18 @@ namespace Xamarin.Forms.Controls.Issues
 			base.OnAppearing();
 
 			var emptyView = (View)_collectionView.EmptyView;
-			_emptyLabel.Text += $"BindingContext = {emptyView.BindingContext}";
+			_emptyLabel.Text = emptyView.BindingContext == null ? "Failed" : Success;
 		}
+
+#if UITEST
+		[Test]
+		public void EmptyViewBindingContextShouldNotBeNull()
+		{
+			RunningApp.WaitForElement(Success);
+		}
+#endif
 	}
 
-	[Preserve(AllMembers = true)]
 	public class Issue9833ViewModel : BindableObject
 	{
 		ObservableCollection<string> _items;

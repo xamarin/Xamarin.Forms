@@ -315,6 +315,10 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			public TestShell()
 			{
+				Routing.RegisterRoute(nameof(TestPage1), typeof(TestPage1));
+				Routing.RegisterRoute(nameof(TestPage2), typeof(TestPage2));
+				Routing.RegisterRoute(nameof(TestPage3), typeof(TestPage3));
+
 				this.Navigated += (_, __) => NavigatedCount++;
 				this.Navigating += (_, __) => NavigatingCount++;
 			}
@@ -335,6 +339,11 @@ namespace Xamarin.Forms.Core.UnitTests
 			{
 				Routing.SetRoute(contentPage, route);
 				Routing.RegisterRoute(route, new ConcretePageFactory(contentPage));
+			}
+
+			public void AssertCurrentStateEquals(string expectedState)
+			{
+				Assert.AreEqual(expectedState, CurrentState.Location.ToString());
 			}
 
 			public class ConcretePageFactory : RouteFactory
@@ -365,8 +374,6 @@ namespace Xamarin.Forms.Core.UnitTests
 				OnNavigatingCount++;
 			}
 
-
-
 			public void TestNavigationArgs(ShellNavigationSource source, string from, string to)
 			{
 				TestNavigatingArgs(source, from, to);
@@ -383,6 +390,7 @@ namespace Xamarin.Forms.Core.UnitTests
 					Assert.AreEqual(from, this.LastShellNavigatedEventArgs.Previous.Location.ToString());
 
 				Assert.AreEqual(to, this.LastShellNavigatedEventArgs.Current.Location.ToString());
+				Assert.AreEqual(to, this.CurrentState.Location.ToString());
 			}
 
 			public void TestNavigatingArgs(ShellNavigationSource source, string from, string to)
@@ -458,5 +466,9 @@ namespace Xamarin.Forms.Core.UnitTests
 				}
 			}
 		}
+
+		public class TestPage1 : ContentPage { }
+		public class TestPage2 : ContentPage { }
+		public class TestPage3 : ContentPage { }
 	}
 }
