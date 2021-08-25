@@ -22,6 +22,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 	[NUnit.Framework.Category(Core.UITests.UITestCategories.Github5000)]
 	[NUnit.Framework.Category(UITestCategories.ListView)]
+	[NUnit.Framework.Category(UITestCategories.UwpIgnore)] // Can't accurately check item contents in ListViews yet
 #endif
 	public class Issue3788 : TestContentPage
 	{
