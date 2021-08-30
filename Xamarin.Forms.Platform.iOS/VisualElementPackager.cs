@@ -165,7 +165,11 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			Performance.Start(out string reference);
 			if (CompressedLayout.GetIsHeadless(element))
+			{
+				Performance.Stop(reference);
+
 				return;
+			}
 
 			var childRenderer = Platform.GetRenderer(element);
 
