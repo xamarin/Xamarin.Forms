@@ -170,7 +170,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			var childRenderer = Platform.GetRenderer(element);
 
 			if (childRenderer == null)
+			{
+				Performance.Stop(reference);
+
 				return;
+			}
 
 			var nativeControl = childRenderer.NativeView;
 #if __MOBILE__
