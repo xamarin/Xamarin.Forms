@@ -1750,6 +1750,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue13616.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue13670.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue13684.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue12300.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue12150.cs" />
   </ItemGroup>
   <ItemGroup>
