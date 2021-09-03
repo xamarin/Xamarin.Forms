@@ -23,6 +23,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue13551.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue13819.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue13916.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue14426.xaml.cs">
+      <DependentUpon>Issue14426.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)RadioButtonTemplateFromStyle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellSearchHandlerItemSizing.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellWithCustomRendererDisabledAnimations.cs" />
@@ -2689,8 +2692,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue6742.xaml">
-        <SubType>Designer</SubType>
-        <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue10897.xaml">
       <SubType>Designer</SubType>
@@ -2729,8 +2732,8 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue4143.xaml">
-        <SubType>Designer</SubType>
-        <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -2739,6 +2742,12 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)VisualGallery.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue14426.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
