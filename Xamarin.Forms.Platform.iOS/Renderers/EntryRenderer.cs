@@ -571,7 +571,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if(_defaultClearImage == null)
 					_defaultClearImage = clearButton.ImageForState(UIControlState.Highlighted);
 
-				if(Element.TextColor == Color.Default)
+				if (Element.TextColor == Color.Default)
 				{
 					clearButton.SetImage(_defaultClearImage, UIControlState.Normal);
 					clearButton.SetImage(_defaultClearImage, UIControlState.Highlighted);
@@ -580,14 +580,20 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					var tintedClearImage = GetClearButtonTintImage(_defaultClearImage, Element.TextColor.ToUIColor());
 
-					clearButton.SetImage(tintedClearImage, UIControlState.Normal);
-					clearButton.SetImage(tintedClearImage, UIControlState.Highlighted);
+					if (tintedClearImage != null)
+					{
+						clearButton.SetImage(tintedClearImage, UIControlState.Normal);
+						clearButton.SetImage(tintedClearImage, UIControlState.Highlighted);
+					}
 				}
 			}
 		}
 
 		UIImage GetClearButtonTintImage(UIImage image, UIColor color)
 		{
+			if (image == null)
+				return null;
+
 			var size = image.Size;
 
 			UIGraphics.BeginImageContextWithOptions(size, false, UIScreen.MainScreen.Scale);
