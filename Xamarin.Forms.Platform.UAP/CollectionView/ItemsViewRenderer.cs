@@ -332,7 +332,7 @@ namespace Xamarin.Forms.Platform.UWP
 			await ScrollTo(args);
 		}
 
-		object FindBoundItem(ScrollToRequestEventArgs args)
+		protected virtual object FindBoundItem(ScrollToRequestEventArgs args)
 		{
 			if (args.Mode == ScrollToMode.Position)
 			{

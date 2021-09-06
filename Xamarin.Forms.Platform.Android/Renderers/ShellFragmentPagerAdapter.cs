@@ -6,13 +6,17 @@ using Xamarin.Forms.Platform.Android.AppCompat;
 
 namespace Xamarin.Forms.Platform.Android
 {
+#pragma warning disable CS0618 // Type or member is obsolete
 	internal class ShellFragmentPagerAdapter : FragmentPagerAdapter
+#pragma warning restore CS0618 // Type or member is obsolete
 	{
 		bool _disposed;
 		ShellSection _shellSection;
 		IShellSectionController SectionController => (IShellSectionController)_shellSection;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 		public ShellFragmentPagerAdapter(ShellSection shellSection, FragmentManager fragmentManager) : base(fragmentManager, FragmentStatePagerAdapter.BehaviorResumeOnlyCurrentFragment)
+#pragma warning restore CS0618 // Type or member is obsolete
 		{
 			_shellSection = shellSection;
 			SectionController.ItemsCollectionChanged += OnItemsCollectionChanged;

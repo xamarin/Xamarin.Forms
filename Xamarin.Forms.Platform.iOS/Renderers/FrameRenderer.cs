@@ -92,8 +92,10 @@ namespace Xamarin.Forms.Platform.iOS
 				if (backgroundLayer != null)
 				{
 					_actualView.Layer.BackgroundColor = UIColor.Clear.CGColor;
-					Layer.InsertBackgroundLayer(backgroundLayer, 0);
+
 					backgroundLayer.CornerRadius = cornerRadius;
+
+					Layer.InsertBackgroundLayer(backgroundLayer, 0);
 				}
 			}
 
