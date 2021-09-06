@@ -7,7 +7,7 @@
     mc:Ignorable="d"
     Title="Test 14433" xmlns:local="using:Xamarin.Forms.Controls"
     x:Class="Xamarin.Forms.Controls.Issues.Issue14433"
-    BackgroundColor="White">
+    BackgroundColor="Yellow">
     <StackLayout>
         <Label
             Padding="12"
