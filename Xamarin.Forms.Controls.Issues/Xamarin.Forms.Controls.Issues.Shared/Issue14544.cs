@@ -29,8 +29,16 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			_statusLabel = new Label { Text = UncheckedLabel, AutomationId = StatusLabelID };
+			var descriptionLabel = new Label
+			{
+				Padding = 12,
+				BackgroundColor = Color.Black,
+				TextColor = Color.White,
+				Text = "Initially the RadioButton should not respond, then tap the button to enable the RadioButton. If the RadioButton now responds (it selects) the test succeeded."
+			};
 
+			_statusLabel = new Label { Text = UncheckedLabel, AutomationId = StatusLabelID };
+			
 			_radioButton = new RadioButton
 			{
 				AutomationId = RadioButtonID,
@@ -46,13 +54,12 @@ namespace Xamarin.Forms.Controls.Issues
 				Command = new Command(() => _radioButton.IsEnabled = true)
 			};
 
-			_button.Command.Execute(null);
-
 			Content = new StackLayout
 			{
 				Orientation = StackOrientation.Vertical,
 				Children =
 				{
+					descriptionLabel,
 					_radioButton,
 					_button,
 					_statusLabel
@@ -70,9 +77,18 @@ namespace Xamarin.Forms.Controls.Issues
 			var labelElem = RunningApp.Query(c => c.Marked(StatusLabelID))[0];
 			Assert.AreEqual(UncheckedLabel, labelElem.Text);
 
+			// Tap RadioButton
+			RunningApp.Tap(RadioButtonID);
+
+			// Should be still unchecked
+			labelElem = RunningApp.Query(c => c.Marked(StatusLabelID))[0];
+			Assert.AreEqual(UncheckedLabel, labelElem.Text);
+
+			// Tap toggle button, then RadioButton
 			RunningApp.Tap(ToggleButtonID);
 			RunningApp.Tap(RadioButtonID);
 
+			// RadioButton should now be selected
 			labelElem = RunningApp.Query(c => c.Marked(StatusLabelID))[0];
 			Assert.AreEqual(CheckedLabel, labelElem.Text);
 
