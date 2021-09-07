@@ -171,20 +171,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void SetBackgroundColor(Color color)
 		{
-			UIColor backgroundColor = ColorExtensions.BackgroundColor;
+			Color backgroundColor = Element.BackgroundColor;
 
-			if (Element.BackgroundColor != Color.Default)
-			{
-				BackgroundColor = Element.BackgroundColor.ToUIColor();
+			if (Element.BackgroundColor == Color.Default)
+				return;
 
-				if (_contentView != null && (Element.Content == null || (Element.Content != null && Element.Content.BackgroundColor == Color.Default)))
-					_contentView.BackgroundColor = Element.BackgroundColor.ToUIColor();
-			}
-			else
-				BackgroundColor = backgroundColor;
+			BackgroundColor = backgroundColor.ToUIColor();
 
-			if (_contentView != null && _contentView.BackgroundColor == UIColor.Clear)
-				_contentView.BackgroundColor = backgroundColor;
+			if (_contentView != null && (Element.Content == null || (Element.Content != null && Element.Content.BackgroundColor == Color.Default)))
+				_contentView.BackgroundColor = backgroundColor.ToUIColor();
 		}
 
 		protected override void SetBackground(Brush brush)
