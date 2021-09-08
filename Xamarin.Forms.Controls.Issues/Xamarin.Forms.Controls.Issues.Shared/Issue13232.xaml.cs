@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			});
 		}
-	
+
 		public ObservableCollection<Issue13232Model> Items { get; set; }
 
 		public ICommand DeleteCommand { get; }
