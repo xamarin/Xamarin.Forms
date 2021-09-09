@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 14544, "RadioButton does not respond to taps after changing IsEnabled from false to true", PlatformAffected.iOS)]
-	public class Issue14544 : TestContentPage 
+	public class Issue14544 : TestContentPage
 	{
 		RadioButton _radioButton;
 		Button _button;
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			_statusLabel = new Label { Text = UncheckedLabel, AutomationId = StatusLabelID };
-			
+
 			_radioButton = new RadioButton
 			{
 				AutomationId = RadioButtonID,

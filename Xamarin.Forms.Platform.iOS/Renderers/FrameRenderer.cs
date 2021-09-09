@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Drawing;
 using CoreGraphics;
 using UIKit;
+using SizeF = CoreGraphics.CGSize;
 
 namespace Xamarin.Forms.Platform.iOS
 {
