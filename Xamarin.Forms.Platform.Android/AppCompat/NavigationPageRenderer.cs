@@ -1019,7 +1019,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			else
 			{
 				bar.UpdateBackground(barBackground);
-			}	
+			}
 
 			Color textColor = Element.BarTextColor;
 			if (!textColor.IsDefault)
