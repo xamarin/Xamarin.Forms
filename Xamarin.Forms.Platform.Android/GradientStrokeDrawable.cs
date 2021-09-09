@@ -87,7 +87,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (_backgroundColor.HasValue)
 				paint.Color = _backgroundColor.Value;
 
-			shape.Draw(canvas, _strokePaint);
+			if (_strokePaint.StrokeWidth > 0)
+				shape.Draw(canvas, _strokePaint);
 		}
 
 		public abstract class GradientShader

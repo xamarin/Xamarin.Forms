@@ -43,21 +43,52 @@
                       Margin="12, 0"
                       Padding="12">
                       <Label
-                          Text="BoxView"/>
+                          Text="Color BoxView"
+                          FontSize="Micro"/>
+                      <BoxView
+                          x:Name="SolidBoxView"
+                          HeightRequest="60"
+                          WidthRequest="120"
+                          CornerRadius="12"
+                          BackgroundColor="Red"/>
+                      <Label
+                          Text="Gradient BoxView"
+                          FontSize="Micro"/>
                       <BoxView
                           x:Name="GradientBoxView"
-                          HeightRequest="120"
+                          HeightRequest="60"
                           WidthRequest="120"
                           CornerRadius="12"
                           Background="{StaticResource LinearBrush}"/>
                       <Label
-                          Text="Frame"/>
+                          Text="Color Frame"
+                          FontSize="Micro"/>
+                      <Frame
+                          x:Name="SolidFrame"
+                          HasShadow="True"
+                          HeightRequest="60"
+                          WidthRequest="120"
+                          CornerRadius="12"
+                          Padding="6"
+                          BackgroundColor="Red">
+                          <Grid>
+                              <Label
+                                  HorizontalOptions="Center"
+                                  VerticalOptions="Center"
+                                  TextColor="White"
+                                  Text="Color"/>
+                          </Grid>
+                      </Frame>
+                      <Label
+                          Text="Gradient Frame"
+                          FontSize="Micro"/>
                       <Frame
                           x:Name="GradientFrame"
                           HasShadow="True"
-                          HeightRequest="120"
+                          HeightRequest="60"
                           WidthRequest="120"
                           CornerRadius="12"
+                          Padding="6"
                           Background="{StaticResource LinearBrush}">
                           <Grid>
                               <Label

@@ -160,7 +160,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					Shape = new RectShape()
 				});
-				if (Background is GradientDrawable backgroundGradient)
+				if (Background is GradientStrokeDrawable backgroundGradient)
 				{
 					var cornerRadii = new[] {
 						(float)(Context.ToPixels(cornerRadius.TopLeft)),
