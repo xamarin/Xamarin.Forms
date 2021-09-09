@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xamarin.Forms.Internals;
 
 #if __MOBILE__
@@ -46,7 +47,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				var child = ElementController.LogicalChildren[i] as VisualElement;
 				if (child != null)
+				{
 					OnChildAdded(child);
+					OrderElement(child, i);
+				}
 			}
 		}
 		
@@ -120,8 +124,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				if (Renderer.ViewController != null && viewRenderer.ViewController != null)
 					Renderer.ViewController.AddChildViewController(viewRenderer.ViewController);
-
-				EnsureChildrenOrder();
 			}
 
 			Performance.Stop(reference);
@@ -141,34 +143,59 @@ namespace Xamarin.Forms.Platform.MacOS
 			viewRenderer.Dispose();
 		}
 
-		void EnsureChildrenOrder()
+		void EnsureChildrenOrder(VisualElement element = null)
 		{
 			if (ElementController.LogicalChildren.Count == 0)
 				return;
 
-			for (var z = 0; z < ElementController.LogicalChildren.Count; z++)
+			var effectedChildIndex = 0;
+			if (element != null)
+				effectedChildIndex = ElementController.LogicalChildren.IndexOf(element);
+
+			for (var z = effectedChildIndex; z < ElementController.LogicalChildren.Count; z++)
 			{
 				var child = ElementController.LogicalChildren[z] as VisualElement;
 				if (child == null)
 					continue;
-				var childRenderer = Platform.GetRenderer(child);
-
-				if (childRenderer == null)
-					continue;
-
-				var nativeControl = childRenderer.NativeView;
-#if __MOBILE__
-				Renderer.NativeView.BringSubviewToFront(nativeControl);
-#endif
-				nativeControl.Layer.ZPosition = z * 1000;
+				OrderElement(child, z);
 			}
+		}
+
+		void OrderElement(VisualElement element, int order)
+		{
+			Performance.Start(out string reference);
+			if (CompressedLayout.GetIsHeadless(element))
+			{
+				Performance.Stop(reference);
+
+				return;
+			}
+
+			var childRenderer = Platform.GetRenderer(element);
+
+			if (childRenderer == null)
+			{
+				Performance.Stop(reference);
+
+				return;
+			}
+
+			var nativeControl = childRenderer.NativeView;
+#if __MOBILE__
+			Renderer.NativeView.BringSubviewToFront(nativeControl);
+#endif
+			nativeControl.Layer.ZPosition = order * 1000;
+			Performance.Stop(reference);
 		}
 
 		void OnChildAdded(object sender, ElementEventArgs e)
 		{
 			var view = e.Element as VisualElement;
 			if (view != null)
+			{
 				OnChildAdded(view);
+				EnsureChildrenOrder(view);
+			}
 		}
 
 		void OnChildRemoved(object sender, ElementEventArgs e)

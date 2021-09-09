@@ -82,6 +82,9 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 					var view = renderer.View;
 					Layout(visualElement, view);
 
+					if (view.Background is GradientStrokeDrawable)
+						view.ForceDraw();
+
 					// Need to parent the Frame for it to work on lower APIs (below Marshmallow)
 					ParentView(view);
 					var image = view.ToBitmap();

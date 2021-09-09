@@ -474,7 +474,7 @@ namespace Xamarin.Forms.Platform.MacOS
             CATransaction.Begin();
             CATransaction.DisableActions = true;
 
-            graphics.SetLineWidth(_strokeWidth);
+            graphics.SetLineWidth(_stroke != null ? _strokeWidth : 0);
             graphics.SetLineDash(_dashOffset * _strokeWidth, _strokeDash);
             graphics.SetLineCap(_strokeLineCap);
             graphics.SetLineJoin(_strokeLineJoin);
