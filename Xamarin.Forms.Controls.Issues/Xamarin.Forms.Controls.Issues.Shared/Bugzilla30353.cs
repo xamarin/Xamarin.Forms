@@ -91,26 +91,26 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot("Portrait");
 			RunningApp.Tap(q => q.Marked("Toggle"));
 			RunningApp.Screenshot("Portrait Visible");
-			RunningApp.WaitForElement(q => q.Marked("The Flyout is now visible"));
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now visible"), "Basic Toggle Visible Failed");
 			Back();
 			RunningApp.Screenshot("Portrait Invisible");
-			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"));
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"), "Basic Toggle Invisible Failed");
 			RunningApp.SetOrientationLandscape();
 			RunningApp.Screenshot("Landscape Invisible");
-			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"));
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"), "Landscape Invisible Failed");
 			RunningApp.Tap(q => q.Marked("Toggle"));
 			RunningApp.Screenshot("Landscape Visible");
-			RunningApp.WaitForElement(q => q.Marked("The Flyout is now visible"));
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now visible"), "Landscape Toggle Visible Failed");
 			Back();
 			RunningApp.Screenshot("Landscape InVisible");
-			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"));
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"), "Landscape Back InVisible Failed");
 			RunningApp.SetOrientationPortrait();
 			RunningApp.Tap(q => q.Marked("Toggle"));
 			RunningApp.Screenshot("Portrait Visible");
-			RunningApp.WaitForElement(q => q.Marked("The Flyout is now visible"));
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now visible"), "Portrait Then Toggle Visible Failed");
 			Back();
 			RunningApp.Screenshot("Portrait Invisible");
-			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"));
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"), "Portrait Back InVisible Failed");
 			RunningApp.SetOrientationLandscape();
 		}
 
