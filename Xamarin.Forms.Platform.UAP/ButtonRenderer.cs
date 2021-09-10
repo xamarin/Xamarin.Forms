@@ -319,6 +319,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				_button.Click -= OnButtonClick;
 				_button.RemoveHandler(PointerPressedEvent, _pointerPressedHandler);
+				_button.Loading -= ButtonOnLoading;
 				_button.Loaded -= ButtonOnLoaded;				
 
 				_pointerPressedHandler = null;
