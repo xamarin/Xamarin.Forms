@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Controls.Issues
 			btn.Clicked += (object sender, EventArgs e) => IsPresented = !IsPresented;
 			btn1.Clicked += (object sender, EventArgs e) => IsPresented = !IsPresented;
 
-			var stacklayout = new StackLayout();
+			var stacklayout = new StackLayout() { AutomationId = "MainPageLayout" };
 			stacklayout.Children.Add(lbl);
 			stacklayout.Children.Add(btn);
 
@@ -91,27 +91,32 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot("Portrait");
 			RunningApp.Tap(q => q.Marked("Toggle"));
 			RunningApp.Screenshot("Portrait Visible");
-			RunningApp.WaitForElement(q => q.Marked("The Flyout is now visible"), "Basic Toggle Visible Failed");
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now visible"), $"Basic Toggle Visible Failed: {GetRect()} {GetRect().Width}");
 			Back();
 			RunningApp.Screenshot("Portrait Invisible");
-			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"), "Basic Toggle Invisible Failed");
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"), $"Basic Toggle Invisible Failed: {GetRect()} {GetRect().Width}");
 			RunningApp.SetOrientationLandscape();
 			RunningApp.Screenshot("Landscape Invisible");
-			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"), "Landscape Invisible Failed");
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"), $"Landscape Invisible Failed: {GetRect()} {GetRect().Width}");
 			RunningApp.Tap(q => q.Marked("Toggle"));
 			RunningApp.Screenshot("Landscape Visible");
-			RunningApp.WaitForElement(q => q.Marked("The Flyout is now visible"), "Landscape Toggle Visible Failed");
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now visible"), $"Landscape Toggle Visible Failed: {GetRect()} {GetRect().Width}");
 			Back();
 			RunningApp.Screenshot("Landscape InVisible");
-			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"), "Landscape Back InVisible Failed");
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"), $"Landscape Back InVisible Failed: {GetRect()} {GetRect().Width}");
 			RunningApp.SetOrientationPortrait();
 			RunningApp.Tap(q => q.Marked("Toggle"));
 			RunningApp.Screenshot("Portrait Visible");
-			RunningApp.WaitForElement(q => q.Marked("The Flyout is now visible"), "Portrait Then Toggle Visible Failed");
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now visible"), $"Portrait Then Toggle Visible Failed: {GetRect()} {GetRect().Width}");
 			Back();
 			RunningApp.Screenshot("Portrait Invisible");
-			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"), "Portrait Back InVisible Failed");
+			RunningApp.WaitForElement(q => q.Marked("The Flyout is now invisible"), $"Portrait Back InVisible Failed: {GetRect()} {GetRect().Width}");
 			RunningApp.SetOrientationLandscape();
+
+			UITest.Queries.AppRect GetRect()
+			{
+				return RunningApp.WaitForElement("MainPageLayout")[0].Rect;
+			}
 		}
 
 		[TearDown]
