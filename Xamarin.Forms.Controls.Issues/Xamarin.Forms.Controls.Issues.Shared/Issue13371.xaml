@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 13371" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13371">
+    <StackLayout
+        Padding="12">
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If EmptyView does not appear, the test has passed."/>
+        <CollectionView
+            ItemsSource="{Binding Data}"
+            SelectionMode="Single">
+            <CollectionView.Header>
+                <Grid
+                    HeightRequest="50"
+                    BackgroundColor="LightGray">
+                    <Label
+                        Text="Header"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Center" />
+                </Grid>
+            </CollectionView.Header>
+            <CollectionView.EmptyView>
+                <Label
+                    Text="Empty"
+                    VerticalOptions="CenterAndExpand"
+                    HorizontalOptions="FillAndExpand"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center" />
+            </CollectionView.EmptyView>
+            <CollectionView.Footer>
+                <Grid
+                    HeightRequest="50"
+                    BackgroundColor="LightGray">
+                    <Label
+                        Text="Footer"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Center" />
+                </Grid>
+            </CollectionView.Footer>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <SwipeView>
+                            <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem
+                                    Text="Delete"
+                                    BackgroundColor="Red"/>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <Label
+                            Text="{Binding .}"
+                            Padding="20" />
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</local:TestContentPage>
