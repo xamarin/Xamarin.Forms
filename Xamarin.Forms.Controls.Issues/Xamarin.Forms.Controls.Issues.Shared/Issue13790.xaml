@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 13790" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13790">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Collapse a group. Without exceptions, the test has passed."/>
+        <ListView
+            CachingStrategy="RetainElement"
+            IsGroupingEnabled="True"
+            HasUnevenRows="True"
+            ItemsSource="{Binding Grouped}">
+            <ListView.GroupHeaderTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid
+                            BackgroundColor="Black">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid
+                                Padding="8"
+                                ColumnSpacing="4">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Label
+                                    Grid.Column="0"
+                                    TextColor="White"
+                                    Text="{Binding LongName}" />
+                            
+                                <Label
+                                    Grid.Column="1"
+                                    TextColor="Red"
+                                    Text="{Binding IsExpanded, Converter={StaticResource CollapseExpandToStringConverter}}" >
+                                    <Label.GestureRecognizers >
+                                        <TapGestureRecognizer Command="{Binding ExpandCollapseCommand}"/>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Grid>
+
+                            <BoxView
+                                Grid.Row="1"
+                                BackgroundColor="Magenta"
+                                HeightRequest="1"
+                                VerticalOptions="End"/>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.GroupHeaderTemplate>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItem
+                                    BackgroundColor="Red"
+                                    Text="Delete"
+                                    Command="{Binding DeleteCommand}"
+                                    CommandParameter="{Binding .}"/>
+                            </SwipeView.RightItems>
+                            <StackLayout>
+                                <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding NavigateCommand}"/>
+                                </StackLayout.GestureRecognizers>
+                                <Label Text="{Binding Name}" />
+                                <Label Text="{Binding Comment}" />
+                            </StackLayout>
+                        </SwipeView>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+</local:TestContentPage>
