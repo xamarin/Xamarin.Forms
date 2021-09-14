@@ -105,6 +105,7 @@ namespace Xamarin.Forms
 
 		internal static void Clear()
 		{
+			s_implicitPageRoutes.Clear();
 			s_routes.Clear();
 		}
 

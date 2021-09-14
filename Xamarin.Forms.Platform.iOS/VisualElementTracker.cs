@@ -5,6 +5,8 @@ using System.Threading;
 using CoreAnimation;
 using CoreGraphics;
 using Xamarin.Forms.Internals;
+using RectangleF = CoreGraphics.CGRect;
+using PointF = CoreGraphics.CGPoint;
 
 #if __MOBILE__
 using UIKit;
@@ -325,10 +327,22 @@ namespace Xamarin.Forms.Platform.MacOS
 					transform = transform.Rotate(rotationY * (float)Math.PI / 180.0f, 0.0f, 1.0f, 0.0f);
 
 				transform = transform.Rotate(rotation * (float)Math.PI / 180.0f, 0.0f, 0.0f, 1.0f);
+#if !__MOBILE__
+				if (Math.Abs(scaleX - 1) > epsilon || Math.Abs(scaleY - 1) > epsilon)
+				{
+					if (scaleX == 0)
+						scaleX = (float)epsilon;
+					if (scaleY == 0)
+						scaleY = (float)epsilon;
+					if (scale == 0)
+						scale = (float)epsilon;
 
+					transform = transform.Scale(scaleX, scaleY, scale);
+				}
+#else
 				if (Math.Abs(scaleX - 1) > epsilon || Math.Abs(scaleY - 1) > epsilon)
 					transform = transform.Scale(scaleX, scaleY, scale);
-
+#endif
 				if (Foundation.NSThread.IsMain)
 				{
 					caLayer.Transform = transform;
