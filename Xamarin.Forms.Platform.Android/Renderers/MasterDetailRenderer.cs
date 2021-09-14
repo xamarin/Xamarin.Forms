@@ -1,22 +1,17 @@
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using Android.App;
 using Android.Content;
-#if __ANDROID_29__
-using AndroidX.Core.Widget;
-using AndroidX.DrawerLayout.Widget;
-#else
-using Android.Support.V4.Widget;
-#endif
-using Android.Views;
-using AView = Android.Views.View;
 using Android.OS;
+using Android.Views;
+using AndroidX.DrawerLayout.Widget;
 using Xamarin.Forms.Platform.Android.FastRenderers;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
 
+	[Obsolete("MasterDetailPage is obsolete as of version 5.0.0. Please use FlyoutPage instead.")]
 	public class MasterDetailRenderer : DrawerLayout, IVisualElementRenderer, DrawerLayout.IDrawerListener
 	{
 		//from Android source code
@@ -24,14 +19,13 @@ namespace Xamarin.Forms.Platform.Android
 		int _currentLockMode = -1;
 		MasterDetailContainer _detailLayout;
 		bool _isPresentingFromCore;
+		bool _defaultAutomationSet;
 		MasterDetailContainer _masterLayout;
 		MasterDetailPage _page;
 		bool _presented;
 		Platform _platform;
 
 		string _defaultContentDescription;
-		string _defaultHint;
-
 		public MasterDetailRenderer(Context context) : base(context)
 		{
 		}
@@ -178,12 +172,26 @@ namespace Xamarin.Forms.Platform.Android
 			SetContentDescription();
 		}
 
+		void SetupAutomationDefaults()
+		{
+			if (!_defaultAutomationSet)
+			{
+				_defaultAutomationSet = true;
+				AutomationPropertiesProvider.SetupDefaults(this, ref _defaultContentDescription);
+			}
+		}
+
 		protected virtual void SetAutomationId(string id)
-		=> AutomationPropertiesProvider.SetAutomationId(this, Element, id);
+		{
+			SetupAutomationDefaults();
+			AutomationPropertiesProvider.SetAutomationId(this, Element, id);
+		}
 
 		protected virtual void SetContentDescription()
-			=> AutomationPropertiesProvider.SetContentDescription(this, Element, ref _defaultContentDescription, ref _defaultHint);
-
+		{
+			SetupAutomationDefaults();
+			AutomationPropertiesProvider.SetContentDescription(this, Element, _defaultContentDescription, null);
+		}
 
 		public VisualElementTracker Tracker { get; private set; }
 
@@ -220,6 +228,8 @@ namespace Xamarin.Forms.Platform.Android
 					_masterLayout.Dispose();
 					_masterLayout = null;
 				}
+
+				RemoveDrawerListener(this);
 
 				Device.Info.PropertyChanged -= DeviceInfoPropertyChanged;
 
@@ -284,7 +294,7 @@ namespace Xamarin.Forms.Platform.Android
 		void HandleMasterPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Page.TitleProperty.PropertyName || e.PropertyName == Page.IconImageSourceProperty.PropertyName)
-				Platform?.UpdateMasterDetailToggle(true);
+				Platform?.UpdateFlyoutPageToggle(true);
 		}
 
 		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -434,7 +444,8 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					SetScrimColor(isShowingSplit ? Color.Transparent.ToAndroid() : (int)DefaultScrimColor);
 				}
-				Platform?.UpdateMasterDetailToggle();
+
+				Platform?.UpdateFlyoutPageToggle();
 			}
 		}
 	}

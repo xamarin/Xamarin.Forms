@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		void AddPage(string title)
 		{
-			var page = AddFlyoutItem(title);
+			var page = CreateContentPage<FlyoutItem>(title);
 
 			page.Content = new Grid()
 			{
@@ -41,7 +41,8 @@ namespace Xamarin.Forms.Controls.Issues
 										Text = "Learn More",
 										Margin = new Thickness(0,10,0,0),
 										BackgroundColor = Color.Purple,
-										TextColor = Color.White
+										TextColor = Color.White,
+										AutomationId = "LearnMoreButton"
 									}
 								}
 							}
@@ -62,7 +63,7 @@ namespace Xamarin.Forms.Controls.Issues
 			AddPage("Lock test has passed");
 
 			int i = 0;
-			foreach(var item in Items)
+			foreach (var item in Items)
 			{
 				item.Items[0].AutomationId = $"FlyoutItem{i}";
 				item.Items[0].Items.Add(new ContentPage()
@@ -110,16 +111,21 @@ namespace Xamarin.Forms.Controls.Issues
 			for (int i = 0; i < 5; i++)
 			{
 				RunningApp.WaitForElement("Tab1AutomationId");
+				RunningApp.WaitForElement("LearnMoreButton");
 				RunningApp.Tap("FlyoutItem0");
 				RunningApp.Tap("FlyoutItem1");
 				RunningApp.Tap("FlyoutItem0");
+				RunningApp.WaitForElement("LearnMoreButton");
 			}
 
 			RunningApp.WaitForElement("Tab1AutomationId");
+			RunningApp.WaitForElement("LearnMoreButton");
 			RunningApp.Tap("FlyoutItem1");
 			RunningApp.WaitForElement("Tab2AutomationId");
+			RunningApp.WaitForElement("LearnMoreButton");
 			RunningApp.Tap("FlyoutItem0");
 			RunningApp.WaitForElement("Tab1AutomationId");
+			RunningApp.WaitForElement("LearnMoreButton");
 		}
 #endif
 	}

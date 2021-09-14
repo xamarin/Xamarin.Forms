@@ -10,15 +10,15 @@ using WindowsOS = Xamarin.Forms.PlatformConfiguration.Windows;
 
 namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 {
-    public class MasterDetailPageWindows : MasterDetailPage
+	public class FlyoutPageWindows : FlyoutPage
 	{
-		public MasterDetailPageWindows(ICommand restore)
+		public FlyoutPageWindows(ICommand restore)
 		{
 			On<WindowsOS>()
 				.SetCollapseStyle(CollapseStyle.Partial);
-			MasterBehavior = MasterBehavior.Popover;
+			FlyoutLayoutBehavior = FlyoutLayoutBehavior.Popover;
 
-			var master = new ContentPage { Title = "Master Detail Page" };
+			var master = new ContentPage { Title = "Flyout Detail Page" };
 			var masterContent = new StackLayout { Spacing = 10, Margin = new Thickness(0, 10, 5, 0) };
 			var detail = new ContentPage { Title = "This is the detail page's Title" };
 
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 			// And add them to the navigation pane's content
 			masterContent.Children.Add(navList);
 			master.Content = masterContent;
-			
+
 			var detailContent = new StackLayout { VerticalOptions = LayoutOptions.Fill, HorizontalOptions = LayoutOptions.Fill };
 			detailContent.Children.Add(new Label
 			{
@@ -55,14 +55,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 
 			detail.Content = detailContent;
 
-			Master = master;
+			Flyout = master;
 
 			AddToolBarItems(this);
 
 			Detail = detail;
 		}
 
-		static Layout CreateCollapseStyleChanger(MasterDetailPage page)
+		static Layout CreateCollapseStyleChanger(FlyoutPage page)
 		{
 			Type enumType = typeof(CollapseStyle);
 
@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 				"Select Collapse Style");
 		}
 
-		static Layout CreateCollapseWidthAdjuster(MasterDetailPage page)
+		static Layout CreateCollapseWidthAdjuster(FlyoutPage page)
 		{
 			var adjustCollapseWidthLabel = new Label
 			{
@@ -182,7 +182,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 			var page = new ContentPage();
 
 			var label = new Label { Text = "This is content in a nav page" };
-			var button = new Button() { Text = "Push Another Page"};
+			var button = new Button() { Text = "Push Another Page" };
 
 			button.Clicked += (sender, args) => page.Navigation.PushAsync(CreateNavSubPage());
 

@@ -34,12 +34,14 @@ namespace Xamarin.Forms
 
 		public MenuItemCollection MenuItems => (MenuItemCollection)GetValue(MenuItemsProperty);
 
-		public object Content {
+		public object Content
+		{
 			get => GetValue(ContentProperty);
 			set => SetValue(ContentProperty, value);
 		}
 
-		public DataTemplate ContentTemplate {
+		public DataTemplate ContentTemplate
+		{
 			get => (DataTemplate)GetValue(ContentTemplateProperty);
 			set => SetValue(ContentTemplateProperty, value);
 		}
@@ -142,15 +144,18 @@ namespace Xamarin.Forms
 			}
 		}
 
-		protected override void OnChildRemoved(Element child)
+		[Obsolete("OnChildRemoved(Element) is obsolete as of version 4.8.0. Please use OnChildRemoved(Element, int) instead.")]
+		protected override void OnChildRemoved(Element child) => OnChildRemoved(child, -1);
+
+		protected override void OnChildRemoved(Element child, int oldLogicalIndex)
 		{
-			base.OnChildRemoved(child);
+			base.OnChildRemoved(child, oldLogicalIndex);
 			if (child is Page page)
 			{
 				page.PropertyChanged -= OnPagePropertyChanged;
 			}
 		}
-		
+
 
 		void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -168,8 +173,8 @@ namespace Xamarin.Forms
 
 				var oldCache = _contentCache;
 				_contentCache = value;
-				if(oldCache != null)
-					OnChildRemoved(oldCache);
+				if (oldCache != null)
+					OnChildRemoved(oldCache, -1);
 
 				if (value != null && value.Parent != this)
 				{
@@ -181,7 +186,7 @@ namespace Xamarin.Forms
 					((ShellSection)Parent).UpdateDisplayedPage();
 			}
 		}
-		
+
 		public static implicit operator ShellContent(TemplatedPage page)
 		{
 			var shellContent = new ShellContent();
@@ -216,7 +221,7 @@ namespace Xamarin.Forms
 				{
 					shellContent.ContentCache = newElement;
 				}
-				else if(newValue != null)
+				else if (newValue != null)
 				{
 					throw new InvalidOperationException($"{nameof(ShellContent)} {nameof(Content)} should be of type {nameof(Page)}. Title {shellContent?.Title}, Route {shellContent?.Route} ");
 				}
@@ -233,8 +238,11 @@ namespace Xamarin.Forms
 					OnChildAdded(el);
 
 			if (e.OldItems != null)
-				foreach (Element el in e.OldItems)
-					OnChildRemoved(el);
+				for (var i = 0; i < e.OldItems.Count; i++)
+				{
+					var el = (Element)e.OldItems[i];
+					OnChildRemoved(el, e.OldStartingIndex + i);
+				}
 		}
 
 		internal override void ApplyQueryAttributes(IDictionary<string, string> query)
@@ -264,6 +272,7 @@ namespace Xamarin.Forms
 
 			var type = content.GetType();
 			var typeInfo = type.GetTypeInfo();
+
 #if NETSTANDARD1_0
 			var queryPropertyAttributes = typeInfo.GetCustomAttributes(typeof(QueryPropertyAttribute), true).ToArray();
 #else
@@ -273,12 +282,27 @@ namespace Xamarin.Forms
 			if (queryPropertyAttributes.Length == 0)
 				return;
 
-			foreach (QueryPropertyAttribute attrib in queryPropertyAttributes) {
-				if (query.TryGetValue(attrib.QueryId, out var value)) {
+			foreach (QueryPropertyAttribute attrib in queryPropertyAttributes)
+			{
+				if (query.TryGetValue(attrib.QueryId, out var value))
+				{
 					PropertyInfo prop = type.GetRuntimeProperty(attrib.Name);
 
 					if (prop != null && prop.CanWrite && prop.SetMethod.IsPublic)
-						prop.SetValue(content, value);
+					{
+						if (prop.PropertyType == typeof(String))
+						{
+							if (value != null)
+								value = System.Net.WebUtility.UrlDecode(value);
+
+							prop.SetValue(content, value);
+						}
+						else
+						{
+							var castValue = Convert.ChangeType(value, prop.PropertyType);
+							prop.SetValue(content, castValue);
+						}
+					}
 				}
 				else if (oldQuery.TryGetValue(attrib.QueryId, out var oldValue))
 				{

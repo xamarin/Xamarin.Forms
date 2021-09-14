@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Drawing;
 using CoreGraphics;
 using UIKit;
+using SizeF = CoreGraphics.CGSize;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -55,11 +56,9 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
-#if __XCODE11__
 			// Make sure the control adheres to changes in UI theme
 			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
 				SetupLayer();
-#endif
 		}
 
 		public virtual void SetupLayer()
@@ -94,8 +93,10 @@ namespace Xamarin.Forms.Platform.iOS
 				if (backgroundLayer != null)
 				{
 					_actualView.Layer.BackgroundColor = UIColor.Clear.CGColor;
-					Layer.InsertBackgroundLayer(backgroundLayer, 0);
+
 					backgroundLayer.CornerRadius = cornerRadius;
+
+					Layer.InsertBackgroundLayer(backgroundLayer, 0);
 				}
 			}
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Xaml.Diagnostics;
 
 namespace Xamarin.Forms
 {
@@ -96,8 +97,9 @@ namespace Xamarin.Forms
 			}
 
 			_logicalChildren.Add(element);
-
 			element.Parent = this;
+			OnChildAdded(element);
+			VisualDiagnostics.OnChildAdded(this, element);
 		}
 
 		public void RemoveLogicalChild(Element element)
@@ -108,7 +110,14 @@ namespace Xamarin.Forms
 			}
 
 			element.Parent = null;
+
+			if (!_logicalChildren.Contains(element))
+				return;
+
+			var oldLogicalIndex = _logicalChildren.IndexOf(element);
 			_logicalChildren.Remove(element);
+			OnChildRemoved(element, oldLogicalIndex);
+			VisualDiagnostics.OnChildRemoved(this, element, oldLogicalIndex);
 		}
 
 #if NETSTANDARD1_0
@@ -212,12 +221,12 @@ namespace Xamarin.Forms
 
 		protected virtual void OnRemainingItemsThresholdReached()
 		{
-			
+
 		}
 
 		protected virtual void OnScrolled(ItemsViewScrolledEventArgs e)
 		{
-			
+
 		}
 
 		protected override void OnBindingContextChanged()

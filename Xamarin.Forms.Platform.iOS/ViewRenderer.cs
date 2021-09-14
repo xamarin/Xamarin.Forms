@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		public override void LayoutSubviews()
 		{
 			base.LayoutSubviews();
-			if (Control != null)
+			if (Control != null && Element != null)
 				Control.Frame = new RectangleF(0, 0, (nfloat)Element.Width, (nfloat)Element.Height);
 		}
 
@@ -223,12 +223,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			_controlChanging?.Invoke(this, EventArgs.Empty);
 #if __MOBILE__
 			_defaultColor = uiview.BackgroundColor;
-
-			// UIKit UIViews created via storyboard default IsAccessibilityElement to true, BUT
-			// UIViews created programmatically default IsAccessibilityElement to false.
-			// We need to default to true to allow all elements to be accessible by default and
-			// allow users to override this later via AutomationProperties.IsInAccessibleTree
-			uiview.IsAccessibilityElement = true;
 #else
 			uiview.WantsLayer = true;
 			_defaultColor = uiview.Layer.BackgroundColor;
@@ -252,11 +246,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
-#if __XCODE11__
 			// Make sure the control adheres to changes in UI theme
 			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
 				Control?.SetNeedsDisplay();
-#endif
 		}
 
 		internal override void SendVisualElementInitialized(VisualElement element, NativeView nativeView)
@@ -279,7 +271,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (IsElementOrControlEmpty)
 				return;
 
-			SetBackground(Element.Background);
+			Brush brush = Element.Background;
+
+			if (!Brush.IsNullOrEmpty(brush))
+				SetBackground(brush);
 		}
 
 		void UpdateIsEnabled()
@@ -305,8 +300,12 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (Control == null)
 				return;
-
+				
+#if __MOBILE__
 			focusRequestArgs.Result = focusRequestArgs.Focus ? Control.BecomeFirstResponder() : Control.ResignFirstResponder();
+#else
+			focusRequestArgs.Result = focusRequestArgs.Focus ? Control.Window.MakeFirstResponder(Control) : Control.Window.MakeFirstResponder(null);
+#endif
 		}
 	}
 }

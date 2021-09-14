@@ -18,7 +18,6 @@ namespace Xamarin.Forms.Controls.Issues
 		public Issue10679()
 		{
 #if APP
-			Device.SetFlags(new List<string>(Device.Flags ?? new List<string>()) { "SwipeView_Experimental" });
 			InitializeComponent();
 #endif
 		}
@@ -109,7 +108,7 @@ namespace Xamarin.Forms.Controls.Issues
 			swipeView.RightItems = rightItems;
 
 			layout.Children.Add(swipeView);
-			
+
 			Content = layout;
 
 			leftItem.Invoked += async (sender, args) =>

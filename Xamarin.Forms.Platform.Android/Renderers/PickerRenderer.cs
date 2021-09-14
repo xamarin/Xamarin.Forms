@@ -1,16 +1,17 @@
-using Android.App;
-using Android.Util;
-using Android.Views;
-using Android.Widget;
 using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using Orientation = Android.Widget.Orientation;
+using Android.App;
 using Android.Content;
-using AColor = Android.Graphics.Color;
 using Android.Text;
 using Android.Text.Style;
+using Android.Util;
+using Android.Views;
+using Android.Widget;
+using AndroidX.Core.View;
+using AColor = Android.Graphics.Color;
+using Orientation = Android.Widget.Orientation;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -67,7 +68,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					var textField = CreateNativeControl();
 
-					textField.SetAccessibilityDelegate(_pickerAccessibilityDelegate = new EntryAccessibilityDelegate(Element));
+					ViewCompat.SetAccessibilityDelegate(textField, _pickerAccessibilityDelegate = new EntryAccessibilityDelegate(Element));
 
 					var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 					_textColorSwitcher = new TextColorSwitcher(textField.TextColors, useLegacyColorManagement);
@@ -239,7 +240,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateGravity()
 		{
-			Control.Gravity = Element.HorizontalTextAlignment.ToHorizontalGravityFlags() | Element.VerticalTextAlignment.ToVerticalGravityFlags();			
+			Control.Gravity = Element.HorizontalTextAlignment.ToHorizontalGravityFlags() | Element.VerticalTextAlignment.ToVerticalGravityFlags();
 		}
 	}
 }

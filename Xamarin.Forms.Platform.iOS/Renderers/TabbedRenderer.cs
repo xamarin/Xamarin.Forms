@@ -9,6 +9,7 @@ using static Xamarin.Forms.PlatformConfiguration.iOSSpecific.Page;
 using PageUIStatusBarAnimation = Xamarin.Forms.PlatformConfiguration.iOSSpecific.UIStatusBarAnimation;
 using TabbedPageConfiguration = Xamarin.Forms.PlatformConfiguration.iOSSpecific.TabbedPage;
 using TranslucencyMode = Xamarin.Forms.PlatformConfiguration.iOSSpecific.TranslucencyMode;
+using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -23,7 +24,6 @@ namespace Xamarin.Forms.Platform.iOS
 		bool? _defaultBarTranslucent;
 		bool _loaded;
 		Size _queuedSize;
-		PageLifecycleManager _pageLifecycleManager;
 
 		Page Page => Element as Page;
 
@@ -73,8 +73,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 
-			_pageLifecycleManager = new PageLifecycleManager(Element as IPageController);
-
 			OnPagesChanged(null, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 
 			if (element != null)
@@ -114,15 +112,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidAppear(bool animated)
 		{
-			_pageLifecycleManager?.HandlePageAppearing();
+			Page.SendAppearing();
 			base.ViewDidAppear(animated);
 		}
 
 		public override void ViewDidDisappear(bool animated)
 		{
 			base.ViewDidDisappear(animated);
-			_pageLifecycleManager?.HandlePageDisappearing();
-
+			Page.SendDisappearing();
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -137,7 +134,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (!Element.Bounds.IsEmpty)
 			{
-				View.Frame = new System.Drawing.RectangleF((float)Element.X, (float)Element.Y, (float)Element.Width, (float)Element.Height);
+				View.Frame = new RectangleF((float)Element.X, (float)Element.Y, (float)Element.Width, (float)Element.Height);
 			}
 
 			var frame = View.Frame;
@@ -157,8 +154,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (disposing)
 			{
-				_pageLifecycleManager?.Dispose();
-				_pageLifecycleManager = null;
+				Page.SendDisappearing();
 				Tabbed.PropertyChanged -= OnPropertyChanged;
 				Tabbed.PagesChanged -= OnPagesChanged;
 				FinishedCustomizingViewControllers -= HandleFinishedCustomizingViewControllers;

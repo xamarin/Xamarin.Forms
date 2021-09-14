@@ -11,7 +11,7 @@
     <AssemblyName>Xamarin.Forms.Platform.UAP.UnitTests</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.18362.0</TargetPlatformVersion>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.19041.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
@@ -132,6 +132,7 @@
     <Compile Include="ScaleTests.cs" />
     <Compile Include="ScrollBarVisibilityTests.cs" />
     <Compile Include="ShellTests.cs" />
+    <Compile Include="TransformationTests.cs" />
     <EmbeddedResource Include="Properties\Xamarin.Forms.Platform.UAP.UnitTests.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -139,7 +140,7 @@
       <Version>6.2.10</Version>
     </PackageReference>
     <PackageReference Include="NUnit">
-      <Version>3.12.0</Version>
+      <Version>3.13.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

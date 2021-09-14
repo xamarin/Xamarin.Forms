@@ -11,13 +11,8 @@ using ASearchView = Android.Widget.SearchView;
 using System.Collections.Generic;
 using NUnit.Framework;
 using System.Threading.Tasks;
-
-#if __ANDROID_29__
 using AndroidX.AppCompat.Widget;
 using AndroidX.CardView.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
 
 namespace Xamarin.Forms.Platform.Android.UnitTests
 {
@@ -363,6 +358,10 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 				{
 					var view = renderer.View;
 					Layout(element, view);
+
+					if(view.Background is GradientStrokeDrawable)
+						view.ForceDraw();
+
 					return getProperty(renderer);
 				}
 			});

@@ -92,9 +92,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
                             lastPoint = points[points.Count - 1];
                         }
-
                         // BezierSegment
-                        if (pathSegment is BezierSegment)
+                        else if (pathSegment is BezierSegment)
                         {
                             BezierSegment bezierSegment = pathSegment as BezierSegment;
 
@@ -112,19 +111,22 @@ namespace Xamarin.Forms.Platform.MacOS
                             PolyBezierSegment polyBezierSegment = pathSegment as PolyBezierSegment;
                             PointCollection points = polyBezierSegment.Points;
 
-                            for (int i = 0; i < points.Count; i += 3)
+                            if (points.Count >= 3)
                             {
-                                pathData.Data.AddCurveToPoint(
-                                    transform,
-                                    points[i].ToPointF(),
-                                    points[i + 1].ToPointF(),
-                                    points[i + 2].ToPointF());
+                                for (int i = 0; i < points.Count; i += 3)
+                                {
+                                    pathData.Data.AddCurveToPoint(
+                                        transform,
+                                        points[i].ToPointF(),
+                                        points[i + 1].ToPointF(),
+                                        points[i + 2].ToPointF());
+                                }
                             }
+
                             lastPoint = points[points.Count - 1];
                         }
-
                         // QuadraticBezierSegment
-                        if (pathSegment is QuadraticBezierSegment)
+                        else if (pathSegment is QuadraticBezierSegment)
                         {
                             QuadraticBezierSegment bezierSegment = pathSegment as QuadraticBezierSegment;
 
@@ -143,14 +145,17 @@ namespace Xamarin.Forms.Platform.MacOS
                             PolyQuadraticBezierSegment polyBezierSegment = pathSegment as PolyQuadraticBezierSegment;
                             PointCollection points = polyBezierSegment.Points;
 
-                            for (int i = 0; i < points.Count; i += 2)
+                            if (points.Count >= 2)
                             {
-                                pathData.Data.AddQuadCurveToPoint(
-                                    transform,
-                                    new nfloat(points[i + 0].X),
-                                    new nfloat(points[i + 0].Y),
-                                    new nfloat(points[i + 1].X),
-                                    new nfloat(points[i + 1].Y));
+                                for (int i = 0; i < points.Count; i += 2)
+                                {
+                                    pathData.Data.AddQuadCurveToPoint(
+                                        transform,
+                                        new nfloat(points[i + 0].X),
+                                        new nfloat(points[i + 0].Y),
+                                        new nfloat(points[i + 1].X),
+                                        new nfloat(points[i + 1].Y));
+                                }
                             }
 
                             lastPoint = points[points.Count - 1];
@@ -173,14 +178,15 @@ namespace Xamarin.Forms.Platform.MacOS
                                 arcSegment.SweepDirection == SweepDirection.CounterClockwise,
                                 1);
 
-                            CGPoint[] cgpoints = new CGPoint[points.Count];
-
                             for (int i = 0; i < points.Count; i++)
-                                cgpoints[i] = transform.TransformPoint(points[i].ToPointF());
+                            {
+                                pathData.Data.AddLineToPoint(
+                                    (nfloat)points[i].X,
+                                    (nfloat)points[i].Y);
+                            }
 
-                            pathData.Data.AddLines(cgpoints);
-
-                            lastPoint = points.Count > 0 ? points[points.Count - 1] : Point.Zero;
+                            if (points.Count > 0)
+                                lastPoint = points[points.Count - 1];
                         }
                     }
 

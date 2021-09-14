@@ -1,20 +1,12 @@
-﻿using Android.OS;
+﻿using System;
+using Android.OS;
 using Android.Runtime;
-#if __ANDROID_29__
-using AndroidX.Fragment.App;
-using AndroidX.Core.Widget;
-using AndroidX.AppCompat.Widget;
-using AndroidX.CoordinatorLayout.Widget;
-using Google.Android.Material.AppBar;
-#else
-using Android.Support.V4.App;
-using Android.Support.Design.Widget;
-using Android.Support.V7.Widget;
-using Android.Support.V4.Widget;
-#endif
 using Android.Views;
 using Android.Views.Animations;
-using System;
+using AndroidX.AppCompat.Widget;
+using AndroidX.CoordinatorLayout.Widget;
+using AndroidX.Fragment.App;
+using Google.Android.Material.AppBar;
 using AndroidAnimation = Android.Views.Animations.Animation;
 using AnimationSet = Android.Views.Animations.AnimationSet;
 using AView = Android.Views.View;
@@ -23,12 +15,33 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class ShellContentFragment : Fragment, AndroidAnimation.IAnimationListener, IShellObservableFragment, IAppearanceObserver
 	{
+		// AndroidX.Fragment packaged stopped calling CreateAnimation for every call
+		// of creating a fragment
+		bool _isAnimating = false;
+
 		#region IAnimationListener
 
 		void AndroidAnimation.IAnimationListener.OnAnimationEnd(AndroidAnimation animation)
 		{
 			View?.SetLayerType(LayerType.None, null);
 			AnimationFinished?.Invoke(this, EventArgs.Empty);
+			_isAnimating = false;
+		}
+
+		public override void OnResume()
+		{
+			base.OnResume();
+			if (!_isAnimating)
+			{
+				View?.SetLayerType(LayerType.None, null);
+				AnimationFinished?.Invoke(this, EventArgs.Empty);
+			}
+		}
+
+
+		public override void OnViewStateRestored(Bundle savedInstanceState)
+		{
+			base.OnViewStateRestored(savedInstanceState);
 		}
 
 		void AndroidAnimation.IAnimationListener.OnAnimationRepeat(AndroidAnimation animation)
@@ -83,6 +96,7 @@ namespace Xamarin.Forms.Platform.Android
 		public override AndroidAnimation OnCreateAnimation(int transit, bool enter, int nextAnim)
 		{
 			var result = base.OnCreateAnimation(transit, enter, nextAnim);
+			_isAnimating = true;
 
 			if (result == null && nextAnim != 0)
 			{
@@ -90,7 +104,10 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			if (result == null)
+			{
+				AnimationFinished?.Invoke(this, EventArgs.Empty);
 				return result;
+			}
 
 			// we only want to use a hardware layer for the entering view because its quite likely
 			// the view exiting is animating a button press of some sort. This means lots of GPU
@@ -128,7 +145,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			_shellPageContainer = new ShellPageContainer(Context, _renderer);
 
-			if(_root is ViewGroup vg)
+			if (_root is ViewGroup vg)
 				vg.AddView(_shellPageContainer);
 
 			_toolbarTracker = _shellContext.CreateTrackerForToolbar(_toolbar);
@@ -141,14 +158,14 @@ namespace Xamarin.Forms.Platform.Android
 			((IShellController)_shellContext.Shell).AddAppearanceObserver(this, _page);
 
 			if (_shellPageContainer.LayoutParameters is CoordinatorLayout.LayoutParams layoutParams)
-				layoutParams.Behavior = new AppBarLayout.ScrollingViewBehavior();			
+				layoutParams.Behavior = new AppBarLayout.ScrollingViewBehavior();
 
 			return _root;
 		}
 
 		void Destroy()
 		{
-			((IShellController)_shellContext.Shell).RemoveAppearanceObserver(this);			
+			((IShellController)_shellContext.Shell).RemoveAppearanceObserver(this);
 
 			if (_shellContent != null)
 			{

@@ -37,6 +37,14 @@ namespace Xamarin.Forms.Platform.MacOS
                 UpdateStrokeLineCap();
                 UpdateStrokeLineJoin();
                 UpdateStrokeMiterLimit();
+
+                if (!args.NewElement.Bounds.IsEmpty)
+                {
+                    _height = Element.Height;
+                    _width = Element.Width;
+
+                    UpdateSize();
+                }
             }
         }
 
@@ -290,8 +298,8 @@ namespace Xamarin.Forms.Platform.MacOS
         public SizeRequest GetDesiredSize()
         {
             return new SizeRequest(new Size(
-                Math.Max(0, _pathStrokeBounds.Right),
-                Math.Max(0, _pathStrokeBounds.Bottom)));
+                Math.Max(0, nfloat.IsNaN(_pathStrokeBounds.Right) ? 0 : _pathStrokeBounds.Right),
+                Math.Max(0, nfloat.IsNaN(_pathStrokeBounds.Bottom) ? 0 : _pathStrokeBounds.Bottom)));
         }
 
         public void UpdateSize(CGSize size)
@@ -466,7 +474,7 @@ namespace Xamarin.Forms.Platform.MacOS
             CATransaction.Begin();
             CATransaction.DisableActions = true;
 
-            graphics.SetLineWidth(_strokeWidth);
+            graphics.SetLineWidth(_stroke != null ? _strokeWidth : 0);
             graphics.SetLineDash(_dashOffset * _strokeWidth, _strokeDash);
             graphics.SetLineCap(_strokeLineCap);
             graphics.SetLineJoin(_strokeLineJoin);

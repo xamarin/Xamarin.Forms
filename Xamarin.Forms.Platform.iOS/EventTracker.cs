@@ -59,6 +59,12 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 		}
 
+		internal void Disconnect()
+		{
+			if (ElementGestureRecognizers != null)
+				ElementGestureRecognizers.CollectionChanged -= _collectionChangedHandler;
+		}
+
 		public void Dispose()
 		{
 			if (_disposed)
@@ -77,8 +83,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			_gestureRecognizers.Clear();
 
-			if (ElementGestureRecognizers != null)
-				ElementGestureRecognizers.CollectionChanged -= _collectionChangedHandler;
+			Disconnect();
 
 			_handler = null;
 		}
@@ -589,7 +594,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					continue;
 
 				var nativeRecognizer = GetNativeRecognizer(recognizer);
-				if (nativeRecognizer != null)
+				if (nativeRecognizer != null && _handler != null)
 				{
 #if __MOBILE__
 					nativeRecognizer.ShouldReceiveTouch = _shouldReceiveTouch;
@@ -662,7 +667,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				return false;
 			}
 
-			if (touch.View.IsDescendantOfView(_renderer.NativeView) && touch.View.GestureRecognizers?.Length > 0)
+			if (touch.View.IsDescendantOfView(_renderer.NativeView) &&
+				(touch.View.GestureRecognizers?.Length > 0 || _renderer.NativeView.GestureRecognizers?.Length > 0))
 			{
 				return true;
 			}

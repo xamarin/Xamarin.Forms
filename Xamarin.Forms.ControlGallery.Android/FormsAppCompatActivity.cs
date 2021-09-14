@@ -11,6 +11,8 @@ using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Platform.Android.AppLinks;
 using System.Linq;
 using Xamarin.Forms.Internals;
+using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace Xamarin.Forms.ControlGallery.Android
 {
@@ -43,11 +45,20 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 			base.OnCreate(bundle);
 
-#if TEST_EXPERIMENTAL_RENDERERS
+#if !LEGACY_RENDERERS
 #else
-			Forms.SetFlags("UseLegacyRenderers", "SwipeView_Experimental", "MediaElement_Experimental");
+			Forms.SetFlags("UseLegacyRenderers");
 #endif
+			// Forms.SetFlags("AccessibilityExperimental");
 			Forms.Init(this, bundle);
+
+
+
+			// null out the assembly on the Resource Manager
+			// so all of our tests run without using the reflection APIs
+			// At some point the Resources class types will go away so
+			// reflection will stop working
+			ResourceManager.Init(null);
 
 			FormsMaps.Init(this, bundle);
 			FormsMaterial.Init(this, bundle);
@@ -96,7 +107,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 			
 			LoadApplication(_app);
 
-#if !TEST_EXPERIMENTAL_RENDERERS
+#if LEGACY_RENDERERS
 			if ((int)Build.VERSION.SdkInt >= 21)
 			{
 				// Show a purple status bar if we're looking at legacy renderers
@@ -114,6 +125,27 @@ namespace Xamarin.Forms.ControlGallery.Android
 		{
 			base.OnResume();
 			Profile.Stop();
+		}
+
+		[Export("hasInternetAccess")]
+		public bool HasInternetAccess()
+		{
+			try
+			{
+				using (var httpClient = new HttpClient())
+				using (var httpResponse = httpClient.GetAsync(@"https://www.github.com"))
+				{
+					httpResponse.Wait();
+					if (httpResponse.Result.StatusCode == System.Net.HttpStatusCode.OK)
+						return true;
+					else
+						return false;
+				}
+			}
+			catch
+			{
+				return false;
+			}
 		}
 
 		[Export("IsPreAppCompat")]

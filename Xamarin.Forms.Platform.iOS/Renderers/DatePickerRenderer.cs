@@ -1,5 +1,7 @@
 using System;
 using System.ComponentModel;
+using System.Globalization;
+using System.Linq;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -46,6 +48,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		IElementController ElementController => Element as IElementController;
 
+		internal UIDatePicker Picker => _picker;
 
 		abstract protected override TControl CreateNativeControl();
 
@@ -70,6 +73,11 @@ namespace Xamarin.Forms.Platform.iOS
 				entry.EditingDidEnd += OnEnded;
 
 				_picker = new UIDatePicker { Mode = UIDatePickerMode.Date, TimeZone = new NSTimeZone("UTC") };
+
+				if (Forms.IsiOS14OrNewer)
+				{
+					_picker.PreferredDatePickerStyle = UIKit.UIDatePickerStyle.Wheels;
+				}
 
 				_picker.ValueChanged += HandleValueChanged;
 
@@ -160,7 +168,33 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_picker.Date.ToDateTime().Date != Element.Date.Date)
 				_picker.SetDate(Element.Date.ToNSDate(), animate);
 
-			Control.Text = Element.Date.ToString(Element.Format);
+			// Can't use Element.Format because it won't display the correct format if the region and language are set differently
+			if (string.IsNullOrWhiteSpace(Element.Format) || Element.Format.Equals("d") || Element.Format.Equals("D"))
+			{
+				NSDateFormatter dateFormatter = new NSDateFormatter();
+				dateFormatter.TimeZone = NSTimeZone.FromGMT(0);
+
+				if (Element.Format?.Equals("D") == true)
+				{
+					dateFormatter.DateStyle = NSDateFormatterStyle.Long;
+					var strDate = dateFormatter.StringFor(_picker.Date);
+					Control.Text = strDate;
+				}
+				else
+				{
+					dateFormatter.DateStyle = NSDateFormatterStyle.Short;
+					var strDate = dateFormatter.StringFor(_picker.Date);
+					Control.Text = strDate;
+				}
+			}
+			else if (Element.Format.Contains("/"))
+			{
+				Control.Text = Element.Date.ToString(Element.Format, CultureInfo.InvariantCulture);
+			}
+			else
+			{
+				Control.Text = Element.Date.ToString(Element.Format);
+			}
 		}
 
 		void UpdateElementDate()

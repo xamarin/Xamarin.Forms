@@ -2,19 +2,12 @@
 using System.ComponentModel;
 using Android.Content;
 using Android.OS;
-#if __ANDROID_29__
+using Android.Views;
+using Android.Widget;
 using AndroidX.Core.View;
 using AndroidX.Core.Widget;
 using AndroidX.RecyclerView.Widget;
 using AndroidX.SwipeRefreshLayout.Widget;
-using AndroidX.AppCompat.Widget;
-#else
-using Android.Support.V4.Widget;
-using Android.Support.V4.View;
-using Android.Support.V7.Widget;
-#endif
-using Android.Views;
-using Android.Widget;
 using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 using AWebView = Android.Webkit.WebView;
@@ -191,7 +184,7 @@ namespace Xamarin.Forms.Platform.Android
 				return true;
 			}
 
-			if(view is RecyclerView recyclerView)
+			if (view is RecyclerView recyclerView)
 				return recyclerView.ComputeVerticalScrollOffset() > 0;
 
 			if (view is NestedScrollView nestedScrollView)
@@ -244,9 +237,9 @@ namespace Xamarin.Forms.Platform.Android
 					Element.PropertyChanged -= HandlePropertyChanged;
 				}
 
-				if (_renderer != null)
-					_renderer.View.RemoveFromParent();
+				SetOnRefreshListener(null);
 
+				_renderer?.View.RemoveFromParent();
 				_renderer?.Dispose();
 				_renderer = null;
 

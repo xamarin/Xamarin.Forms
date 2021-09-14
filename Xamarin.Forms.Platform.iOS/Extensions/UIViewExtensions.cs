@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using static System.String;
 using Xamarin.Forms.Internals;
+using SizeF = CoreGraphics.CGSize;
 #if __MOBILE__
 using UIKit;
 namespace Xamarin.Forms.Platform.iOS
@@ -34,6 +35,24 @@ namespace Xamarin.Forms.Platform.MacOS
 			});
 		}
 #endif
+
+		internal static T GetParentOfType<T>(this UIView view)
+			where T : class
+		{
+			if (view is T t)
+				return t;
+
+			while (view != null)
+			{
+				T parent = view.Superview as T;
+				if (parent != null)
+					return parent;
+
+				view = view.Superview;
+			}
+
+			return default(T);
+		}
 
 		public static IEnumerable<UIView> Descendants(this UIView self)
 		{

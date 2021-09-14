@@ -3,18 +3,11 @@ using System.Runtime.CompilerServices;
 using Android.Content;
 using Android.Util;
 using Android.Views.InputMethods;
-using AApplicationInfoFlags = Android.Content.PM.ApplicationInfoFlags;
-using AActivity = Android.App.Activity;
-
-#if __ANDROID_29__
-using AndroidX.Fragment.App;
 using AndroidX.AppCompat.App;
+using AndroidX.Fragment.App;
+using AActivity = Android.App.Activity;
+using AApplicationInfoFlags = Android.Content.PM.ApplicationInfoFlags;
 using AFragmentManager = AndroidX.Fragment.App.FragmentManager;
-#else
-using AFragmentManager = Android.Support.V4.App.FragmentManager;
-using Android.Support.V4.App;
-using Android.Support.V7.App;
-#endif
 
 namespace Xamarin.Forms.Platform.Android
 {
