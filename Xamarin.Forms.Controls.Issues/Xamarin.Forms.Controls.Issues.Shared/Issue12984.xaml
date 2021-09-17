@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue12984"
+    Title="Issue 12984">
+    <Grid RowDefinitions="Auto,*">
+        <Label
+            Grid.Row="0"
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If the background color of the disabled Button is pink, the test has passed."/>
+        <StackLayout 
+            Grid.Row="1">
+            <Button 
+                Text="Normal Button">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="Red" />
+                                <Setter Property="BorderColor" Value="Yellow" />
+                                <Setter Property="TextColor" Value="White" />
+                                <Setter Property="FontSize" Value="Small" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="Green" />
+                                <Setter Property="BorderColor" Value="Orange" />
+                                <Setter Property="TextColor" Value="Yellow" />
+                                <Setter Property="FontSize" Value="Medium" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Focused">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="Blue" />
+                                <Setter Property="BorderColor" Value="Purple" />
+                                <Setter Property="TextColor" Value="Yellow" />
+                                <Setter Property="FontSize" Value="Medium" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </Button>
+            <Button
+                Text="Disabled Button" 
+                IsEnabled="False">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Disabled">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="Pink" />
+                                <Setter Property="BorderColor" Value="Orange" />
+                                <Setter Property="TextColor" Value="Red" />
+                                <Setter Property="FontSize" Value="Micro" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </Button>
+        </StackLayout>
+    </Grid>
+</controls:TestContentPage>

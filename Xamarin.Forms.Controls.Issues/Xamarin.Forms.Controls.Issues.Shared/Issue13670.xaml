@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 13670" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13670">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Without setting the BackgroundColor of the SwipeView Content, the BackgroundColor of the SwipeView is used. "/>
+        <CollectionView
+            SelectionMode="Single"
+            ItemsSource="{Binding Items}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="5,10,5,10" BackgroundColor="#464646" RowSpacing="0" ColumnSpacing="2" RowDefinitions="Auto" ColumnDefinitions="10, *, 26, 26, 55, 55">
+                        <SwipeView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" BackgroundColor="#464646">
+                            <SwipeView.LeftItems>
+                                <SwipeItems>
+                                    <SwipeItemView IsVisible="{Binding CanShow}" BackgroundColor="#707070">
+                                        <Label Margin="20,0" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Text="A" TextColor="#FFFFFF" FontSize="22" />
+                                    </SwipeItemView>
+                                    <SwipeItemView IsVisible="{Binding CanShow}" BackgroundColor="#707070">
+                                        <Label Margin="20,0" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Text="B" TextColor="#FFFFFF" FontSize="22" />
+                                    </SwipeItemView>
+                                </SwipeItems>
+                            </SwipeView.LeftItems>
+                            <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="2, 10, *, 26, 26" RowSpacing="0" ColumnSpacing="2">
+                                <BoxView Grid.Column="1" Grid.RowSpan="2" BackgroundColor="#325993" Margin="0,0,5,0" />
+                                <Label VerticalTextAlignment="End" Grid.Row="0" Grid.Column="2" Text="{Binding Name}" LineBreakMode="TailTruncation" FontSize="Medium" TextColor="#FFFFFF" />
+                                <Label VerticalOptions="Start" Grid.Row="1" Grid.Column="2" Text="..." TextColor="#95989A" />
+                                <Label Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" HorizontalOptions="End" IsVisible="False" WidthRequest="26" HeightRequest="26" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" />
+                                <Label Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" HorizontalOptions="End" IsVisible="False" WidthRequest="26" HeightRequest="26" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" />
+                                <Label Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" HorizontalOptions="End" IsVisible="False" WidthRequest="26" HeightRequest="26" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" />
+                                <Label Grid.Row="0" Grid.Column="4" Grid.RowSpan="2"  IsVisible="False" WidthRequest="26" HeightRequest="26" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center" />
+                            </Grid>
+                        </SwipeView>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</local:TestContentPage>

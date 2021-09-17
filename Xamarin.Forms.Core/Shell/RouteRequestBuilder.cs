@@ -74,6 +74,8 @@ namespace Xamarin.Forms
 
 			bool AddNode(BaseShellItem baseShellItem, string nextSegment)
 			{
+				_ = baseShellItem ?? throw new ArgumentNullException(nameof(baseShellItem));
+
 				if (Routing.IsUserDefined(baseShellItem.Route) && baseShellItem.Route != nextSegment)
 				{
 					return false;
