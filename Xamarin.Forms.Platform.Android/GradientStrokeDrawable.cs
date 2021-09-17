@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.Android
 	public class GradientStrokeDrawable : PaintDrawable
 	{
 		readonly Paint _strokePaint;
-		AColor _backgroundColor;
+		AColor? _backgroundColor;
 
 		public GradientStrokeDrawable()
 		{
@@ -27,6 +27,14 @@ namespace Xamarin.Forms.Platform.Android
 			InvalidateSelf();
 		}
 
+		public AColor? GetColor()
+		{
+			if (_backgroundColor.HasValue)
+				return _backgroundColor.Value;
+
+			return null;
+		}
+
 		public void SetStroke(int strokeWidth, AColor strokeColor)
 		{
 			_strokePaint.StrokeWidth = strokeWidth;
@@ -36,6 +44,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void SetGradient(Brush brush)
 		{
+			_backgroundColor = null;
+
 			if (brush is LinearGradientBrush linearGradientBrush)
 			{
 				var p1 = linearGradientBrush.StartPoint;
@@ -74,10 +84,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnDraw(shape, canvas, paint);
 
-			if (_backgroundColor != null)
-				paint.Color = _backgroundColor;
+			if (_backgroundColor.HasValue)
+				paint.Color = _backgroundColor.Value;
 
-			shape.Draw(canvas, _strokePaint);
+			if (_strokePaint.StrokeWidth > 0)
+				shape.Draw(canvas, _strokePaint);
 		}
 
 		public abstract class GradientShader

@@ -539,6 +539,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateText()
 		{
+			if (EditText == null || Element == null)
+				return;
+
 			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 
 			if (EditText.Text == text)
@@ -547,7 +550,7 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.Text = text;
 			if (EditText.IsFocused)
 			{
-				EditText.SetSelection(text.Length);
+				EditText.SetSelection(EditText.Text.Length);
 				EditText.ShowKeyboard();
 			}
 		}
@@ -614,9 +617,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				bool showClearBtn = Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing;
 				UpdateClearBtn(showClearBtn);
-
-				if (!showClearBtn && isFocused)
-					ListenForCloseBtnTouch(false);
+				ListenForCloseBtnTouch(showClearBtn);
 			}
 		}
 
