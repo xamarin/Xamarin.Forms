@@ -106,23 +106,13 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		protected override void UpdateItemsSource()
-		{
-			var itemsSource = Element.ItemsSource;
-
-			if (itemsSource == null)
-				return;
-
-			var itemTemplate = Element.ItemTemplate;
-
-			if (itemTemplate == null)
-				return;
-
-			base.UpdateItemsSource();
-		}
-
 		protected override CollectionViewSource CreateCollectionViewSource()
 		{
+			if (Element.ItemTemplate == null)
+			{
+				return base.CreateCollectionViewSource();
+			}
+
 			var collectionViewSource = TemplatedItemSourceFactory.Create(Element.ItemsSource, Element.ItemTemplate, Element,
 					GetItemHeight(), GetItemWidth(), GetItemSpacing());
 
@@ -158,7 +148,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (Element == null || ListViewBase == null)
 				return;
 
-			ListViewBase.ItemTemplate = CarouselItemsViewTemplate;
+			ListViewBase.ItemTemplate = Element.ItemTemplate == null ? null : CarouselItemsViewTemplate;
 		}
 
 		protected override ItemsViewScrolledEventArgs ComputeVisibleIndexes(ItemsViewScrolledEventArgs args, ItemsLayoutOrientation orientation, bool advancing)
@@ -292,9 +282,17 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			for (int n = 0; n < ItemCount; n++)
 			{
-				if (GetItem(n) is ItemTemplateContext pair)
+				var itemAtIndex = GetItem(n);
+				if (itemAtIndex is ItemTemplateContext pair)
 				{
 					if (pair.Item == item)
+					{
+						return n;
+					}
+				}
+				else
+				{
+					if (itemAtIndex == item)
 					{
 						return n;
 					}
@@ -383,10 +381,13 @@ namespace Xamarin.Forms.Platform.UWP
 			if (!IsValidPosition(carouselPosition))
 				return;
 
-			if (!(GetItem(carouselPosition) is ItemTemplateContext itemTemplateContext))
-				throw new InvalidOperationException("Visible item not found");
+			object item = GetItem(carouselPosition);
 
-			var item = itemTemplateContext.Item;
+			if (item is ItemTemplateContext itemTemplateContext)
+			{
+				item = itemTemplateContext.Item;
+			}
+			
 			CarouselView.SetValueFromRenderer(CarouselView.CurrentItemProperty, item);
 		}
 

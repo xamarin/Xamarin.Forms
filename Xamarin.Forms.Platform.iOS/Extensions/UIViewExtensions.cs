@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using static System.String;
 using Xamarin.Forms.Internals;
+using SizeF = CoreGraphics.CGSize;
 #if __MOBILE__
 using UIKit;
 namespace Xamarin.Forms.Platform.iOS
