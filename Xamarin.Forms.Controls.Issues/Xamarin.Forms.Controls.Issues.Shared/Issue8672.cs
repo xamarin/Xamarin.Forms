@@ -18,6 +18,8 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 8672, "CollectionView crashes on iOS 12.4 for repeated adds", PlatformAffected.iOS)]
 	public class Issue8672 : TestContentPage
 	{
+		public const string Success = "Success";
+
 		protected override void Init()
 		{
 			var layout = new StackLayout();
@@ -62,6 +64,14 @@ namespace Xamarin.Forms.Controls.Issues
 
 			return template;
 		}
+
+#if UITEST
+		[Test]
+		public void RepeatedAddsDoNoCrashCollectionView()
+		{
+			RunningApp.WaitForElement(Success);
+		}
+#endif
 	}
 
 	public class Issue8672Model
@@ -79,6 +89,8 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Device.BeginInvokeOnMainThread(() =>
 				{
+					Collection.Add(new Issue8672Model() { Id = "100", Name = Issue8672.Success });
+
 					for (int i = 0; i < 10; i++)
 					{
 						Collection.Add(new Issue8672Model() { Id = i.ToString(), Name = $"Item {i}" });

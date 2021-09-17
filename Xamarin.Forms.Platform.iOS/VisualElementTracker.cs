@@ -5,6 +5,8 @@ using System.Threading;
 using CoreAnimation;
 using CoreGraphics;
 using Xamarin.Forms.Internals;
+using RectangleF = CoreGraphics.CGRect;
+using PointF = CoreGraphics.CGPoint;
 
 #if __MOBILE__
 using UIKit;

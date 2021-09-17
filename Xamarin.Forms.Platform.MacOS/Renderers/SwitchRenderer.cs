@@ -3,7 +3,7 @@ using AppKit;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
-	public class SwitchRenderer : ViewRenderer<Switch, NSButton>
+	public class SwitchRenderer : ViewRenderer<Switch, NSSwitch>
 	{
 		bool _disposed;
 
@@ -18,12 +18,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new NSButton { AllowsMixedState = false, Title = string.Empty });
-
-					Control.SetButtonType(NSButtonType.Switch);
+					SetNativeControl(new NSSwitch());
 					Control.Activated += OnControlActivated;
 				}
-
 				UpdateState();
 				e.NewElement.Toggled += OnElementToggled;
 			}
@@ -45,7 +42,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void OnControlActivated(object sender, EventArgs e)
 		{
-			ElementController?.SetValueFromRenderer(Switch.IsToggledProperty, Control.State == NSCellStateValue.On);
+			ElementController?.SetValueFromRenderer(Switch.IsToggledProperty, Control.State == (int)NSCellStateValue.On);
 		}
 
 		void OnElementToggled(object sender, EventArgs e)
@@ -55,7 +52,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateState()
 		{
-			Control.State = Element.IsToggled ? NSCellStateValue.On : NSCellStateValue.Off;
+			Control.State = Element.IsToggled ? (int)NSCellStateValue.On : (int)NSCellStateValue.Off;
 		}
 	}
 }
