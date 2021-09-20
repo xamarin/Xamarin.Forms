@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics.Drawables;
+using Android.Graphics.Drawables.Shapes;
 using Android.Views;
 
 namespace Xamarin.Forms.Platform.Android
@@ -9,7 +10,7 @@ namespace Xamarin.Forms.Platform.Android
 	public class BoxRenderer : VisualElementRenderer<BoxView>
 	{
 		bool _disposed;
-		GradientDrawable _backgroundDrawable;
+		GradientStrokeDrawable _backgroundDrawable;
 
 		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
 
@@ -80,11 +81,14 @@ namespace Xamarin.Forms.Platform.Android
 			if (!Brush.IsNullOrEmpty(brushToSet))
 			{
 				if (_backgroundDrawable != null)
-					_backgroundDrawable.UpdateBackground(brushToSet, Height, Width);
+					_backgroundDrawable.UpdateBackground(brushToSet);
 				else
 				{
-					_backgroundDrawable = new GradientDrawable();
-					_backgroundDrawable.UpdateBackground(brushToSet, Height, Width);
+					_backgroundDrawable = new GradientStrokeDrawable
+					{
+						Shape = new RectShape()
+					};
+					_backgroundDrawable.UpdateBackground(brushToSet);
 					this.SetBackground(_backgroundDrawable);
 				}
 			}
@@ -152,8 +156,11 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else
 			{
-				this.SetBackground(_backgroundDrawable = new GradientDrawable());
-				if (Background is GradientDrawable backgroundGradient)
+				this.SetBackground(_backgroundDrawable = new GradientStrokeDrawable
+				{
+					Shape = new RectShape()
+				});
+				if (Background is GradientStrokeDrawable backgroundGradient)
 				{
 					var cornerRadii = new[] {
 						(float)(Context.ToPixels(cornerRadius.TopLeft)),

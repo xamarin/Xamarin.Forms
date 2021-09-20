@@ -990,32 +990,37 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 			}
 
-			Color tintColor = Element.BarBackgroundColor;
+			Color barBackgroundColor = Element.BarBackgroundColor;
+			Brush barBackground = Element.BarBackground;
 
-			if (Forms.IsLollipopOrNewer)
+			if (Brush.IsNullOrEmpty(barBackground))
 			{
-				if (tintColor.IsDefault)
-					bar.BackgroundTintMode = null;
+				if (Forms.IsLollipopOrNewer)
+				{
+					if (barBackgroundColor.IsDefault)
+						bar.BackgroundTintMode = null;
+					else
+					{
+						bar.BackgroundTintMode = PorterDuff.Mode.Src;
+						bar.BackgroundTintList = ColorStateList.ValueOf(barBackgroundColor.ToAndroid());
+					}
+				}
 				else
 				{
-					bar.BackgroundTintMode = PorterDuff.Mode.Src;
-					bar.BackgroundTintList = ColorStateList.ValueOf(tintColor.ToAndroid());
+					if (barBackgroundColor.IsDefault && _backgroundDrawable != null)
+						bar.SetBackground(_backgroundDrawable);
+					else if (!barBackgroundColor.IsDefault)
+					{
+						if (_backgroundDrawable == null)
+							_backgroundDrawable = bar.Background;
+						bar.SetBackgroundColor(barBackgroundColor.ToAndroid());
+					}
 				}
 			}
 			else
 			{
-				if (tintColor.IsDefault && _backgroundDrawable != null)
-					bar.SetBackground(_backgroundDrawable);
-				else if (!tintColor.IsDefault)
-				{
-					if (_backgroundDrawable == null)
-						_backgroundDrawable = bar.Background;
-					bar.SetBackgroundColor(tintColor.ToAndroid());
-				}
+				bar.UpdateBackground(barBackground);
 			}
-
-			Brush barBackground = Element.BarBackground;
-			bar.UpdateBackground(barBackground);
 
 			Color textColor = Element.BarTextColor;
 			if (!textColor.IsDefault)

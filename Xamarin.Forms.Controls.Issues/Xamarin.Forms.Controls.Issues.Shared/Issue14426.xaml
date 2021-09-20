@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 14426" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue14426"
+    BackgroundColor="Red">
+    <StackLayout
+        Padding="12">
+        <Label
+            Text="If the first Frame Background is transparent, the test has passed."/>
+        <Frame 
+            HasShadow="False">
+            <Frame.Background>
+                <SolidColorBrush 
+                    Color="Transparent" />
+            </Frame.Background>
+            <Label 
+                Text="Transparent Background" />
+        </Frame>
+        <Frame 
+            HasShadow="False">
+            <Frame.Background>
+                <SolidColorBrush 
+                    Color="Green" />
+            </Frame.Background>
+            <Label 
+                TextColor="White"
+                Text="Green SolidColor" />
+        </Frame>
+        <Frame 
+            HasShadow="False">
+            <Frame.Background>
+                <LinearGradientBrush 
+                    StartPoint="0,0"
+                    EndPoint="1,0">
+                    <LinearGradientBrush.GradientStops>
+                        <GradientStop 
+                            Color="Yellow"
+                            Offset="0.1" />
+                        <GradientStop 
+                            Color="Green"
+                            Offset="1.0" />
+                    </LinearGradientBrush.GradientStops>
+                </LinearGradientBrush>
+            </Frame.Background>
+            <Label 
+                 TextColor="White"
+                Text="LinearGradient" />
+        </Frame>
+        <Frame 
+            HasShadow="False">
+            <Frame.Background>
+                <RadialGradientBrush
+                    Center="0.1,0.1"
+                    Radius="0.5">
+                    <RadialGradientBrush.GradientStops>
+                        <GradientStop
+                            Color="Red"
+                            Offset="0.1" />
+                        <GradientStop
+                            Color="DarkBlue"
+                            Offset="1.0" />
+                    </RadialGradientBrush.GradientStops>
+                </RadialGradientBrush>
+            </Frame.Background>
+            <Label 
+                Text="RadialGradient" />
+        </Frame>
+    </StackLayout>
+</local:TestContentPage>
