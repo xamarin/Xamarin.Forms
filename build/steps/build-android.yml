@@ -55,6 +55,11 @@ jobs:
           targetType: 'filePath'
           filePath: 'build.sh'
           arguments: --target provision --TeamProject="$(System.TeamProject)"
+      
+      # Setup JDK Paths
+      - bash: |
+          echo "##vso[task.setvariable variable=JI_JAVA_HOME]$(JAVA_HOME_11_X64)"
+        displayName: 'Setup JDK Paths'
 
       - task: xamops.azdevex.provisionator-task.provisionator@1
         displayName: 'Provisionator'

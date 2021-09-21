@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Drawing;
 using CoreGraphics;
 using UIKit;
+using SizeF = CoreGraphics.CGSize;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -93,7 +94,6 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					_actualView.Layer.BackgroundColor = UIColor.Clear.CGColor;
 
-					backgroundLayer.BackgroundColor = ColorExtensions.BackgroundColor.CGColor;
 					backgroundLayer.CornerRadius = cornerRadius;
 
 					Layer.InsertBackgroundLayer(backgroundLayer, 0);
