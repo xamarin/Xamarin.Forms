@@ -24,7 +24,7 @@
 			itemsLayout.SnapPointsType = SnapPointsType.None;
 
 			var itemTemplate = ExampleTemplates.SnapPointsTemplate();
-			
+
 			var collectionView = new CollectionView
 			{
 				ItemsLayout = itemsLayout,

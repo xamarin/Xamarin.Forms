@@ -60,7 +60,8 @@ namespace Xamarin.Forms.Controls.Issues
 					Text = "PopModal",
 					VerticalOptions = LayoutOptions.Center,
 				};
-				button.Clicked += (sender, e) => {
+				button.Clicked += (sender, e) =>
+				{
 					Navigation.PopModalAsync();
 				};
 
