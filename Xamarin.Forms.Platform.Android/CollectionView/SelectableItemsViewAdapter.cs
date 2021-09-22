@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			for (int i = 0; i < _currentViewHolders.Count; i++)
 			{
-				if (_currentViewHolders[i].AdapterPosition == position)
+				if (_currentViewHolders[i].BindingAdapterPosition == position)
 				{
 					_currentViewHolders[i].IsSelected = true;
 					return;

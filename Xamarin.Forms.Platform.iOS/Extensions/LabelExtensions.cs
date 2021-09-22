@@ -3,6 +3,7 @@ using Foundation;
 using System.Collections.Generic;
 using System.Drawing;
 using Xamarin.Forms.Internals;
+using SizeF = CoreGraphics.CGSize;
 #if __MOBILE__
 using UIKit;
 using NativeLabel = UIKit.UILabel;
@@ -21,6 +22,12 @@ namespace Xamarin.Forms.Platform.MacOS
 	{
 		public static void RecalculateSpanPositions(this NativeLabel control, Label element)
 		{
+			if (element == null)
+				return;
+
+			if (element.TextType == TextType.Html)
+				return;
+
 			if (element?.FormattedText?.Spans == null
 				|| element.FormattedText.Spans.Count == 0)
 				return;

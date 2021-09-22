@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Frame Backgrund Issue" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.FrameBackgroundIssue">
+    <ScrollView>
+        <StackLayout
+            Padding="12">
+            <Frame
+                HasShadow="False"
+                WidthRequest="150"
+                BackgroundColor="LightGray"
+                BorderColor="DarkGreen"
+                CornerRadius="0"
+                Padding="0">
+                <StackLayout>
+                    <BoxView
+                        BackgroundColor="GreenYellow" />
+                    <Label
+                        Margin="8"
+                        Text="Frame using BackgroundColor"
+                        TextColor="Black" />
+                </StackLayout>
+            </Frame>
+            <Frame
+                HasShadow="False"
+                WidthRequest="150"
+                BackgroundColor="LightGray"
+                BorderColor="DarkGreen"
+                CornerRadius="{Binding Source={x:Reference CornerRadiusSlider}, Path=Value}"
+                Padding="0">
+                <StackLayout>
+                    <BoxView
+                        BackgroundColor="GreenYellow" />
+                    <Label
+                        Margin="8"
+                        Text="Frame using BackgroundColor"
+                        TextColor="Black" />
+                </StackLayout>
+            </Frame>
+            <Frame
+                HasShadow="False"
+                WidthRequest="150"
+                Background="LightGray"
+                BorderColor="DeepPink"
+                CornerRadius="0"
+                Padding="0">
+                <StackLayout>
+                    <BoxView
+                        Background="LightPink" />
+                    <Label
+                        Margin="8"
+                        Text="Frame using Background"
+                        TextColor="Black" />
+                </StackLayout>
+            </Frame>
+            <Frame
+                HasShadow="False"
+                WidthRequest="150"
+                Background="LightGray"
+                BorderColor="DeepPink"
+                CornerRadius="{Binding Source={x:Reference CornerRadiusSlider}, Path=Value}"
+                Padding="0">
+                <StackLayout>
+                    <BoxView
+                        Background="LightPink" />
+                    <Label
+                        Margin="8"
+                        Text="Frame using Background"
+                        TextColor="Black" />
+                </StackLayout>
+            </Frame>
+            <Label
+                FontSize="Micro"
+                Text="Frame CornerRadius"/>
+            <Slider
+                x:Name="CornerRadiusSlider"
+                Minimum="0"
+                Maximum="48"
+                Value="12"/>
+        </StackLayout>
+    </ScrollView>
+</local:TestContentPage>
