@@ -23,14 +23,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public virtual void SetAppearance(UITabBarController controller, ShellAppearance appearance)
 		{
-			IShellAppearanceElement appearanceElement = appearance;
-			var backgroundColor = appearanceElement.EffectiveTabBarBackgroundColor;
-			var foregroundColor = appearanceElement.EffectiveTabBarForegroundColor; // currently unused
-			var disabledColor = appearanceElement.EffectiveTabBarDisabledColor; // unused on iOS
-			var unselectedColor = appearanceElement.EffectiveTabBarUnselectedColor;
-			var titleColor = appearanceElement.EffectiveTabBarTitleColor;
-
 			var tabBar = controller.TabBar;
+
 			bool operatingSystemSupportsUnselectedTint = Forms.IsiOS10OrNewer;
 
 			if (_defaultTint == null)
@@ -44,10 +38,58 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 
+			if (Forms.IsiOS15OrNewer)
+				UpdateiOS15TabBarAppearance(controller, appearance);
+			else
+				UpdateTabBarAppearance(controller, appearance);
+		}
+
+		public virtual void UpdateLayout(UITabBarController controller)
+		{
+		}
+
+		void UpdateiOS15TabBarAppearance(UITabBarController controller, ShellAppearance appearance)
+		{
+			IShellAppearanceElement appearanceElement = appearance;
+			var backgroundColor = appearanceElement.EffectiveTabBarBackgroundColor;
+			var titleColor = appearanceElement.EffectiveTabBarTitleColor;
+
+			var tabBar = controller.TabBar;
+
+			var tabBarAppearance = new UITabBarAppearance();
+			tabBarAppearance.ConfigureWithOpaqueBackground();
+
+			tabBar.Translucent = false;
+
+			if (!backgroundColor.IsDefault)
+				tabBarAppearance.BackgroundColor = backgroundColor.ToUIColor();
+
+			if (!titleColor.IsDefault)
+			{
+				tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = tabBarAppearance.StackedLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes
+				{
+					ForegroundColor = titleColor.ToUIColor()
+				};
+			}
+
+			tabBar.StandardAppearance = tabBar.ScrollEdgeAppearance = tabBarAppearance;
+		}
+
+		void UpdateTabBarAppearance(UITabBarController controller, ShellAppearance appearance)
+		{
+			IShellAppearanceElement appearanceElement = appearance;
+			var backgroundColor = appearanceElement.EffectiveTabBarBackgroundColor;
+			var unselectedColor = appearanceElement.EffectiveTabBarUnselectedColor;
+			var titleColor = appearanceElement.EffectiveTabBarTitleColor;
+
+			var tabBar = controller.TabBar;
+
 			if (!backgroundColor.IsDefault)
 				tabBar.BarTintColor = backgroundColor.ToUIColor();
 			if (!titleColor.IsDefault)
 				tabBar.TintColor = titleColor.ToUIColor();
+
+			bool operatingSystemSupportsUnselectedTint = Forms.IsiOS10OrNewer;
 
 			if (operatingSystemSupportsUnselectedTint)
 			{
@@ -56,11 +98,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		public virtual void UpdateLayout(UITabBarController controller)
-		{
-		}
-
 		#region IDisposable Support
+
 		protected virtual void Dispose(bool disposing)
 		{
 		}
@@ -69,7 +108,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			Dispose(true);
 		}
-		#endregion
 
+		#endregion
 	}
 }

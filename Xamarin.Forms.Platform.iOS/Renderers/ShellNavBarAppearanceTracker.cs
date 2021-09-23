@@ -51,13 +51,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var navBar = controller.NavigationBar;
 
-			if (_defaultTint == null)
-			{
-				_defaultBarTint = navBar.BarTintColor;
-				_defaultTint = navBar.TintColor;
-				_defaultTitleAttributes = navBar.TitleTextAttributes;
-			}
-
 			if (!background.IsDefault)
 				navBar.BarTintColor = background.ToUIColor();
 			if (!foreground.IsDefault)
@@ -78,13 +71,6 @@ namespace Xamarin.Forms.Platform.iOS
 			var titleColor = appearance.TitleColor;
 
 			var navBar = controller.NavigationBar;
-
-			if (_defaultTint == null)
-			{
-				_defaultBarTint = navBar.BarTintColor;
-				_defaultTint = navBar.TintColor;
-				_defaultTitleAttributes = navBar.TitleTextAttributes;
-			}
 
 			var navigationBarAppearance = new UINavigationBarAppearance();
 			navigationBarAppearance.ConfigureWithOpaqueBackground();

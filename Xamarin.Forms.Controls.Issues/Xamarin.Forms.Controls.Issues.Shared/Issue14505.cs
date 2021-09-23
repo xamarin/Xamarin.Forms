@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Controls.Issues
 					Padding = 12,
 					BackgroundColor = Color.Black,
 					TextColor = Color.White,
-					Text = "Navigate to the second Tab"
+					Text = "If the NavigationBar is Red, everything is ok. Pass to the next Tab."
 				};
 
 				layout.Children.Add(instructions);
@@ -45,7 +45,6 @@ namespace Xamarin.Forms.Controls.Issues
 				};
 
 				Shell.SetBackgroundColor(contentPage1, Color.Red);
-				Shell.SetTabBarBackgroundColor(contentPage1, Color.Red);
 
 				return contentPage1;
 			}
@@ -59,7 +58,7 @@ namespace Xamarin.Forms.Controls.Issues
 					Padding = 12,
 					BackgroundColor = Color.Black,
 					TextColor = Color.White,
-					Text = "Navigate back to the first tab, and verify if the Ellipse is rendering or not."
+					Text = "If the NavigationBar is Green, the test has passed."
 				};
 
 				layout.Children.Add(instructions);
@@ -71,7 +70,6 @@ namespace Xamarin.Forms.Controls.Issues
 				};
 
 				Shell.SetBackgroundColor(contentPage2, Color.Green);
-				Shell.SetTabBarBackgroundColor(contentPage2, Color.Green);
 
 				return contentPage2;
 			}
