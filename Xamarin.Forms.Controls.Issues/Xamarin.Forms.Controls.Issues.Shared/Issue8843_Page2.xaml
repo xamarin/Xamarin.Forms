@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue8843_Page2"
+    Title="Issue 8843">
+    <StackLayout x:Name="mainLayout"
+                 Padding="10,10,10,10"
+                 VerticalOptions="Center">
+        <Label x:Name="theLabel"
+               Text="&lt;- now go back..."
+               HorizontalOptions="Center" />
+    </StackLayout>
+</controls:TestContentPage>
