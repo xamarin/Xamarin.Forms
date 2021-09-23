@@ -7,6 +7,7 @@ using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using NavigationPage = Xamarin.Forms.NavigationPage;
 using Page = Xamarin.Forms.Page;
+using System.Diagnostics;
 
 #if UITEST
 using Xamarin.UITest;
@@ -79,6 +80,13 @@ namespace Xamarin.Forms.Controls.Issues
 			private void ButtonClicked(object sender, EventArgs e)
 			{
 				Navigation.PopModalAsync();
+			}
+
+			protected override void OnParentSet()
+			{
+				base.OnParentSet();
+
+				Debug.WriteLine($"OnParentSet: {Parent == null}");
 			}
 		}
 	}

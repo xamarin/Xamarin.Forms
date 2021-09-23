@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
@@ -434,7 +435,17 @@ namespace Xamarin.Forms
 					return null;
 				}
 				Page result = await base.OnPopModal(animated);
+
+				if(result is NavigationPage navigationPage)
+				{
+					var pages = navigationPage.Pages.Reverse();
+
+					foreach (var page in pages)
+						page.Parent = null;
+				}
+
 				result.Parent = null;
+
 				_owner.OnModalPopped(result);
 				return result;
 			}
