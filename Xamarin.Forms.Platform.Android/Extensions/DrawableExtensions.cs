@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (Forms.Is29OrNewer)
 			{
-				if(mode == FilterMode.Multiply)
+				if (mode == FilterMode.Multiply)
 #pragma warning disable CS0612 // Type or member is obsolete
 					drawable.SetColorFilter(new PorterDuffColorFilter(color, GetFilterModePre29(mode)));
 #pragma warning restore CS0612 // Type or member is obsolete

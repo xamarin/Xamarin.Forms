@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 12590" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue12590">
+    <StackLayout
+        Padding="12">
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If the string is trimmed in in both cases,the test has passed."/>
+        <Label
+            FontSize="Micro"
+            Text="Text"/>
+        <Label
+            MaxLines="1"
+            LineBreakMode="TailTruncation"
+            Text="Some long string. Some long string. Some long string. Some long string. Some long string. Some long string" />
+        <Label
+            FontSize="Micro"
+            Text="FormattedString"/>
+        <Label
+            MaxLines="1"
+            LineBreakMode="TailTruncation">
+            <Label.FormattedText>
+                <FormattedString>
+                    <FormattedString.Spans>
+                        <Span Text="Some long string. Some long string. Some long string. Some long string. Some long string. Some long string" />
+                        <Span Text="Some long string. Some long string. Some long string. Some long string. Some long string. Some long string" />
+                    </FormattedString.Spans>
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+    </StackLayout>
+</local:TestContentPage>
