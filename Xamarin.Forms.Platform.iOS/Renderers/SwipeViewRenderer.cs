@@ -67,7 +67,18 @@ namespace Xamarin.Forms.Platform.iOS
 				DelaysTouchesEnded = false
 			};
 
-			_panGestureRecognizer.ShouldRecognizeSimultaneously = (recognizer, gestureRecognizer) => true;
+			_panGestureRecognizer.ShouldRecognizeSimultaneously = (recognizer, gestureRecognizer) =>
+			{
+				if (gestureRecognizer is UIPanGestureRecognizer panGesture)
+				{
+					CGPoint beginvelocity = panGesture.VelocityInView(this);
+
+					if (beginvelocity.X == 0 && beginvelocity.Y == 0)
+						return false;
+				}
+
+				return true;
+			};
 
 			AddGestureRecognizer(_tapGestureRecognizer);
 			AddGestureRecognizer(_panGestureRecognizer);
@@ -358,10 +369,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void HandleTap()
 		{
-			if (_tapGestureRecognizer == null)
-				return;
-
-			if (_isSwiping)
+			if (!_isSwipeEnabled || _isSwiping || _tapGestureRecognizer == null)
 				return;
 
 			var state = _tapGestureRecognizer.State;
@@ -803,13 +811,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ProcessTouchUp()
 		{
+			IsParentScrollEnabled(true);
+
 			_isTouchDown = false;
 
 			if (!_isSwiping)
 				return;
 
 			_isSwiping = false;
-			IsParentScrollEnabled(true);
 
 			RaiseSwipeEnded();
 
@@ -1026,8 +1035,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_swipeItems.Clear();
 			_swipeThreshold = 0;
 			_swipeOffset = 0;
-			_originalBounds = CGRect.Empty;
-
+	
 			if (_actionView != null)
 			{
 				_actionView.RemoveFromSuperview();
