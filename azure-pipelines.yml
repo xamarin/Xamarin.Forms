@@ -49,6 +49,7 @@ schedules:
   branches:
     include:
     - main
+    - 5.0.0
 
 stages:
   - stage: windows

@@ -43,6 +43,19 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 			}
 		}
 
+		public static void ForceDraw(this AView view)
+		{
+			var bitmap = Bitmap.CreateBitmap(view.Width, view.Height, Bitmap.Config.Argb8888);
+
+			var canvas = new Canvas(bitmap);
+			canvas.Save();
+			canvas.Translate(0, 0);
+			view.Draw(canvas);
+			canvas.Restore();
+
+			bitmap.Dispose();
+		}
+
 		public static Bitmap ToBitmap(this AView view)
 		{
 			var bitmap = Bitmap.CreateBitmap(view.Width, view.Height, Bitmap.Config.Argb8888);
