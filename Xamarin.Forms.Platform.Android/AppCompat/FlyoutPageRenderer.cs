@@ -37,7 +37,9 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
-		FlyoutPage Element { get; set; }
+		FlyoutPage FlyoutPage => Element as FlyoutPage;
+
+		public VisualElement Element { get; private set; }
 
 		IFlyoutPageController FlyoutPageController => Element as IFlyoutPageController;
 
@@ -50,7 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 					return;
 				UpdateSplitViewLayout();
 				_presented = value;
-				if (Element.FlyoutLayoutBehavior == FlyoutLayoutBehavior.Default && FlyoutPageController.ShouldShowSplitMode)
+				if (FlyoutPage.FlyoutLayoutBehavior == FlyoutLayoutBehavior.Default && FlyoutPageController.ShouldShowSplitMode)
 					return;
 				if (_presented)
 					OpenDrawer(_flyoutLayout);
@@ -59,8 +61,8 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		IPageController FlyoutPagePageController => Element.Flyout as IPageController;
-		IPageController DetailPageController => Element.Detail as IPageController;
+		IPageController FlyoutPagePageController => FlyoutPage.Flyout as IPageController;
+		IPageController DetailPageController => FlyoutPage.Detail as IPageController;
 		IPageController PageController => Element as IPageController;
 
 		void IDrawerListener.OnDrawerClosed(global::Android.Views.View drawerView)
@@ -109,8 +111,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		void IVisualElementRenderer.SetElement(VisualElement element)
 		{
-			FlyoutPage oldElement = Element;
-			FlyoutPage newElement = Element = element as FlyoutPage;
+			FlyoutPage oldElement = FlyoutPage;
+			FlyoutPage newElement = element as FlyoutPage;
+
+			if (newElement is VisualElement visualElement)
+				Element = visualElement;
 
 			if (oldElement != null)
 			{
@@ -246,8 +251,8 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					FlyoutPageController.BackButtonPressed -= OnBackButtonPressed;
 					Element.PropertyChanged -= HandlePropertyChanged;
-					Element.Appearing -= FlyoutPageAppearing;
-					Element.Disappearing -= FlyoutPageDisappearing;
+					FlyoutPage.Appearing -= FlyoutPageAppearing;
+					FlyoutPage.Disappearing -= FlyoutPageDisappearing;
 				}
 
 				if (_flyoutLayout?.ChildView != null)
@@ -365,13 +370,13 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.PropertyName == FlyoutPage.IsPresentedProperty.PropertyName)
 			{
 				_isPresentingFromCore = true;
-				Presented = Element.IsPresented;
+				Presented = FlyoutPage.IsPresented;
 				_isPresentingFromCore = false;
 			}
 			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
-				UpdateBackgroundImage(Element);
+				UpdateBackgroundImage(FlyoutPage);
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
-				UpdateBackgroundColor(Element);
+				UpdateBackgroundColor(FlyoutPage);
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection();
 		}
@@ -399,7 +404,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void SetGestureState()
 		{
-			SetDrawerLockMode(Element.IsGestureEnabled ? LockModeUnlocked : LockModeLockedClosed);
+			SetDrawerLockMode(FlyoutPage.IsGestureEnabled ? LockModeUnlocked : LockModeLockedClosed);
 		}
 
 		void SetLockMode(int lockMode)
@@ -441,7 +446,7 @@ namespace Xamarin.Forms.Platform.Android
 					return;
 
 				Context.HideKeyboard(this);
-				_detailLayout.ChildView = Element.Detail;
+				_detailLayout.ChildView = FlyoutPage.Detail;
 			}
 		}
 
@@ -455,7 +460,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_isPresentingFromCore)
 				return;
-			if (Presented != Element.IsPresented)
+			if (Presented != FlyoutPage.IsPresented)
 				((IElementController)Element).SetValueFromRenderer(FlyoutPage.IsPresentedProperty, Presented);
 		}
 
@@ -475,7 +480,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (_flyoutLayout.ChildView != null)
 					_flyoutLayout.ChildView.PropertyChanged -= HandleFlyoutPropertyChanged;
 
-				_flyoutLayout.ChildView = Element.Flyout;
+				_flyoutLayout.ChildView = FlyoutPage.Flyout;
 
 				if (_flyoutLayout.ChildView != null)
 					_flyoutLayout.ChildView.PropertyChanged += HandleFlyoutPropertyChanged;
@@ -486,7 +491,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (Device.Idiom == TargetIdiom.Tablet)
 			{
-				bool isShowingSplit = FlyoutPageController.ShouldShowSplitMode || (FlyoutPageController.ShouldShowSplitMode && Element.FlyoutLayoutBehavior != FlyoutLayoutBehavior.Default && Element.IsPresented);
+				bool isShowingSplit = FlyoutPageController.ShouldShowSplitMode || (FlyoutPageController.ShouldShowSplitMode && FlyoutPage.FlyoutLayoutBehavior != FlyoutLayoutBehavior.Default && Element.IsPresented);
 				SetLockMode(isShowingSplit ? LockModeLockedOpen : LockModeUnlocked);
 				unchecked
 				{
