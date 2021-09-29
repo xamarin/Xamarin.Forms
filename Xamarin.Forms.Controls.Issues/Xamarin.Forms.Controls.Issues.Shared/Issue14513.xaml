@@ -10,7 +10,7 @@
     <StackLayout
         Padding="12">
         <Label
-            Text="If the first Frame Background is transparent, the test has passed."/>
+            Text="If the selected item have a Red background, the test has passed."/>
         <CollectionView
             ItemsSource="{Binding Items}"
             SelectedItem="{Binding SelectedItem}"
