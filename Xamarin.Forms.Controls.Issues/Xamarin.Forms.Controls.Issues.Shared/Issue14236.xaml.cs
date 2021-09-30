@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
-using Xamarin.Forms.Xaml;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.Xaml;
 
 #if UITEST
 using Xamarin.UITest;
@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 14236, "CollectionView does not call DataTemplateSelector", PlatformAffected.UWP)]
 	public partial class Issue14236 : TestContentPage
 	{
-		public Issue14236 ()
+		public Issue14236()
 		{
 #if APP
 			InitializeComponent();
