@@ -9,6 +9,7 @@ using Android.Text.Style;
 using Android.Util;
 using Android.Widget;
 using AndroidX.Core.View;
+using AlertDialog = AndroidX.AppCompat.App.AlertDialog;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
