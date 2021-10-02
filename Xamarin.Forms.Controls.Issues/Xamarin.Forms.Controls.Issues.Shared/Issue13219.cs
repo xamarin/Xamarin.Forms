@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public Issue13219()
 		{
-			
+
 		}
 
 		protected override void Init()
@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 			browsePage.Route = "browse";
 			CurrentItem = aboutPage;
 		}
-		
+
 		[Preserve(AllMembers = true)]
 		class AboutPage_Issue13219 : ContentPage
 		{
@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		int holder = 0;
 		Label lblValue;
-		
+
 		string id;
 		public string PageId
 		{
