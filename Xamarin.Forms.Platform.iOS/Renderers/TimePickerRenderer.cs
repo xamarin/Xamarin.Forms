@@ -64,6 +64,11 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					Control.EditingDidBegin -= OnStarted;
 					Control.EditingDidEnd -= OnEnded;
+
+					if (Forms.IsiOS15OrNewer)
+					{
+						_picker.EditingDidBegin -= PickerEditingDidBegin;
+					}
 				}
 			}
 
@@ -89,6 +94,11 @@ namespace Xamarin.Forms.Platform.iOS
 					if (Forms.IsiOS14OrNewer)
 					{
 						_picker.PreferredDatePickerStyle = UIKit.UIDatePickerStyle.Wheels;
+					}
+
+					if (Forms.IsiOS15OrNewer)
+					{
+						_picker.EditingDidBegin += PickerEditingDidBegin;
 					}
 
 					var width = UIScreen.MainScreen.Bounds.Width;
@@ -160,6 +170,11 @@ namespace Xamarin.Forms.Platform.iOS
 		void OnStarted(object sender, EventArgs eventArgs)
 		{
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
+		}
+
+		void PickerEditingDidBegin(object sender, EventArgs eventArgs)
+		{
+			_picker.ResignFirstResponder();
 		}
 
 		void OnValueChanged(object sender, EventArgs e)
