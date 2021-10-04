@@ -56,6 +56,12 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					_picker.RemoveFromSuperview();
 					_picker.ValueChanged -= OnValueChanged;
+
+					if (Forms.IsiOS15OrNewer)
+					{
+						_picker.EditingDidBegin -= PickerEditingDidBegin;
+					}
+
 					_picker.Dispose();
 					_picker = null;
 				}
@@ -64,11 +70,6 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					Control.EditingDidBegin -= OnStarted;
 					Control.EditingDidEnd -= OnEnded;
-
-					if (Forms.IsiOS15OrNewer)
-					{
-						_picker.EditingDidBegin -= PickerEditingDidBegin;
-					}
 				}
 			}
 
