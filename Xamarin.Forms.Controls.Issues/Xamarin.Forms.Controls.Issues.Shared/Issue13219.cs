@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Controls.Issues
 		int holder = 0;
 		Label lblValue;
 
-		string id = 0;
+		string id = "";
 		public string PageId
 		{
 			get { return id; }
