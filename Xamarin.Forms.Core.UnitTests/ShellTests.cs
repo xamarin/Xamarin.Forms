@@ -330,13 +330,13 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			await shell.GoToAsync("//two/tab21/");
 
-			await shell.GoToAsync("/tab22", false, true);
+			await shell.NavigationManager.GoToAsync("/tab22", false, true);
 			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//two/tab22/content"));
 
-			await shell.GoToAsync("tab21", false, true);
+			await shell.NavigationManager.GoToAsync("tab21", false, true);
 			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//two/tab21/content"));
 
-			await shell.GoToAsync("/tab23", false, true);
+			await shell.NavigationManager.GoToAsync("/tab23", false, true);
 			Assert.That(shell.CurrentState.Location.ToString(), Is.EqualTo("//two/tab23/content"));
 
 			await shell.GoToAsync("RelativeGoTo_Page1", false);
@@ -401,62 +401,6 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public async Task DotDotNavigationPassesParameters()
-		{
-			Routing.RegisterRoute(nameof(DotDotNavigationPassesParameters), typeof(ContentPage));
-			var shell = new Shell();
-			var one = new ShellItem { Route = "one" };
-
-			var tabone = MakeSimpleShellSection("tabone", "content");
-
-			one.Items.Add(tabone);
-
-			shell.Items.Add(one);
-
-			one.CurrentItem.CurrentItem.ContentTemplate = new DataTemplate(() =>
-			{
-				ShellTestPage pagetoTest = new ShellTestPage();
-				pagetoTest.BindingContext = pagetoTest;
-				return pagetoTest;
-			});
-
-			var page = (ShellTestPage)(one.CurrentItem.CurrentItem as IShellContentController).GetOrCreateContent();
-			Assert.AreEqual(null, page.SomeQueryParameter);
-			await shell.GoToAsync(nameof(DotDotNavigationPassesParameters));
-			await shell.GoToAsync($"..?{nameof(ShellTestPage.SomeQueryParameter)}=1234");
-			Assert.AreEqual("1234", page.SomeQueryParameter);
-
-		}
-
-		[TestCase(true)]
-		[TestCase(false)]
-		public async Task ReNavigatingToCurrentLocationPassesParameters(bool useDataTemplates)
-		{
-			var shell = new Shell();
-			ShellTestPage pagetoTest = new ShellTestPage();
-			pagetoTest.BindingContext = pagetoTest;
-			var one = CreateShellItem(pagetoTest, shellContentRoute: "content", templated: useDataTemplates);
-			shell.Items.Add(one);
-			ShellTestPage page = null;
-			if (useDataTemplates)
-			{
-				page = (ShellTestPage)(one.CurrentItem.CurrentItem as IShellContentController).GetOrCreateContent();
-			}
-			else
-			{
-				page = (ShellTestPage)one.CurrentItem.CurrentItem.Content;
-			}
-
-			Assert.AreEqual(null, page.SomeQueryParameter);
-			await shell.GoToAsync($"//content?{nameof(ShellTestPage.SomeQueryParameter)}=1234");
-			Assert.AreEqual("1234", page.SomeQueryParameter);
-			await shell.GoToAsync($"//content?{nameof(ShellTestPage.SomeQueryParameter)}=4321");
-			Assert.AreEqual("4321", page.SomeQueryParameter);
-			await shell.GoToAsync($"//content?{nameof(ShellTestPage.SomeQueryParameter)}");
-			Assert.AreEqual(null, page.SomeQueryParameter);
-		}
-
-		[Test]
 		public async Task RoutePathDefaultRemovalWithGlobalRoutesKeepsOneDefaultRoute()
 		{
 			var shell = new Shell();
@@ -483,130 +427,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual($"//content/{nameof(RoutePathDefaultRemovalWithGlobalRoutesKeepsOneNamedRoute)}", shell.CurrentState.Location.ToString());
 		}
 
-		[Test]
-		public async Task NavigationWithQueryStringWhenPageMatchesBindingContext()
-		{
-			var shell = new Shell();
 
-			var one = new ShellItem { Route = "one" };
-			var two = new ShellItem { Route = "two" };
-
-			var tabone = MakeSimpleShellSection("tabone", "content");
-			var tabfour = MakeSimpleShellSection("tabfour", "content", null);
-
-			one.Items.Add(tabone);
-			two.Items.Add(tabfour);
-
-			shell.Items.Add(one);
-			shell.Items.Add(two);
-
-			ShellTestPage pagetoTest = new ShellTestPage();
-			await shell.GoToAsync(new ShellNavigationState($"//two/tabfour/content?{nameof(ShellTestPage.SomeQueryParameter)}=1234"));
-			two.CurrentItem.CurrentItem.ContentTemplate = new DataTemplate(() =>
-			{
-				pagetoTest = new ShellTestPage();
-				pagetoTest.BindingContext = pagetoTest;
-				return pagetoTest;
-			});
-
-
-			var page = (two.CurrentItem.CurrentItem as IShellContentController).GetOrCreateContent();
-			Assert.AreEqual("1234", (page as ShellTestPage).SomeQueryParameter);
-
-		}
-
-
-		[Test]
-		public async Task NavigationWithQueryStringThenWithoutQueryString()
-		{
-			var shell = new Shell();
-
-			var one = new ShellItem { Route = "one" };
-			var two = new ShellItem { Route = "two" };
-
-			var tabone = MakeSimpleShellSection("tabone", "content");
-			var tabfour = MakeSimpleShellSection("tabfour", "content", null);
-
-			one.Items.Add(tabone);
-			two.Items.Add(tabfour);
-
-			shell.Items.Add(one);
-			shell.Items.Add(two);
-
-			ShellTestPage pagetoTest = new ShellTestPage();
-			await shell.GoToAsync(new ShellNavigationState($"//two/tabfour/content?{nameof(ShellTestPage.SomeQueryParameter)}=1234"));
-			two.CurrentItem.CurrentItem.ContentTemplate = new DataTemplate(() =>
-			{
-				pagetoTest = new ShellTestPage();
-				pagetoTest.BindingContext = pagetoTest;
-				return pagetoTest;
-			});
-
-
-			await shell.GoToAsync(new ShellNavigationState($"//one/tabone/content"));
-			await shell.GoToAsync(new ShellNavigationState($"//two/tabfour/content"));
-
-			var page = (two.CurrentItem.CurrentItem as IShellContentController).GetOrCreateContent();
-			Assert.AreEqual(null, (page as ShellTestPage).SomeQueryParameter);
-		}
-
-
-		[Test]
-		public async Task NavigationBetweenShellContentsPassesQueryString()
-		{
-			var shell = new Shell();
-
-			var item = CreateShellItem(shellSectionRoute: "section2");
-			var content = CreateShellContent(shellContentRoute: "content");
-			item.Items[0].Items.Add(content);
-
-			Routing.RegisterRoute("details", typeof(ShellTestPage));
-
-			shell.Items.Add(item);
-
-
-			await shell.GoToAsync(new ShellNavigationState($"//section2/details?{nameof(ShellTestPage.SomeQueryParameter)}=1234"));
-			await shell.GoToAsync(new ShellNavigationState($"//content?{nameof(ShellTestPage.SomeQueryParameter)}=1234"));
-			await shell.GoToAsync(new ShellNavigationState($"//section2/details?{nameof(ShellTestPage.SomeQueryParameter)}=4321"));
-
-			var testPage = (shell.CurrentItem.CurrentItem as IShellSectionController).PresentedPage as ShellTestPage;
-			Assert.AreEqual("4321", testPage.SomeQueryParameter);
-		}
-
-		[Test]
-		public async Task BasicQueryStringTest()
-		{
-			var shell = new Shell();
-
-			var item = CreateShellItem(shellSectionRoute: "section2");
-			Routing.RegisterRoute("details", typeof(ShellTestPage));
-			shell.Items.Add(item);
-			await shell.GoToAsync(new ShellNavigationState($"details?{nameof(ShellTestPage.SomeQueryParameter)}=1234"));
-			var testPage = (shell.CurrentItem.CurrentItem as IShellSectionController).PresentedPage as ShellTestPage;
-			Assert.AreEqual("1234", testPage.SomeQueryParameter);
-		}
-
-
-		[Test]
-		public async Task NavigationWithQueryStringAndNoDataTemplate()
-		{
-			var shell = new Shell();
-
-			var one = new ShellItem { Route = "one" };
-			var two = new ShellItem { Route = "two" };
-
-			var tabone = MakeSimpleShellSection("tabone", "content");
-			var tabfour = MakeSimpleShellSection("tabfour", "content");
-
-			one.Items.Add(tabone);
-			two.Items.Add(tabfour);
-
-			shell.Items.Add(one);
-			shell.Items.Add(two);
-
-			await shell.GoToAsync(new ShellNavigationState($"//two/tabfour/content?{nameof(ShellTestPage.SomeQueryParameter)}=1234"));
-			Assert.AreEqual("1234", (two.CurrentItem.CurrentItem.Content as ShellTestPage).SomeQueryParameter);
-		}
 
 		[Test]
 		public async Task OnBackbuttonPressedPageReturnsTrue()
@@ -947,10 +768,10 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.FlyoutHeader = null;
 			shell.FlyoutHeader = layout;
 
-			Assert.True(shell.ChildrenNotDrawnByThisElement.Contains(layout));
+			Assert.True(shell.LogicalChildren.Contains(layout));
 			shell.FlyoutHeader = null;
 
-			Assert.False(shell.ChildrenNotDrawnByThisElement.Contains(layout));
+			Assert.False(shell.LogicalChildren.Contains(layout));
 		}
 
 
@@ -1139,7 +960,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			shell.Items.Add(item1);
 			shell.Items.Add(item2);
 
-			FlyoutItem.SetIsVisible(item1, false);
+			Shell.SetFlyoutItemIsVisible(item1, false);
 			Assert.IsTrue(GetItems(shell).Contains(item1));
 
 			bool hasFlyoutItem =

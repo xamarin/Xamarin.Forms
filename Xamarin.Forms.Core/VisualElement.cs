@@ -216,6 +216,7 @@ namespace Xamarin.Forms
 		{
 			if (Background != null)
 			{
+				Background.Parent = this;
 				Background.PropertyChanged += OnBackgroundChanged;
 
 				if (Background is GradientBrush gradientBrush)
@@ -227,6 +228,7 @@ namespace Xamarin.Forms
 		{
 			if (Background != null)
 			{
+				Background.Parent = null;
 				Background.PropertyChanged -= OnBackgroundChanged;
 
 				if (Background is GradientBrush gradientBrush)
@@ -821,6 +823,7 @@ namespace Xamarin.Forms
 		protected override void OnBindingContextChanged()
 		{
 			PropagateBindingContextToStateTriggers();
+
 			base.OnBindingContextChanged();
 		}
 
@@ -1128,6 +1131,13 @@ namespace Xamarin.Forms
 						return false;
 				}
 				throw new InvalidOperationException(string.Format("Cannot convert \"{0}\" into {1}.", value, typeof(bool)));
+			}
+
+			public override string ConvertToInvariantString(object value)
+			{
+				if (!(value is bool visibility))
+					throw new NotSupportedException();
+				return visibility.ToString();
 			}
 		}
 	}

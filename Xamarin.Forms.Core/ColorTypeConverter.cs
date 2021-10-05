@@ -149,7 +149,7 @@ namespace Xamarin.Forms
 							return Color.BlanchedAlmond;
 						case "blue":
 							return Color.Blue;
-						case "blueViolet":
+						case "blueviolet":
 							return Color.BlueViolet;
 						case "brown":
 							return Color.Brown;
@@ -443,6 +443,14 @@ namespace Xamarin.Forms
 		static double ParseOpacity(string elem)
 		{
 			return double.Parse(elem, NumberStyles.Number, CultureInfo.InvariantCulture).Clamp(0, 1);
+		}
+
+		public override string ConvertToInvariantString(object value)
+		{
+			if (!(value is Color color))
+				throw new NotSupportedException();
+
+			return color.ToHex();
 		}
 	}
 }

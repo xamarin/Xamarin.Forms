@@ -16,6 +16,7 @@ using WebKit;
 using Xamarin.Forms.Internals;
 using PreserveAttribute = Foundation.PreserveAttribute;
 using Uri = System.Uri;
+using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -694,6 +695,16 @@ namespace Xamarin.Forms.Platform.iOS
 			WebView WebView => _renderer.WebView;
 
 			public override void DidFailNavigation(WKWebView webView, WKNavigation navigation, NSError error)
+			{
+				var url = GetCurrentUrl();
+				WebView.SendNavigated(
+					new WebNavigatedEventArgs(_lastEvent, new UrlWebViewSource { Url = url }, url, WebNavigationResult.Failure)
+				);
+
+				_renderer.UpdateCanGoBackForward();
+			}
+
+			public override void DidFailProvisionalNavigation(WKWebView webView, WKNavigation navigation, NSError error)
 			{
 				var url = GetCurrentUrl();
 				WebView.SendNavigated(

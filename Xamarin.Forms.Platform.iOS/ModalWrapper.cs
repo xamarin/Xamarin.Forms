@@ -21,10 +21,20 @@ namespace Xamarin.Forms.Platform.iOS
 			if (elementConfiguration?.On<PlatformConfiguration.iOS>()?.ModalPresentationStyle() is PlatformConfiguration.iOSSpecific.UIModalPresentationStyle style)
 			{
 				var result = style.ToNativeModalPresentationStyle();
+
 				if (!Forms.IsiOS13OrNewer && result == UIKit.UIModalPresentationStyle.Automatic)
 				{
 					result = UIKit.UIModalPresentationStyle.FullScreen;
 				}
+
+				if (result == UIKit.UIModalPresentationStyle.FullScreen)
+				{
+					Color modalBkgndColor = ((Page)_modal.Element).BackgroundColor;
+
+					if (modalBkgndColor.A > 0)
+						result = UIKit.UIModalPresentationStyle.OverFullScreen;
+				}
+
 				ModalPresentationStyle = result;
 			}
 
@@ -39,9 +49,6 @@ namespace Xamarin.Forms.Platform.iOS
 				PresentationController.Delegate = this;
 
 			((Page)modal.Element).PropertyChanged += OnModalPagePropertyChanged;
-
-			if (Forms.IsiOS13OrNewer)
-				PresentationController.Delegate = this;
 		}
 
 		[Export("presentationControllerDidDismiss:")]
@@ -53,17 +60,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void DismissViewController(bool animated, Action completionHandler)
 		{
-			if (PresentedViewController == null)
-			{
-				// After dismissing a UIDocumentMenuViewController, (for instance, if a WebView with an Upload button
-				// is asking the user for a source (camera roll, etc.)), the view controller accidentally calls dismiss
-				// again on itself before presenting the UIImagePickerController; this leaves the UIImagePickerController
-				// without an anchor to the view hierarchy and it doesn't show up. This appears to be an iOS bug.
-
-				// We can work around it by ignoring the dismiss call when PresentedViewController is null.
-				return;
-			}
-
 			base.DismissViewController(animated, completionHandler);
 		}
 
@@ -109,13 +105,12 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewDidLayoutSubviews()
 		{
 			base.ViewDidLayoutSubviews();
-			if (_modal != null)
-				_modal.SetElementSize(new Size(View.Bounds.Width, View.Bounds.Height));
+			_modal?.SetElementSize(new Size(View.Bounds.Width, View.Bounds.Height));
 		}
 
 		public override void ViewWillAppear(bool animated)
 		{
-			if(!_isDisposed)
+			if (!_isDisposed)
 				UpdateBackgroundColor();
 
 			base.ViewWillAppear(animated);
@@ -131,8 +126,9 @@ namespace Xamarin.Forms.Platform.iOS
 			if (disposing)
 			{
 				if (_modal?.Element is Page modalPage)
+				{
 					modalPage.PropertyChanged -= OnModalPagePropertyChanged;
-
+				}
 				_modal = null;
 			}
 

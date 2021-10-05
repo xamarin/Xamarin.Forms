@@ -53,5 +53,13 @@ namespace Xamarin.Forms
 
 			throw new InvalidOperationException($"Cannot convert \"{value}\" into {typeof(CornerRadius)}");
 		}
+
+		public override string ConvertToInvariantString(object value)
+		{
+			if (!(value is CornerRadius cr))
+				throw new NotSupportedException();
+			return $"{cr.TopLeft.ToString(CultureInfo.InvariantCulture)}, {cr.TopRight.ToString(CultureInfo.InvariantCulture)}, {cr.BottomLeft.ToString(CultureInfo.InvariantCulture)}, {cr.BottomRight.ToString(CultureInfo.InvariantCulture)}";
+
+		}
 	}
 }

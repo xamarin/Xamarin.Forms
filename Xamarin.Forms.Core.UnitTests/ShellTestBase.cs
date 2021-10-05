@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -82,6 +83,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return shellSection;
 		}
 
+		[QueryProperty("DoubleQueryParameter", "DoubleQueryParameter")]
 		[QueryProperty("SomeQueryParameter", "SomeQueryParameter")]
 		[QueryProperty("CancelNavigationOnBackButtonPressed", "CancelNavigationOnBackButtonPressed")]
 		public class ShellTestPage : ContentPage
@@ -92,6 +94,12 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 
 			public string SomeQueryParameter
+			{
+				get;
+				set;
+			}
+
+			public double DoubleQueryParameter
 			{
 				get;
 				set;
@@ -293,8 +301,24 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			public IShellController Controller => this;
 
+			public List<List<Element>> GenerateTestFlyoutItems()
+			{
+				List<List<Element>> returnValue = new List<List<Element>>();
+
+
+				FlyoutItems
+					.OfType<IEnumerable>()
+					.ForEach(l => returnValue.Add(l.OfType<Element>().ToList()));
+
+				return returnValue;
+			}
+
 			public TestShell()
 			{
+				Routing.RegisterRoute(nameof(TestPage1), typeof(TestPage1));
+				Routing.RegisterRoute(nameof(TestPage2), typeof(TestPage2));
+				Routing.RegisterRoute(nameof(TestPage3), typeof(TestPage3));
+
 				this.Navigated += (_, __) => NavigatedCount++;
 				this.Navigating += (_, __) => NavigatingCount++;
 			}
@@ -302,6 +326,36 @@ namespace Xamarin.Forms.Core.UnitTests
 			public TestShell(params ShellItem[] shellItems) : this()
 			{
 				shellItems.ForEach(x => Items.Add(x));
+			}
+
+			public ContentPage RegisterPage(string route)
+			{
+				ContentPage page = new ContentPage();
+				RegisterPage(route, page);
+				return page;
+			}
+
+			public void RegisterPage(string route, ContentPage contentPage)
+			{
+				Routing.SetRoute(contentPage, route);
+				Routing.RegisterRoute(route, new ConcretePageFactory(contentPage));
+			}
+
+			public void AssertCurrentStateEquals(string expectedState)
+			{
+				Assert.AreEqual(expectedState, CurrentState.Location.ToString());
+			}
+
+			public class ConcretePageFactory : RouteFactory
+			{
+				ContentPage _contentPage;
+
+				public ConcretePageFactory(ContentPage contentPage)
+				{
+					_contentPage = contentPage;
+				}
+
+				public override Element GetOrCreate() => _contentPage;
 			}
 
 			public Action<ShellNavigatedEventArgs> OnNavigatedHandler { get; set; }
@@ -318,6 +372,37 @@ namespace Xamarin.Forms.Core.UnitTests
 				LastShellNavigatingEventArgs = args;
 				base.OnNavigating(args);
 				OnNavigatingCount++;
+			}
+
+			public void TestNavigationArgs(ShellNavigationSource source, string from, string to)
+			{
+				TestNavigatingArgs(source, from, to);
+				TestNavigatedArgs(source, from, to);
+			}
+
+			public void TestNavigatedArgs(ShellNavigationSource source, string from, string to)
+			{
+				Assert.AreEqual(source, this.LastShellNavigatedEventArgs.Source);
+
+				if (from == null)
+					Assert.AreEqual(LastShellNavigatedEventArgs.Previous, null);
+				else
+					Assert.AreEqual(from, this.LastShellNavigatedEventArgs.Previous.Location.ToString());
+
+				Assert.AreEqual(to, this.LastShellNavigatedEventArgs.Current.Location.ToString());
+				Assert.AreEqual(to, this.CurrentState.Location.ToString());
+			}
+
+			public void TestNavigatingArgs(ShellNavigationSource source, string from, string to)
+			{
+				Assert.AreEqual(source, this.LastShellNavigatingEventArgs.Source);
+
+				if (from == null)
+					Assert.AreEqual(LastShellNavigatingEventArgs.Current, null);
+				else
+					Assert.AreEqual(from, this.LastShellNavigatingEventArgs.Current.Location.ToString());
+
+				Assert.AreEqual(to, this.LastShellNavigatingEventArgs.Target.Location.ToString());
 			}
 
 			public Func<bool> OnBackButtonPressedFunc;
@@ -381,5 +466,9 @@ namespace Xamarin.Forms.Core.UnitTests
 				}
 			}
 		}
+
+		public class TestPage1 : ContentPage { }
+		public class TestPage2 : ContentPage { }
+		public class TestPage3 : ContentPage { }
 	}
 }

@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Platform.iOS
 		Page _displayedPage;
 		bool _disposed;
 		ShellItem _shellItem;
-		bool _switched = true;
+		static UIColor _defaultMoreTextLabelTextColor;
 
 		IShellSectionRenderer CurrentRenderer { get; set; }
 
@@ -77,11 +77,14 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					MoreNavigationController.WeakDelegate = this;
 				}
+
+				UpdateMoreCellsEnabled();
 			}
 		}
 
 		[Export("navigationController:didShowViewController:animated:")]
-		public virtual void DidShowViewController(UINavigationController navigationController, [Transient]UIViewController viewController, bool animated)
+		[Preserve(AllMembers = true)]
+		public virtual void DidShowViewController(UINavigationController navigationController, [Transient] UIViewController viewController, bool animated)
 		{
 			var renderer = RendererForViewController(this.SelectedViewController);
 			if (renderer != null)
@@ -89,6 +92,7 @@ namespace Xamarin.Forms.Platform.iOS
 				ShellItem.SetValueFromRenderer(ShellItem.CurrentItemProperty, renderer.ShellSection);
 				CurrentRenderer = renderer;
 			}
+			UpdateMoreCellsEnabled();
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -272,7 +276,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CreateTabRenderers()
 		{
-			if(ShellItem.CurrentItem == null)
+			if (ShellItem.CurrentItem == null)
 				throw new InvalidOperationException($"Content not found for active {ShellItem}. Title: {ShellItem.Title}. Route: {ShellItem.Route}.");
 
 			var items = ShellItemController.GetItems();
@@ -299,18 +303,49 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// Make sure we are at the right item
 			GoTo(ShellItem.CurrentItem);
+			UpdateMoreCellsEnabled();
+		}
 
+		void UpdateMoreCellsEnabled()
+		{
+			var moreNavigationCells = GetMoreNavigationCells();
+			var viewControllersLength = ViewControllers.Length;
 			// now that they are applied we can set the enabled state of the TabBar items
-			for (i = 0; i < ViewControllers.Length; i++)
+			for (int i = 4; i < viewControllersLength; i++)
 			{
+				if((i - 4) >= (moreNavigationCells.Length))
+				{
+					break;
+				}
+
 				var renderer = RendererForViewController(ViewControllers[i]);
+				var cell = moreNavigationCells[i - 4];
+
 				if (!renderer.ShellSection.IsEnabled)
 				{
-					TabBar.Items[i].Enabled = false;
+					cell.UserInteractionEnabled = false;
+
+					if (_defaultMoreTextLabelTextColor == null)
+						_defaultMoreTextLabelTextColor = cell.TextLabel.TextColor;
+
+					cell.TextLabel.TextColor = Color.FromRgb(213, 213, 213).ToUIColor();
+				}
+				else if(!cell.UserInteractionEnabled)
+				{
+					cell.UserInteractionEnabled = true;
+					cell.TextLabel.TextColor = _defaultMoreTextLabelTextColor;
 				}
 			}
+
+			UITableViewCell[] GetMoreNavigationCells()
+			{
+				if(MoreNavigationController.TopViewController.View is UITableView uITableView)
+					return uITableView.VisibleCells;
+
+				return new UITableViewCell[0];
+			}
 		}
-			   
+
 		void GoTo(ShellSection shellSection)
 		{
 			if (shellSection == null || _currentSection == shellSection)
@@ -330,7 +365,6 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_currentSection != null)
 			{
 				((IShellSectionController)_currentSection).AddDisplayedPageObserver(this, OnDisplayedPageChanged);
-				_switched = true;
 			}
 		}
 
@@ -347,12 +381,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_displayedPage != null)
 			{
 				_displayedPage.PropertyChanged += OnDisplayedPagePropertyChanged;
-
-				if (!_currentSection.Stack.Contains(_displayedPage) || _switched)
-				{
-					_switched = false;
-					UpdateTabBarHidden();
-				}
+				UpdateTabBarHidden();
 			}
 		}
 

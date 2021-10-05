@@ -163,7 +163,11 @@ namespace Xamarin.Forms.Platform
 
 
 
-#if !__IOS__
+#if __ANDROID__
+	// current previewer doesn't work with appcompat so this renderer is here for the previewer only
+	// once previewer switches to appcompat then we can remove this
+	[RenderWith(typeof(FlyoutPageRendererNonAppCompat))]
+#elif !__IOS__
 	[RenderWith(typeof(FlyoutPageRenderer))]
 #else
 	[RenderWith (typeof (PhoneFlyoutPageRenderer))]
@@ -189,7 +193,6 @@ namespace Xamarin.Forms.Platform
 	[RenderWith(typeof(SwipeViewRenderer))]
 	internal class _SwipeViewRenderer { }
 
-#if !TIZEN4_0
 	[RenderWith(typeof(PathRenderer))]
 	internal class _PathRenderer { }
 
@@ -207,7 +210,6 @@ namespace Xamarin.Forms.Platform
 
 	[RenderWith(typeof(RectangleRenderer))]
 	internal class _RectangleRenderer { }
-#endif
 }
 
 

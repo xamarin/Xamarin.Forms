@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -77,18 +76,19 @@ namespace Xamarin.Forms
 		public event EventHandler<SwipeEndedEventArgs> SwipeEnded;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public event EventHandler<OpenSwipeEventArgs> OpenRequested;
+		public event EventHandler<OpenRequestedEventArgs> OpenRequested;
 
-		public event EventHandler CloseRequested;
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler<CloseRequestedEventArgs> CloseRequested;
 
-		public void Open(OpenSwipeItem openSwipeItem)
+		public void Open(OpenSwipeItem openSwipeItem, bool animated = true)
 		{
-			OpenRequested?.Invoke(this, new OpenSwipeEventArgs(openSwipeItem));
+			OpenRequested?.Invoke(this, new OpenRequestedEventArgs(openSwipeItem, animated));
 		}
 
-		public void Close()
+		public void Close(bool animated = true)
 		{
-			CloseRequested?.Invoke(this, EventArgs.Empty);
+			CloseRequested?.Invoke(this, new CloseRequestedEventArgs(animated));
 		}
 
 		void ISwipeViewController.SendSwipeStarted(SwipeStartedEventArgs args) => SwipeStarted?.Invoke(this, args);
@@ -114,6 +114,23 @@ namespace Xamarin.Forms
 
 			if (BottomItems != null)
 				SetInheritedBindingContext(BottomItems, bc);
+		}
+
+		protected override void OnParentSet()
+		{
+			base.OnParentSet();
+
+			if (LeftItems != null)
+				UpdateSwipeItemsParent(LeftItems);
+
+			if (RightItems != null)
+				UpdateSwipeItemsParent(RightItems);
+
+			if (TopItems != null)
+				UpdateSwipeItemsParent(TopItems);
+
+			if (BottomItems != null)
+				UpdateSwipeItemsParent(BottomItems);
 		}
 
 		SwipeItems SwipeItemsDefaultValueCreator() => new SwipeItems();

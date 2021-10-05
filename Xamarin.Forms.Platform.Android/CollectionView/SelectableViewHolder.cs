@@ -34,11 +34,13 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		protected virtual bool UseDefaultSelectionColor => true;
+
 		public void OnClick(global::Android.Views.View view)
 		{
 			if (_isSelectionEnabled)
 			{
-				OnViewHolderClicked(AdapterPosition);
+				OnViewHolderClicked(BindingAdapterPosition);
 			}
 		}
 
@@ -55,6 +57,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		void SetSelectionStates(bool isSelected)
 		{
+			if (!UseDefaultSelectionColor)
+			{
+				return;
+			}
+
 			if (Forms.IsMarshmallowOrNewer)
 			{
 				// We're looking for the foreground ripple effect, which is not available on older APIs

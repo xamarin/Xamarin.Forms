@@ -15,12 +15,33 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class ShellContentFragment : Fragment, AndroidAnimation.IAnimationListener, IShellObservableFragment, IAppearanceObserver
 	{
+		// AndroidX.Fragment packaged stopped calling CreateAnimation for every call
+		// of creating a fragment
+		bool _isAnimating = false;
+
 		#region IAnimationListener
 
 		void AndroidAnimation.IAnimationListener.OnAnimationEnd(AndroidAnimation animation)
 		{
 			View?.SetLayerType(LayerType.None, null);
 			AnimationFinished?.Invoke(this, EventArgs.Empty);
+			_isAnimating = false;
+		}
+
+		public override void OnResume()
+		{
+			base.OnResume();
+			if (!_isAnimating)
+			{
+				View?.SetLayerType(LayerType.None, null);
+				AnimationFinished?.Invoke(this, EventArgs.Empty);
+			}
+		}
+
+
+		public override void OnViewStateRestored(Bundle savedInstanceState)
+		{
+			base.OnViewStateRestored(savedInstanceState);
 		}
 
 		void AndroidAnimation.IAnimationListener.OnAnimationRepeat(AndroidAnimation animation)
@@ -75,6 +96,7 @@ namespace Xamarin.Forms.Platform.Android
 		public override AndroidAnimation OnCreateAnimation(int transit, bool enter, int nextAnim)
 		{
 			var result = base.OnCreateAnimation(transit, enter, nextAnim);
+			_isAnimating = true;
 
 			if (result == null && nextAnim != 0)
 			{
@@ -82,7 +104,10 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			if (result == null)
+			{
+				AnimationFinished?.Invoke(this, EventArgs.Empty);
 				return result;
+			}
 
 			// we only want to use a hardware layer for the entering view because its quite likely
 			// the view exiting is animating a button press of some sort. This means lots of GPU

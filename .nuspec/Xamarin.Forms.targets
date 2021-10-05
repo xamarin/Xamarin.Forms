@@ -48,9 +48,9 @@
 
 	<Target Name="_ValidateNETFrameworkVersion"
 			BeforeTargets="_CheckForInvalidConfigurationAndPlatform"
-			Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework' AND '$(TargetFrameworkVersion.Substring(1))' &lt; '4.6.1' AND '$(XFDisableFrameworkVersionValidation)' != 'True'">
+			Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework' AND '$(TargetFrameworkVersion.Substring(1))' &lt; '4.6.1' AND '$(ProjectExt)' != '.wapproj' AND '$(XFDisableFrameworkVersionValidation)' != 'True'">
 		<Error Code="XF004"
-			Text="XF requires .NETFramework >= v4.6.1. You have '$(TargetFrameworkVersion)'" />
+			Text="Xamarin.Forms requires .NETFramework >= v4.6.1. You have '$(TargetFrameworkVersion)'" />
 	</Target>
 
 	<!-- XamlG -->
@@ -191,19 +191,19 @@
 
   <!-- UWP Targets-->
   <Target Name="WinUICheckTargetPlatformVersion" BeforeTargets="PrepareForBuild"
-      Condition="'$(TargetPlatformVersion)' != '' and '$(TargetPlatformMinVersion)' != ''">
+      Condition="'$(TargetPlatformIdentifier)' == 'UAP' AND '$(TargetPlatformVersion)' != '' AND '$(TargetPlatformMinVersion)' != ''">
     <PropertyGroup>
       <MicrosoftUIXamlTargetPlatformMinCheckValue>$([System.Version]::Parse('$(TargetPlatformMinVersion)').Build)</MicrosoftUIXamlTargetPlatformMinCheckValue>
     </PropertyGroup>
     <Warning
-        Text="Xamarin.Forms recommends TargetPlatformMinVersion &gt;= 10.0.14393.0 (current project is $(MicrosoftUIXamlTargetPlatformMinCheckValue))"
-        Condition="$(MicrosoftUIXamlTargetPlatformMinCheckValue) &lt; 14393" />
+        Text="Xamarin.Forms recommends TargetPlatformMinVersion &gt;= 10.0.15063.0 (current project is $(MicrosoftUIXamlTargetPlatformMinCheckValue))"
+        Condition="$(MicrosoftUIXamlTargetPlatformMinCheckValue) &lt; 15063" />
     <PropertyGroup>
       <MicrosoftUIXamlTargetPlatformCheckValue>$([System.Version]::Parse('$(TargetPlatformVersion)').Build)</MicrosoftUIXamlTargetPlatformCheckValue>
     </PropertyGroup>
     <Warning
-        Text="Xamarin.Forms recommends TargetPlatformVersion &gt;= 10.0.17763.0 (current project is $(MicrosoftUIXamlTargetPlatformCheckValue))"
-        Condition="$(MicrosoftUIXamlTargetPlatformCheckValue) &lt; 17763 AND '$(OutputType)'!='Library'" />
+        Text="Xamarin.Forms recommends TargetPlatformVersion &gt;= 10.0.18362.0 (current project is $(MicrosoftUIXamlTargetPlatformCheckValue))"
+        Condition="$(MicrosoftUIXamlTargetPlatformCheckValue) &lt; 18362 AND '$(OutputType)'!='Library'" />
     <Warning
         Text="Xamarin.Forms recommends TargetPlatformVersion &gt;= 10.0.14393.0 (current project is $(MicrosoftUIXamlTargetPlatformCheckValue))"
         Condition="$(MicrosoftUIXamlTargetPlatformCheckValue) &lt; 14393 AND '$(OutputType)'=='Library'" />

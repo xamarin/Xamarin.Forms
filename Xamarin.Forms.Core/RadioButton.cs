@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Shapes;
 
@@ -219,6 +220,14 @@ namespace Xamarin.Forms
 		bool IBorderElement.IsBorderColorSet() => IsSet(BorderElement.BorderColorProperty);
 		bool IBorderElement.IsBorderWidthSet() => IsSet(BorderElement.BorderWidthProperty);
 
+		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			base.OnPropertyChanged(propertyName);
+
+			if (propertyName == nameof(IsEnabled))
+				UpdateIsEnabled();
+		}
+
 		protected internal override void ChangeVisualState()
 		{
 			ApplyIsCheckedState();
@@ -418,17 +427,26 @@ namespace Xamarin.Forms
 			IsChecked = true;
 		}
 
+		static void BindToTemplatedParent(BindableObject bindableObject, params BindableProperty[] properties)
+		{
+			foreach (var property in properties)
+			{
+				bindableObject.SetBinding(property, new Binding(property.PropertyName,
+					source: RelativeBindingSource.TemplatedParent));
+			}
+		}
+
 		static View BuildDefaultTemplate()
 		{
 			var frame = new Frame
 			{
 				HasShadow = false,
-				BackgroundColor = Color.Transparent,
-				VerticalOptions = LayoutOptions.Start,
-				HorizontalOptions = LayoutOptions.Start,
-				Margin = new Thickness(6),
-				Padding = new Thickness(0)
+				Padding = 6
 			};
+
+			BindToTemplatedParent(frame, BackgroundColorProperty, Frame.BorderColorProperty, HorizontalOptionsProperty,
+				MarginProperty, OpacityProperty, RotationProperty, ScaleProperty, ScaleXProperty, ScaleYProperty,
+				TranslationYProperty, TranslationXProperty, VerticalOptionsProperty);
 
 			var grid = new Grid
 			{
@@ -469,8 +487,8 @@ namespace Xamarin.Forms
 
 			var contentPresenter = new ContentPresenter
 			{
-				HorizontalOptions = LayoutOptions.Center,
-				VerticalOptions = LayoutOptions.Center
+				HorizontalOptions = LayoutOptions.Fill,
+				VerticalOptions = LayoutOptions.Fill
 			};
 
 			contentPresenter.SetBinding(MarginProperty, new Binding("Padding", source: RelativeBindingSource.TemplatedParent));

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Core.UnitTests
@@ -106,6 +108,168 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(column0Height, Is.LessThan(gridHeight));
 		}
 
+		[Test]
+		public void StarRowsDoNotOverlapWithStackLayoutOnTop()
+		{
+			SetupStarRowOverlapTest(rowAIsOnTop: false, out VisualElement rowAControl,
+				out VisualElement rowBControl, out Label lastLabel);
+
+			var bottomOfRowB = rowBControl.Y + rowBControl.Height;
+			var bottomOfLastLabelInRowB = rowBControl.Y + lastLabel.Y + lastLabel.Height;
+			var topOfRowA = rowAControl.Y;
+
+			Assert.That(bottomOfRowB, Is.EqualTo(bottomOfLastLabelInRowB));
+
+			Assert.That(topOfRowA, Is.EqualTo(bottomOfRowB),
+				"B is on top of A, so the top of A should be the bottom of B");
+		}
+
+		[Test]
+		public void StarRowsDoNotOverlapWithStackLayoutOnBottom()
+		{
+			SetupStarRowOverlapTest(rowAIsOnTop: true, out VisualElement rowAControl,
+				out VisualElement rowBControl, out Label lastLabel);
+
+			var topOfRowB = rowBControl.Y;
+			var bottomOfRowB = rowBControl.Y + rowBControl.Height;
+			var bottomOfLastLabelInRowB = rowBControl.Y + lastLabel.Y + lastLabel.Height;
+			var bottomOfRowA = rowAControl.Y + rowAControl.Height;
+
+			Assert.That(bottomOfRowB, Is.EqualTo(bottomOfLastLabelInRowB));
+
+			Assert.That(topOfRowB, Is.EqualTo(bottomOfRowA),
+				"A is on top of B, so the top of B should be the bottom of A");
+		}
+
+		[Test]
+		public void StarColumnsDoNotOverlapWithStackLayoutAtStart()
+		{
+			SetupStarColumnOverlapTest(colAIsAtStart: false, out VisualElement colAControl,
+				out VisualElement colBControl, out Label lastLabel);
+
+			var endOfColB = colBControl.X + colBControl.Width;
+			var endOfLastLabelInColB = colBControl.X + lastLabel.X + lastLabel.Width;
+			var startOfColA = colAControl.X;
+
+			Assert.That(endOfColB, Is.EqualTo(endOfLastLabelInColB));
+
+			Assert.That(startOfColA, Is.EqualTo(endOfColB),
+				"B is before A, so the start of A should be the end of B");
+		}
+
+		[Test]
+		public void StarColumnsDoNotOverlapWithStackLayoutAtEnd()
+		{
+			SetupStarColumnOverlapTest(colAIsAtStart: true, out VisualElement colAControl,
+				out VisualElement colBControl, out Label lastLabel);
+
+			var startOfColB = colBControl.X;
+			var endOfColB = colBControl.X + colBControl.Width;
+			var endOfLastLabelInColB = colBControl.X + lastLabel.X + lastLabel.Width;
+			var endOfColA = colAControl.X + colAControl.Width;
+
+			Assert.That(endOfColB, Is.EqualTo(endOfLastLabelInColB));
+
+			Assert.That(endOfColA, Is.EqualTo(startOfColB),
+				"A is before B, so the end of A should be the start of B");
+		}
+
+		void SetupStarRowOverlapTest(bool rowAIsOnTop, out VisualElement rowAControl,
+			out VisualElement rowBControl, out Label lastLabel)
+		{
+			var grid = new Grid
+			{
+				RowSpacing = 0,
+				RowDefinitions = new RowDefinitionCollection
+				{
+					new RowDefinition() { Height = GridLength.Star },
+					new RowDefinition() { Height = GridLength.Star }
+				}
+			};
+
+			var labelSize = new Size(100, 20);
+
+			Label label;
+			rowAControl = label = new FixedSizeLabel(labelSize) { Text = "Hello" };
+
+			StackLayout stackLayout;
+			rowBControl = stackLayout = new StackLayout() { Spacing = 0, IsPlatformEnabled = true };
+
+			for (int n = 0; n < 14; n++)
+			{
+				var labelInStack = new FixedSizeLabel(labelSize) { Text = "Hello" };
+				stackLayout.Children.Add(labelInStack);
+			}
+
+			lastLabel = new FixedSizeLabel(labelSize) { Text = "Hello" };
+			stackLayout.Children.Add(lastLabel);
+
+			grid.Children.Add(stackLayout);
+			grid.Children.Add(label);
+
+			if (rowAIsOnTop)
+			{
+				Grid.SetRow(rowAControl, 0);
+				Grid.SetRow(rowBControl, 1);
+			}
+			else
+			{
+				Grid.SetRow(rowBControl, 0);
+				Grid.SetRow(rowAControl, 1);
+			}
+
+			var sizeRequest = grid.Measure(300, double.PositiveInfinity);
+			grid.Layout(new Rectangle(0, 0, sizeRequest.Request.Width, sizeRequest.Request.Height));
+		}
+
+		void SetupStarColumnOverlapTest(bool colAIsAtStart, out VisualElement colAControl,
+				out VisualElement colBControl, out Label lastLabel)
+		{
+			var grid = new Grid
+			{
+				ColumnSpacing = 0,
+				ColumnDefinitions = new ColumnDefinitionCollection
+				{
+					new ColumnDefinition() { Width = GridLength.Star },
+					new ColumnDefinition() { Width = GridLength.Star }
+				}
+			};
+
+			var labelSize = new Size(20, 100);
+
+			Label label;
+			colAControl = label = new FixedSizeLabel(labelSize) { Text = "Hello" };
+
+			StackLayout stackLayout;
+			colBControl = stackLayout = new StackLayout() { Spacing = 0, Orientation = StackOrientation.Horizontal, IsPlatformEnabled = true };
+
+			for (int n = 0; n < 14; n++)
+			{
+				var labelInStack = new FixedSizeLabel(labelSize) { Text = "Hello" };
+				stackLayout.Children.Add(labelInStack);
+			}
+
+			lastLabel = new FixedSizeLabel(labelSize) { Text = "Hello" };
+			stackLayout.Children.Add(lastLabel);
+
+			grid.Children.Add(stackLayout);
+			grid.Children.Add(label);
+
+			if (colAIsAtStart)
+			{
+				Grid.SetColumn(colAControl, 0);
+				Grid.SetColumn(colBControl, 1);
+			}
+			else
+			{
+				Grid.SetColumn(colBControl, 0);
+				Grid.SetColumn(colAControl, 1);
+			}
+
+			var sizeRequest = grid.Measure(double.PositiveInfinity, 300);
+			grid.Layout(new Rectangle(0, 0, sizeRequest.Request.Width, sizeRequest.Request.Height));
+		}
+
 		[Test(Description = "Columns with a Star width less than one should not cause the Grid to contract below the target width; see https://github.com/xamarin/Xamarin.Forms/issues/11742")]
 		public void StarWidthsLessThanOneShouldNotContractGrid()
 		{
@@ -146,7 +310,181 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			// Having a first column which is a fraction of a Star width should not cause the grid
 			// to contract below the target width
-			Assert.That(column0Width + column1Width, Is.GreaterThanOrEqualTo(gridWidth));
+			var totalColumnSpacing = (grid.ColumnDefinitions.Count - 1) * grid.ColumnSpacing;
+
+			Assert.That(column0Width + column1Width + totalColumnSpacing, Is.GreaterThanOrEqualTo(gridWidth));
+		}
+
+		[Test]
+		public void ColumnsLessThanOneStarShouldBeTallerThanOneStarColumns()
+		{
+			var gridWidth = 400;
+
+			var grid1 = new Grid() { ColumnSpacing = 0 };
+
+			grid1.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
+			grid1.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
+
+			grid1.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+
+			var label1 = new ColumnTestLabel
+			{
+				Text = "label1"
+			};
+
+			grid1.Children.Add(label1, 0, 0);
+			grid1.Measure(gridWidth, double.PositiveInfinity);
+			var grid1Height = grid1.RowDefinitions[0].ActualHeight;
+
+			var grid2 = new Grid() { ColumnSpacing = 0 };
+
+			// Because the column with the label in it is narrower in this grid (0.5* vs 1*), the label will have
+			// grow taller to fit the text. So we expect this grid to grow vertically to accommodate it.
+			grid2.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(0.5, GridUnitType.Star) });
+			grid2.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
+
+			grid2.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+
+			var label2 = new ColumnTestLabel
+			{
+				Text = "label2"
+			};
+
+			grid2.Children.Add(label2, 0, 0);
+
+			grid2.Measure(gridWidth, double.PositiveInfinity);
+			var grid2Height = grid2.RowDefinitions[0].ActualHeight;
+
+			Assert.That(grid2Height, Is.GreaterThan(grid1Height));
+		}
+
+
+		[Test]
+		public void ContentHeightSumShouldMatchGridHeightWithAutoRows()
+		{
+			var widthConstraint = 400;
+
+			var grid1 = new Grid() { ColumnSpacing = 0, Padding = 0, RowSpacing = 0 };
+
+			grid1.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
+			grid1.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
+
+			grid1.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+			grid1.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+
+			var label1 = new ColumnTestLabel { Text = "label1" };
+			var label2 = new ColumnTestLabel { Text = "label2" };
+
+			grid1.Children.Add(label1, 0, 0);
+			grid1.Children.Add(label2, 0, 1);
+			var grid1Size = grid1.Measure(widthConstraint, double.PositiveInfinity, MeasureFlags.IncludeMargins);
+			grid1.Layout(new Rectangle(0, 0, grid1Size.Request.Width, grid1Size.Request.Height));
+			var grid1Height = grid1.Height;
+
+			var expectedHeight = label1.Height + label2.Height + grid1.RowSpacing;
+			Assert.That(grid1Height, Is.EqualTo(expectedHeight));
+		}
+
+		[Test]
+		public void UnconstrainedStarRowWithMultipleStarColumnsAllowsTextToGrow()
+		{
+			var outerGrid = new Grid() { ColumnSpacing = 0, Padding = 0, RowSpacing = 0, IsPlatformEnabled = true };
+			outerGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Star });
+
+			outerGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
+			outerGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
+
+			var sl = new StackLayout { Padding = 0, IsPlatformEnabled = true };
+
+			var label1 = new HeightBasedOnTextLengthLabel
+			{
+				Text = "The actual text here doesn't matter, just the length. The length determines the height."
+			};
+
+			var label2 = new ColumnTestLabel { FontSize = 13, LineBreakMode = LineBreakMode.NoWrap, Text = "Description" };
+
+			sl.Children.Add(label1);
+			sl.Children.Add(label2);
+
+			var bv = new BoxView { WidthRequest = 50, BackgroundColor = Color.Blue, IsPlatformEnabled = true };
+
+			outerGrid.Children.Add(sl);
+			outerGrid.Children.Add(bv);
+			Grid.SetColumn(bv, 1);
+
+			var width = 400;
+			var expectedColumnWidth = width / 2;
+
+			// Measure and layout the grid
+			var firstMeasure = outerGrid.Measure(width, double.PositiveInfinity, MeasureFlags.IncludeMargins).Request;
+			outerGrid.Layout(new Rectangle(0, 0, firstMeasure.Width, firstMeasure.Height));
+
+			// Verify that the actual height of the label is what we would expect (within a tolerance)
+			Assert.That(label1.Height, Is.EqualTo(label1.DesiredHeight(expectedColumnWidth)).Within(2));
+
+			var label1OriginalHeight = label1.Height;
+
+			// Increase the text
+			label1.Text += label1.Text;
+
+			// And measure/layout again
+			var secondMeasure = outerGrid.Measure(width, double.PositiveInfinity, MeasureFlags.IncludeMargins).Request;
+			outerGrid.Layout(new Rectangle(0, 0, secondMeasure.Width, secondMeasure.Height));
+
+			// Verify that the actual height of the label is what we would expect (within a tolerance)
+			Assert.That(label1.Height, Is.EqualTo(label1.DesiredHeight(expectedColumnWidth)).Within(2));
+
+			// And that the new height is taller than the old one (since there's more text, and the column width did not change)
+			Assert.That(label1.Height, Is.GreaterThan(label1OriginalHeight));
+		}
+
+		[Test]
+		[TestCase(0.1), TestCase(0.2), TestCase(0.3), TestCase(0.4), TestCase(0.5)]
+		[TestCase(0.6), TestCase(0.7), TestCase(0.8), TestCase(0.9)]
+		public void AbsoluteColumnShouldNotBloatStarredColumns(double firstColumnWidth)
+		{
+			// This is a re-creation of the layout from Issue 12292
+			// The problem is that a huge label in a star column between a partial star column and
+			// an absolute column causes the container to get the wrong width during an early measure pass.
+			// The big label gets the wrong dimensions for measurement, and returns a height that won't actually
+			// work in the final layout.
+
+			var outerGrid = new Grid { ColumnSpacing = 0, Padding = 0, RowSpacing = 0, IsPlatformEnabled = true };
+
+			outerGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+
+			outerGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(firstColumnWidth, GridUnitType.Star) }); // 0.3, but 0.2 works fine
+			outerGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
+
+			// This last column is the trouble spot; MeasureAndContractStarredColumns needs to account for this width
+			// when measuring and distributing the starred column space. Otherwise it reports the wrong width and every
+			// measure after that is wrong.
+			outerGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = 36 });
+
+			var innerGrid = new Grid() { ColumnSpacing = 0, Padding = 0, RowSpacing = 0, IsPlatformEnabled = true };
+
+			outerGrid.Children.Add(innerGrid);
+			Grid.SetColumn(innerGrid, 1);
+
+			innerGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+			innerGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+
+			var hugeLabel = new _12292TestLabel() { };
+			var tinyLabel = new ColumnTestLabel { Text = "label1" };
+
+			innerGrid.Children.Add(hugeLabel);
+			innerGrid.Children.Add(tinyLabel);
+			Grid.SetRow(tinyLabel, 1);
+
+			var scrollView = new ScrollView() { IsPlatformEnabled = true };
+			scrollView.Content = outerGrid;
+
+			var layoutSize = scrollView.Measure(411, 603, MeasureFlags.IncludeMargins);
+
+			// The containing ScrollView should measure a width of about 411; the absolute column at the end of the grid
+			// shouldn't expand the ScrollView's measure to 447-ish. It's this expansion of the ScrollView that causes
+			// all subsequent parts of layout to go pear-shaped.
+			Assert.That(layoutSize.Request.Width, Is.EqualTo(411).Within(2));
 		}
 
 		[Test]
@@ -253,17 +591,67 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(column0Height, Is.EqualTo(column1Height / 2));
 		}
 
-		class FixedSizeLabel : Label
+		[Test]
+		public void Issue13127()
+		{
+			var scrollView = new ScrollView() { IsPlatformEnabled = true };
+			var outerGrid = new Grid() { RowSpacing = 0, IsPlatformEnabled = true };
+			var outerStackLayout = new StackLayout() { Spacing = 0, IsPlatformEnabled = true };
+
+			var innerGrid = new Grid() { RowSpacing = 0, IsPlatformEnabled = true };
+			innerGrid.RowDefinitions = new RowDefinitionCollection() {
+				new RowDefinition(){ Height = new GridLength(6, GridUnitType.Star)},
+				new RowDefinition(){ Height = new GridLength(4, GridUnitType.Star)},
+			};
+
+			// Set up the background view, only covers the first row
+			var background = new BoxView() { IsPlatformEnabled = true };
+			Grid.SetRowSpan(background, 1);
+
+			// Create the foreground, which spans both rows
+			var foreground = new StackLayout() { Spacing = 0, IsPlatformEnabled = true };
+			var view1 = new FixedSizeLabel(new Size(200, 50)) { IsPlatformEnabled = true };
+			var view2 = new FixedSizeLabel(new Size(200, 100)) { IsPlatformEnabled = true };
+			foreground.Children.Add(view1);
+			foreground.Children.Add(view2);
+			Grid.SetRowSpan(foreground, 2);
+
+			innerGrid.Children.Add(background);
+			innerGrid.Children.Add(foreground);
+
+			outerStackLayout.Children.Add(innerGrid);
+			outerGrid.Children.Add(outerStackLayout);
+			scrollView.Content = outerGrid;
+
+			var sizeRequest = scrollView.Measure(500, 1000);
+			scrollView.Layout(new Rectangle(0, 0, sizeRequest.Request.Width, 1000));
+
+			Assert.That(innerGrid.Height, Is.EqualTo(foreground.Height));
+			Assert.That(background.Height, Is.EqualTo(foreground.Height * 0.6).Within(0.01));
+
+			Assert.That(background.Height, Is.EqualTo(165));
+		}
+
+		abstract class TestLabel : Label
+		{
+			protected TestLabel()
+			{
+				IsPlatformEnabled = true;
+			}
+		}
+
+		class FixedSizeLabel : TestLabel
 		{
 			readonly Size _minimumSize;
 			readonly Size _requestedSize;
 
 			public FixedSizeLabel(Size minimumSize, Size requestedSize)
 			{
-				IsPlatformEnabled = true;
 				_minimumSize = minimumSize;
 				_requestedSize = requestedSize;
 			}
+
+			public FixedSizeLabel(Size size) : this(size, size) { }
 
 			protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
 			{
@@ -271,13 +659,75 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		class ColumnTestLabel : Label
+		class _12292TestLabel : Label
 		{
-			public ColumnTestLabel()
+			// We need a label that simulates a fairly specific layout/measure pattern to reproduce
+			// the circumstances of issue 12292.
+
+			int _counter;
+
+			public _12292TestLabel()
 			{
 				IsPlatformEnabled = true;
+				Text = "dfghjkl;SCAsdnlv dvjhdbcviaijdlvnkhubv oebwepuvjlvsdiljh dvjhdbcviaijdlvnkhubv dvjhdbcviaijdlvnkhubv oebwepuvjlvsdiljh dvjhdbcviaijdlvnkhubv dvjhdbcviaijdlvnkhubv oebwepuvjlvsdiljh dvjhdbcviaijdlvnkhubv dvjhdbcviaijdlvnkhubv oebwepuvjlvsdiljh dvjhdbcviaijdlvnkhubv dvjhdbcviaijdlvnkhubv oebwepuvjlvsdiljh dvjhdbcviaijdlvnkhubv  oebwepuvjlvsdiljh dvjhdbcviaijdlvnkhubv dvjhdbcviaijdlvnkhubv oebwepuvjlvsdiljh oebwepuvjlvsdiljhssdlncaCSN SNCAascsbdn  sciwohwfwef wbodlaoj bcwhuofw9qph nxaxhsavcgsdcvewp ibewfwfhpo sbcshclcsdc aasusos 9 p;fqpnwuvaycxaslucn;we;oivwemopv mre]bn ;nvw  modcefin e['vmdkv wqs vwlj vqur;/ b;bnoerbor blk evoneifb;4rbkk-eq'o ge  vlfbmokfen wov mdkqncvw;bnzdFCGHSIAJDOKFBLKVSCBAXVCGFAYGUIOK;LBMDF, NZBCHGFSYUGAEUHRPK;LBMFNVBCFYEWYGUIOPBK; M,MNBCDTFYYU9GIPL;LMVNCX KOEKFULIDJOPKWLFSBVHGIROIQWDMC, ;QLKHFEUHFIJOKPDS;LMNDFVGUHFIDJXHFJOKPEOEJGHRIFJEWODK;LMNBVJHGIOJFEPKWD;LMNDBF VBIWOPKWFKBNRGJOFKPELDWKNVDSHFIOEFIEPKLMDWNDVSFBDIHOFEPDKWL;MNVFBF C,P POIUYFUYGIHOJ;LMFE WGREBFX CUOUIGYUFCHJDKJLFK;EGRHMNBHIOKVEJKVNERNVOEIV OWIEFNIENEKEDLC,WP,EFF dfghjkl;SCAsdnlv dvjhdbcviaijdlvnkhubv oebwepuvjlvsdiljh ssdlncaCSN SNCAascsbdn  sciwohwfwef wbodlaoj bcwhuofw9qph nxaxhsavcgsdcvewp ibewfwfhpo sbcshclcsdc aasusos 9 p;fqpnwuvaycxaslucn;we;oivwemopv mre]bn ;nvw  modcefin e['vmdkv wqs vwlj vqur;/ b;bnoerbor blk evoneifb;4rbkk-eq'o ge  vlfbmokfen wov mdkqncvw;bnzdFCGHSIAJDOKFBLKVSCBAXVCGFAYGUIOK;LBMDF, NZBCHGFSYUGAEUHRPK;LBMFNVBCFYEWYGUIOPBK; M,MNBCDTFYYU9GIPL;LMVNCX KOEKFULIDJOPKWLFSBVHGIROIQWDMC, ;QLKHFEUHFIJOKPDS;LMNDFVGUHFIDJXHFJOKPEOEJGHRIFJEWODK;LMNBVJHGIOJFEPKWD;LMNDBF VBIWOPKWFKBNRGJOFKPELDWKNVDSHFIOEFIEPKLMDWNDVSFBDIHOFEPDKWL;MNVFBF C,P POIUYFUYGIHOJ;LMFE WGREBFX CUOUIGYUFCHJDKJLFK;EGRHMNBHIOKVEJKVNERNVOEIV OWIEFNIENEKEDLC,WP,1234567890234567890";
 			}
 
+			protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
+			{
+				double minWidth = 10.2857142857143;
+
+				_counter += 1;
+
+				switch (_counter % 6)
+				{
+					case 1:
+						return new SizeRequest(
+							new Size(375.619047619048, 673.904761904762),
+							new Size(minWidth, 673.904761904762));
+					case 2:
+						return new SizeRequest(
+							new Size(411.428571428571, 575.619047619048),
+							new Size(minWidth, 575.619047619048));
+					case 3:
+						return new SizeRequest(
+							new Size(336.380952380952, 755.809523809524),
+							new Size(minWidth, 755.809523809524));
+					case 4:
+						return new SizeRequest(
+							new Size(375.619047619048, 673.904761904762),
+							new Size(minWidth, 673.904761904762));
+					case 5:
+						return new SizeRequest(
+							new Size(313.142857142857, 772.190476190476),
+							new Size(minWidth, 772.190476190476));
+					case 0:
+						return new SizeRequest(
+							new Size(313.142857142857, 772.190476190476),
+							new Size(minWidth, 772.190476190476));
+				}
+
+				throw new Exception("This shouldn't happen, unless we make measure/layout more or less efficient and " +
+					"OnMeasure isn't called 6 times during this test.");
+			}
+		}
+
+		class HeightBasedOnTextLengthLabel : TestLabel
+		{
+			public double DesiredHeight(double widthConstraint)
+			{
+				return (Text.Length / widthConstraint) * 200;
+			}
+
+			protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
+			{
+				var minimumSize = new Size(20, 20);
+				var height = DesiredHeight(widthConstraint);
+				return new SizeRequest(new Size(widthConstraint, height), minimumSize);
+			}
+		}
+
+		class ColumnTestLabel : TestLabel
+		{
 			protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
 			{
 				var minimumSize = new Size(20, 20);
@@ -286,13 +736,8 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		class RowTestLabel : Label
+		class RowTestLabel : TestLabel
 		{
-			public RowTestLabel()
-			{
-				IsPlatformEnabled = true;
-			}
-
 			protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
 			{
 				var minimumSize = new Size(20, 20);
@@ -1815,7 +2260,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False(invalidated);
 		}
 
-
 		[Test]
 		//https://github.com/xamarin/Xamarin.Forms/issues/4933
 		public void GridHeightCorrectWhenAspectFitImageGetsShrinked()
@@ -1835,7 +2279,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(50, measurement.Request.Width);
 			Assert.AreEqual(10, measurement.Request.Height);
 		}
-
 
 		[Test]
 		public void MinimumWidthRequestInAutoCells()
@@ -1939,12 +2382,9 @@ namespace Xamarin.Forms.Core.UnitTests
 			};
 			view.Layout(new Rectangle(0, 0, 800, 800));
 
-
 			Assert.AreEqual(boxRow0Column0.MinimumHeightRequest, boxRow0Column0.Height);
 			Assert.AreEqual(boxRow0Column1.MinimumHeightRequest, boxRow0Column1.Height);
 		}
-
-
 
 		// because the constraint is internal, we need this
 		public enum HackLayoutConstraint

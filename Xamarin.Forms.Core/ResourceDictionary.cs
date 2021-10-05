@@ -34,7 +34,7 @@ namespace Xamarin.Forms
 					return;
 
 				if (_source != null)
-					throw new ArgumentException("MergedWith can not be used with Source");
+					throw new ArgumentException("MergedWith cannot be used with Source");
 
 				if (!typeof(ResourceDictionary).GetTypeInfo().IsAssignableFrom(value.GetTypeInfo()))
 					throw new ArgumentException("MergedWith should inherit from ResourceDictionary");
@@ -66,7 +66,7 @@ namespace Xamarin.Forms
 		{
 			_source = value;
 			if (_mergedWith != null)
-				throw new ArgumentException("Source can not be used with MergedWith");
+				throw new ArgumentException("Source cannot be used with MergedWith");
 
 			//this will return a type if the RD as an x:Class element, and codebehind
 			var type = XamlResourceIdAttribute.GetTypeForPath(assembly, resourcePath);
@@ -175,7 +175,7 @@ namespace Xamarin.Forms
 
 		public int Count
 		{
-			get { return _innerDictionary.Count; }
+			get { return _innerDictionary.Count + (_mergedInstance?.Count ?? 0); }
 		}
 
 		bool ICollection<KeyValuePair<string, object>>.IsReadOnly
@@ -230,7 +230,7 @@ namespace Xamarin.Forms
 
 		public bool Remove(string key)
 		{
-			return _innerDictionary.Remove(key);
+			return _innerDictionary.Remove(key) || (_mergedInstance?.Remove(key) ?? false);
 		}
 
 		public ICollection<object> Values
@@ -352,6 +352,7 @@ namespace Xamarin.Forms
 		internal static void ClearCache() => s_instances = new ConditionalWeakTable<Type, ResourceDictionary>();
 
 		[Xaml.ProvideCompiled("Xamarin.Forms.Core.XamlC.RDSourceTypeConverter")]
+		[TypeConversion(typeof(Uri))]
 		public class RDSourceTypeConverter : TypeConverter, IExtendedTypeConverter
 		{
 			object IExtendedTypeConverter.ConvertFromInvariantString(string value, IServiceProvider serviceProvider)
@@ -359,8 +360,7 @@ namespace Xamarin.Forms
 				if (serviceProvider == null)
 					throw new ArgumentNullException(nameof(serviceProvider));
 
-				var targetRD = (serviceProvider.GetService(typeof(Xaml.IProvideValueTarget)) as Xaml.IProvideValueTarget)?.TargetObject as ResourceDictionary;
-				if (targetRD == null)
+				if (!((serviceProvider.GetService(typeof(Xaml.IProvideValueTarget)) as Xaml.IProvideValueTarget)?.TargetObject is ResourceDictionary targetRD))
 					return null;
 
 				var rootObjectType = (serviceProvider.GetService(typeof(Xaml.IRootObjectProvider)) as Xaml.IRootObjectProvider)?.RootObject.GetType();
@@ -369,10 +369,23 @@ namespace Xamarin.Forms
 
 				var lineInfo = (serviceProvider.GetService(typeof(Xaml.IXmlLineInfoProvider)) as Xaml.IXmlLineInfoProvider)?.XmlLineInfo;
 				var rootTargetPath = XamlResourceIdAttribute.GetPathForType(rootObjectType);
+				var assembly = rootObjectType.GetTypeInfo().Assembly;
+#if NETSTANDARD2_0
+				if (value.Contains(";assembly="))
+				{
+					var parts = value.Split(new[] { ";assembly=" }, StringSplitOptions.RemoveEmptyEntries);
+					value = parts[0];
+					var asmName = parts[1];
+					assembly = Assembly.Load(asmName);
+				}
+#endif
 				var uri = new Uri(value, UriKind.Relative); //we don't want file:// uris, even if they start with '/'
 				var resourcePath = GetResourcePath(uri, rootTargetPath);
 
-				targetRD.SetAndLoadSource(uri, resourcePath, rootObjectType.GetTypeInfo().Assembly, lineInfo);
+				//Re-add the assembly= in all cases, so HotReload doesn't have to make assumptions
+				uri = new Uri($"{value};assembly={assembly.GetName().Name}", UriKind.Relative);
+				targetRD.SetAndLoadSource(uri, resourcePath, assembly, lineInfo);
+
 				return uri;
 			}
 
@@ -395,6 +408,13 @@ namespace Xamarin.Forms
 			public override object ConvertFromInvariantString(string value)
 			{
 				throw new NotImplementedException();
+			}
+
+			public override string ConvertToInvariantString(object value)
+			{
+				if (!(value is Uri uri))
+					throw new NotSupportedException();
+				return uri.ToString();
 			}
 		}
 	}

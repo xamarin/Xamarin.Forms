@@ -4,6 +4,7 @@ using System.Reflection;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Tizen.Native;
 using Xamarin.Forms.PlatformConfiguration.TizenSpecific;
+using Xamarin.Forms.Shapes;
 using Xamarin.Forms.Xaml.Internals;
 
 namespace Xamarin.Forms.Platform.Tizen
@@ -69,7 +70,14 @@ namespace Xamarin.Forms.Platform.Tizen
 		public static void RegisterHandlers(Dictionary<Type, Func<IRegisterable>> customHandlers)
 		{
 			//Renderers
-			Registered.Register(typeof(Layout), () => new LayoutRenderer());
+			if (Forms.UseFastLayout)
+			{
+				Registered.Register(typeof(Layout), () => new FastLayoutRenderer());
+			}
+			else
+			{
+				Registered.Register(typeof(Layout), () => new LayoutRenderer());
+			}
 			Registered.Register(typeof(ScrollView), () => new ScrollViewRenderer());
 			Registered.Register(typeof(CarouselPage), () => new CarouselPageRenderer());
 			Registered.Register(typeof(Page), () => new PageRenderer());
@@ -112,6 +120,10 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				Registered.Register(typeof(Shell), () => new Watch.ShellRenderer());
 			}
+			else if (Device.Idiom == TargetIdiom.TV)
+			{
+				Registered.Register(typeof(Shell), () => new TV.TVShellRenderer());
+			}
 			else
 			{
 				Registered.Register(typeof(Shell), () => new ShellRenderer());
@@ -137,6 +149,22 @@ namespace Xamarin.Forms.Platform.Tizen
 			DependencyService.Register<IDeserializer, Deserializer>();
 			DependencyService.Register<INativeBindingService, NativeBindingService>();
 			DependencyService.Register<INativeValueConverterService, NativeValueConverterService>();
+
+			//SkiaSharp Renderers
+			if (Forms.UseSkiaSharp)
+			{
+				// Register all skiasharp-based rednerers here for StaticRegistrar
+				Registered.Register(typeof(Frame), () => new SkiaSharp.FrameRenderer());
+				Registered.Register(typeof(BoxView), () => new SkiaSharp.BoxViewRenderer());
+				Registered.Register(typeof(Image), () => new SkiaSharp.ImageRenderer());
+
+				Registered.Register(typeof(Ellipse), () => new SkiaSharp.EllipseRenderer());
+				Registered.Register(typeof(Line), () => new SkiaSharp.LineRenderer());
+				Registered.Register(typeof(Path), () => new SkiaSharp.PathRenderer());
+				Registered.Register(typeof(Polygon), () => new SkiaSharp.PolygonRenderer());
+				Registered.Register(typeof(Polyline), () => new SkiaSharp.PolylineRenderer());
+				Registered.Register(typeof(Shapes.Rectangle), () => new SkiaSharp.RectangleRenderer());
+			}
 
 			//Custom Handlers
 			if (customHandlers != null)

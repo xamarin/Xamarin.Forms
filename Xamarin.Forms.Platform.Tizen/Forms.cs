@@ -9,6 +9,7 @@ using ElmSharp.Wearable;
 using Tizen.Applications;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Tizen;
+using Xamarin.Forms.Shapes;
 using DeviceOrientation = Xamarin.Forms.Internals.DeviceOrientation;
 using ELayout = ElmSharp.Layout;
 using TSystemInfo = Tizen.System.Information;
@@ -32,6 +33,7 @@ namespace Xamarin.Forms
 	{
 		public CoreApplication Context { get; set; }
 		public bool UseDeviceIndependentPixel { get; set; }
+		public bool UseSkiaSharp { get; set; }
 		public HandlerAttribute[] Handlers { get; set; }
 		public Dictionary<Type, Func<IRegisterable>> CustomHandlers { get; set; } // for static registers
 		public Assembly[] Assemblies { get; set; }
@@ -40,6 +42,7 @@ namespace Xamarin.Forms
 		public StaticRegistrarStrategy StaticRegistarStrategy { get; set; }
 		public PlatformType PlatformType { get; set; }
 		public bool UseMessagingCenter { get; set; } = true;
+		public bool UseFastLayout { get; set; } = false;
 
 		public DisplayResolutionUnit DisplayResolutionUnit { get; set; }
 
@@ -267,6 +270,10 @@ namespace Xamarin.Forms
 
 		public static bool UseMessagingCenter => s_useMessagingCenter;
 
+		public static bool UseSkiaSharp { get; private set; }
+
+		public static bool UseFastLayout { get; private set; }
+
 		public static DisplayResolutionUnit DisplayResolutionUnit { get; private set; }
 
 		public static int ScreenDPI => s_dpi.Value;
@@ -475,11 +482,8 @@ namespace Xamarin.Forms
 				{
 					s_platformType = options.PlatformType;
 					s_useMessagingCenter = options.UseMessagingCenter;
-
-					if (options.Assemblies != null && options.Assemblies.Length > 0)
-					{
-						TizenPlatformServices.AppDomain.CurrentDomain.AddAssemblies(options.Assemblies);
-					}
+					UseSkiaSharp = options.UseSkiaSharp;
+					UseFastLayout = options.UseFastLayout;
 
 					// renderers
 					if (options.Handlers != null)
@@ -488,9 +492,6 @@ namespace Xamarin.Forms
 					}
 					else
 					{
-						// Add Xamarin.Forms.Core assembly by default to apply the styles.
-						TizenPlatformServices.AppDomain.CurrentDomain.AddAssembly(Assembly.GetAssembly(typeof(Xamarin.Forms.View)));
-
 						// static registrar
 						if (options.StaticRegistarStrategy != StaticRegistrarStrategy.None)
 						{
@@ -507,12 +508,13 @@ namespace Xamarin.Forms
 										typeof(ExportHandlerAttribute),
 										typeof(ExportFontAttribute)
 								});
+
+								if (UseSkiaSharp)
+									RegisterSkiaSharpRenderers();
 							}
 						}
 						else
 						{
-							// The assembly of the executing application and referenced assemblies of it are added into the list here.
-							TizenPlatformServices.AppDomain.CurrentDomain.RegisterAssemblyRecursively(application.GetType().GetTypeInfo().Assembly);
 							Registrar.RegisterAll(new Type[]
 							{
 								typeof(ExportRendererAttribute),
@@ -521,6 +523,12 @@ namespace Xamarin.Forms
 								typeof(ExportHandlerAttribute),
 								typeof(ExportFontAttribute)
 							});
+
+							if (UseSkiaSharp)
+								RegisterSkiaSharpRenderers();
+
+							if (UseFastLayout)
+								Registrar.Registered.Register(typeof(Layout), typeof(FastLayoutRenderer));
 						}
 					}
 
@@ -540,11 +548,6 @@ namespace Xamarin.Forms
 				}
 				else
 				{
-					// In .NETCore, AppDomain feature is not supported.
-					// The list of assemblies returned by AppDomain.GetAssemblies() method should be registered manually.
-					// The assembly of the executing application and referenced assemblies of it are added into the list here.
-					TizenPlatformServices.AppDomain.CurrentDomain.RegisterAssemblyRecursively(application.GetType().GetTypeInfo().Assembly);
-
 					Registrar.RegisterAll(new Type[]
 					{
 						typeof(ExportRendererAttribute),
@@ -563,6 +566,21 @@ namespace Xamarin.Forms
 				s_platformType = PlatformType.Lightweight;
 
 			IsInitialized = true;
+		}
+
+		static void RegisterSkiaSharpRenderers()
+		{
+			// Register all skiasharp-based rednerers here.
+			Registrar.Registered.Register(typeof(Frame), typeof(Platform.Tizen.SkiaSharp.FrameRenderer));
+			Registrar.Registered.Register(typeof(BoxView), typeof(Platform.Tizen.SkiaSharp.BoxViewRenderer));
+			Registrar.Registered.Register(typeof(Image), typeof(Platform.Tizen.SkiaSharp.ImageRenderer));
+
+			Registrar.Registered.Register(typeof(Ellipse), typeof(Platform.Tizen.SkiaSharp.EllipseRenderer));
+			Registrar.Registered.Register(typeof(Line), typeof(Platform.Tizen.SkiaSharp.LineRenderer));
+			Registrar.Registered.Register(typeof(Path), typeof(Platform.Tizen.SkiaSharp.PathRenderer));
+			Registrar.Registered.Register(typeof(Shapes.Polygon), typeof(Platform.Tizen.SkiaSharp.PolygonRenderer));
+			Registrar.Registered.Register(typeof(Polyline), typeof(Platform.Tizen.SkiaSharp.PolylineRenderer));
+			Registrar.Registered.Register(typeof(Shapes.Rectangle), typeof(Platform.Tizen.SkiaSharp.RectangleRenderer));
 		}
 
 		static Color GetAccentColor(string profile)

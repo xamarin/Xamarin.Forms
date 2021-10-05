@@ -69,6 +69,10 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					Items[0].Items.Clear();
 					Items.Clear();
+
+					ContentPage parent = _stackContent.Parent as ContentPage;
+					parent.Content = null;
+
 					AddTopTab(TopTab).Content = _stackContent;
 					CurrentItem = Items.Last();
 
@@ -86,7 +90,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap(ClearShellItems);
 
 			var label = RunningApp.WaitForElement(StatusLabel)[0];
-			Assert.AreEqual(label.Text, StatusLabelText);
+			Assert.AreEqual(StatusLabelText, label.ReadText());
 			RunningApp.Tap(PostClearTopTab);
 		}
 #endif

@@ -266,6 +266,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateEmptyView();
 			AddOrUpdateScrollListener();
+			UpdateSnapBehavior();
 		}
 
 		protected virtual TAdapter CreateAdapter()
@@ -317,7 +318,6 @@ namespace Xamarin.Forms.Platform.Android
 			ItemsLayout = GetItemsLayout();
 			SetLayoutManager(SelectLayoutManager(ItemsLayout));
 
-			UpdateSnapBehavior();
 			UpdateBackgroundColor();
 			UpdateBackground();
 			UpdateFlowDirection();
@@ -336,6 +336,9 @@ namespace Xamarin.Forms.Platform.Android
 			ItemsView.ScrollToRequested += ScrollToRequested;
 
 			AddOrUpdateScrollListener();
+
+			// Update the snap behavior after add the scroll listener
+			UpdateSnapBehavior();
 		}
 
 		protected virtual RecyclerViewScrollListener<TItemsView, TItemsViewSource> CreateScrollListener()
@@ -566,7 +569,6 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (args.Mode == ScrollToMode.Position)
 			{
-				// TODO hartez 2018/08/28 15:40:03 Need to handle group indices here as well	
 				return args.Index;
 			}
 

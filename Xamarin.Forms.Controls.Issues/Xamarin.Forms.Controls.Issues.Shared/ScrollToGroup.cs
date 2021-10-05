@@ -12,6 +12,10 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+
+#if __WINDOWS__
+[NUnit.Framework.Category(UITestCategories.UwpIgnore)] // Can't accurately check this test 
+#endif
 #if UITEST
 	[Category(UITestCategories.CollectionView)]
 #endif
@@ -27,7 +31,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 		}
 
-#if UITEST && __IOS__ // Grouping for Android hasn't been merged yet
+#if UITEST
 		[Test]
 		public void CanScrollToGroupAndItemIndex()
 		{
