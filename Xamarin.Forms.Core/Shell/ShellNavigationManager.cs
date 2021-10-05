@@ -163,7 +163,10 @@ namespace Xamarin.Forms
 			}
 			else
 			{
-				await _shell.CurrentItem.CurrentItem.GoToAsync(navigationRequest, queryData, animate, isRelativePopping);
+				await Device.InvokeOnMainThreadAsync(() =>
+				{
+					return _shell.CurrentItem.CurrentItem.GoToAsync(navigationRequest, queryData, animate, isRelativePopping);
+				});
 			}
 
 			(_shell as IShellController).UpdateCurrentState(source);
