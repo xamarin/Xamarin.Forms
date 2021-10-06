@@ -703,11 +703,15 @@ namespace Xamarin.Forms.Platform.iOS
 				System.Diagnostics.Debug.Write($"WillShowViewController {viewController.GetHashCode()}");
 				var element = _self.ElementForViewController(viewController);
 
-				bool navBarVisible;
-				if (element is ShellSection)
-					navBarVisible = _self._renderer.ShowNavBar;
-				else
-					navBarVisible = Shell.GetNavBarIsVisible(element);
+				bool navBarVisible = false;
+
+				if (element != null)
+				{
+					if (element is ShellSection)
+						navBarVisible = _self._renderer.ShowNavBar;
+					else
+						navBarVisible = Shell.GetNavBarIsVisible(element);
+				}
 
 				navigationController.SetNavigationBarHidden(!navBarVisible, true);
 
