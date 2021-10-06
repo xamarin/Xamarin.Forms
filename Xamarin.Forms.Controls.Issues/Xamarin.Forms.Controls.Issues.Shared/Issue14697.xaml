@@ -9,9 +9,8 @@
             BackgroundColor="Black"
             CornerRadius="0">
             <Label
-                FontSize="36"
                 HorizontalTextAlignment="Center"
-                Text="Issue 14697"
+                Text="Rotate the Device or Emulator If the Shape size adapts (Aspect = Uniform), the test has passed."
                 TextColor="White" />
         </Frame>
         <Path
