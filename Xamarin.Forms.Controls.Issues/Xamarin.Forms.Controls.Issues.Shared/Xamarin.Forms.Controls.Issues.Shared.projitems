@@ -98,6 +98,9 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue12652.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue12714.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue13037.xaml.cs">
+      <DependentUpon>Issue13037.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue2447.xaml.cs">
       <DependentUpon>Issue2447.xaml</DependentUpon>
     </Compile>
@@ -1777,8 +1780,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue12590.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue13726.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11795.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue14528.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue14286.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue9079.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue10101.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue13818.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FrameBackgroundIssue.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue14192.xaml.cs" />
@@ -2233,6 +2238,9 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue9079.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue10101.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue13818.xaml">
@@ -2762,6 +2770,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue13037.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue2447.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
