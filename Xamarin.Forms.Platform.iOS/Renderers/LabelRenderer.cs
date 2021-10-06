@@ -201,6 +201,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (e.PropertyName == Label.TextProperty.PropertyName)
 			{
 				UpdateText();
+				UpdateTextColor();
 				UpdateTextDecorations();
 				UpdateCharacterSpacing();
 			}
@@ -289,6 +290,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			Control.AttributedStringValue = newAttributedText;
 #endif
 			UpdateCharacterSpacing();
+
 			_perfectSizeValid = false;
 		}
 
@@ -468,6 +470,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			_perfectSizeValid = false;
 
 			UpdateHorizontalTextAlignment();
+			UpdateLineBreakMode();
 		}
 
 		void UpdateTextHtml()
