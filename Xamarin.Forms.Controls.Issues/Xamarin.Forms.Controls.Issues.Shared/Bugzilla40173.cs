@@ -103,6 +103,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var testListView = new ListView();
 			var items = new[] { "Foo" };
 			testListView.ItemsSource = items;
+			testListView.RowHeight = 23;
 			testListView.ItemTemplate = new DataTemplate(() =>
 			{
 				var result = new ViewCell
