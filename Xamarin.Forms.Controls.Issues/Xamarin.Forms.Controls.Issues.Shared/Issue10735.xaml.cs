@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
@@ -9,7 +10,7 @@ using Xamarin.UITest;
 using NUnit.Framework;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.CollectionView)]
@@ -18,12 +19,14 @@ namespace Xamarin.Forms.Controls
 	[Issue(IssueTracker.Github, 10735, "[Bug] [Fatal] [Android] CollectionView Causes Application Crash When Keyboard Opens", PlatformAffected.Android)]
 	public partial class Issue10735 : TestContentPage
 	{
+#if APP
 		readonly int _addItemDelay = 300;
 		int _item = 0;
-#if APP
 		readonly int _changeFocusDelay = 1000;
 		View _lastFocus;
 #endif
+
+		const string Success = "Success";
 
 		public Issue10735()
 		{
@@ -41,21 +44,27 @@ namespace Xamarin.Forms.Controls
 
 		}
 
+#if APP
 		void StartAddingMessages()
 		{
 			Task.Run(async () =>
 			{
-				while (true)
+				while (_item < 30)
 				{
 					await Task.Delay(_addItemDelay);
 					Items.Add(_item.ToString());
 					_item++;
 				}
+
+				Device.BeginInvokeOnMainThread(() =>
+				{
+					Result.Text = Success;
+				});
 			});
-#if APP
+
 			Task.Run(async () =>
 			{
-				while (true)
+				while (_item < 30)
 				{
 					await Task.Delay(_changeFocusDelay);
 					Device.BeginInvokeOnMainThread(() =>
@@ -71,7 +80,15 @@ namespace Xamarin.Forms.Controls
 					});
 				}
 			});
-#endif
 		}
+#endif
+
+#if UITEST
+		[Test]
+		public void KeyboardOpeningDuringCollectionViewAnimationShouldNotCrash()
+		{
+			RunningApp.WaitForElement(Success, timeout: TimeSpan.FromSeconds(15));
+		}
+#endif
 	}
 }

@@ -14,7 +14,7 @@
             BackgroundColor="GreenYellow">
             <CarouselView.ItemsSource>
                 <x:Array Type="{x:Type x:String}">
-                    <x:String>Baboon</x:String>
+                    <x:String>Success</x:String>
                     <x:String>Capuchin Monkey</x:String>
                     <x:String>Blue Monkey</x:String>
                     <x:String>Squirrel Monkey</x:String>
