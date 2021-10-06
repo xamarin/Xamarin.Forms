@@ -46,7 +46,8 @@
     <item name="windowActionModeOverlay">true</item>
     <item name="android:datePickerDialogTheme">@style/AppCompatDialogStyle</item>
   </style>
-  <style name="AppCompatDialogStyle" parent="Theme.AppCompat.DayNight.Dialog">
+  <style name="AppCompatDialogStyle">
     <item name="colorAccent">#FF4081</item>
+    <item name="android:windowIsFloating">true</item>
   </style>
 </resources>

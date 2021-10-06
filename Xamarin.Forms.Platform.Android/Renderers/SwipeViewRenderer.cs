@@ -246,21 +246,31 @@ namespace Xamarin.Forms.Platform.Android
 			var interceptPoint = new Point(e.GetX() / _density, e.GetY() / _density);
 
 			var diffX = interceptPoint.X - _initialPoint.X;
+			var aDiffX = Math.Abs(diffX);
+
 			var diffY = interceptPoint.Y - _initialPoint.Y;
+			var aDiffY = Math.Abs(diffY);
 
-			SwipeDirection swipeDirection;
+			var swipeMinimumDelta = 1.0f;
 
-			if (Math.Abs(diffX) > Math.Abs(diffY))
-				swipeDirection = diffX > 0 ? SwipeDirection.Right : SwipeDirection.Left;
-			else
-				swipeDirection = diffY > 0 ? SwipeDirection.Down : SwipeDirection.Up;
+			if (aDiffX >= swipeMinimumDelta || aDiffY >= swipeMinimumDelta)
+			{
+				SwipeDirection swipeDirection;
 
-			var items = GetSwipeItemsByDirection(swipeDirection);
+				if (aDiffX > aDiffY)
+					swipeDirection = diffX > 0 ? SwipeDirection.Right : SwipeDirection.Left;
+				else
+					swipeDirection = diffY > 0 ? SwipeDirection.Down : SwipeDirection.Up;
 
-			if (items == null || items.Count == 0)
-				return false;
+				var items = GetSwipeItemsByDirection(swipeDirection);
 
-			return ShouldInterceptScrollChildrenTouch(swipeDirection);
+				if (items == null || items.Count == 0)
+					return false;
+
+				return ShouldInterceptScrollChildrenTouch(swipeDirection);
+			}
+
+			return false;
 		}
 
 		bool ShouldInterceptScrollChildrenTouch(SwipeDirection swipeDirection)

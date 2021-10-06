@@ -6,7 +6,7 @@ variables:
 - name: BuildVersion
   value: $[counter('nuget-counter', 126)]
 - name: NUGET_VERSION
-  value: 5.6.0
+  value: 5.8.1
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
   value: true
 - name: DOTNET_VERSION
@@ -49,6 +49,7 @@ schedules:
   branches:
     include:
     - main
+    - 5.0.0
 
 stages:
   - stage: windows
@@ -259,5 +260,7 @@ stages:
             signedArtifactPath: signed
             displayName: Sign Phase
             condition: and(succeeded(), ne(variables['signVmImage'], ''), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
-
-
+            preSignSteps:
+              - task: NuGetToolInstaller@1
+                inputs:
+                  versionSpec: $(NUGET_VERSION)
