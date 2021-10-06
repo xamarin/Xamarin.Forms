@@ -831,7 +831,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			nfloat GetEstimatedRowHeight(UITableView table)
 			{
-				if (List.RowHeight != -1)
+				if (List == null || List.RowHeight != -1)
 				{
 					// Not even sure we need this case; A list with HasUnevenRows and a RowHeight doesn't make a ton of sense
 					// Anyway, no need for an estimate, because the heights we'll use are known
@@ -858,6 +858,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				var firstCell = templatedItems.ActivateContent(0, item);
 
+				nfloat returnValue;
 				// Let's skip this optimization for grouped lists. It will likely cause more trouble than it's worth.
 				if (firstCell?.Height > 0 && !isGroupingEnabled)
 				{
@@ -867,10 +868,15 @@ namespace Xamarin.Forms.Platform.iOS
 					// In this case, we will cache the specified cell heights asynchronously, which will be returned one time on
 					// table load by EstimatedHeight.
 
-					return 0;
+					returnValue= 0;
+				}
+				else
+				{
+					returnValue = CalculateHeightForCell(table, firstCell);
 				}
 
-				return CalculateHeightForCell(table, firstCell);
+				TemplatedItemsView.UnhookContent(firstCell);
+				return returnValue;
 			}
 
 			internal override void InvalidatingPrototypicalCellCache()

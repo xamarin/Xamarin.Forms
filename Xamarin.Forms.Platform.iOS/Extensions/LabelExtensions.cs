@@ -3,6 +3,7 @@ using Foundation;
 using System.Collections.Generic;
 using System.Drawing;
 using Xamarin.Forms.Internals;
+using SizeF = CoreGraphics.CGSize;
 #if __MOBILE__
 using UIKit;
 using NativeLabel = UIKit.UILabel;

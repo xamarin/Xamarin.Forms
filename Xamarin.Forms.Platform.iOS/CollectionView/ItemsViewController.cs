@@ -13,6 +13,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public const int EmptyTag = 333;
 
 		public IItemsViewSource ItemsSource { get; protected set; }
+		
 		public TItemsView ItemsView { get; }
 		protected ItemsViewLayout ItemsViewLayout { get; set; }
 		bool _initialized;
@@ -59,6 +60,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
+				UnbindCells();
+				_measurementCells = null;
+			
 				ItemsSource?.Dispose();
 
 				CollectionView.Delegate = null;
@@ -71,6 +75,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				ItemsViewLayout?.Dispose();
 				CollectionView?.Dispose();
+
 			}
 
 			base.Dispose(disposing);
@@ -108,6 +113,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (_isEmpty)
 			{
+				UnbindCells();
 				_measurementCells.Clear();
 				ItemsViewLayout?.ClearCellSizeCache();
 			}
@@ -123,6 +129,24 @@ namespace Xamarin.Forms.Platform.iOS
 				// a prototype cell and our itemSize or estimatedItemSize are wrong/unset
 				// So trigger a constraint update; if we need a measurement, that will make it happen
 				ItemsViewLayout.ConstrainTo(CollectionView.Bounds.Size);
+			}
+		}
+
+		private void UnbindCells()
+		{
+			if (_measurementCells == null || _measurementCells.Count == 0)
+				return;
+
+			foreach (var _cell in _measurementCells)
+			{
+				var _tCell = _cell.Value;
+				if (_tCell == null)
+					continue;
+
+				_tCell.Unbind();
+
+				_tCell.ContentSizeChanged -= CellContentSizeChanged;
+				_tCell.LayoutAttributesChanged -= CellLayoutAttributesChanged;
 			}
 		}
 
@@ -209,6 +233,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_measurementCells.Clear();
 			ItemsViewLayout?.ClearCellSizeCache();
+			ItemsSource?.Dispose();
 			ItemsSource = CreateItemsViewSource();
 			CollectionView.ReloadData();
 			CollectionView.CollectionViewLayout.InvalidateLayout();
@@ -403,7 +428,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual void HandleFormsElementMeasureInvalidated(VisualElement formsElement)
 		{
 			RemeasureLayout(formsElement);
-        }
+		}
 
 		internal void UpdateView(object view, DataTemplate viewTemplate, ref UIView uiView, ref VisualElement formsElement)
 		{
@@ -618,6 +643,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (CollectionView.Hidden)
 				{
+					CollectionView.ReloadData();
 					CollectionView.Hidden = false;
 					Layout.InvalidateLayout();
 					CollectionView.LayoutIfNeeded();

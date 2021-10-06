@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using Android.Content;
 
 namespace Xamarin.Forms.Platform.Android
@@ -27,6 +26,21 @@ namespace Xamarin.Forms.Platform.Android
 		protected override TAdapter CreateAdapter()
 		{
 			return (TAdapter)new GroupableItemsViewAdapter<TItemsView, TItemsViewSource>(ItemsView);
+		}
+
+		protected override int DetermineTargetPosition(ScrollToRequestEventArgs args)
+		{
+			if (!ItemsView.IsGrouped || args.Mode == ScrollToMode.Element)
+			{
+				return base.DetermineTargetPosition(args);
+			}
+
+			if (ItemsViewAdapter.ItemsSource is IGroupedItemsPosition groupedItemsPosition)
+			{
+				return groupedItemsPosition.GetPosition(args.GroupIndex, args.Index);
+			}
+
+			return 0;
 		}
 	}
 }

@@ -18,10 +18,11 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 	[Category(UITestCategories.CollectionView)]
 #endif
-	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 7510, "CollectionView crashes on adding item", PlatformAffected.All)]
 	public class Issue7510 : TestContentPage
 	{
+		const string AddButton = "AddBtn";
+
 		public Issue7510()
 		{
 			Title = "Issue 7510";
@@ -30,7 +31,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void OnAppearing()
 		{
-			if (this.BindingContext is Issue7510ModelViewModel vm)
+			if (BindingContext is Issue7510ModelViewModel vm)
 			{
 				vm.Init();
 			}
@@ -48,7 +49,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var addButton = new Button
 			{
 				Text = "Add items",
-				AutomationId = "AddBtn"
+				AutomationId = AddButton
 			};
 
 			addButton.SetBinding(Button.CommandProperty, "MoreCommand");
@@ -90,16 +91,26 @@ namespace Xamarin.Forms.Controls.Issues
 
 			return template;
 		}
+
+#if UITEST
+		[Test]
+		public void AddingItemsToCollectionViewShouldNotCrash()
+		{
+			RunningApp.WaitForElement(AddButton);
+			RunningApp.Tap(AddButton);
+
+			// If the button's still here, the app didn't crash
+			RunningApp.WaitForElement(AddButton);
+		}
+#endif
 	}
 
-	[Preserve(AllMembers = true)]
 	public class Issue7510Model
 	{
 		public Guid Id { get; set; }
 		public string Title { get; set; }
 	}
 
-	[Preserve(AllMembers = true)]
 	public class Issue7510ModelViewModel : BindableObject
 	{
 		private ObservableCollection<Issue7510Model> _items;
