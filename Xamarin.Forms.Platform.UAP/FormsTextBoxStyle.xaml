@@ -221,10 +221,10 @@
 						              VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
 						              VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}" ZoomMode="Disabled"
                                       VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
-						<ContentControl x:Name="PlaceholderTextContentPresenter" Grid.ColumnSpan="2"
-						                Content="{TemplateBinding PlaceholderText}"
+						<TextBlock x:Name="PlaceholderTextContentPresenter" Grid.ColumnSpan="2"
+						                Text="{TemplateBinding PlaceholderText}" TextWrapping="Wrap"
 						                Foreground="{TemplateBinding PlaceholderForegroundBrush}" IsHitTestVisible="False"
-						                IsTabStop="False" Margin="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}"
+						                Margin="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}"
 						                Grid.Row="1"
 						                HorizontalAlignment="{Binding TextAlignment, 
                                             RelativeSource={RelativeSource Mode=TemplatedParent}, 
