@@ -70,12 +70,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (!tabBarTitleColor.IsDefault)
 			{
-				tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = tabBarAppearance.StackedLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes
-				{
-					ForegroundColor = tabBarTitleColor.ToUIColor()
-				};
+				tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = tabBarAppearance.StackedLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes { ForegroundColor = tabBarTitleColor.ToUIColor() };
+				tabBarAppearance.StackedLayoutAppearance.Normal.IconColor = tabBarAppearance.StackedLayoutAppearance.Selected.IconColor = tabBarTitleColor.ToUIColor();
 			}
-
+			
 			//Set TabBarUnselectedColor
 			var tabBarUnselectedColor = appearanceElement.EffectiveTabBarUnselectedColor;
 
@@ -85,7 +83,6 @@ namespace Xamarin.Forms.Platform.iOS
 				tabBarAppearance.StackedLayoutAppearance.Normal.IconColor = tabBarUnselectedColor.ToUIColor();
 			}
 
-
 			// Set TabBarDisabledColor
 			var tabBarDisabledColor = appearanceElement.EffectiveTabBarDisabledColor;
 
@@ -94,7 +91,7 @@ namespace Xamarin.Forms.Platform.iOS
 				tabBarAppearance.StackedLayoutAppearance.Disabled.TitleTextAttributes = new UIStringAttributes { ForegroundColor = tabBarDisabledColor.ToUIColor() };
 				tabBarAppearance.StackedLayoutAppearance.Disabled.IconColor = tabBarDisabledColor.ToUIColor();
 			}
-
+			
 			tabBar.StandardAppearance = tabBar.ScrollEdgeAppearance = tabBarAppearance;
 		}
 
