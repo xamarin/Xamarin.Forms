@@ -66,10 +66,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateiOS15NavigationBarAppearance(UINavigationController controller, ShellAppearance appearance)
 		{
-			var background = appearance.BackgroundColor;
-			var foreground = appearance.ForegroundColor;
-			var titleColor = appearance.TitleColor;
-
 			var navBar = controller.NavigationBar;
 
 			var navigationBarAppearance = new UINavigationBarAppearance();
@@ -77,11 +73,20 @@ namespace Xamarin.Forms.Platform.iOS
 
 			navBar.Translucent = false;
 
+			// Set ForegroundColor
+			var foreground = appearance.ForegroundColor;
+
 			if (!foreground.IsDefault)
 				navBar.TintColor = foreground.ToUIColor();
 
+			// Set BackgroundColor
+			var background = appearance.BackgroundColor;
+
 			if (!background.IsDefault)
 				navigationBarAppearance.BackgroundColor = background.ToUIColor();
+
+			// Set TitleColor
+			var titleColor = appearance.TitleColor;
 
 			if (!titleColor.IsDefault)
 				navigationBarAppearance.TitleTextAttributes = new UIStringAttributes() { ForegroundColor = titleColor.ToUIColor() };
