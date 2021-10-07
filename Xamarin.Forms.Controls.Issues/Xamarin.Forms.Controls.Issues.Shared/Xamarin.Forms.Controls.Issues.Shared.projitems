@@ -1786,6 +1786,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue10101.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue13818.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FrameBackgroundIssue.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue14664.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue14192.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue14505.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue14505-II.cs" />
