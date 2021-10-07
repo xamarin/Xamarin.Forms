@@ -10,7 +10,7 @@
     mc:Ignorable="d">
     <ShellItem>
         <ShellSection Title="Issue 1" IsEnabled="False">
-            <ShellContent>
+            <ShellContent Shell.TabBarBackgroundColor="Red" Shell.TabBarTitleColor="Yellow" Shell.TabBarUnselectedColor="Green" Shell.TabBarDisabledColor="Purple">
                 <local:PageInstruction PageNumber="1"  />
             </ShellContent>
         </ShellSection>

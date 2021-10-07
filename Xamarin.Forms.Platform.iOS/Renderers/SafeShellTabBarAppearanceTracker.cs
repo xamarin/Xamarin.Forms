@@ -51,8 +51,6 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateiOS15TabBarAppearance(UITabBarController controller, ShellAppearance appearance)
 		{
 			IShellAppearanceElement appearanceElement = appearance;
-			var backgroundColor = appearanceElement.EffectiveTabBarBackgroundColor;
-			var titleColor = appearanceElement.EffectiveTabBarTitleColor;
 
 			var tabBar = controller.TabBar;
 
@@ -61,15 +59,40 @@ namespace Xamarin.Forms.Platform.iOS
 
 			tabBar.Translucent = false;
 
-			if (!backgroundColor.IsDefault)
-				tabBarAppearance.BackgroundColor = backgroundColor.ToUIColor();
+			// Set TabBarBackgroundColor
+			var tabBarBackgroundColor = appearanceElement.EffectiveTabBarBackgroundColor;
 
-			if (!titleColor.IsDefault)
+			if (!tabBarBackgroundColor.IsDefault)
+				tabBarAppearance.BackgroundColor = tabBarBackgroundColor.ToUIColor();
+
+			// Set TabBarTitleColor
+			var tabBarTitleColor = appearanceElement.EffectiveTabBarTitleColor;
+
+			if (!tabBarTitleColor.IsDefault)
 			{
 				tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = tabBarAppearance.StackedLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes
 				{
-					ForegroundColor = titleColor.ToUIColor()
+					ForegroundColor = tabBarTitleColor.ToUIColor()
 				};
+			}
+
+			//Set TabBarUnselectedColor
+			var tabBarUnselectedColor = appearanceElement.EffectiveTabBarUnselectedColor;
+
+			if (!tabBarUnselectedColor.IsDefault)
+			{
+				tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes { ForegroundColor = tabBarUnselectedColor.ToUIColor() };
+				tabBarAppearance.StackedLayoutAppearance.Normal.IconColor = tabBarUnselectedColor.ToUIColor();
+			}
+
+
+			// Set TabBarDisabledColor
+			var tabBarDisabledColor = appearanceElement.EffectiveTabBarDisabledColor;
+
+			if (!tabBarDisabledColor.IsDefault)
+			{
+				tabBarAppearance.StackedLayoutAppearance.Disabled.TitleTextAttributes = new UIStringAttributes { ForegroundColor = tabBarDisabledColor.ToUIColor() };
+				tabBarAppearance.StackedLayoutAppearance.Disabled.IconColor = tabBarDisabledColor.ToUIColor();
 			}
 
 			tabBar.StandardAppearance = tabBar.ScrollEdgeAppearance = tabBarAppearance;
