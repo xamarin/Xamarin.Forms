@@ -23,8 +23,9 @@ namespace Xamarin.Forms.Controls.Issues
 		PlatformAffected.iOS)]
 	public partial class Issue83832 : TestContentPage
 	{
+        #if APP
 		int _remainingItemsThresholdReachedCounter;
-
+        #endif
 		public Issue83832()
 		{
 #if APP
@@ -79,7 +80,7 @@ namespace Xamarin.Forms.Controls.Issues
             }
         }
 
-        #region INotifyPropertyChanged
+#region INotifyPropertyChanged
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -88,6 +89,6 @@ namespace Xamarin.Forms.Controls.Issues
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        #endregion
+#endregion
     }
 }
