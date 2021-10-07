@@ -78,7 +78,7 @@ namespace Xamarin.Forms.Platform.iOS
 			navBar.Translucent = false;
 
 			if (!foreground.IsDefault)
-				navigationBarAppearance.BackgroundColor = foreground.ToUIColor();
+				navBar.TintColor = foreground.ToUIColor();
 
 			if (!background.IsDefault)
 				navigationBarAppearance.BackgroundColor = background.ToUIColor();

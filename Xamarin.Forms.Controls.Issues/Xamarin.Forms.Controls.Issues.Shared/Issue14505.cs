@@ -45,6 +45,9 @@ namespace Xamarin.Forms.Controls.Issues
 				};
 
 				Shell.SetBackgroundColor(contentPage1, Color.Red);
+				Shell.SetForegroundColor(contentPage1, Color.Yellow);
+				Shell.SetTabBarBackgroundColor(contentPage1, Color.Red);
+				Shell.SetTabBarForegroundColor(contentPage1, Color.Yellow);
 
 				return contentPage1;
 			}
@@ -70,6 +73,9 @@ namespace Xamarin.Forms.Controls.Issues
 				};
 
 				Shell.SetBackgroundColor(contentPage2, Color.Green);
+				Shell.SetForegroundColor(contentPage2, Color.Red);
+				Shell.SetTabBarBackgroundColor(contentPage2, Color.Green);
+				Shell.SetTabBarForegroundColor(contentPage2, Color.Red);
 
 				return contentPage2;
 			}
