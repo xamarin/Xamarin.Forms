@@ -72,7 +72,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		void ButtonOnLoading(object o, RoutedEventArgs routedEventArgs)
+		void ButtonOnLoading(FrameworkElement sender, object args)
 		{
 			Element.IsNativeStateConsistent = false;
 		}
