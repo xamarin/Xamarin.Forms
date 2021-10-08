@@ -27,7 +27,7 @@ steps:
     condition: eq(variables['provisioningVS'], 'true')
     inputs:
       provisioning_script: 'build/provisioning/vs.csx'
-      provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
+      provisioning_extra_args: '-vvv'
 
   # - task: UseDotNet@2
   #   displayName: "Install .net core $(DOTNET_VERSION)"
