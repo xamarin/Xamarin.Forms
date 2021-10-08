@@ -23,11 +23,11 @@ steps:
       provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
   
   - task: xamops.azdevex.provisionator-task.provisionator@1
-    displayName: 'Provisionator'
+    displayName: 'Provisioning VS'
     condition: eq(variables['provisioningVS'], 'true')
     inputs:
-      provisioning_script: 'build/provisioning/vs.csx'
-      provisioning_extra_args: '-vvv'
+      provisioning_script: ${{ parameters.provisionatorVSPath }}
+      provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
 
   # - task: UseDotNet@2
   #   displayName: "Install .net core $(DOTNET_VERSION)"
