@@ -165,6 +165,15 @@ namespace Xamarin.Forms.Platform.Android
 
 		void Destroy()
 		{
+			if (_page != null)
+			{
+				var titleView = Shell.GetTitleView(_page);
+				if (titleView != null)
+				{
+					Shell.SetTitleView(_page, null);
+				}
+			}
+
 			((IShellController)_shellContext.Shell).RemoveAppearanceObserver(this);
 
 			if (_shellContent != null)
