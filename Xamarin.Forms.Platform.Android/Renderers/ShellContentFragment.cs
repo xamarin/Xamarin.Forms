@@ -180,6 +180,8 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_root is ViewGroup vg)
 					vg.RemoveView(_shellPageContainer);
+
+				_shellPageContainer.Dispose();
 			}
 
 			_renderer?.Dispose();
@@ -194,6 +196,7 @@ namespace Xamarin.Forms.Platform.Android
 			_root = null;
 			_renderer = null;
 			_shellContent = null;
+			_shellPageContainer = null;
 		}
 
 		protected override void Dispose(bool disposing)

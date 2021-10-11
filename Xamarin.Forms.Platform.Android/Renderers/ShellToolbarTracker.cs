@@ -176,6 +176,7 @@ namespace Xamarin.Forms.Platform.Android
 				_currentMenuItems?.Clear();
 				_currentToolbarItems?.Clear();
 
+				_drawerLayout.RemoveDrawerListener(_drawerToggle);
 				_drawerToggle?.Dispose();
 			}
 
