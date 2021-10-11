@@ -13,7 +13,7 @@
             Padding="12"
             BackgroundColor="Black"
             TextColor="White"
-            Text="If the can clear the selected Date, the test has passed."/>
+            Text="If you can clear the selected Date, the test has passed."/>
         <issues:NullableDatePicker
             Format="dd-MM-yyyy"
             NullableDate="{Binding NullableDate}" />
