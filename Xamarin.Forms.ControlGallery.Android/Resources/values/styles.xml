@@ -40,7 +40,7 @@
 		<!--<item name="android:buttonStyle">@style/red_button_style</item>-->
   </style>
 
-  <style name="AppCompatDialogStyle" parent="Theme.AppCompat.Light.Dialog">
+  <style name="AppCompatDialogStyle">
     <item name="colorAccent">#FF4081</item>
   </style>
 
