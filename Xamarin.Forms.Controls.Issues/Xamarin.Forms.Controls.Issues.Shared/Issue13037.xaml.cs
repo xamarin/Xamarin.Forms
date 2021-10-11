@@ -2,7 +2,7 @@
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Issue(IssueTracker.Github, 13037, "[Bug] Placeholder text in Editor control does not wrap text on UWP",	
+	[Issue(IssueTracker.Github, 13037, "[Bug] Placeholder text in Editor control does not wrap text on UWP",
 		PlatformAffected.UWP)]
 	public partial class Issue13037 : TestContentPage
 	{
