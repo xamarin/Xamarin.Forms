@@ -23,9 +23,9 @@ namespace Xamarin.Forms.Controls.Issues
 		PlatformAffected.iOS)]
 	public partial class Issue83832 : TestContentPage
 	{
-        #if APP
+#if APP
 		int _remainingItemsThresholdReachedCounter;
-        #endif
+#endif
 		public Issue83832()
 		{
 #if APP
@@ -35,8 +35,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-            BindingContext = new Issue83832ViewModel();
-        }
+			BindingContext = new Issue83832ViewModel();
+		}
 #if APP
 		void CollectionView_RemainingItemsThresholdReached(object sender, System.EventArgs e)
 		{
@@ -45,50 +45,50 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	}
 
-    public class Issue83832ViewModel : INotifyPropertyChanged
-    {
-        public ObservableCollection<string> ListItems { get; private set; } = new ObservableCollection<string>();
+	public class Issue83832ViewModel : INotifyPropertyChanged
+	{
+		public ObservableCollection<string> ListItems { get; private set; } = new ObservableCollection<string>();
 
-        Command _remainingItemsReachedCommand;
-        int _numberOfItems;
+		Command _remainingItemsReachedCommand;
+		int _numberOfItems;
 
-        public Issue83832ViewModel()
-        {
-            Initialize();
-        }
+		public Issue83832ViewModel()
+		{
+			Initialize();
+		}
 
-        public Command RemainingItemsReachedCommand
-        {
-            get
-            {
-                return (_remainingItemsReachedCommand) ?? (_remainingItemsReachedCommand = new Command(() =>
-                {
-                    for (int i = 0; i < 25; i++)
-                    {
-                        ListItems.Add(_numberOfItems++.ToString());
-                    }
-                }
-                ));
-            }
-        }
+		public Command RemainingItemsReachedCommand
+		{
+			get
+			{
+				return (_remainingItemsReachedCommand) ?? (_remainingItemsReachedCommand = new Command(() =>
+				{
+					for (int i = 0; i < 25; i++)
+					{
+						ListItems.Add(_numberOfItems++.ToString());
+					}
+				}
+				));
+			}
+		}
 
-        void Initialize()
-        {
-            for (int i = 0; i < 50; i++)
-            {
-                ListItems.Add(_numberOfItems++.ToString());
-            }
-        }
+		void Initialize()
+		{
+			for (int i = 0; i < 50; i++)
+			{
+				ListItems.Add(_numberOfItems++.ToString());
+			}
+		}
 
-#region INotifyPropertyChanged
+		#region INotifyPropertyChanged
 
-        public event PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler PropertyChanged;
 
-        public void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+		public void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
 
-#endregion
-    }
+		#endregion
+	}
 }

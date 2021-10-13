@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 13577,
-        "[Bug][DatePicker][XF5] DatePicker empty format now invalid",
+		"[Bug][DatePicker][XF5] DatePicker empty format now invalid",
 		PlatformAffected.iOS)]
 	public partial class Issue13577 : TestContentPage
 	{
@@ -26,101 +26,101 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		protected override void Init()
-        {
-            BindingContext = new Issue13577ViewModel();
-        }
+		{
+			BindingContext = new Issue13577ViewModel();
+		}
 	}
 
-    public class Issue13577ViewModel
-    {
-        public Issue13577ViewModel()
-        {
-            NullableDate = null;
-        }
+	public class Issue13577ViewModel
+	{
+		public Issue13577ViewModel()
+		{
+			NullableDate = null;
+		}
 
-        public DateTime? NullableDate { get; set; }
-    }
+		public DateTime? NullableDate { get; set; }
+	}
 
-    public class NullableDatePicker : Xamarin.Forms.DatePicker
-    {
-        public static readonly BindableProperty NullableDateProperty = BindableProperty.Create("NullableDate", typeof(DateTime?), typeof(NullableDatePicker), null, BindingMode.TwoWay);
+	public class NullableDatePicker : Xamarin.Forms.DatePicker
+	{
+		public static readonly BindableProperty NullableDateProperty = BindableProperty.Create("NullableDate", typeof(DateTime?), typeof(NullableDatePicker), null, BindingMode.TwoWay);
 
-        public DateTime? NullableDate
-        {
-            get
-            {
-                return (DateTime?)GetValue(NullableDateProperty);
-            }
-            set
-            {
-                if (value != NullableDate)
-                {
-                    SetValue(NullableDateProperty, value);
-                    UpdateDate();
-                }
-            }
-        }
+		public DateTime? NullableDate
+		{
+			get
+			{
+				return (DateTime?)GetValue(NullableDateProperty);
+			}
+			set
+			{
+				if (value != NullableDate)
+				{
+					SetValue(NullableDateProperty, value);
+					UpdateDate();
+				}
+			}
+		}
 
-        public void CleanDate()
-        {
-            NullableDate = null;
-            UpdateDate();
-        }
+		public void CleanDate()
+		{
+			NullableDate = null;
+			UpdateDate();
+		}
 
-        public void AssignValue()
-        {
-            NullableDate = Date;
-            UpdateDate();
-        }
+		public void AssignValue()
+		{
+			NullableDate = Date;
+			UpdateDate();
+		}
 
-        protected override void OnBindingContextChanged()
-        {
-            base.OnBindingContextChanged();
-            UpdateDate();
-        }
+		protected override void OnBindingContextChanged()
+		{
+			base.OnBindingContextChanged();
+			UpdateDate();
+		}
 
-        protected override void OnPropertyChanged(string propertyName = null)
-        {
-            base.OnPropertyChanged(propertyName);
+		protected override void OnPropertyChanged(string propertyName = null)
+		{
+			base.OnPropertyChanged(propertyName);
 
-            if (propertyName == IsFocusedProperty.PropertyName)
-            {
-                if (!IsFocused)
-                {
-                    OnPropertyChanged(DateProperty.PropertyName);
-                }
-            }
+			if (propertyName == IsFocusedProperty.PropertyName)
+			{
+				if (!IsFocused)
+				{
+					OnPropertyChanged(DateProperty.PropertyName);
+				}
+			}
 
-            if (propertyName == DateProperty.PropertyName)
-            {
-                NullableDate = Date;
-            }
+			if (propertyName == DateProperty.PropertyName)
+			{
+				NullableDate = Date;
+			}
 
-            if (propertyName == NullableDateProperty.PropertyName)
-            {
-                if (NullableDate.HasValue)
-                {
-                    Date = NullableDate.Value;
-                    Format = "dd-MM-yyyy";
-                }
-                else
-                {
-                    Format = "  ";
-                }
-            }
-        }
+			if (propertyName == NullableDateProperty.PropertyName)
+			{
+				if (NullableDate.HasValue)
+				{
+					Date = NullableDate.Value;
+					Format = "dd-MM-yyyy";
+				}
+				else
+				{
+					Format = "  ";
+				}
+			}
+		}
 
-        private void UpdateDate()
-        {
-            if (NullableDate.HasValue)
-            {
-                Date = NullableDate.Value;
-                Format = "dd-MM-yyyy";
-            }
-            else
-            {
-                Format = "  ";
-            }
-        }
-    }
+		private void UpdateDate()
+		{
+			if (NullableDate.HasValue)
+			{
+				Date = NullableDate.Value;
+				Format = "dd-MM-yyyy";
+			}
+			else
+			{
+				Format = "  ";
+			}
+		}
+	}
 }
