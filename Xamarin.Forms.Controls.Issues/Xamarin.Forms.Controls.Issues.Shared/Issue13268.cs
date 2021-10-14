@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	public class Issue13268 : TestContentPage
 	{
-		private string _success = "todo";
+		private string _success = "Guardian-1";
 
 		ObservableCollection<ObservableTeam> _itemsSource;
 
