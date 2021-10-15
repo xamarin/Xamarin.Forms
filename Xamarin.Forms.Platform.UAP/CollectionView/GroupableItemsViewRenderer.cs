@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections;
+using System.ComponentModel;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 
@@ -44,6 +45,40 @@ namespace Xamarin.Forms.Platform.UWP
 			base.UpdateItemTemplate();
 
 			ListViewBase.GroupStyleSelector = new GroupHeaderStyleSelector();
+		}
+
+		protected override object FindBoundItem(ScrollToRequestEventArgs args)
+		{
+			if (!ItemsView.IsGrouped || args.Mode == ScrollToMode.Element)
+			{
+				return base.FindBoundItem(args);
+			}
+
+			var groups = CollectionViewSource.Source as GroupedItemTemplateCollection;
+
+			if (groups == null || args.GroupIndex >= groups.Count)
+			{
+				return null;
+			}
+
+			if (!(groups[args.GroupIndex].Items is IEnumerable group))
+			{
+				return null;
+			}
+
+			var index = args.Index;
+
+			foreach (var item in group)
+			{
+				if (index == 0)
+				{
+					return item;
+				}
+
+				index -= 1;
+			}
+
+			return null;
 		}
 	}
 }

@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 10101" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue10101">
+    <local:TestContentPage.Resources>
+         <ResourceDictionary>
+             <!-- FONTS -->
+             <OnPlatform x:TypeArguments="Font" x:Key="FontNormal">
+                 <On Platform="macOS" Value="Roboto Bold, 15" />
+             </OnPlatform>
+             <!-- LABELS -->
+             <Style TargetType="Label" ApplyToDerivedTypes="True">
+                 <Setter Property="Font" Value="{StaticResource FontNormal}" />
+                 <Setter Property="TextColor" Value="Red" />
+             </Style>
+         </ResourceDictionary>
+     </local:TestContentPage.Resources>
+
+     <StackLayout>
+         <Label
+             x:Name="label1"
+             Text="I should keep my color" />
+          <Label
+              x:Name="label2"
+              LineBreakMode="WordWrap">
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span Text="I should" TextColor="Red" FontAttributes="Bold" />
+                    <Span Text=" keep my color" TextColor="Red" />
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+         <Button x:Name="button" Text="Change text on label"  Clicked="button_Clicked" />
+
+         <Label x:Name="labelColor" Text="Welcome to Xamarin.Forms!" HorizontalOptions="Center"
+                VerticalOptions="CenterAndExpand">
+             <Label.GestureRecognizers>
+                 <TapGestureRecognizer Tapped="OnTapped" />
+             </Label.GestureRecognizers>
+         </Label>
+         <Label x:Name="labelText" Text="" HorizontalOptions="Center"
+                VerticalOptions="CenterAndExpand" />
+     </StackLayout>
+</local:TestContentPage>

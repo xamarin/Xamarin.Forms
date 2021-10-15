@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
+
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Shapes;
 
@@ -217,6 +219,14 @@ namespace Xamarin.Forms
 		bool IBorderElement.IsBackgroundSet() => IsSet(BackgroundProperty);
 		bool IBorderElement.IsBorderColorSet() => IsSet(BorderElement.BorderColorProperty);
 		bool IBorderElement.IsBorderWidthSet() => IsSet(BorderElement.BorderWidthProperty);
+
+		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			base.OnPropertyChanged(propertyName);
+
+			if (propertyName == nameof(IsEnabled))
+				UpdateIsEnabled();
+		}
 
 		protected internal override void ChangeVisualState()
 		{
@@ -477,8 +487,8 @@ namespace Xamarin.Forms
 
 			var contentPresenter = new ContentPresenter
 			{
-				HorizontalOptions = LayoutOptions.Center,
-				VerticalOptions = LayoutOptions.Center
+				HorizontalOptions = LayoutOptions.Fill,
+				VerticalOptions = LayoutOptions.Fill
 			};
 
 			contentPresenter.SetBinding(MarginProperty, new Binding("Padding", source: RelativeBindingSource.TemplatedParent));

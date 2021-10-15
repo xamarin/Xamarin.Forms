@@ -21,14 +21,6 @@ steps:
     displayName: 'Setup SDK Paths'
     condition: ne(variables['osx2019VmPool'], 'Azure Pipelines')
 
-  - task: Bash@3
-    displayName: 'Cake Provision'
-    condition: eq(variables['provisioningCake'], 'true')
-    inputs:
-      targetType: 'filePath'
-      filePath: 'build.sh'
-      arguments: --target provision --TeamProject="$(System.TeamProject)"
-
   - task: UseDotNet@2
     displayName: 'Install .net core $(DOTNET_VERSION)'
     condition: ne(variables['DOTNET_VERSION'], '')
@@ -36,11 +28,13 @@ steps:
       version: $(DOTNET_VERSION)
       packageType: 'sdk'
 
-  - task: NuGetToolInstaller@1
-    displayName: 'Use NuGet'
-    condition: ne(variables['NUGET_VERSION'], '')
+  - task: Bash@3
+    displayName: 'Cake Provision'
+    condition: eq(variables['provisioningCake'], 'true')
     inputs:
-      versionSpec: $(NUGET_VERSION)
+      targetType: 'filePath'
+      filePath: 'build.sh'
+      arguments: --target provision --TeamProject="$(System.TeamProject)"
 
   - task: DownloadBuildArtifacts@0
     displayName: 'Download build artifact nuget'
@@ -55,14 +49,6 @@ steps:
     inputs:
       SourceFolder: '$(Build.ArtifactsDirectory)/nuget/$(buildConfiguration)'
       TargetFolder: '$(System.DefaultWorkingDirectory)/Nuget'
-
-  - task: NuGetCommand@2
-    displayName: 'NuGet restore'
-    inputs:
-      command: restore
-      restoreSolution: 'Xamarin.Forms.sln'
-      feedsToUse: config
-      nugetConfigPath: 'DevopsNuget.config'
 
   - task: InstallAppleCertificate@2
     displayName: 'Install an Apple certificate'
@@ -80,14 +66,14 @@ steps:
     inputs:
       targetType: 'filePath'
       filePath: 'build.sh'
-      arguments: --target cg-ios --BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments='${{ variables.MSBuildArguments_cg_ios }}'
+      arguments: --target cg-ios --BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments='${{ variables.MSBuildArguments_cg_ios }} '
 
   - task: Bash@3
     displayName: 'Build iOS Tests'
     inputs:
       targetType: 'filePath'
       filePath: 'build.sh'
-      arguments: --target cg-ios-build-tests -BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments='${{ variables.MSBuildArguments_cg_ios }}'
+      arguments: --target cg-ios-build-tests --BUILD_CONFIGURATION=$(buildConfiguration) --MSBuildArguments='${{ variables.MSBuildArguments_cg_ios }} '
 
   - task: CopyFiles@2
     displayName: 'Copy iOS Files for UITest'
