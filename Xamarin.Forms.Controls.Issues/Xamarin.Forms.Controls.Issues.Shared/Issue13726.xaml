@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 13726" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13726">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Tap several times the Button. If the counter is always updated, the test has passed."/>
+        <StackLayout
+            Padding="12">
+            <Label
+                Text="Button"/>
+            <Button
+                Text="Tap"
+                Clicked="OnButtonClicked"/>
+            <Label
+                x:Name="ButtonInfoLabel"
+                FontSize="Medium"
+                HorizontalOptions="Center"/>
+            <Label
+                Text="Button inside SwipeView"/>
+            <SwipeView>
+                <SwipeView.RightItems>
+                    <SwipeItem
+                        Text="Delete"
+                        BackgroundColor="Red"/>
+                </SwipeView.RightItems>
+                <Grid
+                    BackgroundColor="LightGray">
+                    <Button
+                        AutomationId="SwipeViewButtonId"
+                        Text="Tap"
+                        Clicked="OnSwipeViewButtonClicked"/>
+                </Grid>
+            </SwipeView>
+            <Label
+                x:Name="SwipeViewInfoLabel"
+                AutomationId="SwipeViewInfoLabelId"
+                FontSize="Medium"
+                HorizontalOptions="Center"/>
+        </StackLayout>
+    </StackLayout>
+</local:TestContentPage>

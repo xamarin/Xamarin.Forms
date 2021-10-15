@@ -16,6 +16,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.CollectionView)]
+	[Category(UITestCategories.UwpIgnore)] // CollectionView contents aren't currently visible to test automation
 #endif
 #if APP
 	[XamlCompilation(XamlCompilationOptions.Compile)]
@@ -36,6 +37,16 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			Title = "Issue 8326";
 		}
+
+#if UITEST
+		[Test]
+		public void EmptyViewShouldShowUpWhenHeaderPresent()
+		{
+			RunningApp.WaitForElement("Header");
+			RunningApp.WaitForElement("Footer");
+			RunningApp.WaitForElement("Empty view");
+		}
+#endif
 	}
 
 	[Preserve(AllMembers = true)]

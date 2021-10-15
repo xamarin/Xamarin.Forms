@@ -40,6 +40,7 @@ namespace Xamarin.Forms
 		static bool? s_isiOS12OrNewer;
 		static bool? s_isiOS13OrNewer;
 		static bool? s_isiOS14OrNewer;
+		static bool? s_isiOS15OrNewer;
 		static bool? s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden;
 
 		internal static bool IsiOS9OrNewer
@@ -100,6 +101,16 @@ namespace Xamarin.Forms
 				if (!s_isiOS14OrNewer.HasValue)
 					s_isiOS14OrNewer = UIDevice.CurrentDevice.CheckSystemVersion(14, 0);
 				return s_isiOS14OrNewer.Value;
+			}
+		}
+
+		internal static bool IsiOS15OrNewer
+		{
+			get
+			{
+				if (!s_isiOS15OrNewer.HasValue)
+					s_isiOS15OrNewer = UIDevice.CurrentDevice.CheckSystemVersion(15, 0);
+				return s_isiOS15OrNewer.Value;
 			}
 		}
 
@@ -756,16 +767,17 @@ namespace Xamarin.Forms
 							return OSAppTheme.Unspecified;
 					};
 #else
-                    return AppearanceIsDark(NSApplication.SharedApplication.EffectiveAppearance) ? OSAppTheme.Dark : OSAppTheme.Light;
+                    return AppearanceIsDark() ? OSAppTheme.Dark : OSAppTheme.Light;
 #endif
 				}
 			}
 
 #if __MACOS__
-			bool AppearanceIsDark(NSAppearance appearance)
+			bool AppearanceIsDark()
 			{
 				if (IsMojaveOrNewer)
 				{
+					var appearance = NSApplication.SharedApplication.EffectiveAppearance;
 					var matchedAppearance = appearance.FindBestMatch(new string[] { NSAppearance.NameAqua, NSAppearance.NameDarkAqua });
 
 					return matchedAppearance == NSAppearance.NameDarkAqua;
