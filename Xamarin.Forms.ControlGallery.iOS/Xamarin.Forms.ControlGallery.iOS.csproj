@@ -146,6 +146,7 @@
     <Compile Include="_10337CustomRenderer.cs" />
     <Compile Include="_11132CustomRenderer.cs" />
     <Compile Include="CustomRenderers\_12372CustomRenderer.cs" />
+    <Compile Include="_13577CustomRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Controls\Xamarin.Forms.Controls.csproj">

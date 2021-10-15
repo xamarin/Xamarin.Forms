@@ -24,8 +24,9 @@ namespace Xamarin.Forms.Platform.iOS
 		bool? _defaultBarTranslucent;
 		bool _loaded;
 		Size _queuedSize;
+		UITabBarAppearance _tabBarAppearance;
 
-		Page Page => Element as Page;
+		 Page Page => Element as Page;
 
 		[Internals.Preserve(Conditional = true)]
 		public TabbedRenderer()
@@ -155,6 +156,10 @@ namespace Xamarin.Forms.Platform.iOS
 			if (disposing)
 			{
 				Page.SendDisappearing();
+
+				_tabBarAppearance?.Dispose();
+				_tabBarAppearance = null;
+
 				Tabbed.PropertyChanged -= OnPropertyChanged;
 				Tabbed.PagesChanged -= OnPagesChanged;
 				FinishedCustomizingViewControllers -= HandleFinishedCustomizingViewControllers;
@@ -369,8 +374,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (!isDefaultColor)
 				_barBackgroundColorWasSet = true;
-			
-			TabBar.BarTintColor = isDefaultColor ? _defaultBarColor : barBackgroundColor.ToUIColor();
+
+			if (Forms.IsiOS15OrNewer)
+				UpdateiOS15TabBarAppearance();
+			else
+				TabBar.BarTintColor = isDefaultColor ? _defaultBarColor : barBackgroundColor.ToUIColor();
 		}
 
 		void UpdateBarBackground()
@@ -417,7 +425,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// set TintColor for selected icon
 			// setting the unselected icon tint is not supported by iOS
-			TabBar.TintColor = isDefaultColor ? _defaultBarTextColor : barTextColor.ToUIColor();
+			if (Forms.IsiOS15OrNewer)
+				UpdateiOS15TabBarAppearance();
+			else
+				TabBar.TintColor = isDefaultColor ? _defaultBarTextColor : barTextColor.ToUIColor();
 		}
 
 		void UpdateBarTranslucent()
@@ -492,7 +503,6 @@ namespace Xamarin.Forms.Platform.iOS
 					TabBar.TintColor = Tabbed.SelectedTabColor.ToUIColor();
 				else
 					TabBar.SelectedImageTintColor = Tabbed.SelectedTabColor.ToUIColor();
-
 			}
 			else
 			{
@@ -505,10 +515,15 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!Forms.IsiOS10OrNewer)
 				return;
 
-			if (Tabbed.IsSet(TabbedPage.UnselectedTabColorProperty) && Tabbed.UnselectedTabColor != Color.Default)
-				TabBar.UnselectedItemTintColor = Tabbed.UnselectedTabColor.ToUIColor();
+			if (Forms.IsiOS15OrNewer)
+				UpdateiOS15TabBarAppearance();
 			else
-				TabBar.UnselectedItemTintColor = UITabBar.Appearance.TintColor;
+			{
+				if (Tabbed.IsSet(TabbedPage.UnselectedTabColorProperty) && Tabbed.UnselectedTabColor != Color.Default)
+					TabBar.UnselectedItemTintColor = Tabbed.UnselectedTabColor.ToUIColor();
+				else
+					TabBar.UnselectedItemTintColor = UITabBar.Appearance.TintColor;
+			}
 		}
 
 		/// <summary>
@@ -522,6 +537,61 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var icon = await page.IconImageSource.GetNativeImageAsync();
 			return icon == null ? null : Tuple.Create(icon, (UIImage)null);
+		}
+
+		void UpdateiOS15TabBarAppearance()
+		{
+			if (_tabBarAppearance == null)
+			{
+				_tabBarAppearance = new UITabBarAppearance();
+				_tabBarAppearance.ConfigureWithOpaqueBackground();
+			}
+
+			var barBackgroundColor = Tabbed.BarBackgroundColor;
+			var isDefaultBarBackgroundColor = barBackgroundColor.IsDefault;
+
+			// Set BarBackgroundColor
+			_tabBarAppearance.BackgroundColor = isDefaultBarBackgroundColor ? _defaultBarColor : barBackgroundColor.ToUIColor();
+
+			var barTextColor = Tabbed.BarTextColor;
+			var isDefaultBarTextColor = barTextColor.IsDefault;
+
+			// Set BarTextColor
+			_tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes
+			{
+				ForegroundColor = isDefaultBarTextColor ? _defaultBarTextColor : barTextColor.ToUIColor()
+			};
+
+			// Set SelectedTabColor
+			if (Tabbed.IsSet(TabbedPage.SelectedItemProperty) && Tabbed.SelectedTabColor != Color.Default)
+			{
+				var foregroundColor = Tabbed.SelectedTabColor.ToUIColor();
+				_tabBarAppearance.StackedLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor };
+				_tabBarAppearance.StackedLayoutAppearance.Selected.IconColor = foregroundColor;
+			}
+			else
+			{
+				var foregroundColor = UITabBar.Appearance.TintColor;
+				_tabBarAppearance.StackedLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor };
+				_tabBarAppearance.StackedLayoutAppearance.Selected.IconColor = foregroundColor;
+			}
+
+			// Set UnselectedTabColor
+			if (Tabbed.IsSet(TabbedPage.UnselectedTabColorProperty) && Tabbed.UnselectedTabColor != Color.Default)
+			{
+				var foregroundColor = Tabbed.UnselectedTabColor.ToUIColor();
+				_tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor };
+				_tabBarAppearance.StackedLayoutAppearance.Normal.IconColor = foregroundColor;
+			}
+			else
+			{
+				var foreground = UITabBar.Appearance.TintColor;
+				_tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foreground };
+				_tabBarAppearance.StackedLayoutAppearance.Normal.IconColor = foreground;
+			}
+
+			// Set the TabBarAppearance
+			TabBar.StandardAppearance = TabBar.ScrollEdgeAppearance = _tabBarAppearance;
 		}
 	}
 }
