@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Issue 11795"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue11795">
+    <controls:TestContentPage.Resources>
+        <ResourceDictionary>
+
+            <LinearGradientBrush x:Key="LinearBrush" StartPoint="0, 0" EndPoint="1, 0">
+                <LinearGradientBrush.GradientStops>
+                    <GradientStop Color="YellowGreen" Offset="0.1"/>
+                    <GradientStop Color="Green" Offset="0.9"/>
+                </LinearGradientBrush.GradientStops>
+            </LinearGradientBrush>
+
+            <Style TargetType="Slider">
+                <Setter Property="MinimumTrackColor" Value="LightGray" />
+                <Setter Property="MaximumTrackColor" Value="Gray" />
+            </Style>
+
+        </ResourceDictionary>
+    </controls:TestContentPage.Resources>
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Modify the Brush Offset values. If you modify the gradient, the test has passed."/>
+          <Grid>
+              <!-- EXPLORER -->
+              <Grid>
+                  <Grid.RowDefinitions>
+                      <RowDefinition Height="Auto" />
+                      <RowDefinition Height="*" />
+                  </Grid.RowDefinitions>
+                  <StackLayout
+                      Grid.Row="0"
+                      Margin="12, 0"
+                      Padding="12">
+                      <Label
+                          Text="Color BoxView"
+                          FontSize="Micro"/>
+                      <BoxView
+                          x:Name="SolidBoxView"
+                          HeightRequest="60"
+                          WidthRequest="120"
+                          CornerRadius="12"
+                          BackgroundColor="Red"/>
+                      <Label
+                          Text="Gradient BoxView"
+                          FontSize="Micro"/>
+                      <BoxView
+                          x:Name="GradientBoxView"
+                          HeightRequest="60"
+                          WidthRequest="120"
+                          CornerRadius="12"
+                          Background="{StaticResource LinearBrush}"/>
+                      <Label
+                          Text="Color Frame"
+                          FontSize="Micro"/>
+                      <Frame
+                          x:Name="SolidFrame"
+                          HasShadow="True"
+                          HeightRequest="60"
+                          WidthRequest="120"
+                          CornerRadius="12"
+                          Padding="6"
+                          BackgroundColor="Red">
+                          <Grid>
+                              <Label
+                                  HorizontalOptions="Center"
+                                  VerticalOptions="Center"
+                                  TextColor="White"
+                                  Text="Color"/>
+                          </Grid>
+                      </Frame>
+                      <Label
+                          Text="Gradient Frame"
+                          FontSize="Micro"/>
+                      <Frame
+                          x:Name="GradientFrame"
+                          HasShadow="True"
+                          HeightRequest="60"
+                          WidthRequest="120"
+                          CornerRadius="12"
+                          Padding="6"
+                          Background="{StaticResource LinearBrush}">
+                          <Grid>
+                              <Label
+                                  HorizontalOptions="Center"
+                                  VerticalOptions="Center"
+                                  Text="LinearGradientBrush"/>
+                          </Grid>
+                      </Frame>
+                  </StackLayout>
+                  <ScrollView
+                      Grid.Row="1"
+                      Margin="12, 0"
+                      Padding="12">
+                     <StackLayout>
+                         <Label
+                             Text="Color 1 Offset"/>
+                         <Slider
+                             x:Name="Offset1Slider"
+                             Minimum="0.0"
+                             Maximum="1.0"
+                             Value="0.1"
+                             ValueChanged="OnOffset1SliderValueChanged"/>
+                         <Label
+                             Text="Color 2 Offset"/>
+                         <Slider
+                             x:Name="Offset2Slider"
+                             Minimum="0.0"
+                             Margin="1.0"
+                             Value="0.9"
+                             ValueChanged="OnOffset2SliderValueChanged"/>
+                      </StackLayout>
+                  </ScrollView>
+              </Grid>
+          </Grid>
+    </StackLayout>
+</controls:TestContentPage>
