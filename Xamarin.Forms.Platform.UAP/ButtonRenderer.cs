@@ -30,6 +30,7 @@ namespace Xamarin.Forms.Platform.UWP
 					_pointerPressedHandler = new PointerEventHandler(OnPointerPressed);
 					_button.Click += OnButtonClick;
 					_button.AddHandler(PointerPressedEvent, _pointerPressedHandler, true);
+					_button.Loading += ButtonOnLoading;
 					_button.Loaded += ButtonOnLoaded;
 
 					SetNativeControl(_button);
@@ -69,6 +70,11 @@ namespace Xamarin.Forms.Platform.UWP
 
 				UpdateFont();
 			}
+		}
+
+		void ButtonOnLoading(FrameworkElement sender, object args)
+		{
+			Element.IsNativeStateConsistent = false;
 		}
 
 		void ButtonOnLoaded(object o, RoutedEventArgs routedEventArgs)
@@ -313,6 +319,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				_button.Click -= OnButtonClick;
 				_button.RemoveHandler(PointerPressedEvent, _pointerPressedHandler);
+				_button.Loading -= ButtonOnLoading;
 				_button.Loaded -= ButtonOnLoaded;				
 
 				_pointerPressedHandler = null;
