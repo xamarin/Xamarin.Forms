@@ -31,6 +31,8 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _disposed;
 		bool _useLegacyColorManagement;
 
+		internal UIDatePicker Picker => _picker;
+
 		IElementController ElementController => Element as IElementController;
 
 		[Internals.Preserve(Conditional = true)]
@@ -54,6 +56,12 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					_picker.RemoveFromSuperview();
 					_picker.ValueChanged -= OnValueChanged;
+
+					if (Forms.IsiOS15OrNewer)
+					{
+						_picker.EditingDidBegin -= PickerEditingDidBegin;
+					}
+
 					_picker.Dispose();
 					_picker = null;
 				}
@@ -83,12 +91,17 @@ namespace Xamarin.Forms.Platform.iOS
 					entry.EditingDidEnd += OnEnded;
 
 					_picker = new UIDatePicker { Mode = UIDatePickerMode.Time, TimeZone = new NSTimeZone("UTC") };
-#if __XCODE11__
+
 					if (Forms.IsiOS14OrNewer)
 					{
 						_picker.PreferredDatePickerStyle = UIKit.UIDatePickerStyle.Wheels;
 					}
-#endif
+
+					if (Forms.IsiOS15OrNewer)
+					{
+						_picker.EditingDidBegin += PickerEditingDidBegin;
+					}
+
 					var width = UIScreen.MainScreen.Bounds.Width;
 					var toolbar = new UIToolbar(new RectangleF(0, 0, width, 44)) { BarStyle = UIBarStyle.Default, Translucent = true };
 					var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace);
@@ -158,6 +171,11 @@ namespace Xamarin.Forms.Platform.iOS
 		void OnStarted(object sender, EventArgs eventArgs)
 		{
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
+		}
+
+		void PickerEditingDidBegin(object sender, EventArgs eventArgs)
+		{
+			_picker.ResignFirstResponder();
 		}
 
 		void OnValueChanged(object sender, EventArgs e)

@@ -149,7 +149,7 @@ namespace Xamarin.Forms
 							return Color.BlanchedAlmond;
 						case "blue":
 							return Color.Blue;
-						case "blueViolet":
+						case "blueviolet":
 							return Color.BlueViolet;
 						case "brown":
 							return Color.Brown;

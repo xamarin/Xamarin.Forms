@@ -156,6 +156,12 @@ namespace Xamarin.Forms.Platform.iOS
 			return itemsSource;
 		}
 
+		protected override void CacheCellAttributes(NSIndexPath indexPath, CGSize size)
+		{
+			var itemIndex = GetIndexFromIndexPath(indexPath);
+			base.CacheCellAttributes(NSIndexPath.FromItemSection(itemIndex, 0), size);
+		}
+
 		internal void TearDown()
 		{
 			Carousel.PropertyChanged -= CarouselViewPropertyChanged;
@@ -462,6 +468,18 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			_oldViews = newViews;
+		}
+
+		protected internal override void UpdateVisibility()
+		{
+			if (ItemsView.IsVisible)
+			{
+				CollectionView.Hidden = false;
+			}
+			else
+			{
+				CollectionView.Hidden = true;
+			}
 		}
 	}
 

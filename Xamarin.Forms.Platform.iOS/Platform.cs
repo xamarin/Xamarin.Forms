@@ -224,7 +224,10 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			IVisualElementRenderer renderer = null;
 
-			if (element is TemplatedView tv && tv.ResolveControlTemplate() != null)
+			// temporary hack to fix the following issues
+			// https://github.com/xamarin/Xamarin.Forms/issues/13261
+			// https://github.com/xamarin/Xamarin.Forms/issues/12484
+			if (element is RadioButton tv && tv.ResolveControlTemplate() != null)
 			{
 				renderer = new DefaultRenderer();
 			}
@@ -235,6 +238,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			renderer.SetElement(element);
+
 			return renderer;
 		}
 
@@ -581,26 +585,6 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				return result;
-			}
-
-			void ResolveLayoutChanges() 
-			{
-				if (Element is Layout layout)
-				{
-					layout.ResolveLayoutChanges();
-				}
-			}
-
-			public override void LayoutSubviews()
-			{
-				ResolveLayoutChanges();
-				base.LayoutSubviews();
-			}
-
-			public override CGSize SizeThatFits(CGSize size)
-			{
-				ResolveLayoutChanges();
-				return base.SizeThatFits(size);
 			}
 		}
 

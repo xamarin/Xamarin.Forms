@@ -7,14 +7,18 @@ using FragmentTransit = Android.App.FragmentTransit;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
+#pragma warning disable CS0618 // Type or member is obsolete
 	internal class FormsFragmentPagerAdapter<T> : FragmentPagerAdapter where T : Page
+#pragma warning restore CS0618 // Type or member is obsolete
 	{
 		MultiPage<T> _page;
 		FragmentManager _fragmentManager;
 		List<Fragment> _fragments;
 		bool _disposed;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 		public FormsFragmentPagerAdapter(MultiPage<T> page, FragmentManager fragmentManager) : base(fragmentManager, FragmentStatePagerAdapter.BehaviorResumeOnlyCurrentFragment)
+#pragma warning restore CS0618 // Type or member is obsolete
 		{
 			_page = page;
 			_fragmentManager = fragmentManager;

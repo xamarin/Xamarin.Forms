@@ -12,6 +12,7 @@ using AndroidX.Fragment.App;
 using AndroidX.ViewPager.Widget;
 using Google.Android.Material.BottomNavigation;
 using Google.Android.Material.BottomSheet;
+using Google.Android.Material.Navigation;
 using Google.Android.Material.Tabs;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
@@ -22,7 +23,11 @@ using AWidget = Android.Widget;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
-	public class TabbedPageRenderer : VisualElementRenderer<TabbedPage>, TabLayout.IOnTabSelectedListener, ViewPager.IOnPageChangeListener, IManageFragments, BottomNavigationView.IOnNavigationItemSelectedListener
+	public class TabbedPageRenderer : VisualElementRenderer<TabbedPage>,
+#pragma warning disable CS0618 // Type or member is obsolete
+		TabLayout.IOnTabSelectedListener,
+#pragma warning restore CS0618 // Type or member is obsolete
+		ViewPager.IOnPageChangeListener, IManageFragments, NavigationBarView.IOnItemSelectedListener
 	{
 		Drawable _backgroundDrawable;
 		Drawable _wrappedBackgroundDrawable;
@@ -193,7 +198,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				if (_bottomNavigationView != null)
 				{
-					_bottomNavigationView.SetOnNavigationItemSelectedListener(null);
+					_bottomNavigationView.SetOnItemSelectedListener(null);
 					_bottomNavigationView.Dispose();
 					_bottomNavigationView = null;
 				}
@@ -263,7 +268,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 						if (_bottomNavigationView != null)
 						{
 							_relativeLayout.RemoveView(_bottomNavigationView);
-							_bottomNavigationView.SetOnNavigationItemSelectedListener(null);
+							_bottomNavigationView.SetOnItemSelectedListener(null);
 						}
 
 						var bottomNavigationViewLayoutParams = new AWidget.RelativeLayout.LayoutParams(
@@ -466,7 +471,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				else
 				{
 					SetupBottomNavigationView(e);
-					bottomNavigationView.SetOnNavigationItemSelectedListener(this);
+					bottomNavigationView.SetOnItemSelectedListener(this);
 				}
 
 				UpdateIgnoreContainerAreas();
@@ -487,7 +492,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					tabs.SetupWithViewPager(pager);
 					UpdateTabIcons();
+#pragma warning disable CS0618 // Type or member is obsolete
 					tabs.AddOnTabSelectedListener(this);
+#pragma warning restore CS0618 // Type or member is obsolete
 				}
 
 				UpdateIgnoreContainerAreas();

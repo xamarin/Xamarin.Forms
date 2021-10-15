@@ -34,20 +34,26 @@ namespace Xamarin.Forms.Platform.Tizen.Native.Watch
 			switch (position)
 			{
 				case ButtonPosition.Neutral:
-					this.SetButton2Part(button.SetWatchPopupRightStyle());
+					if (button != null)
+						button.SetWatchPopupRightStyle();
+					this.SetButton2Part(button);
 					break;
 
 				case ButtonPosition.Negative:
-					if (_hasAcceptButton)
+					if (button != null)
 					{
-						button.BackgroundColor = EColor.Default;
-						this.SetButton1Part(button.SetWatchPopupLeftStyle());
+						if (_hasAcceptButton)
+						{
+							button.BackgroundColor = EColor.Default;
+							button.SetWatchPopupLeftStyle();
+						}
+						else
+						{
+							button.BackgroundColor = new EColor(0, 47, 66, 255);
+							button.SetBottomStyle();
+						}
 					}
-					else
-					{
-						button.BackgroundColor = new EColor(0, 47, 66, 255);
-						this.SetButton1Part(button.SetBottomStyle());
-					}
+					this.SetButton1Part(button);
 					break;
 
 				case ButtonPosition.Positive:

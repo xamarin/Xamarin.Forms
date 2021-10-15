@@ -142,7 +142,6 @@ namespace Xamarin.Forms.Platform.iOS
 		void CollectionChanged(NotifyCollectionChangedEventArgs args)
 		{
 			switch (args.Action)
-
 			{
 				case NotifyCollectionChangedAction.Add:
 					Add(args);
@@ -157,18 +156,27 @@ namespace Xamarin.Forms.Platform.iOS
 					Move(args);
 					break;
 				case NotifyCollectionChangedAction.Reset:
-					Reload();
+					Reload(true);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
 		}
 
-		void Reload()
+		void Reload(bool collectionWasReset = false)
 		{
 			ResetGroupTracking();
 
 			_collectionView.ReloadData();
+
+			// I'm trying to modify as little as possible
+			// due to possible unpredictable consequences including perf. degradation
+			// https://github.com/xamarin/Xamarin.Forms/issues/13268
+			if (collectionWasReset)
+			{
+				_collectionView.LayoutIfNeeded();
+			}
+
 			_collectionView.CollectionViewLayout.InvalidateLayout();
 		}
 
@@ -200,7 +208,7 @@ namespace Xamarin.Forms.Platform.iOS
 			ResetGroupTracking();
 
 			// Queue up the updates to the UICollectionView
-			_collectionView.InsertSections(CreateIndexSetFrom(startIndex, count));
+			Update(() => _collectionView.InsertSections(CreateIndexSetFrom(startIndex, count)));
 		}
 
 		void Remove(NotifyCollectionChangedEventArgs args)
@@ -229,7 +237,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var count = args.OldItems.Count;
 
 			// Queue up the updates to the UICollectionView
-			_collectionView.DeleteSections(CreateIndexSetFrom(startIndex, count));
+			Update(() => _collectionView.DeleteSections(CreateIndexSetFrom(startIndex, count)));
 		}
 
 		void Replace(NotifyCollectionChangedEventArgs args)
@@ -243,7 +251,7 @@ namespace Xamarin.Forms.Platform.iOS
 				var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _groupSource.IndexOf(args.NewItems[0]);
 
 				// We are replacing one set of items with a set of equal size; we can do a simple item range update
-				_collectionView.ReloadSections(CreateIndexSetFrom(startIndex, newCount));
+				Update(() => _collectionView.ReloadSections(CreateIndexSetFrom(startIndex, newCount)));
 				return;
 			}
 
@@ -261,14 +269,14 @@ namespace Xamarin.Forms.Platform.iOS
 			if (count == 1)
 			{
 				// For a single item, we can use MoveSection and get the animation
-				_collectionView.MoveSection(args.OldStartingIndex, args.NewStartingIndex);
+				Update(() => _collectionView.MoveSection(args.OldStartingIndex, args.NewStartingIndex));
 				return;
 			}
 
 			var start = Math.Min(args.OldStartingIndex, args.NewStartingIndex);
 			var end = Math.Max(args.OldStartingIndex, args.NewStartingIndex) + count;
 
-			_collectionView.ReloadSections(CreateIndexSetFrom(start, end));
+			Update(() => _collectionView.ReloadSections(CreateIndexSetFrom(start, end)));
 		}
 
 		int GetGroupCount(int groupIndex)
@@ -337,12 +345,21 @@ namespace Xamarin.Forms.Platform.iOS
 
 		bool ReloadRequired()
 		{
-			// If the UICollectionView has never been loaded, or doesn't yet have any sections, or has no actual
-			// cells (just supplementary views like Header/Footer), any insert/delete operations are gonna crash
-			// hard. We'll need to reload the data instead.
+			// If the UICollectionView has never been loaded, or doesn't yet have any sections, any insert/delete operations 
+			// are gonna crash hard. We'll need to reload the data instead.
 
 			return NotLoadedYet()
 				|| _collectionView.NumberOfSections() == 0;
+		}
+
+		void Update(Action update)
+		{
+			if (_collectionView.Hidden)
+			{
+				return;
+			}
+
+			update();
 		}
 	}
 }

@@ -48,6 +48,10 @@ namespace Xamarin.Forms.Platform.iOS
 		static readonly int baseHeight = 30;
 		static CGSize initialSize = CGSize.Empty;
 
+		UIImage _defaultClearImage;
+
+		UIButton ClearButton => Control?.ValueForKey(new NSString("clearButton")) as UIButton;
+
 		public EntryRendererBase()
 		{
 		}
@@ -88,6 +92,8 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.EditingDidEnd -= OnEditingEnded;
 					Control.ShouldChangeCharacters -= ShouldChangeCharacters;
 					_selectedTextRangeObserver?.Dispose();
+
+					ClearButton?.Layer?.RemoveObserver(this, new NSString("sublayers"));
 				}
 			}
 
@@ -121,6 +127,8 @@ namespace Xamarin.Forms.Platform.iOS
 				textField.EditingDidEnd += OnEditingEnded;
 				textField.ShouldChangeCharacters += ShouldChangeCharacters;
 				_selectedTextRangeObserver = textField.AddObserver("selectedTextRange", NSKeyValueObservingOptions.New, UpdateCursorFromControl);
+
+				ClearButton?.Layer.AddObserver(this, new NSString("sublayers"), NSKeyValueObservingOptions.New, IntPtr.Zero);
 			}
 
 			// When we set the control text, it triggers the UpdateCursorFromControl event, which updates CursorPosition and SelectionLength;
@@ -149,6 +157,12 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateIsReadOnly();
 
 			if (Element.ClearButtonVisibility != ClearButtonVisibility.Never)
+				UpdateClearButtonVisibility();
+		}
+
+		public override void ObserveValue(NSString keyPath, NSObject ofObject, NSDictionary change, IntPtr context)
+		{
+			if (keyPath == new NSString("sublayers") && _defaultClearImage == null)
 				UpdateClearButtonVisibility();
 		}
 
@@ -551,7 +565,66 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateClearButtonVisibility()
 		{
-			Control.ClearButtonMode = Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing ? UITextFieldViewMode.WhileEditing : UITextFieldViewMode.Never;
+			if (Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing)
+			{
+				Control.ClearButtonMode = UITextFieldViewMode.WhileEditing;
+				UpdateClearButtonColor();
+			}
+			else
+				Control.ClearButtonMode = UITextFieldViewMode.Never;
+		}
+
+		void UpdateClearButtonColor()
+		{
+			if (ClearButton != null)
+			{
+				ClearButton.TintColor = Element.TextColor.ToUIColor();
+				
+				if(_defaultClearImage == null)
+					_defaultClearImage = ClearButton.ImageForState(UIControlState.Highlighted);
+
+				if (_defaultClearImage == null)
+					return;
+
+				if(Element.TextColor == Color.Default)
+				{
+					ClearButton.SetImage(_defaultClearImage, UIControlState.Normal);
+					ClearButton.SetImage(_defaultClearImage, UIControlState.Highlighted);
+				}
+				else
+				{
+					var tintedClearImage = GetClearButtonTintImage(_defaultClearImage, Element.TextColor.ToUIColor());
+
+					ClearButton.SetImage(tintedClearImage, UIControlState.Normal);
+					ClearButton.SetImage(tintedClearImage, UIControlState.Highlighted);
+				}
+			}
+		}
+
+		UIImage GetClearButtonTintImage(UIImage image, UIColor color)
+		{
+			var size = image.Size;
+
+			UIGraphics.BeginImageContextWithOptions(size, false, UIScreen.MainScreen.Scale);
+
+			if (UIGraphics.GetCurrentContext() == null)
+				return null;
+
+			var context = UIGraphics.GetCurrentContext();
+
+			image.Draw(CGPoint.Empty, CGBlendMode.Normal, 1.0f);
+			context?.SetFillColor(color.CGColor);
+			context?.SetBlendMode(CGBlendMode.SourceIn);
+			context?.SetAlpha(1.0f);
+
+			var rect = new CGRect(CGPoint.Empty.X, CGPoint.Empty.Y, image.Size.Width, image.Size.Height);
+			context?.FillRect(rect);
+
+			var tintedImage = UIGraphics.GetImageFromCurrentImageContext();
+
+			UIGraphics.EndImageContext();
+
+			return tintedImage;
 		}
 	}
 }
