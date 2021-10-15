@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 13592" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13592">
+    <local:TestContentPage.Resources>
+        <ResourceDictionary>
+
+            <Style TargetType="StackLayout">
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Selected">
+                                <VisualState.Setters>
+                                    <Setter
+                                        Property="BackgroundColor"
+                                        Value="Yellow" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+
+        </ResourceDictionary>
+    </local:TestContentPage.Resources>
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If both CollectionViews have items selected, the test has passed."/>
+    <StackLayout>
+        <StackLayout Orientation="Horizontal">
+            <CollectionView
+                x:Name="stringCollectionView"
+                ItemsSource="{Binding StringItems}"
+                SelectedItems="{Binding SelectedStringItems, Mode=TwoWay}"
+                BackgroundColor="White"
+                ItemSizingStrategy="MeasureFirstItem"
+                SelectionMode="Multiple">
+                <CollectionView.Header>
+                    <Label
+                        Text="String collection:"
+                        BackgroundColor="Gray" />
+                </CollectionView.Header>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <StackLayout>
+                            <Label Text="{Binding .}" />
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <CollectionView
+                x:Name="intCollectionView"
+                ItemsSource="{Binding IntItems}"
+                SelectedItems="{Binding SelectedIntItems, Mode=TwoWay}"
+                BackgroundColor="White"
+                ItemSizingStrategy="MeasureFirstItem"
+                SelectionMode="Multiple">
+                <CollectionView.Header>
+                    <Label
+                        Text="Int collection:"
+                        BackgroundColor="Gray" />
+                </CollectionView.Header>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="x:Int32">
+                        <StackLayout>
+                            <Label Text="{Binding .}" />
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </StackLayout>
+        <CollectionView
+            ItemsSource="{Binding Log}"
+            VerticalOptions="End"
+            HeightRequest="200"
+            BackgroundColor="LightGray"
+            ItemsUpdatingScrollMode="KeepLastItemInView">
+            <CollectionView.Header>
+                <Label Text="Log" />
+            </CollectionView.Header>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                    <StackLayout>
+                        <Label
+                            Text="{Binding .}"
+                            FontSize="Small" />
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+    </StackLayout>
+</local:TestContentPage>
