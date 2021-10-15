@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 14433" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue14433"
+    BackgroundColor="Yellow">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If gradient renders correctly, the test has passed."/>
+        <Frame 
+            InputTransparent="True"
+            VerticalOptions="End"
+            HeightRequest="57"
+            Padding="0"
+            CornerRadius="0"
+            HasShadow="False"
+            Opacity="0.8">
+            <Frame.Background>
+                <LinearGradientBrush
+                    StartPoint="0.0, 0"
+                    EndPoint="1.0, 0">
+                    <GradientStop
+                        Color="#00FF0000"
+                        Offset="0" />
+                    <GradientStop
+                        Color="#00FF00"
+                        Offset="1" />
+                </LinearGradientBrush>
+            </Frame.Background>
+        </Frame>
+    </StackLayout>
+</local:TestContentPage>

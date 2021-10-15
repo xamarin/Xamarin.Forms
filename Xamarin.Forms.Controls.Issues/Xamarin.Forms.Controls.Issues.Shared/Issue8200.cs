@@ -16,11 +16,11 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 	[Category(UITestCategories.CollectionView)]
 #endif
-	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 8200, "CollectionView on iOS assumes INotifyCollectionChanged is an IList", PlatformAffected.iOS)]
 	public class Issue8200 : TestContentPage
 	{
 		CollectionView _collectionView;
+		const string AddItem = "AddItem";
 
 		public Issue8200()
 		{
@@ -42,7 +42,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var addButton = new Button
 			{
-				Text = "Add Item"
+				Text = "Add Item",
+				AutomationId = AddItem
 			};
 
 			addButton.SetBinding(Button.CommandProperty, "AddItemCommand");
@@ -83,15 +84,21 @@ namespace Xamarin.Forms.Controls.Issues
 
 			return template;
 		}
+
+#if UITEST
+		[Test]
+		public void CollectionViewShouldNotCrash()
+		{
+			RunningApp.WaitForElement(AddItem);
+		}
+#endif
 	}
 
-	[Preserve(AllMembers = true)]
 	public class Issue8200Model
 	{
 		public string Text { get; set; }
 	}
 
-	[Preserve(AllMembers = true)]
 	public class Issue8200ViewModel : BindableObject
 	{
 		Issue8200Collection _items;

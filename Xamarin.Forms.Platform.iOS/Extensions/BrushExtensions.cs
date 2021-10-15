@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (linearGradientBrush.GradientStops != null && linearGradientBrush.GradientStops.Count > 0)
 				{
 					var orderedStops = linearGradientBrush.GradientStops.OrderBy(x => x.Offset).ToList();
-					linearGradientLayer.Colors = orderedStops.Select(x => x.Color.ToCGColor()).ToArray();
+					linearGradientLayer.Colors = GetCAGradientLayerColors(orderedStops);
 					linearGradientLayer.Locations = GetCAGradientLayerLocations(orderedStops);
 				}
 
@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (radialGradientBrush.GradientStops != null && radialGradientBrush.GradientStops.Count > 0)
 				{
 					var orderedStops = radialGradientBrush.GradientStops.OrderBy(x => x.Offset).ToList();
-					radialGradientLayer.Colors = orderedStops.Select(x => x.Color.ToCGColor()).ToArray();
+					radialGradientLayer.Colors = GetCAGradientLayerColors(orderedStops);
 					radialGradientLayer.Locations = GetCAGradientLayerLocations(orderedStops);
 				}
 

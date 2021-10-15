@@ -1,7 +1,9 @@
 using System;
 using System.ComponentModel;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Android.Views;
 using Android.Widget;
+using AndroidX.Core.View;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
@@ -30,42 +32,102 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			resourceIdClose = context.Resources.GetIdentifier($"{automationIdParent}{s_defaultDrawerIdCloseSuffix}", "string", context.ApplicationInfo.PackageName);
 		}
 
+		static bool ShoudISetImportantForAccessibilityToNoIfAutomationIdIsSet(AView control, Element element)
+		{
+			if (!Flags.IsAccessibilityExperimentalSet())
+				return false;
+
+			if (element == null)
+				return false;
+
+			if (String.IsNullOrWhiteSpace(element.AutomationId))
+				return false;
+
+			// User has specifically said what they want
+			if (AutomationProperties.GetIsInAccessibleTree(element) == true)
+				return false;
+
+			// User has explicitly set name and help text so we honor that
+			if (!String.IsNullOrWhiteSpace(ConcatenateNameAndHelpText(element)))
+				return false;
+
+			if (element is Layout ||
+				element is ItemsView ||
+				element is BoxView ||
+				element is ScrollView ||
+				element is TableView ||
+				element is WebView ||
+				element is Page ||
+				element is Shapes.Path ||
+				element is Frame ||
+				element is ListView ||
+				element is Image)
+			{
+				return true;
+			}
+
+			return false;
+		}
+
 		internal static void SetAutomationId(AView control, Element element, string value = null)
 		{
-			if (element == null || control == null)
+			if (!control.IsAlive())
 			{
 				return;
 			}
 
-			value = element.AutomationId;
-
-			if (!string.IsNullOrEmpty(value))
+			string automationId = value ?? element?.AutomationId;
+			if (!string.IsNullOrEmpty(automationId))
 			{
-				control.ContentDescription = value;
+				control.ContentDescription = automationId;
+
+				if (ShoudISetImportantForAccessibilityToNoIfAutomationIdIsSet(control, element))
+				{
+					control.ImportantForAccessibility = ImportantForAccessibility.No;
+				}
+				else if (Flags.IsAccessibilityExperimentalSet() && control.GetAccessibilityDelegate() == null)
+					ViewCompat.SetAccessibilityDelegate(control, new AccessibilityDelegateAutomationId(element));
+
 			}
 		}
 
 		internal static void SetBasicContentDescription(
 			AView control,
-			BindableObject bindableObject,
+			Element element,
 			string defaultContentDescription)
 		{
-			if (bindableObject == null || control == null)
+			if (element == null || control == null)
 				return;
 
-			string value = ConcatenateNameAndHelpText(bindableObject);
+			string value = ConcatenateNameAndHelpText(element);
 
 			var contentDescription = !string.IsNullOrWhiteSpace(value) ? value : defaultContentDescription;
 
-			if (String.IsNullOrWhiteSpace(contentDescription) && bindableObject is Element element)
+			if (String.IsNullOrWhiteSpace(contentDescription))
+			{
+				if (Flags.IsAccessibilityExperimentalSet())
+				{
+					SetAutomationId(control, element, element.AutomationId);
+					return;
+				}
+
 				contentDescription = element.AutomationId;
+			}
+
+			if (Flags.IsAccessibilityExperimentalSet())
+			{
+				if (!AutomationProperties.GetIsInAccessibleTree(element).HasValue)
+				{
+					control.ImportantForAccessibility = ImportantForAccessibility.Auto;
+				}
+			}
 
 			control.ContentDescription = contentDescription;
 		}
 
 		internal static void SetContentDescription(
 			AView control,
-			BindableObject element,
+			Element element,
 			string defaultContentDescription,
 			string defaultHint)
 		{
@@ -86,12 +148,21 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				defaultFocusable = control.Focusable;
 			}
+
 			if (!defaultImportantForAccessibility.HasValue)
 			{
-				defaultImportantForAccessibility = control.ImportantForAccessibility;
+				// Auto is the default just use that
+				if (Flags.IsAccessibilityExperimentalSet())
+					defaultImportantForAccessibility = ImportantForAccessibility.Auto;
+				else
+					defaultImportantForAccessibility = control.ImportantForAccessibility;
 			}
 
 			bool? isInAccessibleTree = (bool?)element.GetValue(AutomationProperties.IsInAccessibleTreeProperty);
+
+			if (!isInAccessibleTree.HasValue && Flags.IsAccessibilityExperimentalSet())
+				return;
+
 			control.Focusable = (bool)(isInAccessibleTree ?? defaultFocusable);
 			control.ImportantForAccessibility = !isInAccessibleTree.HasValue ? (ImportantForAccessibility)defaultImportantForAccessibility : (bool)isInAccessibleTree ? ImportantForAccessibility.Yes : ImportantForAccessibility.No;
 		}
@@ -243,12 +314,16 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		internal static void SetupDefaults(AView control, ref string defaultContentDescription, ref string defaultHint)
 		{
-			if (defaultContentDescription == null)
-				defaultContentDescription = control.ContentDescription;
-
-			if (control is TextView textView && defaultHint == null)
+			// Setting defaults for these values makes no sense
+			if (!Flags.IsAccessibilityExperimentalSet())
 			{
-				defaultHint = textView.Hint;
+				if (defaultContentDescription == null)
+					defaultContentDescription = control.ContentDescription;
+
+				if (control is TextView textView && defaultHint == null)
+				{
+					defaultHint = textView.Hint;
+				}
 			}
 		}
 

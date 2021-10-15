@@ -8,22 +8,37 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		IVisualElementRenderer _renderer;
 		object _bindingContext;
+
 		internal Action<UIContainerCell> ViewMeasureInvalidated { get; set; }
 		internal NSIndexPath IndexPath { get; set; }
 		internal UITableView TableView { get; set; }
 
-		public UIContainerCell(string cellId, View view) : base(UITableViewCellStyle.Default, cellId)
+		internal UIContainerCell(string cellId, View view, Shell shell, object context) : base(UITableViewCellStyle.Default, cellId)
 		{
 			View = view;
 			View.MeasureInvalidated += MeasureInvalidated;
 			SelectionStyle = UITableViewCellSelectionStyle.None;
 
-			_renderer = Platform.CreateRenderer(view);
-			Platform.SetRenderer(view, _renderer);
+			_renderer = Platform.GetRenderer(view);
+
+			if (_renderer == null)
+			{
+				_renderer = Platform.CreateRenderer(view);
+				Platform.SetRenderer(view, _renderer);
+			}
 
 			ContentView.AddSubview(_renderer.NativeView);
 			_renderer.NativeView.ClipsToBounds = true;
 			ContentView.ClipsToBounds = true;
+
+			BindingContext = context;
+			if (shell != null)
+				shell.AddLogicalChild(View);
+		}
+
+
+		public UIContainerCell(string cellId, View view) : this(cellId, view, null, null)
+		{
 		}
 
 		void MeasureInvalidated(object sender, System.EventArgs e)
@@ -39,7 +54,7 @@ namespace Xamarin.Forms.Platform.iOS
 			TableView.ReloadRows(new[] { IndexPath }, UITableViewRowAnimation.Automatic);
 		}
 
-		internal void Disconnect()
+		internal void Disconnect(Shell shell = null, bool keepRenderer = false)
 		{
 			ViewMeasureInvalidated = null;
 			View.MeasureInvalidated -= MeasureInvalidated;
@@ -47,7 +62,13 @@ namespace Xamarin.Forms.Platform.iOS
 				baseShell.PropertyChanged -= OnElementPropertyChanged;
 
 			_bindingContext = null;
-			Platform.SetRenderer(View, null);
+
+			if (!keepRenderer)
+				Platform.SetRenderer(View, null);
+
+			if (shell != null)
+				shell.RemoveLogicalChild(shell);
+
 			View = null;
 			TableView = null;
 		}
@@ -57,7 +78,8 @@ namespace Xamarin.Forms.Platform.iOS
 		public object BindingContext
 		{
 			get => _bindingContext;
-			set {
+			set
+			{
 				if (value == _bindingContext)
 					return;
 
@@ -72,14 +94,13 @@ namespace Xamarin.Forms.Platform.iOS
 					baseShell2.PropertyChanged += OnElementPropertyChanged;
 					UpdateVisualState();
 				}
-
 			}
 		}
 
 		public override void LayoutSubviews()
 		{
 			base.LayoutSubviews();
-			if(View != null)
+			if (View != null)
 				View.Layout(Bounds.ToRectangle());
 		}
 
