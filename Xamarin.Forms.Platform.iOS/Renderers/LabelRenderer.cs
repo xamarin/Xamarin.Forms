@@ -201,6 +201,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (e.PropertyName == Label.TextProperty.PropertyName)
 			{
 				UpdateText();
+				UpdateTextColor();
 				UpdateTextDecorations();
 				UpdateCharacterSpacing();
 			}
