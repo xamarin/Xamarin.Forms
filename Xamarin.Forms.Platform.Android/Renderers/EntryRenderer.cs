@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
+using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Text;
 using Android.Text.Method;
@@ -205,12 +206,20 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
-				if (EditText != null && EditText is IFormsEditText formsEditContext)
+				if (EditText != null)
 				{
-					formsEditContext.OnKeyboardBackPressed -= OnKeyboardBackPressed;
-					formsEditContext.SelectionChanged -= SelectionChanged;
-					ListenForCloseBtnTouch(false);
+					EditText.RemoveTextChangedListener(this);
+					EditText.SetOnEditorActionListener(null);
+
+					if (EditText is IFormsEditText formsEditContext)
+					{
+						formsEditContext.OnKeyboardBackPressed -= OnKeyboardBackPressed;
+						formsEditContext.SelectionChanged -= SelectionChanged;
+
+						ListenForCloseBtnTouch(false);
+					}
 				}
+
 				_clearBtn = null;
 			}
 
@@ -530,6 +539,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateText()
 		{
+			if (EditText == null || Element == null)
+				return;
+
 			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 
 			if (EditText.Text == text)
@@ -538,7 +550,7 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.Text = text;
 			if (EditText.IsFocused)
 			{
-				EditText.SetSelection(text.Length);
+				EditText.SetSelection(EditText.Text.Length);
 				EditText.ShowKeyboard();
 			}
 		}
@@ -605,9 +617,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				bool showClearBtn = Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing;
 				UpdateClearBtn(showClearBtn);
-
-				if (!showClearBtn && isFocused)
-					ListenForCloseBtnTouch(false);
+				ListenForCloseBtnTouch(showClearBtn);
 			}
 		}
 
@@ -629,6 +639,13 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateClearBtn(bool showClearButton)
 		{
 			Drawable d = showClearButton && (Element.Text?.Length > 0) ? GetCloseButtonDrawable() : null;
+
+			if (!Element.TextColor.IsDefault)
+				d?.SetColorFilter(Element.TextColor.ToAndroid(), FilterMode.SrcIn);
+			else
+				d?.ClearColorFilter();
+
+
 			if ((Element as IVisualElementController).EffectiveFlowDirection.IsRightToLeft())
 			{
 				EditText.SetCompoundDrawablesWithIntrinsicBounds(d, null, null, null);
@@ -637,6 +654,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				EditText.SetCompoundDrawablesWithIntrinsicBounds(null, null, d, null);
 			}
+
 			_clearBtn = d;
 		}
 

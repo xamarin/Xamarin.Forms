@@ -22,16 +22,26 @@ namespace Xamarin.Forms.Platform.iOS
 			ClipsToBounds = true;
 			view.MeasureInvalidated += OnMeasureInvalidated;
 			MeasuredHeight = double.NaN;
-			_view.BatchCommitted += _view_BatchCommitted;
-		}
-
-		private void _view_BatchCommitted(object sender, Internals.EventArg<VisualElement> e)
-		{
+			Margin = new Thickness(0);
 		}
 
 		internal View View => _view;
 
+		internal bool MatchHeight { get; set; }
+
 		internal double MeasuredHeight { get; private set; }
+
+		internal double? Height
+		{
+			get;
+			set;
+		}
+
+		internal double? Width
+		{
+			get;
+			set;
+		}
 
 		internal bool MeasureIfNeeded()
 		{
@@ -43,31 +53,27 @@ namespace Xamarin.Forms.Platform.iOS
 				ReMeasure();
 				return true;
 			}
+			
 			return false;
 		}
 
-		public Thickness Margin
+		public virtual Thickness Margin
 		{
-			get
-			{
-				if(!_view.IsSet(View.MarginProperty))
-				{
-					var newMargin = new Thickness(0, (float)Platform.SafeAreaInsetsForWindow.Top, 0, 0);
-
-					if (newMargin != _view.Margin)
-					{
-						_view.Margin = newMargin;
-					}
-				}
-
-				return _view.Margin;
-			}
+			get;
 		}
 
 		void ReMeasure()
 		{
-			var request = _view.Measure(Frame.Width, double.PositiveInfinity, MeasureFlags.None);
-			MeasuredHeight = request.Request.Height;
+			if(Height != null && MatchHeight)
+			{
+				MeasuredHeight = Height.Value;
+			}
+			else
+			{
+				var request = _view.Measure(Frame.Width, double.PositiveInfinity, MeasureFlags.None);
+				MeasuredHeight = request.Request.Height;
+			}
+
 			HeaderSizeChanged?.Invoke(this, EventArgs.Empty);
 		}
 
@@ -77,15 +83,15 @@ namespace Xamarin.Forms.Platform.iOS
 			LayoutSubviews();
 		}
 
-		public override void WillMoveToSuperview(UIView newsuper)
+		public override void WillMoveToSuperview(UIView newSuper)
 		{
-			base.WillMoveToSuperview(newsuper);
+			base.WillMoveToSuperview(newSuper);
 			ReMeasure();
 		}
 
 		public override void LayoutSubviews()
 		{
-			_view.Layout(new Rectangle(0, Margin.Top, Frame.Width, MeasuredHeight));
+			_view.Layout(new Rectangle(0, Margin.Top, Width ?? Frame.Width, Height ?? MeasuredHeight));
 		}
 
 		protected override void Dispose(bool disposing)
@@ -95,7 +101,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
-				if(_view != null)
+				if (_view != null)
 					_view.MeasureInvalidated -= OnMeasureInvalidated;
 
 				_renderer?.Dispose();

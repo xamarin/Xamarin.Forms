@@ -2,6 +2,8 @@
 {
 	internal class TextCodeCollectionViewGridGallery : ContentPage
 	{
+		ItemsSourceGenerator generator;
+
 		public TextCodeCollectionViewGridGallery(ItemsLayoutOrientation orientation = ItemsLayoutOrientation.Vertical)
 		{
 			var layout = new Grid
@@ -18,7 +20,7 @@
 
 			var collectionView = new CollectionView { ItemsLayout = itemsLayout, AutomationId = "collectionview" };
 
-			var generator = new ItemsSourceGenerator(collectionView);
+			generator = new ItemsSourceGenerator(collectionView);
 			var spanSetter = new SpanSetter(collectionView);
 
 			layout.Children.Add(generator);
@@ -31,6 +33,20 @@
 
 			spanSetter.UpdateSpan();
 			generator.GenerateItems();
+		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			generator.SubscribeEvents();
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			generator.UnsubscribeEvents();
 		}
 	}
 }

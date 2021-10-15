@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+             xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+             x:Class="Xamarin.Forms.Controls.Issues.Issue6742">
+    <StackLayout>
+        <Button AutomationId="Issue6742Refresh" Clicked="RefreshItems" Text="Refresh" BackgroundColor="Cyan"/>
+
+        <Label Text="Tap Refresh button a few times." />
+        <Label AutomationId="Issue6742Label" Text="{Binding DisposeString}"/>
+        <Label AutomationId="Issue6742Mem" Text="{Binding TotalMemory}"/>
+
+        <ListView
+            HasUnevenRows="True"
+            ItemsSource="{Binding ItemGroups}"
+            IsGroupingEnabled="True"
+            GroupDisplayBinding="{Binding GroupName}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout Margin="20">
+                            <Label Text="{Binding Name}" />
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+</controls:TestContentPage>
