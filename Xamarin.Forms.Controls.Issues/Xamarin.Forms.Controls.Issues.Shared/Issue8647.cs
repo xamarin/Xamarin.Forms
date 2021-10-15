@@ -70,5 +70,17 @@ namespace Xamarin.Forms.Controls.Issues
 
 			public static implicit operator Item(string value) => new Item { Value = value };
 		}
+
+#if UITEST
+		[Test]
+		public void DataTemplateSelectorInGroupHeaderTemplateShouldNotCrash()
+		{
+			RunningApp.WaitForElement(ButtonId);
+			RunningApp.Tap(ButtonId);
+
+			// Still here? Then we didn't crash
+			RunningApp.WaitForElement(ButtonId);
+		}
+#endif
 	}
 }

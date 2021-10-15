@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -169,10 +168,12 @@ namespace Xamarin.Forms.Platform.iOS
 				_picker.SetDate(Element.Date.ToNSDate(), animate);
 
 			// Can't use Element.Format because it won't display the correct format if the region and language are set differently
-			if (string.IsNullOrWhiteSpace(Element.Format) || Element.Format.Equals("d") || Element.Format.Equals("D"))
+			if (Element.Format.Equals("d") || Element.Format.Equals("D"))
 			{
-				NSDateFormatter dateFormatter = new NSDateFormatter();
-				dateFormatter.TimeZone = NSTimeZone.FromGMT(0);
+				NSDateFormatter dateFormatter = new NSDateFormatter
+				{
+					TimeZone = NSTimeZone.FromGMT(0)
+				};
 
 				if (Element.Format?.Equals("D") == true)
 				{

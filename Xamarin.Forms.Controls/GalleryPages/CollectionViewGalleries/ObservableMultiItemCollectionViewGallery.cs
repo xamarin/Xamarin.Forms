@@ -2,6 +2,8 @@
 {
 	internal class ObservableMultiItemCollectionViewGallery : ContentPage
 	{
+		ItemsSourceGenerator generator;
+
 		public ObservableMultiItemCollectionViewGallery(ItemsLayoutOrientation orientation = ItemsLayoutOrientation.Vertical,
 			bool grid = true, int initialItems = 1000, bool withIndex = false)
 		{
@@ -26,7 +28,7 @@
 
 			var collectionView = new CollectionView { ItemsLayout = itemsLayout, ItemTemplate = itemTemplate, AutomationId = "collectionview" };
 
-			var generator = new ItemsSourceGenerator(collectionView, initialItems, ItemsSourceType.MultiTestObservableCollection);
+			generator = new ItemsSourceGenerator(collectionView, initialItems, ItemsSourceType.MultiTestObservableCollection);
 
 			var remover = new MultiItemRemover(collectionView, withIndex);
 
@@ -54,6 +56,20 @@
 			Content = layout;
 
 			generator.GenerateItems();
+		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			generator.SubscribeEvents();
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			generator.UnsubscribeEvents();
 		}
 	}
 }

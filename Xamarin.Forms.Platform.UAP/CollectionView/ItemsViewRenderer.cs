@@ -332,7 +332,7 @@ namespace Xamarin.Forms.Platform.UWP
 			await ScrollTo(args);
 		}
 
-		object FindBoundItem(ScrollToRequestEventArgs args)
+		protected virtual object FindBoundItem(ScrollToRequestEventArgs args)
 		{
 			if (args.Mode == ScrollToMode.Position)
 			{
@@ -524,6 +524,17 @@ namespace Xamarin.Forms.Platform.UWP
 			itemsViewScrolledEventArgs = ComputeVisibleIndexes(itemsViewScrolledEventArgs, layoutOrientaton, advancing);
 
 			Element.SendScrolled(itemsViewScrolledEventArgs);
+
+			if (IsRemainingItemsThresholdReached(itemsViewScrolledEventArgs.LastVisibleItemIndex))
+				ItemsView.SendRemainingItemsThresholdReached();
+		}
+
+		private bool IsRemainingItemsThresholdReached(int lastVisibleItemIndex)
+		{
+			if (ItemsView == null || lastVisibleItemIndex == -1 || ItemsView.RemainingItemsThreshold == -1)
+				return false;
+
+			return (ItemCount - 1 - lastVisibleItemIndex) <= ItemsView.RemainingItemsThreshold;
 		}
 
 		protected virtual ItemsViewScrolledEventArgs ComputeVisibleIndexes(ItemsViewScrolledEventArgs args, ItemsLayoutOrientation orientation, bool advancing) 

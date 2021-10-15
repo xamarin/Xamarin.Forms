@@ -2,6 +2,8 @@
 {
 	internal class TemplateCodeCollectionViewGallery : ContentPage
 	{
+		ItemsSourceGenerator generator;
+
 		public TemplateCodeCollectionViewGallery(IItemsLayout itemsLayout)
 		{
 			var layout = new Grid
@@ -23,7 +25,7 @@
 				BackgroundColor = Color.Red
 			};
 
-			var generator = new ItemsSourceGenerator(collectionView, initialItems: 20);
+			generator = new ItemsSourceGenerator(collectionView, initialItems: 20);
 
 			layout.Children.Add(generator);
 			layout.Children.Add(collectionView);
@@ -33,6 +35,20 @@
 			Content = layout;
 
 			generator.GenerateItems();
+		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			generator.SubscribeEvents();
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			generator.UnsubscribeEvents();
 		}
 	}
 }
