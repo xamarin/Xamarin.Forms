@@ -6,11 +6,11 @@ variables:
 - name: BuildVersion
   value: $[counter('nuget-counter', 126)]
 - name: NUGET_VERSION
-  value: 5.6.0
+  value: 5.8.1
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
   value: true
 - name: DOTNET_VERSION
-  value: 3.1.301
+  value: 5.0.102
 
 resources:
   repositories:
@@ -49,6 +49,7 @@ schedules:
   branches:
     include:
     - main
+    - 5.0.0
 
 stages:
   - stage: windows
@@ -75,6 +76,7 @@ stages:
           - template: build/steps/build-windows.yml
             parameters:
               provisionatorPath : 'build/provisioning/provisioning.csx'
+              provisionatorVSPath : 'build/provisioning/vs.csx'
       - job: nuget_pack_hosted
         workspace:
           clean: all
@@ -168,7 +170,6 @@ stages:
           vmImage: $(macOSXVmImage)
           demands:
             - sh
-            - Xamarin.iOS
         variables:
           provisionator.osxPath : 'build/provisioning/provisioning.csx'
           buildConfiguration: $(DefaultBuildConfiguration)
@@ -260,5 +261,7 @@ stages:
             signedArtifactPath: signed
             displayName: Sign Phase
             condition: and(succeeded(), ne(variables['signVmImage'], ''), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
-
-
+            preSignSteps:
+              - task: NuGetToolInstaller@1
+                inputs:
+                  versionSpec: $(NUGET_VERSION)

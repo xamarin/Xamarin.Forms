@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    x:Class="Xamarin.Forms.Controls.Issues.Issue14236"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls" 
+    xmlns:issues="clr-namespace:Xamarin.Forms.Controls.Issues">
+    <controls:TestContentPage.Resources>
+        <DataTemplate x:Key="YellowTemplate" x:DataType="issues:Issue14236Item">
+            <StackLayout BackgroundColor="Yellow">
+                <Label Text="{Binding Color}" />
+                <Label Text="{Binding RequestTemplateCount}" />
+            </StackLayout>
+        </DataTemplate>
+        <DataTemplate x:Key="GrenTemplate" x:DataType="issues:Issue14236Item">
+            <StackLayout BackgroundColor="YellowGreen">
+                <Label Text="{Binding Color}" />
+                <Label Text="{Binding RequestTemplateCount}" />
+            </StackLayout>
+        </DataTemplate>
+        <issues:Issue14236ItemsTemplateSelector
+            x:Key="ItemsTemplateSelector"
+            GreenTemplate="{StaticResource GrenTemplate}"
+            YellowTemplate="{StaticResource YellowTemplate}" />
+    </controls:TestContentPage.Resources>
+    <StackLayout VerticalOptions="FillAndExpand">
+        <CollectionView VerticalOptions="FillAndExpand" ItemTemplate="{StaticResource ItemsTemplateSelector}" ItemsSource="{Binding Items}" />
+        <Button Command="{Binding AddItemsCommand}" Text="Add Items" />
+    </StackLayout>
+</controls:TestContentPage>
