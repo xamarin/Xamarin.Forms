@@ -13,7 +13,7 @@ Read more about the platform at https://www.xamarin.com/forms.
 
 ## Packages ##
 
-Platform/Feature               | Package name                              | Stable      | Prerelease | Nightly Feed [Azure](https://aka.ms/xf-ci/index.json)  (main branch)
+Platform/Feature               | Package name                              | Stable      | Prerelease | Nightly Feed [Azure](https://aka.ms/xf-nightly/index.json)  (main branch)
 -----------------------|-------------------------------------------|-----------------------------|------------------------- |-------------------------|
 Core             | `Xamarin.Forms` | [![NuGet](https://img.shields.io/nuget/v/Xamarin.Forms.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms/) | [![NuGet](https://img.shields.io/nuget/vpre/Xamarin.Forms.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms/) |
 AppLinks  | `Xamarin.Forms.AppLinks`  | [![NuGet](https://img.shields.io/nuget/v/Xamarin.Forms.AppLinks.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.AppLinks/) | [![NuGet](https://img.shields.io/nuget/vpre/Xamarin.Forms.AppLinks.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.AppLinks/) | 
@@ -35,7 +35,7 @@ If you want to use the latest dev build then you should read [this blog post](ht
   <configuration>
     <packageSources>
       <clear />
-      <add key="xamarin-ci" value="https://aka.ms/xf-ci/index.json" />
+      <add key="xamarin-ci" value="https://aka.ms/xf-nightly/index.json" />
       <add key="NuGet.org" value="https://api.nuget.org/v3/index.json" />
     </packageSources>
   </configuration>
