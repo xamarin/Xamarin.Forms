@@ -1,15 +1,16 @@
 ﻿using Android.Views.Accessibility;
+using AndroidX.Core.View.Accessibility;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	class EntryAccessibilityDelegate : global::Android.Views.View.AccessibilityDelegate
+	class EntryAccessibilityDelegate : AccessibilityDelegateAutomationId
 	{
 		BindableObject _element;
 
-		public EntryAccessibilityDelegate(BindableObject Element) : base()
+		public EntryAccessibilityDelegate(BindableObject element) : base(element)
 		{
-			_element = Element;
+			_element = element;
 		}
 
 		protected override void Dispose(bool disposing)
@@ -22,7 +23,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public string ClassName { get; set; } = "android.widget.Button";
 
-		public override void OnInitializeAccessibilityNodeInfo(global::Android.Views.View host, AccessibilityNodeInfo info)
+		public override void OnInitializeAccessibilityNodeInfo(global::Android.Views.View host, AccessibilityNodeInfoCompat info)
 		{
 			base.OnInitializeAccessibilityNodeInfo(host, info);
 			info.ClassName = ClassName;

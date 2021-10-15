@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			var stack = shellSection.Stack.ToList();
-			bool result = ((IShellController)_shellContext.Shell).ProposeNavigation(ShellNavigationSource.ShellContentChanged,
+			bool result = ShellController.ProposeNavigation(ShellNavigationSource.ShellContentChanged,
 				(ShellItem)shellSection.Parent, shellSection, shellContent, stack, true);
 
 			if (result)
@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Platform.Android
 		IShellToolbarTracker _toolbarTracker;
 		FormsViewPager _viewPager;
 		bool _disposed;
-
+		IShellController ShellController => _shellContext.Shell;
 		public ShellSectionRenderer(IShellContext shellContext)
 		{
 			_shellContext = shellContext;
@@ -128,6 +128,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		Fragment IShellObservableFragment.Fragment => this;
 		public ShellSection ShellSection { get; set; }
+		protected IShellContext ShellContext => _shellContext;
 		IShellSectionController SectionController => (IShellSectionController)ShellSection;
 
 		public override AView OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -143,6 +144,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			_toolbar = root.FindViewById<Toolbar>(Resource.Id.main_toolbar);
 			_viewPager = root.FindViewById<FormsViewPager>(Resource.Id.main_viewpager);
+
 			_tablayout = root.FindViewById<TabLayout>(Resource.Id.main_tablayout);
 
 			_viewPager.EnableGesture = false;
@@ -176,7 +178,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (SectionController.GetItems().Count == 1)
 			{
-				_tablayout.Visibility = ViewStates.Gone;
+				UpdateTablayoutVisibility();
 			}
 
 			_tablayout.LayoutChange += OnTabLayoutChange;
@@ -263,8 +265,22 @@ namespace Xamarin.Forms.Platform.Android
 			AnimationFinished?.Invoke(this, e);
 		}
 
-		protected virtual void OnItemsCollectionChagned(object sender, NotifyCollectionChangedEventArgs e) =>
+		protected virtual void OnItemsCollectionChagned(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			UpdateTablayoutVisibility();
+		}
+
+		void UpdateTablayoutVisibility()
+		{
 			_tablayout.Visibility = (SectionController.GetItems().Count > 1) ? ViewStates.Visible : ViewStates.Gone;
+			if (Flags.IsAccessibilityExperimentalSet())
+			{
+				if (_tablayout.Visibility == ViewStates.Gone)
+					_viewPager.ImportantForAccessibility = ImportantForAccessibility.No;
+				else
+					_viewPager.ImportantForAccessibility = ImportantForAccessibility.Auto;
+			}
+		}
 
 		protected virtual void OnShellItemPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{

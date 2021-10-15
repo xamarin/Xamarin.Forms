@@ -18,8 +18,10 @@ namespace Xamarin.Forms.Platform.UWP
 			new PropertyMetadata(default(bool), IsSelectedChanged));
 
 		View _content;
+		object _previousDataContext;
+		double _previousWidth;
 		FrameworkElement FrameworkElement { get; set; }
-
+		Shell _shell;
 		public ShellFlyoutItemRenderer()
 		{
 			this.DataContextChanged += OnDataContextChanged;
@@ -34,11 +36,17 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnDataContextChanged(Windows.UI.Xaml.FrameworkElement sender, Windows.UI.Xaml.DataContextChangedEventArgs args)
 		{
+			if (_previousDataContext == args.NewValue)
+				return;
+
+			_previousWidth = -1;
+			_previousDataContext = args.NewValue;
 			if (_content != null)
 			{
 				if (_content.BindingContext is INotifyPropertyChanged inpc)
 					inpc.PropertyChanged -= ShellElementPropertyChanged;
 
+				_shell?.RemoveLogicalChild(_content);
 				_content.Cleanup();
 				_content.MeasureInvalidated -= OnMeasureInvalidated;
 				_content.BindingContext = null;
@@ -48,8 +56,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 			var bo = (BindableObject)args.NewValue;
 			var element = bo as Element;
-			var shell = element?.FindParent<Shell>();
-			DataTemplate dataTemplate = (shell as IShellController)?.GetFlyoutItemDataTemplate(bo);
+			_shell = element?.FindParent<Shell>();
+			DataTemplate dataTemplate = (_shell as IShellController)?.GetFlyoutItemDataTemplate(bo);
 
 			if (bo != null)
 				bo.PropertyChanged += ShellElementPropertyChanged;
@@ -58,7 +66,8 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				_content = (View)dataTemplate.CreateContent();
 				_content.BindingContext = bo;
-				_content.Parent = shell;
+				_shell.AddLogicalChild(_content);
+				
 				_content.MeasureInvalidated += OnMeasureInvalidated;
 				IVisualElementRenderer renderer = Platform.CreateRenderer(_content);
 				Platform.SetRenderer(_content, renderer);
@@ -95,12 +104,6 @@ namespace Xamarin.Forms.Platform.UWP
 			OnMeasureInvalidated();
 		}
 
-		protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize)
-		{
-			return base.MeasureOverride(availableSize);
-		}
-
-		double _previousWidth;
 		private void OnLayoutUpdated(object sender, object e)
 		{
 			if (this.ActualWidth > 0 && this.ActualWidth != _content.Width && _previousWidth != this.ActualWidth)

@@ -42,6 +42,7 @@ namespace Xamarin.Forms
 		public StaticRegistrarStrategy StaticRegistarStrategy { get; set; }
 		public PlatformType PlatformType { get; set; }
 		public bool UseMessagingCenter { get; set; } = true;
+		public bool UseFastLayout { get; set; } = false;
 
 		public DisplayResolutionUnit DisplayResolutionUnit { get; set; }
 
@@ -271,6 +272,8 @@ namespace Xamarin.Forms
 
 		public static bool UseSkiaSharp { get; private set; }
 
+		public static bool UseFastLayout { get; private set; }
+
 		public static DisplayResolutionUnit DisplayResolutionUnit { get; private set; }
 
 		public static int ScreenDPI => s_dpi.Value;
@@ -480,11 +483,7 @@ namespace Xamarin.Forms
 					s_platformType = options.PlatformType;
 					s_useMessagingCenter = options.UseMessagingCenter;
 					UseSkiaSharp = options.UseSkiaSharp;
-
-					if (options.Assemblies != null && options.Assemblies.Length > 0)
-					{
-						TizenPlatformServices.AppDomain.CurrentDomain.AddAssemblies(options.Assemblies);
-					}
+					UseFastLayout = options.UseFastLayout;
 
 					// renderers
 					if (options.Handlers != null)
@@ -493,9 +492,6 @@ namespace Xamarin.Forms
 					}
 					else
 					{
-						// Add Xamarin.Forms.Core assembly by default to apply the styles.
-						TizenPlatformServices.AppDomain.CurrentDomain.AddAssembly(Assembly.GetAssembly(typeof(Xamarin.Forms.View)));
-
 						// static registrar
 						if (options.StaticRegistarStrategy != StaticRegistrarStrategy.None)
 						{
@@ -519,8 +515,6 @@ namespace Xamarin.Forms
 						}
 						else
 						{
-							// The assembly of the executing application and referenced assemblies of it are added into the list here.
-							TizenPlatformServices.AppDomain.CurrentDomain.RegisterAssemblyRecursively(application.GetType().GetTypeInfo().Assembly);
 							Registrar.RegisterAll(new Type[]
 							{
 								typeof(ExportRendererAttribute),
@@ -532,6 +526,9 @@ namespace Xamarin.Forms
 
 							if (UseSkiaSharp)
 								RegisterSkiaSharpRenderers();
+
+							if (UseFastLayout)
+								Registrar.Registered.Register(typeof(Layout), typeof(FastLayoutRenderer));
 						}
 					}
 
@@ -551,11 +548,6 @@ namespace Xamarin.Forms
 				}
 				else
 				{
-					// In .NETCore, AppDomain feature is not supported.
-					// The list of assemblies returned by AppDomain.GetAssemblies() method should be registered manually.
-					// The assembly of the executing application and referenced assemblies of it are added into the list here.
-					TizenPlatformServices.AppDomain.CurrentDomain.RegisterAssemblyRecursively(application.GetType().GetTypeInfo().Assembly);
-
 					Registrar.RegisterAll(new Type[]
 					{
 						typeof(ExportRendererAttribute),

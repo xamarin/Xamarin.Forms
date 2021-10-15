@@ -113,9 +113,19 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void UpdateBackgroundColor()
 		{
 			if (Element.BackgroundColor != Color.Default)
-				SetBackgroundColor(Element.BackgroundColor.ToAndroid());
+			{
+				var backgroundColor = Element.BackgroundColor.ToAndroid();
+
+				SetBackgroundColor(backgroundColor);
+
+				if (_contentView != null && (Element.Content == null || (Element.Content != null && Element.Content.BackgroundColor == Color.Default)))
+					_contentView.SetBackgroundColor(backgroundColor);
+			}
 			else
-				Control?.SetWindowBackground();
+				Control.SetWindowBackground();
+
+			if (_contentView != null && _contentView.Background == null)
+				_contentView.SetWindowBackground();
 		}
 
 		protected override void UpdateBackground()
@@ -126,6 +136,9 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			this.UpdateBackground(background);
+
+			if (_contentView != null && Element.Content == null)
+				_contentView.UpdateBackground(background);
 		}
 
 		protected override void OnAttachedToWindow()
@@ -233,21 +246,31 @@ namespace Xamarin.Forms.Platform.Android
 			var interceptPoint = new Point(e.GetX() / _density, e.GetY() / _density);
 
 			var diffX = interceptPoint.X - _initialPoint.X;
+			var aDiffX = Math.Abs(diffX);
+
 			var diffY = interceptPoint.Y - _initialPoint.Y;
+			var aDiffY = Math.Abs(diffY);
 
-			SwipeDirection swipeDirection;
+			var swipeMinimumDelta = 1.0f;
 
-			if (Math.Abs(diffX) > Math.Abs(diffY))
-				swipeDirection = diffX > 0 ? SwipeDirection.Right : SwipeDirection.Left;
-			else
-				swipeDirection = diffY > 0 ? SwipeDirection.Down : SwipeDirection.Up;
+			if (aDiffX >= swipeMinimumDelta || aDiffY >= swipeMinimumDelta)
+			{
+				SwipeDirection swipeDirection;
 
-			var items = GetSwipeItemsByDirection(swipeDirection);
+				if (aDiffX > aDiffY)
+					swipeDirection = diffX > 0 ? SwipeDirection.Right : SwipeDirection.Left;
+				else
+					swipeDirection = diffY > 0 ? SwipeDirection.Down : SwipeDirection.Up;
 
-			if (items == null || items.Count == 0)
-				return false;
+				var items = GetSwipeItemsByDirection(swipeDirection);
 
-			return ShouldInterceptScrollChildrenTouch(swipeDirection);
+				if (items == null || items.Count == 0)
+					return false;
+
+				return ShouldInterceptScrollChildrenTouch(swipeDirection);
+			}
+
+			return false;
 		}
 
 		bool ShouldInterceptScrollChildrenTouch(SwipeDirection swipeDirection)
@@ -365,6 +388,9 @@ namespace Xamarin.Forms.Platform.Android
 				_contentView = CreateContent();
 
 			AddView(_contentView);
+
+			UpdateBackgroundColor();
+			UpdateBackground();
 		}
 
 		AView CreateEmptyContent()
@@ -441,7 +467,7 @@ namespace Xamarin.Forms.Platform.Android
 				case MotionEventActions.Up:
 					handled = HandleTouchInteractions(GestureStatus.Completed, point);
 
-					if (Parent == null)
+					if (_isDisposed || Parent == null)
 						break;
 
 					Parent.RequestDisallowInterceptTouchEvent(false);
@@ -457,7 +483,7 @@ namespace Xamarin.Forms.Platform.Android
 				case MotionEventActions.Cancel:
 					handled = HandleTouchInteractions(GestureStatus.Canceled, point);
 
-					if (Parent == null)
+					if (_isDisposed || Parent == null)
 						break;
 
 					Parent.RequestDisallowInterceptTouchEvent(false);
