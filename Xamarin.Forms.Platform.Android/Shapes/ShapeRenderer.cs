@@ -208,6 +208,7 @@ namespace Xamarin.Forms.Platform.Android
 		Stretch _aspect;
 
 		AMatrix _transform;
+		AMatrix _transformMatrix;
 
 		public ShapeView(Context context) : base(context)
 		{
@@ -229,11 +230,12 @@ namespace Xamarin.Forms.Platform.Android
 			if (_path == null)
 				return;
 
-			AMatrix transformMatrix = CreateMatrix();
+			if (_transformMatrix == null)
+				_transformMatrix = CreateMatrix();
 
-			_path.Transform(transformMatrix);
-			transformMatrix.MapRect(_pathFillBounds);
-			transformMatrix.MapRect(_pathStrokeBounds);
+			_path.Transform(_transformMatrix);
+			_transformMatrix.MapRect(_pathFillBounds);
+			_transformMatrix.MapRect(_pathStrokeBounds);
 
 			if (_fill != null)
 			{
@@ -241,11 +243,14 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_fill is GradientBrush fillGradientBrush)
 				{
-					if (fillGradientBrush is LinearGradientBrush linearGradientBrush)
-						_fillShader = CreateLinearGradient(linearGradientBrush, _pathFillBounds);
+					if (_fillShader == null)
+					{
+						if (fillGradientBrush is LinearGradientBrush linearGradientBrush)
+							_fillShader = CreateLinearGradient(linearGradientBrush, _pathFillBounds);
 
-					if (fillGradientBrush is RadialGradientBrush radialGradientBrush)
-						_fillShader = CreateRadialGradient(radialGradientBrush, _pathFillBounds);
+						if (fillGradientBrush is RadialGradientBrush radialGradientBrush)
+							_fillShader = CreateRadialGradient(radialGradientBrush, _pathFillBounds);
+					}
 
 					_drawable.Paint.SetShader(_fillShader);
 				}
@@ -269,13 +274,16 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_stroke is GradientBrush strokeGradientBrush)
 				{
-					UpdatePathStrokeBounds();
+					if (_strokeShader == null)
+					{
+						UpdatePathStrokeBounds();
 
-					if (strokeGradientBrush is LinearGradientBrush linearGradientBrush)
-						_strokeShader = CreateLinearGradient(linearGradientBrush, _pathStrokeBounds);
+						if (strokeGradientBrush is LinearGradientBrush linearGradientBrush)
+							_strokeShader = CreateLinearGradient(linearGradientBrush, _pathStrokeBounds);
 
-					if (strokeGradientBrush is RadialGradientBrush radialGradientBrush)
-						_strokeShader = CreateRadialGradient(radialGradientBrush, _pathStrokeBounds);
+						if (strokeGradientBrush is RadialGradientBrush radialGradientBrush)
+							_strokeShader = CreateRadialGradient(radialGradientBrush, _pathStrokeBounds);
+					}
 
 					_drawable.Paint.SetShader(_strokeShader);
 				}
@@ -294,10 +302,11 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			AMatrix inverseTransformMatrix = new AMatrix();
-			transformMatrix.Invert(inverseTransformMatrix);
+			_transformMatrix.Invert(inverseTransformMatrix);
 			_path.Transform(inverseTransformMatrix);
 			inverseTransformMatrix.MapRect(_pathFillBounds);
 			inverseTransformMatrix.MapRect(_pathStrokeBounds);
+			inverseTransformMatrix.Dispose();
 		}
 
 		public void UpdateShape(APath path)
@@ -328,22 +337,36 @@ namespace Xamarin.Forms.Platform.Android
 		public void UpdateAspect(Stretch aspect)
 		{
 			_aspect = aspect;
+
+			_transformMatrix?.Dispose();
+			_transformMatrix = null;
+
+			_fillShader?.Dispose();
 			_fillShader = null;
+
+			_strokeShader?.Dispose();
 			_strokeShader = null;
+
 			Invalidate();
 		}
 
 		public void UpdateFill(Brush fill)
 		{
 			_fill = fill;
+
+			_fillShader?.Dispose();
 			_fillShader = null;
+
 			Invalidate();
 		}
 
 		public void UpdateStroke(Brush stroke)
 		{
 			_stroke = stroke;
+
+			_strokeShader?.Dispose();
 			_strokeShader = null;
+
 			Invalidate();
 		}
 
@@ -430,6 +453,7 @@ namespace Xamarin.Forms.Platform.Android
 				_pathFillBounds.SetEmpty();
 			}
 
+			_fillShader?.Dispose();
 			_fillShader = null;
 			UpdatePathStrokeBounds();
 		}
@@ -486,6 +510,7 @@ namespace Xamarin.Forms.Platform.Android
 				_pathStrokeBounds.SetEmpty();
 			}
 
+			_strokeShader?.Dispose();
 			_strokeShader = null;
 			Invalidate();
 		}

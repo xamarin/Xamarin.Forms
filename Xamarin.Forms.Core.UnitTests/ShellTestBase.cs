@@ -341,6 +341,11 @@ namespace Xamarin.Forms.Core.UnitTests
 				Routing.RegisterRoute(route, new ConcretePageFactory(contentPage));
 			}
 
+			public void AssertCurrentStateEquals(string expectedState)
+			{
+				Assert.AreEqual(expectedState, CurrentState.Location.ToString());
+			}
+
 			public class ConcretePageFactory : RouteFactory
 			{
 				ContentPage _contentPage;
@@ -369,8 +374,6 @@ namespace Xamarin.Forms.Core.UnitTests
 				OnNavigatingCount++;
 			}
 
-
-
 			public void TestNavigationArgs(ShellNavigationSource source, string from, string to)
 			{
 				TestNavigatingArgs(source, from, to);
@@ -387,6 +390,7 @@ namespace Xamarin.Forms.Core.UnitTests
 					Assert.AreEqual(from, this.LastShellNavigatedEventArgs.Previous.Location.ToString());
 
 				Assert.AreEqual(to, this.LastShellNavigatedEventArgs.Current.Location.ToString());
+				Assert.AreEqual(to, this.CurrentState.Location.ToString());
 			}
 
 			public void TestNavigatingArgs(ShellNavigationSource source, string from, string to)

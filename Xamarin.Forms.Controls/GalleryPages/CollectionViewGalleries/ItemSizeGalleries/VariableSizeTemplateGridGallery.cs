@@ -2,6 +2,8 @@
 {
 	internal class VariableSizeTemplateGridGallery : ContentPage
 	{
+		ItemsSourceGenerator generator;
+
 		public VariableSizeTemplateGridGallery(ItemsLayoutOrientation orientation = ItemsLayoutOrientation.Vertical)
 		{
 			var layout = new Grid
@@ -26,7 +28,7 @@
 				ItemSizingStrategy = ItemSizingStrategy.MeasureFirstItem
 			};
 
-			var generator = new ItemsSourceGenerator(collectionView, 100);
+			generator = new ItemsSourceGenerator(collectionView, 100);
 
 			var explanation = new Label();
 			UpdateExplanation(explanation, collectionView.ItemSizingStrategy);
@@ -52,6 +54,20 @@
 			Content = layout;
 
 			generator.GenerateItems();
+		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			generator.SubscribeEvents();
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			generator.UnsubscribeEvents();
 		}
 
 		static void UpdateExplanation(Label explanation, ItemSizingStrategy strategy)
