@@ -128,7 +128,7 @@ namespace Xamarin.Forms
 			{
 				indicatorView.IndicatorLayout = new IndicatorStackLayout(indicatorView);
 			}
-			else if (indicatorView.IndicatorLayout == null)
+			else if (indicatorView.IndicatorLayout != null)
 			{
 				(indicatorView.IndicatorLayout as IndicatorStackLayout).Remove();
 				indicatorView.IndicatorLayout = null;
