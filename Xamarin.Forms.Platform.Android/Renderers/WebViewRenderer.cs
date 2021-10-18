@@ -118,6 +118,13 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var webView = new AWebView(Context);
 			webView.Settings.SetSupportMultipleWindows(true);
+
+			if ((int)Forms.SdkInt >= 30)
+			{
+				webView.Settings.AllowFileAccess = true;
+				webView.Settings.AllowContentAccess = true;
+			}
+
 			return webView;
 		}
 
