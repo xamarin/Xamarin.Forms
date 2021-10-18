@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue6387"
+    Title="Issue 6387">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label 
+                Text="Tap the ToolBarItem" />
+        </StackLayout>
+    </ContentPage.Content>
+</controls:TestContentPage>
