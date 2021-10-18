@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Threading.Tasks;
 using CoreGraphics;
 using UIKit;
 using PointF = CoreGraphics.CGPoint;
@@ -23,6 +24,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		sealed class PrimaryToolbarItem : UIBarButtonItem
 		{
+			bool _disposed;
 			readonly bool _forceName;
 			readonly ToolbarItem _item;
 
@@ -32,7 +34,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_item = item;
 
 				if (item.IconImageSource != null && !item.IconImageSource.IsEmpty && !forceName)
-					UpdateIconAndStyle();
+					Device.BeginInvokeOnMainThread(async () => { await UpdateIconAndStyleAsync(); });
 				else
 					UpdateTextAndStyle();
 				UpdateIsEnabled();
@@ -50,11 +52,15 @@ namespace Xamarin.Forms.Platform.iOS
 			protected override void Dispose(bool disposing)
 			{
 				if (disposing)
+				{
 					_item.PropertyChanged -= OnPropertyChanged;
+					_disposed = true;
+				}
+
 				base.Dispose(disposing);
 			}
 
-			void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+			async void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
 			{
 				if (e.PropertyName == MenuItem.IsEnabledProperty.PropertyName)
 					UpdateIsEnabled();
@@ -68,7 +74,7 @@ namespace Xamarin.Forms.Platform.iOS
 					if (!_forceName)
 					{
 						if (_item.IconImageSource != null && !_item.IconImageSource.IsEmpty)
-							UpdateIconAndStyle();
+							await UpdateIconAndStyleAsync();
 						else
 							UpdateTextAndStyle();
 					}
@@ -79,8 +85,11 @@ namespace Xamarin.Forms.Platform.iOS
 					this.SetAccessibilityLabel(_item);
 			}
 
-			async void UpdateIconAndStyle()
+			async Task UpdateIconAndStyleAsync()
 			{
+				if (_disposed)
+					return;
+
 				Image = await _item.IconImageSource.GetNativeImageAsync();
 				Style = UIBarButtonItemStyle.Plain;
 			}
@@ -100,13 +109,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		sealed class SecondaryToolbarItem : UIBarButtonItem
 		{
+			bool _disposed;
 			readonly ToolbarItem _item;
 
 			public SecondaryToolbarItem(ToolbarItem item) : base(new SecondaryToolbarItemContent())
 			{
 				_item = item;
 				UpdateText();
-				UpdateIcon();
+				Device.BeginInvokeOnMainThread(async () => { await UpdateIconAsync(); });
 				UpdateIsEnabled();
 
 				((SecondaryToolbarItemContent)CustomView).TouchUpInside += (sender, e) => ((IMenuItemController)_item).Activate();
@@ -122,16 +132,20 @@ namespace Xamarin.Forms.Platform.iOS
 			protected override void Dispose(bool disposing)
 			{
 				if (disposing)
+				{
 					_item.PropertyChanged -= OnPropertyChanged;
+					_disposed = true;
+				}
+
 				base.Dispose(disposing);
 			}
 
-			void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+			async void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
 			{
 				if (e.PropertyName == MenuItem.TextProperty.PropertyName)
 					UpdateText();
 				else if (e.PropertyName == MenuItem.IconImageSourceProperty.PropertyName)
-					UpdateIcon();
+					await UpdateIconAsync();
 				else if (e.PropertyName == MenuItem.IsEnabledProperty.PropertyName)
 					UpdateIsEnabled();
 				else if (e.PropertyName == AutomationProperties.HelpTextProperty.PropertyName)
@@ -140,8 +154,11 @@ namespace Xamarin.Forms.Platform.iOS
 					this.SetAccessibilityLabel(_item);
 			}
 
-			async void UpdateIcon()
+			async Task UpdateIconAsync()
 			{
+				if (_disposed)
+					return;
+
 				UIImage image = null;
 				if (_item.IconImageSource != null && !_item.IconImageSource.IsEmpty)
 				{
