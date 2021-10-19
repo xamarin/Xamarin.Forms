@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using NUnit.Framework;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -28,20 +29,29 @@ namespace Xamarin.Forms.Controls.Issues
 			BindingContext = this;
 		}
 
+		const string LabelAutomationId = "TheStatusLabel";
+		const string GoToPageAutomationId = "GoToPageButton";
+		const string ChangeTextAutomationId = "ChangeTextButton";
+
 		protected override void Init()
 		{
-			var statusLabel = new Label();
+			var statusLabel = new Label()
+			{
+				AutomationId = LabelAutomationId
+			};
 			statusLabel.SetBinding(Label.TextProperty, new Binding("SomeText"));
 
 			var button1 = new Button
 			{
-				Text = "To testpage"
+				Text = "To testpage",
+				AutomationId = GoToPageAutomationId
 			};
 			button1.Clicked += Button1_Clicked;
 
 			var button2 = new Button
 			{
-				Text = "Change Text"
+				Text = "Change Text",
+				AutomationId = ChangeTextAutomationId
 			};
 			button2.Clicked += Button2_Clicked;
 
@@ -106,5 +116,25 @@ namespace Xamarin.Forms.Controls.Issues
 				Content = stackLayout;
 			}
 		}
+
+#if UITEST
+		[Test]
+		public void Issue14757Test()
+		{
+			System.Threading.Tasks.Task.Delay(500);
+
+			RunningApp.WaitForElement(LabelAutomationId);
+
+			for (int i = 0; i <= 10; i++)
+			{
+				RunningApp.Tap(GoToPageAutomationId);
+				System.Threading.Tasks.Task.Delay(500);
+				RunningApp.Back();
+			}
+
+			RunningApp.Tap(ChangeTextAutomationId);
+			RunningApp.WaitForElement("Some Value");
+		}
+#endif
 	}
 }
