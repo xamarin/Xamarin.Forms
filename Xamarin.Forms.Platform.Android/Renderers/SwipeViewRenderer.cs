@@ -1505,9 +1505,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool CanEnableParentGesture()
 		{
-			if(_pageParent != null)
+			if (_pageParent != null)
 				return _pageParent.OnThisPlatform().IsSwipePagingEnabled();
-			
+
 			return true;
 		}
 
