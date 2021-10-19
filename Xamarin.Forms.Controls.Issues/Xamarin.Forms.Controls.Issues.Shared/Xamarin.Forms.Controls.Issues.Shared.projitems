@@ -1781,6 +1781,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue8129.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue12300.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue12150.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue14556.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue14433.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue12590.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue13726.xaml.cs" />
@@ -2240,6 +2241,9 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue13684.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue14556.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue14066.xaml">
