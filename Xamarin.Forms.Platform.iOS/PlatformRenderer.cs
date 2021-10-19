@@ -91,7 +91,6 @@ namespace Xamarin.Forms.Platform.iOS
 			// while it's being replaced on the Window.RootViewController with a new MainPage
 			if (!_disposed)
 			{
-				View.BackgroundColor = ColorExtensions.BackgroundColor;
 				Platform.WillAppear();
 			}
 
