@@ -22,9 +22,10 @@ namespace Xamarin.Forms.Controls.Issues
 		PlatformAffected.iOS)]
 	public partial class Issue6387 : TestContentPage
 	{
+#if APP
 		readonly ToolbarItem _item0;
 		readonly ToolbarItem _item1;
-
+#endif
 		public Issue6387()
 		{
 #if APP
@@ -47,7 +48,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 
 		}
-
+#if APP
 		void ClearAndAddToolbarItems()
 		{
 			ToolbarItems.Clear();
@@ -55,5 +56,6 @@ namespace Xamarin.Forms.Controls.Issues
 			ToolbarItems.Add(_item0);
 			ToolbarItems.Add(_item1);
 		}
+#endif
 	}
 }
