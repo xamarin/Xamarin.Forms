@@ -2,11 +2,13 @@
 {
 	[TypeConverter(typeof(BrushTypeConverter))]
 	public abstract class Brush : Element
-	{
+	{	
 		public static Brush Default
 		{
 			get { return new SolidColorBrush(Color.Default); }
 		}
+
+		public static implicit operator Brush(Color color) => new SolidColorBrush(color);
 
 		public abstract bool IsEmpty { get; }
 
