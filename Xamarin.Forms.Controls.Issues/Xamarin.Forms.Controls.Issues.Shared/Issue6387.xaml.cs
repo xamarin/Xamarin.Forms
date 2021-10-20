@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Reflection;
 
 #if UITEST
 using Xamarin.UITest;
@@ -32,13 +32,13 @@ namespace Xamarin.Forms.Controls.Issues
 			InitializeComponent();
 
 			_item0 = new ToolbarItem("Item 0", null, ClearAndAddToolbarItems)
-            {
-                IconImageSource = ImageSource.FromResource("Xamarin.Forms.Controls.GalleryPages.crimson.jpg", typeof(Issue6387).GetTypeInfo().Assembly)
-            };
-            _item1 = new ToolbarItem("Item 1", null, ClearAndAddToolbarItems)
-            {
-                // It doesn't matter if this item has an image or not.
-            };
+			{
+				IconImageSource = ImageSource.FromResource("Xamarin.Forms.Controls.GalleryPages.crimson.jpg", typeof(Issue6387).GetTypeInfo().Assembly)
+			};
+			_item1 = new ToolbarItem("Item 1", null, ClearAndAddToolbarItems)
+			{
+				// It doesn't matter if this item has an image or not.
+			};
 
 			ClearAndAddToolbarItems();
 #endif
