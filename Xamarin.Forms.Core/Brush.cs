@@ -2,7 +2,7 @@
 {
 	[TypeConverter(typeof(BrushTypeConverter))]
 	public abstract class Brush : Element
-	{	
+	{
 		public static Brush Default
 		{
 			get { return new SolidColorBrush(Color.Default); }

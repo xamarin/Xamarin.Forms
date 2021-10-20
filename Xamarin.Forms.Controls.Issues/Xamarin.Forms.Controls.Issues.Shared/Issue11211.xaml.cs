@@ -20,17 +20,17 @@ namespace Xamarin.Forms.Controls.Issues
 		"[Bug] CarouselView Position stops working when the collection updates",
 		PlatformAffected.Android)]
 	public partial class Issue11211 : TestContentPage
-    {
-        int _position;
+	{
+		int _position;
 
-        public Issue11211()
+		public Issue11211()
 		{
 #if APP
-            BindingContext = this;
+			BindingContext = this;
 
-            AddFewItems();
+			AddFewItems();
 
-            InitializeComponent();
+			InitializeComponent();
 #endif
 		}
 
@@ -38,37 +38,37 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 		}
 
-        public ObservableCollection<string> Items { get; } = new ObservableCollection<string>();
+		public ObservableCollection<string> Items { get; } = new ObservableCollection<string>();
 
-        public int Position
-        {
-            get { return _position; }
-            set
-            {
-                _position = value;
-                OnPropertyChanged();
-            }
-        }
+		public int Position
+		{
+			get { return _position; }
+			set
+			{
+				_position = value;
+				OnPropertyChanged();
+			}
+		}
 
-        public ICommand NextItem => new Command(() =>
-        {
-            Position = (Position + 1) % Items.Count;
-        });
+		public ICommand NextItem => new Command(() =>
+		{
+			Position = (Position + 1) % Items.Count;
+		});
 
-        public ICommand AddItem => new Command(() =>
-        {
-            var i = Items.Count;
-            Items.Add(i.ToString());
-            Position = i;
-        });
+		public ICommand AddItem => new Command(() =>
+		{
+			var i = Items.Count;
+			Items.Add(i.ToString());
+			Position = i;
+		});
 
-        void AddFewItems()
-        {
-            var count = 3;
-            for (int i = 0; i < count; i++)
-            {
-                AddItem.Execute(null);
-            }
-        }
-    }
+		void AddFewItems()
+		{
+			var count = 3;
+			for (int i = 0; i < count; i++)
+			{
+				AddItem.Execute(null);
+			}
+		}
+	}
 }
