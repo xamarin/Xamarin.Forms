@@ -5,12 +5,14 @@ using System.Linq;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
+using Android.Graphics.Drawables;
 using Android.OS;
 using Android.Text;
 using Android.Text.Method;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using AndroidX.Core.Content;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
@@ -288,6 +290,31 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateTextColor()
 		{
 			_textColorSwitcher?.UpdateTextColor(_editText, Element.TextColor);
+
+			UpdateSearchButtonColor();
+			UpdateClearButtonColor();
+		}
+
+		void UpdateSearchButtonColor()
+		{
+			var resource = Control?.FindViewById(Context.Resources.GetIdentifier("android:id/search_mag_icon", null, null));
+			var icon = resource as ImageView;
+
+			if (!Element.TextColor.IsDefault)
+				icon?.SetColorFilter(Element.TextColor.ToAndroid());
+			else
+				icon?.ClearColorFilter();
+		}
+
+		void UpdateClearButtonColor()
+		{
+			var resource = Control?.FindViewById(Context.Resources.GetIdentifier("android:id/search_close_btn", null, null));
+			var icon = resource as ImageView;
+
+			if (!Element.TextColor.IsDefault)
+				icon?.SetColorFilter(Element.TextColor.ToAndroid());
+			else
+				icon?.ClearColorFilter();
 		}
 
 		void UpdateMaxLength()
