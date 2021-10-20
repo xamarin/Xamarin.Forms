@@ -265,7 +265,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool UpdateTextAndImage()
 		{
 
-			if (_disposed || _renderer?.View == null || _element == null)
+			if (_disposed || _renderer?.View == null || _element == null || (View?.IsDisposed() ?? true))
 				return false;
 
 			if (View?.LayoutParameters == null && _hasLayoutOccurred)

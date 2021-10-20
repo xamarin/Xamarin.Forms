@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 14613" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue14613">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If Frame have a red background color in all the cases, the test has passed."/>
+        <StackLayout
+            Padding="12">
+            <Label
+                TextColor="White"
+                Text="Using BackgroundColor"/>
+            <Frame
+                Background="Red">
+                <Label
+                    TextColor="White"
+                    Text="Color"/>
+            </Frame>
+            <Label
+                Text="Using Background"/>
+            <Frame>
+                <Frame.Background>
+                    <SolidColorBrush
+                        Color="Red" />
+                </Frame.Background>
+                <Label
+                    TextColor="White"
+                    Text="SolidColorBrush"/>
+            </Frame>
+        </StackLayout>
+    </StackLayout>
+</local:TestContentPage>
