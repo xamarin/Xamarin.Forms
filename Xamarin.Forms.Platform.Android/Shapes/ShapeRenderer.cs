@@ -4,6 +4,7 @@ using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Graphics.Drawables.Shapes;
+using Android.Views;
 using Xamarin.Forms.Shapes;
 using AColor = Android.Graphics.Color;
 using AMatrix = Android.Graphics.Matrix;
@@ -41,6 +42,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateStrokeLineCap();
 				UpdateStrokeLineJoin();
 				UpdateStrokeMiterLimit();
+				UpdateClip();
 
 				if (!args.NewElement.Bounds.IsEmpty)
 				{
@@ -83,6 +85,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateStrokeLineJoin();
 			else if (args.PropertyName == Shape.StrokeMiterLimitProperty.PropertyName)
 				UpdateStrokeMiterLimit();
+			else if (args.PropertyName == VisualElement.ClipProperty.PropertyName)
+				UpdateClip();
 		}
 
 		public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
@@ -176,6 +180,18 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Control.UpdateStrokeMiterLimit((float)Element.StrokeMiterLimit);
 		}
+
+		void UpdateClip()
+		{
+			var geometry = Element.Clip;
+
+			if (geometry == null)
+				return;
+
+			var path = geometry.ToAPath(Context);
+
+			Control.UpdateClip(path);
+		}
 	}
 
 	public class ShapeView : AView
@@ -202,6 +218,8 @@ namespace Xamarin.Forms.Platform.Android
 		AMatrix _transform;
 		AMatrix _transformMatrix;
 
+		APath _clip;
+
 		public ShapeView(Context context) : base(context)
 		{
 			_drawable = new ShapeDrawable(null);
@@ -217,6 +235,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnDraw(Canvas canvas)
 		{
+			if (_clip != null)
+				canvas.ClipShape(_clip);
+
 			base.OnDraw(canvas);
 
 			if (_path == null)
@@ -299,6 +320,13 @@ namespace Xamarin.Forms.Platform.Android
 			inverseTransformMatrix.MapRect(_pathFillBounds);
 			inverseTransformMatrix.MapRect(_pathStrokeBounds);
 			inverseTransformMatrix.Dispose();
+		}
+
+		public void UpdateClip(APath clip)
+		{
+			_clip = clip;
+
+			Invalidate();
 		}
 
 		public void UpdateShape(APath path)
@@ -418,6 +446,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void UpdateSize(double width, double height)
 		{
+			_transformMatrix?.Dispose();
+			_transformMatrix = null;
+
 			_drawable.SetBounds(0, 0, (int)(width * _density), (int)(height * _density));
 			UpdatePathShape();
 		}
