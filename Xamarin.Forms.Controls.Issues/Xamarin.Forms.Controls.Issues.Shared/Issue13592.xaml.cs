@@ -25,108 +25,108 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 #if APP
 			InitializeComponent();
-            BindingContext = new Issue13592ViewModel();
+			BindingContext = new Issue13592ViewModel();
 #endif
-        }
+		}
 
-        protected override void Init()
+		protected override void Init()
 		{
 		}
-    }
+	}
 
-    public class Issue13592ViewModel : BindableObject
-    {
-        const int NumItems = 20;
-        const int NumSelected = 3;
+	public class Issue13592ViewModel : BindableObject
+	{
+		const int NumItems = 20;
+		const int NumSelected = 3;
 
-        ObservableCollection<string> _stringItems;
-        ObservableCollection<object> _selectedStringItems;
-        ObservableCollection<int> _intItems;
-        ObservableCollection<object> _selectedIntItems;
-        ObservableCollection<string> _log;
+		ObservableCollection<string> _stringItems;
+		ObservableCollection<object> _selectedStringItems;
+		ObservableCollection<int> _intItems;
+		ObservableCollection<object> _selectedIntItems;
+		ObservableCollection<string> _log;
 
-        public Issue13592ViewModel()
-        {
-            Log = new ObservableCollection<string>();
+		public Issue13592ViewModel()
+		{
+			Log = new ObservableCollection<string>();
 
-            IntItems = new ObservableCollection<int>();
+			IntItems = new ObservableCollection<int>();
 
-            for (var i = 0; i < NumItems; i++)
-                IntItems.Add(i);
+			for (var i = 0; i < NumItems; i++)
+				IntItems.Add(i);
 
-            StringItems = new ObservableCollection<string>();
+			StringItems = new ObservableCollection<string>();
 
-            for (var i = 0; i < NumItems; i++)
-                StringItems.Add(i.ToString());
+			for (var i = 0; i < NumItems; i++)
+				StringItems.Add(i.ToString());
 
-            AddToLog($"Loaded {NumItems} items");
+			AddToLog($"Loaded {NumItems} items");
 
-            SelectedIntItems = new ObservableCollection<object>();
+			SelectedIntItems = new ObservableCollection<object>();
 
-            for (var i = 0; i < NumSelected; i++)
-                SelectedIntItems.Add(i);
+			for (var i = 0; i < NumSelected; i++)
+				SelectedIntItems.Add(i);
 
-            SelectedStringItems = new ObservableCollection<object>();
+			SelectedStringItems = new ObservableCollection<object>();
 
-            for (var i = 0; i < NumSelected; i++)
-                SelectedStringItems.Add(i.ToString());
+			for (var i = 0; i < NumSelected; i++)
+				SelectedStringItems.Add(i.ToString());
 
-            AddToLog($"Loaded initial selection of: {string.Join(", ", this.SelectedIntItems)}");
-        }
+			AddToLog($"Loaded initial selection of: {string.Join(", ", this.SelectedIntItems)}");
+		}
 
-        public ObservableCollection<string> StringItems
-        {
-            get { return _stringItems; }
-            set
-            {
-                _stringItems = value;
-                OnPropertyChanged();
-            }
-        }
+		public ObservableCollection<string> StringItems
+		{
+			get { return _stringItems; }
+			set
+			{
+				_stringItems = value;
+				OnPropertyChanged();
+			}
+		}
 
-        public ObservableCollection<object> SelectedStringItems
-        {
-            get { return _selectedStringItems; }
-            set
-            {
-                _selectedStringItems = value;
-                OnPropertyChanged();
-            }
-        }
-        
-        public ObservableCollection<int> IntItems
-        {
-            get { return _intItems; }
-            set
-            {
-                _intItems = value;
-                OnPropertyChanged();
-            }
-        }
-       
-        public ObservableCollection<object> SelectedIntItems
-        {
-            get { return _selectedIntItems; }
-            set
-            {
-                _selectedIntItems = value;
-                OnPropertyChanged();
-            }
-        }
-        
-        public ObservableCollection<string> Log
-        {
-            get { return _log; }
-            set
-            {
-                _log = value;
-                OnPropertyChanged();
-            }
-        }
-        
-        public void AddToLog(string line)
-        {
-            Log.Add($"{line}.");
-        }
-    }
+		public ObservableCollection<object> SelectedStringItems
+		{
+			get { return _selectedStringItems; }
+			set
+			{
+				_selectedStringItems = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public ObservableCollection<int> IntItems
+		{
+			get { return _intItems; }
+			set
+			{
+				_intItems = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public ObservableCollection<object> SelectedIntItems
+		{
+			get { return _selectedIntItems; }
+			set
+			{
+				_selectedIntItems = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public ObservableCollection<string> Log
+		{
+			get { return _log; }
+			set
+			{
+				_log = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public void AddToLog(string line)
+		{
+			Log.Add($"{line}.");
+		}
+	}
 }
