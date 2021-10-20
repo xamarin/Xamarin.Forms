@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		private bool _isVisible;
 
-		public bool IsVisible
+		public bool IsButtonVisible
 		{
 			get => _isVisible;
 			set
@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public Issue14764()
 		{
-			ToggleVisibilityCommand = new Command(() => IsVisible = !IsVisible);
+			ToggleVisibilityCommand = new Command(() => IsButtonVisible = !IsButtonVisible);
 			BindingContext = this;
 		}
 	}
