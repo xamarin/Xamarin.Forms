@@ -446,6 +446,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void UpdateSize(double width, double height)
 		{
+			_transformMatrix?.Dispose();
+			_transformMatrix = null;
+
 			_drawable.SetBounds(0, 0, (int)(width * _density), (int)(height * _density));
 			UpdatePathShape();
 		}
