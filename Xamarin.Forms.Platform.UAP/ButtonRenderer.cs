@@ -130,11 +130,6 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdatePadding();
 			}
-			else if (e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
-			{
-				if (Element.IsVisible)
-					Element.IsNativeStateConsistent = true;
-			}
 		}
 
 		protected override void UpdateBackgroundColor()
