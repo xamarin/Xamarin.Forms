@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -10,7 +8,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 14764, "[Bug] [Regression] UWP Button breaks the Layout", PlatformAffected.UWP)]
 	public class Issue14764 : TestContentPage
 	{
-		private bool _isVisible;
+		bool _isVisible;
 
 		public bool IsButtonVisible
 		{
@@ -19,6 +17,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				if (_isVisible == value)
 					return;
+
 				_isVisible = value;
 				OnPropertyChanged();
 			}
@@ -49,7 +48,7 @@ namespace Xamarin.Forms.Controls.Issues
 				BackgroundColor = Color.Blue,
 				TextColor = Color.White
 			};
-			button2.SetBinding(Button.IsVisibleProperty, new Binding("IsVisible"));
+			button2.SetBinding(IsVisibleProperty, new Binding("IsButtonVisible"));
 
 			grid.Children.Add(button2, 0, 1);
 
@@ -58,7 +57,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Text = "Button 3",
 				BackgroundColor = Color.Yellow
 			};
-			button3.SetBinding(Button.IsVisibleProperty, new Binding("IsVisible"));
+			button3.SetBinding(IsVisibleProperty, new Binding("IsButtonVisible"));
 
 			grid.Children.Add(button3, 0, 2);
 
@@ -67,7 +66,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Text = "Button 4",
 				BackgroundColor = Color.Red
 			};
-			button4.SetBinding(Button.IsVisibleProperty, new Binding("IsVisible"));
+			button4.SetBinding(IsVisibleProperty, new Binding("IsButtonVisible"));
 
 			grid.Children.Add(button4, 0, 4);
 
