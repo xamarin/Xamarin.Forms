@@ -566,13 +566,13 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Tabbed.IsSet(TabbedPage.SelectedItemProperty) && Tabbed.SelectedTabColor != Color.Default)
 			{
 				var foregroundColor = Tabbed.SelectedTabColor.ToUIColor();
-				_tabBarAppearance.StackedLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor };
+				_tabBarAppearance.StackedLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor, ParagraphStyle = NSParagraphStyle.Default };
 				_tabBarAppearance.StackedLayoutAppearance.Selected.IconColor = foregroundColor;
 			}
 			else
 			{
 				var foregroundColor = UITabBar.Appearance.TintColor;
-				_tabBarAppearance.StackedLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor };
+				_tabBarAppearance.StackedLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor, ParagraphStyle = NSParagraphStyle.Default };
 				_tabBarAppearance.StackedLayoutAppearance.Selected.IconColor = foregroundColor;
 			}
 
@@ -580,13 +580,13 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Tabbed.IsSet(TabbedPage.UnselectedTabColorProperty) && Tabbed.UnselectedTabColor != Color.Default)
 			{
 				var foregroundColor = Tabbed.UnselectedTabColor.ToUIColor();
-				_tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor };
+				_tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor, ParagraphStyle = NSParagraphStyle.Default };
 				_tabBarAppearance.StackedLayoutAppearance.Normal.IconColor = foregroundColor;
 			}
 			else
 			{
 				var foreground = UITabBar.Appearance.TintColor;
-				_tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foreground };
+				_tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foreground, ParagraphStyle = NSParagraphStyle.Default };
 				_tabBarAppearance.StackedLayoutAppearance.Normal.IconColor = foreground;
 			}
 
