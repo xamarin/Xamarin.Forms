@@ -66,9 +66,10 @@ namespace Xamarin.Forms.Platform.iOS
 			// Set TabBarTitleColor
 			var tabBarTitleColor = appearanceElement.EffectiveTabBarTitleColor;
 
+			// Update colors for all variations of the appearance to also make it work for iPads, etc. which use different layouts for the tabbar
+			// Also, set ParagraphStyle explicitly. This seems to be an iOS bug. If we don't do this, tab titles will be truncat...
 			if (!tabBarTitleColor.IsDefault)
 			{
-				// Update colors for all variations of the appearance to also make it work for iPads, etc.
 				tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = tabBarAppearance.StackedLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes { ForegroundColor = tabBarTitleColor.ToUIColor(), ParagraphStyle = NSParagraphStyle.Default };
 				tabBarAppearance.StackedLayoutAppearance.Normal.IconColor = tabBarAppearance.StackedLayoutAppearance.Selected.IconColor = tabBarTitleColor.ToUIColor();
 
@@ -84,7 +85,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (!tabBarUnselectedColor.IsDefault)
 			{
-				// Update colors for all variations of the appearance to also make it work for iPads, etc.
 				tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes { ForegroundColor = tabBarUnselectedColor.ToUIColor(), ParagraphStyle = NSParagraphStyle.Default };
 				tabBarAppearance.StackedLayoutAppearance.Normal.IconColor = tabBarUnselectedColor.ToUIColor();
 
@@ -100,7 +100,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (!tabBarDisabledColor.IsDefault)
 			{
-				// Update colors for all variations of the appearance to also make it work for iPads, etc.
 				tabBarAppearance.StackedLayoutAppearance.Disabled.TitleTextAttributes = new UIStringAttributes { ForegroundColor = tabBarDisabledColor.ToUIColor(), ParagraphStyle = NSParagraphStyle.Default };
 				tabBarAppearance.StackedLayoutAppearance.Disabled.IconColor = tabBarDisabledColor.ToUIColor();
 

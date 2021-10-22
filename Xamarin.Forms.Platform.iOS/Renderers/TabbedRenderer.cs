@@ -562,10 +562,12 @@ namespace Xamarin.Forms.Platform.iOS
 				ForegroundColor = isDefaultBarTextColor ? _defaultBarTextColor : barTextColor.ToUIColor()
 			};
 
+			// Update colors for all variations of the appearance to also make it work for iPads, etc. which use different layouts for the tabbar
+			// Also, set ParagraphStyle explicitly. This seems to be an iOS bug. If we don't do this, tab titles will be truncat...
+
 			// Set SelectedTabColor
 			if (Tabbed.IsSet(TabbedPage.SelectedItemProperty) && Tabbed.SelectedTabColor != Color.Default)
 			{
-				// Update colors for all variations of the appearance to also make it work for iPads, etc.
 				var foregroundColor = Tabbed.SelectedTabColor.ToUIColor();
 				_tabBarAppearance.StackedLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor, ParagraphStyle = NSParagraphStyle.Default };
 				_tabBarAppearance.StackedLayoutAppearance.Selected.IconColor = foregroundColor;
@@ -578,7 +580,6 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else
 			{
-				// Update colors for all variations of the appearance to also make it work for iPads, etc.
 				var foregroundColor = UITabBar.Appearance.TintColor;
 				_tabBarAppearance.StackedLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor, ParagraphStyle = NSParagraphStyle.Default };
 				_tabBarAppearance.StackedLayoutAppearance.Selected.IconColor = foregroundColor;
@@ -593,7 +594,6 @@ namespace Xamarin.Forms.Platform.iOS
 			// Set UnselectedTabColor
 			if (Tabbed.IsSet(TabbedPage.UnselectedTabColorProperty) && Tabbed.UnselectedTabColor != Color.Default)
 			{
-				// Update colors for all variations of the appearance to also make it work for iPads, etc.
 				var foregroundColor = Tabbed.UnselectedTabColor.ToUIColor();
 				_tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor, ParagraphStyle = NSParagraphStyle.Default };
 				_tabBarAppearance.StackedLayoutAppearance.Normal.IconColor = foregroundColor;
@@ -606,7 +606,6 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else
 			{
-				// Update colors for all variations of the appearance to also make it work for iPads, etc.
 				var foreground = UITabBar.Appearance.TintColor;
 				_tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foreground, ParagraphStyle = NSParagraphStyle.Default };
 				_tabBarAppearance.StackedLayoutAppearance.Normal.IconColor = foreground;
