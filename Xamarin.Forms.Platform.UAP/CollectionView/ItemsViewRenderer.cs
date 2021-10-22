@@ -213,10 +213,11 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			if (Layout != null)
+			if (oldElement is StructuredItemsView oldStructuredItemsView)
 			{
 				// Stop tracking the old layout
-				Layout.PropertyChanged -= LayoutPropertyChanged;
+				oldStructuredItemsView.ItemsLayout.PropertyChanged -= LayoutPropertyChanged;
+				oldStructuredItemsView.ItemsLayout = null;
 			}
 
 			// Stop listening for ScrollTo requests
@@ -604,7 +605,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				default:
 					return elementBounds.Left < containerBounds.Right && elementBounds.Right > containerBounds.Left;
-			};
+			}
 		}
 
 		void OnScrollViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
