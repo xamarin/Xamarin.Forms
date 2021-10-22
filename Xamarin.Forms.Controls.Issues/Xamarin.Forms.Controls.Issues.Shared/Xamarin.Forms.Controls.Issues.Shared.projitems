@@ -40,6 +40,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue14426.xaml.cs">
       <DependentUpon>Issue14426.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Issue14765.xaml.cs">
+      <DependentUpon>Issue14765.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue14764.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RadioButtonTemplateFromStyle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellSearchHandlerItemSizing.cs" />
@@ -2909,6 +2912,12 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue14095.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue14765.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

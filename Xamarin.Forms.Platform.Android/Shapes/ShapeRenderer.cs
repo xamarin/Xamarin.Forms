@@ -243,9 +243,13 @@ namespace Xamarin.Forms.Platform.Android
 			if (_path == null)
 				return;
 
-			if (_transformMatrix == null)
-				_transformMatrix = CreateMatrix();
+			if (_transformMatrix != null)
+			{
+				_transformMatrix.Dispose();
+				_transformMatrix = null;
+			}
 
+			_transformMatrix = CreateMatrix();
 			_path.Transform(_transformMatrix);
 			_transformMatrix.MapRect(_pathFillBounds);
 			_transformMatrix.MapRect(_pathStrokeBounds);
