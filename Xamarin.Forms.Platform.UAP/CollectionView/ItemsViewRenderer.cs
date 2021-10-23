@@ -127,6 +127,13 @@ namespace Xamarin.Forms.Platform.UWP
 				CollectionViewSource = null;
 			}
 
+			var itemContentControls = ListViewBase.GetChildren<ItemContentControl>();
+			foreach (ItemContentControl itemContentControl in itemContentControls)
+			{
+				itemContentControl.FormsDataContext = null;
+				itemContentControl.DataContext = null;
+			}
+
 			if (Element?.ItemsSource == null)
 			{
 				ListViewBase.ItemsSource = null;
