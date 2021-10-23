@@ -1,7 +1,7 @@
 ﻿using Xamarin.Forms;
-using Xamarin.Forms.Shapes;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Shapes;
 
 namespace Xamarin.Forms.Controls.Issues
 {
@@ -12,9 +12,9 @@ namespace Xamarin.Forms.Controls.Issues
 		public Issue14765()
 		{
 #if APP
-			InitializeComponent();	
-			
-			UpdatePathBtn.Clicked += (sender, args) =>	
+			InitializeComponent();
+
+			UpdatePathBtn.Clicked += (sender, args) =>
 			{
 				PathFigure pathFigure1 = new PathFigure
 				{
