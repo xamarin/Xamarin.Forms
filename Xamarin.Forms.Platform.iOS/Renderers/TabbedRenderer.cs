@@ -133,10 +133,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Element.Parent is BaseShellItem)
 				Element.Layout(View.Bounds.ToRectangle());
 
-			if (!Element.Bounds.IsEmpty)
-			{
+			if (!Forms.IsiOS15OrNewer && !Element.Bounds.IsEmpty)
 				View.Frame = new RectangleF((float)Element.X, (float)Element.Y, (float)Element.Width, (float)Element.Height);
-			}
 
 			var frame = View.Frame;
 			var tabBarFrame = TabBar.Frame;
@@ -544,7 +542,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_tabBarAppearance == null)
 			{
 				_tabBarAppearance = new UITabBarAppearance();
-				_tabBarAppearance.ConfigureWithOpaqueBackground();
+				_tabBarAppearance.ConfigureWithDefaultBackground();
 			}
 
 			var barBackgroundColor = Tabbed.BarBackgroundColor;
