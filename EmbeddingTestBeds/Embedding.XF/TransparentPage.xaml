@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Embedding.XF.TransparentPage"
+             BackgroundColor="Transparent">
+    <ContentPage.Content>
+        <StackLayout Margin="80">
+            <BoxView HeightRequest="100" BackgroundColor="#77ff0000" />
+            <Label Text="This page has a transparent background. The containing view background should be yellow and should be visible" />
+            <BoxView HeightRequest="100" BackgroundColor="#770000ff" />
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

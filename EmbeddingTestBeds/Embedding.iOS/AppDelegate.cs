@@ -16,6 +16,7 @@ namespace Embedding.iOS
 		UIViewController _hello;
 		UIViewController _alertsAndActionSheets;
 		UIViewController _webview;
+		UIViewController _containingController;
 
 		UIBarButtonItem _helloButton;
 
@@ -90,6 +91,16 @@ namespace Embedding.iOS
 			}
 
 			_navigation.PushViewController(_webview, true);
+		}
+
+		public void ShowTransparent()
+		{
+			if (_containingController == null)
+			{
+				_containingController = new ContainingViewController();
+			}
+
+			_navigation.PushViewController(_containingController, true);
 		}
 	}
 }

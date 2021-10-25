@@ -23,6 +23,10 @@ namespace Embedding.iOS
         UIKit.UIButton ShowWebView { get; set; }
 
         [Outlet]
+        [GeneratedCode("iOS Designer", "1.0")]
+        UIKit.UIButton ShowTransparent { get; set; }
+
+        [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UIView UIViewController { get; set; }
 
@@ -36,6 +40,11 @@ namespace Embedding.iOS
             if (ShowWebView != null) {
                 ShowWebView.Dispose ();
                 ShowWebView = null;
+            }
+
+            if (ShowTransparent != null) {
+                ShowTransparent.Dispose ();
+                ShowTransparent = null;
             }
 
             if (UIViewController != null) {

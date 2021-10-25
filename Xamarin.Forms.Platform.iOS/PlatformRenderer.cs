@@ -95,6 +95,11 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			base.ViewWillAppear(animated);
+
+			if (!_disposed)
+			{
+				View.BackgroundColor = UIColor.Clear;
+			}
 		}
 
 		public override void ViewDidLoad()
