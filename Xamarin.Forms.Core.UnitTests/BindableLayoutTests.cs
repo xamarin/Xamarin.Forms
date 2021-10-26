@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace Xamarin.Forms.Core.UnitTests
@@ -137,6 +138,144 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			itemsSource.Clear();
 			Assert.IsTrue(IsLayoutWithItemsSource(itemsSource, layout));
+		}
+
+		[Test]
+		public async Task TracksAddOnBackgroundThread()
+		{
+			var invokeOnMainThreadWasCalled = false;
+			Device.PlatformServices = new MockPlatformServices(x => invokeOnMainThreadWasCalled = true, isInvokeRequired: true);
+			var layout = new StackLayout
+			{
+				IsPlatformEnabled = true,
+			};
+
+			var itemsSource = new ObservableCollection<int>();
+			BindableLayout.SetItemsSource(layout, itemsSource);
+
+			invokeOnMainThreadWasCalled = false;
+			await Task.Run(() => itemsSource.Add(1));
+			Assert.IsTrue(invokeOnMainThreadWasCalled);
+		}
+
+		[Test]
+		public async Task TracksInsertOnBackgroundThread()
+		{
+			var invokeOnMainThreadWasCalled = false;
+			Device.PlatformServices = new MockPlatformServices(x => invokeOnMainThreadWasCalled = true, isInvokeRequired: true);
+			var layout = new StackLayout
+			{
+				IsPlatformEnabled = true,
+			};
+
+			var itemsSource = new ObservableCollection<int>() { 0, 1, 2, 3, 4 };
+			BindableLayout.SetItemsSource(layout, itemsSource);
+
+			invokeOnMainThreadWasCalled = false;
+			await Task.Run(() => itemsSource.Insert(2, 5));
+			Assert.IsTrue(invokeOnMainThreadWasCalled);
+		}
+
+		[Test]
+		public async Task TracksRemoveOnBackgroundThread()
+		{
+			var invokeOnMainThreadWasCalled = false;
+			Device.PlatformServices = new MockPlatformServices(x => invokeOnMainThreadWasCalled = true, isInvokeRequired: true);
+			var layout = new StackLayout
+			{
+				IsPlatformEnabled = true,
+			};
+
+			var itemsSource = new ObservableCollection<int>() { 0, 1 };
+			BindableLayout.SetItemsSource(layout, itemsSource);
+
+			invokeOnMainThreadWasCalled = false;
+			await Task.Run(() => itemsSource.RemoveAt(0));
+			Assert.IsTrue(invokeOnMainThreadWasCalled);
+			invokeOnMainThreadWasCalled = false;
+			await Task.Run(() => itemsSource.Remove(1));
+			Assert.IsTrue(invokeOnMainThreadWasCalled);
+		}
+
+		[Test]
+		public async Task TracksRemoveAllOnBackgroundThread()
+		{
+			var invokeOnMainThreadWasCalled = false;
+			Device.PlatformServices = new MockPlatformServices(x => invokeOnMainThreadWasCalled = true, isInvokeRequired: true);
+			var layout = new StackLayout
+			{
+				IsPlatformEnabled = true,
+			};
+
+			var itemsSource = new ObservableRangeCollection<int>(Enumerable.Range(0, 10));
+			BindableLayout.SetItemsSource(layout, itemsSource);
+
+			invokeOnMainThreadWasCalled = false;
+			await Task.Run(() => itemsSource.RemoveAll());
+			Assert.IsTrue(invokeOnMainThreadWasCalled);
+		}
+
+		[Test]
+		public async Task TracksReplaceOnBackgroundThread()
+		{
+			var invokeOnMainThreadWasCalled = false;
+			Device.PlatformServices = new MockPlatformServices(x => invokeOnMainThreadWasCalled = true, isInvokeRequired: true);
+			var layout = new StackLayout
+			{
+				IsPlatformEnabled = true,
+			};
+
+			var itemsSource = new ObservableCollection<int>() { 0, 1, 2 };
+			BindableLayout.SetItemsSource(layout, itemsSource);
+
+			invokeOnMainThreadWasCalled = false;
+			await Task.Run(() => itemsSource[0] = 3);
+			Assert.IsTrue(invokeOnMainThreadWasCalled);
+			invokeOnMainThreadWasCalled = false;
+			await Task.Run(() => itemsSource[1] = 4);
+			Assert.IsTrue(invokeOnMainThreadWasCalled);
+			invokeOnMainThreadWasCalled = false;
+			await Task.Run(() => itemsSource[2] = 5);
+			Assert.IsTrue(invokeOnMainThreadWasCalled);
+		}
+
+		[Test]
+		public async Task TracksMoveOnBackgroundThread()
+		{
+			var invokeOnMainThreadWasCalled = false;
+			Device.PlatformServices = new MockPlatformServices(x => invokeOnMainThreadWasCalled = true, isInvokeRequired: true);
+			var layout = new StackLayout
+			{
+				IsPlatformEnabled = true,
+			};
+
+			var itemsSource = new ObservableCollection<int>() { 0, 1 };
+			BindableLayout.SetItemsSource(layout, itemsSource);
+
+			invokeOnMainThreadWasCalled = false;
+			await Task.Run(() => itemsSource.Move(0, 1));
+			Assert.IsTrue(invokeOnMainThreadWasCalled);
+			invokeOnMainThreadWasCalled = false;
+			await Task.Run(() => itemsSource.Move(1, 0));
+			Assert.IsTrue(invokeOnMainThreadWasCalled);
+		}
+
+		[Test]
+		public async Task TracksClearOnBackgroundThread()
+		{
+			var invokeOnMainThreadWasCalled = false;
+			Device.PlatformServices = new MockPlatformServices(x => invokeOnMainThreadWasCalled = true, isInvokeRequired: true);
+			var layout = new StackLayout
+			{
+				IsPlatformEnabled = true,
+			};
+
+			var itemsSource = new ObservableCollection<int>() { 0, 1 };
+			BindableLayout.SetItemsSource(layout, itemsSource);
+
+			invokeOnMainThreadWasCalled = false;
+			await Task.Run(() => itemsSource.Clear());
+			Assert.IsTrue(invokeOnMainThreadWasCalled);
 		}
 
 		[Test]

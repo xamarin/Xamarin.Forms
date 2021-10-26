@@ -297,14 +297,17 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			e.Apply(
-				insert: (item, index, _) => layout.Children.Insert(index, CreateItemView(item, layout)),
-				removeAt: (item, index) => layout.Children.RemoveAt(index),
-				reset: CreateChildren);
+			Device.BeginInvokeOnMainThread(() =>
+			{
+				e.Apply(
+					insert: (item, index, _) => layout.Children.Insert(index, CreateItemView(item, layout)),
+					removeAt: (item, index) => layout.Children.RemoveAt(index),
+					reset: CreateChildren);
 
-			// UpdateEmptyView is called from within CreateChildren, therefor skip it for Reset
-			if (e.Action != NotifyCollectionChangedAction.Reset)
-				UpdateEmptyView(layout);
+				// UpdateEmptyView is called from within CreateChildren, therefor skip it for Reset
+				if (e.Action != NotifyCollectionChangedAction.Reset)
+					UpdateEmptyView(layout);
+			});
 		}
 	}
 }
