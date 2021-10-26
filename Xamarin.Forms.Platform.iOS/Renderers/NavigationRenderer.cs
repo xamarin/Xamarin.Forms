@@ -244,6 +244,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateToolBarVisible();
 			UpdateBackgroundColor();
+			UpdateBackground();
 			Current = navPage.CurrentPage;
 		}
 
@@ -364,7 +365,10 @@ namespace Xamarin.Forms.Platform.iOS
 			base.TraitCollectionDidChange(previousTraitCollection);
 			// Make sure the control adheres to changes in UI theme
 			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+			{
 				UpdateBackgroundColor();
+				UpdateBackground();
+			}
 		}
 
 
@@ -458,6 +462,10 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 			{
 				UpdateBackgroundColor();
+			}
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			{
+				UpdateBackground();
 			}
 			else if (e.PropertyName == NavigationPage.CurrentPageProperty.PropertyName)
 			{
@@ -659,6 +667,14 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var color = Element.BackgroundColor == Color.Default ? ColorExtensions.BackgroundColor.ToColor() : Element.BackgroundColor;
 			View.BackgroundColor = color.ToUIColor();
+		}
+
+		void UpdateBackground()
+		{
+			Brush background = Element.Background;
+
+			if (!Brush.IsNullOrEmpty(background))
+				NativeView.UpdateBackground(Element.Background);
 		}
 
 		void UpdateBarBackground()
