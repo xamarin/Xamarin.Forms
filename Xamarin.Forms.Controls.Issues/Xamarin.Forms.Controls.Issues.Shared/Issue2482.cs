@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 			var layout = new StackLayout();
-			
+
 			layout.Background = Brush.LightGray;
 
 			var instructions = new Label
