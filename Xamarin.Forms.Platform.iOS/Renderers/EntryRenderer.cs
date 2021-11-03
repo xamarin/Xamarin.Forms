@@ -40,6 +40,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		bool _disposed;
 		IDisposable _selectedTextRangeObserver;
+		IDisposable _clearButtonSublayerObserver;
 		bool _nativeSelectionIsUpdating;
 
 		bool _cursorPositionChangePending;
@@ -92,8 +93,7 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.EditingDidEnd -= OnEditingEnded;
 					Control.ShouldChangeCharacters -= ShouldChangeCharacters;
 					_selectedTextRangeObserver?.Dispose();
-
-					ClearButton?.Layer?.RemoveObserver(this, new NSString("sublayers"));
+					_clearButtonSublayerObserver?.Dispose();
 				}
 			}
 
@@ -128,7 +128,7 @@ namespace Xamarin.Forms.Platform.iOS
 				textField.ShouldChangeCharacters += ShouldChangeCharacters;
 				_selectedTextRangeObserver = textField.AddObserver("selectedTextRange", NSKeyValueObservingOptions.New, UpdateCursorFromControl);
 
-				ClearButton?.Layer.AddObserver(this, new NSString("sublayers"), NSKeyValueObservingOptions.New, IntPtr.Zero);
+				_clearButtonSublayerObserver = ClearButton?.Layer.AddObserver(new NSString("sublayers"), NSKeyValueObservingOptions.New, UpdateClearButtonSublayer);
 			}
 
 			// When we set the control text, it triggers the UpdateCursorFromControl event, which updates CursorPosition and SelectionLength;
@@ -157,12 +157,6 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateIsReadOnly();
 
 			if (Element.ClearButtonVisibility != ClearButtonVisibility.Never)
-				UpdateClearButtonVisibility();
-		}
-
-		public override void ObserveValue(NSString keyPath, NSObject ofObject, NSDictionary change, IntPtr context)
-		{
-			if (keyPath == new NSString("sublayers") && _defaultClearImage == null)
 				UpdateClearButtonVisibility();
 		}
 
@@ -438,6 +432,15 @@ namespace Xamarin.Forms.Platform.iOS
 						SetSelectionLengthFromRenderer(selectionLength);
 				}
 			}
+		}
+
+		void UpdateClearButtonSublayer(NSObservedChange obj)
+		{
+			if (Control == null || Element == null)
+				return;
+
+			if (_defaultClearImage == null)
+				UpdateClearButtonVisibility();
 		}
 
 		void UpdateCursorSelection()
