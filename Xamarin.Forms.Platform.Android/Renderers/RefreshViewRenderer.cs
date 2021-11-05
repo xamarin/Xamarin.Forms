@@ -57,6 +57,9 @@ namespace Xamarin.Forms.Platform.Android
 					RefreshView.SetValueFromRenderer(RefreshView.IsRefreshingProperty, _refreshing);
 
 				base.Refreshing = _refreshing;
+
+				// Allow to disable SwipeToRefresh layout AFTER refresh is done
+				UpdateIsEnabled();
 			}
 		}
 
@@ -140,8 +143,16 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		void UpdateIsRefreshing() => Refreshing = RefreshView.IsRefreshing;
-
-		void UpdateIsEnabled() => SwipeRefreshLayout.Enabled = RefreshView.IsEnabled;
+		
+		void UpdateIsEnabled()
+		{
+			// NOTE: only disable while NOT refreshing, otherwise Command bindings CanExecute behavior will effectively
+			// cancel refresh animation. If not possible right now we will be called by UpdateIsRefreshing().
+			// For details see https://github.com/xamarin/Xamarin.Forms/issues/14350
+			var isEnabled = RefreshView.IsEnabled && RefreshView.IsRefreshAllowed;
+			if (isEnabled || !SwipeRefreshLayout.Refreshing)
+				SwipeRefreshLayout.Enabled = isEnabled;
+		}
 
 		bool CanScrollUp(AView view)
 		{
@@ -206,6 +217,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (e.PropertyName == ContentView.ContentProperty.PropertyName)
 				UpdateContent();
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+				UpdateIsEnabled();
+			else if (e.PropertyName == RefreshView.IsRefreshAllowedProperty.PropertyName)
 				UpdateIsEnabled();
 			else if (e.PropertyName == RefreshView.IsRefreshingProperty.PropertyName)
 				UpdateIsRefreshing();

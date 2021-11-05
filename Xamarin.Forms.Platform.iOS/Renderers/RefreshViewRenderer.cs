@@ -81,6 +81,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateIsEnabled();
+			else if (e.PropertyName == RefreshView.IsRefreshAllowedProperty.PropertyName)
+				UpdateIsEnabled();
 			else if (e.PropertyName == RefreshView.IsRefreshingProperty.PropertyName)
 				UpdateIsRefreshing();
 			else if (e.IsOneOf(RefreshView.RefreshColorProperty, VisualElement.BackgroundColorProperty))
@@ -252,7 +254,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateIsEnabled()
 		{
-			bool isRefreshViewEnabled = Element.IsEnabled;
+			bool isRefreshViewEnabled = Element.IsEnabled && Element.IsRefreshAllowed;
 			_refreshControl.Enabled = isRefreshViewEnabled;
 
 			UserInteractionEnabled = true;
