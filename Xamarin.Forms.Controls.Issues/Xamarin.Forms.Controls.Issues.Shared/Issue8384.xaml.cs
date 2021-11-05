@@ -55,6 +55,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		private List<string> _items;
 		private bool _isRefreshing;
+		private bool _isRefreshAllowed = true;
 		private MyCommand _refresh;
 
 		static readonly List<string> FIRST_LIST = new List<string>() {
@@ -75,6 +76,19 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				_isRefreshing = value;
 				OnPropertyChanged("IsRefreshing");
+			}
+		}
+
+		public bool IsRefreshAllowed
+		{
+			get
+			{
+				return _isRefreshAllowed;
+			}
+			set
+			{
+				_isRefreshAllowed = value;
+				OnPropertyChanged("IsRefreshAllowed");
 			}
 		}
 
