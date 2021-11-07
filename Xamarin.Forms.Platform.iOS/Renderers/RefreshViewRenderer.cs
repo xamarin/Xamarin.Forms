@@ -69,7 +69,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					_refreshControl = new UIRefreshControl();
 					_refreshControl.ValueChanged += OnRefresh;
-					_refreshControlParent = this;
+					_refreshControlParent = null;
 				}
 			}
 
@@ -160,7 +160,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		bool TryRemoveRefresh(UIView view, int index = 0)
 		{
-			_refreshControlParent = view;
+			// Ensure refresh control is in idle state before removing 
+			// Should avoid ios warnings of the form "Attempting to change the refresh control while
+			// it is not idle is strongly discouraged and probably won't work properly."
+			PerformWithoutAnimation(() => {
+				_refreshControl.EndRefreshing();
+			});
 
 			if (_refreshControl.Superview != null)
 				_refreshControl.RemoveFromSuperview();
@@ -188,8 +193,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		bool TryInsertRefresh(UIView view, int index = 0)
 		{
-			_refreshControlParent = view;
-
 			if (view is UIScrollView scrollView)
 			{
 				bool addedRefreshControl = false;
@@ -257,18 +260,30 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateIsEnabled()
 		{
-			bool isRefreshViewEnabled = Element.IsEnabled && Element.IsRefreshAllowed;
-			_refreshControl.Enabled = isRefreshViewEnabled;
-
-			UserInteractionEnabled = true;
-
+			// Do not disable while refresh control is active
 			if (IsRefreshing)
 				return;
 
+			UserInteractionEnabled = true;
+
+			bool isRefreshViewEnabled = Element.IsEnabled && Element.IsRefreshAllowed;
+
+			_refreshControl.Enabled = isRefreshViewEnabled;
+
 			if (isRefreshViewEnabled)
-				TryInsertRefresh(_refreshControlParent);
+			{
+				if (_refreshControlParent == null && TryInsertRefresh(this))
+				{
+					_refreshControlParent = this;
+				}
+			}
 			else
-				TryRemoveRefresh(_refreshControlParent);
+			{
+				if (_refreshControlParent != null && TryRemoveRefresh(_refreshControlParent))
+				{
+					_refreshControlParent = null;
+				}
+			}
 
 			UserInteractionEnabled = true;
 		}
