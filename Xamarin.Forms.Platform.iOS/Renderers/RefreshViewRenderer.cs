@@ -38,6 +38,9 @@ namespace Xamarin.Forms.Platform.iOS
 						TryOffsetRefresh(this, IsRefreshing);
 					}
 				}
+
+				// Allow to disable UIRefreshControl layout AFTER refresh is done
+				UpdateIsEnabled();
 			}
 		}
 
