@@ -6,28 +6,31 @@
              mc:Ignorable="d"
 			 Title="Test 14350"
              x:Class="Xamarin.Forms.Controls.Issues.Issue14350">
-
-    <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding Refresh}" IsEnabled="{Binding IsRefreshAllowed}">
-        <ScrollView>
-            <StackLayout>
-                <Label Text="Test for issue #14350" />
-                <Label Text="Refreshing ..." IsVisible="{Binding IsRefreshing}" BackgroundColor="Orange"/>
-                <Label Text="Enable refresh:" IsVisible="{Binding IsRefreshAllowed}" TextColor="Green"/>
+    <StackLayout>
+        <Label Text="Test for issue #14350" />
+        <Label Text="Refresh enabled" IsVisible="{Binding IsRefreshAllowed}" TextColor="Green"/>
+        <Button Text="Refresh now" Command="{Binding Refresh}" />
+        <StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Enable refresh:" HorizontalOptions="FillAndExpand"/>
+                <Switch IsToggled="{Binding IsRefreshAllowed}" />
+            </StackLayout>
+        </StackLayout>
+        <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding Refresh}" IsEnabled="{Binding IsRefreshAllowed}">
+            <ScrollView>
                 <StackLayout>
-                    <StackLayout Orientation="Horizontal">
-                        <Label Text="Refresh enabled:" HorizontalOptions="FillAndExpand"/>
-                        <Switch IsToggled="{Binding IsRefreshAllowed}" />
+                    <Label Text="Pull-to-refresh here" />
+                    <Label Text="Refreshing ..." IsVisible="{Binding IsRefreshing}" TextColor="Orange"/>
+                    <BoxView HeightRequest="30" />
+                    <StackLayout>
+                        <Label Text="Test steps:" />
+                        <Label Text="1. Swipe to refresh" />
+                        <Label Text="2. Refresh/busy indicator appears at the top" />
+                        <Label Text="3. Refresh/busy indicator should remain visible until content changes (refresh is finished). Due to issue #14350 the indicator vanishes too early if Command.CanExecute toggles (in this test after 1 second)." />
+                        <Label Text="4. Repeat steps 1 to 3 multiple times" />
                     </StackLayout>
                 </StackLayout>
-                <StackLayout>
-                    <Label Text="Test steps (Android):" />
-                    <Label Text="1. Swipe to refresh" />
-                    <Label Text="2. Refresh/busy indicator appears at the top" />
-                    <Label Text="3. Refresh/busy indicator should remain visible until content changes (refresh is finished).
-					   due to issue #14350 the indicator vanishes too early if Command.CanExecute toggles (in this test after 1 second)." />
-                    <Label Text="4. Repeat steps 1 to 3 multiple times" />
-                </StackLayout>
-            </StackLayout>
-        </ScrollView>
-    </RefreshView>
+            </ScrollView>
+        </RefreshView>
+    </StackLayout>
 </ContentPage>
