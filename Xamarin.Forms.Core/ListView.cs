@@ -544,7 +544,7 @@ namespace Xamarin.Forms
 
 		void OnCommandCanExecuteChanged(object sender, EventArgs eventArgs)
 		{
-			RefreshAllowed = RefreshCommand.CanExecute(null);
+			RefreshAllowed = RefreshCommand != null && RefreshCommand.CanExecute(null);
 		}
 
 		static void OnFooterChanged(BindableObject bindable, object oldValue, object newValue)

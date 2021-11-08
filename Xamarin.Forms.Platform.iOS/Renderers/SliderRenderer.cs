@@ -198,7 +198,7 @@ namespace Xamarin.Forms.Platform.iOS
 							if (control != null)
 							{
 								var tappedLocation = recognizer.LocationInView(control);
-								if (tappedLocation != null)
+								if (tappedLocation != default)
 								{
 									var val = (tappedLocation.X - control.Frame.X) * control.MaxValue / control.Frame.Size.Width;
 									Element.SetValueFromRenderer(Slider.ValueProperty, val);
