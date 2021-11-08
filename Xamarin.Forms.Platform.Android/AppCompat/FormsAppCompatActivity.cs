@@ -223,6 +223,7 @@ namespace Xamarin.Forms.Platform.Android
 				// because we're rebuilding everything from scratch. This saves a bit of memory
 				// and prevents loading errors from child fragment managers
 				savedInstanceState?.Remove("android:support:fragments");
+				savedInstanceState?.Remove("androidx.lifecycle.BundlableSavedStateRegistry.key");
 			}
 
 			Profile.FramePartition("Xamarin.Android.OnCreate");

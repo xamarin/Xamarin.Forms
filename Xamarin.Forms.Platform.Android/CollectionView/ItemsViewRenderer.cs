@@ -569,7 +569,6 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (args.Mode == ScrollToMode.Position)
 			{
-				// TODO hartez 2018/08/28 15:40:03 Need to handle group indices here as well	
 				return args.Index;
 			}
 

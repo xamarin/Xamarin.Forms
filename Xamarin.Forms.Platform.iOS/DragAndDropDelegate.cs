@@ -122,6 +122,9 @@ namespace Xamarin.Forms.Platform.iOS
 		void SendEventArgs<TRecognizer>(Action<TRecognizer> func, View view)
 			where TRecognizer : class
 		{
+			if (view == null)
+				return;
+
 			var gestures =
 				view.GestureRecognizers;
 
