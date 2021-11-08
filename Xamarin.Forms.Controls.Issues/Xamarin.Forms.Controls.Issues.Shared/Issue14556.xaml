@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 14556" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue14556">
+    <StackLayout
+        Padding="12">
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If you see a triangle (clip) instead of a rectangle, the test has passed."/>
+        <StackLayout>
+            <Path
+                Clip="M0,1.71815 L6.65685,6.375 L0,11.0319 z"
+                Data="M0,0 L7,0 L7,13 L0,13 z"
+                Fill="Gray"
+                HorizontalOptions="Center"
+                VerticalOptions ="Center"
+                HeightRequest="50"
+                WidthRequest="50"
+                Aspect="Fill" />
+        </StackLayout>
+    </StackLayout>
+</local:TestContentPage>

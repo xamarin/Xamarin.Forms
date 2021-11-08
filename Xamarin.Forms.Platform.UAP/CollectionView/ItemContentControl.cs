@@ -130,7 +130,8 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			if (_renderer?.ContainerElement == null || _currentTemplate != formsTemplate)
+			if (_renderer?.ContainerElement == null || _currentTemplate != formsTemplate
+				|| formsTemplate is DataTemplateSelector)
 			{
 				// If the content has never been realized (i.e., this is a new instance), 
 				// or if we need to switch DataTemplates (because this instance is being recycled)
