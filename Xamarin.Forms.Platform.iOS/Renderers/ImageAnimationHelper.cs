@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using CoreAnimation;
 using Foundation;
 using ImageIO;
-using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -51,9 +48,9 @@ namespace Xamarin.Forms.Platform.iOS
 				using (var delayTimeValue = gifImageProperties?.ValueForKey(ImageIO.CGImageProperties.GIFDelayTime))
 				{
 					if (unclampedDelayTimeValue != null)
-						double.TryParse(unclampedDelayTimeValue.ToString(), out delayTime);
+						double.TryParse(unclampedDelayTimeValue.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out delayTime);
 					else if (delayTimeValue != null)
-						double.TryParse(delayTimeValue.ToString(), out delayTime);
+						double.TryParse(delayTimeValue.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out delayTime);
 
 					// Frame delay compability adjustment.
 					if (delayTime <= 0.02f)

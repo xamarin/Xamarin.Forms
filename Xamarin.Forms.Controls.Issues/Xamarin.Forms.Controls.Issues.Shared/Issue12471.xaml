@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<controls:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue12471"
+    Title="Issue 12471">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If the Label below has a circular clip applied, the test has passed."/>
+        <Grid>
+            <Label
+                Text="X"
+                TextColor="White"
+                FontSize="30"
+                HeightRequest="60"
+                WidthRequest="60"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                VerticalTextAlignment="Center"
+                HorizontalTextAlignment="Center"
+                BackgroundColor="Red">
+                <Label.Clip>
+                    <EllipseGeometry
+                        Center="30,30"
+                        RadiusX="30"
+                        RadiusY="30"/>
+                </Label.Clip>
+            </Label>
+        </Grid>
+    </StackLayout>
+</controls:TestContentPage>
