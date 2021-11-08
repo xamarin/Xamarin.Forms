@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			for (int n = 0; n < Count; n++)
 			{
-				if (this[n] == item)
+				if(ItemComparer.AreEquals(this[n], item))
 				{
 					return NSIndexPath.Create(_section, n);
 				}
