@@ -243,9 +243,13 @@ namespace Xamarin.Forms.Platform.Android
 			if (_path == null)
 				return;
 
-			if (_transformMatrix == null)
-				_transformMatrix = CreateMatrix();
+			if (_transformMatrix != null)
+			{
+				_transformMatrix.Dispose();
+				_transformMatrix = null;
+			}
 
+			_transformMatrix = CreateMatrix();
 			_path.Transform(_transformMatrix);
 			_transformMatrix.MapRect(_pathFillBounds);
 			_transformMatrix.MapRect(_pathStrokeBounds);
@@ -446,6 +450,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void UpdateSize(double width, double height)
 		{
+			_transformMatrix?.Dispose();
+			_transformMatrix = null;
+
 			_drawable.SetBounds(0, 0, (int)(width * _density), (int)(height * _density));
 			UpdatePathShape();
 		}
