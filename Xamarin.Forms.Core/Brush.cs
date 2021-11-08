@@ -8,6 +8,8 @@
 			get { return new SolidColorBrush(Color.Default); }
 		}
 
+		public static implicit operator Brush(Color color) => new SolidColorBrush(color);
+
 		public abstract bool IsEmpty { get; }
 
 		public static bool IsNullOrEmpty(Brush brush)
