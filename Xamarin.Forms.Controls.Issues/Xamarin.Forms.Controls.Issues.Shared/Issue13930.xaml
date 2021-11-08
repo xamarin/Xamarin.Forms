@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 13930" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13930">
+    <local:TestContentPage.Resources>
+        <ResourceDictionary>
+
+            <Color x:Key="CustomColor">#2B0B98</Color>
+
+        </ResourceDictionary>
+    </local:TestContentPage.Resources>
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If the Entry have a background color, the test has passed."/>
+        <StackLayout
+            Padding="12">
+            <Entry
+                Placeholder="Placeholder" 
+                Background="{StaticResource CustomColor}"/>
+            <Entry
+                Placeholder="Placeholder"
+                IsEnabled="False"
+                Background="{StaticResource CustomColor}"/>
+        </StackLayout>
+    </StackLayout>
+</local:TestContentPage>
