@@ -34,6 +34,8 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var layout = new StackLayout();
 
+			layout.Background = Brush.LightGray;
+
 			var instructions = new Label
 			{
 				Text = "Tap the button below twice quickly."

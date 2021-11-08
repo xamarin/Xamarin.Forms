@@ -562,32 +562,59 @@ namespace Xamarin.Forms.Platform.iOS
 				ForegroundColor = isDefaultBarTextColor ? _defaultBarTextColor : barTextColor.ToUIColor()
 			};
 
+			// Update colors for all variations of the appearance to also make it work for iPads, etc. which use different layouts for the tabbar
+			// Also, set ParagraphStyle explicitly. This seems to be an iOS bug. If we don't do this, tab titles will be truncat...
+
 			// Set SelectedTabColor
 			if (Tabbed.IsSet(TabbedPage.SelectedItemProperty) && Tabbed.SelectedTabColor != Color.Default)
 			{
 				var foregroundColor = Tabbed.SelectedTabColor.ToUIColor();
-				_tabBarAppearance.StackedLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor };
+				_tabBarAppearance.StackedLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor, ParagraphStyle = NSParagraphStyle.Default };
 				_tabBarAppearance.StackedLayoutAppearance.Selected.IconColor = foregroundColor;
+
+				_tabBarAppearance.InlineLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor, ParagraphStyle = NSParagraphStyle.Default };
+				_tabBarAppearance.InlineLayoutAppearance.Selected.IconColor = foregroundColor;
+
+				_tabBarAppearance.CompactInlineLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor, ParagraphStyle = NSParagraphStyle.Default };
+				_tabBarAppearance.CompactInlineLayoutAppearance.Selected.IconColor = foregroundColor;
 			}
 			else
 			{
 				var foregroundColor = UITabBar.Appearance.TintColor;
-				_tabBarAppearance.StackedLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor };
+				_tabBarAppearance.StackedLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor, ParagraphStyle = NSParagraphStyle.Default };
 				_tabBarAppearance.StackedLayoutAppearance.Selected.IconColor = foregroundColor;
+
+				_tabBarAppearance.InlineLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor, ParagraphStyle = NSParagraphStyle.Default };
+				_tabBarAppearance.InlineLayoutAppearance.Selected.IconColor = foregroundColor;
+
+				_tabBarAppearance.CompactInlineLayoutAppearance.Selected.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor, ParagraphStyle = NSParagraphStyle.Default };
+				_tabBarAppearance.CompactInlineLayoutAppearance.Selected.IconColor = foregroundColor;
 			}
 
 			// Set UnselectedTabColor
 			if (Tabbed.IsSet(TabbedPage.UnselectedTabColorProperty) && Tabbed.UnselectedTabColor != Color.Default)
 			{
 				var foregroundColor = Tabbed.UnselectedTabColor.ToUIColor();
-				_tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor };
+				_tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor, ParagraphStyle = NSParagraphStyle.Default };
 				_tabBarAppearance.StackedLayoutAppearance.Normal.IconColor = foregroundColor;
+
+				_tabBarAppearance.InlineLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor, ParagraphStyle = NSParagraphStyle.Default };
+				_tabBarAppearance.InlineLayoutAppearance.Normal.IconColor = foregroundColor;
+
+				_tabBarAppearance.CompactInlineLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foregroundColor, ParagraphStyle = NSParagraphStyle.Default };
+				_tabBarAppearance.CompactInlineLayoutAppearance.Normal.IconColor = foregroundColor;
 			}
 			else
 			{
 				var foreground = UITabBar.Appearance.TintColor;
-				_tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foreground };
+				_tabBarAppearance.StackedLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foreground, ParagraphStyle = NSParagraphStyle.Default };
 				_tabBarAppearance.StackedLayoutAppearance.Normal.IconColor = foreground;
+
+				_tabBarAppearance.InlineLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foreground, ParagraphStyle = NSParagraphStyle.Default };
+				_tabBarAppearance.InlineLayoutAppearance.Normal.IconColor = foreground;
+
+				_tabBarAppearance.CompactInlineLayoutAppearance.Normal.TitleTextAttributes = new UIStringAttributes { ForegroundColor = foreground, ParagraphStyle = NSParagraphStyle.Default };
+				_tabBarAppearance.CompactInlineLayoutAppearance.Normal.IconColor = foreground;
 			}
 
 			// Set the TabBarAppearance

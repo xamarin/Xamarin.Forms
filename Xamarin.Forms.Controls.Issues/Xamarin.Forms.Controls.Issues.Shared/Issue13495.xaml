@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 13495" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13495"
+    xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Swipe any SwipeView several times, without a SwipeItem glitch when pulled out (using Drag SwipeTransitionMode), the test has passed."/>
+        <Label
+            Text="Left Items"/>
+        <CollectionView
+            HeightRequest="100"
+            ItemSizingStrategy="MeasureFirstItem">
+            <CollectionView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Item 1</x:String>
+                    <x:String>Item 2</x:String>
+                </x:Array>
+            </CollectionView.ItemsSource>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                    <SwipeView
+                        ios:SwipeView.SwipeTransitionMode="Drag">
+                        <SwipeView.LeftItems>
+                            <SwipeItems
+                                SwipeBehaviorOnInvoked="RemainOpen">
+                                <SwipeItem
+                                    Text="Delete"
+                                    BackgroundColor="Red"/>
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                        <Grid>
+                            <Frame
+                                HorizontalOptions="Start"
+                                BackgroundColor="LightGray"
+                                CornerRadius="12"
+                                Padding="6"
+                                HasShadow="False"
+                                Margin="6"
+                                Opacity="0.75">
+                                <Label
+                                    Text="{Binding .}"/>
+                            </Frame>
+                        </Grid>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <Label
+            Text="Top Items"/>
+        <CollectionView
+            HeightRequest="100"
+            ItemSizingStrategy="MeasureFirstItem">
+            <CollectionView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Item 1</x:String>
+                    <x:String>Item 2</x:String>
+                </x:Array>
+            </CollectionView.ItemsSource>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                    <SwipeView
+                        ios:SwipeView.SwipeTransitionMode="Drag">
+                        <SwipeView.TopItems>
+                            <SwipeItems
+                                SwipeBehaviorOnInvoked="RemainOpen">
+                                <SwipeItem
+                                    Text="Delete"
+                                    BackgroundColor="Red"/>
+                            </SwipeItems>
+                        </SwipeView.TopItems>
+                        <Grid>
+                            <Frame
+                                BackgroundColor="LightGray"
+                                CornerRadius="12"
+                                Padding="6"
+                                HasShadow="False"
+                                Margin="6"
+                                Opacity="0.75">
+                                <Label
+                                    Text="{Binding .}"/>
+                            </Frame>
+                        </Grid>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+         <Label
+            Text="Right Items"/>
+        <CollectionView
+            HeightRequest="100"
+            ItemSizingStrategy="MeasureFirstItem">
+            <CollectionView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Item 1</x:String>
+                    <x:String>Item 2</x:String>
+                </x:Array>
+            </CollectionView.ItemsSource>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                    <SwipeView
+                        ios:SwipeView.SwipeTransitionMode="Drag">
+                        <SwipeView.RightItems>
+                            <SwipeItems
+                                SwipeBehaviorOnInvoked="RemainOpen">
+                                <SwipeItem
+                                    Text="Delete"
+                                    BackgroundColor="Red"/>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <Grid>
+                            <Frame
+                                HorizontalOptions="End"
+                                BackgroundColor="LightGray"
+                                CornerRadius="12"
+                                Padding="6"
+                                HasShadow="False"
+                                Margin="6"
+                                Opacity="0.75">
+                                <Label
+                                    Text="{Binding .}"/>
+                            </Frame>
+                        </Grid>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <Label
+            Text="Bottom Items"/>
+        <CollectionView
+            HeightRequest="100"
+            ItemSizingStrategy="MeasureFirstItem">
+            <CollectionView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Item 1</x:String>
+                    <x:String>Item 2</x:String>
+                </x:Array>
+            </CollectionView.ItemsSource>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                    <SwipeView
+                        ios:SwipeView.SwipeTransitionMode="Drag">
+                        <SwipeView.BottomItems>
+                            <SwipeItems
+                                SwipeBehaviorOnInvoked="RemainOpen">
+                                <SwipeItem
+                                    Text="Delete"
+                                    BackgroundColor="Red"/>
+                            </SwipeItems>
+                        </SwipeView.BottomItems>
+                        <Grid>
+                            <Frame
+                                BackgroundColor="LightGray"
+                                CornerRadius="12"
+                                Padding="6"
+                                HasShadow="False"
+                                Margin="6"
+                                Opacity="0.75">
+                                <Label
+                                    Text="{Binding .}"/>
+                            </Frame>
+                        </Grid>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</local:TestContentPage>
