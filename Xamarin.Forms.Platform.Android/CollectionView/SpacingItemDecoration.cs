@@ -86,14 +86,14 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_orientation == ItemsLayoutOrientation.Vertical)
 			{
-				outRect.Left = spanIndex == 0 ? 0 : _adjustedHorizontalSpacing;
-				outRect.Top = spanGroupIndex == 0 ? 0 : _adjustedVerticalSpacing;
+				outRect.Left = spanIndex > 0 ? _adjustedHorizontalSpacing : 0;
+				outRect.Top = spanGroupIndex > 0 ? _adjustedVerticalSpacing : 0;
 			}
 
 			if (_orientation == ItemsLayoutOrientation.Horizontal)
 			{
-				outRect.Top = spanIndex == 0 ? 0 : _adjustedVerticalSpacing;
-				outRect.Left = spanGroupIndex == 0 ? 0 : _adjustedHorizontalSpacing;
+				outRect.Top = spanIndex > 0 ? _adjustedVerticalSpacing : 0;
+				outRect.Left = spanGroupIndex > 0 ? _adjustedHorizontalSpacing : 0;
 			}
 		}
 
@@ -101,7 +101,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var position = parent.GetChildAdapterPosition(view);
 
-			if (_spanCount > 1)
+			if (_spanCount > 1 && position != RecyclerView.NoPosition)
 			{
 				if (parent.GetLayoutManager() is GridLayoutManager gridLayoutManager)
 				{

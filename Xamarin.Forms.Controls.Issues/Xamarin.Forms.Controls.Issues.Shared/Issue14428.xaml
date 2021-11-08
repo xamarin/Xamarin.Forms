@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 14428" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue14428">
+    <StackLayout
+        Padding="12">
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If can distinguish between enabled and disabled buttons, the test has passed."/>
+        <StackLayout>
+            <Label
+                Text="Default"/>
+            <Button 
+                Text="Enabled" />
+            <Button
+                IsEnabled="False" 
+                Text="Disabled" />
+            <Label
+                Text="Custom"/>
+            <Button 
+                BackgroundColor="Red"
+                TextColor="Yellow"
+                Text="Enabled" />
+            <Button 
+                BackgroundColor="Red"
+                TextColor="Yellow"
+                IsEnabled="False" 
+                Text="Disabled" />
+        </StackLayout>
+    </StackLayout>
+</local:TestContentPage>

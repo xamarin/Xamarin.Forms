@@ -358,6 +358,10 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 				{
 					var view = renderer.View;
 					Layout(element, view);
+
+					if(view.Background is GradientStrokeDrawable)
+						view.ForceDraw();
+
 					return getProperty(renderer);
 				}
 			});
