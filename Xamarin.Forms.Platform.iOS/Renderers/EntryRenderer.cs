@@ -39,6 +39,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _useLegacyColorManagement;
 
 		bool _disposed;
+		bool _observedSublayers;
 		IDisposable _selectedTextRangeObserver;
 		bool _nativeSelectionIsUpdating;
 
@@ -93,7 +94,11 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.ShouldChangeCharacters -= ShouldChangeCharacters;
 					_selectedTextRangeObserver?.Dispose();
 
-					ClearButton?.Layer?.RemoveObserver(this, new NSString("sublayers"));
+					if (_observedSublayers)
+					{
+						ClearButton?.Layer?.RemoveObserver(this, new NSString("sublayers"));
+						_observedSublayers = false;
+					}
 				}
 			}
 
@@ -129,6 +134,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_selectedTextRangeObserver = textField.AddObserver("selectedTextRange", NSKeyValueObservingOptions.New, UpdateCursorFromControl);
 
 				ClearButton?.Layer.AddObserver(this, new NSString("sublayers"), NSKeyValueObservingOptions.New, IntPtr.Zero);
+				_observedSublayers = true;
 			}
 
 			// When we set the control text, it triggers the UpdateCursorFromControl event, which updates CursorPosition and SelectionLength;
