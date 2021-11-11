@@ -207,13 +207,18 @@ namespace Xamarin.Forms.Platform.MacOS
 				_requestedScroll = e;
 				return;
 			}
+			
+			var scrollY = Element.Height == e.ScrollY ? 0 : e.ScrollY;
 
 			Point scrollPoint = (e.Mode == ScrollToMode.Position)
-				? new Point(e.ScrollX, e.ScrollY)
+				? new Point(e.ScrollX, scrollY)
 				: ScrollView.GetScrollPositionForElement(e.Element as VisualElement, e.Position);
-
+			
 			ContentView.ScrollToPoint(scrollPoint.ToPointF());
 			ScrollView.SendScrollFinished();
+
+			// Force the scrollbar to be updated
+			ReflectScrolledClipView(ContentView);
 		}
 
 		void UpdateBackgroundColor()
