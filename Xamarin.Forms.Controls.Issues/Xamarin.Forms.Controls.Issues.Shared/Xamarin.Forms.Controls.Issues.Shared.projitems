@@ -44,6 +44,9 @@
       <DependentUpon>Issue14765.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue14764.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue8804.xaml.cs">
+      <DependentUpon>Issue8804.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)RadioButtonTemplateFromStyle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellSearchHandlerItemSizing.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShellWithCustomRendererDisabledAnimations.cs" />
@@ -1810,7 +1813,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue14697.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8383.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8383-2.xaml.cs" />
-	<Compile Include="$(MSBuildThisFileDirectory)Issue8384.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue8384.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue13577.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue14505.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue14505-II.cs" />
@@ -2323,7 +2326,7 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8383-2.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-	<EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8384.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8384.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue13577.xaml">
@@ -2923,6 +2926,12 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue14765.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8804.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

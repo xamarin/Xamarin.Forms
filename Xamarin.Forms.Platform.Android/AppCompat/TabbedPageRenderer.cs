@@ -130,13 +130,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void ViewPager.IOnPageChangeListener.OnPageSelected(int position)
 		{
-			if (_previousPage != Element.CurrentPage)
+			var selectedPage = Element.Children[position];
+			if (_previousPage != selectedPage)
 			{
 				_previousPage?.SendDisappearing();
-				_previousPage = Element.CurrentPage;
 			}
-			Element.CurrentPage = Element.Children[position];
+			Element.CurrentPage = selectedPage;
 			Element.CurrentPage.SendAppearing();
+
+			_previousPage = Element.CurrentPage;
 
 			if (IsBottomTabPlacement)
 				_bottomNavigationView.SelectedItemId = position;
