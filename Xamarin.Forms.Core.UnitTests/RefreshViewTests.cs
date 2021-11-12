@@ -35,22 +35,25 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			RefreshView refreshView = new RefreshView();
 			Assert.IsTrue(refreshView.IsEnabled);
+			Assert.IsTrue(refreshView.IsRefreshAllowed);
 		}
 
 		[Test]
-		public void CanExecuteDisablesRefreshView()
+		public void CanExecuteDisablesRefresh()
 		{
 			RefreshView refreshView = new RefreshView();
 			refreshView.Command = new Command(() => { }, () => false);
-			Assert.IsFalse(refreshView.IsEnabled);
+			Assert.IsTrue(refreshView.IsEnabled);
+			Assert.IsFalse(refreshView.IsRefreshAllowed);
 		}
 
 		[Test]
-		public void CanExecuteEnablesRefreshView()
+		public void CanExecuteEnablesRefresh()
 		{
 			RefreshView refreshView = new RefreshView();
 			refreshView.Command = new Command(() => { }, () => true);
 			Assert.IsTrue(refreshView.IsEnabled);
+			Assert.IsTrue(refreshView.IsRefreshAllowed);
 		}
 
 		[Test]
@@ -64,16 +67,18 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			canExecute = false;
 			command.ChangeCanExecute();
-			Assert.IsFalse(refreshView.IsEnabled);
+			Assert.IsTrue(refreshView.IsEnabled);
+			Assert.IsFalse(refreshView.IsRefreshAllowed);
 
 
 			canExecute = true;
 			command.ChangeCanExecute();
 			Assert.IsTrue(refreshView.IsEnabled);
+			Assert.IsTrue(refreshView.IsRefreshAllowed);
 		}
 
 		[Test]
-		public void CommandPropertyChangesEnabled()
+		public void CommandPropertyChangesRefreshEnabled()
 		{
 			RefreshView refreshView = new RefreshView();
 
@@ -82,26 +87,40 @@ namespace Xamarin.Forms.Core.UnitTests
 			refreshView.CommandParameter = true;
 			refreshView.Command = command;
 
-			Assert.IsTrue(refreshView.IsEnabled);
+			Assert.IsTrue(refreshView.IsRefreshAllowed);
 			refreshView.CommandParameter = false;
-			Assert.IsFalse(refreshView.IsEnabled);
+			Assert.IsFalse(refreshView.IsRefreshAllowed);
 			refreshView.CommandParameter = true;
+			Assert.IsTrue(refreshView.IsRefreshAllowed);
+		}
+
+		[Test]
+		public void CanExecuteDoesNotDisableRefreshView()
+		{
+			// NOTE: RefreshView.IsEnabled should NOT be set to false based on CanExec to avoid problems like:
+			// https://github.com/xamarin/Xamarin.Forms/issues/14350
+			RefreshView refreshView = new RefreshView();
+			Assert.IsTrue(refreshView.IsEnabled);
+			refreshView.Command = new Command(() => { }, () => false);
 			Assert.IsTrue(refreshView.IsEnabled);
 		}
 
 		[Test]
-		public void RemovedCommandEnablesRefreshView()
+		public void RemovedCommandEnablesRefresh()
 		{
 			RefreshView refreshView = new RefreshView();
 
 			bool canExecute = true;
 			var command = new Command(() => { }, () => false);
 			refreshView.Command = command;
-			Assert.IsFalse(refreshView.IsEnabled);
+			Assert.IsTrue(refreshView.IsEnabled);
+			Assert.IsFalse(refreshView.IsRefreshAllowed);
 			refreshView.Command = null;
 			Assert.IsTrue(refreshView.IsEnabled);
+			Assert.IsTrue(refreshView.IsRefreshAllowed);
 			refreshView.Command = command;
-			Assert.IsFalse(refreshView.IsEnabled);
+			Assert.IsTrue(refreshView.IsEnabled);
+			Assert.IsFalse(refreshView.IsRefreshAllowed);
 		}
 
 		[Test]
