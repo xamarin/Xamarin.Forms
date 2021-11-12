@@ -55,7 +55,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var tabBar = controller.TabBar;
 
 			var tabBarAppearance = new UITabBarAppearance();
-			tabBarAppearance.ConfigureWithOpaqueBackground();
+			tabBarAppearance.ConfigureWithDefaultBackground();
 
 			// Set TabBarBackgroundColor
 			var tabBarBackgroundColor = appearanceElement.EffectiveTabBarBackgroundColor;
@@ -129,10 +129,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			bool operatingSystemSupportsUnselectedTint = Forms.IsiOS10OrNewer;
 
-			if (operatingSystemSupportsUnselectedTint)
+			if (operatingSystemSupportsUnselectedTint && !unselectedColor.IsDefault)
 			{
-				if (!unselectedColor.IsDefault)
-					tabBar.UnselectedItemTintColor = unselectedColor.ToUIColor();
+				tabBar.UnselectedItemTintColor = unselectedColor.ToUIColor();
 			}
 		}
 
