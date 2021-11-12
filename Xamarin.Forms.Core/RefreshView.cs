@@ -103,7 +103,7 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty IsRefreshAllowedProperty =
-			BindableProperty.Create(nameof(IsRefreshAllowed), typeof(bool), typeof(RefreshView), false, BindingMode.TwoWay);
+			BindableProperty.Create(nameof(IsRefreshAllowed), typeof(bool), typeof(RefreshView), true, BindingMode.TwoWay);
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public bool IsRefreshAllowed
