@@ -133,11 +133,6 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Element.Parent is BaseShellItem)
 				Element.Layout(View.Bounds.ToRectangle());
 
-			if (!Forms.IsiOS15OrNewer && !Element.Bounds.IsEmpty)
-			{
-				View.Frame = new RectangleF((float)Element.X, (float)Element.Y, (float)Element.Width, (float)Element.Height);
-			}
-
 			var frame = View.Frame;
 			var tabBarFrame = TabBar.Frame;
 			Page.ContainerArea = new Rectangle(0, 0, frame.Width, frame.Height - tabBarFrame.Height);
