@@ -173,10 +173,10 @@ namespace Xamarin.Forms.Platform.iOS
 			var toolbar = _secondaryToolbar;
 
 			//save the state of the Current page we are calculating, this will fire before Current is updated
-			_hasNavigationBar = NavigationPage.GetHasNavigationBar(Current);
+			_hasNavigationBar = NavigationPage.GetHasNavigationBar(Current) && !(NavigationBarHidden || NavigationBar.Translucent);
 
 			// Use 0 if the NavBar is hidden or will be hidden
-			var toolbarY = NavigationBarHidden || NavigationBar.Translucent || !_hasNavigationBar ? 0 : navBarFrameBottom;
+			var toolbarY = !_hasNavigationBar ? 0 : navBarFrameBottom;
 			toolbar.Frame = new RectangleF(0, toolbarY, View.Frame.Width, toolbar.Frame.Height);
 
 			double trueBottom = toolbar.Hidden ? toolbarY : toolbar.Frame.Bottom;
@@ -1385,6 +1385,11 @@ namespace Xamarin.Forms.Platform.iOS
 					current.IgnoresContainerArea = !hasNavBar;
 					NavigationController.SetNavigationBarHidden(!hasNavBar, animated);
 				}
+				
+				// Esnure correct nav bar state and layout dimension after swipe-back gesture was
+				// aborted, see  https://github.com/xamarin/Xamarin.Forms/issues/14763.
+				if (_navigation.TryGetTarget(out var n))
+					n.ValidateNavbarExists(current);
 			}
 
 			void UpdateToolbarItems()
