@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platform.WPF
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
-			
+
 			if (e.PropertyName == ContentPage.ContentProperty.PropertyName
 				|| e.PropertyName == TemplatedPage.ControlTemplateProperty.PropertyName)
 			{
