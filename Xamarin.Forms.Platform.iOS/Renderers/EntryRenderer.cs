@@ -7,6 +7,7 @@ using Foundation;
 using UIKit;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.iOSSpecific.Entry;
+using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -39,7 +40,6 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _useLegacyColorManagement;
 
 		bool _disposed;
-		bool _observedSublayers;
 		IDisposable _selectedTextRangeObserver;
 		bool _nativeSelectionIsUpdating;
 
@@ -50,8 +50,6 @@ namespace Xamarin.Forms.Platform.iOS
 		static CGSize initialSize = CGSize.Empty;
 
 		UIImage _defaultClearImage;
-
-		UIButton ClearButton => Control?.ValueForKey(new NSString("clearButton")) as UIButton;
 
 		public EntryRendererBase()
 		{
@@ -93,12 +91,6 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.EditingDidEnd -= OnEditingEnded;
 					Control.ShouldChangeCharacters -= ShouldChangeCharacters;
 					_selectedTextRangeObserver?.Dispose();
-
-					if (_observedSublayers)
-					{
-						ClearButton?.Layer?.RemoveObserver(this, new NSString("sublayers"));
-						_observedSublayers = false;
-					}
 				}
 			}
 
@@ -132,9 +124,6 @@ namespace Xamarin.Forms.Platform.iOS
 				textField.EditingDidEnd += OnEditingEnded;
 				textField.ShouldChangeCharacters += ShouldChangeCharacters;
 				_selectedTextRangeObserver = textField.AddObserver("selectedTextRange", NSKeyValueObservingOptions.New, UpdateCursorFromControl);
-
-				ClearButton?.Layer.AddObserver(this, new NSString("sublayers"), NSKeyValueObservingOptions.New, IntPtr.Zero);
-				_observedSublayers = true;
 			}
 
 			// When we set the control text, it triggers the UpdateCursorFromControl event, which updates CursorPosition and SelectionLength;
@@ -163,12 +152,6 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateIsReadOnly();
 
 			if (Element.ClearButtonVisibility != ClearButtonVisibility.Never)
-				UpdateClearButtonVisibility();
-		}
-
-		public override void ObserveValue(NSString keyPath, NSObject ofObject, NSDictionary change, IntPtr context)
-		{
-			if (keyPath == new NSString("sublayers") && _defaultClearImage == null)
 				UpdateClearButtonVisibility();
 		}
 
@@ -582,33 +565,36 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateClearButtonColor()
 		{
-			if (ClearButton != null)
+			if (Control.ValueForKey(new NSString("clearButton")) is UIButton clearButton)
 			{
-				ClearButton.TintColor = Element.TextColor.ToUIColor();
-				
+				clearButton.TintColor = Element.TextColor.ToUIColor();
+
 				if(_defaultClearImage == null)
-					_defaultClearImage = ClearButton.ImageForState(UIControlState.Highlighted);
+					_defaultClearImage = clearButton.ImageForState(UIControlState.Highlighted);
 
-				if (_defaultClearImage == null)
-					return;
-
-				if(Element.TextColor == Color.Default)
+				if (Element.TextColor == Color.Default)
 				{
-					ClearButton.SetImage(_defaultClearImage, UIControlState.Normal);
-					ClearButton.SetImage(_defaultClearImage, UIControlState.Highlighted);
+					clearButton.SetImage(_defaultClearImage, UIControlState.Normal);
+					clearButton.SetImage(_defaultClearImage, UIControlState.Highlighted);
 				}
 				else
 				{
 					var tintedClearImage = GetClearButtonTintImage(_defaultClearImage, Element.TextColor.ToUIColor());
 
-					ClearButton.SetImage(tintedClearImage, UIControlState.Normal);
-					ClearButton.SetImage(tintedClearImage, UIControlState.Highlighted);
+					if (tintedClearImage != null)
+					{
+						clearButton.SetImage(tintedClearImage, UIControlState.Normal);
+						clearButton.SetImage(tintedClearImage, UIControlState.Highlighted);
+					}
 				}
 			}
 		}
 
 		UIImage GetClearButtonTintImage(UIImage image, UIColor color)
 		{
+			if (image == null)
+				return null;
+
 			var size = image.Size;
 
 			UIGraphics.BeginImageContextWithOptions(size, false, UIScreen.MainScreen.Scale);
