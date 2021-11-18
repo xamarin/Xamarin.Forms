@@ -491,7 +491,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (Device.Idiom == TargetIdiom.Tablet)
 			{
-				bool isShowingSplit = FlyoutPageController.ShouldShowSplitMode || (FlyoutPageController.ShouldShowSplitMode && FlyoutPage.FlyoutLayoutBehavior != FlyoutLayoutBehavior.Default && Element.IsPresented);
+				bool isShowingSplit = FlyoutPageController.ShouldShowSplitMode || (FlyoutPageController.ShouldShowSplitMode && FlyoutPage.FlyoutLayoutBehavior != FlyoutLayoutBehavior.Default && FlyoutPage.IsPresented);
 				SetLockMode(isShowingSplit ? LockModeLockedOpen : LockModeUnlocked);
 				unchecked
 				{
