@@ -116,6 +116,8 @@ namespace Xamarin.Forms
 			await poppingCompleted;
 
 			RemovePage(page);
+
+			(Parent?.Parent as IShellController)?.UpdateCurrentState(ShellNavigationSource.Pop);
 		}
 
 		async void IShellSectionController.SendPoppingToRoot(Task finishedPopping)
