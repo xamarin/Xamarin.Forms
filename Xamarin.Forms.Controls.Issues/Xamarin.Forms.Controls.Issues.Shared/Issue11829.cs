@@ -34,12 +34,12 @@ namespace Xamarin.Forms.Controls.Issues
 				Padding = 12,
 				BackgroundColor = Color.Black,
 				TextColor = Color.White,
-				Text = "If the text below is underline, the test has passed."
+				Text = "If the text below is underline & strike through, the test has passed."
 			};
 
 			var label = new Label
 			{
-				TextDecorations = TextDecorations.Underline,
+				TextDecorations = TextDecorations.Underline | TextDecorations.Strikethrough,
 				LineHeight = 2,
 				Text = "Underline using LineHeight",
 				Margin = new Thickness(0, 12)
@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Controls.Issues
 			textDecorationsCheckBox.CheckedChanged += (sender, args) =>
 			{
 				if (args.Value)
-					label.TextDecorations = TextDecorations.Underline;
+					label.TextDecorations = TextDecorations.Strikethrough | TextDecorations.Underline;
 				else
 					label.TextDecorations = TextDecorations.None;
 			};
