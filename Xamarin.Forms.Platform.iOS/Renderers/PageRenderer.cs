@@ -24,7 +24,8 @@ namespace Xamarin.Forms.Platform.iOS
 		Page Page => Element as Page;
 		IAccessibilityElementsController AccessibilityElementsController => this;
 		Thickness SafeAreaInsets => Page.On<PlatformConfiguration.iOS>().SafeAreaInsets();
-		bool IsPartOfShell => (Element?.Parent is BaseShellItem);
+		bool IsPartOfShell => (Element?.Parent is BaseShellItem || (
+			Element?.Parent is TabbedPage && Element?.Parent?.Parent is BaseShellItem));
 		ShellSection _shellSection;
 		bool _safeAreasSet = false;
 		Thickness _userPadding = default(Thickness);
@@ -102,7 +103,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get { return _disposed ? null : View; }
 		}
-		
+
 		public void SetElement(VisualElement element)
 		{
 			VisualElement oldElement = Element;
@@ -281,10 +282,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (_appeared)
 					Page.SendDisappearing();
-				
+
 				Element = null;
 			}
-				
+
 			_events?.Disconnect();
 			_packager?.Disconnect();
 			_tracker?.Disconnect();
