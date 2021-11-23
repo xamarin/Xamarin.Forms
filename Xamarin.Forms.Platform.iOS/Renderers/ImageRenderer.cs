@@ -196,7 +196,7 @@ namespace Xamarin.Forms.Platform.iOS
 			FormsCAKeyFrameAnimation animation = await ImageAnimationHelper.CreateAnimationFromStreamImageSourceAsync(imagesource as StreamImageSource, cancelationToken).ConfigureAwait(false);
 			if (animation == null)
 			{
-				Log.Warning(nameof(FileImageSourceHandler), "Could not find image: {0}", imagesource);
+				Log.Warning(nameof(StreamImagesourceHandler), "Could not find image: {0}", imagesource);
 			}
 
 			return animation;

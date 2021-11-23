@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.iOS
 		Size _queuedSize;
 		UITabBarAppearance _tabBarAppearance;
 
-		 Page Page => Element as Page;
+		Page Page => Element as Page;
 
 		[Internals.Preserve(Conditional = true)]
 		public TabbedRenderer()
@@ -133,21 +133,14 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Element.Parent is BaseShellItem)
 				Element.Layout(View.Bounds.ToRectangle());
 
-			if (!Element.Bounds.IsEmpty)
-			{
-				View.Frame = new RectangleF((float)Element.X, (float)Element.Y, (float)Element.Width, (float)Element.Height);
-			}
-
 			var frame = View.Frame;
 			var tabBarFrame = TabBar.Frame;
 			Page.ContainerArea = new Rectangle(0, 0, frame.Width, frame.Height - tabBarFrame.Height);
-
 			if (!_queuedSize.IsZero)
 			{
 				Element.Layout(new Rectangle(Element.X, Element.Y, _queuedSize.Width, _queuedSize.Height));
 				_queuedSize = Size.Zero;
 			}
-
 			_loaded = true;
 		}
 
@@ -479,7 +472,7 @@ namespace Xamarin.Forms.Platform.iOS
 		async void SetTabBarItem(IVisualElementRenderer renderer)
 		{
 			var page = renderer.Element as Page;
-			if(page == null)
+			if (page == null)
 				throw new InvalidCastException($"{nameof(renderer)} must be a {nameof(Page)} renderer.");
 
 			var icons = await GetIcon(page);
@@ -544,7 +537,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_tabBarAppearance == null)
 			{
 				_tabBarAppearance = new UITabBarAppearance();
-				_tabBarAppearance.ConfigureWithOpaqueBackground();
+				_tabBarAppearance.ConfigureWithDefaultBackground();
 			}
 
 			var barBackgroundColor = Tabbed.BarBackgroundColor;
