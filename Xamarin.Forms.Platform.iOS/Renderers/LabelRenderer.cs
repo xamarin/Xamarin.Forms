@@ -455,7 +455,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 #if __MOBILE__
-				Control.Text = text;
+				Control.AttributedText = new NSAttributedString(text);
 #else
 				Control.StringValue = text ?? "";
 #endif
