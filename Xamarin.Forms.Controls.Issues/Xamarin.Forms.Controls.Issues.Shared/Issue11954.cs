@@ -1,6 +1,6 @@
 ﻿using System;
-using Xamarin.Forms.Internals;
 using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.UITest;
@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Controls.Issues
 			NiceLabel = new Label
 			{
 				FontSize = 16,
-				Padding = new Thickness(30,24,30,0),
+				Padding = new Thickness(30, 24, 30, 0),
 				Text = "Default text"
 			};
 
