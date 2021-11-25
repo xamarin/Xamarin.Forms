@@ -667,6 +667,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (Forms.IsiOS13OrNewer)
 			{
+				if (UINavigationBar.Appearance.BackgroundColor != null)
+					return;
+
 				var navigationBarAppearance = NavigationBar.StandardAppearance;
 
 				navigationBarAppearance.ConfigureWithOpaqueBackground();
