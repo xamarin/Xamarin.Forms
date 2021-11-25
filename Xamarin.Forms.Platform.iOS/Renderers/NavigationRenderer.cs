@@ -667,27 +667,30 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (Forms.IsiOS13OrNewer)
 			{
+				var appearanceBgColor = UINavigationBar.Appearance.BackgroundColor;
+
 				var navigationBarAppearance = NavigationBar.StandardAppearance;
 
 				navigationBarAppearance.ConfigureWithOpaqueBackground();
 
-				// Let Appearance API take precedence always 
-				if (UINavigationBar.Appearance.BackgroundColor == null)
+				// Let Appearance API take precedence if set
+				if (appearanceBgColor != null)
 				{
-					if (barBackgroundColor == Color.Default)
-					{
-						navigationBarAppearance.BackgroundColor = ColorExtensions.BackgroundColor;
-
-						var parentingViewController = GetParentingViewController();
-						parentingViewController?.SetupDefaultNavigationBarAppearance();
-					}
-					else
-						navigationBarAppearance.BackgroundColor = barBackgroundColor.ToUIColor();
-
-					var barBackgroundBrush = NavPage.BarBackground;
-					var backgroundImage = NavigationBar.GetBackgroundImage(barBackgroundBrush);
-					navigationBarAppearance.BackgroundImage = backgroundImage;
+					navigationBarAppearance.BackgroundColor = appearanceBgColor;
 				}
+				else if (barBackgroundColor == Color.Default)
+				{
+					navigationBarAppearance.BackgroundColor = ColorExtensions.BackgroundColor;
+
+					var parentingViewController = GetParentingViewController();
+					parentingViewController?.SetupDefaultNavigationBarAppearance();
+				}
+				else
+					navigationBarAppearance.BackgroundColor = barBackgroundColor.ToUIColor();
+
+				var barBackgroundBrush = NavPage.BarBackground;
+				var backgroundImage = NavigationBar.GetBackgroundImage(barBackgroundBrush);
+				navigationBarAppearance.BackgroundImage = backgroundImage;
 
 				NavigationBar.CompactAppearance = navigationBarAppearance;
 				NavigationBar.StandardAppearance = navigationBarAppearance;
