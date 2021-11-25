@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+			 Title="Test 8384"
+             x:Class="Xamarin.Forms.Controls.Issues.Issue8384">
+
+    <StackLayout>
+        <Label Text="Test for issue #8384" />
+        <ListView  IsPullToRefreshEnabled="True" ItemsSource="{Binding Items}" RefreshCommand="{Binding Refresh}"
+                   IsRefreshing="{Binding IsRefreshing}">
+        </ListView>
+        <StackLayout>
+            <Label Text="Test steps (Android):" />
+            <Label Text="1. Swipe to refresh the list (refresh takes 4 seconds)" />
+            <Label Text="2. Refresh/busy indicator appears at the top" />
+            <Label Text="3. Refresh/busy indicator should remain visible until list content changes (refresh is finished).
+				   due to issue #8384 the indicator vanishes too early if Command.CanExecute toggles (in this test after 1 second)." />
+            <Label Text="4. Repeat steps 1 to 3 multiple times" />
+        </StackLayout>
+    </StackLayout>
+</ContentPage>
