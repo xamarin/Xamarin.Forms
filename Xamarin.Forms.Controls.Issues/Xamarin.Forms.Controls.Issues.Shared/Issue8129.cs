@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Content = grid;
 		}
-#if UITEST
+#if UITEST && __IOS__
 		[Test]
 		public void AddTooManyContentsTest()
 		{
