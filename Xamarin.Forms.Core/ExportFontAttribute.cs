@@ -12,7 +12,6 @@ namespace Xamarin.Forms
 			FontFileName = fontFileName;
 		}
 
-		public string EmbeddedFontResourceId { get; set; }
 		public string FontFileName { get; }
 	}
 }
