@@ -74,6 +74,12 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void ButtonOnLoading(FrameworkElement sender, object args)
 		{
+			// HACK: Update IsNativeStateConsistent to fix issue rendering Buttons inside a CollectionView
+			var collectionViewParent = Element.FindParent<CollectionView>();
+
+			if (collectionViewParent == null)
+				return;
+
 			Element.IsNativeStateConsistent = false;
 		}
 
