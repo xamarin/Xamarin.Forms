@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 14552" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue14552">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Using a Device, drag and drop several times elements. Without exceptions, the test has passed."/>
+        <Grid>
+            <ListView
+                ItemsSource="{Binding ViewModel.Items}"
+                SelectionMode="None">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell
+                            Tapped="IsSelected_Tapped">
+                            <StackLayout
+                                Orientation="Horizontal"
+                                Spacing="1">
+                                <CheckBox
+                                    IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                    IsEnabled="{Binding IsEnabled}" />
+                                <Label
+                                    Text="{Binding Name}"
+                                    VerticalOptions="Center">
+                                    <Label.GestureRecognizers>
+                                        <DragGestureRecognizer
+                                            CanDrag="True"
+                                            DragStarting="OnDragStarting" />
+                                        <DropGestureRecognizer
+                                            AllowDrop="True"
+                                            Drop="OnDropped"
+                                            DragOver="OnDragOver" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+    </StackLayout>
+</local:TestContentPage>

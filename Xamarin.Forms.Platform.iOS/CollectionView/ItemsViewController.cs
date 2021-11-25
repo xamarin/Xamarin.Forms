@@ -60,6 +60,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
+				UnbindCells();
+				_measurementCells = null;
+			
 				ItemsSource?.Dispose();
 
 				CollectionView.Delegate = null;
@@ -72,6 +75,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				ItemsViewLayout?.Dispose();
 				CollectionView?.Dispose();
+
 			}
 
 			base.Dispose(disposing);
@@ -109,6 +113,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (_isEmpty)
 			{
+				UnbindCells();
 				_measurementCells.Clear();
 				ItemsViewLayout?.ClearCellSizeCache();
 			}
@@ -124,6 +129,24 @@ namespace Xamarin.Forms.Platform.iOS
 				// a prototype cell and our itemSize or estimatedItemSize are wrong/unset
 				// So trigger a constraint update; if we need a measurement, that will make it happen
 				ItemsViewLayout.ConstrainTo(CollectionView.Bounds.Size);
+			}
+		}
+
+		private void UnbindCells()
+		{
+			if (_measurementCells == null || _measurementCells.Count == 0)
+				return;
+
+			foreach (var _cell in _measurementCells)
+			{
+				var _tCell = _cell.Value;
+				if (_tCell == null)
+					continue;
+
+				_tCell.Unbind();
+
+				_tCell.ContentSizeChanged -= CellContentSizeChanged;
+				_tCell.LayoutAttributesChanged -= CellLayoutAttributesChanged;
 			}
 		}
 
@@ -462,14 +485,21 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void AlignEmptyView() 
+		void AlignEmptyView()
 		{
 			if (_emptyUIView == null)
 			{
 				return;
 			}
 
-			if (CollectionView.EffectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirection.RightToLeft)
+			bool isRtl;
+
+			if (Forms.IsiOS10OrNewer)
+				isRtl = CollectionView.EffectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirection.RightToLeft;
+			else
+				isRtl = CollectionView.SemanticContentAttribute == UISemanticContentAttribute.ForceRightToLeft;
+
+			if (isRtl)
 			{
 				if (_emptyUIView.Transform.xx == -1)
 				{
