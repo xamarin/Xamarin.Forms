@@ -476,6 +476,11 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateSearchVisibility(_searchController);
 			else if (e.PropertyName == SearchHandler.IsSearchEnabledProperty.PropertyName)
 				UpdateSearchIsEnabled(_searchController);
+			else if (e.PropertyName == SearchHandler.IsFocusedProperty.PropertyName)
+			{
+				if (!_searchHandler.IsFocused)
+					_searchController.Active = false;
+			}
 			else if (e.Is(SearchHandler.AutomationIdProperty))
 			{
 				UpdateAutomationId();
