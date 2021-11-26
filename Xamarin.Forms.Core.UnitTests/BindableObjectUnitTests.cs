@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using NUnit.Framework;
 using Xamarin.Forms.Internals;
@@ -59,6 +60,15 @@ namespace Xamarin.Forms.Core.UnitTests
 			get { return (Baz)GetValue(QuxProperty); }
 			set { SetValue(QuxProperty, value); }
 		}
+	}
+
+	internal static class AttachedPropertyHolder
+	{
+		public static readonly BindableProperty AttachedCollectionProperty =
+			BindableProperty.CreateAttached("AttachedCollection", typeof(IList<string>), typeof(AttachedPropertyHolder), new List<string>());
+
+		public static IList<string> GetAttachedCollection(BindableObject bindable) => (IList<string>)bindable.GetValue(AttachedCollectionProperty);
+		public static void SetAttachedCollection(BindableObject bindable, IList<string> value) => bindable.SetValue(AttachedCollectionProperty, value);
 	}
 
 	internal class ToBarConverter : TypeConverter
@@ -1593,5 +1603,33 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(bindable.GetValue(prop), Is.EqualTo("converted"));
 		}
 
+		[Test]
+		//https://github.com/xamarin/Xamarin.Forms/issues/9151
+		public void SetValueWorksWithAttachedCollectionValuedProperties()
+		{
+			var prop = BindableProperty.CreateAttached("AttachedCollection", typeof(IList<string>), typeof(AttachedPropertyHolder), null, defaultValueCreator: _ => new List<string>());
+			var collection = new[] { "a", "b" };
+			var bindable = new MockBindable() { BindingContext = new { info = collection } };
+			bindable.SetBinding(prop, "info");
+
+			Assert.That(bindable.GetValue(prop), Is.EquivalentTo(collection));
+		}
+
+		[Test]
+		//https://github.com/xamarin/Xamarin.Forms/issues/9151
+		public void SetValueWorksWithAttachedCollectionValuedPropertiesOnMultipleBindables()
+		{
+			var prop = BindableProperty.CreateAttached("AttachedCollection", typeof(IList<string>), typeof(AttachedPropertyHolder), null, defaultValueCreator: _ => new List<string>());
+			var collection1 = new[] { "a", "b" };
+			var collection2 = new[] { "c", "d" };
+
+			var bindable1 = new MockBindable() { BindingContext = new { info = collection1 } };
+			bindable1.SetValue(prop, collection1);
+			var bindable2 = new MockBindable() { BindingContext = new { info = collection2 } };
+			bindable2.SetValue(prop, collection2);
+
+			Assert.That(bindable1.GetValue(prop), Is.EquivalentTo(collection1));
+			Assert.That(bindable2.GetValue(prop), Is.EquivalentTo(collection2));
+		}
 	}
 }

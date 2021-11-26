@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 8383" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue8383">
+    <StackLayout
+        Padding="12">
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="When scrolling down, new items should automatically load when reaching the end of the list, like on Android."/>
+        <StackLayout>
+            <Label
+                x:Name="RemainingThresholdCount" />
+            <CollectionView
+                ItemSizingStrategy="MeasureAllItems"
+                IsGrouped="True"
+                ItemsSource="{Binding Path=ListItems, Mode=TwoWay}"
+                RemainingItemsThreshold="0"
+                RemainingItemsThresholdReachedCommand="{Binding Path=RemainingItemsReachedCommand}"
+                RemainingItemsThresholdReached="CollectionView_RemainingItemsThresholdReached"
+                VerticalOptions="StartAndExpand">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout
+                        ItemSpacing="2"
+                        Orientation="Vertical" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.GroupHeaderTemplate>
+                    <DataTemplate>
+                        <Label
+                            Text="{Binding Name}" />
+                    </DataTemplate>
+                </CollectionView.GroupHeaderTemplate>
+                <CollectionView.GroupFooterTemplate>
+                    <DataTemplate>
+                        <Label
+                            Text="{Binding Count, StringFormat='Total items: {0:D}'}" Margin="0,0,0,10" />
+                    </DataTemplate>
+                </CollectionView.GroupFooterTemplate>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate
+                        x:DataType="x:String">
+                        <Label
+                            FontSize="Large"
+                            HorizontalOptions="StartAndExpand"
+                            Text="{Binding Path=.}" />
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </StackLayout>
+    </StackLayout>
+</local:TestContentPage>

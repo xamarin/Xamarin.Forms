@@ -485,14 +485,21 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void AlignEmptyView() 
+		void AlignEmptyView()
 		{
 			if (_emptyUIView == null)
 			{
 				return;
 			}
 
-			if (CollectionView.EffectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirection.RightToLeft)
+			bool isRtl;
+
+			if (Forms.IsiOS10OrNewer)
+				isRtl = CollectionView.EffectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirection.RightToLeft;
+			else
+				isRtl = CollectionView.SemanticContentAttribute == UISemanticContentAttribute.ForceRightToLeft;
+
+			if (isRtl)
 			{
 				if (_emptyUIView.Transform.xx == -1)
 				{

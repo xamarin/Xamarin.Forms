@@ -303,16 +303,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			// If the Appearing handler changed the application's main page for some reason,
 			// this page may no longer be part of the hierarchy; if so, we need to skip
-			// updating the toolbar and pushing the pages to avoid crashing the app
+			// updating the toolbar to avoid crashing the app
 			if (!Element.IsAttachedToRoot())
 				return;
 
 			RegisterToolbar();
 
-			// If there is already stuff on the stack we need to push it
-			PushCurrentPages();
-
 			UpdateToolbar();
+
 			_isAttachedToWindow = true;
 		}
 
@@ -368,12 +366,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				navController.PopToRootRequested += OnPoppedToRoot;
 				navController.InsertPageBeforeRequested += OnInsertPageBeforeRequested;
 				navController.RemovePageRequested += OnRemovePageRequested;
-
-				if (_isAttachedToWindow && Element.IsAttachedToRoot())
-				{
-					PushCurrentPages();
-				}
 			}
+
+			// If there is already stuff on the stack we need to push it
+			PushCurrentPages();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
