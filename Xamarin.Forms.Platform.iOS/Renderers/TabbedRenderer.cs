@@ -360,7 +360,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (parent == null)
 				return;
 
-			parent.BackgroundColor = Tabbed.BackgroundColor.ToUIColor();
+			if (Tabbed.BackgroundColor != Color.Default)
+				parent.BackgroundColor = Tabbed.BackgroundColor.ToUIColor();
 		}
 
 		void UpdateBarBackgroundColor()
