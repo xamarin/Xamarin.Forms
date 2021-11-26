@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage 
+  xmlns="http://xamarin.com/schemas/2014/forms" 
+  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+  x:Class="Xamarin.Forms.Controls.Issues.Issue14697">
+    <StackLayout>
+        <Frame
+            Padding="12"
+            BackgroundColor="Black"
+            CornerRadius="0">
+            <Label
+                HorizontalTextAlignment="Center"
+                Text="Rotate the Device or Emulator If the Shape size adapts (Aspect = Uniform), the test has passed."
+                TextColor="White" />
+        </Frame>
+        <Path
+            Aspect="Uniform"
+            BackgroundColor="Orange"
+            HeightRequest="300"
+            HorizontalOptions="Fill"
+            Stroke="Black"
+            VerticalOptions="Fill">
+            <Path.Data>
+                <PathGeometry>
+                    <PathGeometry.Figures>
+                        <PathFigureCollection>
+                            <PathFigure IsClosed="True" StartPoint="10,100">
+                                <PathFigure.Segments>
+                                    <PathSegmentCollection>
+                                        <LineSegment Point="100,100" />
+                                        <LineSegment Point="20,90" />
+                                    </PathSegmentCollection>
+                                </PathFigure.Segments>
+                            </PathFigure>
+                        </PathFigureCollection>
+                    </PathGeometry.Figures>
+                </PathGeometry>
+            </Path.Data>
+        </Path>
+    </StackLayout>
+</ContentPage>

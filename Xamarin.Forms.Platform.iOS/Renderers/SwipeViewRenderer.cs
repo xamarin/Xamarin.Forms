@@ -475,9 +475,29 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_actionView = new UIStackView
 			{
-				Axis = UILayoutConstraintAxis.Horizontal,
-				Frame = new CGRect(0, 0, swipeItemsWidth, _contentView.Frame.Height)
+				Axis = UILayoutConstraintAxis.Horizontal
 			};
+
+			if (_swipeTransitionMode == SwipeTransitionMode.Reveal)
+				_actionView.Frame = new CGRect(0, 0, swipeItemsWidth, _contentView.Frame.Height);
+			else
+			{
+				switch (_swipeDirection)
+				{
+					case SwipeDirection.Left:
+						_actionView.Frame = new CGRect(swipeItemsWidth, 0, swipeItemsWidth, _contentView.Frame.Height);
+						break;
+					case SwipeDirection.Right:
+						_actionView.Frame = new CGRect(-swipeItemsWidth, 0, swipeItemsWidth, _contentView.Frame.Height);
+						break;
+					case SwipeDirection.Up:
+						_actionView.Frame = new CGRect(0, _contentView.Frame.Height, swipeItemsWidth, _contentView.Frame.Height);
+						break;
+					case SwipeDirection.Down:
+						_actionView.Frame = new CGRect(0, -_contentView.Frame.Height, swipeItemsWidth, _contentView.Frame.Height);
+						break;
+				}
+			}
 
 			foreach (var item in items)
 			{
