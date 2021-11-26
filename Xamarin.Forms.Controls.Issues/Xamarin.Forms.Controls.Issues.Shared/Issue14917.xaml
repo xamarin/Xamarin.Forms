@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TabbedPage 
+    xmlns="http://xamarin.com/schemas/2014/forms" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    x:Class="Xamarin.Forms.Controls.Issues.Issue14917"
+    Title="Issue 14917"
+    BackgroundColor="Yellow">
+    <ContentPage
+        Title="Tab 1"
+        BackgroundColor="Transparent" >
+        <Grid
+            Margin="60">
+          <Label
+              HorizontalOptions="Center"
+              VerticalOptions="Center"
+              Text="Tab 1"/>
+      </Grid>
+    </ContentPage>
+    <ContentPage
+        Title="Tab 2"
+        BackgroundColor="Red"
+        Opacity="0.1">
+      <Grid
+
+        Margin="60">
+          <Label
+              HorizontalOptions="Center"
+              VerticalOptions="Center"
+              Text="Tab 2"/>
+      </Grid>
+    </ContentPage>
+    <ContentPage
+        Title="Tab 3"
+        BackgroundColor="Blue">
+        <Grid
+            Margin="60">
+          <Label
+              HorizontalOptions="Center"
+              VerticalOptions="Center"
+              Text="Tab 3"/>
+      </Grid>
+    </ContentPage>
+</TabbedPage>

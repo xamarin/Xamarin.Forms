@@ -82,6 +82,7 @@ namespace Xamarin.Forms.Platform.iOS
 			//disable edit/reorder of tabs
 			CustomizableViewControllers = null;
 
+			UpdateBackgroundColor();
 			UpdateBarBackgroundColor();
 			UpdateBarBackground();
 			UpdateBarTextColor();
@@ -222,6 +223,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (controller != null && controller != base.SelectedViewController)
 				base.SelectedViewController = controller;
 
+			UpdateBackgroundColor();
 			UpdateBarBackgroundColor();
 			UpdateBarTextColor();
 			UpdateSelectedTabColors();
@@ -240,6 +242,7 @@ namespace Xamarin.Forms.Platform.iOS
 					return;
 
 				SelectedViewController = controller;
+				UpdateBackgroundColor();
 			}
 			else if (e.PropertyName == TabbedPage.BarBackgroundColorProperty.PropertyName)
 				UpdateBarBackgroundColor();
@@ -345,6 +348,19 @@ namespace Xamarin.Forms.Platform.iOS
 			page.PropertyChanged -= OnPagePropertyChanged;
 
 			Platform.SetRenderer(page, null);
+		}
+
+		void UpdateBackgroundColor()
+		{
+			if (Tabbed == null || SelectedViewController == null || SelectedViewController.View == null)
+				return;
+
+			var parent = SelectedViewController.View.Superview;
+
+			if (parent == null)
+				return;
+
+			parent.BackgroundColor = Tabbed.BackgroundColor.ToUIColor();
 		}
 
 		void UpdateBarBackgroundColor()
