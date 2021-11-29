@@ -1,4 +1,6 @@
-﻿namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
+﻿using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.DataTemplateSelectorGalleries;
+
+namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
 	internal class DataTemplateGallery : ContentPage
 	{
@@ -16,18 +18,20 @@
 					Children =
 					{
 						descriptionLabel,
-						GalleryBuilder.NavButton("Vertical List (Code)", () => 
+						GalleryBuilder.NavButton("Vertical List (Code)", () =>
 							new TemplateCodeCollectionViewGallery(LinearItemsLayout.Vertical), Navigation),
-						GalleryBuilder.NavButton("Horizontal List (Code)", () => 
+						GalleryBuilder.NavButton("Horizontal List (Code)", () =>
 							new TemplateCodeCollectionViewGallery(LinearItemsLayout.Horizontal), Navigation),
-						GalleryBuilder.NavButton("Vertical Grid (Code)", () => 
+						GalleryBuilder.NavButton("Vertical Grid (Code)", () =>
 							new TemplateCodeCollectionViewGridGallery (), Navigation),
-						GalleryBuilder.NavButton("Horizontal Grid (Code)", () => 
+						GalleryBuilder.NavButton("Horizontal Grid (Code)", () =>
 							new TemplateCodeCollectionViewGridGallery (ItemsLayoutOrientation.Horizontal), Navigation),
-                        GalleryBuilder.NavButton("DataTemplateSelector", () =>
-                            new DataTemplateSelectorGallery(), Navigation),
+						GalleryBuilder.NavButton("DataTemplateSelector", () =>
+							new DataTemplateSelectorGallery(), Navigation),
+						GalleryBuilder.NavButton("Varied Size Data Templates", () =>
+							new VariedSizeDataTemplateSelectorGallery(), Navigation),
 					}
-                }
+				}
 			};
 		}
 	}

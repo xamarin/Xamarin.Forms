@@ -30,6 +30,7 @@ namespace Xamarin.Forms
 					((ColumnDefinitionCollection)oldvalue).ItemSizeChanged -= ((Grid)bindable).OnDefinitionChanged;
 				if (newvalue != null)
 					((ColumnDefinitionCollection)newvalue).ItemSizeChanged += ((Grid)bindable).OnDefinitionChanged;
+				((Grid)bindable).OnDefinitionChanged(bindable, EventArgs.Empty);
 			}, defaultValueCreator: bindable =>
 			{
 				var colDef = new ColumnDefinitionCollection();
@@ -44,6 +45,7 @@ namespace Xamarin.Forms
 					((RowDefinitionCollection)oldvalue).ItemSizeChanged -= ((Grid)bindable).OnDefinitionChanged;
 				if (newvalue != null)
 					((RowDefinitionCollection)newvalue).ItemSizeChanged += ((Grid)bindable).OnDefinitionChanged;
+				((Grid)bindable).OnDefinitionChanged(bindable, EventArgs.Empty);
 			}, defaultValueCreator: bindable =>
 			{
 				var rowDef = new RowDefinitionCollection();
@@ -57,7 +59,7 @@ namespace Xamarin.Forms
 		public Grid()
 		{
 			_children = new GridElementCollection(InternalChildren, this) { Parent = this };
-			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Grid>>(() => 
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Grid>>(() =>
 				new PlatformConfigurationRegistry<Grid>(this));
 		}
 
@@ -162,14 +164,14 @@ namespace Xamarin.Forms
 
 			var result = LayoutConstraint.None;
 
-			if (_rows == null || _columns == null)
-				EnsureRowsColumnsInitialized();
+			// grab a snapshot of this grid's structure for computing the constraints
+			var structure = new GridStructure(this);
 
 			if (vOptions.Alignment == LayoutAlignment.Fill)
 			{
 				int row = GetRow(view);
 				int rowSpan = GetRowSpan(view);
-				List<RowDefinition> rowDefinitions = _rows;
+				List<RowDefinition> rowDefinitions = structure.Rows;
 
 				var canFix = true;
 
@@ -196,7 +198,7 @@ namespace Xamarin.Forms
 			{
 				int col = GetColumn(view);
 				int colSpan = GetColumnSpan(view);
-				List<ColumnDefinition> columnDefinitions = _columns;
+				List<ColumnDefinition> columnDefinitions = structure.Columns;
 
 				var canFix = true;
 
@@ -226,12 +228,6 @@ namespace Xamarin.Forms
 		public void InvalidateMeasureInernalNonVirtual(InvalidationTrigger trigger)
 		{
 			InvalidateMeasureInternal(trigger);
-		}
-		internal override void InvalidateMeasureInternal(InvalidationTrigger trigger)
-		{
-			base.InvalidateMeasureInternal(trigger);
-			_columns = null;
-			_rows = null;
 		}
 
 		void OnDefinitionChanged(object sender, EventArgs args)

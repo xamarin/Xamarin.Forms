@@ -9,7 +9,7 @@ using PageSpecific = Xamarin.Forms.PlatformConfiguration.iOSSpecific.Page;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class PageRenderer : UIViewController, IVisualElementRenderer, IEffectControlProvider, IAccessibilityElementsController, IShellContentInsetObserver
+	public class PageRenderer : UIViewController, IVisualElementRenderer, IEffectControlProvider, IAccessibilityElementsController, IShellContentInsetObserver, IDisconnectable
 	{
 		bool _appeared;
 		bool _disposed;
@@ -24,7 +24,8 @@ namespace Xamarin.Forms.Platform.iOS
 		Page Page => Element as Page;
 		IAccessibilityElementsController AccessibilityElementsController => this;
 		Thickness SafeAreaInsets => Page.On<PlatformConfiguration.iOS>().SafeAreaInsets();
-		bool IsPartOfShell => (Element?.Parent is BaseShellItem);
+		bool IsPartOfShell => (Element?.Parent is BaseShellItem || (
+			Element?.Parent is TabbedPage && Element?.Parent?.Parent is BaseShellItem));
 		ShellSection _shellSection;
 		bool _safeAreasSet = false;
 		Thickness _userPadding = default(Thickness);
@@ -44,18 +45,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 
-		List<NSObject> DefaultOrder()
-		{
-			var views = new List<NSObject>();
-			if (Container != null)
-				views.AddRange(Container.DescendantsTree());
-			return views;
-		}
-
 		public List<NSObject> GetAccessibilityElements()
 		{
 			if (Container == null || Element == null)
-				return new List<NSObject>();
+				return null;
 
 			SortedDictionary<int, List<ITabStopElement>> tabIndexes = null;
 			foreach (var child in Element.LogicalChildren)
@@ -68,11 +61,11 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			if (tabIndexes == null)
-				return DefaultOrder();
+				return null;
 
 			// Just return all elements on the page in order.
 			if (tabIndexes.Count <= 1)
-				return DefaultOrder();
+				return null;
 
 			var views = new List<NSObject>();
 			foreach (var idx in tabIndexes?.Keys)
@@ -150,14 +143,25 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public void SetElementSize(Size size)
 		{
+			// In Split Mode the Frame will occasionally get set to the wrong value
+			var rect = new CoreGraphics.CGRect(Element.X, Element.Y, size.Width, size.Height);
+			if (rect != _pageContainer.Frame)
+				_pageContainer.Frame = rect;
+
 			Element.Layout(new Rectangle(Element.X, Element.Y, size.Width, size.Height));
 		}
 
 		public override void LoadView()
 		{
+
 			//by default use the MainScreen Bounds so Effects can access the Container size
 			if (_pageContainer == null)
-				_pageContainer = new PageContainer(this) { Frame = UIScreen.MainScreen.Bounds };
+			{
+				var bounds = UIApplication.SharedApplication?.GetKeyWindow()?.Bounds ??
+					UIScreen.MainScreen.Bounds;
+
+				_pageContainer = new PageContainer(this) { Frame = bounds };
+			}
 
 			View = _pageContainer;
 		}
@@ -172,7 +176,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidLayoutSubviews();
 
-			if (_disposed)
+			if (_disposed || Element == null)
 				return;
 
 			if (Element.Parent is BaseShellItem)
@@ -180,6 +184,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (_safeAreasSet || !Forms.IsiOS11OrNewer)
 				UpdateUseSafeArea();
+
+			if (Element.Background != null && !Element.Background.IsEmpty)
+				NativeView?.UpdateBackgroundLayer();
 		}
 
 		public override void ViewSafeAreaInsetsDidChange()
@@ -195,7 +202,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidAppear(animated);
 
-			if (_appeared || _disposed)
+			if (_appeared || _disposed || Element == null)
 				return;
 
 			_appeared = true;
@@ -213,7 +220,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidDisappear(animated);
 
-			if (!_appeared || _disposed)
+			if (!_appeared || _disposed || Element == null)
 				return;
 
 			_appeared = false;
@@ -260,6 +267,29 @@ namespace Xamarin.Forms.Platform.iOS
 			NativeView?.Window?.EndEditing(true);
 		}
 
+		void IDisconnectable.Disconnect()
+		{
+			if (_shellSection != null)
+			{
+				((IShellSectionController)_shellSection).RemoveContentInsetObserver(this);
+				_shellSection = null;
+			}
+
+			if (Element != null)
+			{
+				Element.PropertyChanged -= OnHandlePropertyChanged;
+				Platform.SetRenderer(Element, null);
+
+				if (_appeared)
+					Page.SendDisappearing();
+
+				Element = null;
+			}
+
+			_events?.Disconnect();
+			_packager?.Disconnect();
+			_tracker?.Disconnect();
+		}
 
 		protected override void Dispose(bool disposing)
 		{
@@ -268,36 +298,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
-				if (_shellSection != null)
-				{
-					((IShellSectionController)_shellSection).RemoveContentInsetObserver(this);
-					_shellSection = null;
-				}
+				(this as IDisconnectable).Disconnect();
 
-				Element.PropertyChanged -= OnHandlePropertyChanged;
-				Platform.SetRenderer(Element, null);
-				if (_appeared)
-					Page.SendDisappearing();
-
-				_appeared = false;
-
-				if (_events != null)
-				{
-					_events.Dispose();
-					_events = null;
-				}
-
-				if (_packager != null)
-				{
-					_packager.Dispose();
-					_packager = null;
-				}
-
-				if (_tracker != null)
-				{
-					_tracker.Dispose();
-					_tracker = null;
-				}
+				_events?.Dispose();
+				_packager?.Dispose();
+				_tracker?.Dispose();
+				_events = null;
+				_packager = null;
+				_tracker = null;
 
 				Element = null;
 				Container?.Dispose();
@@ -322,7 +330,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnHandlePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
 				UpdateBackground();
 			else if (e.PropertyName == Page.BackgroundImageSourceProperty.PropertyName)
 				UpdateBackground();
@@ -368,10 +376,10 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
 
-#if __XCODE11__
-			if (Forms.IsiOS13OrNewer && previousTraitCollection.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+			if (Forms.IsiOS13OrNewer &&
+				previousTraitCollection.UserInterfaceStyle != TraitCollection.UserInterfaceStyle &&
+				UIApplication.SharedApplication.ApplicationState != UIApplicationState.Background)
 				Application.Current?.TriggerThemeChanged(new AppThemeChangedEventArgs(Application.Current.RequestedTheme));
-#endif
 		}
 
 		bool ShouldUseSafeArea()
@@ -483,7 +491,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			foreach (UIView v in ViewAndSuperviewsOfView(touch.View))
 			{
-				if (v is UITableView || v is UITableViewCell || v.CanBecomeFirstResponder)
+				if (v != null && (v is UITableView || v is UITableViewCell || v.CanBecomeFirstResponder))
 					return false;
 			}
 			return true;
@@ -516,10 +524,22 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (bgImage != null)
 					NativeView.BackgroundColor = UIColor.FromPatternImage(bgImage);
-				else if (Element.BackgroundColor.IsDefault)
-					NativeView.BackgroundColor = ColorExtensions.BackgroundColor;
 				else
-					NativeView.BackgroundColor = Element.BackgroundColor.ToUIColor();
+				{
+					Brush background = Element.Background;
+
+					if (!Brush.IsNullOrEmpty(background))
+						NativeView.UpdateBackground(Element.Background);
+					else
+					{
+						Color backgroundColor = Element.BackgroundColor;
+
+						if (backgroundColor.IsDefault)
+							NativeView.BackgroundColor = ColorExtensions.BackgroundColor;
+						else
+							NativeView.BackgroundColor = Element.BackgroundColor.ToUIColor();
+					}
+				}
 			});
 		}
 

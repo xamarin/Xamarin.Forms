@@ -2,18 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
-using Android.Views;
-using Xamarin.Forms.Internals;
-using AView = Android.Views.View;
-using Xamarin.Forms.Platform.Android.FastRenderers;
-using Android.Runtime;
 using Android.Content.Res;
 using Android.Graphics;
-#if __ANDROID_29__
+using Android.Runtime;
+using Android.Views;
 using AndroidX.Core.View;
-#else
-using Android.Support.V4.View;
-#endif
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.Platform.Android.FastRenderers;
+using AView = Android.Views.View;
 
 
 namespace Xamarin.Forms.Platform.Android
@@ -30,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 		ImportantForAccessibility? _defaultImportantForAccessibility;
 		string _defaultHint;
 		bool _cascadeInputTransparent = true;
-
+		bool _defaultAutomationSet;
 		VisualElementPackager _packager;
 		PropertyChangedEventHandler _propertyChangeHandler;
 
@@ -60,7 +56,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override bool DispatchTouchEvent(MotionEvent e)
 		{
-			if (InputTransparent && _cascadeInputTransparent)
+			if (Element == null || (InputTransparent && _cascadeInputTransparent))
 			{
 				// If the Element is InputTransparent, this ViewGroup will be marked InputTransparent
 				// If we're InputTransparent and our transparency should be applied to our child controls,
@@ -229,6 +225,9 @@ namespace Xamarin.Forms.Platform.Android
 			if (element.BackgroundColor != currentColor)
 				UpdateBackgroundColor();
 
+			if (element.Background != null)
+				UpdateBackground();
+
 			if (_propertyChangeHandler == null)
 				_propertyChangeHandler = OnElementPropertyChanged;
 
@@ -367,6 +366,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				UpdateBackground();
 			else if (e.PropertyName == AutomationProperties.HelpTextProperty.PropertyName)
 				SetContentDescription();
 			else if (e.PropertyName == AutomationProperties.NameProperty.PropertyName)
@@ -433,11 +434,26 @@ namespace Xamarin.Forms.Platform.Android
 			effect.SetContainer(this);
 		}
 
+		void SetupAutomationDefaults()
+		{
+			if (!_defaultAutomationSet)
+			{
+				_defaultAutomationSet = true;
+				AutomationPropertiesProvider.SetupDefaults(this, ref _defaultContentDescription, ref _defaultHint);
+			}
+		}
+
 		protected virtual void SetAutomationId(string id)
-			=> AutomationPropertiesProvider.SetAutomationId(this, Element, id);
+		{
+			SetupAutomationDefaults();
+			AutomationPropertiesProvider.SetAutomationId(this, Element, id);
+		}
 
 		protected virtual void SetContentDescription()
-			=> AutomationPropertiesProvider.SetContentDescription(this, Element, ref _defaultContentDescription, ref _defaultHint);
+		{
+			SetupAutomationDefaults();
+			AutomationPropertiesProvider.SetContentDescription(this, Element, _defaultContentDescription, _defaultHint);
+		}
 
 		protected virtual void SetFocusable()
 			=> AutomationPropertiesProvider.SetFocusable(this, Element, ref _defaultFocusable, ref _defaultImportantForAccessibility);
@@ -475,6 +491,13 @@ namespace Xamarin.Forms.Platform.Android
 			SetBackgroundColor(Element.BackgroundColor.ToAndroid());
 		}
 
+		protected virtual void UpdateBackground()
+		{
+			Brush background = Element.Background;
+
+			this.UpdateBackground(background);
+		}
+
 		internal virtual void SendVisualElementInitialized(VisualElement element, AView nativeView)
 		{
 			element.SendViewInitialized(nativeView);
@@ -482,5 +505,15 @@ namespace Xamarin.Forms.Platform.Android
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
 			=> ViewCompat.SetLabelFor(this, id ?? ViewCompat.GetLabelFor(this));
+
+		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
+		{
+			if (Element is Layout layout)
+			{
+				layout.ResolveLayoutChanges();
+			}
+
+			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+		}
 	}
 }

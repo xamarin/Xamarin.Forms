@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.UITest;
@@ -19,7 +19,6 @@ namespace Xamarin.Forms.Controls.Issues
 		public Issue8417()
 		{
 #if APP
-			Device.SetFlags(new List<string> { ExperimentalFlags.CarouselViewExperimental });
 			InitializeComponent();
 			BindingContext = new Issue8417ViewModel();
 #endif

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Xamarin.Forms
 {
@@ -20,6 +21,12 @@ namespace Xamarin.Forms
 		Region(IList<Rectangle> positions, Thickness inflation) : this(positions)
 		{
 			_inflation = inflation;
+		}
+
+		public static Region FromRectangles(IEnumerable<Rectangle> rectangles)
+		{
+			var list = rectangles.ToList();
+			return new Region(list);
 		}
 
 		public static Region FromLines(double[] lineHeights, double maxWidth, double startX, double endX, double startY)

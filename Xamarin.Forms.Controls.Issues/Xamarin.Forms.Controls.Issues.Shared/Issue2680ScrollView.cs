@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 2680, "[Enhancement] Add VerticalScrollMode/HorizontalScrollMode to ListView and ScrollView", PlatformAffected.All)]
-	public class Issue2680ScrollView : TestContentPage // or TestMasterDetailPage, etc ... 
+	public class Issue2680ScrollView : TestContentPage // or TestFlyoutPage, etc ... 
 	{
 		public bool IsScrollEnabled { get; set; } = false;
 
@@ -82,6 +82,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		[Test]
+		[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
 		public void Issue2680Test_ScrollEnabled()
 		{
 			RunningApp.Tap(q => q.Button(ToggleButtonMark));

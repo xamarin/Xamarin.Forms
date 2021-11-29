@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<controls:TestTabbedPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue14897"
+    xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
+    android:TabbedPage.IsSwipePagingEnabled="False"
+    Title="Issue 14897">
+      <ContentPage
+          Title="Page 1">
+        <StackLayout
+            HorizontalOptions="CenterAndExpand"
+            VerticalOptions="CenterAndExpand">
+            <Label
+                Margin="12"
+                Text="Interact with the SwipeView available in Page 2 and then, try to swipe to move between tabs. If the page not swipe, the test has passed." />
+        </StackLayout>
+    </ContentPage>
+    <ContentPage
+        Title="Page 2">
+        <ScrollView>
+            <SwipeView
+                Padding="50"
+                BackgroundColor="Blue"
+                VerticalOptions="CenterAndExpand">
+            <Grid
+                BackgroundColor="White"
+                HeightRequest="50">
+                <Label
+                    HorizontalOptions="Center"
+                    Text="Swipe Left or Right"
+                    VerticalOptions="Center" />
+            </Grid>
+            <SwipeView.LeftItems>
+                <SwipeItems>
+                    <SwipeItem BackgroundColor="Red" Text="Left SwipeItem" />
+                </SwipeItems>
+            </SwipeView.LeftItems>
+            <SwipeView.RightItems>
+                <SwipeItems>
+                    <SwipeItem BackgroundColor="Green" Text="Right SwipeItem" />
+                </SwipeItems>
+            </SwipeView.RightItems>
+        </SwipeView>
+        </ScrollView>
+    </ContentPage>
+</controls:TestTabbedPage>

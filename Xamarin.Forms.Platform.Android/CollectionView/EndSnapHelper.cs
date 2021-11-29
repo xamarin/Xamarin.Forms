@@ -1,9 +1,4 @@
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
 using AndroidX.RecyclerView.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
@@ -33,7 +28,7 @@ namespace Xamarin.Forms.Platform.Android
 				// Don't snap to anything if this isn't a LinearLayoutManager;
 				return null;
 			}
-			
+
 			int span = 1;
 			if (layoutManager is GridLayoutManager gridLayoutManager)
 			{
@@ -52,7 +47,7 @@ namespace Xamarin.Forms.Platform.Android
 			var lastView = linearLayoutManager.FindViewByPosition(lastVisibleItemPosition);
 
 			// If the last visible item is in the first row/col of the collection, snap to it
-			if(lastVisibleItemPosition < span)
+			if (lastVisibleItemPosition < span)
 			{
 				return lastView;
 			}

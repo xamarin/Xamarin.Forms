@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Controls.Issues
 		PlatformAffected.Android)]
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.Button)]
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
 #endif
 	public class Issue6260 : TestContentPage
 	{
@@ -33,7 +34,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Text = "Click me",
 				BackgroundColor = Color.Green,
-				
+
 			};
 
 			var label = new Label()

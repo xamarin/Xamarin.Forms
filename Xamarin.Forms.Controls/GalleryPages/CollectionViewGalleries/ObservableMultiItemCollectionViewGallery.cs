@@ -2,11 +2,13 @@
 {
 	internal class ObservableMultiItemCollectionViewGallery : ContentPage
 	{
+		ItemsSourceGenerator generator;
+
 		public ObservableMultiItemCollectionViewGallery(ItemsLayoutOrientation orientation = ItemsLayoutOrientation.Vertical,
 			bool grid = true, int initialItems = 1000, bool withIndex = false)
 		{
 			var layout = new Grid
-			{ 
+			{
 				RowDefinitions = new RowDefinitionCollection
 				{
 					new RowDefinition { Height = GridLength.Auto },
@@ -18,16 +20,16 @@
 				}
 			};
 
-			var itemsLayout = grid 
-				? new GridItemsLayout(3, orientation) 
+			var itemsLayout = grid
+				? new GridItemsLayout(3, orientation)
 				: new LinearItemsLayout(orientation) as IItemsLayout;
 
 			var itemTemplate = ExampleTemplates.PhotoTemplate();
 
-			var collectionView = new CollectionView {ItemsLayout = itemsLayout, ItemTemplate = itemTemplate, AutomationId = "collectionview" };
+			var collectionView = new CollectionView { ItemsLayout = itemsLayout, ItemTemplate = itemTemplate, AutomationId = "collectionview" };
 
-			var generator = new ItemsSourceGenerator(collectionView, initialItems, ItemsSourceType.MultiTestObservableCollection);
-			
+			generator = new ItemsSourceGenerator(collectionView, initialItems, ItemsSourceType.MultiTestObservableCollection);
+
 			var remover = new MultiItemRemover(collectionView, withIndex);
 
 			var adder = new MultiItemAdder(collectionView, withIndex);
@@ -54,6 +56,20 @@
 			Content = layout;
 
 			generator.GenerateItems();
+		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			generator.SubscribeEvents();
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			generator.UnsubscribeEvents();
 		}
 	}
 }

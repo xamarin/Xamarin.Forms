@@ -11,6 +11,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Xamarin.Forms.Internals;
+using WBrush = Windows.UI.Xaml.Media.Brush;
+using WSolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -24,7 +26,7 @@ namespace Xamarin.Forms.Platform.UWP
 		internal static readonly BindableProperty MeasuredEstimateProperty = BindableProperty.Create("MeasuredEstimate", typeof(double), typeof(ListView), -1d);
 		readonly Lazy<ListView> _listView;
 		readonly PropertyChangedEventHandler _propertyChangedHandler;
-		Brush _defaultOnColor;
+		WBrush _defaultOnColor;
 
 		IList<MenuItem> _contextActions;
 		Windows.UI.Xaml.DataTemplate _currentTemplate;
@@ -37,13 +39,33 @@ namespace Xamarin.Forms.Platform.UWP
 
 			DataContextChanged += OnDataContextChanged;
 
-			Unloaded += (sender, args) =>
-			{
-				Cell?.SendDisappearing();
-			};
+			Loaded += OnLoaded;
+			Unloaded += OnUnloaded;
 
 			_propertyChangedHandler = OnCellPropertyChanged;
 		}
+
+		void OnLoaded(object sender, RoutedEventArgs e)
+		{
+			if (Cell == null)
+				return;
+
+			/// 🚀 subscribe topropertychanged
+			// make sure we do not subscribe twice (because this could happen in SetSource(Cell oldCell, Cell newCell))
+			Cell.PropertyChanged -= _propertyChangedHandler;
+			Cell.PropertyChanged += _propertyChangedHandler;
+		}
+
+		void OnUnloaded(object sender, RoutedEventArgs e)
+		{
+			if (Cell == null)
+				return;
+
+			Cell.SendDisappearing();
+			/// 🚀 unsubscribe from propertychanged
+			Cell.PropertyChanged -= _propertyChangedHandler;
+		}
+
 
 		public Cell Cell
 		{
@@ -156,7 +178,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			var color = switchCell.OnColor == Color.Default
 				? _defaultOnColor
-				: new SolidColorBrush(switchCell.OnColor.ToWindowsColor());
+				: new WSolidColorBrush(switchCell.OnColor.ToWindowsColor());
 
 			var nativeSwitch = FrameworkElementExtensions.GetFirstDescendant<ToggleSwitch>(this);
 
@@ -308,18 +330,37 @@ namespace Xamarin.Forms.Platform.UWP
 			// If there is a ListView, load the Cell content from the ItemTemplate.
 			// Otherwise, the given Cell is already a templated Cell from a TableView.
 			ListView lv = _listView.Value;
+
 			if (lv != null)
 			{
+				Cell oldCell = Cell;
 				bool isGroupHeader = IsGroupHeader;
 				DataTemplate template = isGroupHeader ? lv.GroupHeaderTemplate : lv.ItemTemplate;
 				object bindingContext = newContext;
 
-				if (template is DataTemplateSelector)
+				bool sameTemplate = false;
+				if (template is DataTemplateSelector dataTemplateSelector)
 				{
-					template = ((DataTemplateSelector)template).SelectTemplate(bindingContext, lv);
+					template = dataTemplateSelector.SelectTemplate(bindingContext, lv);
+
+					// 🚀 If there exists an old cell, get its data template and check
+					// whether the new- and old template matches. In that case, we can recycle it
+					if (oldCell?.BindingContext != null)
+					{
+						DataTemplate oldTemplate = dataTemplateSelector.SelectTemplate(oldCell?.BindingContext, lv);
+						sameTemplate = oldTemplate == template;
+					}
 				}
 
-				if (template != null)
+				// Reuse cell
+				var canReuseCell = Cell != null && sameTemplate;
+
+				// 🚀 If we can reuse the cell, just reuse it...
+				if (canReuseCell)
+				{
+					cell = Cell;
+				}
+				else if (template != null)
 				{
 					cell = template.CreateContent() as Cell;
 				}
@@ -343,7 +384,19 @@ namespace Xamarin.Forms.Platform.UWP
 				cell.SetIsGroupHeader<ItemsView<Cell>, Cell>(isGroupHeader);
 			}
 
-			Cell = cell;
+			// 🚀 Only set the cell if it DID change
+			// Note: The cleanup (SendDisappearing(), etc.) is done by the Cell propertychanged callback so we do not need to do any cleanup ourselves.
+
+			if (Cell != cell)
+				Cell = cell;
+
+			// 🚀 Even if the cell did not change, we **must** call SendDisappearing() and SendAppearing()
+			// because frameworks such as Reactive UI rely on this! (this.WhenActivated())
+			else if (Cell != null)
+			{
+				Cell.SendDisappearing();
+				Cell.SendAppearing();
+			}
 		}
 
 		void SetSource(Cell oldCell, Cell newCell)
@@ -362,9 +415,12 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateFlowDirection(newCell);
 				SetupContextMenu();
 
+				// 🚀 make sure we do not subscribe twice (OnLoaded!)
+				newCell.PropertyChanged -= _propertyChangedHandler;
 				newCell.PropertyChanged += _propertyChangedHandler;
 			}
 		}
+
 
 		void SetupContextMenu()
 		{

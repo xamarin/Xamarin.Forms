@@ -11,10 +11,11 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IsCheckedProperty =
 			BindableProperty.Create(nameof(IsChecked), typeof(bool), typeof(CheckBox), false,
-				propertyChanged: (bindable, oldValue, newValue) => {
-			((CheckBox)bindable).CheckedChanged?.Invoke(bindable, new CheckedChangedEventArgs((bool)newValue));
-			((CheckBox)bindable).ChangeVisualState();
-		}, defaultBindingMode: BindingMode.TwoWay);
+				propertyChanged: (bindable, oldValue, newValue) =>
+				{
+					((CheckBox)bindable).CheckedChanged?.Invoke(bindable, new CheckedChangedEventArgs((bool)newValue));
+					((CheckBox)bindable).ChangeVisualState();
+				}, defaultBindingMode: BindingMode.TwoWay);
 
 		public static readonly BindableProperty ColorProperty = ColorElement.ColorProperty;
 
@@ -59,6 +60,7 @@ namespace Xamarin.Forms
 		double IBorderElement.BorderWidthDefaultValue => 0;
 		bool IBorderElement.IsCornerRadiusSet() => false;
 		bool IBorderElement.IsBackgroundColorSet() => IsSet(BackgroundColorProperty);
+		bool IBorderElement.IsBackgroundSet() => IsSet(BackgroundProperty);
 		bool IBorderElement.IsBorderColorSet() => false;
 		bool IBorderElement.IsBorderWidthSet() => false;
 	}

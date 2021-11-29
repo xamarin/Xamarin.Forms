@@ -44,9 +44,9 @@ namespace Xamarin.Forms.Platform.Tizen
 		protected override Size MinimumSize()
 		{
 			Size measured;
-			if(Control is IMeasurable im)
+			if (Control is IMeasurable im)
 			{
-				measured = im.Measure(Control.MinimumWidth, Control.MinimumHeight).ToDP(); 
+				measured = im.Measure(Control.MinimumWidth, Control.MinimumHeight).ToDP();
 			}
 			else
 			{
@@ -103,7 +103,6 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void UpdateFontSize()
 		{
-			//(Control as IButton).FontSize = Element.FontSize;
 			if (Control is IButton ib)
 			{
 				ib.FontSize = Element.FontSize;
@@ -115,7 +114,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (Control is IButton ib)
 			{
 				ib.FontAttributes = Element.FontAttributes;
-			}				
+			}
 		}
 
 		void UpdateFontFamily()
@@ -123,7 +122,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (Control is IButton ib)
 			{
 				ib.FontFamily = Element.FontFamily.ToNativeFontFamily();
-			}			
+			}
 		}
 
 		void UpdateTextColor()
@@ -131,7 +130,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (Control is IButton ib)
 			{
 				ib.TextColor = Element.TextColor.ToNative();
-			}			
+			}
 		}
 
 		void UpdateBitmap()

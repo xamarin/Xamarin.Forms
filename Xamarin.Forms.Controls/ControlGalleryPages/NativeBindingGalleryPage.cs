@@ -5,7 +5,7 @@ namespace Xamarin.Forms.Controls
 {
 	public class NativeBindingGalleryPage : ContentPage
 	{
-		public StackLayout Layout { get; set; }
+		public new StackLayout Layout { get; set; }
 		public bool NativeControlsAdded { get; set; }
 
 		NestedNativeViewModel ViewModel { get; set; }
@@ -44,7 +44,8 @@ namespace Xamarin.Forms.Controls
 				vm.NativeLabelColor = Color.Pink;
 				vm.Age = 10;
 
-				BindingContext = ViewModel = vm; ;
+				BindingContext = ViewModel = vm;
+				;
 			};
 
 			var boxView = new BoxView { HeightRequest = 50 };
@@ -61,7 +62,8 @@ namespace Xamarin.Forms.Controls
 			Layout.Children.Add(button);
 			Layout.Children.Add(labelAge);
 
-			BindingContext = ViewModel = vm; ;
+			BindingContext = ViewModel = vm;
+			;
 
 			Content = new ScrollView { Content = Layout };
 		}

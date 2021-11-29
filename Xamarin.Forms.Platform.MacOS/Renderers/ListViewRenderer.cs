@@ -105,10 +105,29 @@ namespace Xamarin.Forms.Platform.MacOS
 		protected override void SetBackgroundColor(Color color)
 		{
 			base.SetBackgroundColor(color);
+
 			if (_table == null)
 				return;
 
-			_table.BackgroundColor = color.ToNSColor(NSColor.White);
+			_table.BackgroundColor = color.ToNSColor(ColorExtensions.ControlBackgroundColor);
+		}
+
+		// When OS Theme changes, reload data to update all the colors
+		public override void ViewDidChangeEffectiveAppearance()
+		{
+			base.ViewDidChangeEffectiveAppearance();
+			NativeTableView?.ReloadData();
+		}
+
+		protected override void SetBackground(Brush brush)
+		{
+			base.SetBackground(brush);
+
+			if (_table == null)
+				return;
+
+			var backgroundImage = this.GetBackgroundImage(brush);
+			_table.BackgroundColor = backgroundImage != null ? NSColor.FromPatternImage(backgroundImage) : NSColor.Clear;
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<ListView> e)
@@ -473,12 +492,10 @@ namespace Xamarin.Forms.Platform.MacOS
 					(Source as ListViewDataSource)?.OnRowClicked();
 			}
 
-#if __XCODE11__
 			public override bool ValidateProposedFirstResponder(NSResponder responder, NSEvent forEvent)
 			{
 				return true;
 			}
-#endif
 
 		}
 	}

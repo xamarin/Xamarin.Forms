@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Material.Android
 			var view = inflater.Inflate(Resource.Layout.MaterialPickerTextInput, null);
 			_textInputLayout = (MaterialPickerTextInputLayout)view;
 			_textInputEditText = _textInputLayout.FindViewById<MaterialPickerEditText>(Resource.Id.materialformsedittext);
-			
+
 			return _textInputLayout;
 		}
 
@@ -40,13 +40,8 @@ namespace Xamarin.Forms.Material.Android
 			UpdateBackgroundColor();
 		}
 
-		protected override void UpdateBackgroundColor()
-		{
-			if (_textInputLayout == null)
-				return;
-
-			_textInputLayout.BoxBackgroundColor = MaterialColors.CreateEntryFilledInputBackgroundColor(Element.BackgroundColor, Element.TextColor);
-		}
+		protected override void UpdateBackgroundColor() =>
+			_textInputLayout?.ApplyBackgroundColor(Element.BackgroundColor, Element.TextColor);
 
 		protected override void UpdateTextColor() => ApplyTheme();
 

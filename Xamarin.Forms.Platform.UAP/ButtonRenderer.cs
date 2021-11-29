@@ -1,10 +1,10 @@
 using System.ComponentModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Input;
 using Xamarin.Forms.Internals;
+using WBrush = Windows.UI.Xaml.Media.Brush;
 using WImage = Windows.UI.Xaml.Controls.Image;
 using WStretch = Windows.UI.Xaml.Media.Stretch;
 using WThickness = Windows.UI.Xaml.Thickness;
@@ -30,6 +30,7 @@ namespace Xamarin.Forms.Platform.UWP
 					_pointerPressedHandler = new PointerEventHandler(OnPointerPressed);
 					_button.Click += OnButtonClick;
 					_button.AddHandler(PointerPressedEvent, _pointerPressedHandler, true);
+					_button.Loading += ButtonOnLoading;
 					_button.Loaded += ButtonOnLoaded;
 
 					SetNativeControl(_button);
@@ -43,7 +44,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 				//TODO: We may want to revisit this strategy later. If a user wants to reset any of these to the default, the UI won't update.
 				if (Element.IsSet(VisualElement.BackgroundColorProperty) && Element.BackgroundColor != (Color)VisualElement.BackgroundColorProperty.DefaultValue)
-					UpdateBackground();
+					UpdateBackgroundBrush();
+
+				if (Element.IsSet(VisualElement.BackgroundProperty) && (Element.Background != null && !Element.Background.IsEmpty))
+					UpdateBackgroundBrush();
 
 				if (Element.IsSet(Button.TextColorProperty) && Element.TextColor != (Color)Button.TextColorProperty.DefaultValue)
 					UpdateTextColor();
@@ -66,6 +70,17 @@ namespace Xamarin.Forms.Platform.UWP
 
 				UpdateFont();
 			}
+		}
+
+		void ButtonOnLoading(FrameworkElement sender, object args)
+		{
+			// HACK: Update IsNativeStateConsistent to fix issue rendering Buttons inside a CollectionView
+			var collectionViewParent = Element.FindParent<CollectionView>();
+
+			if (collectionViewParent == null)
+				return;
+
+			Element.IsNativeStateConsistent = false;
 		}
 
 		void ButtonOnLoaded(object o, RoutedEventArgs routedEventArgs)
@@ -93,9 +108,9 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateCharacterSpacing();
 			}
-			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
 			{
-				UpdateBackground();
+				UpdateBackgroundBrush();
 			}
 			else if (e.PropertyName == Button.TextColorProperty.PropertyName)
 			{
@@ -131,6 +146,11 @@ namespace Xamarin.Forms.Platform.UWP
 			return;
 		}
 
+		protected override void UpdateBackground()
+		{
+			return;
+		}
+
 		protected override bool PreventGestureBubbling { get; set; } = true;
 
 		void OnButtonClick(object sender, RoutedEventArgs e)
@@ -144,14 +164,17 @@ namespace Xamarin.Forms.Platform.UWP
 			((IButtonController)Element)?.SendPressed();
 		}
 
-		void UpdateBackground()
+		void UpdateBackgroundBrush()
 		{
-			Control.BackgroundColor = Element.BackgroundColor != Color.Default ? Element.BackgroundColor.ToBrush() : (Brush)Windows.UI.Xaml.Application.Current.Resources["ButtonBackgroundThemeBrush"];
+			if (Brush.IsNullOrEmpty(Element.Background))
+				Control.BackgroundColor = Element.BackgroundColor != Color.Default ? Element.BackgroundColor.ToBrush() : (WBrush)Windows.UI.Xaml.Application.Current.Resources["ButtonBackgroundThemeBrush"];
+			else
+				Control.BackgroundColor = Element.Background.ToBrush();
 		}
 
 		void UpdateBorderColor()
 		{
-			Control.BorderBrush = Element.BorderColor != Color.Default ? Element.BorderColor.ToBrush() : (Brush)Windows.UI.Xaml.Application.Current.Resources["ButtonBorderThemeBrush"];
+			Control.BorderBrush = Element.BorderColor != Color.Default ? Element.BorderColor.ToBrush() : (WBrush)Windows.UI.Xaml.Application.Current.Resources["ButtonBorderThemeBrush"];
 		}
 
 		void UpdateBorderRadius()
@@ -280,7 +303,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateTextColor()
 		{
-			Control.Foreground = Element.TextColor != Color.Default ? Element.TextColor.ToBrush() : (Brush)Windows.UI.Xaml.Application.Current.Resources["DefaultTextForegroundThemeBrush"];
+			Control.Foreground = Element.TextColor != Color.Default ? Element.TextColor.ToBrush() : (WBrush)Windows.UI.Xaml.Application.Current.Resources["DefaultTextForegroundThemeBrush"];
 		}
 
 		void UpdatePadding()
@@ -302,6 +325,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				_button.Click -= OnButtonClick;
 				_button.RemoveHandler(PointerPressedEvent, _pointerPressedHandler);
+				_button.Loading -= ButtonOnLoading;
 				_button.Loaded -= ButtonOnLoaded;				
 
 				_pointerPressedHandler = null;

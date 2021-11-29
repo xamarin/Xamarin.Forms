@@ -1,13 +1,8 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
-#if __ANDROID_29__
-using AndroidX.Core.View;
-using AndroidX.ViewPager.Widget;
-#else
-using Android.Support.V4.View;
-#endif
 using Android.Views;
+using AndroidX.ViewPager.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -36,8 +31,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_previousPage = null;
 
-				if (_viewPager.Adapter != null)
-					_viewPager.Adapter.Dispose();
+				_viewPager.Adapter?.Dispose();
+				_viewPager.ClearOnPageChangeListeners();
 				_viewPager.Dispose();
 				_viewPager = null;
 			}

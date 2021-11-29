@@ -1,9 +1,9 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
-using Xamarin.Forms.Xaml;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.Xaml;
 
 #if UITEST
 using Xamarin.UITest;
@@ -16,6 +16,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.CollectionView)]
+	[Category(UITestCategories.UwpIgnore)] // CollectionView contents aren't currently visible to test automation
 #endif
 #if APP
 	[XamlCompilation(XamlCompilationOptions.Compile)]
@@ -36,6 +37,16 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			Title = "Issue 8326";
 		}
+
+#if UITEST
+		[Test]
+		public void EmptyViewShouldShowUpWhenHeaderPresent()
+		{
+			RunningApp.WaitForElement("Header");
+			RunningApp.WaitForElement("Footer");
+			RunningApp.WaitForElement("Empty view");
+		}
+#endif
 	}
 
 	[Preserve(AllMembers = true)]
@@ -76,7 +87,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			for (int i = 0; i < 20; i++)
 			{
-				Items.Add(new Issue8326Model { Text = $"Item {i+1}" });
+				Items.Add(new Issue8326Model { Text = $"Item {i + 1}" });
 			}
 		}
 	}

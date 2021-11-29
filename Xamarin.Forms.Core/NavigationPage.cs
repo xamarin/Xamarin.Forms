@@ -10,11 +10,12 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_NavigationPageRenderer))]
-	public class NavigationPage : Page, IPageContainer<Page>, IBarElement, INavigationPageController, IElementConfiguration<NavigationPage> 
+	public class NavigationPage : Page, IPageContainer<Page>, IBarElement, INavigationPageController, IElementConfiguration<NavigationPage>
 	{
 		public static readonly BindableProperty BackButtonTitleProperty = BindableProperty.CreateAttached("BackButtonTitle", typeof(string), typeof(Page), null);
 
-		public static readonly BindableProperty HasNavigationBarProperty = BindableProperty.CreateAttached("HasNavigationBar", typeof(bool), typeof(Page), true);
+		public static readonly BindableProperty HasNavigationBarProperty =
+			BindableProperty.CreateAttached("HasNavigationBar", typeof(bool), typeof(Page), true);
 
 		public static readonly BindableProperty HasBackButtonProperty = BindableProperty.CreateAttached("HasBackButton", typeof(bool), typeof(NavigationPage), true);
 
@@ -23,6 +24,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty TintProperty = BindableProperty.Create("Tint", typeof(Color), typeof(NavigationPage), Color.Default);
 
 		public static readonly BindableProperty BarBackgroundColorProperty = BarElement.BarBackgroundColorProperty;
+
+		public static readonly BindableProperty BarBackgroundProperty = BarElement.BarBackgroundProperty;
 
 		public static readonly BindableProperty BarTextColorProperty = BarElement.BarTextColorProperty;
 
@@ -54,12 +57,20 @@ namespace Xamarin.Forms
 			PushPage(root);
 		}
 
-		public Color BarBackgroundColor {
+		public Color BarBackgroundColor
+		{
 			get => (Color)GetValue(BarElement.BarBackgroundColorProperty);
 			set => SetValue(BarElement.BarBackgroundColorProperty, value);
 		}
 
-		public Color BarTextColor {
+		public Brush BarBackground
+		{
+			get => (Brush)GetValue(BarElement.BarBackgroundProperty);
+			set => SetValue(BarElement.BarBackgroundProperty, value);
+		}
+
+		public Color BarTextColor
+		{
 			get => (Color)GetValue(BarElement.BarTextColorProperty);
 			set => SetValue(BarElement.BarTextColorProperty, value);
 		}
@@ -116,7 +127,7 @@ namespace Xamarin.Forms
 			if (oldValue == newValue)
 				return;
 
-			if(bindable is Page page)
+			if (bindable is Page page)
 			{
 				page.SetTitleView((View)oldValue, (View)newValue);
 			}
@@ -165,7 +176,7 @@ namespace Xamarin.Forms
 		{
 			if (bindable == null)
 			{
-				return Color.Default;		
+				return Color.Default;
 			}
 
 			return (Color)bindable.GetValue(IconColorProperty);

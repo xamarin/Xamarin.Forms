@@ -6,9 +6,9 @@ namespace Xamarin.Forms.Platform.Tizen
 	public class ViewCellRenderer : CellRenderer
 	{
 		readonly Dictionary<EvasObject, ViewCell> _cacheCandidate = new Dictionary<EvasObject, ViewCell>();
-		public ViewCellRenderer() : base("full")
+		public ViewCellRenderer() : base(ThemeManager.GetViewCellRendererStyle())
 		{
-			MainContentPart = "elm.swallow.content";
+			MainContentPart = this.GetMainContentPart();
 		}
 
 		protected string MainContentPart { get; set; }
@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				height = height > 0 ? height : FindCellContentHeight(viewCell);
 
 				renderer.NativeView.MinimumHeight = Forms.ConvertToScaledPixel(height);
-				(renderer as LayoutRenderer)?.RegisterOnLayoutUpdated();
+				(renderer as ILayoutRenderer)?.RegisterOnLayoutUpdated();
 
 				UpdatePropagateEvent(viewCell.View);
 
@@ -84,7 +84,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				_cacheCandidate.Remove((EvasObject)sender);
 			};
-			(renderer as LayoutRenderer)?.RegisterOnLayoutUpdated();
+			(renderer as ILayoutRenderer)?.RegisterOnLayoutUpdated();
 
 			UpdatePropagateEvent(duplicatedCell.View);
 			return renderer.NativeView;

@@ -1,6 +1,12 @@
 #if UITEST
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using NUnit.Framework;
+using NUnit.Framework.Interfaces;
+using Xamarin.Forms.Controls.Issues;
+using Xamarin.Forms.Core.UITests;
 using Xamarin.UITest;
 using Xamarin.UITest.Queries;
 
@@ -209,6 +215,16 @@ namespace Xamarin.Forms.Controls
 			TimeSpan? timeout = null, TimeSpan? retryFrequency = null, TimeSpan? postTimeout = null)
 		{
 			return _app.WaitForElement(query, timeoutMessage, timeout, retryFrequency, postTimeout);
+		}
+
+		public AppResult WaitForFirstElement(string marked, string timeoutMessage = "Timed out waiting for element...",
+			TimeSpan? timeout = null, TimeSpan? retryFrequency = null)
+		{
+#if __WINDOWS__
+			return (_app as WinDriverApp).WaitForFirstElement(marked, timeoutMessage, timeout, retryFrequency);
+#else
+			return _app.WaitForElement(marked, timeoutMessage, timeout, retryFrequency).FirstOrDefault();
+#endif
 		}
 
 		public void WaitForNoElement(Func<AppQuery, AppQuery> query, string timeoutMessage = "Timed out waiting for no element...",
@@ -444,6 +460,93 @@ namespace Xamarin.Forms.Controls
 		public ITestServer TestServer
 		{
 			get { return _app.TestServer; }
+		}
+
+#if __WINDOWS__
+		public string ReadDatePicker(string marked)
+		{
+			return ((WinDriverApp)_app).ReadDatePicker(marked).ToString();
+		}
+
+		public string ReadTimePicker(string marked)
+		{
+			return ((WinDriverApp)_app).ReadTimePicker(marked).ToString();
+		}
+
+		public bool RestartIfAppIsClosed()
+		{
+			return (_app as WinDriverApp).RestartIfAppIsClosed();
+		}
+
+		public void Restart()
+		{
+			(_app as WinDriverApp).RestartApp();
+		}
+#endif
+
+		public void TestSetup(Type testType, bool isolate)
+		{
+
+			UITestHelper.MarkTestInconclusiveIfNoInternetConnectionIsPresent(testType, _app);
+
+#if __WINDOWS__
+			RestartIfAppIsClosed();
+#endif
+
+			if (isolate)
+			{
+				AppSetup.BeginIsolate();
+			}
+			else
+			{
+				AppSetup.EnsureMemory();
+				AppSetup.EnsureConnection();
+			}
+
+			AppSetup.NavigateToIssue(testType, this);
+		}
+
+		public void TestTearDown(bool isolate)
+		{
+			if (isolate)
+			{
+				AppSetup.EndIsolate();
+			}
+
+			AttachScreenshotIfOutcomeFailed();
+		}
+
+		public void AttachScreenshotToTestContext(string title = null)
+		{
+			if(!TestContext.Parameters.Exists("IncludeScreenShots") ||
+				!Convert.ToBoolean(TestContext.Parameters["IncludeScreenShots"]))
+			{
+				return;
+			}
+			
+			title = title ?? TestContext.CurrentContext.Test.FullName
+				.Replace(".", "_")
+				.Replace(" ", "_");
+
+			FileInfo file = _app.Screenshot(title);
+
+			if (file != null)
+			{
+				try
+				{
+					TestContext.AddTestAttachment(file.FullName, TestContext.CurrentContext.Test.FullName);
+				}
+				catch(Exception exc)
+				{
+					Debug.WriteLine($"Failed to write {file?.FullName} {exc}");
+				}
+			}
+		}
+
+		public void AttachScreenshotIfOutcomeFailed()
+		{
+			if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+				AttachScreenshotToTestContext();
 		}
 
 #if __IOS__

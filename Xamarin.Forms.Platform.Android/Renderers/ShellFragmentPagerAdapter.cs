@@ -1,27 +1,22 @@
-﻿using Android.Database;
+﻿using System.Collections.Specialized;
 using Android.OS;
-#if __ANDROID_29__
 using AndroidX.Fragment.App;
-#else
-using Android.Support.V4.App;
-#endif
 using Java.Lang;
-using System.Collections.Specialized;
 using Xamarin.Forms.Platform.Android.AppCompat;
 
 namespace Xamarin.Forms.Platform.Android
 {
+#pragma warning disable CS0618 // Type or member is obsolete
 	internal class ShellFragmentPagerAdapter : FragmentPagerAdapter
+#pragma warning restore CS0618 // Type or member is obsolete
 	{
 		bool _disposed;
 		ShellSection _shellSection;
 		IShellSectionController SectionController => (IShellSectionController)_shellSection;
-		
-#if __ANDROID_29__
+
+#pragma warning disable CS0618 // Type or member is obsolete
 		public ShellFragmentPagerAdapter(ShellSection shellSection, FragmentManager fragmentManager) : base(fragmentManager, FragmentStatePagerAdapter.BehaviorResumeOnlyCurrentFragment)
-#else
-		public ShellFragmentPagerAdapter(ShellSection shellSection, FragmentManager fragmentManager) : base(fragmentManager)
-#endif
+#pragma warning restore CS0618 // Type or member is obsolete
 		{
 			_shellSection = shellSection;
 			SectionController.ItemsCollectionChanged += OnItemsCollectionChanged;

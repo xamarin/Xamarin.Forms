@@ -1,7 +1,6 @@
 ﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
 using System.Threading.Tasks;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 #if UITEST
 using Xamarin.UITest;
@@ -15,7 +14,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 28709, "Application.Properties saving crash ")]
-	public class Bugzilla28709 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Bugzilla28709 : TestContentPage // or TestFlyoutPage, etc ...
 	{
 		protected override void Init()
 		{

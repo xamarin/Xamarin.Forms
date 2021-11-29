@@ -1,3 +1,4 @@
+using ElmSharp;
 using ERect = ElmSharp.Rect;
 using ESize = ElmSharp.Size;
 
@@ -30,5 +31,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		void ItemMeasureInvalidated(int index);
 
 		int GetVisibleItemIndex(int x, int y);
+
+		int GetScrollBlockSize();
+
+		void SetHeader(EvasObject header, ESize size);
+
+		void SetFooter(EvasObject footer, ESize size);
 	}
 }

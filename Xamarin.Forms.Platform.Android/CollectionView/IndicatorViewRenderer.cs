@@ -1,14 +1,14 @@
 ﻿using System;
 using System.ComponentModel;
 using Android.Content;
+using Android.Graphics.Drawables;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Platform.Android.FastRenderers;
-using Android.Graphics.Drawables;
-using AView = Android.Views.View;
 using AColor = Android.Graphics.Color;
 using AShapes = Android.Graphics.Drawables.Shapes;
 using AShapeType = Android.Graphics.Drawables.ShapeType;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -165,6 +165,10 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateIndicatorCount();
 				ResetIndicators();
 			}
+			else if (changedProperty.PropertyName == IndicatorView.HideSingleProperty.PropertyName)
+			{
+				UpdateHidesForSinglePage();
+			}
 		}
 
 		protected virtual void UpdateBackgroundColor(Color? color = null)
@@ -206,6 +210,7 @@ namespace Xamarin.Forms.Platform.Android
 			ElevationHelper.SetElevation(this, newElement);
 
 			UpdateSelectedIndicator();
+			UpdateHidesForSinglePage();
 		}
 
 		void UpdateSelectedIndicator()
@@ -313,6 +318,12 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		void UpdateHidesForSinglePage()
+		{
+			ResetIndicators();
+			UpdateIndicatorCount();
+		}
+
 		void UpdateShapes()
 		{
 			if (_currentPageShape != null)
@@ -342,7 +353,13 @@ namespace Xamarin.Forms.Platform.Android
 		int GetMaximumVisible()
 		{
 			var minValue = Math.Min(IndicatorView.MaximumVisible, IndicatorView.Count);
-			return minValue <= 0 ? 0 : minValue;
+			var maximumVisible = minValue <= 0 ? 0 : minValue;
+			bool hideSingle = IndicatorView.HideSingle;
+
+			if (maximumVisible == 1 && hideSingle)
+				maximumVisible = 0;
+
+			return maximumVisible;
 		}
 	}
 }

@@ -95,6 +95,14 @@ namespace Xamarin.Forms.Platform.iOS
 			_refreshControl.BackgroundColor = color != Color.Default ? color.ToUIColor() : null;
 		}
 
+		protected override void SetBackground(Brush brush)
+		{
+			if (_refreshControl == null)
+				return;
+
+			_refreshControl.UpdateBackground(brush);
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (_isDisposed)
@@ -179,10 +187,24 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (view is UIScrollView scrollView)
 			{
-				if (CanUseRefreshControlProperty())
-					scrollView.RefreshControl = _refreshControl;
-				else
-					scrollView.InsertSubview(_refreshControl, index);
+				bool addedRefreshControl = false;
+
+				if (scrollView is UICollectionView collectionView)
+				{
+					if (HasCollectionViewHeader(collectionView))
+					{
+						collectionView.BackgroundView = _refreshControl;
+						addedRefreshControl = true;	
+					}
+				}
+
+				if (!addedRefreshControl)
+				{
+					if (CanUseRefreshControlProperty())
+						scrollView.RefreshControl = _refreshControl;
+					else
+						scrollView.InsertSubview(_refreshControl, index);
+				}
 
 				scrollView.AlwaysBounceVertical = true;
 
@@ -220,6 +242,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_refreshControl.TintColor = Element.RefreshColor.ToUIColor();
 
 			SetBackgroundColor(Element.BackgroundColor);
+			SetBackground(Element.Background);
 		}
 
 		void UpdateIsRefreshing()
@@ -248,6 +271,22 @@ namespace Xamarin.Forms.Platform.iOS
 		bool CanUseRefreshControlProperty()
 		{
 			return Forms.IsiOS10OrNewer && !_usingLargeTitles;
+		}
+
+		bool HasCollectionViewHeader(UICollectionView collectionView)
+		{
+			bool hasHeader = false;
+
+			foreach (var children in collectionView.Subviews)
+			{
+				if (children.Tag == ItemsViewTags.HeaderTag)
+				{
+					hasHeader = true;
+					break;
+				}
+			}
+
+			return hasHeader;
 		}
 
 		void OnRefresh(object sender, EventArgs e)

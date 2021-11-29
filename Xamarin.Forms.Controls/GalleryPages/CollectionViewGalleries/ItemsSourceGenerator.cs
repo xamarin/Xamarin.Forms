@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
-    internal enum ItemsSourceType
+	internal enum ItemsSourceType
 	{
 		List,
 		ObservableCollection,
@@ -21,11 +22,12 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		private readonly ItemsSourceType _itemsSourceType;
 		readonly Entry _entry;
 		int _count = 0;
+		Button button;
 
 		CarouselView carousel => _cv as CarouselView;
 
 		public int Count => _count;
-		public ItemsSourceGenerator(ItemsView cv, int initialItems = 1000, 
+		public ItemsSourceGenerator(ItemsView cv, int initialItems = 1000,
 			ItemsSourceType itemsSourceType = ItemsSourceType.List)
 		{
 			_count = initialItems;
@@ -37,7 +39,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				HorizontalOptions = LayoutOptions.Fill
 			};
 
-			var button = new Button { Text = "Update", AutomationId = "btnUpdate"  };
+			button = new Button { Text = "Update", AutomationId = "btnUpdate" };
 			var label = new Label { Text = "Items:", VerticalTextAlignment = TextAlignment.Center };
 			_entry = new Entry { Keyboard = Keyboard.Numeric, Text = initialItems.ToString(), WidthRequest = 100, AutomationId = "entryUpdate" };
 
@@ -47,12 +49,23 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 			layout.Children.Add(button);
 
-			button.Clicked += GenerateItems;
-			MessagingCenter.Subscribe<ExampleTemplateCarousel>(this, "remove", (obj) => {
-				(cv.ItemsSource as ObservableCollection<CollectionViewGalleryTestItem>).Remove(obj.BindingContext as CollectionViewGalleryTestItem);
-			});
 
 			Content = layout;
+		}
+
+		public void SubscribeEvents()
+		{
+			button.Clicked += GenerateItems;
+			MessagingCenter.Subscribe<ExampleTemplateCarousel>(this, "remove", (obj) =>
+			{
+				(_cv.ItemsSource as ObservableCollection<CollectionViewGalleryTestItem>).Remove(obj.BindingContext as CollectionViewGalleryTestItem);
+			});
+
+		}
+		public void UnsubscribeEvents()
+		{
+			button.Clicked -= GenerateItems;
+			MessagingCenter.Unsubscribe<ExampleTemplateCarousel>(this, "remove");
 		}
 
 		readonly string[] _images =
@@ -94,7 +107,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 						$"Item: {n}", _images[n % _images.Length], n));
 				}
 
+				var watch = new Stopwatch();
+				watch.Start();
 				_cv.ItemsSource = items;
+				watch.Stop();
+				System.Diagnostics.Debug.WriteLine($">>>>>> That itemsource update took {watch.ElapsedMilliseconds} ms");
 			}
 		}
 

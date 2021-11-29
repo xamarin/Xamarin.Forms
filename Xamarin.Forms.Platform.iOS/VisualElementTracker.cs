@@ -5,6 +5,8 @@ using System.Threading;
 using CoreAnimation;
 using CoreGraphics;
 using Xamarin.Forms.Internals;
+using RectangleF = CoreGraphics.CGRect;
+using PointF = CoreGraphics.CGPoint;
 
 #if __MOBILE__
 using UIKit;
@@ -64,6 +66,21 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 		public event EventHandler NativeControlUpdated;
+
+		internal void Disconnect()
+		{
+			Disconnect(_element);
+		}
+
+		void Disconnect(VisualElement oldElement)
+		{
+			if (oldElement == null)
+				return;
+
+			oldElement.PropertyChanged -= _propertyChangedHandler;
+			oldElement.SizeChanged -= _sizeChangedEventHandler;
+			oldElement.BatchCommitted -= _batchCommittedHandler;
+		}
 
 		protected virtual void Dispose(bool disposing)
 		{
@@ -300,9 +317,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (Math.Abs(translationX) > epsilon || Math.Abs(translationY) > epsilon)
 					transform = transform.Translate(translationX, translationY, 0);
 
-				if (Math.Abs(scaleX - 1) > epsilon || Math.Abs(scaleY - 1) > epsilon)
-					transform = transform.Scale(scaleX, scaleY, scale);
-
 				// not just an optimization, iOS will not "pixel align" a view which has m34 set
 				if (Math.Abs(rotationY % 180) > epsilon || Math.Abs(rotationX % 180) > epsilon)
 					transform.m34 = 1.0f / -400f;
@@ -313,7 +327,22 @@ namespace Xamarin.Forms.Platform.MacOS
 					transform = transform.Rotate(rotationY * (float)Math.PI / 180.0f, 0.0f, 1.0f, 0.0f);
 
 				transform = transform.Rotate(rotation * (float)Math.PI / 180.0f, 0.0f, 0.0f, 1.0f);
+#if !__MOBILE__
+				if (Math.Abs(scaleX - 1) > epsilon || Math.Abs(scaleY - 1) > epsilon)
+				{
+					if (scaleX == 0)
+						scaleX = (float)epsilon;
+					if (scaleY == 0)
+						scaleY = (float)epsilon;
+					if (scale == 0)
+						scale = (float)epsilon;
 
+					transform = transform.Scale(scaleX, scaleY, scale);
+				}
+#else
+				if (Math.Abs(scaleX - 1) > epsilon || Math.Abs(scaleY - 1) > epsilon)
+					transform = transform.Scale(scaleX, scaleY, scale);
+#endif
 				if (Foundation.NSThread.IsMain)
 				{
 					caLayer.Transform = transform;
@@ -344,9 +373,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (oldElement != null)
 			{
-				oldElement.PropertyChanged -= _propertyChangedHandler;
-				oldElement.SizeChanged -= _sizeChangedEventHandler;
-				oldElement.BatchCommitted -= _batchCommittedHandler;
+				Disconnect(oldElement);
 			}
 
 			_element = newElement;
@@ -391,6 +418,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateClip()
 		{
+			if (!ShouldUpdateClip())
+				return;
+
 			var element = Renderer.Element;
 			var uiview = Renderer.NativeView;
 
@@ -409,14 +439,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (formsGeometry != null)
 					uiview.Layer.Mask = maskLayer;
 				else
-				{
-					var isClipShapeLayer =
-						uiview.Layer.Mask != null &&
-						uiview.Layer.Mask.Name.Equals(ClipShapeLayer);
-
-					if (isClipShapeLayer)
-						uiview.Layer.Mask = null;
-				}
+					uiview.Layer.Mask = null;
 			}
 			else
 			{
@@ -429,33 +452,57 @@ namespace Xamarin.Forms.Platform.MacOS
 					};
 
 					maskView.Layer.Mask = maskLayer;
-
 					uiview.MaskView = maskView;
 				}
 				else
-				{
-					var isClipShapeLayer =
-						uiview.MaskView != null &&
-						uiview.MaskView.Layer.Mask != null &&
-						uiview.MaskView.Layer.Mask.Name.Equals(ClipShapeLayer);
-
-					if (isClipShapeLayer)
-						uiview.MaskView = null;
-				}
+					uiview.MaskView = null;
 			}
 #else
 			if (formsGeometry != null)
 				uiview.Layer.Mask = maskLayer;
 			else
-			{
-				var isClipShapeLayer =
-					uiview.Layer.Mask != null &&
-					uiview.Layer.Mask.Name.Equals(ClipShapeLayer);
-
-				if (isClipShapeLayer)
-					uiview.Layer.Mask = null;
-			}
+				uiview.Layer.Mask = null;
 #endif
 		}
+
+		bool ShouldUpdateClip()
+		{
+			var element = Renderer?.Element;
+			var uiview = Renderer?.NativeView;
+
+			if (element == null || uiview == null)
+				return false;
+
+			bool hasClipShapeLayer = false;
+#if __MOBILE__
+			if (Forms.IsiOS11OrNewer)
+				hasClipShapeLayer =
+					uiview.Layer != null &&
+					uiview.Layer.Mask != null &&
+					uiview.Layer.Mask?.Name == ClipShapeLayer;
+			else
+			{
+				hasClipShapeLayer =
+					uiview.MaskView != null &&
+					uiview.MaskView.Layer.Mask != null &&
+					uiview.MaskView.Layer.Mask?.Name == ClipShapeLayer;
+			}
+#else
+			hasClipShapeLayer =
+				uiview.Layer != null &&
+				uiview.Layer.Mask != null &&
+				uiview.Layer.Mask?.Name == ClipShapeLayer;
+#endif
+
+			var formsGeometry = element.Clip;
+
+			if (formsGeometry != null)
+				return true;
+
+			if (formsGeometry == null && hasClipShapeLayer)
+				return true;
+
+			return false;
+		}	
 	}
 }

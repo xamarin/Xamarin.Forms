@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -14,10 +15,10 @@ namespace Xamarin.Forms.Controls
 		class Group
 			: ObservableList<GroupAction>, INotifyPropertyChanged
 		{
-			public Group (string name)
+			public Group(string name)
 			{
 				if (name == null)
-					throw new ArgumentNullException ("name");
+					throw new ArgumentNullException("name");
 
 				Name = name;
 				ShortName = Name[0].ToString();
@@ -25,7 +26,7 @@ namespace Xamarin.Forms.Controls
 
 			string _name;
 			string _shortName;
-			public event PropertyChangedEventHandler PropertyChanged;
+			public new event PropertyChangedEventHandler PropertyChanged;
 
 			public string Name
 			{
@@ -53,17 +54,17 @@ namespace Xamarin.Forms.Controls
 				}
 			}
 
-			protected override void InsertItem (int index, GroupAction item)
+			protected override void InsertItem(int index, GroupAction item)
 			{
 				item.Parent = this;
-				base.InsertItem (index, item);
+				base.InsertItem(index, item);
 			}
 
-			void OnPropertyChanged ([CallerMemberName] string propertyName = null)
+			void OnPropertyChanged([CallerMemberName] string propertyName = null)
 			{
 				PropertyChangedEventHandler handler = PropertyChanged;
 				if (handler != null)
-					handler (this, new PropertyChangedEventArgs (propertyName));
+					handler(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
 
@@ -71,11 +72,11 @@ namespace Xamarin.Forms.Controls
 		{
 			readonly Action<GroupAction> _action;
 
-			public GroupAction (string name, Action<GroupAction> action = null)
+			public GroupAction(string name, Action<GroupAction> action = null)
 			{
 				if (name == null)
-					throw new ArgumentNullException ("name");
-				
+					throw new ArgumentNullException("name");
+
 				Name = name;
 				_action = action;
 			}
@@ -88,7 +89,7 @@ namespace Xamarin.Forms.Controls
 
 			public void DoStuff()
 			{
-				_action?.Invoke (this);
+				_action?.Invoke(this);
 			}
 
 			public Group Parent
@@ -98,18 +99,23 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
-		readonly ListView _list = new ListView {
+		readonly ListView _list = new ListView
+		{
 			IsGroupingEnabled = true,
-			GroupHeaderTemplate = new DataTemplate(() => {
-				var label = new Label {
+			GroupHeaderTemplate = new DataTemplate(() =>
+			{
+				var label = new Label
+				{
 					VerticalOptions = LayoutOptions.CenterAndExpand,
 					TextColor = Color.Red
 				};
 
-				label.SetBinding (Label.TextProperty, "Name");
+				label.SetBinding(Label.TextProperty, "Name");
 
-				return new ViewCell {
-					View = new StackLayout {
+				return new ViewCell
+				{
+					View = new StackLayout
+					{
 						Orientation = StackOrientation.Horizontal,
 						Children = {
 							new Image {
@@ -124,9 +130,10 @@ namespace Xamarin.Forms.Controls
 				};
 			}),
 
-			ItemTemplate = new DataTemplate (() => {
+			ItemTemplate = new DataTemplate(() =>
+			{
 				var c = new TextCell();
-				c.SetBinding (TextCell.TextProperty, "Name");
+				c.SetBinding(TextCell.TextProperty, "Name");
 				return c;
 			})
 		};
@@ -243,7 +250,7 @@ namespace Xamarin.Forms.Controls
 
 		public GroupedListActionsGallery()
 		{
-			NavigationPage.SetHasNavigationBar (this, false);
+			NavigationPage.SetHasNavigationBar(this, false);
 			_groups = CreateItemSource();
 
 			_list.ItemTapped += (sender, arg) => ((GroupAction)arg.Item)?.DoStuff();
@@ -253,28 +260,28 @@ namespace Xamarin.Forms.Controls
 			Content = _list;
 		}
 
-		IEnumerable<GroupAction> GetGroupActions (string name, int count)
+		IEnumerable<GroupAction> GetGroupActions(string name, int count)
 		{
-			return Enumerable.Range (0, count).Select (i => new GroupAction (name + " " + i));
+			return Enumerable.Range(0, count).Select(i => new GroupAction(name + " " + i));
 		}
 
-		Group CreateDummyGroup (int children)
+		Group CreateDummyGroup(int children)
 		{
-			var group = new Group ("Dummy group");
-			group.AddRange (Enumerable.Range (0, children).Select (i => new GroupAction ("Dummy item")));
+			var group = new Group("Dummy group");
+			group.AddRange(Enumerable.Range(0, children).Select(i => new GroupAction("Dummy item")));
 			return group;
 		}
 
-		int GetIndexOfDummy (GroupAction source, int count = 1)
+		int GetIndexOfDummy(GroupAction source, int count = 1)
 		{
-			var dummies = GetNextDummyItems (source, count);
-			return source.Parent.IndexOf (dummies.First());
+			var dummies = GetNextDummyItems(source, count);
+			return source.Parent.IndexOf(dummies.First());
 		}
 
-		IEnumerable<GroupAction> GetNextDummyItems (GroupAction source, int count)
+		IEnumerable<GroupAction> GetNextDummyItems(GroupAction source, int count)
 		{
-			int start = source.Parent.IndexOf (source);
-			return source.Parent.Skip (start).Where (xga => xga.Name.StartsWith ("Dummy item")).Take (count);
+			int start = source.Parent.IndexOf(source);
+			return source.Parent.Skip(start).Where(xga => xga.Name.StartsWith("Dummy item")).Take(count);
 		}
 	}
 }

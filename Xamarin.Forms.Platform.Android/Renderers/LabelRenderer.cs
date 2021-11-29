@@ -1,3 +1,5 @@
+using System;
+using System.ComponentModel;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
@@ -5,8 +7,6 @@ using Android.Text;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using System;
-using System.ComponentModel;
 using Xamarin.Forms.PlatformConfiguration.TizenSpecific;
 
 namespace Xamarin.Forms.Platform.Android
@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Platform.Android
 		Typeface _lastTypeface;
 
 		Color _lastUpdateColor = Color.Default;
-		FormsTextView _view;
+		TextView _view;
 		bool _wasFormatted;
 
 		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
@@ -107,7 +107,7 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnElementChanged(e);
 			if (_view == null)
 			{
-				_view = (FormsTextView)CreateNativeControl();
+				_view = CreateNativeControl();
 				_labelTextColorDefault = _view.TextColors;
 				_lineSpacingMultiplierDefault = _view.LineSpacingMultiplier;
 				_lineSpacingExtraDefault = _view.LineSpacingExtra;
@@ -122,9 +122,10 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateLineHeight();
 				UpdateGravity();
 				UpdateMaxLines();
+				UpdateFlowDirection();
 			}
 			else
-			{	
+			{
 				UpdateText();
 				if (e.OldElement.LineBreakMode != e.NewElement.LineBreakMode)
 					UpdateLineBreakMode();
@@ -134,6 +135,8 @@ namespace Xamarin.Forms.Platform.Android
 					UpdateMaxLines();
 				if (e.OldElement.CharacterSpacing != e.NewElement.CharacterSpacing)
 					UpdateCharacterSpacing();
+				if (e.OldElement.FlowDirection != e.NewElement.FlowDirection)
+					UpdateFlowDirection();
 			}
 			UpdateTextDecorations();
 			UpdatePadding();
@@ -169,6 +172,13 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateMaxLines();
 			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+				UpdateFlowDirection();
+		}
+
+		void UpdateFlowDirection()
+		{
+			Control.UpdateFlowDirection(Element);
 		}
 
 		void UpdateColor()

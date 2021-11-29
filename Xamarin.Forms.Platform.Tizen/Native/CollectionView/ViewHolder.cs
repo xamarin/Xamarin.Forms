@@ -1,8 +1,6 @@
 using System;
 using ElmSharp;
-using ERectangle = ElmSharp.Rectangle;
 using EColor = ElmSharp.Color;
-
 
 namespace Xamarin.Forms.Platform.Tizen.Native
 {
@@ -11,17 +9,17 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 	{
 		Normal,
 		Selected,
+		Focused,
 	}
 
 	public class ViewHolder : Box
 	{
-		static readonly EColor s_defaultFocusEffectColor = EColor.FromRgba(244, 244, 244, 200);
-		static readonly EColor s_defaultSelectedColor = EColor.FromRgba(227, 242, 253, 200);
-
-		ERectangle _background;
 		Button _focusArea;
 		EvasObject _content;
 		ViewHolderState _state;
+		bool _isSelected;
+		bool _isFocused;
+		bool _focusable;
 
 		public ViewHolder(EvasObject parent) : base(parent)
 		{
@@ -29,25 +27,12 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		}
 
 		public object ViewCategory { get; set; }
+
+		[Obsolete("FocusedColor is obsolete. Use VisualStateManager")]
 		public EColor FocusedColor { get; set; }
+
+		[Obsolete("SelectedColor is obsolete. Use VisualStateManager")]
 		public EColor SelectedColor { get; set; }
-
-		EColor EffectiveFocusedColor => FocusedColor == EColor.Default ? s_defaultFocusEffectColor : FocusedColor;
-		EColor EffectiveSelectedColor => SelectedColor == EColor.Default ? s_defaultSelectedColor : FocusedColor;
-
-		EColor FocusSelectedColor
-		{
-			get
-			{
-				var color1 = EffectiveFocusedColor;
-				var color2 = EffectiveSelectedColor;
-				return new EColor(
-					(color1.R + color2.R) / 2,
-					(color1.G + color2.G) / 2,
-					(color1.B + color2.B) / 2,
-					(color1.A + color2.A) / 2);
-			}
-		}
 
 		public EvasObject Content
 		{
@@ -64,9 +49,23 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				_content = value;
 				if (_content != null)
 				{
-					PackAfter(_content, _background);
+					PackEnd(_content);
 					_content.StackBelow(_focusArea);
 				}
+			}
+		}
+
+		public bool AllowItemFocus
+		{
+			get => _focusable;
+			set
+			{
+				_focusable = value;
+				if (!value && _focusArea.IsFocused)
+				{
+					_focusArea.SetFocus(false);
+				}
+				_focusArea.AllowFocus(_focusable);
 			}
 		}
 
@@ -75,62 +74,54 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			get { return _state; }
 			set
 			{
-				_state = value;
+				if (value == ViewHolderState.Normal)
+					_isSelected = false;
+				else if (value == ViewHolderState.Selected)
+					_isSelected = true;
+
+				_state = _isFocused ? ViewHolderState.Focused : (_isSelected ? ViewHolderState.Selected : ViewHolderState.Normal);
+
 				UpdateState();
 			}
 		}
 
-		public event EventHandler Selected;
 		public event EventHandler RequestSelected;
+
+		public event EventHandler StateUpdated;
 
 		public void ResetState()
 		{
 			State = ViewHolderState.Normal;
-			_background.Color = EColor.Transparent;
-		}
-
-		protected void SendSelected()
-		{
-			Selected?.Invoke(this, EventArgs.Empty);
 		}
 
 		protected void Initialize(EvasObject parent)
 		{
 			SetLayoutCallback(OnLayout);
 
-			_background = new ERectangle(parent)
-			{
-				Color = EColor.Transparent
-			};
-			_background.Show();
-
 			_focusArea = new Button(parent);
 			_focusArea.Color = EColor.Transparent;
 			_focusArea.BackgroundColor = EColor.Transparent;
-			_focusArea.SetPartColor("effect", EColor.Transparent);
+			_focusArea.SetEffectColor(EColor.Transparent);
 			_focusArea.Clicked += OnClicked;
 			_focusArea.Focused += OnFocused;
-			_focusArea.Unfocused += OnFocused;
+			_focusArea.Unfocused += OnUnfocused;
 			_focusArea.KeyUp += OnKeyUp;
 			_focusArea.RepeatEvents = true;
 			_focusArea.Show();
+			_focusArea.AllowFocus(_focusable);
 
-			PackEnd(_background);
 			PackEnd(_focusArea);
-			FocusedColor = EColor.Default;
 			Show();
 		}
 
 		protected virtual void OnFocused(object sender, EventArgs e)
 		{
-			if (_focusArea.IsFocused)
-			{
-				_background.Color = State == ViewHolderState.Selected ? FocusSelectedColor : EffectiveFocusedColor;
-			}
-			else
-			{
-				_background.Color = State == ViewHolderState.Selected ? EffectiveSelectedColor : EColor.Transparent;
-			}
+			UpdateFocusState();
+		}
+
+		protected virtual void OnUnfocused(object sender, EventArgs e)
+		{
+			UpdateFocusState();
 		}
 
 		protected virtual void OnClicked(object sender, EventArgs e)
@@ -140,7 +131,6 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		protected virtual void OnLayout()
 		{
-			_background.Geometry = Geometry;
 			_focusArea.Geometry = Geometry;
 			if (_content != null)
 			{
@@ -150,16 +140,29 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		protected virtual void UpdateState()
 		{
-			if (State == ViewHolderState.Normal)
-			{
-				_background.Color = _focusArea.IsFocused ? EffectiveFocusedColor : EColor.Transparent;
-			} else
-			{
-				_background.Color = _focusArea.IsFocused ? FocusSelectedColor : SelectedColor;
-				SendSelected();
-			}
+			if (State == ViewHolderState.Selected)
+				_isSelected = true;
+			else if (State == ViewHolderState.Normal)
+				_isSelected = false;
+			else if (State == ViewHolderState.Focused)
+				RaiseTop();
+
+			StateUpdated?.Invoke(this, EventArgs.Empty);
 		}
 
+		void UpdateFocusState()
+		{
+			if (_focusArea.IsFocused)
+			{
+				_isFocused = true;
+				State = ViewHolderState.Focused;
+			}
+			else
+			{
+				_isFocused = false;
+				State = _isSelected ? ViewHolderState.Selected : ViewHolderState.Normal;
+			}
+		}
 
 		void OnKeyUp(object sender, EvasKeyEventArgs e)
 		{

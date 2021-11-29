@@ -12,8 +12,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 	{
 		CarouselItemsGalleryViewModel _viewModel;
 		bool _setPositionOnAppering;
-		public CarouselItemsGallery(bool startEmptyCollection = false, bool setCollectionWithAsync = false, 
-									bool useNativeIndicators = false, bool setPositionOnConstructor = false, 
+		public CarouselItemsGallery(bool startEmptyCollection = false, bool setCollectionWithAsync = false,
+									bool useNativeIndicators = false, bool setPositionOnConstructor = false,
 									bool setPositionOnAppearing = false, bool useScrollAnimated = true)
 		{
 			_viewModel = new CarouselItemsGalleryViewModel(startEmptyCollection, setCollectionWithAsync);
@@ -132,7 +132,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				_viewModel.Items.Clear();
 			};
 
-			var lbl = new Label();
+			var lbl = new Label
+			{
+				AutomationId = "lblPosition"
+			};
 			lbl.SetBinding(Label.TextProperty, nameof(CarouselView.Position));
 			lbl.BindingContext = carouselView;
 
@@ -149,7 +152,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 		protected override void OnAppearing()
 		{
-			if (_viewModel.CarouselPosition != 3)
+			if (_viewModel.CarouselPosition != 3 && _setPositionOnAppering)
 				_viewModel.CarouselPosition = 3;
 
 			base.OnAppearing();
