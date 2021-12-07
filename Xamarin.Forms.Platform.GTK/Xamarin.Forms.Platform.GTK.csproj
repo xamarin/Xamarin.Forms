@@ -121,6 +121,8 @@
     <Compile Include="Controls\ActivityIndicator.cs" />
     <Compile Include="Controls\Shapes\EllipseView.cs" />
     <Compile Include="Controls\Shapes\PathView.cs" />
+    <Compile Include="Controls\Shapes\PolylineView.cs" />
+    <Compile Include="Controls\Shapes\PolygonView.cs" />
     <Compile Include="Controls\Shapes\RectangleView.cs" />
     <Compile Include="Controls\BoxView.cs" />
     <Compile Include="Controls\Carousel.cs" />
@@ -194,6 +196,8 @@
     <Compile Include="Renderers\ActivityIndicatorRenderer.cs" />
     <Compile Include="Renderers\Shapes\EllipseRenderer.cs" />
     <Compile Include="Renderers\Shapes\PathRenderer.cs" />
+    <Compile Include="Renderers\Shapes\PolylineRenderer.cs" />
+    <Compile Include="Renderers\Shapes\PolygonRenderer.cs" />
     <Compile Include="Renderers\Shapes\ShapeRenderer.cs" />
     <Compile Include="Renderers\Shapes\RectangleRenderer.cs" />
     <Compile Include="Renderers\BoxViewRenderer.cs" />

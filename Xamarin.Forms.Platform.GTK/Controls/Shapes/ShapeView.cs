@@ -9,8 +9,8 @@ namespace Xamarin.Forms.Platform.GTK.Controls
 		protected Brush _fill, _stroke;
 		protected int _height, _width;
 		double? _strokeThickness;
-		float? _strokeDashOffset, _strokeMiterLimit;
-		double[] _dashArray;
+		double? _strokeDashOffset, _strokeMiterLimit;
+		double[] _strokeDashArray;
 		LineCap? _strokeCap;
 		LineJoin? _strokeJoin;
 
@@ -35,26 +35,40 @@ namespace Xamarin.Forms.Platform.GTK.Controls
 		public void UpdateStrokeThickness(double strokeThickness)
 		{
 			_strokeThickness = strokeThickness;
+			QueueDraw();
 		}
 
-		public void UpdateStrokeDashArray(double[] dashArray)
+		public void UpdateStrokeDashArray(double[] strokeDashArray)
 		{
-			_dashArray = dashArray;
+			if (_strokeThickness.HasValue && strokeDashArray != null && strokeDashArray.Length > 1)
+			{
+				double[] strokeDash = new double[strokeDashArray.Length];
+
+				for (int i = 0; i < strokeDashArray.Length; i++)
+					strokeDash[i] = strokeDashArray[i] * _strokeThickness.Value;
+
+				_strokeDashArray = strokeDash;
+			}
+			QueueDraw();
 		}
 
-		public void UpdateStrokeDashOffset(float strokeDashOffset)
+		public void UpdateStrokeDashOffset(double strokeDashOffset)
 		{
-			_strokeDashOffset = strokeDashOffset;
+			if (_strokeThickness.HasValue)
+				_strokeDashOffset = strokeDashOffset * _strokeThickness.Value;
+			QueueDraw();
 		}
 
 		public void UpdateStrokeLineCap(LineCap strokeCap)
 		{
 			_strokeCap = strokeCap;
+			QueueDraw();
 		}
 
 		public void UpdateStrokeLineJoin(LineJoin strokeJoin)
 		{
 			_strokeJoin = strokeJoin;
+			QueueDraw();
 		}
 
 		public void UpdateStrokeMiterLimit(float strokeMiterLimit)
@@ -72,6 +86,26 @@ namespace Xamarin.Forms.Platform.GTK.Controls
 			}
 			else if (_fill != null)
 				throw new NotImplementedException("Brushes other than SolidColorBrush are not implemented yet");
+
+			if (_stroke is SolidColorBrush strokeBrush)
+			{
+				if (_strokeCap.HasValue)
+					cr.LineCap = _strokeCap.Value;
+				if (_strokeJoin.HasValue)
+					cr.LineJoin = _strokeJoin.Value;
+				if (_strokeThickness.HasValue)
+					cr.LineWidth = _strokeThickness.Value;
+				if (_strokeDashOffset.HasValue && _strokeDashArray != null)
+					cr.SetDash(_strokeDashArray, _strokeDashOffset.Value);
+				if (_strokeMiterLimit.HasValue)
+					cr.MiterLimit = _strokeMiterLimit.Value;
+
+				cr.SetSourceRGBA(strokeBrush.Color.R, strokeBrush.Color.G, strokeBrush.Color.B, strokeBrush.Color.A);
+				cr.StrokePreserve();
+			}
+			else if (_stroke != null)
+				throw new NotImplementedException("Brushes other than SolidColorBrush are not implemented yet");
+
 		}
 	}
 }

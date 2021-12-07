@@ -24,6 +24,12 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 				UpdateFill();
 				UpdateStroke();
+				UpdateStrokeThickness();
+				UpdateStrokeDashArray();
+				UpdateStrokeDashOffset();
+				UpdateStrokeLineCap();
+				UpdateStrokeLineJoin();
+				UpdateStrokeMiterLimit();
 
 				UpdateSize();
 			}
@@ -97,7 +103,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 		void UpdateStrokeDashOffset()
 		{
-			Control.UpdateStrokeDashOffset((float)Element.StrokeDashOffset);
+			Control.UpdateStrokeDashOffset(Element.StrokeDashOffset);
 		}
 
 		void UpdateStrokeLineCap()
