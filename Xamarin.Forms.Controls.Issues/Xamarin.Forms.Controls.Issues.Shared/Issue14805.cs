@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -87,9 +88,9 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap("Push1");
 			RunningApp.Tap("Push2");
 			RunningApp.Tap("Pop1");
-			RunningApp.Tap("Push3");
+			RunningApp.Tap("Push2");
 			RunningApp.Tap("Pop2");
-			RunningApp.Tap("Push4");
+			RunningApp.Tap("Push2");
 			RunningApp.WaitForElement("Success");
 		}
 #endif
