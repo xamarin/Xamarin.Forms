@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestTabbedPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="using:Xamarin.Forms.Controls"
+    mc:Ignorable="d"
+    Title="Test 8804"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue8804"
+    xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
+    android:TabbedPage.IsSwipePagingEnabled="True">
+    <ContentPage
+        Title="Page 1" Disappearing="ContentPage1_Disappearing">
+        <StackLayout
+            VerticalOptions="CenterAndExpand"
+            HorizontalOptions="CenterAndExpand">
+            <Label
+                Text="Swipe to Page 2. You should see an alert confirming that Page 1 is Disappearing. If you see the alert, the test has passed."
+                Margin="12"/>
+        </StackLayout>
+    </ContentPage>
+    <ContentPage
+        Title="Page 2" Disappearing="ContentPage2_Disappearing">
+        <StackLayout
+            VerticalOptions="CenterAndExpand"
+            HorizontalOptions="CenterAndExpand">
+            <Label
+                Text="Swipe to Page 1. You should see an alert confirming that Page 2 is Disappearing. If you see the alert, the test has passed."
+                Margin="12"/>
+        </StackLayout>
+    </ContentPage>
+</local:TestTabbedPage>

@@ -151,6 +151,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (Element != null)
 			{
+				if (_pageParent == null)
+					_pageParent = Element.FindParentOfType<TabbedPage>();
+
 				if (_scrollParent == null)
 				{
 					_scrollParent = Element.FindParentOfType<ScrollView>();
@@ -176,9 +179,6 @@ namespace Xamarin.Forms.Platform.Android
 						collectionView.Scrolled += OnParentScrolled;
 					}
 				}
-
-				if (_pageParent == null)
-					_pageParent = Element.FindParentOfType<TabbedPage>();
 			}
 		}
 
