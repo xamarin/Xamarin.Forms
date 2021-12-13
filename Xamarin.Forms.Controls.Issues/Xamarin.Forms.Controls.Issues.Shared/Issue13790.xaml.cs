@@ -17,9 +17,9 @@ using Xamarin.Forms.Core.UITests;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
-	[Category(UITestCategories.SwipeView)]
+    [NUnit.Framework.Category(Core.UITests.UITestCategories.SwipeView)]
 #endif
-	[Preserve(AllMembers = true)]
+    [Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 13790,
 		"[Bug] ListView with grouping and SwipeView throws IllegalStateException: The specified child already has a parent",
 		PlatformAffected.Android)]
