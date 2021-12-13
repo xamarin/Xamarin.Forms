@@ -14,20 +14,6 @@ namespace Xamarin.Forms.Core.UITests
 			App.NavigateToGallery(GalleryQueries.CarouselViewGallery);
 		}
 
-		void SwipeRightToLeft(int swipes = 1)
-		{
-			var rect = App.Query(c => c.Marked("TheCarouselView")).First().Rect;
-			var fromX = rect.CenterX + 40;
-			var toX = rect.X - 5;
-			var fromY = rect.CenterY;
-			var toY = fromY;
-
-			for (int n = 0; n < swipes; n++)
-			{
-				App.DragCoordinates(fromX, fromY, toX, toY);
-			}
-		}
-
 		[TestCase("CarouselView (XAML, Horizontal)")]
 		[TestCase("CarouselView (XAML, Horizontal, Loop)")]
 		public void CarouselViewRemoveAndUpdateCurrentItem(string subgallery)
@@ -40,7 +26,7 @@ namespace Xamarin.Forms.Core.UITests
 				CheckLabelValue("lblCurrentItem", "0");
 				CheckLabelValue("lblSelected", "0");
 
-				SwipeRightToLeft();
+				App.SwipeRightToLeft("TheCarouselView");
 
 				CheckLabelValue("lblPosition", "1");
 				CheckLabelValue("lblCurrentItem", "1");
@@ -120,7 +106,10 @@ namespace Xamarin.Forms.Core.UITests
 				CheckLabelValue("lblCurrentItem", "0");
 				CheckLabelValue("lblSelected", "0");
 
-				SwipeRightToLeft(4);
+				for (int i = 0; i < 4; i++)
+				{
+					App.SwipeRightToLeft("TheCarouselView");
+				}
 
 				CheckLabelValue("lblPosition", "4");
 				CheckLabelValue("lblCurrentItem", "4");
@@ -149,7 +138,10 @@ namespace Xamarin.Forms.Core.UITests
 				CheckLabelValue("lblCurrentItem", "0");
 				CheckLabelValue("lblSelected", "0");
 
-				SwipeRightToLeft(5);
+				for (int i = 0; i < 5; i++)
+				{
+					App.SwipeRightToLeft("TheCarouselView");
+				}
 
 				CheckLabelValue("lblPosition", "0");
 				CheckLabelValue("lblCurrentItem", "0");
@@ -340,15 +332,17 @@ namespace Xamarin.Forms.Core.UITests
 				App.Tap("btnNewObservable");
 				Assert.AreEqual("0", GetPostion());
 
-				SwipeRightToLeft();
+				App.SwipeRightToLeft("TheCarouselView");
 
 				App.Tap("btnAddObservable");
 				Assert.AreEqual("0", GetPostion());
 
-				SwipeRightToLeft();
+				App.SwipeRightToLeft("TheCarouselView");
+
 				Assert.AreEqual("1", GetPostion());
 
-				SwipeRightToLeft();
+				App.SwipeRightToLeft("TheCarouselView");
+
 				Assert.AreEqual("2", GetPostion());
 			}
 			finally

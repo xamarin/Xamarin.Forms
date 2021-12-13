@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Resources.Core;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.UWP;
@@ -65,6 +66,56 @@ namespace Xamarin.Forms
 			Device.SetFlags(s_flags);
 			Device.Info = new WindowsDeviceInfo();
 
+			UpdateIdiom();
+
+			ExpressionSearch.Default = new WindowsExpressionSearch();
+
+			Registrar.ExtraAssemblies = rendererAssemblies?.ToArray();
+
+			Registrar.RegisterAll(new[] { typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute), typeof(ExportFontAttribute) });
+
+			IsInitialized = true;
+			s_state = launchActivatedEventArgs.PreviousExecutionState;
+
+			Platform.UWP.Platform.SubscribeAlertsAndActionSheets();
+			SubscribeIdiom();
+		}
+
+		static FlowDirection GetFlowDirection()
+		{
+			string resourceFlowDirection = ResourceContext.GetForCurrentView().QualifierValues["LayoutDirection"];
+			if (resourceFlowDirection == "LTR")
+				return FlowDirection.LeftToRight;
+			else if (resourceFlowDirection == "RTL")
+				return FlowDirection.RightToLeft;
+
+			return FlowDirection.MatchParent;
+		}
+
+		internal static Windows.UI.Xaml.ResourceDictionary GetTabletResources()
+		{
+			return new Windows.UI.Xaml.ResourceDictionary {
+				Source = new Uri("ms-appx:///Xamarin.Forms.Platform.UAP/Resources.xbf")
+			};
+		}
+
+		static void SubscribeIdiom()
+		{
+			var currentWindow = Window.Current;
+
+			if (currentWindow == null)
+				return;
+
+			currentWindow.SizeChanged += OnWindowSizeChanged;
+		}
+
+		static void OnWindowSizeChanged(object sender, WindowSizeChangedEventArgs e)
+		{
+			UpdateIdiom();
+		}
+
+		static void UpdateIdiom()
+		{
 			switch (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily)
 			{
 				case "Windows.Desktop":
@@ -84,35 +135,6 @@ namespace Xamarin.Forms
 					Device.SetIdiom(TargetIdiom.Unsupported);
 					break;
 			}
-
-			ExpressionSearch.Default = new WindowsExpressionSearch();
-
-			Registrar.ExtraAssemblies = rendererAssemblies?.ToArray();
-
-			Registrar.RegisterAll(new[] { typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute), typeof(ExportFontAttribute) });
-
-			IsInitialized = true;
-			s_state = launchActivatedEventArgs.PreviousExecutionState;
-
-			Platform.UWP.Platform.SubscribeAlertsAndActionSheets();
-		}
-		 
-		static FlowDirection GetFlowDirection()
-		{
-			string resourceFlowDirection = ResourceContext.GetForCurrentView().QualifierValues["LayoutDirection"];
-			if (resourceFlowDirection == "LTR")
-				return FlowDirection.LeftToRight;
-			else if (resourceFlowDirection == "RTL")
-				return FlowDirection.RightToLeft;
-
-			return FlowDirection.MatchParent;
-		}
-
-		internal static Windows.UI.Xaml.ResourceDictionary GetTabletResources()
-		{
-			return new Windows.UI.Xaml.ResourceDictionary {
-				Source = new Uri("ms-appx:///Xamarin.Forms.Platform.UAP/Resources.xbf")
-			};
 		}
 	}
 }

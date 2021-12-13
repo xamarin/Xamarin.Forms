@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateFooter();
 			}
-			else if (changedProperty.Is(StructuredItemsView.ItemsLayoutProperty))
+			else if (changedProperty.IsOneOf(VisualElement.IsVisibleProperty, StructuredItemsView.ItemsLayoutProperty))
 			{
 				UpdateItemsLayout();
 			}

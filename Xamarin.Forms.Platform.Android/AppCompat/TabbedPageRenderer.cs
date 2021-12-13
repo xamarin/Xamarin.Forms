@@ -12,6 +12,7 @@ using AndroidX.Fragment.App;
 using AndroidX.ViewPager.Widget;
 using Google.Android.Material.BottomNavigation;
 using Google.Android.Material.BottomSheet;
+using Google.Android.Material.Navigation;
 using Google.Android.Material.Tabs;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
@@ -26,7 +27,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 #pragma warning disable CS0618 // Type or member is obsolete
 		TabLayout.IOnTabSelectedListener,
 #pragma warning restore CS0618 // Type or member is obsolete
-		ViewPager.IOnPageChangeListener, IManageFragments, BottomNavigationView.IOnNavigationItemSelectedListener
+		ViewPager.IOnPageChangeListener, IManageFragments, NavigationBarView.IOnItemSelectedListener
 	{
 		Drawable _backgroundDrawable;
 		Drawable _wrappedBackgroundDrawable;
@@ -129,13 +130,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void ViewPager.IOnPageChangeListener.OnPageSelected(int position)
 		{
-			if (_previousPage != Element.CurrentPage)
+			var selectedPage = Element.Children[position];
+			if (_previousPage != selectedPage)
 			{
 				_previousPage?.SendDisappearing();
-				_previousPage = Element.CurrentPage;
 			}
-			Element.CurrentPage = Element.Children[position];
+			Element.CurrentPage = selectedPage;
 			Element.CurrentPage.SendAppearing();
+
+			_previousPage = Element.CurrentPage;
 
 			if (IsBottomTabPlacement)
 				_bottomNavigationView.SelectedItemId = position;
@@ -197,7 +200,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				if (_bottomNavigationView != null)
 				{
-					_bottomNavigationView.SetOnNavigationItemSelectedListener(null);
+					_bottomNavigationView.SetOnItemSelectedListener(null);
 					_bottomNavigationView.Dispose();
 					_bottomNavigationView = null;
 				}
@@ -267,7 +270,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 						if (_bottomNavigationView != null)
 						{
 							_relativeLayout.RemoveView(_bottomNavigationView);
-							_bottomNavigationView.SetOnNavigationItemSelectedListener(null);
+							_bottomNavigationView.SetOnItemSelectedListener(null);
 						}
 
 						var bottomNavigationViewLayoutParams = new AWidget.RelativeLayout.LayoutParams(
@@ -470,7 +473,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				else
 				{
 					SetupBottomNavigationView(e);
-					bottomNavigationView.SetOnNavigationItemSelectedListener(this);
+					bottomNavigationView.SetOnItemSelectedListener(this);
 				}
 
 				UpdateIgnoreContainerAreas();

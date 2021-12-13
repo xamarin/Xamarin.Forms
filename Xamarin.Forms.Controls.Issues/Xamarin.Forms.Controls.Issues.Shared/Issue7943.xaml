@@ -23,12 +23,15 @@
             <StackLayout
                 Grid.Row="1">
                 <Button
+                    AutomationId="ChangeTemplate"
                     Text="Change Template"
                     Clicked="OnChangeTemplate"/>
                 <Button
+                    AutomationId="ChangeItemsSource"
                     Text="Change ItemsSource" 
                     Clicked="OnChangeItemsSource"/>
                 <Button
+                    AutomationId="ClearItemsSource"
                     Text="Clear ItemsSource" 
                     Clicked="OnClearItemsSource"/>
             </StackLayout>

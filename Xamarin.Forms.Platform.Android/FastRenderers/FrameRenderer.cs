@@ -3,6 +3,7 @@ using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+using Android.Graphics.Drawables.Shapes;
 using Android.Views;
 using AndroidX.CardView.Widget;
 using AndroidX.Core.View;
@@ -176,8 +177,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (e.NewElement != null)
 			{
 				this.EnsureId();
+
 				_backgroundDrawable = new GradientDrawable();
-				_backgroundDrawable.SetShape(ShapeType.Rectangle);
 				this.SetBackground(_backgroundDrawable);
 
 				if (_visualElementTracker == null)
@@ -291,13 +292,19 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (_disposed)
 				return;
 
-			_backgroundDrawable.Dispose();
-			_backgroundDrawable = null;
-			this.SetBackground(null);
+			if (_backgroundDrawable.UseGradients())
+			{
+				_backgroundDrawable.Dispose();
+				_backgroundDrawable = null;
+				this.SetBackground(null);
 
-			_backgroundDrawable = new GradientDrawable();
-			_backgroundDrawable.SetShape(ShapeType.Rectangle);
-			this.SetBackground(_backgroundDrawable);
+				_backgroundDrawable = new GradientDrawable();
+	      _backgroundDrawable.SetShape(ShapeType.Rectangle);
+				this.SetBackground(_backgroundDrawable);
+        
+				UpdateBorderColor();
+				UpdateCornerRadius();
+			}
 
 			Brush background = Element.Background;
 
@@ -307,6 +314,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				_height = Control.Height;
 				_width = Control.Width;
+
 				_backgroundDrawable.UpdateBackground(background, _height, _width);
 			}
 		}
@@ -346,9 +354,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				return;
 
 			if (_defaultCornerRadius == -1f)
-			{
 				_defaultCornerRadius = Radius;
-			}
 
 			float cornerRadius = Element.CornerRadius;
 

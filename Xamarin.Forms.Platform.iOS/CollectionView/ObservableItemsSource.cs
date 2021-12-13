@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			for (int n = 0; n < Count; n++)
 			{
-				if (this[n] == item)
+				if(ItemComparer.AreEquals(this[n], item))
 				{
 					return NSIndexPath.Create(_section, n);
 				}
@@ -111,8 +111,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void CollectionChanged(NotifyCollectionChangedEventArgs args)
 		{
-			// Force UICollectionView to get the internal accounting straight 
-			CollectionView.NumberOfItemsInSection(_section);
+			// Force UICollectionView to get the internal accounting straight
+			if(!CollectionView.Hidden)
+				CollectionView.NumberOfItemsInSection(_section);
 
 			switch (args.Action)
 			{
