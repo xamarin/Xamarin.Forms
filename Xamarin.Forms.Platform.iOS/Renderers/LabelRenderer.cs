@@ -561,6 +561,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateTextColor()
 		{
+			if (IsElementOrControlEmpty)
+				return;
+				
 			if (IsTextFormatted)
 			{
 				UpdateFormattedText();
