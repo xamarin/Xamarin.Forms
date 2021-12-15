@@ -382,17 +382,15 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateContent()
 		{
-			if (_contentView != null)
-			{
-				_contentView.RemoveFromParent();
-				_contentView.Dispose();
-				_contentView = null;
-			}
+			RemoveAllViews();
 
 			if (Element.Content == null)
 				_contentView = CreateEmptyContent();
 			else
-				_contentView = CreateContent();
+				_contentView = GetOrCreateContent();
+
+			if (_contentView.Parent != null)
+				_contentView.RemoveFromParent();
 
 			AddView(_contentView);
 
@@ -408,7 +406,7 @@ namespace Xamarin.Forms.Platform.Android
 			return emptyContentView;
 		}
 
-		AView CreateContent()
+		AView GetOrCreateContent()
 		{
 			var renderer = Element.Content.GetRenderer() ?? Platform.CreateRendererWithContext(Element.Content, Context);
 			Platform.SetRenderer(Element.Content, renderer);

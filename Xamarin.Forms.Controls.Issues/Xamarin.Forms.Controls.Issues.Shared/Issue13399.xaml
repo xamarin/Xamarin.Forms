@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="using:Xamarin.Forms.Controls"
+    mc:Ignorable="d"
+    Title="Test 13399"
+    x:Name="Issue13399Page"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13399">
+    <Grid
+        RowSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Delete items, without exceptions the test has passed."/>
+        <ScrollView
+            Grid.Row="1">
+            <StackLayout
+                VerticalOptions="Start">
+                <ListView
+                    ItemsSource="{Binding Items}"
+                    IsVisible="True"
+                    HasUnevenRows="True"
+                    SeparatorVisibility="Default">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <SwipeView>
+                                    <SwipeView.LeftItems>
+                                        <SwipeItems>
+                                            <SwipeItem
+                                                Text="Share"
+                                                BackgroundColor="#2196F3">
+                                            </SwipeItem>
+                                            <SwipeItem
+                                                Text="Edit"
+                                                BackgroundColor="Orange">
+                                            </SwipeItem>
+                                        </SwipeItems>
+                                    </SwipeView.LeftItems>
+                                    <SwipeView.RightItems>
+                                        <SwipeItems>
+                                            <SwipeItem
+                                                Text="Delete"
+                                                BackgroundColor="Red"
+                                                Command="{Binding Source={x:Reference Issue13399Page}, Path=BindingContext.DeleteItemCommand}"
+                                                CommandParameter="{Binding}"/>
+                                        </SwipeItems>
+                                    </SwipeView.RightItems>
+                                    <Grid>
+                                        <Frame>
+                                            <StackLayout>
+                                                <Grid>
+                                                    <Label
+                                                        Text="{Binding Text}"
+                                                        TextColor="Black"
+                                                        Margin="2"
+                                                        FontSize="12"
+                                                        HorizontalOptions="FillAndExpand"
+                                                        VerticalOptions="StartAndExpand"/>
+                                                </Grid>
+                                            </StackLayout>
+                                        </Frame>
+                                    </Grid>
+                                </SwipeView>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+        </ScrollView>
+        <Button
+            Grid.Row="2"
+            Text="Delete Item"
+            Command="{Binding DeleteLastItemCommand}"/>
+    </Grid>
+</local:TestContentPage>
