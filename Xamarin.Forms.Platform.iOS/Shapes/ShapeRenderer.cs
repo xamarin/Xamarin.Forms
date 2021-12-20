@@ -392,8 +392,11 @@ namespace Xamarin.Forms.Platform.MacOS
                 if (viewBounds.Height < 0)
                     viewBounds.Height = 0;
 
-                nfloat widthScale = nfloat.IsNaN(viewBounds.Width / _pathFillBounds.Width) ? 0 : viewBounds.Width / _pathFillBounds.Width;
-                nfloat heightScale = nfloat.IsNaN(viewBounds.Height / _pathFillBounds.Height) ? 0 : viewBounds.Height / _pathFillBounds.Height;
+                var calculatedWidth = viewBounds.Width / _pathFillBounds.Width;
+                var calculatedHeight = viewBounds.Height / _pathFillBounds.Height;
+
+                nfloat widthScale = nfloat.IsNaN(calculatedWidth) ? 0 : calculatedWidth;
+                nfloat heightScale = nfloat.IsNaN(calculatedHeight) ? 0 : calculatedHeight;
 
                 var stretchTransform = CGAffineTransform.MakeIdentity();
 
@@ -453,10 +456,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
                     Frame = new CGRect(adjustX, adjustY, width, height);
 
-                    var calculatedWidth = nfloat.IsNaN(Bounds.Width / width) ? 0 : Bounds.Width / width;
-                    var calculatedHeight = nfloat.IsNaN(Bounds.Height / height) ? 0 : Bounds.Height / height;
+                    var calculatedWidth = Bounds.Width / width;
+                    var calculatedHeight = Bounds.Height / height;
 
-                    var transform = new CGAffineTransform(calculatedWidth, 0, 0, calculatedHeight, -adjustX, -adjustY);
+                    var transform = new CGAffineTransform(nfloat.IsNaN(calculatedWidth) ? 0 : calculatedWidth, 0, 0, nfloat.IsNaN(calculatedHeight) ? 0: calculatedHeight, -adjustX, -adjustY);
                     _renderPath = _path.CopyByTransformingPath(transform);
                 }
                 else
