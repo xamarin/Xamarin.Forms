@@ -17,6 +17,8 @@ namespace Xamarin.Forms.Platform.iOS
 	public class ListViewRenderer : ViewRenderer<ListView, UITableView>
 	{
 		const int DefaultRowHeight = 44;
+
+		UIView _backgroundUIView;
 		ListViewDataSource _dataSource;
 		IVisualElementRenderer _headerRenderer;
 		IVisualElementRenderer _footerRenderer;
@@ -112,6 +114,43 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		protected override void SetBackground(Brush brush)
+		{
+			if (Control == null)
+				return;
+
+			_backgroundUIView.RemoveBackgroundLayer();
+
+			if (!Brush.IsNullOrEmpty(brush))
+			{
+				if (_backgroundUIView == null)
+				{
+					_backgroundUIView = new UIView();
+					Control.BackgroundView = _backgroundUIView;
+				}
+
+				if (brush is SolidColorBrush solidColorBrush)
+				{
+					var backgroundColor = solidColorBrush.Color;
+
+					if (backgroundColor == Color.Default)
+						_backgroundUIView.BackgroundColor = UIColor.White;
+					else
+						_backgroundUIView.BackgroundColor = backgroundColor.ToUIColor();
+				}
+				else
+				{
+					var backgroundLayer = _backgroundUIView.GetBackgroundLayer(Element.Background);
+
+					if (backgroundLayer != null)
+					{
+						_backgroundUIView.BackgroundColor = UIColor.Clear;
+						_backgroundUIView.InsertBackgroundLayer(backgroundLayer, 0);
+					}
+				}
+			}
+		}
+
 		void DisposeSubviews(UIView view)
 		{
 			var ver = view as IVisualElementRenderer;
@@ -176,6 +215,12 @@ namespace Xamarin.Forms.Platform.iOS
 					_footerRenderer = null;
 				}
 
+				if (_backgroundUIView != null)
+				{
+					_backgroundUIView.Dispose();
+					_backgroundUIView = null;
+				}
+
 				var headerView = ListView?.HeaderElement as VisualElement;
 				if (headerView != null)
 					headerView.MeasureInvalidated -= OnHeaderMeasureInvalidated;
@@ -225,6 +270,11 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 					_tableViewController = new FormsUITableViewController(e.NewElement, _usingLargeTitles);
 					SetNativeControl(_tableViewController.TableView);
+
+					if (Forms.IsiOS15OrNewer)
+						_tableViewController.TableView.SectionHeaderTopPadding = new nfloat(0);
+
+					_backgroundUIView = _tableViewController.TableView.BackgroundView;
 
 					_insetTracker = new KeyboardInsetTracker(_tableViewController.TableView, () => Control.Window, insets => Control.ContentInset = Control.ScrollIndicatorInsets = insets, point =>
 					{
@@ -304,11 +354,9 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void TraitCollectionDidChange(UITraitCollection previousTraitCollection)
 		{
 			base.TraitCollectionDidChange(previousTraitCollection);
-#if __XCODE11__
 			// Make sure the cells adhere to changes UI theme
 			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
 				ReloadData();
-#endif
 		}
 
 		NSIndexPath[] GetPaths(int section, int index, int count)
@@ -786,7 +834,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			nfloat GetEstimatedRowHeight(UITableView table)
 			{
-				if (List.RowHeight != -1)
+				if (List == null || List.RowHeight != -1)
 				{
 					// Not even sure we need this case; A list with HasUnevenRows and a RowHeight doesn't make a ton of sense
 					// Anyway, no need for an estimate, because the heights we'll use are known
@@ -813,6 +861,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				var firstCell = templatedItems.ActivateContent(0, item);
 
+				nfloat returnValue;
 				// Let's skip this optimization for grouped lists. It will likely cause more trouble than it's worth.
 				if (firstCell?.Height > 0 && !isGroupingEnabled)
 				{
@@ -822,10 +871,15 @@ namespace Xamarin.Forms.Platform.iOS
 					// In this case, we will cache the specified cell heights asynchronously, which will be returned one time on
 					// table load by EstimatedHeight.
 
-					return 0;
+					returnValue= 0;
+				}
+				else
+				{
+					returnValue = CalculateHeightForCell(table, firstCell);
 				}
 
-				return CalculateHeightForCell(table, firstCell);
+				TemplatedItemsView.UnhookContent(firstCell);
+				return returnValue;
 			}
 
 			internal override void InvalidatingPrototypicalCellCache()

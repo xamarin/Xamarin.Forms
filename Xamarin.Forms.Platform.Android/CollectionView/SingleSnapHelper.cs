@@ -1,11 +1,6 @@
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
 using AndroidX.RecyclerView.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
-using AView = Android.Views.View;
 using ALayoutDirection = Android.Views.LayoutDirection;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {

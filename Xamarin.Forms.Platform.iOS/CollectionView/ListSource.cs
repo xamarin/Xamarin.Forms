@@ -5,7 +5,7 @@ using Foundation;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	sealed class ListSource : List<object>, IItemsViewSource
+	class ListSource : List<object>, IItemsViewSource
 	{
 		public ListSource()
 		{
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			for (int n = 0; n < Count; n++)
 			{
-				if (this[n] == item)
+				if (ItemComparer.AreEquals(this[n], item))
 				{
 					return NSIndexPath.Create(0, n);
 				}

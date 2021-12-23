@@ -3,15 +3,10 @@ using System.ComponentModel;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
-#if __ANDROID_29__
-using AndroidX.Core.View;
-#else
-using Android.Support.V4.View;
-#endif
 using Android.Text;
 using Android.Util;
 using Android.Views;
-using Android.Widget;
+using AndroidX.Core.View;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
@@ -125,11 +120,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (!string.IsNullOrEmpty(hint) && setHint)
 				Control.Hint = string.Empty;
 
+			var hc = MeasureSpec.GetSize(heightConstraint);
+
 			Measure(widthConstraint, heightConstraint);
 			var result = new SizeRequest(new Size(MeasuredWidth, MeasuredHeight), new Size());
 
 			//Set Hint back after sizing
-			if(setHint)
+			if (setHint)
 				Control.Hint = hint;
 
 			result.Minimum = new Size(Math.Min(Context.ToPixels(10), result.Request.Width), result.Request.Height);
@@ -148,6 +145,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_lastSizeRequest = result;
 
 			return result;
+		}
+
+		public override void Draw(Canvas canvas)
+		{
+			canvas.ClipShape(Context, Element);
+
+			base.Draw(canvas);
 		}
 
 		protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
@@ -298,7 +302,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateCharacterSpacing();
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();
-			else if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName)
+			else if (e.IsOneOf(Label.TextProperty, Label.FormattedTextProperty, Label.TextTransformProperty))
 				UpdateText();
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
 				UpdateLineHeight();
@@ -386,6 +390,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		void UpdateMaxLines()
 		{
 			this.SetMaxLines(Element);
+			_lastSizeRequest = null;
 		}
 
 		void UpdateText()
@@ -418,10 +423,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 						break;
 
 					default:
-						Text = Element.Text;
+						Text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 						break;
 				}
-				
+
 				UpdateColor();
 				UpdateFont();
 

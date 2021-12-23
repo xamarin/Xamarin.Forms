@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Platform.Android
 					var aswitch = CreateNativeControl();
 					aswitch.SetOnCheckedChangeListener(this);
 					SetNativeControl(aswitch);
-					_defaultTrackDrawable = Control.TrackDrawable;					
+					_defaultTrackDrawable = Control.TrackDrawable;
 				}
 				else
 				{
@@ -103,7 +103,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.PropertyName == Switch.OnColorProperty.PropertyName)
 				UpdateOnColor();
-			else if (e.PropertyName == Slider.ThumbColorProperty.PropertyName)
+			else if (e.PropertyName == Switch.ThumbColorProperty.PropertyName)
 				UpdateThumbColor();
 		}
 

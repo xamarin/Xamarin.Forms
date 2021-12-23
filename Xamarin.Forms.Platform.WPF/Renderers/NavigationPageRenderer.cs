@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Linq;
 using Xamarin.Forms.Platform.WPF.Controls;
+using Xamarin.Forms.Platform.WPF.Extensions;
 
 namespace Xamarin.Forms.Platform.WPF
 {
@@ -23,7 +24,7 @@ namespace Xamarin.Forms.Platform.WPF
 				NavigationPage.PopAsync();
 		}
 	}
-	
+
 	public class NavigationPageRenderer : VisualPageRenderer<NavigationPage, FormsLightNavigationPage>
 	{
 		protected override void OnElementChanged(ElementChangedEventArgs<NavigationPage> e)
@@ -46,6 +47,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 				// Update control property 
 				UpdateBarBackgroundColor();
+				UpdateBarBackground();
 				UpdateBarTextColor();
 
 				// Suscribe element event
@@ -55,7 +57,7 @@ namespace Xamarin.Forms.Platform.WPF
 				Element.RemovePageRequested += Element_RemovePageRequested;
 				Element.InsertPageBeforeRequested += Element_InsertPageBeforeRequested;
 			}
-			
+
 			base.OnElementChanged(e);
 		}
 
@@ -65,6 +67,8 @@ namespace Xamarin.Forms.Platform.WPF
 
 			if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
 				UpdateBarBackgroundColor();
+			else if (e.PropertyName == NavigationPage.BarBackgroundProperty.PropertyName)
+				UpdateBarBackground();
 			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName)
 				UpdateBarTextColor();
 		}
@@ -74,15 +78,15 @@ namespace Xamarin.Forms.Platform.WPF
 			base.Appearing();
 			PushExistingNavigationStack();
 		}
-		
-	    void Element_InsertPageBeforeRequested(object sender, Internals.NavigationRequestedEventArgs e)
+
+		void Element_InsertPageBeforeRequested(object sender, Internals.NavigationRequestedEventArgs e)
 		{
 			this.Control?.InsertPageBefore(e.Page, e.BeforePage);
 		}
 
-	    void Element_RemovePageRequested(object sender, Internals.NavigationRequestedEventArgs e)
+		void Element_RemovePageRequested(object sender, Internals.NavigationRequestedEventArgs e)
 		{
-			this.Control?.RemovePage(e.Page); 
+			this.Control?.RemovePage(e.Page);
 		}
 
 		void Element_PopToRootRequested(object sender, Internals.NavigationRequestedEventArgs e)
@@ -99,7 +103,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			this.Control?.Push(e.Page, e.Animated);
 		}
-		
+
 		void PushExistingNavigationStack()
 		{
 			foreach (var page in Element.Pages)
@@ -108,10 +112,15 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 			this.Control.CurrentPage = this.Control.InternalChildren.Last();
 		}
-		
+
 		void UpdateBarBackgroundColor()
 		{
 			Control.UpdateDependencyColor(FormsNavigationPage.TitleBarBackgroundColorProperty, Element.BarBackgroundColor);
+		}
+
+		void UpdateBarBackground()
+		{
+			Control.TitleBarBackgroundColor = Element.BarBackground.ToBrush();
 		}
 
 		void UpdateBarTextColor()

@@ -6,12 +6,12 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Xamarin.Forms.Internals;
-using WTransformGroup = System.Windows.Media.TransformGroup;
-using WTransformCollection = System.Windows.Media.TransformCollection;
-using WRotateTransform = System.Windows.Media.RotateTransform;
-using WTranslateTransform = System.Windows.Media.TranslateTransform;
-using WScaleTransform = System.Windows.Media.ScaleTransform;
 using Xamarin.Forms.Platform.WPF.Extensions;
+using WRotateTransform = System.Windows.Media.RotateTransform;
+using WScaleTransform = System.Windows.Media.ScaleTransform;
+using WTransformCollection = System.Windows.Media.TransformCollection;
+using WTransformGroup = System.Windows.Media.TransformGroup;
+using WTranslateTransform = System.Windows.Media.TranslateTransform;
 
 namespace Xamarin.Forms.Platform.WPF
 {
@@ -279,31 +279,30 @@ namespace Xamarin.Forms.Platform.WPF
 			double translationX = Element.TranslationX;
 			double translationY = Element.TranslationY;
 			double scale = Element.Scale;
-
-			double offsetX = scale == 0 ? 0 : translationX / scale;
-			double offsetY = scale == 0 ? 0 : translationY / scale;
+			double scaleX = Element.ScaleX * scale;
+			double scaleY = Element.ScaleY * scale;
 
 			Control.RenderTransformOrigin = new System.Windows.Point(anchorX, anchorY);
 			Control.RenderTransform = new WTransformGroup()
 			{
 				Children = new WTransformCollection()
 				{
+					new WScaleTransform
+					{
+						ScaleX = scaleX,
+						ScaleY = scaleY
+					},
 					new WRotateTransform()
 					{
 						CenterX = anchorX,
 						CenterY = anchorY,
-						Angle = Element.Rotation
+						Angle = rotation
 					},
 					new WTranslateTransform()
 					{
-						X = offsetX,
-						Y = offsetY
+						X = translationX,
+						Y = translationY
 					},
-					new WScaleTransform
-					{
-						ScaleX = scale,
-						ScaleY = scale
-					}
 				}
 			};
 		}

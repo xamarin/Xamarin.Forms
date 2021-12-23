@@ -9,6 +9,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 	[Preserve(AllMembers = true)]
 	public class IndicatorCodeGallery : ContentPage
 	{
+		ItemsSourceGenerator generator;
 		CarouselView _carouselView;
 		Button _btnPrev;
 		Button _btnNext;
@@ -51,14 +52,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			};
 
 			layout.Children.Add(_carouselView);
-			var generator = new ItemsSourceGenerator(_carouselView, nItems, ItemsSourceType.ObservableCollection);
+			generator = new ItemsSourceGenerator(_carouselView, nItems, ItemsSourceType.ObservableCollection);
 			layout.Children.Add(generator);
 
 			generator.GenerateItems();
 
 			_carouselView.PropertyChanged += CarouselViewPropertyChanged;
 			(_carouselView.ItemsSource as ObservableCollection<CollectionViewGalleryTestItem>).CollectionChanged += IndicatorCodeGalleryCollectionChanged;
- 
+
 			var indicatorView = new IndicatorView
 			{
 				HorizontalOptions = LayoutOptions.Center,
@@ -68,7 +69,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				IndicatorsShape = IndicatorShape.Square,
 				AutomationId = "TheIndicatorView",
 				Count = 5,
-				Position = 2
 			};
 
 			_carouselView.IndicatorView = indicatorView;
@@ -262,6 +262,20 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			layout.Children.Add(layoutBtn);
 			Grid.SetRow(layoutBtn, 5);
 			Content = layout;
+		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			generator.SubscribeEvents();
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			generator.UnsubscribeEvents();
 		}
 
 		void IndicatorCodeGalleryCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

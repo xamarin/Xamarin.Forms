@@ -1,7 +1,7 @@
-﻿using Xamarin.Forms.Internals;
+﻿using System.Collections.Generic;
 using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Shapes;
-using System.Collections.Generic;
 
 #if UITEST
 using Xamarin.UITest;
@@ -22,8 +22,6 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
-			Device.SetFlags(new List<string> { ExperimentalFlags.ShapesExperimental });
-
 			Title = "Issue 11137";
 
 			var grid = new Grid();
@@ -42,8 +40,8 @@ namespace Xamarin.Forms.Controls.Issues
 			var path = new Path
 			{
 				BackgroundColor = Color.LightGray,
-				Stroke = Color.Black,
-				Fill = Color.Blue,
+				Stroke = Brush.Black,
+				Fill = Brush.Blue,
 				StrokeThickness = 4,
 				HorizontalOptions = LayoutOptions.Center,
 				VerticalOptions = LayoutOptions.Center,

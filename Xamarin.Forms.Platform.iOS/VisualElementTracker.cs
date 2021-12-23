@@ -5,6 +5,8 @@ using System.Threading;
 using CoreAnimation;
 using CoreGraphics;
 using Xamarin.Forms.Internals;
+using RectangleF = CoreGraphics.CGRect;
+using PointF = CoreGraphics.CGPoint;
 
 #if __MOBILE__
 using UIKit;
@@ -64,6 +66,21 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 		public event EventHandler NativeControlUpdated;
+
+		internal void Disconnect()
+		{
+			Disconnect(_element);
+		}
+
+		void Disconnect(VisualElement oldElement)
+		{
+			if (oldElement == null)
+				return;
+
+			oldElement.PropertyChanged -= _propertyChangedHandler;
+			oldElement.SizeChanged -= _sizeChangedEventHandler;
+			oldElement.BatchCommitted -= _batchCommittedHandler;
+		}
 
 		protected virtual void Dispose(bool disposing)
 		{
@@ -300,9 +317,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (Math.Abs(translationX) > epsilon || Math.Abs(translationY) > epsilon)
 					transform = transform.Translate(translationX, translationY, 0);
 
-				if (Math.Abs(scaleX - 1) > epsilon || Math.Abs(scaleY - 1) > epsilon)
-					transform = transform.Scale(scaleX, scaleY, scale);
-
 				// not just an optimization, iOS will not "pixel align" a view which has m34 set
 				if (Math.Abs(rotationY % 180) > epsilon || Math.Abs(rotationX % 180) > epsilon)
 					transform.m34 = 1.0f / -400f;
@@ -313,7 +327,22 @@ namespace Xamarin.Forms.Platform.MacOS
 					transform = transform.Rotate(rotationY * (float)Math.PI / 180.0f, 0.0f, 1.0f, 0.0f);
 
 				transform = transform.Rotate(rotation * (float)Math.PI / 180.0f, 0.0f, 0.0f, 1.0f);
+#if !__MOBILE__
+				if (Math.Abs(scaleX - 1) > epsilon || Math.Abs(scaleY - 1) > epsilon)
+				{
+					if (scaleX == 0)
+						scaleX = (float)epsilon;
+					if (scaleY == 0)
+						scaleY = (float)epsilon;
+					if (scale == 0)
+						scale = (float)epsilon;
 
+					transform = transform.Scale(scaleX, scaleY, scale);
+				}
+#else
+				if (Math.Abs(scaleX - 1) > epsilon || Math.Abs(scaleY - 1) > epsilon)
+					transform = transform.Scale(scaleX, scaleY, scale);
+#endif
 				if (Foundation.NSThread.IsMain)
 				{
 					caLayer.Transform = transform;
@@ -344,9 +373,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (oldElement != null)
 			{
-				oldElement.PropertyChanged -= _propertyChangedHandler;
-				oldElement.SizeChanged -= _sizeChangedEventHandler;
-				oldElement.BatchCommitted -= _batchCommittedHandler;
+				Disconnect(oldElement);
 			}
 
 			_element = newElement;

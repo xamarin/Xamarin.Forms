@@ -5,7 +5,7 @@ using System.Collections.Specialized;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class ObservableGroupedSource : IGroupableItemsViewSource, ICollectionChangedNotifier
+	internal class ObservableGroupedSource : IGroupableItemsViewSource, ICollectionChangedNotifier, IGroupedItemsPosition
 	{
 		readonly ICollectionChangedNotifier _notifier;
 		readonly IList _groupSource;
@@ -102,7 +102,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			for (int groupIndex = 0; groupIndex < _groupSource.Count; groupIndex++)
 			{
-				if (_groupSource[groupIndex] == item)
+				if (_groupSource[groupIndex].Equals(item))
 				{
 					return AdjustPositionForHeader(groupIndex);
 				}
@@ -200,7 +200,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				ClearGroupTracking();
 
-				if(_groupSource is INotifyCollectionChanged notifyCollectionChanged)
+				if (_groupSource is INotifyCollectionChanged notifyCollectionChanged)
 				{
 					notifyCollectionChanged.CollectionChanged -= CollectionChanged;
 				}
@@ -281,7 +281,7 @@ namespace Xamarin.Forms.Platform.Android
 			// Determine the absolute starting position and the number of items in the groups being added
 			var absolutePosition = GetAbsolutePosition(_groups[groupIndex], 0);
 			var itemCount = CountItemsInGroups(groupIndex, groupCount);
-		
+
 			if (itemCount == 1)
 			{
 				_notifier.NotifyItemInserted(this, absolutePosition);
@@ -354,7 +354,7 @@ namespace Xamarin.Forms.Platform.Android
 			// We are replacing one set of items with a set of equal size; we can do a simple item or range notification 
 			var firstGroupIndex = Math.Min(newStartIndex, oldStartIndex);
 			var absolutePosition = GetAbsolutePosition(_groups[firstGroupIndex], 0);
-			
+
 			if (newItemCount == 1)
 			{
 				_notifier.NotifyItemChanged(this, absolutePosition);
@@ -446,6 +446,39 @@ namespace Xamarin.Forms.Platform.Android
 				itemCount += ((_groupSource[groupStartIndex + n] as IList).Count + 1);
 			}
 			return itemCount;
+    }
+    
+		public int GetPosition(int groupIndex, int itemIndex)
+		{
+			// Ignore invalid indexes
+			if (groupIndex >= _groups.Count)
+			{
+				return 0;
+			}
+
+			if (itemIndex >= _groups[groupIndex].Count)
+			{
+				return 0;
+			}
+
+			int position = 0;
+
+			// Account for all the positions in the earlier groups;
+			// these counts will already include headers/footers, if present
+			for (int g = 0; g < groupIndex; g++)
+			{
+				position += _groups[g].Count;
+			}
+
+			position += itemIndex;
+
+			if (_hasGroupHeaders)
+			{
+				// Does this last group have a header? We'll need to account for that
+				position += 1;
+			}
+
+			return position;
 		}
 	}
 }

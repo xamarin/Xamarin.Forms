@@ -9,8 +9,9 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	public class ItemContentControl : ContentControl
 	{
-		View _view;
+		VisualElement _visualElement;
 		IVisualElementRenderer _renderer;
+		DataTemplate _currentTemplate;
 
 		public ItemContentControl()
 		{
@@ -104,11 +105,11 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnContentChanged(oldContent, newContent);
 
-			if (oldContent != null && _view != null)
-				_view.MeasureInvalidated -= OnViewMeasureInvalidated;
+			if (oldContent != null && _visualElement != null)
+				_visualElement.MeasureInvalidated -= OnViewMeasureInvalidated;
 
-			if (newContent != null && _view != null)
-				_view.MeasureInvalidated += OnViewMeasureInvalidated;
+			if (newContent != null && _visualElement != null)
+				_visualElement.MeasureInvalidated += OnViewMeasureInvalidated;
 		}
 
 		internal void Realize()
@@ -129,14 +130,52 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			_view = FormsDataTemplate.CreateContent(dataContext, container) as View;
-			_view.BindingContext = dataContext;
-			_renderer = Platform.CreateRenderer(_view);
-			Platform.SetRenderer(_view, _renderer);
+			if (_renderer?.ContainerElement == null || _currentTemplate != formsTemplate
+				|| formsTemplate is DataTemplateSelector)
+			{
+				// If the content has never been realized (i.e., this is a new instance), 
+				// or if we need to switch DataTemplates (because this instance is being recycled)
+				// then we'll need to create the content from the template 
+				_visualElement = formsTemplate.CreateContent(dataContext, container) as VisualElement;
+				_visualElement.BindingContext = dataContext;
+				_renderer = Platform.CreateRenderer(_visualElement);
+				Platform.SetRenderer(_visualElement, _renderer);
+
+				// We need to set IsNativeStateConsistent explicitly; otherwise, it won't be set until the renderer's Loaded 
+				// event. If the CollectionView is in a Layout, the Layout won't measure or layout the CollectionView until
+				// every visible descendant has `IsNativeStateConsistent == true`. And the problem that Layout is trying
+				// to avoid by skipping layout for controls with not-yet-loaded children does not apply to CollectionView
+				// items. If we don't set this, the CollectionView just won't get layout at all, and will be invisible until
+				// the window is resized. 
+				SetNativeStateConsistent(_visualElement);
+
+				// Keep track of the template in case this instance gets reused later
+				_currentTemplate = formsTemplate;
+			}
+			else
+			{
+				// We are reusing this ItemContentControl and we can reuse the Element
+				_visualElement = _renderer.Element;
+				_visualElement.BindingContext = dataContext;
+			}
 
 			Content = _renderer.ContainerElement;
+			itemsView?.AddLogicalChild(_visualElement);
+		}
 
-			itemsView?.AddLogicalChild(_view);
+		void SetNativeStateConsistent(VisualElement visualElement) 
+		{
+			visualElement.IsNativeStateConsistent = true;
+
+			foreach (var child in visualElement.LogicalChildren)
+			{
+				if (!(child is VisualElement ve))
+				{
+					continue;
+				}
+
+				SetNativeStateConsistent(ve);
+			}
 		}
 
 		internal void UpdateIsSelected(bool isSelected)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
@@ -16,17 +17,12 @@ using Android.Content.Res;
 using Android.OS;
 using Android.Util;
 using Android.Views;
+using AndroidX.Core.Content;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
+using AColor = Android.Graphics.Color;
 using Resource = Android.Resource;
 using Trace = System.Diagnostics.Trace;
-using System.ComponentModel;
-using AColor = Android.Graphics.Color;
-#if __ANDROID_29__
-using AndroidX.Core.Content;
-#else
-using Android.Support.V4.Content;
-#endif
 
 namespace Xamarin.Forms
 {
@@ -58,12 +54,13 @@ namespace Xamarin.Forms
 		const int TabletCrossover = 600;
 
 		static BuildVersionCodes? s_sdkInt;
-		static bool? s_isLollipopOrNewer;
 		static bool? s_is29OrNewer;
+		static bool? s_isJellyBeanMr1OrNewer;
+		static bool? s_isLollipopOrNewer;
 		static bool? s_isMarshmallowOrNewer;
 		static bool? s_isNougatOrNewer;
 		static bool? s_isOreoOrNewer;
-		static bool? s_isJellyBeanMr1OrNewer;
+		static bool? s_isPieOrNewer;
 
 		[Obsolete("Context is obsolete as of version 2.5. Please use a local context instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -98,7 +95,7 @@ namespace Xamarin.Forms
 				return s_is29OrNewer.Value;
 			}
 		}
-		
+
 		internal static bool IsJellyBeanMr1OrNewer
 		{
 			get
@@ -146,6 +143,16 @@ namespace Xamarin.Forms
 				if (!s_isOreoOrNewer.HasValue)
 					s_isOreoOrNewer = SdkInt >= BuildVersionCodes.O;
 				return s_isOreoOrNewer.Value;
+			}
+		}
+
+		internal static bool IsPieOrNewer
+		{
+			get
+			{
+				if (!s_isPieOrNewer.HasValue)
+					s_isPieOrNewer = SdkInt >= BuildVersionCodes.P;
+				return s_isPieOrNewer.Value;
 			}
 		}
 
@@ -300,7 +307,11 @@ namespace Xamarin.Forms
 			// We want this to be updated when we have a new activity (e.g. on a configuration change)
 			// because AndroidPlatformServices needs a current activity to launch URIs from
 			Profile.FramePartition("Device.PlatformServices");
-			Device.PlatformServices = new AndroidPlatformServices(activity);
+
+			var androidServices = new AndroidPlatformServices(activity);
+
+			Device.PlatformServices = androidServices;
+			Device.PlatformInvalidator = androidServices;
 
 			// use field and not property to avoid exception in getter
 			if (Device.info != null)
@@ -366,7 +377,7 @@ namespace Xamarin.Forms
 
 			var currentIdiom = TargetIdiom.Unsupported;
 
-			// first try UIModeManager
+			// First try UIModeManager
 			using (var uiModeManager = UiModeManager.FromContext(ApplicationContext))
 			{
 				try
@@ -380,12 +391,32 @@ namespace Xamarin.Forms
 				}
 			}
 
+			// Then try Configuration
 			if (TargetIdiom.Unsupported == currentIdiom)
 			{
-				// This could change as a result of a config change, so we need to check it every time
-				int minWidthDp = activity.Resources.Configuration.SmallestScreenWidthDp;
-				Device.SetIdiom(minWidthDp >= TabletCrossover ? TargetIdiom.Tablet : TargetIdiom.Phone);
+				var configuration = activity.Resources.Configuration;
+
+				if (configuration != null)
+				{
+					var minWidth = configuration.SmallestScreenWidthDp;
+					var isWide = minWidth >= TabletCrossover;
+					currentIdiom = isWide ? TargetIdiom.Tablet : TargetIdiom.Phone;
+				}
+				else
+				{
+					// Start clutching at straws
+					var metrics = activity.Resources?.DisplayMetrics;
+
+					if (metrics != null)
+					{
+						var minSize = Math.Min(metrics.WidthPixels, metrics.HeightPixels);
+						var isWide = minSize * metrics.Density >= TabletCrossover;
+						currentIdiom = isWide ? TargetIdiom.Tablet : TargetIdiom.Phone;
+					}
+				}
 			}
+
+			Device.SetIdiom(currentIdiom);
 
 			if (SdkInt >= BuildVersionCodes.JellyBeanMr1)
 				Device.SetFlowDirection(activity.Resources.Configuration.LayoutDirection.ToFlowDirection());
@@ -400,13 +431,13 @@ namespace Xamarin.Forms
 		static TargetIdiom DetectIdiom(UiMode uiMode)
 		{
 			var returnValue = TargetIdiom.Unsupported;
-			if (uiMode.HasFlag(UiMode.TypeNormal))
+			if (uiMode == UiMode.TypeNormal)
 				returnValue = TargetIdiom.Unsupported;
-			else if (uiMode.HasFlag(UiMode.TypeTelevision))
+			else if (uiMode == UiMode.TypeTelevision)
 				returnValue = TargetIdiom.TV;
-			else if (uiMode.HasFlag(UiMode.TypeDesk))
+			else if (uiMode == UiMode.TypeDesk)
 				returnValue = TargetIdiom.Desktop;
-			else if (SdkInt >= BuildVersionCodes.KitkatWatch && uiMode.HasFlag(UiMode.TypeWatch))
+			else if (SdkInt >= BuildVersionCodes.KitkatWatch && uiMode == UiMode.TypeWatch)
 				returnValue = TargetIdiom.Watch;
 
 			Device.SetIdiom(returnValue);
@@ -431,7 +462,7 @@ namespace Xamarin.Forms
 			}
 
 			s_flags = (string[])flags.Clone();
-			if (s_flags.Contains ("Profile"))
+			if (s_flags.Contains("Profile"))
 				Profile.Enable();
 			FlagsSet = true;
 		}
@@ -614,7 +645,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		class AndroidPlatformServices : IPlatformServices
+		class AndroidPlatformServices : IPlatformServices, IPlatformInvalidate
 		{
 			double _buttonDefaultSize;
 			double _editTextDefaultSize;
@@ -921,19 +952,31 @@ namespace Xamarin.Forms
 				return Platform.Android.Platform.GetNativeSize(view, widthConstraint, heightConstraint);
 			}
 
+			public void Invalidate(VisualElement visualElement)
+			{
+				var renderer = visualElement.GetRenderer();
+				if (renderer == null || renderer.View.IsDisposed())
+				{
+					return;
+				}
+
+				renderer.View.Invalidate();
+				renderer.View.RequestLayout();
+			}
+
 			public OSAppTheme RequestedTheme
-            {
-                get
-                {
-                    var nightMode = _context.Resources.Configuration.UiMode & UiMode.NightMask;
-                    switch (nightMode)
-                    {
-                        case UiMode.NightYes:
-                            return OSAppTheme.Dark;
-                        case UiMode.NightNo:
-                            return OSAppTheme.Light;
-                        default:
-                            return OSAppTheme.Unspecified;
+			{
+				get
+				{
+					var nightMode = _context.Resources.Configuration.UiMode & UiMode.NightMask;
+					switch (nightMode)
+					{
+						case UiMode.NightYes:
+							return OSAppTheme.Dark;
+						case UiMode.NightNo:
+							return OSAppTheme.Light;
+						default:
+							return OSAppTheme.Unspecified;
 					};
 				}
 			}

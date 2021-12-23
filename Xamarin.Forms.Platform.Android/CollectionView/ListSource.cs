@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
-		public ListSource(IEnumerable<object> enumerable) 
+		public ListSource(IEnumerable<object> enumerable)
 		{
 			_itemsSource = new List<object>(enumerable);
 		}
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void Dispose()
 		{
-			
+
 		}
 
 		public bool IsFooter(int index)
@@ -64,7 +64,10 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			for (int n = 0; n < _itemsSource.Count; n++)
 			{
-				if (_itemsSource[n] == item)
+				var elementByIndex = _itemsSource[n];
+				var isEqual = elementByIndex == item || (elementByIndex != null && item != null && elementByIndex.Equals(item));
+
+				if (isEqual)
 				{
 					return AdjustPosition(n);
 				}

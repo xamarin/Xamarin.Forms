@@ -6,6 +6,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.WPF.Controls;
+using WAutomationProperties = System.Windows.Automation.AutomationProperties;
 using WButton = System.Windows.Controls.Button;
 using WImage = System.Windows.Controls.Image;
 using WThickness = System.Windows.Thickness;
@@ -39,7 +40,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 				if (Element.IsSet(Button.CornerRadiusProperty) && Element.CornerRadius != (int)Button.CornerRadiusProperty.DefaultValue)
 					UpdateCornerRadius();
-					
+
 				if (Element.IsSet(Button.PaddingProperty))
 					UpdatePadding();
 
@@ -53,7 +54,9 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Button.TextProperty.PropertyName || e.PropertyName == Button.ImageSourceProperty.PropertyName)
+			if (e.PropertyName == Button.TextProperty.PropertyName ||
+				e.PropertyName == Button.ImageSourceProperty.PropertyName ||
+				e.PropertyName == Button.TextTransformProperty.PropertyName)
 				UpdateContent();
 			else if (e.PropertyName == Button.TextColorProperty.PropertyName)
 				UpdateTextColor();
@@ -78,7 +81,7 @@ namespace Xamarin.Forms.Platform.WPF
 			if (buttonView != null)
 				buttonView.SendClicked();
 		}
-		
+
 		void UpdateBorderColor()
 		{
 			Control.UpdateDependencyColor(WButton.BorderBrushProperty, Element.BorderColor);
@@ -95,7 +98,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 		async void UpdateContent()
 		{
-			var text = Element.Text;
+			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 			var elementImage = await Element.ImageSource.ToWindowsImageSourceAsync();
 
 			// No image, just the text
@@ -132,6 +135,10 @@ namespace Xamarin.Forms.Platform.WPF
 				VerticalAlignment = VerticalAlignment.Center,
 				HorizontalAlignment = HorizontalAlignment.Center
 			};
+
+			// narrator doesn't pick up text content when nested in a layout so set automation name unless set explicitly
+			if (string.IsNullOrEmpty(WAutomationProperties.GetName(Control)))
+				WAutomationProperties.SetName(Control, text);
 
 			var spacing = layout.Spacing;
 

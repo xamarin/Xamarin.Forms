@@ -39,7 +39,9 @@ namespace Xamarin.Forms.Platform.iOS
 					? _itemsLayout.HorizontalItemSpacing
 					: _itemsLayout.VerticalItemSpacing);
 
-			spacing = spacing * (_itemsLayout.Span - 1);
+			spacing = ReduceSpacingToFitIfNeeded(availableSpace, spacing, _itemsLayout.Span);
+
+			spacing *= (_itemsLayout.Span - 1);
 
 			ConstrainedDimension = (availableSpace - spacing) / _itemsLayout.Span;
 
@@ -55,7 +57,16 @@ namespace Xamarin.Forms.Platform.iOS
 			// Truncating to 177 means the rows fit, but there's a very slight gap
 			// There may not be anything we can do about this.
 
-			ConstrainedDimension = (int)ConstrainedDimension;
+			// Possibly the solution is to round to the tenths or hundredths place, we should look into that. 
+			// But for the moment, we need a special case for dimensions < 1, because upon transition from invisible to visible,
+			// Forms will briefly layout the CollectionView at a size of 1,1. For a spanned collectionview, that means we 
+			// need to accept a constrained dimension of 1/span. If we don't, autolayout will start throwing a flurry of 
+			// exceptions (which we can't catch) and either crash the app or spin until we kill the app. 
+			if (ConstrainedDimension > 1)
+			{
+				ConstrainedDimension = (int)ConstrainedDimension;
+			}
+
 			DetermineCellSize();
 		}
 
@@ -171,6 +182,19 @@ namespace Xamarin.Forms.Platform.iOS
 			return invalidationContext;
 		}
 
+		public override nfloat GetMinimumInteritemSpacingForSection(UICollectionView collectionView, UICollectionViewLayout layout, nint section)
+		{
+			var requestedSpacing = ScrollDirection == UICollectionViewScrollDirection.Horizontal
+				? (nfloat)_itemsLayout.VerticalItemSpacing
+				: (nfloat)_itemsLayout.HorizontalItemSpacing;
+
+			var availableSpace = ScrollDirection == UICollectionViewScrollDirection.Horizontal
+				? collectionView.Frame.Height
+				: collectionView.Frame.Width;
+
+			return ReduceSpacingToFitIfNeeded(availableSpace, requestedSpacing, _itemsLayout.Span);
+		}
+
 		void CenterAlignCellsInColumn(UICollectionViewLayoutAttributes preferredAttributes) 
 		{
 			// Determine the set of cells above this one
@@ -263,6 +287,23 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return true;
+		}
+
+		static nfloat ReduceSpacingToFitIfNeeded(nfloat available, nfloat requestedSpacing, int span) 
+		{
+			if (span == 1)
+			{
+				return requestedSpacing;
+			}
+
+			var maxSpacing = (available - span) / (span - 1);
+
+			if (maxSpacing < 0)
+			{
+				return 0;
+			}
+
+			return (nfloat)Math.Min(requestedSpacing, maxSpacing);
 		}
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -12,19 +13,8 @@ namespace Xamarin.Forms
 		IDispatcher _dispatcher;
 		public virtual IDispatcher Dispatcher
 		{
-			get
-			{
-				if (_dispatcher == null)
-				{
-					_dispatcher = this.GetDispatcher();
-				}
-
-				return _dispatcher;
-			}
-			internal set
-			{
-				_dispatcher = value;
-			}
+			get => _dispatcher ??= this.GetDispatcher();
+			internal set => _dispatcher = value;
 		}
 
 		readonly Dictionary<BindableProperty, BindablePropertyContext> _properties = new Dictionary<BindableProperty, BindablePropertyContext>(4);
@@ -32,7 +22,7 @@ namespace Xamarin.Forms
 		object _inheritedContext;
 
 		public static readonly BindableProperty BindingContextProperty =
-			BindableProperty.Create("BindingContext", typeof(object), typeof(BindableObject), default(object),
+			BindableProperty.Create(nameof(BindingContext), typeof(object), typeof(BindableObject), default(object),
 									BindingMode.OneWay, null, BindingContextPropertyChanged, null, null, BindingContextPropertyBindingChanging);
 
 		public object BindingContext
@@ -54,7 +44,7 @@ namespace Xamarin.Forms
 			if (propertyKey == null)
 				throw new ArgumentNullException(nameof(propertyKey));
 
-			ClearValue(propertyKey.BindableProperty, fromStyle:false, checkAccess: false);
+			ClearValue(propertyKey.BindableProperty, fromStyle: false, checkAccess: false);
 		}
 
 		void ClearValue(BindableProperty property, bool fromStyle, bool checkAccess)
@@ -69,24 +59,28 @@ namespace Xamarin.Forms
 			if (bpcontext == null)
 				return;
 
+			if (fromStyle)
+				bpcontext.StyleValueSet = false;
+
 			if (fromStyle && !CanBeSetFromStyle(property))
 				return;
 
 			object original = bpcontext.Value;
 
-			object newValue = property.GetDefaultValue(this);
+			object newValue = bpcontext.StyleValueSet ? bpcontext.StyleValue : property.GetDefaultValue(this);
 
 			bool same = Equals(original, newValue);
 			if (!same)
 			{
 				property.PropertyChanging?.Invoke(this, original, newValue);
-
 				OnPropertyChanging(property.PropertyName);
 			}
 
 			bpcontext.Attributes &= ~BindableContextAttributes.IsManuallySet;
 			bpcontext.Value = newValue;
-			if (property.DefaultValueCreator == null)
+			if (bpcontext.StyleValueSet)
+				bpcontext.Attributes |= BindableContextAttributes.IsSetFromStyle;
+			else if (property.DefaultValueCreator == null)
 				bpcontext.Attributes |= BindableContextAttributes.IsDefaultValue;
 			else
 				bpcontext.Attributes |= BindableContextAttributes.IsDefaultValueCreated;
@@ -106,6 +100,49 @@ namespace Xamarin.Forms
 			var context = property.DefaultValueCreator != null ? GetOrCreateContext(property) : GetContext(property);
 
 			return context == null ? property.DefaultValue : context.Value;
+		}
+
+		internal LocalValueEnumerator GetLocalValueEnumerator() => new LocalValueEnumerator(this);
+
+		internal class LocalValueEnumerator : IEnumerator<LocalValueEntry>
+		{
+			Dictionary<BindableProperty, BindablePropertyContext>.Enumerator _propertiesEnumerator;
+			internal LocalValueEnumerator(BindableObject bindableObject) => _propertiesEnumerator = bindableObject._properties.GetEnumerator();
+
+			object IEnumerator.Current => Current;
+			public LocalValueEntry Current { get; private set; }
+
+			public bool MoveNext()
+			{
+				if (_propertiesEnumerator.MoveNext())
+				{
+					Current = new LocalValueEntry(_propertiesEnumerator.Current.Key, _propertiesEnumerator.Current.Value.Value, _propertiesEnumerator.Current.Value.Attributes);
+					return true;
+				}
+				return false;
+			}
+
+			public void Dispose() => _propertiesEnumerator.Dispose();
+
+			void IEnumerator.Reset()
+			{
+				((IEnumerator)_propertiesEnumerator).Reset();
+				Current = null;
+			}
+		}
+
+		internal class LocalValueEntry
+		{
+			internal LocalValueEntry(BindableProperty property, object value, BindableContextAttributes attributes)
+			{
+				Property = property;
+				Value = value;
+				Attributes = attributes;
+			}
+
+			public BindableProperty Property { get; }
+			public object Value { get; }
+			public BindableContextAttributes Attributes { get; }
 		}
 
 		internal (bool IsSet, T Value)[] GetValues<T>(BindableProperty[] propArray)
@@ -206,7 +243,7 @@ namespace Xamarin.Forms
 				bindable._inheritedContext = value;
 			}
 
-			bindable.ApplyBindings(skipBindingContext:false, fromBindingContextChanged:true);
+			bindable.ApplyBindings(skipBindingContext: false, fromBindingContextChanged: true);
 			bindable.OnBindingContextChanged();
 		}
 
@@ -233,7 +270,8 @@ namespace Xamarin.Forms
 
 		protected void UnapplyBindings()
 		{
-			foreach (var context in _properties.Values) {
+			foreach (var context in _properties.Values)
+			{
 				if (context.Binding == null)
 					continue;
 
@@ -328,6 +366,8 @@ namespace Xamarin.Forms
 			if (checkAccess && property.IsReadOnly)
 				throw new InvalidOperationException($"The BindableProperty \"{property.PropertyName}\" is readonly.");
 
+			if (fromStyle)
+				SetBackupStyleValue(property, value);
 			if (fromStyle && !CanBeSetFromStyle(property))
 				return;
 
@@ -342,6 +382,13 @@ namespace Xamarin.Forms
 		public void SetValueCore(BindableProperty property, object value, SetValueFlags attributes = SetValueFlags.None)
 			=> SetValueCore(property, value, attributes, SetValuePrivateFlags.Default);
 
+		void SetBackupStyleValue(BindableProperty property, object value)
+		{
+			var context = GetOrCreateContext(property);
+			context.StyleValueSet = true;
+			context.StyleValue = value;
+		}
+
 		internal void SetValueCore(BindableProperty property, object value, SetValueFlags attributes, SetValuePrivateFlags privateAttributes)
 		{
 			bool checkAccess = (privateAttributes & SetValuePrivateFlags.CheckAccess) != 0;
@@ -354,13 +401,13 @@ namespace Xamarin.Forms
 				throw new ArgumentNullException(nameof(property));
 			if (checkAccess && property.IsReadOnly)
 			{
-				Log.Warning("BindableObject", $"Can not set the BindableProperty \"{property.PropertyName}\" because it is readonly.");
+				Log.Warning("BindableObject", $"Cannot set the BindableProperty \"{property.PropertyName}\" because it is readonly.");
 				return;
 			}
 
 			if (!converted && !property.TryConvert(ref value))
 			{
-				Log.Warning("SetValue", $"Can not convert {value} to type '{property.ReturnType}'");
+				Log.Warning("SetValue", $"Cannot convert {value} to type '{property.ReturnType}'");
 				return;
 			}
 
@@ -371,10 +418,12 @@ namespace Xamarin.Forms
 				value = property.CoerceValue(this, value);
 
 			BindablePropertyContext context = GetOrCreateContext(property);
-			if (manuallySet) {
+			if (manuallySet)
+			{
 				context.Attributes |= BindableContextAttributes.IsManuallySet;
 				context.Attributes &= ~BindableContextAttributes.IsSetFromStyle;
-			} else
+			}
+			else
 				context.Attributes &= ~BindableContextAttributes.IsManuallySet;
 
 			if (fromStyle)
@@ -467,8 +516,9 @@ namespace Xamarin.Forms
 		internal void ApplyBindings(bool skipBindingContext, bool fromBindingContextChanged)
 		{
 			var prop = _properties.Values.ToArray();
-			for (int i = 0, propLength = prop.Length; i < propLength; i++) {
-				BindablePropertyContext context = prop [i];
+			for (int i = 0, propLength = prop.Length; i < propLength; i++)
+			{
+				BindablePropertyContext context = prop[i];
 				BindingBase binding = context.Binding;
 				if (binding == null)
 					continue;
@@ -496,7 +546,7 @@ namespace Xamarin.Forms
 		static void BindingContextPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
 		{
 			bindable._inheritedContext = null;
-			bindable.ApplyBindings(skipBindingContext: true, fromBindingContextChanged:true);
+			bindable.ApplyBindings(skipBindingContext: true, fromBindingContextChanged: true);
 			bindable.OnBindingContextChanged();
 		}
 
@@ -561,7 +611,7 @@ namespace Xamarin.Forms
 		}
 
 		[Flags]
-		enum BindableContextAttributes
+		internal enum BindableContextAttributes
 		{
 			IsManuallySet = 1 << 0,
 			IsBeingSet = 1 << 1,
@@ -578,6 +628,9 @@ namespace Xamarin.Forms
 			public Queue<SetValueArgs> DelayedSetters;
 			public BindableProperty Property;
 			public object Value;
+
+			public bool StyleValueSet;
+			public object StyleValue;
 		}
 
 		[Flags]

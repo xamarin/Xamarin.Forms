@@ -1,18 +1,13 @@
-﻿using Android.Content;
-#if __ANDROID_29__
-using AndroidX.Core.Widget;
-using AndroidX.DrawerLayout.Widget;
-#else
-using Android.Support.V4.Widget;
-#endif
+﻿using System;
+using System.ComponentModel;
+using Android.Content;
+using Android.Graphics;
 using Android.Util;
 using Android.Views;
-using System;
-using System.ComponentModel;
+using AndroidX.DrawerLayout.Widget;
 using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
-using AColor = Android.Graphics.Color;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -20,14 +15,40 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		#region IAppearanceObserver
 
+
 		void IAppearanceObserver.OnAppearanceChanged(ShellAppearance appearance)
 		{
-			//if (appearance == null)
-				UpdateScrimColor(Color.Default);
-			//else
-			//	UpdateScrimColor(appearance.FlyoutBackdropColor);
-		}
+			var previousFlyoutWidth = FlyoutWidth;
+			var previousFlyoutHeight = FlyoutHeight;
 
+			if (appearance == null)
+			{
+				UpdateScrim(Brush.Transparent);
+				_flyoutWidth = -1;
+				_flyoutHeight = LP.MatchParent;
+			}
+			else
+			{
+				UpdateScrim(appearance.FlyoutBackdrop);
+
+				if (appearance.FlyoutHeight != -1)
+					_flyoutHeight = Context.ToPixels(appearance.FlyoutHeight);
+				else
+					_flyoutHeight = LP.MatchParent;
+
+				if (appearance.FlyoutWidth != -1)
+					_flyoutWidth = Context.ToPixels(appearance.FlyoutWidth);
+				else
+					_flyoutWidth = -1;
+			}
+
+			if (previousFlyoutWidth != FlyoutWidth || previousFlyoutHeight != FlyoutHeight)
+			{
+				UpdateFlyoutSize();
+				if (_content != null)
+					UpdateDrawerLockMode(_behavior);
+			}
+		}
 		#endregion IAppearanceObserver
 
 		#region IShellFlyoutRenderer
@@ -55,6 +76,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void IDrawerListener.OnDrawerSlide(AView drawerView, float slideOffset)
 		{
+			_scrimOpacity = (int)(slideOffset * 255);
 		}
 
 		void IDrawerListener.OnDrawerStateChanged(int newState)
@@ -71,8 +93,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		void IFlyoutBehaviorObserver.OnFlyoutBehaviorChanged(FlyoutBehavior behavior)
 		{
+			bool closeAfterUpdate = (behavior == FlyoutBehavior.Flyout && _behavior == FlyoutBehavior.Locked);
 			_behavior = behavior;
 			UpdateDrawerLockMode(behavior);
+
+			if (closeAfterUpdate)
+				CloseDrawer(_flyoutContent.AndroidView, false);
 		}
 
 		#endregion IFlyoutBehaviorObserver
@@ -81,24 +107,33 @@ namespace Xamarin.Forms.Platform.Android
 		readonly IShellContext _shellContext;
 		AView _content;
 		IShellFlyoutContentRenderer _flyoutContent;
-		int _flyoutWidth;
+		int _flyoutWidthDefault;
+		double _flyoutWidth = -1;
+		double _flyoutHeight;
+
 		int _currentLockMode;
 		bool _disposed;
-		Color _scrimColor;
+		Brush _scrimBrush;
+		Paint _scrimPaint;
+		int _previousHeight;
+		int _previousWidth;
+		int _scrimOpacity;
 		FlyoutBehavior _behavior;
 
 		public ShellFlyoutRenderer(IShellContext shellContext, Context context) : base(context)
 		{
-			_scrimColor = Color.Default;
+			_scrimBrush = Brush.Default;
 			_shellContext = shellContext;
+			_flyoutHeight = LP.MatchParent;
 
 			Shell.PropertyChanged += OnShellPropertyChanged;
-
 			ShellController.AddAppearanceObserver(this, Shell);
 		}
 
-		Shell Shell => _shellContext.Shell;
+		double FlyoutWidth => (_flyoutWidth == -1) ? _flyoutWidthDefault : _flyoutWidth;
 
+		int FlyoutHeight => (_flyoutHeight == -1) ? LP.MatchParent : (int)_flyoutHeight;
+		Shell Shell => _shellContext.Shell;
 		IShellController ShellController => _shellContext.Shell;
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
@@ -109,6 +144,25 @@ namespace Xamarin.Forms.Platform.Android
 				return false;
 
 			return result;
+		}
+
+		protected override bool DrawChild(Canvas canvas, AView child, long drawingTime)
+		{
+			bool returnValue = base.DrawChild(canvas, child, drawingTime);
+			if (_scrimPaint != null && ((LayoutParams)child.LayoutParameters).Gravity == (int)GravityFlags.NoGravity)
+			{
+				if (_previousHeight != Height || _previousWidth != Width)
+				{
+					_scrimPaint.UpdateBackground(_scrimBrush, Height, Width);
+					_previousHeight = Height;
+					_previousWidth = Width;
+				}
+
+				_scrimPaint.Alpha = _scrimOpacity;
+				canvas.DrawRect(0, 0, Width, Height, _scrimPaint);
+			}
+
+			return returnValue;
 		}
 
 		protected virtual void AttachFlyout(IShellContext context, AView content)
@@ -150,10 +204,9 @@ namespace Xamarin.Forms.Platform.Android
 			var maxWidth = actionBarHeight * 6;
 			width = Math.Min(width, maxWidth);
 
-			_flyoutWidth = width;
+			_flyoutWidthDefault = width;
 
-			_flyoutContent.AndroidView.LayoutParameters =
-				new LayoutParams(width, LP.MatchParent) { Gravity = (int)GravityFlags.Start };
+			UpdateFlyoutSize();
 
 			Profile.FramePartition("AddView Content");
 			AddView(content);
@@ -185,6 +238,13 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		void OnDualScreenServiceScreenChanged(object sender, EventArgs e)
+		{
+			UpdateFlyoutSize();
+			if (_content != null)
+				UpdateDrawerLockMode(_behavior);
+		}
+
 		protected virtual void UpdateDrawerLockMode(FlyoutBehavior behavior)
 		{
 			switch (behavior)
@@ -207,32 +267,67 @@ namespace Xamarin.Forms.Platform.Android
 					Shell.SetValueFromRenderer(Shell.FlyoutIsPresentedProperty, true);
 					_currentLockMode = LockModeLockedOpen;
 					SetDrawerLockMode(_currentLockMode);
-					_content.SetPadding(_flyoutWidth, _content.PaddingTop, _content.PaddingRight, _content.PaddingBottom);
+
+					_content.SetPadding((int)FlyoutWidth, _content.PaddingTop, _content.PaddingRight, _content.PaddingBottom);
 					break;
 			}
 
-			UpdateScrimColor(_scrimColor);
+			UpdateScrim(_scrimBrush);
 		}
 
-		void UpdateScrimColor(Color backdropColor)
+		double _previouslyMeasuredFlyoutWidth;
+		int _previouslyMeasuredFlyoutHeight;
+
+		void UpdateFlyoutSize()
 		{
-			_scrimColor = backdropColor;
+			if (_flyoutContent?.AndroidView != null &&
+				(_previouslyMeasuredFlyoutWidth != FlyoutWidth || _previouslyMeasuredFlyoutHeight != FlyoutHeight))
+			{
+				_previouslyMeasuredFlyoutWidth = FlyoutWidth;
+				_previouslyMeasuredFlyoutHeight = FlyoutHeight;
+
+				_flyoutContent.AndroidView.LayoutParameters =
+					new LayoutParams((int)FlyoutWidth, FlyoutHeight) { Gravity = (int)GravityFlags.Start };
+
+				// This forces a redraw of the flyout
+				// without this the flyout will just be empty once you change
+				// the width
+				if (Shell.FlyoutIsPresented)
+					OpenDrawer(_flyoutContent.AndroidView, false);
+			}
+		}
+
+		void UpdateScrim(Brush backdrop)
+		{
+			_scrimBrush = backdrop;
 
 			if (_behavior == FlyoutBehavior.Locked)
 			{
 				SetScrimColor(Color.Transparent.ToAndroid());
+				_scrimPaint = null;
 			}
 			else
 			{
-				if (backdropColor == Color.Default)
+				if (backdrop is SolidColorBrush solidColor)
 				{
-					unchecked
+					_scrimPaint = null;
+					var backdropColor = solidColor.Color;
+					if (backdropColor == Color.Default)
 					{
-						SetScrimColor((int)DefaultScrimColor);
+						unchecked
+						{
+							SetScrimColor((int)DefaultScrimColor);
+						}
 					}
+					else
+						SetScrimColor(backdropColor.ToAndroid());
 				}
 				else
-					SetScrimColor(_scrimColor.ToAndroid());
+				{
+					_scrimPaint = _scrimPaint ?? new Paint();
+					_scrimPaint.UpdateBackground(_scrimBrush, Height, Width);
+					SetScrimColor(Color.Transparent.ToAndroid());
+				}
 			}
 		}
 
@@ -259,5 +354,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			base.Dispose(disposing);
 		}
+
 	}
 }

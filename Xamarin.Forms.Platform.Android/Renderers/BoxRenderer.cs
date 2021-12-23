@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics.Drawables;
+using Android.Graphics.Drawables.Shapes;
 using Android.Views;
 
 namespace Xamarin.Forms.Platform.Android
@@ -9,7 +10,7 @@ namespace Xamarin.Forms.Platform.Android
 	public class BoxRenderer : VisualElementRenderer<BoxView>
 	{
 		bool _disposed;
-		GradientDrawable _backgroundDrawable;
+		GradientStrokeDrawable _backgroundDrawable;
 
 		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
 
@@ -39,8 +40,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			_motionEventHelper.UpdateElement(e.NewElement);
 
-			UpdateBackgroundColor();
-			UpdateCornerRadius();
+			UpdateBoxView();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -52,32 +52,69 @@ namespace Xamarin.Forms.Platform.Android
 
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == BoxView.ColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
-				UpdateBackgroundColor();
+			if (e.IsOneOf(VisualElement.BackgroundColorProperty, VisualElement.BackgroundProperty, BoxView.ColorProperty))
+				UpdateBoxView();
 			else if (e.PropertyName == BoxView.CornerRadiusProperty.PropertyName)
 				UpdateCornerRadius();
 		}
 
 		protected override void UpdateBackgroundColor()
 		{
-			Color colorToSet = Element.Color;
 
-			if (colorToSet == Color.Default)
-				colorToSet = Element.BackgroundColor;
+		}
 
-			if (_backgroundDrawable != null) {
+		protected override void UpdateBackground()
+		{
 
-				if (colorToSet != Color.Default)
-					_backgroundDrawable.SetColor(colorToSet.ToAndroid());
+		}
+
+		void UpdateBoxView()
+		{
+			UpdateCornerRadius();
+			UpdateBoxBackground();
+		}
+
+		void UpdateBoxBackground()
+		{
+			Brush brushToSet = Element.Background;
+
+			if (!Brush.IsNullOrEmpty(brushToSet))
+			{
+				if (_backgroundDrawable != null)
+					_backgroundDrawable.UpdateBackground(brushToSet);
 				else
-					_backgroundDrawable.SetColor(colorToSet.ToAndroid(Color.Transparent));
-
-				this.SetBackground(_backgroundDrawable);
+				{
+					_backgroundDrawable = new GradientStrokeDrawable
+					{
+						Shape = new RectShape()
+					};
+					_backgroundDrawable.UpdateBackground(brushToSet);
+					this.SetBackground(_backgroundDrawable);
+				}
 			}
-			else {
+			else
+			{
+				Color colorToSet = Element.Color;
+
 				if (colorToSet == Color.Default)
 					colorToSet = Element.BackgroundColor;
-				SetBackgroundColor(colorToSet.ToAndroid(Color.Transparent));
+
+				if (_backgroundDrawable != null)
+				{
+					if (colorToSet != Color.Default)
+						_backgroundDrawable.SetColor(colorToSet.ToAndroid());
+					else
+						_backgroundDrawable.SetColor(colorToSet.ToAndroid(Color.Transparent));
+
+					this.SetBackground(_backgroundDrawable);
+				}
+				else
+				{
+					if (colorToSet == Color.Default)
+						colorToSet = Element.BackgroundColor;
+
+					SetBackgroundColor(colorToSet.ToAndroid(Color.Transparent));
+				}
 			}
 		}
 
@@ -119,8 +156,11 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else
 			{
-				this.SetBackground(_backgroundDrawable = new GradientDrawable());
-				if (Background is GradientDrawable backgroundGradient)
+				this.SetBackground(_backgroundDrawable = new GradientStrokeDrawable
+				{
+					Shape = new RectShape()
+				});
+				if (Background is GradientStrokeDrawable backgroundGradient)
 				{
 					var cornerRadii = new[] {
 						(float)(Context.ToPixels(cornerRadius.TopLeft)),

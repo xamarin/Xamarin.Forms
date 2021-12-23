@@ -2,13 +2,9 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
 using Android.Util;
 using Android.Views;
+using AndroidX.AppCompat.Widget;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AColor = Android.Graphics.Color;
@@ -26,7 +22,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		Typeface _defaultTypeface;
 		bool _isDisposed;
 		ButtonLayoutManager _buttonLayoutManager;
-		string _defaultContentDescription;
 
 		public ButtonRenderer(Context context) : base(context)
 		{
@@ -47,7 +42,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		global::Android.Widget.Button NativeButton => Control;
 
 		protected override void SetContentDescription()
-			=> AutomationPropertiesProvider.SetBasicContentDescription(this, Element, ref _defaultContentDescription);
+			=> base.SetContentDescription(false);
 
 		public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
@@ -199,7 +194,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				NativeButton.LetterSpacing = Element.CharacterSpacing.ToEm();
 			}
-			
+
 		}
 
 		void IOnClickListener.OnClick(AView v) => ButtonElementManager.OnClick(Element, Element, v);

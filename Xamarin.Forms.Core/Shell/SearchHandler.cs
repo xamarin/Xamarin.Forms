@@ -10,7 +10,6 @@ namespace Xamarin.Forms
 {
 	public class SearchHandler : BindableObject, ISearchHandlerController, IPlaceholderElement, IFontElement, ITextElement, ITextAlignmentElement
 	{
-
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static readonly BindablePropertyKey IsFocusedPropertyKey = BindableProperty.CreateReadOnly(nameof(IsFocused),
 			typeof(bool), typeof(VisualElement), default(bool), propertyChanged: OnIsFocusedPropertyChanged);
@@ -50,7 +49,7 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SetIsFocused(bool value)
 		{
-			SetValueCore(IsFocusedPropertyKey.BindableProperty, value);
+			SetValueCore(IsFocusedPropertyKey, value);
 		}
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public event EventHandler<FocusRequestArgs> FocusChangeRequested;
@@ -78,12 +77,12 @@ namespace Xamarin.Forms
 
 		protected virtual void OnFocused()
 		{
-			
+
 		}
 
 		protected virtual void OnUnfocus()
 		{
-			
+
 		}
 
 		public static readonly BindableProperty KeyboardProperty = BindableProperty.Create(nameof(Keyboard), typeof(Keyboard), typeof(SearchHandler), Keyboard.Default, coerceValue: (o, v) => (Keyboard)v ?? Keyboard.Default);
@@ -135,6 +134,21 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty PlaceholderProperty = PlaceholderElement.PlaceholderProperty;
 
 		public static readonly BindableProperty PlaceholderColorProperty = PlaceholderElement.PlaceholderColorProperty;
+
+		public static readonly BindableProperty TextTransformProperty = TextElement.TextTransformProperty;
+
+		public TextTransform TextTransform
+		{
+			get => (TextTransform)GetValue(TextTransformProperty);
+			set => SetValue(TextTransformProperty, value);
+		}
+
+		void ITextElement.OnTextTransformChanged(TextTransform oldValue, TextTransform newValue)
+		{
+		}
+
+		public virtual string UpdateFormsText(string source, TextTransform textTransform)
+			=> TextTransformUtilites.GetTransformedText(source, textTransform);
 
 		public Color CancelButtonColor
 		{
@@ -246,6 +260,8 @@ namespace Xamarin.Forms
 			OnQueryConfirmed();
 		}
 
+		public static readonly BindableProperty AutomationIdProperty = BindableProperty.Create(nameof(AutomationId), typeof(string), typeof(SearchHandler), null);
+
 		public static readonly BindableProperty ClearIconHelpTextProperty =
 			BindableProperty.Create(nameof(ClearIconHelpText), typeof(string), typeof(SearchHandler), null, BindingMode.OneTime,
 				propertyChanged: (b, o, n) => ((SearchHandler)b).UpdateAutomationProperties());
@@ -321,7 +337,7 @@ namespace Xamarin.Forms
 			BindableProperty.Create(nameof(SearchBoxVisibility), typeof(SearchBoxVisibility), typeof(SearchHandler), SearchBoxVisibility.Expanded, BindingMode.OneWay);
 
 		static readonly BindablePropertyKey SelectedItemPropertyKey =
-			BindableProperty.CreateReadOnly (nameof(SelectedItem), typeof(object), typeof(SearchHandler), null, BindingMode.OneWayToSource);
+			BindableProperty.CreateReadOnly(nameof(SelectedItem), typeof(object), typeof(SearchHandler), null, BindingMode.OneWayToSource);
 
 		public static BindableProperty SelectedItemProperty = SelectedItemPropertyKey.BindableProperty;
 
@@ -329,6 +345,12 @@ namespace Xamarin.Forms
 			BindableProperty.Create(nameof(ShowsResults), typeof(bool), typeof(SearchHandler), false, BindingMode.OneTime);
 
 		private ListProxy _listProxy;
+
+		public string AutomationId
+		{
+			get { return (string)GetValue(AutomationIdProperty); }
+			set { SetValue(AutomationIdProperty, value); }
+		}
 
 		public ImageSource ClearIcon
 		{
@@ -518,7 +540,7 @@ namespace Xamarin.Forms
 
 		void ITextElement.OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
 		{
-			
+
 		}
 
 		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)

@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 	[Category(UITestCategories.ManualReview)]
 	[Category(UITestCategories.CarouselView)]
+	[Category(UITestCategories.UwpIgnore)]
 #endif
 #if APP
 	[XamlCompilation(XamlCompilationOptions.Compile)]
@@ -31,7 +32,6 @@ namespace Xamarin.Forms.Controls.Issues
 		public Issue9827()
 		{
 #if APP
-			Device.SetFlags(new List<string>(Device.Flags ?? new List<string>()) { ExperimentalFlags.CarouselViewExperimental });
 			InitializeComponent();
 #endif
 		}

@@ -101,19 +101,25 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 				targetFont = span.ToNSFont();
 #endif
-
 			var fgcolor = span.TextColor;
+
 			if (fgcolor.IsDefault)
 				fgcolor = defaultForegroundColor;
-			if (fgcolor.IsDefault)
-				fgcolor = ColorExtensions.LabelColor.ToColor();
+
+			if (owner is Entry && !fgcolor.IsDefault)
+				fgcolor = defaultForegroundColor;
 
 #if __MOBILE__
+			if (fgcolor.IsDefault)
+				fgcolor = ColorExtensions.LabelColor.ToColor();
 			UIColor spanFgColor;
 			UIColor spanBgColor;
 			spanFgColor = fgcolor.ToUIColor();
 			spanBgColor = span.BackgroundColor.ToUIColor();
 #else
+
+			if (fgcolor.IsDefault)
+				fgcolor = ColorExtensions.LabelColor.ToColor(NSColorSpace.GenericRGBColorSpace);
 			NSColor spanFgColor;
 			NSColor spanBgColor;
 			spanFgColor = fgcolor.ToNSColor();
@@ -146,6 +152,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (formattedString == null)
 				return null;
+
 			var attributed = new NSMutableAttributedString();
 
 			for (int i = 0; i < formattedString.Spans.Count; i++)

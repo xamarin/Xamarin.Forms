@@ -1,22 +1,19 @@
 using System;
+using System.Collections.Generic;
 using Android.Content;
-#if __ANDROID_29__
-using AndroidX.AppCompat.Widget;
-using AndroidX.RecyclerView.Widget;
-#else
-using Android.Support.V7.Widget;
-#endif
 using Android.Widget;
+using AndroidX.RecyclerView.Widget;
 using Object = Java.Lang.Object;
 using ViewGroup = Android.Views.ViewGroup;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class ItemsViewAdapter<TItemsView, TItemsViewSource> : RecyclerView.Adapter 
+	public class ItemsViewAdapter<TItemsView, TItemsViewSource> : RecyclerView.Adapter
 		where TItemsView : ItemsView
 		where TItemsViewSource : IItemsViewSource
 	{
 		protected readonly TItemsView ItemsView;
+		protected readonly List<ItemContentView> ContentViews;
 		readonly Func<View, Context, ItemContentView> _createItemContentView;
 		protected internal TItemsViewSource ItemsSource;
 
@@ -26,6 +23,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected internal ItemsViewAdapter(TItemsView itemsView, Func<View, Context, ItemContentView> createItemContentView = null)
 		{
 			ItemsView = itemsView ?? throw new ArgumentNullException(nameof(itemsView));
+			ContentViews = new List<ItemContentView>();
 
 			UpdateUsingItemTemplate();
 
@@ -92,6 +90,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			var itemContentView = _createItemContentView.Invoke(ItemsView, context);
 
+			ContentViews.Add(itemContentView);
+
 			return new TemplatedItemViewHolder(itemContentView, ItemsView.ItemTemplate);
 		}
 
@@ -103,7 +103,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				return ItemViewType.TemplatedItem;
 			}
-		
+
 			// No template, just use the Text view
 			return ItemViewType.TextItem;
 		}
@@ -114,6 +114,12 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (disposing)
 				{
+					foreach (var contentView in ContentViews)
+					{
+						contentView.Recycle();
+					}
+					ContentViews.Clear();
+
 					ItemsSource?.Dispose();
 					ItemsView.PropertyChanged -= ItemsViewPropertyChanged;
 				}

@@ -1,6 +1,8 @@
+using CoreGraphics;
 using System.ComponentModel;
 using System.Drawing;
 using UIKit;
+using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -18,11 +20,9 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (Control == null)
 				{
-#if __XCODE11__
-					if(Forms.IsiOS13OrNewer)
+					if (Forms.IsiOS13OrNewer)
 						SetNativeControl(new UIActivityIndicatorView(RectangleF.Empty) { ActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.Medium });
 					else
-#endif
 						SetNativeControl(new UIActivityIndicatorView(RectangleF.Empty) { ActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray });
 				}
 
@@ -50,6 +50,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateIsRunning()
 		{
+			// You can't call StartAnimating until it has been added to the top UIView (its Superview), otherwise it doesn't do
+			// anything.It seems to affect any cell based view, where the cell might not be visible, when the Activity starts its animation.
+			// See https://github.com/xamarin/Xamarin.Forms/pull/11339
+			if (Superview == null || Control?.Superview == null)
+				return;
+
 			if (Element.IsRunning)
 				Control.StartAnimating();
 			else
@@ -58,8 +64,28 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal void PreserveState()
 		{
-			if (Control != null && !Control.IsAnimating && Element != null && Element.IsRunning)
-				Control.StartAnimating();
+			// Re-apply is running state in case animation was stopped by external means/events and/or Superview changes
+			// (e.g. in UITableView, see ListViewRenderer).
+			// NOTE: not sure if this is still needed after PR11339
+			UpdateIsRunning();
+		}
+
+		public override void Draw(CGRect rect)
+		{
+			base.Draw(rect);
+
+			// Ensure running state is applied when Superview has changed
+			// See https://github.com/xamarin/Xamarin.Forms/pull/11339
+			UpdateIsRunning();
+		}
+
+		public override void LayoutSubviews()
+		{
+			base.LayoutSubviews();
+
+			// Ensure running state is applied when Superview has changed
+			// See https://github.com/xamarin/Xamarin.Forms/pull/11339
+			UpdateIsRunning();
 		}
 	}
 }

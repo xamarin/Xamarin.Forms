@@ -1,24 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using WPFCheckBox = System.Windows.Controls.CheckBox;
-using WControl = System.Windows.Controls.Control;
-using System.Windows.Media;
+﻿using System.ComponentModel;
+using WBrush = System.Windows.Media.Brush;
 
 namespace Xamarin.Forms.Platform.WPF
 {
 	public class CheckBoxRenderer : ViewRenderer<CheckBox, FormsCheckBox>
 	{
 		bool _isDisposed;
-		static Brush _tintDefaultBrush = Color.Transparent.ToBrush();
+		static WBrush _tintDefaultBrush = Color.Transparent.ToBrush();
 
 		public CheckBoxRenderer()
 		{
-			
+
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<CheckBox> e)
@@ -43,7 +35,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 			base.OnElementChanged(e);
 		}
-		
+
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
@@ -57,7 +49,7 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateTintColor();
 			}
 		}
-		
+
 		void UpdateTintColor()
 		{
 			if (Element.Color == Color.Default)
@@ -76,7 +68,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			((IElementController)Element).SetValueFromRenderer(CheckBox.IsCheckedProperty, Control.IsChecked);
 		}
-		
+
 		protected override void Dispose(bool disposing)
 		{
 			if (_isDisposed)

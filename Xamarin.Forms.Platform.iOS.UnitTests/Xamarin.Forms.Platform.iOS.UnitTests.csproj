@@ -30,13 +30,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Use2017)' == 'true' ">
-    <DefineConstants>$(DefineConstants);__XCODE10__</DefineConstants>
-    <OutputPath>$(OutputPath)\2017</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Use2017)' != 'true' ">
-    <DefineConstants>$(DefineConstants);__XCODE11__</DefineConstants>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -55,20 +48,30 @@
     </Compile>
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="BackgroundColorTests.cs" />
+    <Compile Include="ItemsViewControllerLeakTest.cs" />
+    <Compile Include="ColorComparison.cs" />
     <Compile Include="CornerRadiusTests.cs" />
+    <Compile Include="DatePickerTests.cs" />
     <Compile Include="EmbeddingTests.cs" />
     <Compile Include="FlowDirectionTests.cs" />
     <Compile Include="FrameTests.cs" />
+    <Compile Include="HtmlLabelTests.cs" />
     <Compile Include="ImageButtonTests.cs" />
     <Compile Include="IsEnabledTests.cs" />
     <Compile Include="IsVisibleTests.cs" />
     <Compile Include="NavigationTests.cs" />
+    <Compile Include="ObservableItemsSourceTests.cs" />
     <Compile Include="OpacityTests.cs" />
     <Compile Include="PlatformTestFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RotationTests.cs" />
     <Compile Include="ScaleTests.cs" />
     <Compile Include="TextTests.cs" />
+    <Compile Include="BackgroundTests.cs" />
+    <Compile Include="TimePickerTests.cs" />
+    <Compile Include="TransformationTests.cs" />
+    <Compile Include="LabelTests.cs" />
+    <Compile Include="ShapeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
@@ -84,11 +87,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NUnit">
-      <Version>3.12.0</Version>
+      <Version>3.13.1</Version>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Use2017)' == 'true'">
-    <Reference Include="netstandard" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

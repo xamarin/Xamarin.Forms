@@ -9,6 +9,7 @@ using Xamarin.Forms.Internals;
 using Windows.UI.Xaml.Input;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.VisualElement;
 using WRect = Windows.Foundation.Rect;
+using WSolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -284,6 +285,8 @@ namespace Xamarin.Forms.Platform.UWP
 				_control.GotFocus -= OnGotFocus;
 				_control.GettingFocus -= OnGettingFocus;
 			}
+
+			UpdateIsFocused(false);
 			SetNativeControl(null);
 			SetElement(null);
 		}
@@ -292,6 +295,11 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (Element == null || availableSize.Width * availableSize.Height == 0)
 				return new Windows.Foundation.Size(0, 0);
+
+			if (Element is Layout layout)
+			{
+				layout.ResolveLayoutChanges();
+			}
 
 			Element.IsInNativeLayout = true;
 
@@ -361,6 +369,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateEnabled();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				UpdateBackground();
 			else if (e.PropertyName == AutomationProperties.HelpTextProperty.PropertyName)
 				SetAutomationPropertiesHelpText();
 			else if (e.PropertyName == AutomationProperties.NameProperty.PropertyName)
@@ -465,7 +475,9 @@ namespace Xamarin.Forms.Platform.UWP
 			control.GotFocus += OnControlGotFocus;
 			control.LostFocus += OnControlLostFocus;
 			Children.Add(control);
+			
 			UpdateBackgroundColor();
+			UpdateBackground();
 
 			if (Element != null && !string.IsNullOrEmpty(Element.AutomationId))
 				SetAutomationId(Element.AutomationId);
@@ -493,6 +505,7 @@ namespace Xamarin.Forms.Platform.UWP
 				else
 				{
 					_control.ClearValue(Windows.UI.Xaml.Controls.Control.BackgroundProperty);
+					backgroundLayer.ClearValue(BackgroundProperty);
 				}
 			}
 			else
@@ -504,6 +517,47 @@ namespace Xamarin.Forms.Platform.UWP
 				else
 				{
 					backgroundLayer.ClearValue(BackgroundProperty);
+				}
+			}
+		}
+
+		protected virtual void UpdateBackground()
+		{
+			Color backgroundColor = Element.BackgroundColor;
+			Brush background = Element.Background;
+
+			var backgroundLayer = (Panel)this;
+			if (_backgroundLayer != null)
+			{
+				backgroundLayer = _backgroundLayer;
+				Background = null;
+			}
+
+			if (_control != null)
+			{
+				if (!Brush.IsNullOrEmpty(background))
+					_control.Background = background.ToBrush();
+				else
+				{
+					if (!backgroundColor.IsDefault)
+						_control.Background = backgroundColor.ToBrush();
+					else
+					{
+						_control.ClearValue(Windows.UI.Xaml.Controls.Control.BackgroundProperty);
+						backgroundLayer.ClearValue(BackgroundProperty);
+					}
+				}
+			}
+			else
+			{
+				if (!Brush.IsNullOrEmpty(background))
+					backgroundLayer.Background = background.ToBrush();
+				else
+				{
+					if (!backgroundColor.IsDefault)
+						backgroundLayer.Background = backgroundColor.ToBrush();
+					else
+						backgroundLayer.ClearValue(BackgroundProperty);
 				}
 			}
 		}
@@ -583,7 +637,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnControlGotFocus(object sender, RoutedEventArgs args)
 		{
-			((IVisualElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
+			UpdateIsFocused(true);
 		}
 
 		void OnControlLoaded(object sender, RoutedEventArgs args)
@@ -593,7 +647,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnControlLostFocus(object sender, RoutedEventArgs args)
 		{
-			((IVisualElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
+			UpdateIsFocused(false);
 		}
 
 		void OnTrackerUpdated(object sender, EventArgs e)
@@ -607,6 +661,17 @@ namespace Xamarin.Forms.Platform.UWP
 				_control.IsEnabled = Element.IsEnabled;
 			else
 				IsHitTestVisible = Element.IsEnabled && !Element.InputTransparent;
+		}
+
+		void UpdateIsFocused(bool isFocused)
+		{
+			if (Element == null)
+				return;
+
+			bool updateIsFocused = (isFocused && !Element.IsFocused) || (!isFocused && Element.IsFocused);
+
+			if (updateIsFocused && Element is IVisualElementController visualElementController)
+				visualElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, isFocused);
 		}
 
 		void UpdateInputTransparent()
@@ -631,7 +696,7 @@ namespace Xamarin.Forms.Platform.UWP
 				// in hit testing. 
 				if (Element is Layout && Background == null)
 				{
-					Background = new SolidColorBrush(Windows.UI.Colors.Transparent);
+					Background = new WSolidColorBrush(Windows.UI.Colors.Transparent);
 				}
 			}
 		}
@@ -655,7 +720,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_backgroundLayer = new Canvas { IsHitTestVisible = false };
 			Children.Insert(0, _backgroundLayer);
+
 			UpdateBackgroundColor();
+			UpdateBackground();
 		}
 
 		void RemoveBackgroundLayer()
@@ -667,7 +734,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 			Children.Remove(_backgroundLayer);
 			_backgroundLayer = null;
+
 			UpdateBackgroundColor();
+			UpdateBackground();
 		}
 
 		internal static bool NeedsBackgroundLayer(VisualElement element)

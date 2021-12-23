@@ -86,6 +86,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (!_disposed && disposing)
 			{
+
+				_disposed = true;
+
 				if (Element != null)
 				{
 					if (NavigationPage != null)
@@ -99,6 +102,8 @@ namespace Xamarin.Forms.Platform.MacOS
 						NavigationPage.PoppedToRoot -= OnPoppedToRoot;
 
 						NavigationPage.SendDisappearing();
+
+						Platform.NativeToolbarTracker.TryHide(NavigationPage);
 					}
 					((Element as IPageContainer<Page>)?.CurrentPage as Page)?.SendDisappearing();
 					Element.PropertyChanged -= OnElementPropertyChanged;
@@ -121,10 +126,6 @@ namespace Xamarin.Forms.Platform.MacOS
 					_currentStack.Clear();
 					_currentStack = null;
 				}
-
-				Platform.NativeToolbarTracker.Navigation = null;
-				_disposed = true;
-
 			}
 			base.Dispose(disposing);
 		}
@@ -214,6 +215,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			NavigationPage.PoppedToRoot += OnPoppedToRoot;
 
 			UpdateBarBackgroundColor();
+			UpdateBarBackground();
 			UpdateBarTextColor();
 
 			_events = new EventTracker(this);
@@ -426,6 +428,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			Platform.NativeToolbarTracker.UpdateToolBar();
 		}
 
+		void UpdateBarBackground()
+		{
+			Platform.NativeToolbarTracker.UpdateToolBar();
+		}
+
 		void UpdateBarTextColor()
 		{
 			Platform.NativeToolbarTracker.UpdateToolBar();
@@ -440,9 +447,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (_tracker == null)
 				return;
 
-			if (e.PropertyName == Xamarin.Forms.NavigationPage.BarBackgroundColorProperty.PropertyName)
+			if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
 				UpdateBarBackgroundColor();
-			else if (e.PropertyName == Xamarin.Forms.NavigationPage.BarTextColorProperty.PropertyName)
+			else if (e.PropertyName == NavigationPage.BarBackgroundProperty.PropertyName)
+				UpdateBarBackground();
+			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName)
 				UpdateBarTextColor();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();

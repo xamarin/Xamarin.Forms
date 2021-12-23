@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using CoreGraphics;
 using NUnit.Framework;
 using UIKit;
@@ -12,6 +13,13 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 			var data = bitmap.AsPNG();
 			var imageAsString = data.GetBase64EncodedString(Foundation.NSDataBase64EncodingOptions.None);
 			return $"Expected {expectedColor} at point {x},{y} in renderered view. This is what it looked like:<img>{imageAsString}</img>";
+		}
+
+		public static string CreateColorError(this UIImage bitmap, string message)
+		{
+			var data = bitmap.AsPNG();
+			var imageAsString = data.GetBase64EncodedString(Foundation.NSDataBase64EncodingOptions.None);
+			return $"{message}. This is what it looked like:<img>{imageAsString}</img>";
 		}
 
 		public static UIImage ToBitmap(this UIView view)
@@ -64,23 +72,7 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 			return pixel;
 		}
 
-		static bool ARGBEquivalent(UIColor color1, UIColor color2) 
-		{
-			color1.GetRGBA(out nfloat red1, out nfloat green1, out nfloat blue1, out nfloat alpha1);
-			color2.GetRGBA(out nfloat red2, out nfloat green2, out nfloat blue2, out nfloat alpha2);
-
-			const double tolerance = 0.000001;
-
-			return Equal(red1, red2, tolerance)
-				&& Equal(green1, green2, tolerance)
-				&& Equal(blue1, blue2, tolerance) 
-				&& Equal(alpha1, alpha2, tolerance);
-		}
-
-		static bool Equal(nfloat v1, nfloat v2, double tolerance) 
-		{
-			return Math.Abs(v1 - v2) <= tolerance;
-		}
+		
 
 		public static UIImage AssertColorAtPoint(this UIImage bitmap, UIColor expectedColor, int x, int y)
 		{
@@ -88,12 +80,12 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 			{
 				var cap = bitmap.ColorAtPoint(x, y);
 
-				if (!ARGBEquivalent(cap, expectedColor))
+				if (!ColorComparison.ARGBEquivalent(cap, expectedColor))
 				{
 					System.Diagnostics.Debug.WriteLine("Here");
 				}
 
-				Assert.That(cap, Is.EqualTo(expectedColor).Using<UIColor>(ARGBEquivalent),
+				Assert.That(cap, Is.EqualTo(expectedColor).Using<UIColor>(ColorComparison.ARGBEquivalent),
 					() => bitmap.CreateColorAtPointError(expectedColor, x, y));
 
 				return bitmap;
@@ -166,6 +158,54 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 		{
 			var bitmap = view.ToBitmap();
 			return bitmap.AssertColorAtTopRight(expectedColor);
+		}
+
+		public static UIImage AssertContainsColor(this UIView view, UIColor expectedColor)
+		{
+			return view.ToBitmap().AssertContainsColor(expectedColor);
+		}
+
+		public static UIImage AssertContainsColor(this UIImage bitmap, UIColor expectedColor)
+		{
+			for (int x = 0; x < bitmap.Size.Width; x++)
+			{
+				for (int y = 0; y < bitmap.Size.Height; y++)
+				{
+					if (ColorComparison.ARGBEquivalent(bitmap.ColorAtPoint(x, y), expectedColor))
+					{
+						return bitmap;
+					}
+				}
+			}
+
+			Assert.Fail(CreateColorError(bitmap, $"Color {expectedColor} not found."));
+			return bitmap;
+		}
+
+		public static async Task AssertEqualsAsync(this UIImage expectedBitmap, UIImage actualBitmap)
+		{
+			if(!actualBitmap.AsPNG().IsEqual(expectedBitmap.AsPNG()))
+			{
+				string failureMessage = null;
+				await Device.InvokeOnMainThreadAsync(() =>
+				{
+					var view = new UIView();
+					UIImageView actualView = new UIImageView() { Image = actualBitmap };
+					UIImageView expectedView = new UIImageView() { Image = expectedBitmap };
+
+					actualView.Frame = new CGRect(0, 0, actualBitmap.Size.Width, actualBitmap.Size.Height);
+					expectedView.Frame = new CGRect(0, actualBitmap.Size.Height + 40, expectedBitmap.Size.Width, expectedBitmap.Size.Height);
+
+					view.Frame = new CGRect(0, 0,
+						actualView.Frame.Width + expectedView.Frame.Width,
+						actualView.Frame.Height + expectedView.Frame.Height);
+
+					view.AddSubviews(actualView, expectedView);
+					failureMessage = CreateColorError(view.ToBitmap(), "Actual (top) vs Expected (bottom)");
+				});
+
+				Assert.Fail(failureMessage);
+			}
 		}
 	}
 }

@@ -78,6 +78,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_wrapGrid.SizeChanged -= WrapGridSizeChanged;
 			_wrapGrid.SizeChanged += WrapGridSizeChanged;
+
+			UpdateItemSize();
 		}
 
 		void WrapGridSizeChanged(object sender, SizeChangedEventArgs e)
@@ -124,7 +126,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_emptyViewContentControl = GetTemplateChild("EmptyViewContentControl") as ContentControl;
 
-			if (_emptyView != null)
+			if (_emptyView != null && _emptyViewContentControl != null)
 			{
 				_emptyViewContentControl.Content = _emptyView;
 			}

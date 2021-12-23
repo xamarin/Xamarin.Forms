@@ -1,40 +1,33 @@
-﻿using Android.Content;
-using Android.Graphics.Drawables;
-using Android.OS;
-#if __ANDROID_29__
-using Google.Android.Material.BottomNavigation;
-using Google.Android.Material.BottomSheet;
-#else
-using Android.Support.Design.Widget;
-#endif
-using Android.Views;
-using Android.Widget;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Threading.Tasks;
+using Android.Content;
+using Android.Graphics.Drawables;
+using Android.OS;
+using Android.Views;
+using Android.Widget;
+using Google.Android.Material.BottomNavigation;
+using Google.Android.Material.BottomSheet;
+using Google.Android.Material.Navigation;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
-using ColorStateList = Android.Content.Res.ColorStateList;
 using IMenu = Android.Views.IMenu;
 using LP = Android.Views.ViewGroup.LayoutParams;
 using Orientation = Android.Widget.Orientation;
-using Typeface = Android.Graphics.Typeface;
-using TypefaceStyle = Android.Graphics.TypefaceStyle;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class ShellItemRenderer : ShellItemRendererBase, BottomNavigationView.IOnNavigationItemSelectedListener, IAppearanceObserver
+	public class ShellItemRenderer : ShellItemRendererBase, NavigationBarView.IOnItemSelectedListener, IAppearanceObserver
 	{
-		#region IOnNavigationItemSelectedListener
+		#region IOnItemSelectedListener
 
-		bool BottomNavigationView.IOnNavigationItemSelectedListener.OnNavigationItemSelected(IMenuItem item)
+		bool NavigationBarView.IOnItemSelectedListener.OnNavigationItemSelected(IMenuItem item)
 		{
 			return OnItemSelected(item);
 		}
 
-		#endregion IOnNavigationItemSelectedListener
+		#endregion IOnItemSelectedListener
 
 		#region IAppearanceObserver
 
@@ -71,7 +64,7 @@ namespace Xamarin.Forms.Platform.Android
 			_navigationArea = _outerLayout.FindViewById<FrameLayout>(Resource.Id.bottomtab_navarea);
 
 			_bottomView.SetBackgroundColor(Color.White.ToAndroid());
-			_bottomView.SetOnNavigationItemSelectedListener(this);
+			_bottomView.SetOnItemSelectedListener(this);
 
 			if (ShellItem == null)
 				throw new InvalidOperationException("Active Shell Item not set. Have you added any Shell Items to your Shell?");
@@ -110,7 +103,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_bottomView != null)
 			{
-				_bottomView?.SetOnNavigationItemSelectedListener(null);
+				_bottomView.SetOnItemSelectedListener(null);
 				_bottomView?.Background?.Dispose();
 				_bottomView?.Dispose();
 			}
@@ -158,7 +151,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			return CreateMoreBottomSheet((int index, BottomSheetDialog dialog) =>
 			{
-				selectCallback(ShellItem.Items[index], dialog);
+				selectCallback(ShellItemController.GetItems()[index], dialog);
 			});
 		}
 
@@ -175,7 +168,7 @@ namespace Xamarin.Forms.Platform.Android
 			for (int i = _bottomView.MaxItemCount - 1; i < items.Count; i++)
 			{
 				var closure_i = i;
-				var shellContent = ShellItem.Items[i];
+				var shellContent = items[i];
 
 				using (var innerLayout = new LinearLayout(Context))
 				{
@@ -305,7 +298,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnMoreItemSelected(int shellSectionIndex, BottomSheetDialog dialog)
 		{
-			OnMoreItemSelected(ShellItem.Items[shellSectionIndex], dialog);
+			OnMoreItemSelected(ShellItemController.GetItems()[shellSectionIndex], dialog);
 		}
 
 		protected virtual void OnMoreItemSelected(ShellSection shellSection, BottomSheetDialog dialog)
@@ -320,10 +313,11 @@ namespace Xamarin.Forms.Platform.Android
 		List<(string title, ImageSource icon, bool tabEnabled)> CreateTabList(ShellItem shellItem)
 		{
 			var items = new List<(string title, ImageSource icon, bool tabEnabled)>();
+			var shellItems = ((IShellItemController)shellItem).GetItems();
 
-			for (int i = 0; i < shellItem.Items.Count; i++)
+			for (int i = 0; i < shellItems.Count; i++)
 			{
-				var item = shellItem.Items[i];
+				var item = shellItems[i];
 				items.Add((item.Title, item.Icon, item.IsEnabled));
 			}
 			return items;
@@ -414,7 +408,7 @@ namespace Xamarin.Forms.Platform.Android
 				SetupMenu(menu, _bottomView.MaxItemCount, ShellItem);
 		}
 
-		void UpdateTabBarVisibility()
+		protected virtual void UpdateTabBarVisibility()
 		{
 			if (DisplayedPage == null)
 				return;

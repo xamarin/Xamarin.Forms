@@ -37,7 +37,10 @@ namespace Xamarin.Forms
 		static bool? s_isiOS9OrNewer;
 		static bool? s_isiOS10OrNewer;
 		static bool? s_isiOS11OrNewer;
+		static bool? s_isiOS12OrNewer;
 		static bool? s_isiOS13OrNewer;
+		static bool? s_isiOS14OrNewer;
+		static bool? s_isiOS15OrNewer;
 		static bool? s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden;
 
 		internal static bool IsiOS9OrNewer
@@ -71,6 +74,16 @@ namespace Xamarin.Forms
 			}
 		}
 
+		internal static bool IsiOS12OrNewer
+		{
+			get
+			{
+				if (!s_isiOS12OrNewer.HasValue)
+					s_isiOS12OrNewer = UIDevice.CurrentDevice.CheckSystemVersion(12, 0);
+				return s_isiOS12OrNewer.Value;
+			}
+		}
+
 		internal static bool IsiOS13OrNewer
 		{
 			get
@@ -80,6 +93,27 @@ namespace Xamarin.Forms
 				return s_isiOS13OrNewer.Value;
 			}
 		}
+
+		internal static bool IsiOS14OrNewer
+		{
+			get
+			{
+				if (!s_isiOS14OrNewer.HasValue)
+					s_isiOS14OrNewer = UIDevice.CurrentDevice.CheckSystemVersion(14, 0);
+				return s_isiOS14OrNewer.Value;
+			}
+		}
+
+		internal static bool IsiOS15OrNewer
+		{
+			get
+			{
+				if (!s_isiOS15OrNewer.HasValue)
+					s_isiOS15OrNewer = UIDevice.CurrentDevice.CheckSystemVersion(15, 0);
+				return s_isiOS15OrNewer.Value;
+			}
+		}
+
 
 		internal static bool RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden
 		{
@@ -91,6 +125,30 @@ namespace Xamarin.Forms
 			}
 		}
 #else
+		static bool? s_isSierraOrNewer;
+
+		internal static bool IsSierraOrNewer
+		{
+			get
+			{
+				if (!s_isSierraOrNewer.HasValue)
+					s_isSierraOrNewer = NSProcessInfo.ProcessInfo.IsOperatingSystemAtLeastVersion(new NSOperatingSystemVersion(10, 12, 0));
+				return s_isSierraOrNewer.Value;
+			}
+		}
+
+		static bool? s_isHighSierraOrNewer;
+
+		internal static bool IsHighSierraOrNewer
+		{
+			get
+			{
+				if (!s_isHighSierraOrNewer.HasValue)
+					s_isHighSierraOrNewer = NSProcessInfo.ProcessInfo.IsOperatingSystemAtLeastVersion(new NSOperatingSystemVersion(10, 13, 0));
+				return s_isHighSierraOrNewer.Value;
+			}
+		}
+
 		static bool? s_isMojaveOrNewer;
 
 		internal static bool IsMojaveOrNewer
@@ -116,7 +174,7 @@ namespace Xamarin.Forms
 			}
 
 			s_flags = (string[])flags.Clone();
-			if (s_flags.Contains ("Profile"))
+			if (s_flags.Contains("Profile"))
 				Profile.Enable();
 		}
 
@@ -134,20 +192,34 @@ namespace Xamarin.Forms
 			Device.SetIdiom(UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad ? TargetIdiom.Tablet : TargetIdiom.Phone);
 			Device.SetFlowDirection(UIApplication.SharedApplication.UserInterfaceLayoutDirection.ToFlowDirection());
 #else
+			// Subscribe to notifications in OS Theme changes
+			NSDistributedNotificationCenter.GetDefaultCenter().AddObserver((NSString)"AppleInterfaceThemeChangedNotification", (n) =>
+			{
+				var interfaceStyle = NSUserDefaults.StandardUserDefaults.StringForKey("AppleInterfaceStyle");
+
+				var aquaAppearance = NSAppearance.GetAppearance(interfaceStyle == "Dark" ? NSAppearance.NameDarkAqua : NSAppearance.NameAqua);
+				NSApplication.SharedApplication.Appearance = aquaAppearance;
+
+				Application.Current?.TriggerThemeChanged(new AppThemeChangedEventArgs(interfaceStyle == "Dark" ? OSAppTheme.Dark : OSAppTheme.Light));
+			});
+
 			Device.SetIdiom(TargetIdiom.Desktop);
 			Device.SetFlowDirection(NSApplication.SharedApplication.UserInterfaceLayoutDirection.ToFlowDirection());
-			var mojave = new NSOperatingSystemVersion(10, 14, 0);
-			if (NSProcessInfo.ProcessInfo.IsOperatingSystemAtLeastVersion(mojave) &&
-				typeof(NSApplication).GetProperty("Appearance") is PropertyInfo appearance &&
-				appearance != null)
+
+			if (IsMojaveOrNewer)
 			{
-				var aquaAppearance = NSAppearance.GetAppearance(NSAppearance.NameAqua);
-				appearance.SetValue(NSApplication.SharedApplication, aquaAppearance);
+				var interfaceStyle = NSUserDefaults.StandardUserDefaults.StringForKey("AppleInterfaceStyle");
+				var aquaAppearance = NSAppearance.GetAppearance(interfaceStyle == "Dark" ? NSAppearance.NameDarkAqua : NSAppearance.NameAqua);
+				NSApplication.SharedApplication.Appearance = aquaAppearance;
 			}
 #endif
 			Device.SetFlags(s_flags);
-			Device.PlatformServices = new IOSPlatformServices();
+			var platformServices = new IOSPlatformServices();
+
+			Device.PlatformServices = platformServices;
+
 #if __MOBILE__
+			Device.PlatformInvalidator = platformServices;
 			Device.Info = new IOSDeviceInfo();
 #else
 			Device.Info = new Platform.macOS.MacDeviceInfo();
@@ -193,6 +265,9 @@ namespace Xamarin.Forms
 		}
 
 		class IOSPlatformServices : IPlatformServices
+#if __MOBILE__
+			, IPlatformInvalidate
+#endif
 		{
 			readonly double _fontScalingFactor = 1;
 			public IOSPlatformServices()
@@ -278,9 +353,14 @@ namespace Xamarin.Forms
 
 			public Color GetNamedColor(string name)
 			{
-#if __XCODE11__ && __IOS__
+#if __IOS__
 				UIColor resultColor = null;
 
+				// If not iOS 13, but 11+ we can only get the named colors
+				if (!IsiOS13OrNewer && IsiOS11OrNewer)
+					return (resultColor = UIColor.FromName(name)) == null ? Color.Default : resultColor.ToColor();
+
+				// If iOS 13+ check all dynamic colors too
 				switch (name)
 				{
 					case NamedPlatformColor.Label:
@@ -331,6 +411,9 @@ namespace Xamarin.Forms
 					case NamedPlatformColor.SystemIndigo:
 						resultColor = UIColor.SystemIndigoColor;
 						break;
+					case NamedPlatformColor.SystemOrange:
+						resultColor = UIColor.SystemOrangeColor;
+						break;
 					case NamedPlatformColor.SystemPink:
 						resultColor = UIColor.SystemPinkColor;
 						break;
@@ -358,6 +441,177 @@ namespace Xamarin.Forms
 					return Color.Default;
 
 				return resultColor.ToColor();
+#elif __MACOS__
+
+				NSColor resultColor = null;
+
+				switch (name)
+				{
+					case NamedPlatformColor.AlternateSelectedControlTextColor:
+						resultColor = NSColor.AlternateSelectedControlText;
+							break;
+					case NamedPlatformColor.ControlAccent:
+						if (IsMojaveOrNewer)
+							resultColor = NSColor.ControlAccentColor;
+						break;
+					case NamedPlatformColor.ControlBackgroundColor:
+						resultColor = NSColor.ControlBackground;
+						break;
+					case NamedPlatformColor.ControlColor:
+						resultColor = NSColor.Control;
+						break;
+					case NamedPlatformColor.ControlTextColor:
+						resultColor = NSColor.ControlText;
+						break;
+					case NamedPlatformColor.DisabledControlTextColor:
+						resultColor = NSColor.DisabledControlText;
+						break;
+					case NamedPlatformColor.FindHighlightColor:
+						if (IsHighSierraOrNewer)
+							resultColor = NSColor.FindHighlightColor;
+						break;
+					case NamedPlatformColor.GridColor:
+						resultColor = NSColor.Grid;
+						break;
+					case NamedPlatformColor.HeaderTextColor:
+						resultColor = NSColor.HeaderText;
+						break;
+					case NamedPlatformColor.HighlightColor:
+						resultColor = NSColor.Highlight;
+						break;
+					case NamedPlatformColor.KeyboardFocusIndicatorColor:
+						resultColor = NSColor.KeyboardFocusIndicator;
+						break;
+					case NamedPlatformColor.LabelColor:
+						resultColor = NSColor.LabelColor;
+						break;
+					case NamedPlatformColor.LinkColor:
+						resultColor = NSColor.LinkColor;
+						break;
+					case NamedPlatformColor.PlaceholderTextColor:
+						resultColor = NSColor.PlaceholderTextColor;
+						break;
+					case NamedPlatformColor.QuaternaryLabelColor:
+						resultColor = NSColor.QuaternaryLabelColor;
+						break;
+					case NamedPlatformColor.SecondaryLabelColor:
+						resultColor = NSColor.SecondaryLabelColor;
+						break;
+					case NamedPlatformColor.SelectedContentBackgroundColor:
+						resultColor = NSColor.SelectedContentBackgroundColor;
+						break;
+					case NamedPlatformColor.SelectedControlColor:
+						resultColor = NSColor.SelectedControl;
+						break;
+					case NamedPlatformColor.SelectedControlTextColor:
+						resultColor = NSColor.SelectedControlText;
+						break;
+					case NamedPlatformColor.SelectedMenuItemTextColor:
+						resultColor = NSColor.SelectedMenuItemText;
+						break;
+					case NamedPlatformColor.SelectedTextBackgroundColor:
+						resultColor = NSColor.SelectedTextBackground;
+						break;
+					case NamedPlatformColor.SelectedTextColor:
+						resultColor = NSColor.SelectedText;
+						break;
+					case NamedPlatformColor.SeparatorColor:
+						resultColor = NSColor.SeparatorColor;
+						break;
+					case NamedPlatformColor.ShadowColor:
+						resultColor = NSColor.Shadow;
+						break;
+					case NamedPlatformColor.TertiaryLabelColor:
+						resultColor = NSColor.TertiaryLabelColor;
+						break;
+					case NamedPlatformColor.TextBackgroundColor:
+						resultColor = NSColor.TextBackground;
+						break;
+					case NamedPlatformColor.TextColor:
+						resultColor = NSColor.Text;
+						break;
+					case NamedPlatformColor.UnderPageBackgroundColor:
+						resultColor = NSColor.UnderPageBackgroundColor;
+						break;
+					case NamedPlatformColor.UnemphasizedSelectedContentBackgroundColor:
+						if (IsMojaveOrNewer)
+							resultColor = NSColor.UnemphasizedSelectedContentBackgroundColor;
+						break;
+					case NamedPlatformColor.UnemphasizedSelectedTextBackgroundColor:
+						if (IsMojaveOrNewer)
+							resultColor = NSColor.UnemphasizedSelectedTextBackgroundColor;
+						break;
+					case NamedPlatformColor.UnemphasizedSelectedTextColor:
+						if (IsMojaveOrNewer)
+							resultColor = NSColor.UnemphasizedSelectedTextColor;
+						break;
+					case NamedPlatformColor.WindowBackgroundColor:
+						resultColor = NSColor.WindowBackground;
+						break;
+					case NamedPlatformColor.WindowFrameTextColor:
+						resultColor = NSColor.WindowFrameText;
+						break;
+					case NamedPlatformColor.Label:
+						resultColor = NSColor.LabelColor;
+						break;
+					case NamedPlatformColor.Link:
+						resultColor = NSColor.LinkColor;
+						break;
+					case NamedPlatformColor.PlaceholderText:
+						resultColor = NSColor.PlaceholderTextColor;
+						break;
+					case NamedPlatformColor.QuaternaryLabel:
+						resultColor = NSColor.QuaternaryLabelColor;
+						break;
+					case NamedPlatformColor.SecondaryLabel:
+						resultColor = NSColor.SecondaryLabelColor;
+						break;
+					case NamedPlatformColor.Separator:
+						if (IsMojaveOrNewer)
+							resultColor = NSColor.SeparatorColor;
+						break;
+					case NamedPlatformColor.SystemBlue:
+						resultColor = NSColor.SystemBlueColor;
+						break;
+					case NamedPlatformColor.SystemGray:
+						resultColor = NSColor.SystemGrayColor;
+						break;
+					case NamedPlatformColor.SystemGreen:
+						resultColor = NSColor.SystemGreenColor;
+						break;
+					case NamedPlatformColor.SystemIndigo:
+						resultColor = NSColor.SystemIndigoColor;
+						break;
+					case NamedPlatformColor.SystemOrange:
+						resultColor = NSColor.SystemOrangeColor;
+						break;
+					case NamedPlatformColor.SystemPink:
+						resultColor = NSColor.SystemPinkColor;
+						break;
+					case NamedPlatformColor.SystemPurple:
+						resultColor = NSColor.SystemPurpleColor;
+						break;
+					case NamedPlatformColor.SystemRed:
+						resultColor = NSColor.SystemRedColor;
+						break;
+					case NamedPlatformColor.SystemTeal:
+						resultColor = NSColor.SystemTealColor;
+						break;
+					case NamedPlatformColor.SystemYellow:
+						resultColor = NSColor.SystemYellowColor;
+						break;
+					case NamedPlatformColor.TertiaryLabel:
+						resultColor = NSColor.TertiaryLabelColor;
+						break;
+					default:
+						resultColor = NSColor.FromName(name);
+						break;
+				}
+
+				if (resultColor == null)
+					return Color.Default;
+
+				return resultColor.ToColor(NSColorSpace.GenericRGBColorSpace);
 #else
 				return Color.Default;
 #endif
@@ -494,13 +748,12 @@ namespace Xamarin.Forms
 			}
 
 			public OSAppTheme RequestedTheme
-            {
-                get
-                {
+			{
+				get
+				{
 #if __IOS__ || __TVOS__
 					if (!IsiOS13OrNewer)
 						return OSAppTheme.Unspecified;
-#if __XCODE11__
 					var uiStyle = GetCurrentUIViewController()?.TraitCollection?.UserInterfaceStyle ??
 						UITraitCollection.CurrentTraitCollection.UserInterfaceStyle;
 
@@ -514,13 +767,27 @@ namespace Xamarin.Forms
 							return OSAppTheme.Unspecified;
 					};
 #else
-					return OSAppTheme.Unspecified;
-#endif
-#else
-                    return OSAppTheme.Unspecified;
+                    return AppearanceIsDark() ? OSAppTheme.Dark : OSAppTheme.Light;
 #endif
 				}
 			}
+
+#if __MACOS__
+			bool AppearanceIsDark()
+			{
+				if (IsMojaveOrNewer)
+				{
+					var appearance = NSApplication.SharedApplication.EffectiveAppearance;
+					var matchedAppearance = appearance.FindBestMatch(new string[] { NSAppearance.NameAqua, NSAppearance.NameDarkAqua });
+
+					return matchedAppearance == NSAppearance.NameDarkAqua;
+				}
+				else
+				{
+					return false;
+				}
+			}
+#endif
 
 #if __IOS__ || __TVOS__
 
@@ -556,6 +823,18 @@ namespace Xamarin.Forms
 					throw new InvalidOperationException("Could not find current view controller.");
 
 				return viewController;
+			}
+
+			public void Invalidate(VisualElement visualElement)
+			{
+				var renderer = Platform.iOS.Platform.GetRenderer(visualElement);
+
+				if (renderer == null)
+				{
+					return;
+				}
+
+				renderer.NativeView.SetNeedsLayout();
 			}
 #endif
 		}

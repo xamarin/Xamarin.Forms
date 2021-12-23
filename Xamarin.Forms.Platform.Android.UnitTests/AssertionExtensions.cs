@@ -5,11 +5,6 @@ using System;
 using NUnit.Framework;
 using System.IO;
 
-#if __ANDROID_29__
-#else
-using Android.Support.V7.Widget;
-#endif
-
 namespace Xamarin.Forms.Platform.Android.UnitTests
 {
 	internal static class AssertionExtensions
@@ -46,6 +41,19 @@ namespace Xamarin.Forms.Platform.Android.UnitTests
 			{
 				return AColor.Rgb(red, green, blue);
 			}
+		}
+
+		public static void ForceDraw(this AView view)
+		{
+			var bitmap = Bitmap.CreateBitmap(view.Width, view.Height, Bitmap.Config.Argb8888);
+
+			var canvas = new Canvas(bitmap);
+			canvas.Save();
+			canvas.Translate(0, 0);
+			view.Draw(canvas);
+			canvas.Restore();
+
+			bitmap.Dispose();
 		}
 
 		public static Bitmap ToBitmap(this AView view)

@@ -8,9 +8,9 @@ using Android.Text;
 using Android.Text.Method;
 using Android.Util;
 using Android.Views;
-using Java.Lang;
-using Android.Widget;
 using Android.Views.InputMethods;
+using Android.Widget;
+using Java.Lang;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -95,11 +95,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ITextWatcher.OnTextChanged(ICharSequence s, int start, int before, int count)
 		{
-			if (string.IsNullOrEmpty(Element.Text) && s.Length() == 0)
-				return;
-
-			if (Element.Text != s.ToString())
-				((IElementController)Element).SetValueFromRenderer(Editor.TextProperty, s.ToString());
+			Internals.TextTransformUtilites.SetPlainText(Element, s?.ToString());
 		}
 
 		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
@@ -131,7 +127,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				SetNativeControl(edit);
 				EditText.AddTextChangedListener(this);
-				if(EditText is IFormsEditText formsEditText)
+				if (EditText is IFormsEditText formsEditText)
 					formsEditText.OnKeyboardBackPressed += OnKeyboardBackPressed;
 			}
 
@@ -159,7 +155,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			if (e.PropertyName == Editor.TextProperty.PropertyName)
+			if (e.PropertyName == Editor.TextProperty.PropertyName || e.PropertyName == Editor.TextTransformProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == InputView.KeyboardProperty.PropertyName)
 				UpdateInputType();
@@ -200,9 +196,14 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
-				if (EditText != null && EditText is IFormsEditText formsEditText)
+				if (EditText != null)
 				{
-					formsEditText.OnKeyboardBackPressed -= OnKeyboardBackPressed;
+					EditText.RemoveTextChangedListener(this);
+
+					if (EditText is IFormsEditText formsEditText)
+					{
+						formsEditText.OnKeyboardBackPressed -= OnKeyboardBackPressed;
+					}
 				}
 			}
 
@@ -241,12 +242,12 @@ namespace Xamarin.Forms.Platform.Android
 				if (model.IsSet(InputView.IsSpellCheckEnabledProperty))
 				{
 					if (!model.IsSpellCheckEnabled)
-						edit.InputType = edit.InputType | InputTypes.TextFlagNoSuggestions;					
+						edit.InputType = edit.InputType | InputTypes.TextFlagNoSuggestions;
 				}
 				if (model.IsSet(Editor.IsTextPredictionEnabledProperty))
 				{
 					if (!model.IsTextPredictionEnabled)
-						edit.InputType = edit.InputType | InputTypes.TextFlagNoSuggestions;					
+						edit.InputType = edit.InputType | InputTypes.TextFlagNoSuggestions;
 				}
 			}
 
@@ -266,7 +267,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateText()
 		{
-			string newText = Element.Text ?? "";
+			string newText = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 
 			if (EditText.Text == newText)
 				return;

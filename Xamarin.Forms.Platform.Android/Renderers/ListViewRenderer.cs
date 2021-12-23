@@ -1,19 +1,16 @@
+using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using Android.Content;
-#if __ANDROID_29__
+using Android.Runtime;
+using Android.Views;
+using Android.Widget;
 using AndroidX.Core.Widget;
 using AndroidX.SwipeRefreshLayout.Widget;
-#else
-using Android.Support.V4.Widget;
-#endif
-using Android.Views;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AListView = Android.Widget.ListView;
 using AView = Android.Views.View;
-using Xamarin.Forms.Internals;
-using System;
-using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using Android.Widget;
-using Android.Runtime;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -65,7 +62,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (disposing)
 			{
 				Controller.ScrollToRequested -= OnScrollToRequested;
-		
+
 				if (_headerRenderer != null)
 				{
 					Platform.ClearRenderer(_headerRenderer.View);
@@ -149,7 +146,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					// Unhook the adapter from the ListView before disposing of it
 					Control.Adapter = null;
-					
+
 					Control.SetOnScrollListener(null);
 				}
 
@@ -180,7 +177,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				((IListViewController)e.NewElement).ScrollToRequested += OnScrollToRequested;
 				Control?.SetOnScrollListener(new ListViewScrollDetector(this));
-				
+
 				nativeListView.DividerHeight = 0;
 				nativeListView.Focusable = false;
 				nativeListView.DescendantFocusability = DescendantFocusability.AfterDescendants;
@@ -277,32 +274,41 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			Cell cell;
-			int position;
+			int scrollPosition;
 			var scrollArgs = (ITemplatedItemsListScrollToRequestedEventArgs)e;
 
 			var templatedItems = TemplatedItemsView.TemplatedItems;
 			if (Element.IsGroupingEnabled)
 			{
 				var results = templatedItems.GetGroupAndIndexOfItem(scrollArgs.Group, scrollArgs.Item);
-				if (results.Item1 == -1 || results.Item2 == -1)
+				int indexOfGroup = results.Item1;
+				int indexOfItem = results.Item2;
+
+				if (indexOfGroup == -1)
 					return;
 
-				var group = templatedItems.GetGroup(results.Item1);
-				cell = group[results.Item2];
+				int itemIndex = indexOfItem == -1 ? 0 : indexOfItem;
 
-				position = templatedItems.GetGlobalIndexForGroup(group) + results.Item2 + 1;
+				var group = templatedItems.GetGroup(indexOfGroup);
+				if (group.Count == 0)
+					cell = group.HeaderContent;
+				else
+					cell = group[itemIndex];
+
+				//Increment Scroll Position by 1 when Grouping is enabled. Android offsets position of cells when using header.
+				scrollPosition = templatedItems.GetGlobalIndexForGroup(group) + itemIndex + 1;
 			}
 			else
 			{
-				position = templatedItems.GetGlobalIndexOfItem(scrollArgs.Item);
-				if (position == -1)
+				scrollPosition = templatedItems.GetGlobalIndexOfItem(scrollArgs.Item);
+				if (scrollPosition == -1)
 					return;
 
-				cell = templatedItems[position];
+				cell = templatedItems[scrollPosition];
 			}
 
 			//Android offsets position of cells when using header
-			int realPositionWithHeader = position + 1;
+			int realPositionWithHeader = scrollPosition + 1;
 
 			if (e.Position == ScrollToPosition.MakeVisible)
 			{
@@ -318,11 +324,11 @@ namespace Xamarin.Forms.Platform.Android
 			if (cellHeight == -1)
 			{
 				int first = Control.FirstVisiblePosition;
-				if (first <= position && position <= Control.LastVisiblePosition)
-					cellHeight = Control.GetChildAt(position - first).Height;
+				if (first <= scrollPosition && scrollPosition <= Control.LastVisiblePosition)
+					cellHeight = Control.GetChildAt(scrollPosition - first).Height;
 				else
 				{
-					AView view = _adapter.GetView(position, null, null);
+					AView view = _adapter.GetView(scrollPosition, null, null);
 					view.Measure(MeasureSpecFactory.MakeMeasureSpec(Control.Width, MeasureSpecMode.AtMost), MeasureSpecFactory.MakeMeasureSpec(0, MeasureSpecMode.Unspecified));
 					cellHeight = view.MeasuredHeight;
 				}
@@ -415,21 +421,34 @@ namespace Xamarin.Forms.Platform.Android
 					_refresh.Refreshing = false;
 					_refresh.Post(() =>
 					{
-						if(_refresh.IsDisposed())
+						if (_refresh.IsDisposed())
 							return;
-						
+
 						_refresh.Refreshing = true;
 					});
 				}
 				else
 					_refresh.Refreshing = isRefreshing;
+
+				// Allow to disable SwipeToRefresh layout AFTER refresh is done
+				UpdateIsSwipeToRefreshEnabled();
 			}
 		}
 
 		void UpdateIsSwipeToRefreshEnabled()
 		{
-			if (_refresh != null)
-				_refresh.Enabled = Element.IsPullToRefreshEnabled && (Element as IListViewController).RefreshAllowed;
+			if (_refresh != null && Element != null)
+			{
+				var isEnabled = Element.IsPullToRefreshEnabled && (Element as IListViewController).RefreshAllowed;
+				_refresh.Post(() =>
+				{
+					// NOTE: only disable while NOT refreshing, otherwise Command bindings CanExecute behavior will effectively
+					// cancel refresh animation. If not possible right now we will be called by UpdateIsRefreshing().
+					// For details see https://github.com/xamarin/Xamarin.Forms/issues/8384
+					if (!_refresh.IsDisposed() && (isEnabled || !_refresh.Refreshing))
+						_refresh.Enabled = isEnabled;
+				});
+			}
 		}
 
 		void UpdateFastScrollEnabled()
@@ -491,7 +510,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			Control.VerticalScrollBarEnabled = newVerticalScrollVisibility == ScrollBarVisibility.Always;
 		}
-		
+
 		internal class Container : ViewGroup
 		{
 			IVisualElementRenderer _child;

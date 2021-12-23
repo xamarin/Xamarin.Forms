@@ -17,8 +17,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native.Watch
 
 		public DateTimePickerMode Mode
 		{
-			get 
-			{ 
+			get
+			{
 				return _mode;
 			}
 			set
@@ -35,12 +35,12 @@ namespace Xamarin.Forms.Platform.Tizen.Native.Watch
 		{
 			if (_mode == DateTimePickerMode.Date)
 			{
-				Style = "datepicker/circle";
+				Style = ThemeConstants.CircleDateTimeSelector.Styles.CircleDatePicker;
 				Format = "%d/%b/%Y";
 			}
 			else
 			{
-				Style = "timepicker/circle";
+				Style = ThemeConstants.CircleDateTimeSelector.Styles.CircleTimePicker;
 				Format = "%d/%b/%Y %I:%M %p";
 			}
 		}

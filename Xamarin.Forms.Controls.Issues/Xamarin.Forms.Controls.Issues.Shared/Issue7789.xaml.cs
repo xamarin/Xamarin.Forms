@@ -1,7 +1,7 @@
-﻿using Xamarin.Forms.CustomAttributes;
+﻿using System.Collections.Generic;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
-using System.Collections.Generic;
 
 #if UITEST
 using Xamarin.UITest;
@@ -14,6 +14,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.CollectionView)]
+	[Category(UITestCategories.UwpIgnore)] // CollectionView contents aren't currently visible to test automation
 #endif
 #if APP
 	[XamlCompilation(XamlCompilationOptions.Compile)]
@@ -33,5 +34,13 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 
 		}
+
+#if UITEST
+		[Test]
+		public void CarouselShouldNotCrashDisplayingStrings()
+		{
+			RunningApp.WaitForElement("Success");
+		}
+#endif
 	}
 }

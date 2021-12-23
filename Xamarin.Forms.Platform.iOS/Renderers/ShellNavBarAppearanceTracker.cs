@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using CoreGraphics;
+﻿using CoreGraphics;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -22,6 +20,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_defaultTint != null)
 			{
 				var navBar = controller.NavigationBar;
+				navBar.BarTintColor = _defaultBarTint;
 				navBar.TintColor = _defaultTint;
 				navBar.TitleTextAttributes = _defaultTitleAttributes;
 			}
@@ -29,10 +28,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public void SetAppearance(UINavigationController controller, ShellAppearance appearance)
 		{
-			var background = appearance.BackgroundColor;
-			var foreground = appearance.ForegroundColor;
-			var titleColor = appearance.TitleColor;
-
 			var navBar = controller.NavigationBar;
 
 			if (_defaultTint == null)
@@ -41,6 +36,20 @@ namespace Xamarin.Forms.Platform.iOS
 				_defaultTint = navBar.TintColor;
 				_defaultTitleAttributes = navBar.TitleTextAttributes;
 			}
+						
+			if (Forms.IsiOS15OrNewer)
+				UpdateiOS15NavigationBarAppearance(controller, appearance);
+			else
+				UpdateNavigationBarAppearance(controller, appearance);
+		}
+
+		void UpdateNavigationBarAppearance(UINavigationController controller, ShellAppearance appearance)
+		{
+			var background = appearance.BackgroundColor;
+			var foreground = appearance.ForegroundColor;
+			var titleColor = appearance.TitleColor;
+
+			var navBar = controller.NavigationBar;
 
 			if (!background.IsDefault)
 				navBar.BarTintColor = background.ToUIColor();
@@ -55,14 +64,34 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		#region IDisposable Support
-		protected virtual void Dispose(bool disposing)
+		void UpdateiOS15NavigationBarAppearance(UINavigationController controller, ShellAppearance appearance)
 		{
-		}
+			var navBar = controller.NavigationBar;
 
-		public void Dispose()
-		{
-			Dispose(true);
+			var navigationBarAppearance = new UINavigationBarAppearance();
+			navigationBarAppearance.ConfigureWithOpaqueBackground();
+
+			navBar.Translucent = false;
+
+			// Set ForegroundColor
+			var foreground = appearance.ForegroundColor;
+
+			if (!foreground.IsDefault)
+				navBar.TintColor = foreground.ToUIColor();
+
+			// Set BackgroundColor
+			var background = appearance.BackgroundColor;
+
+			if (!background.IsDefault)
+				navigationBarAppearance.BackgroundColor = background.ToUIColor();
+
+			// Set TitleColor
+			var titleColor = appearance.TitleColor;
+
+			if (!titleColor.IsDefault)
+				navigationBarAppearance.TitleTextAttributes = new UIStringAttributes() { ForegroundColor = titleColor.ToUIColor() };
+
+			navBar.StandardAppearance = navBar.ScrollEdgeAppearance = navigationBarAppearance;
 		}
 
 		public virtual void SetHasShadow(UINavigationController controller, bool hasShadow)
@@ -89,6 +118,18 @@ namespace Xamarin.Forms.Platform.iOS
 				navigationBar.Layer.ShadowOpacity = _shadowOpacity;
 			}
 		}
+
+		#region IDisposable Support
+
+		protected virtual void Dispose(bool disposing)
+		{
+		}
+
+		public void Dispose()
+		{
+			Dispose(true);
+		}
+				
 		#endregion
 	}
 }

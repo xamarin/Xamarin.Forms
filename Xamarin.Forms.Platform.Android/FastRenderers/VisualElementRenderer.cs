@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 	public sealed class VisualElementRenderer : IDisposable, IEffectControlProvider, ITabStop
 	{
 		bool _disposed;
-		
+
 		IVisualElementRenderer _renderer;
 		readonly GestureManager _gestureManager;
 		readonly AutomationPropertiesProvider _automationPropertiesProvider;
@@ -40,6 +40,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		void UpdateFlowDirection()
 		{
 			if (_disposed)
+				return;
+
+			if (Control.IsDisposed())
 				return;
 
 			Control.UpdateFlowDirection(Element);
@@ -106,9 +109,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		void UpdateIsEnabled()
 		{
 			if (Element == null || _disposed)
-			{
 				return;
-			}
+
+			if (Control.IsDisposed())
+				return;
 
 			Control.Enabled = Element.IsEnabled;
 		}

@@ -21,19 +21,49 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 		}
 
+		void AddPage(string title)
+		{
+			var page = CreateContentPage<FlyoutItem>(title);
+
+			page.Content = new Grid()
+			{
+				Children =
+				{
+					new ScrollView()
+					{
+						Content =
+							new StackLayout()
+							{
+								Children =
+								{
+									new Button()
+									{
+										Text = "Learn More",
+										Margin = new Thickness(0,10,0,0),
+										BackgroundColor = Color.Purple,
+										TextColor = Color.White,
+										AutomationId = "LearnMoreButton"
+									}
+								}
+							}
+					}
+				}
+			};
+		}
+
 		protected override void Init()
 		{
 			FlyoutBehavior = FlyoutBehavior.Locked;
 
-			AddFlyoutItem("Click");
-			AddFlyoutItem("Between");
-			AddFlyoutItem("These Flyouts");
-			AddFlyoutItem("Really Fast");
-			AddFlyoutItem("If it doesn't");
-			AddFlyoutItem("Lock test has passed");
+			AddPage("Click");
+			AddPage("Between");
+			AddPage("These Flyouts");
+			AddPage("Really Fast");
+			AddPage("If it doesn't");
+			AddPage("Lock test has passed");
 
 			int i = 0;
-			foreach(var item in Items)
+			foreach (var item in Items)
 			{
 				item.Items[0].AutomationId = $"FlyoutItem{i}";
 				item.Items[0].Items.Add(new ContentPage()
@@ -71,7 +101,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Items[1].FlyoutDisplayOptions = FlyoutDisplayOptions.AsMultipleItems;
 		}
 
-#if UITEST
+#if UITEST && __SHELL__
 		[Test]
 		[Category(UITestCategories.Shell)]
 		public void ShellWithTopTabsFreezesWhenNavigatingFlyoutItems()
@@ -81,16 +111,21 @@ namespace Xamarin.Forms.Controls.Issues
 			for (int i = 0; i < 5; i++)
 			{
 				RunningApp.WaitForElement("Tab1AutomationId");
+				RunningApp.WaitForElement("LearnMoreButton");
 				RunningApp.Tap("FlyoutItem0");
 				RunningApp.Tap("FlyoutItem1");
 				RunningApp.Tap("FlyoutItem0");
+				RunningApp.WaitForElement("LearnMoreButton");
 			}
 
 			RunningApp.WaitForElement("Tab1AutomationId");
+			RunningApp.WaitForElement("LearnMoreButton");
 			RunningApp.Tap("FlyoutItem1");
 			RunningApp.WaitForElement("Tab2AutomationId");
+			RunningApp.WaitForElement("LearnMoreButton");
 			RunningApp.Tap("FlyoutItem0");
 			RunningApp.WaitForElement("Tab1AutomationId");
+			RunningApp.WaitForElement("LearnMoreButton");
 		}
 #endif
 	}
