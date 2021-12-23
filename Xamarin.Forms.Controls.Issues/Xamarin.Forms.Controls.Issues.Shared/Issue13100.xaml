@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 13100" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13100">
+	<local:TestContentPage.Resources>
+		<ResourceDictionary>
+
+			<LinearGradientBrush x:Key="IssueLinearGradientBrush" StartPoint="0.5,0" EndPoint="0.5,1">
+				<GradientStop Color="Green" Offset="0.0" />
+				<GradientStop Color="Blue" Offset="0.25" />
+				<GradientStop Color="Gold" Offset="1.0" />
+			</LinearGradientBrush>
+
+		</ResourceDictionary>
+	</local:TestContentPage.Resources>
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If both gradients render exactly the same, the test passed."/>
+        <StackLayout
+			Padding="12">
+			<Label
+				Text="Frame"/>
+            <Frame
+				BorderColor="Black"
+				HeightRequest="120"
+				WidthRequest="120"
+				Background="{StaticResource IssueLinearGradientBrush}"/>
+			<Label
+				Text="Rectangle"/>
+			<Rectangle
+				HeightRequest="120"
+				WidthRequest="120"
+				Background="{StaticResource IssueLinearGradientBrush}"/>
+        </StackLayout>
+    </StackLayout>
+</local:TestContentPage>
