@@ -1216,7 +1216,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UIImage GetEmptyBackIndicatorImage()
 			{
-				var rect = RectangleF.Empty;
+				var rect = new RectangleF(0, 0, 1, 1);
 				var size = rect.Size;
 
 				UIGraphics.BeginImageContext(size);
