@@ -58,7 +58,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			
+
 		}
 	}
 }
