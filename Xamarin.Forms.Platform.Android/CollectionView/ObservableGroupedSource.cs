@@ -446,8 +446,8 @@ namespace Xamarin.Forms.Platform.Android
 				itemCount += ((_groupSource[groupStartIndex + n] as IList).Count + 1);
 			}
 			return itemCount;
-    }
-    
+		}
+
 		public int GetPosition(int groupIndex, int itemIndex)
 		{
 			// Ignore invalid indexes
