@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Platform.Android
 		Typeface _lastTypeface;
 
 		Color _lastUpdateColor = Color.Default;
-		FormsTextView _view;
+		TextView _view;
 		bool _wasFormatted;
 
 		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
@@ -107,7 +107,7 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnElementChanged(e);
 			if (_view == null)
 			{
-				_view = (FormsTextView)CreateNativeControl();
+				_view = CreateNativeControl();
 				_labelTextColorDefault = _view.TextColors;
 				_lineSpacingMultiplierDefault = _view.LineSpacingMultiplier;
 				_lineSpacingExtraDefault = _view.LineSpacingExtra;

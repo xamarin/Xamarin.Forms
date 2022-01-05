@@ -136,7 +136,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			Size request = _content.Measure(width, height, MeasureFlags.IncludeMargins).Request;
 
-			var minSize = (double)Windows.UI.Xaml.Application.Current.Resources["NavigationViewItemOnLeftMinHeight"];
+			double minSize = 0;
 
 			if (request.Height < minSize)
 			{
