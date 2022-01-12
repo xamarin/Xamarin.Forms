@@ -673,7 +673,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (barBackgroundColor == Color.Default)
 				{
-					navigationBarAppearance.BackgroundColor = ColorExtensions.BackgroundColor;
+					// Let Appearance API take precedence if set
+					navigationBarAppearance.BackgroundColor = UINavigationBar.Appearance.BackgroundColor ?? ColorExtensions.BackgroundColor;
 
 					var parentingViewController = GetParentingViewController();
 					parentingViewController?.SetupDefaultNavigationBarAppearance();
