@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Platform.UWP
 					var iconcolor = (fontsource.Color != Color.Default ? fontsource.Color : Color.White).ToWindowsColor();
 
 					// offset by 1 as we added a 1 inset
-					var x = (float)layout.DrawBounds.X * -1;
+					var x = (float)layout.DrawBounds.X -1;
 					
 					ds.DrawTextLayout(layout, x, 1f, iconcolor);
 				}
