@@ -445,7 +445,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			_formatted = Element.FormattedText;
 			if (_formatted == null && Element.LineHeight >= 0)
-				_formatted = Element.Text;
+				_formatted = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 
 			if (IsTextFormatted)
 			{
@@ -561,6 +561,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateTextColor()
 		{
+			if (IsElementOrControlEmpty)
+				return;
+				
 			if (IsTextFormatted)
 			{
 				UpdateFormattedText();
