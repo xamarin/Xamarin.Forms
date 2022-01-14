@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 14472" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue14472">
+    <StackLayout
+        Padding="12">
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If can see a Green Background Color in PortraitDown orientation, the test has passed."/>
+        <StackLayout
+            VerticalOptions="FillAndExpand"
+            HorizontalOptions="Fill">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup>
+                    <VisualState x:Name="Landscape">
+                        <VisualState.StateTriggers>
+                            <OrientationStateTrigger
+                                Orientation="Landscape" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor"
+                                    Value="Red" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="PortraitUp">
+                        <VisualState.StateTriggers>
+                            <OrientationStateTrigger
+                                Orientation="PortraitUp" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor"
+                                    Value="Blue" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="PortraitDown">
+                        <VisualState.StateTriggers>
+                            <OrientationStateTrigger
+                                Orientation="PortraitDown" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor"
+                                    Value="Green" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            <StackLayout
+                Orientation="Horizontal"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+                <ContentView
+                    Padding="0,40,0,40"
+                    VerticalOptions="FillAndExpand">
+                    <Label
+                        Text="Issue 14472"
+                        TextColor="White"
+                        VerticalOptions="Center"
+                        HeightRequest="64" />
+                </ContentView>
+            </StackLayout>
+        </StackLayout>
+    </StackLayout>
+</local:TestContentPage>
