@@ -55,15 +55,20 @@ namespace Xamarin.Forms.StyleSheets
 			return sb.ToString();
 		}
 
-		public static string ReadUntil(this TextReader reader, params char[] limit)
+		public static string ReadUntil(this TextReader reader, out char? limitedBy, params char[] limit)
 		{
+			limitedBy = null;
+
 			var sb = new StringBuilder();
 			int p;
 			while ((p = reader.Peek()) > 0)
 			{
 				var c = unchecked((char)p);
 				if (limit != null && limit.Contains(c))
+				{
+					limitedBy = c;
 					break;
+				}
 				reader.Read();
 				sb.Append(c);
 			}

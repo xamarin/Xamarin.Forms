@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13588"
+    Title="Issue 13588">
+    <Grid
+        RowSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If Buttons inside CollectionView renders correctly, the test has passed."/>
+        <CollectionView
+            Grid.Row="1">
+            <CollectionView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>mono</x:String>
+                    <x:String>monodroid</x:String>
+                    <x:String>monotouch</x:String>
+                    <x:String>monorail</x:String>
+                    <x:String>monodevelop</x:String>
+                    <x:String>monotone</x:String>
+                    <x:String>monopoly</x:String>
+                    <x:String>monomodal</x:String>
+                    <x:String>mononucleosis</x:String>
+                </x:Array>
+            </CollectionView.ItemsSource>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="40" />
+                        </Grid.ColumnDefinitions>
+                        <Label
+                            Margin="10,5,10,0"
+                            FontAttributes="Bold"
+                            VerticalOptions="Center"
+                            HorizontalOptions="StartAndExpand"
+                            Text="{Binding}"
+                            LineBreakMode="WordWrap" >
+                        </Label>
+                        <Label 
+                            Margin="10,0,10,0"
+                            Grid.Column="1"
+                            VerticalOptions="Center"
+                            HorizontalOptions="Start"
+                            LineBreakMode="WordWrap"
+                            Text="Status" />
+                        <!-- Button having the display issue-->
+                        <Button 
+                            Grid.Column="3"
+                            Text="X"
+                            VerticalOptions="Center"
+                            HorizontalOptions="End">
+                        </Button>
+                        <!-- Button having the display issue-->
+                        <Button 
+                            Grid.Column="2"
+                            Text="Retry"
+                            VerticalOptions="Center"
+                            HorizontalOptions="Center">
+                        </Button>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</controls:TestContentPage>

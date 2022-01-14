@@ -1,10 +1,18 @@
-﻿namespace Xamarin.Forms.Platform.WPF.Controls
+﻿using System;
+using System.Windows;
+using WpfSize = System.Windows.Size;
+
+namespace Xamarin.Forms.Platform.WPF.Controls
 {
 	public class FormsContentPage : FormsPage
 	{
 		public FormsContentPage()
 		{
-			this.DefaultStyleKey = typeof(FormsContentPage);
+		}
+
+		static FormsContentPage()
+		{
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(FormsContentPage), new FrameworkPropertyMetadata(typeof(FormsContentPage)));
 		}
 	}
 }

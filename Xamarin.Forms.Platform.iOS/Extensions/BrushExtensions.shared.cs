@@ -63,5 +63,35 @@ namespace Xamarin.Forms.Platform.MacOS
 				return locations;
 			}
 		}
+
+		static CGColor[] GetCAGradientLayerColors(List<GradientStop> gradientStops)
+		{
+			if (gradientStops == null || gradientStops.Count == 0)
+				return new CGColor[0];
+
+			CGColor[] colors = new CGColor[gradientStops.Count];
+
+			int index = 0;
+			foreach (var gradientStop in gradientStops)
+			{
+				if (gradientStop.Color == Color.Transparent)
+				{
+					var color = gradientStops[index == 0 ? index + 1 : index - 1].Color;
+					CGColor nativeColor;
+#if __MOBILE__
+					nativeColor = color.ToUIColor().ColorWithAlpha(0.0f).CGColor;
+#else
+					nativeColor = color.ToNSColor().ColorWithAlphaComponent(0.0f).CGColor;
+#endif
+					colors[index] = nativeColor;
+				}
+				else
+					colors[index] = gradientStop.Color.ToCGColor();
+
+				index++;
+			}
+
+			return colors;
+		}
 	}
 }

@@ -10,7 +10,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 	{
 		readonly Label _scrollInfoLabel = new Label();
 		readonly ItemsLayoutOrientation _orientation;
-
+		ItemsSourceGenerator _generator;
+		PositionControl _positionControl;
+		CarouselView _carouselView;
+		Slider _padiSlider;
 		public CarouselCodeGallery(ItemsLayoutOrientation orientation)
 		{
 			On<iOS>().SetLargeTitleDisplay(LargeTitleDisplayMode.Never);
@@ -44,7 +47,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 			var itemTemplate = ExampleTemplates.CarouselTemplate();
 
-			var carouselView = new CarouselView
+			_carouselView = new CarouselView
 			{
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
@@ -55,23 +58,21 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			};
 
 			if (orientation == ItemsLayoutOrientation.Horizontal)
-				carouselView.PeekAreaInsets = new Thickness(30, 0, 30, 0);
+				_carouselView.PeekAreaInsets = new Thickness(30, 0, 30, 0);
 			else
-				carouselView.PeekAreaInsets = new Thickness(0, 30, 0, 30);
+				_carouselView.PeekAreaInsets = new Thickness(0, 30, 0, 30);
 
-			carouselView.Scrolled += CarouselViewScrolled;
+			StackLayout stacklayoutInfo = GetReadOnlyInfo(_carouselView);
 
-			StackLayout stacklayoutInfo = GetReadOnlyInfo(carouselView);
+			_generator = new ItemsSourceGenerator(_carouselView, initialItems: nItems, itemsSourceType: ItemsSourceType.ObservableCollection);
 
-			var generator = new ItemsSourceGenerator(carouselView, initialItems: nItems, itemsSourceType: ItemsSourceType.ObservableCollection);
+			_positionControl = new PositionControl(_carouselView, nItems);
 
-			var positionControl = new PositionControl(carouselView, nItems);
-
-			var spacingModifier = new SpacingModifier(carouselView.ItemsLayout, "Update Spacing");
+			var spacingModifier = new SpacingModifier(_carouselView.ItemsLayout, "Update Spacing");
 
 			var stckPeek = new StackLayout { Orientation = StackOrientation.Horizontal };
 			stckPeek.Children.Add(new Label { Text = "Peek" });
-			var padi = new Slider
+			_padiSlider = new Slider
 			{
 				Maximum = 100,
 				Minimum = 0,
@@ -80,34 +81,24 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				BackgroundColor = Color.Pink
 			};
 
-			padi.ValueChanged += (s, e) =>
-			{
-				var peek = padi.Value;
-
-				if (orientation == ItemsLayoutOrientation.Horizontal)
-					carouselView.PeekAreaInsets = new Thickness(peek, 0, peek, 0);
-				else
-					carouselView.PeekAreaInsets = new Thickness(0, peek, 0, peek);
-			};
-
-			stckPeek.Children.Add(padi);
+			stckPeek.Children.Add(_padiSlider);
 
 			var content = new Grid();
-			content.Children.Add(carouselView);
+			content.Children.Add(_carouselView);
 
 #if DEBUG
 			// Uncomment this line to add a helper to visualize the center of each element.
 			//content.Children.Add(CreateDebuggerLines());
 #endif
-			layout.Children.Add(generator);
-			layout.Children.Add(positionControl);
+			layout.Children.Add(_generator);
+			layout.Children.Add(_positionControl);
 			layout.Children.Add(stacklayoutInfo);
 			layout.Children.Add(stckPeek);
 			layout.Children.Add(spacingModifier);
 			layout.Children.Add(_scrollInfoLabel);
 			layout.Children.Add(content);
 
-			Grid.SetRow(positionControl, 1);
+			Grid.SetRow(_positionControl, 1);
 			Grid.SetRow(stacklayoutInfo, 2);
 			Grid.SetRow(stckPeek, 3);
 			Grid.SetRow(spacingModifier, 4);
@@ -115,13 +106,50 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			Grid.SetRow(content, 6);
 
 			Content = layout;
-			generator.CollectionChanged += (sender, e) =>
-			{
-				positionControl.UpdatePositionCount(generator.Count);
-			};
 
-			generator.GenerateItems();
-			positionControl.UpdatePosition(1);
+			_generator.GenerateItems();
+			_positionControl.UpdatePosition(1);
+		}
+
+		private void Padi_ValueChanged(object sender, ValueChangedEventArgs e)
+		{
+			var peek = _padiSlider.Value;
+
+			if (_orientation == ItemsLayoutOrientation.Horizontal)
+				_carouselView.PeekAreaInsets = new Thickness(peek, 0, peek, 0);
+			else
+				_carouselView.PeekAreaInsets = new Thickness(0, peek, 0, peek);
+		}
+
+		private void Generator_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			_positionControl.UpdatePositionCount(_generator.Count);
+		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			_carouselView.Scrolled += CarouselViewScrolled;
+
+			_padiSlider.ValueChanged += Padi_ValueChanged;
+
+			_generator.CollectionChanged += Generator_CollectionChanged;
+
+			_generator.SubscribeEvents();
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			_carouselView.Scrolled -= CarouselViewScrolled;
+
+			_padiSlider.ValueChanged -= Padi_ValueChanged;
+
+			_generator.CollectionChanged -= Generator_CollectionChanged;
+
+			_generator.UnsubscribeEvents();
 		}
 
 		void CarouselViewScrolled(object sender, ItemsViewScrolledEventArgs e)

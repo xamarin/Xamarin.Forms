@@ -303,16 +303,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			// If the Appearing handler changed the application's main page for some reason,
 			// this page may no longer be part of the hierarchy; if so, we need to skip
-			// updating the toolbar and pushing the pages to avoid crashing the app
+			// updating the toolbar to avoid crashing the app
 			if (!Element.IsAttachedToRoot())
 				return;
 
 			RegisterToolbar();
 
-			// If there is already stuff on the stack we need to push it
-			PushCurrentPages();
-
 			UpdateToolbar();
+
 			_isAttachedToWindow = true;
 		}
 
@@ -368,12 +366,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				navController.PopToRootRequested += OnPoppedToRoot;
 				navController.InsertPageBeforeRequested += OnInsertPageBeforeRequested;
 				navController.RemovePageRequested += OnRemovePageRequested;
-
-				if (_isAttachedToWindow && Element.IsAttachedToRoot())
-				{
-					PushCurrentPages();
-				}
 			}
+
+			// If there is already stuff on the stack we need to push it
+			PushCurrentPages();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -989,32 +985,37 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 			}
 
-			Color tintColor = Element.BarBackgroundColor;
+			Color barBackgroundColor = Element.BarBackgroundColor;
+			Brush barBackground = Element.BarBackground;
 
-			if (Forms.IsLollipopOrNewer)
+			if (Brush.IsNullOrEmpty(barBackground))
 			{
-				if (tintColor.IsDefault)
-					bar.BackgroundTintMode = null;
+				if (Forms.IsLollipopOrNewer)
+				{
+					if (barBackgroundColor.IsDefault)
+						bar.BackgroundTintMode = null;
+					else
+					{
+						bar.BackgroundTintMode = PorterDuff.Mode.Src;
+						bar.BackgroundTintList = ColorStateList.ValueOf(barBackgroundColor.ToAndroid());
+					}
+				}
 				else
 				{
-					bar.BackgroundTintMode = PorterDuff.Mode.Src;
-					bar.BackgroundTintList = ColorStateList.ValueOf(tintColor.ToAndroid());
+					if (barBackgroundColor.IsDefault && _backgroundDrawable != null)
+						bar.SetBackground(_backgroundDrawable);
+					else if (!barBackgroundColor.IsDefault)
+					{
+						if (_backgroundDrawable == null)
+							_backgroundDrawable = bar.Background;
+						bar.SetBackgroundColor(barBackgroundColor.ToAndroid());
+					}
 				}
 			}
 			else
 			{
-				if (tintColor.IsDefault && _backgroundDrawable != null)
-					bar.SetBackground(_backgroundDrawable);
-				else if (!tintColor.IsDefault)
-				{
-					if (_backgroundDrawable == null)
-						_backgroundDrawable = bar.Background;
-					bar.SetBackgroundColor(tintColor.ToAndroid());
-				}
+				bar.UpdateBackground(barBackground);
 			}
-
-			Brush barBackground = Element.BarBackground;
-			bar.UpdateBackground(barBackground);
 
 			Color textColor = Element.BarTextColor;
 			if (!textColor.IsDefault)

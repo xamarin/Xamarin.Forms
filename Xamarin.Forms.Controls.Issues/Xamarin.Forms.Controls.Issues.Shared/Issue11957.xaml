@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue11957"
+    Title="Issue 11957">
+    <controls:TestContentPage.Resources>
+        <ResourceDictionary>
+
+            <LinearGradientBrush x:Key="LinearGradient">
+                <GradientStop Color="Red" Offset="0.1" />
+                <GradientStop Color="Orange" Offset="1.0" />
+            </LinearGradientBrush>
+
+        </ResourceDictionary>
+    </controls:TestContentPage.Resources>
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="This example should be tested  profiling to verify that memory does not grow unnecessarily."/>
+        <Ellipse
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            WidthRequest="100"
+            HeightRequest="100"
+            Stroke="{StaticResource LinearGradient}"
+            StrokeThickness="2"
+            Fill="White" />
+    </StackLayout>
+</controls:TestContentPage>

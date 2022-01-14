@@ -15,12 +15,33 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class ShellContentFragment : Fragment, AndroidAnimation.IAnimationListener, IShellObservableFragment, IAppearanceObserver
 	{
+		// AndroidX.Fragment packaged stopped calling CreateAnimation for every call
+		// of creating a fragment
+		bool _isAnimating = false;
+
 		#region IAnimationListener
 
 		void AndroidAnimation.IAnimationListener.OnAnimationEnd(AndroidAnimation animation)
 		{
 			View?.SetLayerType(LayerType.None, null);
 			AnimationFinished?.Invoke(this, EventArgs.Empty);
+			_isAnimating = false;
+		}
+
+		public override void OnResume()
+		{
+			base.OnResume();
+			if (!_isAnimating)
+			{
+				View?.SetLayerType(LayerType.None, null);
+				AnimationFinished?.Invoke(this, EventArgs.Empty);
+			}
+		}
+
+
+		public override void OnViewStateRestored(Bundle savedInstanceState)
+		{
+			base.OnViewStateRestored(savedInstanceState);
 		}
 
 		void AndroidAnimation.IAnimationListener.OnAnimationRepeat(AndroidAnimation animation)
@@ -75,6 +96,7 @@ namespace Xamarin.Forms.Platform.Android
 		public override AndroidAnimation OnCreateAnimation(int transit, bool enter, int nextAnim)
 		{
 			var result = base.OnCreateAnimation(transit, enter, nextAnim);
+			_isAnimating = true;
 
 			if (result == null && nextAnim != 0)
 			{
@@ -143,6 +165,15 @@ namespace Xamarin.Forms.Platform.Android
 
 		void Destroy()
 		{
+			if (_page != null)
+			{
+				var titleView = Shell.GetTitleView(_page);
+				if (titleView != null)
+				{
+					Shell.SetTitleView(_page, null);
+				}
+			}
+
 			((IShellController)_shellContext.Shell).RemoveAppearanceObserver(this);
 
 			if (_shellContent != null)
@@ -158,6 +189,8 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_root is ViewGroup vg)
 					vg.RemoveView(_shellPageContainer);
+
+				_shellPageContainer.Dispose();
 			}
 
 			_renderer?.Dispose();
@@ -172,6 +205,7 @@ namespace Xamarin.Forms.Platform.Android
 			_root = null;
 			_renderer = null;
 			_shellContent = null;
+			_shellPageContainer = null;
 		}
 
 		protected override void Dispose(bool disposing)
