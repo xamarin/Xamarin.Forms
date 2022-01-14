@@ -1308,6 +1308,13 @@ namespace Xamarin.Forms
 
 			protected override async Task<Page> OnPopModal(bool animated)
 			{
+				if (!_shell.NavigationManager.AccumulateNavigatedEvents)
+				{
+					var page = _shell.CurrentPage;
+					await _shell.GoToAsync("..", animated);
+					return page;
+				}
+
 				if (ModalStack.Count > 0)
 					ModalStack[ModalStack.Count - 1].SendDisappearing();
 
@@ -1327,6 +1334,14 @@ namespace Xamarin.Forms
 
 			protected override async Task OnPushModal(Page modal, bool animated)
 			{
+				if (!_shell.NavigationManager.AccumulateNavigatedEvents)
+				{
+					// This will route the modal push through the shell section which is setup
+					// to update the shell state after a modal push
+					await _shell.CurrentItem.CurrentItem.Navigation.PushModalAsync(modal, animated);
+					return;
+				}
+
 				if (ModalStack.Count == 0)
 					_shell.CurrentItem.SendDisappearing();
 
