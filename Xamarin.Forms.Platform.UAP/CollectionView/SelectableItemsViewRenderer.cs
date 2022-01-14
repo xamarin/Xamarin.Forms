@@ -22,9 +22,9 @@ namespace Xamarin.Forms.Platform.UWP
 				oldListViewBase.SelectionChanged -= NativeSelectionChanged;
 			}
 
-			if (ItemsView != null)
+			if (oldElement is TItemsView oldItemsView)
 			{
-				ItemsView.SelectionChanged -= FormsSelectionChanged;
+				oldItemsView.SelectionChanged -= FormsSelectionChanged;
 			}
 
 			base.TearDownOldElement(oldElement);

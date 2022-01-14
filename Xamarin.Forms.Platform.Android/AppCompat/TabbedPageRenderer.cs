@@ -130,13 +130,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void ViewPager.IOnPageChangeListener.OnPageSelected(int position)
 		{
-			if (_previousPage != Element.CurrentPage)
+			var selectedPage = Element.Children[position];
+			if (_previousPage != selectedPage)
 			{
 				_previousPage?.SendDisappearing();
-				_previousPage = Element.CurrentPage;
 			}
-			Element.CurrentPage = Element.Children[position];
+			Element.CurrentPage = selectedPage;
 			Element.CurrentPage.SendAppearing();
+
+			_previousPage = Element.CurrentPage;
 
 			if (IsBottomTabPlacement)
 				_bottomNavigationView.SelectedItemId = position;
@@ -537,13 +539,19 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				if (IsBottomTabPlacement)
 				{
-					IMenuItem tab = _bottomNavigationView.Menu.GetItem(index);
-					tab.SetTitle(page.Title);
+					if (_bottomNavigationView.Menu.Size() > index)
+					{
+						IMenuItem tab = _bottomNavigationView.Menu.GetItem(index);
+						tab.SetTitle(page.Title);
+					}
 				}
 				else
 				{
-					TabLayout.Tab tab = _tabLayout.GetTabAt(index);
-					tab.SetText(page.Title);
+					if (_tabLayout.TabCount > index)
+					{
+						TabLayout.Tab tab = _tabLayout.GetTabAt(index);
+						tab.SetText(page.Title);
+					}
 				}
 			}
 			else if (e.PropertyName == Page.IconImageSourceProperty.PropertyName)
@@ -552,16 +560,22 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				var index = Element.Children.IndexOf(page);
 				if (IsBottomTabPlacement)
 				{
-					var menuItem = _bottomNavigationView.Menu.GetItem(index);
-					_ = this.ApplyDrawableAsync(page, Page.IconImageSourceProperty, Context, icon =>
+					if (_bottomNavigationView.Menu.Size() > index)
 					{
-						menuItem.SetIcon(icon);
-					});
+						var menuItem = _bottomNavigationView.Menu.GetItem(index);
+						_ = this.ApplyDrawableAsync(page, Page.IconImageSourceProperty, Context, icon =>
+						{
+							menuItem.SetIcon(icon);
+						});
+					}
 				}
 				else
 				{
-					TabLayout.Tab tab = _tabLayout.GetTabAt(index);
-					SetTabIconImageSource(page, tab);
+					if (_tabLayout.TabCount > index)
+					{
+						TabLayout.Tab tab = _tabLayout.GetTabAt(index);
+						SetTabIconImageSource(page, tab);
+					}
 				}
 			}
 		}

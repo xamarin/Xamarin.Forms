@@ -244,6 +244,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateToolBarVisible();
 			UpdateBackgroundColor();
+			UpdateBackground();
 			Current = navPage.CurrentPage;
 		}
 
@@ -364,7 +365,10 @@ namespace Xamarin.Forms.Platform.iOS
 			base.TraitCollectionDidChange(previousTraitCollection);
 			// Make sure the control adheres to changes in UI theme
 			if (Forms.IsiOS13OrNewer && previousTraitCollection?.UserInterfaceStyle != TraitCollection.UserInterfaceStyle)
+			{
 				UpdateBackgroundColor();
+				UpdateBackground();
+			}
 		}
 
 
@@ -458,6 +462,10 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 			{
 				UpdateBackgroundColor();
+			}
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+			{
+				UpdateBackground();
 			}
 			else if (e.PropertyName == NavigationPage.CurrentPageProperty.PropertyName)
 			{
@@ -661,6 +669,14 @@ namespace Xamarin.Forms.Platform.iOS
 			View.BackgroundColor = color.ToUIColor();
 		}
 
+		void UpdateBackground()
+		{
+			Brush background = Element.Background;
+
+			if (!Brush.IsNullOrEmpty(background))
+				NativeView.UpdateBackground(Element.Background);
+		}
+
 		void UpdateBarBackground()
 		{
 			var barBackgroundColor = NavPage.BarBackgroundColor;
@@ -673,7 +689,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (barBackgroundColor == Color.Default)
 				{
-					navigationBarAppearance.BackgroundColor = ColorExtensions.BackgroundColor;
+					// Let Appearance API take precedence if set
+					navigationBarAppearance.BackgroundColor = UINavigationBar.Appearance.BackgroundColor ?? ColorExtensions.BackgroundColor;
 
 					var parentingViewController = GetParentingViewController();
 					parentingViewController?.SetupDefaultNavigationBarAppearance();
@@ -1216,7 +1233,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UIImage GetEmptyBackIndicatorImage()
 			{
-				var rect = RectangleF.Empty;
+				var rect = new RectangleF(0, 0, 1, 1);
 				var size = rect.Size;
 
 				UIGraphics.BeginImageContext(size);
