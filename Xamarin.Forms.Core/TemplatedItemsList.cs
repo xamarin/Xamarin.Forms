@@ -231,17 +231,16 @@ namespace Xamarin.Forms.Internals
 				return;
 
 			_itemsView.PropertyChanged -= BindableOnPropertyChanged;
+			ListProxy.CollectionChanged -= OnProxyCollectionChanged;
 
 			TItem header = HeaderContent;
-			if (header != null)
-				UnhookItem(header);
-
-			for (var i = 0; i < _templatedObjects.Count; i++)
+			if (header != null && header.BindingContext != null)
 			{
-				TItem item = _templatedObjects[i];
-				if (item != null)
-					UnhookItem(item);
+				UnhookItem(header);
 			}
+			
+			HeaderContent = null;
+			UnhookAndClear();
 
 			for (var i = 0; i < _groupedItems?.Count; i++)
 			{
@@ -716,7 +715,7 @@ namespace Xamarin.Forms.Internals
 				_groupedItems.Clear();
 			}
 
-			_templatedObjects.Clear();
+			UnhookAndClear();
 
 			var i = 0;
 			foreach (object item in ListProxy)
@@ -821,6 +820,7 @@ namespace Xamarin.Forms.Internals
 						til.CollectionChanged -= OnInnerCollectionChanged;
 						oldItems.Add(til);
 						_groupedItems.RemoveAt(index);
+						UnhookItem(_templatedObjects[index]);
 						_templatedObjects.RemoveAt(index);
 						til.Dispose();
 					}
@@ -845,6 +845,7 @@ namespace Xamarin.Forms.Internals
 						oldItems.Add(til);
 
 						_groupedItems.RemoveAt(index);
+						UnhookItem(_templatedObjects[index]);
 						_templatedObjects.RemoveAt(index);
 
 						newItems.Add(InsertGrouped(e.NewItems[i], index));
