@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else
 			{
-				// Should never happens
+				// Should never happen
 				name.NameValue = InputScopeNameValue.Default;
 			}
 
