@@ -136,6 +136,7 @@
     <Compile Include="Controls\NavigationChildPage.cs" />
     <Compile Include="Controls\NotebookWrapper.cs" />
     <Compile Include="Controls\OpenGLView.cs" />
+    <Compile Include="Controls\RadioButton.cs" />
     <Compile Include="Controls\ScrolledTextView.cs" />
     <Compile Include="Controls\PageContainer.cs" />
     <Compile Include="Controls\SearchEntry.cs" />
@@ -207,6 +208,7 @@
     <Compile Include="Renderers\PageRenderer.cs" />
     <Compile Include="Renderers\PickerRenderer.cs" />
     <Compile Include="Renderers\ProgressBarRenderer.cs" />
+    <Compile Include="Renderers\RadioButtonRenderer.cs" />
     <Compile Include="Renderers\ScrollViewRenderer.cs" />
     <Compile Include="Renderers\SearchBarRenderer.cs" />
     <Compile Include="Renderers\SliderRenderer.cs" />
