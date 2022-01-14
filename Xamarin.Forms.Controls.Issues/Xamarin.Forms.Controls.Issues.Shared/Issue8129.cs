@@ -1,8 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Content = grid;
 		}
-#if UITEST
+#if UITEST && __IOS__
 		[Test]
 		public void AddTooManyContentsTest()
 		{

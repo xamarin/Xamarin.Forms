@@ -53,6 +53,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		}
 
+		[Internals.Preserve(Conditional = true)]
+		public ListViewRenderer(IntPtr handle)
+		{
+
+		}
+
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			return Control.GetSizeRequest(widthConstraint, heightConstraint, DefaultRowHeight, DefaultRowHeight);
@@ -270,6 +276,9 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 					_tableViewController = new FormsUITableViewController(e.NewElement, _usingLargeTitles);
 					SetNativeControl(_tableViewController.TableView);
+
+					if (Forms.IsiOS15OrNewer)
+						_tableViewController.TableView.SectionHeaderTopPadding = new nfloat(0);
 
 					_backgroundUIView = _tableViewController.TableView.BackgroundView;
 
@@ -831,7 +840,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			nfloat GetEstimatedRowHeight(UITableView table)
 			{
-				if (List.RowHeight != -1)
+				if (List == null || List.RowHeight != -1)
 				{
 					// Not even sure we need this case; A list with HasUnevenRows and a RowHeight doesn't make a ton of sense
 					// Anyway, no need for an estimate, because the heights we'll use are known

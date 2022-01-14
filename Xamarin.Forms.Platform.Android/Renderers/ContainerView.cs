@@ -52,6 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
+				RemoveAllViews();
 				_shellViewRenderer?.TearDown();
 				_view = null;
 			}

@@ -76,6 +76,7 @@ stages:
           - template: build/steps/build-windows.yml
             parameters:
               provisionatorPath : 'build/provisioning/provisioning.csx'
+              provisionatorVSPath : 'build/provisioning/vs.csx'
       - job: nuget_pack_hosted
         workspace:
           clean: all

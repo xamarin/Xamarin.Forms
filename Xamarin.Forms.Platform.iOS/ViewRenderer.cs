@@ -215,6 +215,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (IsElementOrControlEmpty)
 				return;
 
+			// Updated in the ImageRenderer
+			if (Element is Image)
+				return;
+
 			Control.UpdateBackground(brush);
 		}
 

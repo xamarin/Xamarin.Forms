@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue12454"
+    Title="Issue 12454">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label
+                Padding="12"
+                BackgroundColor="Black"
+                Text="If can see a Blue Rectangle, the test has passed."
+                TextColor="White" />
+            <Label
+                x:Name="ReferenceLabel"
+                BackgroundColor="Gray"
+                FontSize="Large"
+                HorizontalOptions="Center"
+                Text="This is the reference Label"
+                TextColor="AntiqueWhite" />
+            <Rectangle
+                WidthRequest="{Binding Source={x:Reference ReferenceLabel}, Path=Width}"
+                Fill="Blue"
+                HorizontalOptions="Center"
+                HeightRequest="50"
+                Stroke="Red"
+                StrokeLineJoin="Round"
+                StrokeThickness="5" />
+            <Button
+                WidthRequest="{Binding Source={x:Reference ReferenceLabel}, Path=Width}"
+                Text="A Button"
+                Padding="0"
+                HeightRequest="50"
+                HorizontalOptions="Center" />
+        </StackLayout>
+    </ContentPage.Content>
+</controls:TestContentPage>

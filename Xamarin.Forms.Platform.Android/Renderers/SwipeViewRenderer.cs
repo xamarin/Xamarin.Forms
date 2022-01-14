@@ -33,6 +33,7 @@ namespace Xamarin.Forms.Platform.Android
 		readonly Dictionary<ISwipeItem, object> _swipeItems;
 		readonly Context _context;
 		View _scrollParent;
+		TabbedPage _pageParent;
 		FormsViewPager _viewPagerParent;
 		AView _contentView;
 		LinearLayoutCompat _actionView;
@@ -148,29 +149,35 @@ namespace Xamarin.Forms.Platform.Android
 			if (Control != null && Control.Parent != null && _viewPagerParent == null)
 				_viewPagerParent = Control.Parent.GetParentOfType<FormsViewPager>();
 
-			if (Element != null && _scrollParent == null)
+			if (Element != null)
 			{
-				_scrollParent = Element.FindParentOfType<ScrollView>();
+				if (_pageParent == null)
+					_pageParent = Element.FindParentOfType<TabbedPage>();
 
-				if (_scrollParent is ScrollView scrollView)
+				if (_scrollParent == null)
 				{
-					scrollView.Scrolled += OnParentScrolled;
-					return;
-				}
+					_scrollParent = Element.FindParentOfType<ScrollView>();
 
-				_scrollParent = Element.FindParentOfType<ListView>();
+					if (_scrollParent is ScrollView scrollView)
+					{
+						scrollView.Scrolled += OnParentScrolled;
+						return;
+					}
 
-				if (_scrollParent is ListView listView)
-				{
-					listView.Scrolled += OnParentScrolled;
-					return;
-				}
+					_scrollParent = Element.FindParentOfType<ListView>();
 
-				_scrollParent = Element.FindParentOfType<Xamarin.Forms.CollectionView>();
+					if (_scrollParent is ListView listView)
+					{
+						listView.Scrolled += OnParentScrolled;
+						return;
+					}
 
-				if (_scrollParent is Xamarin.Forms.CollectionView collectionView)
-				{
-					collectionView.Scrolled += OnParentScrolled;
+					_scrollParent = Element.FindParentOfType<Xamarin.Forms.CollectionView>();
+
+					if (_scrollParent is Xamarin.Forms.CollectionView collectionView)
+					{
+						collectionView.Scrolled += OnParentScrolled;
+					}
 				}
 			}
 		}
@@ -467,7 +474,7 @@ namespace Xamarin.Forms.Platform.Android
 				case MotionEventActions.Up:
 					handled = HandleTouchInteractions(GestureStatus.Completed, point);
 
-					if (Parent == null)
+					if (_isDisposed || Parent == null)
 						break;
 
 					Parent.RequestDisallowInterceptTouchEvent(false);
@@ -483,7 +490,7 @@ namespace Xamarin.Forms.Platform.Android
 				case MotionEventActions.Cancel:
 					handled = HandleTouchInteractions(GestureStatus.Canceled, point);
 
-					if (Parent == null)
+					if (_isDisposed || Parent == null)
 						break;
 
 					Parent.RequestDisallowInterceptTouchEvent(false);
@@ -1293,7 +1300,6 @@ namespace Xamarin.Forms.Platform.Android
 			return SwipeThreshold;
 		}
 
-
 		float GetRevealModeSwipeThreshold()
 		{
 			var swipeItems = GetSwipeItemsByDirection();
@@ -1337,7 +1343,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			return SwipeThreshold;
 		}
-
 
 		float ValidateSwipeThreshold(float swipeThreshold)
 		{
@@ -1494,8 +1499,16 @@ namespace Xamarin.Forms.Platform.Android
 
 		void EnableParentGesture(bool isGestureEnabled)
 		{
-			if (_viewPagerParent != null)
+			if (_viewPagerParent != null && CanEnableParentGesture())
 				_viewPagerParent.EnableGesture = isGestureEnabled;
+		}
+
+		bool CanEnableParentGesture()
+		{
+			if (_pageParent != null)
+				return _pageParent.OnThisPlatform().IsSwipePagingEnabled();
+
+			return true;
 		}
 
 		void OnOpenRequested(object sender, OpenRequestedEventArgs e)

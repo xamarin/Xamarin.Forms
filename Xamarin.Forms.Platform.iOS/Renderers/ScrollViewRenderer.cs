@@ -286,6 +286,10 @@ namespace Xamarin.Forms.Platform.iOS
 						break;
 				}
 			}
+			if(newOffset.X + ScrollView.Width > ContentSize.Width)
+				newOffset.X = (nfloat)(ContentSize.Width - ScrollView.Width);
+			if (newOffset.Y + ScrollView.Height > ContentSize.Height)
+				newOffset.Y = (nfloat)(ContentSize.Height - ScrollView.Height);
 			var sameOffset = newOffset == ContentOffset;
 			SetContentOffset(newOffset, e.ShouldAnimate);
 

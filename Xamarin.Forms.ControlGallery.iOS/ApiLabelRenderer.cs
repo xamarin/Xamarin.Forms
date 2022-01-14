@@ -13,9 +13,8 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
 		{
-			Element.Text = UIDevice.CurrentDevice.SystemVersion.ToString();
 			base.OnElementChanged(e);
-			
+			Element.Text = UIDevice.CurrentDevice.SystemVersion.ToString();
 		}
 	}
 }

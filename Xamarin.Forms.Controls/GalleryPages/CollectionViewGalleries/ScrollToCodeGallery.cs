@@ -4,6 +4,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
 	internal class ScrollToCodeGallery : ContentPage
 	{
+		ItemsSourceGenerator generator;
+
 		public ScrollToCodeGallery(IItemsLayout itemsLayout, ScrollToMode mode = ScrollToMode.Position, Func<DataTemplate> dataTemplate = null, Func<CollectionView> createCollectionView = null)
 		{
 			createCollectionView = createCollectionView ?? (() => new CollectionView());
@@ -27,7 +29,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			collectionView.ItemsLayout = itemsLayout;
 			collectionView.ItemTemplate = itemTemplate;
 
-			var generator = new ItemsSourceGenerator(collectionView, initialItems: 50);
+			generator = new ItemsSourceGenerator(collectionView, initialItems: 50);
 			layout.Children.Add(generator);
 
 			if (mode == ScrollToMode.Position)
@@ -50,6 +52,20 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			Content = layout;
 
 			generator.GenerateItems();
+		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			generator.SubscribeEvents();
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			generator.UnsubscribeEvents();
 		}
 	}
 }
