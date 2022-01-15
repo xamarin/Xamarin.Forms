@@ -455,14 +455,15 @@ namespace Xamarin.Forms
 			}
 
 			object original = value;
-			try 
+			try
 			{
 				convertTo = Nullable.GetUnderlyingType(convertTo) ?? convertTo;
 
 				var stringValue = value as string ?? string.Empty;
 				// see: https://bugzilla.xamarin.com/show_bug.cgi?id=32871
 				// do not canonicalize "*.[.]"; "1." should not update bound BindableProperty
-				if (stringValue.EndsWith(CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator, StringComparison.Ordinal) && DecimalTypes.Contains(convertTo)) {
+				if (stringValue.EndsWith(CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator, StringComparison.Ordinal) && DecimalTypes.Contains(convertTo))
+				{
 					value = original;
 					return false;
 				}

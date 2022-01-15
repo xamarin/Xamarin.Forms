@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Controls
 				Flyout = CoreGallery.GetFlyoutPage(),
 				Detail = CoreGallery.GetMainPage()
 			};
-		
+
 			mdp.SetAutomationPropertiesName("Main page");
 			mdp.SetAutomationPropertiesHelpText("Main page help text");
 			mdp.Flyout.IconImageSource.SetAutomationPropertiesHelpText("This as MDP icon");
