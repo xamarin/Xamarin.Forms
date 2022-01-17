@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Internals
 
 		public static object CreateContent(this DataTemplate self, object item, BindableObject container)
 		{
-			return self.SelectDataTemplate(item, container).CreateContent();
+			return self.SelectDataTemplate(item, container)?.CreateContent();
 		}
 	}
 }

@@ -537,7 +537,9 @@ namespace Xamarin.Forms.Internals
 
 		public TItem ActivateContent(int index, object item)
 		{
-			TItem content = ItemTemplate != null ? (TItem)ItemTemplate.CreateContent(item, _itemsView) : _itemsView.CreateDefault(item);
+			TItem content = ItemTemplate != null ?
+				(TItem)ItemTemplate.CreateContent(item, _itemsView) ?? _itemsView.CreateDefault(item) :
+				_itemsView.CreateDefault(item);
 
 			content = UpdateContent(content, index, item);
 
