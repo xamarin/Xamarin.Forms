@@ -90,7 +90,6 @@ namespace Xamarin.Forms.Core.UnitTests
 				if (item is View)
 					return templateThree;
 
-				//if (item is Page)
 				return null;
 			}
 
@@ -152,6 +151,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			tabbedPage.ItemTemplate = new TestPageDTS();
 			Assert.IsInstanceOf<ContentPage>(tabbedPage.Children[0]);
 			Assert.IsInstanceOf<Page>(tabbedPage.Children[1]);
+			Assert.AreEqual(tabbedPage.Children[1].BindingContext, "test");
 		}
 	}
 
