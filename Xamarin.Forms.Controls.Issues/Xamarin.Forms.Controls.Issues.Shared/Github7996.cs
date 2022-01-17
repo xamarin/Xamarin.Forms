@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Controls.Issues
 					CultureInfo.CurrentUICulture = culture;
 				}
 			};
-			
+
 			var textLabel2 = new Label
 			{
 				Text = "Resolved Binding Value:"
