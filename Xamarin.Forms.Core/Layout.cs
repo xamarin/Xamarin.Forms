@@ -327,7 +327,7 @@ namespace Xamarin.Forms
 
 			s_resolutionList.Add(new KeyValuePair<Layout, int>(this, GetElementDepth(this)));
 
-			if (Device.PlatformInvalidator == null && !s_relayoutInProgress)
+			if (!s_relayoutInProgress)
 			{
 				// Rather than recomputing the layout for each change as it happens, we accumulate them in
 				// s_resolutionList and schedule a single layout update operation to handle them all at once.
@@ -345,15 +345,9 @@ namespace Xamarin.Forms
 					Device.BeginInvokeOnMainThread(ResolveLayoutChanges);
 				}
 			}
-			else
-			{
-				// If the platform supports PlatformServices2, queueing is unnecessary; the layout changes
-				// will be handled during the Layout's next Measure/Arrange pass
-				Device.Invalidate(this);
-			}
 		}
 
-		public void ResolveLayoutChanges()
+		internal void ResolveLayoutChanges()
 		{
 			s_relayoutInProgress = false;
 

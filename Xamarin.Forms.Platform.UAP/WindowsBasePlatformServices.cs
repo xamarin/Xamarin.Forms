@@ -25,7 +25,7 @@ using IOPath = System.IO.Path;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	internal abstract class WindowsBasePlatformServices : IPlatformServices, IPlatformInvalidate
+	internal abstract class WindowsBasePlatformServices : IPlatformServices
 	{
 		const string WrongThreadError = "RPC_E_WRONG_THREAD";
 		readonly CoreDispatcher _dispatcher;
@@ -254,17 +254,6 @@ namespace Xamarin.Forms.Platform.UWP
 			});
 
 			return await taskCompletionSource.Task;
-		}
-
-		public void Invalidate(VisualElement visualElement)
-		{
-			var renderer = Platform.GetRenderer(visualElement);
-			if (renderer == null)
-			{
-				return;
-			}
-
-			renderer.ContainerElement.InvalidateMeasure();
 		}
 
 		public OSAppTheme RequestedTheme => Windows.UI.Xaml.Application.Current.RequestedTheme == ApplicationTheme.Dark ? OSAppTheme.Dark : OSAppTheme.Light;

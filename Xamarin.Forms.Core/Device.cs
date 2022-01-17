@@ -90,8 +90,6 @@ namespace Xamarin.Forms
 			set { s_platformServices = value; }
 		}
 
-		public static IPlatformInvalidate PlatformInvalidator { get; set; }
-
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static IReadOnlyList<string> Flags { get; private set; }
 
@@ -286,11 +284,6 @@ namespace Xamarin.Forms
 			public static readonly Style ListItemDetailTextStyle = new Style(typeof(Label)) { BaseResourceKey = ListItemDetailTextStyleKey };
 
 			public static readonly Style CaptionStyle = new Style(typeof(Label)) { BaseResourceKey = CaptionStyleKey };
-		}
-
-		public static void Invalidate(VisualElement visualElement)
-		{
-			PlatformInvalidator?.Invalidate(visualElement);
 		}
 	}
 }

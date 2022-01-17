@@ -677,7 +677,6 @@ namespace Xamarin.Forms
 			if (!Batched)
 			{
 				BatchCommitted?.Invoke(this, new EventArg<VisualElement>(this));
-				Device.Invalidate(this);
 			}
 		}
 

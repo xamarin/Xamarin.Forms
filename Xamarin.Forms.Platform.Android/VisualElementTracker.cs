@@ -336,9 +336,6 @@ namespace Xamarin.Forms.Platform.Android
 				aview.Visibility = ViewStates.Visible;
 			if (!view.IsVisible && aview.Visibility != ViewStates.Gone)
 				aview.Visibility = ViewStates.Gone;
-
-			aview.Invalidate();
-			aview.RequestLayout();
 		}
 
 		void UpdateNativeView(object sender, EventArgs e)

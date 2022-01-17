@@ -313,24 +313,13 @@ namespace Xamarin.Forms.Platform.MacOS
 
 #if __MOBILE__
 
-		void ResolveLayoutChanges()
-		{
-			if (Element is Layout layout)
-			{
-				layout.ResolveLayoutChanges();
-			}
-		}
-
 		public override SizeF SizeThatFits(SizeF size)
 		{
-			ResolveLayoutChanges();
 			return new SizeF(0, 0);
 		}
 
 		public override void LayoutSubviews()
 		{
-			ResolveLayoutChanges();
-
 			base.LayoutSubviews();
 
 			if (_blur != null && Superview != null)
