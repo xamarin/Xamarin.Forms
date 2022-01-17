@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using NUnit.Framework;
 using Xamarin.Forms;
 
@@ -37,6 +38,22 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
+		class TemplateThree : DataTemplate
+		{
+			public TemplateThree() : base(typeof(ContentPage))
+			{
+
+			}
+		}
+
+		class TemplateFour : DataTemplate
+		{
+			public TemplateFour() : base(typeof(ContentView))
+			{
+
+			}
+		}
+
 		class TestDTS : DataTemplateSelector
 		{
 			public TestDTS()
@@ -51,11 +68,33 @@ namespace Xamarin.Forms.Core.UnitTests
 					return templateOne;
 				if (item is byte)
 					return new TestDTS();
-				return templateTwo;
+				if (item is string)
+					return templateTwo;
+
+				return null;
 			}
 
 			readonly DataTemplate templateOne;
 			readonly DataTemplate templateTwo;
+		}
+
+		class TestPageDTS : DataTemplateSelector
+		{
+			public TestPageDTS()
+			{
+				templateThree = new TemplateThree();
+			}
+
+			protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
+			{
+				if (item is View)
+					return templateThree;
+
+				//if (item is Page)
+				return null;
+			}
+
+			readonly DataTemplate templateThree;
 		}
 
 		[Test]
@@ -70,17 +109,31 @@ namespace Xamarin.Forms.Core.UnitTests
 			var dts = new TestDTS();
 			Assert.IsInstanceOf<TemplateOne>(dts.SelectTemplate(1d, null));
 			Assert.IsInstanceOf<TemplateTwo>(dts.SelectTemplate("test", null));
+			Assert.IsNull(dts.SelectTemplate((short)0, null));
 		}
 
 		[Test]
 		public void ListViewSupport()
 		{
 			var listView = new ListView(ListViewCachingStrategy.RecycleElement);
-			listView.ItemsSource = new object[] { 0d, "test" };
+			listView.ItemsSource = new object[] { 0d, "test", (short)0 };
 
 			listView.ItemTemplate = new TestDTS();
 			Assert.IsInstanceOf<ViewCell>(listView.TemplatedItems[0]);
 			Assert.IsInstanceOf<EntryCell>(listView.TemplatedItems[1]);
+			Assert.IsInstanceOf<TextCell>(listView.TemplatedItems[2]);
+		}
+
+		[Test]
+		public void ListViewRecycleDTSupport()
+		{
+			var listView = new ListView(ListViewCachingStrategy.RecycleElementAndDataTemplate);
+			listView.ItemsSource = new object[] { 0d, "test", (short)0 };
+
+			listView.ItemTemplate = new TestDTS();
+			Assert.IsInstanceOf<ViewCell>(listView.TemplatedItems[0]);
+			Assert.IsInstanceOf<EntryCell>(listView.TemplatedItems[1]);
+			Assert.IsInstanceOf<TextCell>(listView.TemplatedItems[2]);
 		}
 
 		[Test]
@@ -88,6 +141,17 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var dts = new TestDTS();
 			Assert.Throws<NotSupportedException>(() => dts.SelectTemplate((byte)0, null));
+		}
+
+		[Test]
+		public void TabbedPageSupport()
+		{
+			var tabbedPage = new TabbedPage();
+			tabbedPage.ItemsSource = new object[] { new View(), "test" };
+
+			tabbedPage.ItemTemplate = new TestPageDTS();
+			Assert.IsInstanceOf<ContentPage>(tabbedPage.Children[0]);
+			Assert.IsInstanceOf<Page>(tabbedPage.Children[1]);
 		}
 	}
 
