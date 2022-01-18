@@ -10,11 +10,24 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		bool _measured;
 		bool _disposed;
-
+		Window _window;
 		public ImageRenderer() : base()
 		{
 			ImageElementManager.Init(this);
+			_window = Window.Current;
+			_window.Activated += Window_Activated;
 			Windows.UI.Xaml.Application.Current.Resuming += OnResumingAsync;
+		}
+
+		async void Window_Activated(object sender, Windows.UI.Core.WindowActivatedEventArgs e)
+		{
+			if (Control == null | Element == null)
+				return;
+
+			if(Element.Source is FontImageSource)
+			{
+				await TryUpdateSource();
+			}
 		}
 
 		bool IImageVisualElementRenderer.IsDisposed => _disposed;

@@ -18,10 +18,24 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _disposed;
 		WImage _image;
 		FormsButton _formsButton;
+		Window _window;
 
 		public ImageButtonRenderer() : base()
 		{
 			ImageElementManager.Init(this);
+			_window = Window.Current;
+			_window.Activated += Window_Activated;
+		}
+
+		async void Window_Activated(object sender, Windows.UI.Core.WindowActivatedEventArgs e)
+		{
+			if (Control == null | Element == null)
+				return;
+
+			if (Element.Source is FontImageSource)
+			{
+				await TryUpdateSource();
+			}
 		}
 
 		protected override void Dispose(bool disposing)

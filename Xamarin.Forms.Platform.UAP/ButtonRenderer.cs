@@ -16,7 +16,14 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _fontApplied;
 
 		FormsButton _button;
-		PointerEventHandler _pointerPressedHandler;		
+		PointerEventHandler _pointerPressedHandler;
+		Window _window;
+
+		public ButtonRenderer()
+		{
+			_window = Window.Current;
+			_window.Activated += Window_Activated;
+		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Button> e)
 		{
@@ -70,6 +77,16 @@ namespace Xamarin.Forms.Platform.UWP
 
 				UpdateFont();
 			}
+		}
+
+		void Window_Activated(object sender, Windows.UI.Core.WindowActivatedEventArgs e)
+		{
+			if (Control == null | Element == null)
+				return;
+
+			if(Element.ImageSource is FontImageSource)
+				UpdateContent();
+			
 		}
 
 		void ButtonOnLoading(FrameworkElement sender, object args)
@@ -321,6 +338,10 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (_isDisposed)
 				return;
+			if(_window != null)
+			{
+				_window.Activated -= Window_Activated;
+			}
 			if (_button != null)
 			{
 				_button.Click -= OnButtonClick;
