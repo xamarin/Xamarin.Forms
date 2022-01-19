@@ -86,6 +86,11 @@ namespace Xamarin.Forms.Platform.Android
 				s_displayDensity = metrics.Density;
 		}
 
+		public static void ResetDensity()
+		{
+			s_displayDensity = float.MinValue;
+		}
+
 		public static AActivity GetActivity(this Context context)
 		{
 			if (context == null)
