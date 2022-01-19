@@ -2,12 +2,21 @@
 using System.Collections.Generic;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+#if UITEST
+using Xamarin.UITest;
+using NUnit.Framework;
+using Xamarin.Forms.Core.UITests;
+#endif
 
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 8606, "[Bug] [UWP] FontIcons are not aligned correctly",PlatformAffected.UWP)]
-	internal class Issue8606 : TestContentPage
+	[Issue(IssueTracker.Github, 8606, "[Bug] [UWP] FontIcons are not aligned correctly", PlatformAffected.UWP)]
+#if UITEST
+	[Category(UITestCategories.Github5000)]
+	[Category(UITestCategories.ManualReview)]
+#endif
+	public class Issue8606 : TestContentPage
 	{
 		protected override void Init()
 		{
@@ -28,7 +37,7 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 			
 			var content = new StackLayout { };
-			content.Children.Add(new Label { FontSize = 24, TextColor = iconColor, Text = "Button, ImageButton and Image should use the same FontImageSourceHandler which should render centered." });
+			content.Children.Add(new Label { BackgroundColor = Color.Black, Padding = 12, TextColor = iconColor, Text = "Button, ImageButton and Image should use the same FontImageSourceHandler which should render centered." });
 			
 			foreach (var (fontFamily, glyph, familyShortName) in fontFamilyGlyphs)
 			{
