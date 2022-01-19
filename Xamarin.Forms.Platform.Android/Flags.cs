@@ -15,7 +15,7 @@ namespace Xamarin.Forms
 
 		public static bool IsAccessibilityExperimentalSet()
 		{
-			return IsFlagSet(AccessibilityExperimental);
+			return true;
 		}
 	}
 }
