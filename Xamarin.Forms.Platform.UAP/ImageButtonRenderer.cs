@@ -49,6 +49,11 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (disposing)
 			{
+				if (_window != null)
+				{
+					_window.Activated -= Window_Activated;
+				}
+
 				ImageElementManager.Dispose(this);
 				if (Control != null)
 				{
