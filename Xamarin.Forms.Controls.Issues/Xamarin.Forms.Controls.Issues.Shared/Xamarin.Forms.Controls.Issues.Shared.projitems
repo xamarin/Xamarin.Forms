@@ -53,6 +53,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue14801.xaml.cs">
       <DependentUpon>Issue14801.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Issue15066.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8804.xaml.cs">
       <DependentUpon>Issue8804.xaml</DependentUpon>
     </Compile>
