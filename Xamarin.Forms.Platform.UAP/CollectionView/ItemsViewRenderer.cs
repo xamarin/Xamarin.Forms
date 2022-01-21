@@ -438,7 +438,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 		FrameworkElement RealizeEmptyViewTemplate(object bindingContext, DataTemplate emptyViewTemplate)
 		{
-			if (emptyViewTemplate == null)
+			var template = emptyViewTemplate?.SelectDataTemplate(bindingContext, null);
+
+			if (template == null)
 			{
 				return new TextBlock
 				{
@@ -448,7 +450,6 @@ namespace Xamarin.Forms.Platform.UWP
 				};
 			}
 
-			var template = emptyViewTemplate.SelectDataTemplate(bindingContext, null);
 			var view = template.CreateContent() as View;
 			view.BindingContext = bindingContext;
 

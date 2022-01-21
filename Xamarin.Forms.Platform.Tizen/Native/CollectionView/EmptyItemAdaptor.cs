@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using ElmSharp;
+using Xamarin.Forms.Internals;
 using ESize = ElmSharp.Size;
 using XLabel = Xamarin.Forms.Label;
 
@@ -44,15 +45,10 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		public override EvasObject CreateNativeView(int index, EvasObject parent)
 		{
-			View emptyView = null;
-			if (ItemTemplate is DataTemplateSelector selector)
-			{
-				emptyView = selector.SelectTemplate(this[index], Element).CreateContent() as View;
-			}
-			else
-			{
-				emptyView = ItemTemplate.CreateContent() as View;
-			}
+			var itemTemplate = ItemTemplate?.SelectDataTemplate(this[index], Element) ??
+			                   ItemDefaultTemplateAdaptor.DefaultTemplate;
+
+			View emptyView = itemTemplate.CreateContent() as View;
 
 			var header = CreateHeaderView();
 			var footer = CreateFooterView();
