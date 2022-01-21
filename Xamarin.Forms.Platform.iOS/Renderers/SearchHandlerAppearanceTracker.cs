@@ -33,6 +33,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_uiSearchBar.ShowsCancelButton = false;
 			GetDefaultSearchBarColors(_uiSearchBar);
 			var uiTextField = searchBar.FindDescendantView<UITextField>();
+			
 			UpdateSearchBarColors();
 			UpdateSearchBarHorizontalTextAlignment(uiTextField);
 			UpdateSearchBarVerticalTextAlignment(uiTextField);
@@ -135,22 +136,30 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!_hasCustomBackground && backGroundColor.IsDefault)
 				return;
 
-			var backgroundView = textField.Subviews[0];
-
-			if (backGroundColor.IsDefault)
+			if(Forms.IsiOS13OrNewer)
 			{
-				backgroundView.Layer.CornerRadius = 0;
-				backgroundView.ClipsToBounds = false;
-				backgroundView.BackgroundColor = _defaultBackgroundColor;
+				textField.BackgroundColor = backGroundColor.ToUIColor();
 			}
+			else
+			{ 
+				var backgroundView = textField.Subviews[0];
+			
 
-			_hasCustomBackground = true;
+				if (backGroundColor.IsDefault)
+				{
+					backgroundView.Layer.CornerRadius = 0;
+					backgroundView.ClipsToBounds = false;
+					backgroundView.BackgroundColor = _defaultBackgroundColor;
+				}
 
-			backgroundView.Layer.CornerRadius = 10;
-			backgroundView.ClipsToBounds = true;
-			if (_defaultBackgroundColor == null)
-				_defaultBackgroundColor = backgroundView.BackgroundColor;
-			backgroundView.BackgroundColor = backGroundColor.ToUIColor();
+				_hasCustomBackground = true;
+
+				backgroundView.Layer.CornerRadius = 10;
+				backgroundView.ClipsToBounds = true;
+				if (_defaultBackgroundColor == null)
+					_defaultBackgroundColor = backgroundView.BackgroundColor;
+				backgroundView.BackgroundColor = backGroundColor.ToUIColor();
+			}
 		}
 
 		void UpdateCancelButtonColor(UIButton cancelButton)

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 13236" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue13236">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Tap the button. Without exceptions, the test has passed."/>
+        <Frame
+            x:Name="TheFrame" BackgroundColor="#2196F3"
+            Padding="24" CornerRadius="0">
+            <Label
+                Text="Issue 13236" HorizontalTextAlignment="Center"
+                TextColor="White" FontSize="36"/>
+        </Frame>
+        <Button 
+            Text="Animate"
+            Clicked="OnButtonClicked"/>
+    </StackLayout>
+</local:TestContentPage>

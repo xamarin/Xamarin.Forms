@@ -734,7 +734,7 @@ namespace Xamarin.Forms
 						case NamedSize.Caption:
 							return 12;
 						case NamedSize.Header:
-							return 96;
+							return 14;
 						case NamedSize.Subtitle:
 							return 16;
 						case NamedSize.Title:
@@ -766,7 +766,7 @@ namespace Xamarin.Forms
 					case NamedSize.Caption:
 						return 12;
 					case NamedSize.Header:
-						return 96;
+						return 14;
 					case NamedSize.Subtitle:
 						return 16;
 					case NamedSize.Title:

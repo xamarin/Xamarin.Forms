@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Forms.Controls.XamStore.Views;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.XamStore
@@ -373,6 +374,10 @@ namespace Xamarin.Forms.Controls.XamStore
 
 			grid.Children.Add(flyoutHeight,
 				2, 22);
+
+			grid.Children.Add(MakeButton("Push Modal",
+					() => Navigation.PushModalAsync((Page)Activator.CreateInstance(typeof(ModalShellPage)), true)),
+				0, 23);
 
 			void FlyoutSizeTextChanged(object sender, TextChangedEventArgs e)
 			{

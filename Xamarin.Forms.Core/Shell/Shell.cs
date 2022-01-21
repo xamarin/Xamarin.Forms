@@ -468,10 +468,13 @@ namespace Xamarin.Forms
 			var modalStack = shellSection?.Navigation?.ModalStack;
 			var result = ShellNavigationManager.GetNavigationState(shellItem, shellSection, shellContent, stack, modalStack);
 
-			SetValueFromRenderer(CurrentStatePropertyKey, result);
-
-			_navigationManager.HandleNavigated(new ShellNavigatedEventArgs(oldState, CurrentState, source));
+			if (result?.Location != oldState?.Location)
+			{
+				SetValueFromRenderer(CurrentStatePropertyKey, result);
+				_navigationManager.HandleNavigated(new ShellNavigatedEventArgs(oldState, CurrentState, source));
+			}
 		}
+
 		ReadOnlyCollection<ShellItem> IShellController.GetItems() =>
 			new ReadOnlyCollection<ShellItem>(((ShellItemCollection)Items).VisibleItemsReadOnly.ToList());
 
@@ -1305,6 +1308,13 @@ namespace Xamarin.Forms
 
 			protected override async Task<Page> OnPopModal(bool animated)
 			{
+				if (!_shell.NavigationManager.AccumulateNavigatedEvents)
+				{
+					var page = _shell.CurrentPage;
+					await _shell.GoToAsync("..", animated);
+					return page;
+				}
+
 				if (ModalStack.Count > 0)
 					ModalStack[ModalStack.Count - 1].SendDisappearing();
 
@@ -1324,6 +1334,14 @@ namespace Xamarin.Forms
 
 			protected override async Task OnPushModal(Page modal, bool animated)
 			{
+				if (!_shell.NavigationManager.AccumulateNavigatedEvents)
+				{
+					// This will route the modal push through the shell section which is setup
+					// to update the shell state after a modal push
+					await _shell.CurrentItem.CurrentItem.Navigation.PushModalAsync(modal, animated);
+					return;
+				}
+
 				if (ModalStack.Count == 0)
 					_shell.CurrentItem.SendDisappearing();
 

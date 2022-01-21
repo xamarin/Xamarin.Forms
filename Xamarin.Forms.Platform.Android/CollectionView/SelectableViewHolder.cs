@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_isSelectionEnabled)
 			{
-				OnViewHolderClicked(AdapterPosition);
+				OnViewHolderClicked(BindingAdapterPosition);
 			}
 		}
 

@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using Android.Content;
 using Android.Runtime;
 using Android.Views;
@@ -428,13 +429,26 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				else
 					_refresh.Refreshing = isRefreshing;
+
+				// Allow to disable SwipeToRefresh layout AFTER refresh is done
+				UpdateIsSwipeToRefreshEnabled();
 			}
 		}
 
 		void UpdateIsSwipeToRefreshEnabled()
 		{
-			if (_refresh != null)
-				_refresh.Enabled = Element.IsPullToRefreshEnabled && (Element as IListViewController).RefreshAllowed;
+			if (_refresh != null && Element != null)
+			{
+				var isEnabled = Element.IsPullToRefreshEnabled && (Element as IListViewController).RefreshAllowed;
+				_refresh.Post(() =>
+				{
+					// NOTE: only disable while NOT refreshing, otherwise Command bindings CanExecute behavior will effectively
+					// cancel refresh animation. If not possible right now we will be called by UpdateIsRefreshing().
+					// For details see https://github.com/xamarin/Xamarin.Forms/issues/8384
+					if (!_refresh.IsDisposed() && (isEnabled || !_refresh.Refreshing))
+						_refresh.Enabled = isEnabled;
+				});
+			}
 		}
 
 		void UpdateFastScrollEnabled()

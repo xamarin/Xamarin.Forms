@@ -2,6 +2,8 @@
 {
 	internal class SnapPointsCodeGallery : ContentPage
 	{
+		ItemsSourceGenerator generator;
+
 		public SnapPointsCodeGallery(ItemsLayout itemsLayout)
 		{
 			Title = $"Snap Points (Code, {itemsLayout})";
@@ -29,7 +31,7 @@
 				ItemTemplate = itemTemplate,
 			};
 
-			var generator = new ItemsSourceGenerator(collectionView, initialItems: 50);
+			generator = new ItemsSourceGenerator(collectionView, initialItems: 50);
 
 			var snapPointsTypeSelector = new EnumSelector<SnapPointsType>(() => itemsLayout.SnapPointsType,
 				type => itemsLayout.SnapPointsType = type);
@@ -54,6 +56,20 @@
 			Content = layout;
 
 			generator.GenerateItems();
+		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+
+			generator.SubscribeEvents();
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			generator.UnsubscribeEvents();
 		}
 	}
 }

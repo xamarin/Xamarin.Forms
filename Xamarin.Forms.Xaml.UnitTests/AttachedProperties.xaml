@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			 xmlns:local="clr-namespace:Xamarin.Forms.Xaml.UnitTests"
+             x:Class="Xamarin.Forms.Xaml.UnitTests.AttachedProperties">
+	<ContentPage.Content>
+        <StackLayout>
+            <StackLayout x:Name="StackLayout1">
+                <local:StackLayoutProperties.StackLayoutCollection>
+                    <local:MyCustomClass ExampleProperty1="a"/>
+                    <local:MyCustomClass ExampleProperty1="b"/>
+                </local:StackLayoutProperties.StackLayoutCollection>
+            </StackLayout>
+            <StackLayout x:Name="StackLayout2">
+                <local:StackLayoutProperties.StackLayoutCollection>
+                    <local:MyCustomClass ExampleProperty1="c"/>
+                    <local:MyCustomClass ExampleProperty1="d"/>
+                </local:StackLayoutProperties.StackLayoutCollection>
+            </StackLayout>
+        </StackLayout>
+	</ContentPage.Content>
+</ContentPage>

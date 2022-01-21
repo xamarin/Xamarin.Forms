@@ -251,9 +251,9 @@ namespace Xamarin.Forms.Platform.Android
 
 				var element = GetView();
 				var renderer = Platform.GetRenderer(element);
-				var v = renderer.View;
+				var v = renderer?.View;
 
-				if (v.Handle == IntPtr.Zero)
+				if (v == null || v.Handle == IntPtr.Zero)
 					return;
 
 				var args = rec.SendDragStarting(element);

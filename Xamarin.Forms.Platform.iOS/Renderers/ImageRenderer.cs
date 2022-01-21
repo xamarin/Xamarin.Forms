@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
@@ -72,6 +71,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				await TrySetImage(e.OldElement as Image);
+				UpdateBackground();
 			}
 
 			base.OnElementChanged(e);
@@ -83,6 +83,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (e.PropertyName == Image.SourceProperty.PropertyName)
 				await TrySetImage().ConfigureAwait(false);
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				UpdateBackground();
 		}
 
 		protected virtual async Task TrySetImage(Image previous = null)
@@ -115,8 +117,17 @@ namespace Xamarin.Forms.Platform.iOS
 		bool IImageVisualElementRenderer.IsDisposed => _isDisposed;
 
 		UIImageView IImageVisualElementRenderer.GetImage() => Control;
-	}
 
+		void UpdateBackground()
+		{
+			var parent = Control.Superview;
+
+			if (parent == null)
+				return;
+
+			parent.UpdateBackground(Element.Background);
+		}
+	}
 
 	public interface IImageSourceHandler : IRegisterable
 	{
@@ -196,7 +207,7 @@ namespace Xamarin.Forms.Platform.iOS
 			FormsCAKeyFrameAnimation animation = await ImageAnimationHelper.CreateAnimationFromStreamImageSourceAsync(imagesource as StreamImageSource, cancelationToken).ConfigureAwait(false);
 			if (animation == null)
 			{
-				Log.Warning(nameof(FileImageSourceHandler), "Could not find image: {0}", imagesource);
+				Log.Warning(nameof(StreamImagesourceHandler), "Could not find image: {0}", imagesource);
 			}
 
 			return animation;
