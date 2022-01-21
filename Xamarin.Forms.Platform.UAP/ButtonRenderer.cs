@@ -195,53 +195,63 @@ namespace Xamarin.Forms.Platform.UWP
 		async void UpdateContent()
 		{
 			var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
-			var elementImage = await Element.ImageSource.ToWindowsImageSourceAsync();
 
 			// No image, just the text
-			if (elementImage == null)
+			if (Element.ImageSource == null)
 			{
 				Control.Content = text;
 				Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
 				return;
 			}
 
-			var size = elementImage.GetImageSourceSize();
-			var image = new WImage
+			FrameworkElement content = null;
+			if (Element.ImageSource is FontImageSource fontImageSource)
 			{
-				Source = elementImage,
-				VerticalAlignment = VerticalAlignment.Center,
-				HorizontalAlignment = HorizontalAlignment.Center,
-				Stretch = WStretch.Uniform,
-				Width = size.Width,
-				Height = size.Height,
-			};
+				content = await Element.ImageSource.ToWindowsIconElementAsync();
+			}
+			else
+			{
+				var elementImage = await Element.ImageSource.ToWindowsImageSourceAsync();
 
-			// BitmapImage is a special case that has an event when the image is loaded
-			// when this happens, we want to resize the button
-			if (elementImage is BitmapImage bmp)
-			{
-				bmp.ImageOpened += (sender, args) => {
-					var actualSize = bmp.GetImageSourceSize();
-					image.Width = actualSize.Width;
-					image.Height = actualSize.Height;
-					Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
+				var size = elementImage.GetImageSourceSize();
+				var image = new WImage
+				{
+					Source = elementImage,
+					VerticalAlignment = VerticalAlignment.Center,
+					HorizontalAlignment = HorizontalAlignment.Center,
+					Stretch = WStretch.Uniform,
+					Width = size.Width,
+					Height = size.Height,
 				};
+
+				// BitmapImage is a special case that has an event when the image is loaded
+				// when this happens, we want to resize the button
+				if (elementImage is BitmapImage bmp)
+				{
+					bmp.ImageOpened += (sender, args) =>
+					{
+						var actualSize = bmp.GetImageSourceSize();
+						image.Width = actualSize.Width;
+						image.Height = actualSize.Height;
+						Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
+					};
+				}
 			}
 
 			// No text, just the image
 			if (string.IsNullOrEmpty(text))
 			{
-				Control.Content = image;
+				Control.Content = content;
 				Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
 				return;
 			}
 
 			// Both image and text, so we need to build a container for them
-			Control.Content = CreateContentContainer(Element.ContentLayout, image, text);
+			Control.Content = CreateContentContainer(Element.ContentLayout, content, text);
 			Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
 		}
 
-		static StackPanel CreateContentContainer(Button.ButtonContentLayout layout, WImage image, string text)
+		static StackPanel CreateContentContainer(Button.ButtonContentLayout layout, FrameworkElement image, string text)
 		{
 			var container = new StackPanel();
 			var textBlock = new TextBlock {
