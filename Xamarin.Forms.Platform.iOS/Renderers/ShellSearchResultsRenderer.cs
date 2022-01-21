@@ -83,12 +83,10 @@ namespace Xamarin.Forms.Platform.iOS
 			int row = indexPath.Row;
 			var context = proxy[row];
 
-			var template = SearchHandler.ItemTemplate;
+			var template = SearchHandler.ItemTemplate?.SelectDataTemplate(context, _context.Shell) ??
+			               DefaultTemplate;
 
-			if (template == null)
-				template = DefaultTemplate;
-
-			var cellId = ((IDataTemplateController)template.SelectDataTemplate(context, _context.Shell)).IdString;
+			var cellId = ((IDataTemplateController)template).IdString;
 
 			var cell = (UIContainerCell)tableView.DequeueReusableCell(cellId);
 

@@ -135,7 +135,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			DataTemplate template = ShellController.GetFlyoutItemDataTemplate(context);
 
-			var cellId = ((IDataTemplateController)template.SelectDataTemplate(context, _context.Shell)).IdString;
+			var cellId = ((IDataTemplateController)template).IdString;
 
 			UIContainerCell cell;
 			if (!_cells.TryGetValue(context, out cell))

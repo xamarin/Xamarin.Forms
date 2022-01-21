@@ -54,11 +54,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 
-			DataTemplate dataTemplate = ShellController.GetFlyoutItemDataTemplate(item.Element);
-
-			var template = dataTemplate.SelectDataTemplate(item.Element, Shell);
-
-			return template;
+			return ShellController.GetFlyoutItemDataTemplate(item.Element);
 		}
 
 		public override void OnViewRecycled(Java.Lang.Object holder)
@@ -163,9 +159,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
 		{
-			var template = GetDataTemplate(viewType);
-
-			var content = (View)template.CreateContent();
+			var content = (View)GetDataTemplate(viewType).CreateContent();
 
 			var linearLayout = new LinearLayoutWithFocus(parent.Context)
 			{
