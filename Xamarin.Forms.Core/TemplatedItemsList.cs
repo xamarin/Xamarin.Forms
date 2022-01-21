@@ -532,14 +532,13 @@ namespace Xamarin.Forms.Internals
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public DataTemplate SelectDataTemplate(object item)
 		{
-			return ItemTemplate.SelectDataTemplate(item, _itemsView);
+			return ItemTemplate?.SelectDataTemplate(item, _itemsView);
 		}
 
 		public TItem ActivateContent(int index, object item)
 		{
-			TItem content = ItemTemplate != null ?
-				(TItem)ItemTemplate.CreateContent(item, _itemsView) ?? _itemsView.CreateDefault(item) :
-				_itemsView.CreateDefault(item);
+			TItem content = (TItem)ItemTemplate?.CreateContent(item, _itemsView) ??
+			                _itemsView.CreateDefault(item);
 
 			content = UpdateContent(content, index, item);
 
