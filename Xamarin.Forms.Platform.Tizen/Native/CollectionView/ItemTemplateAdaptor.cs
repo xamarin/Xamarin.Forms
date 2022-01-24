@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 {
 	public class ItemDefaultTemplateAdaptor : ItemTemplateAdaptor
 	{
-		public readonly static DataTemplate DefaultTemplate =
+		public static readonly DataTemplate DefaultTemplate =
 			new Lazy<DataTemplate>(() => new DataTemplate(
 				                       () =>
 				                       {

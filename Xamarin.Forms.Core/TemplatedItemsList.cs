@@ -741,9 +741,12 @@ namespace Xamarin.Forms.Internals
 
 			groupProxy.BindingContext = item;
 
-			if (GroupHeaderTemplate != null)
+			var groupHeaderTemplate =
+				GroupHeaderTemplate?.SelectDataTemplate(groupProxy.ItemsSource, _itemsView);
+
+			if (groupHeaderTemplate != null)
 			{
-				groupProxy.HeaderContent = (TItem)GroupHeaderTemplate.CreateContent(groupProxy.ItemsSource, _itemsView);
+				groupProxy.HeaderContent = (TItem)groupHeaderTemplate.CreateContent();
 				groupProxy.HeaderContent.BindingContext = groupProxy.ItemsSource;
 				//groupProxy.HeaderContent.BindingContext = groupProxy;
 				//groupProxy.HeaderContent.SetBinding (BindingContextProperty, "ItemsSource");
