@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// Run this through the extension method in case it's really a DataTemplateSelector
 			var itemTemplate = template?.SelectDataTemplate(bindingContext, itemsView) ??
-			                   TemplateHelpers.DefaultTemplate;
+			                   DataTemplateHelpers.DefaultContentTemplate;
 
 			if (itemTemplate != CurrentTemplate)
 			{

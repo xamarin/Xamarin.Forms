@@ -7,14 +7,6 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class TemplatedItemViewHolder : SelectableViewHolder
     {
-        private readonly static DataTemplate _defaultTemplate =
-            new Lazy<DataTemplate>( () => new DataTemplate( () =>
-                                                            {
-                                                                var l = new Label();
-                                                                l.SetBinding( Label.TextProperty, "." );
-                                                                return l;
-                                                            } ) ).Value;
-
         readonly ItemContentView _itemContentView;
 		readonly DataTemplate _template;
 		DataTemplate _selectedTemplate;
@@ -56,7 +48,8 @@ namespace Xamarin.Forms.Platform.Android
 		public void Bind(object itemBindingContext, ItemsView itemsView,
 			Action<Size> reportMeasure = null, Size? size = null)
 		{
-			var template = _template?.SelectDataTemplate(itemBindingContext, itemsView) ?? _defaultTemplate;
+			var template = _template?.SelectDataTemplate(itemBindingContext, itemsView) ??
+			               DataTemplateHelpers.DefaultContentTemplate;
 
 			var templateChanging = template != _selectedTemplate;
 

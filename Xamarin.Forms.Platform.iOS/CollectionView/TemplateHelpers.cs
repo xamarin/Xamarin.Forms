@@ -6,14 +6,6 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	internal static class TemplateHelpers
 	{
-		public readonly static DataTemplate DefaultTemplate =
-			new Lazy<DataTemplate>(() => new DataTemplate(() =>
-			                                              {
-				                                              var l = new Label();
-				                                              l.SetBinding(Label.TextProperty, ".");
-				                                              return l;
-			                                              })).Value;
-
 		public static IVisualElementRenderer CreateRenderer(View view)
 		{
 			if (view == null)
@@ -34,7 +26,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			// Run this through the extension method in case it's really a DataTemplateSelector
 			var itemTemplate = viewTemplate?.SelectDataTemplate(view, itemsView) ??
-			                   TemplateHelpers.DefaultTemplate;
+			                   DataTemplateHelpers.DefaultContentTemplate;
 
 			if (itemTemplate != null)
 			{

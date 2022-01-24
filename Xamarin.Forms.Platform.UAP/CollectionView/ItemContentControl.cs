@@ -9,13 +9,6 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	public class ItemContentControl : ContentControl
 	{
-		readonly static DataTemplate _defaultTemplate =
-			new Lazy<DataTemplate>(() => new DataTemplate(() =>
-			                                              {
-				                                              var l = new Label();
-				                                              l.SetBinding(Label.TextProperty, ".");
-				                                              return l;
-			                                              })).Value;
 		VisualElement _visualElement;
 		IVisualElementRenderer _renderer;
 		DataTemplate _currentTemplate;
@@ -137,7 +130,8 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			var template = formsTemplate.SelectDataTemplate(dataContext, container) ?? _defaultTemplate;
+			var template = formsTemplate.SelectDataTemplate(dataContext, container) ??
+			               DataTemplateHelpers.DefaultContentTemplate;
 
 			if (_renderer?.ContainerElement == null || _currentTemplate != template)
 			{
