@@ -28,6 +28,16 @@ namespace Xamarin.Forms.Internals
 			new Lazy<DataTemplate>(
 				() => new DataTemplate(CreateCoreContent)).Value;
 
+		public readonly static DataTemplate DefaultPageTemplate =
+			new Lazy<DataTemplate>(
+				() => new DataTemplate(() =>
+				                       {
+					                       var page = new ContentPage() { Content = CreateCoreContent() };
+					                       page.SetBinding(Page.TitleProperty, ".");
+
+					                       return page;
+				                       })).Value;
+
 		static View CreateCoreContent()
 		{
 			var label = new Label();

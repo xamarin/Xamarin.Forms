@@ -1,4 +1,5 @@
 using System;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -49,11 +50,7 @@ namespace Xamarin.Forms
 
 		protected override Page CreateDefault(object item)
 		{
-			var page = new Page();
-			if (item != null)
-				page.Title = item.ToString();
-
-			return page;
+			return (Page)DataTemplateHelpers.DefaultPageTemplate.CreateContent();
 		}
 
 		public TabbedPage()
