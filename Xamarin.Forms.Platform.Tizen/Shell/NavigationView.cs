@@ -257,19 +257,23 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			string textBinding;
 			string iconBinding;
+
+			DataTemplate template = null;
+
 			if (bo is IMenuItemController)
 			{
 				if (bo is MenuItem mi && mi.Parent != null && mi.Parent.IsSet(Shell.MenuItemTemplateProperty))
 				{
-					return Shell.GetMenuItemTemplate(mi.Parent);
+					template = Shell.GetMenuItemTemplate(mi.Parent);
 				}
 				else if (bo.IsSet(Shell.MenuItemTemplateProperty))
 				{
-					return Shell.GetMenuItemTemplate(bo);
+					template = Shell.GetMenuItemTemplate(bo);
 				}
-
-				if (Shell.MenuItemTemplate != null)
-					return Shell.MenuItemTemplate;
+				else if (Shell.MenuItemTemplate != null)
+				{
+					template = Shell.MenuItemTemplate;
+				}
 
 				textBinding = "Text";
 				iconBinding = "Icon";
@@ -277,69 +281,73 @@ namespace Xamarin.Forms.Platform.Tizen
 			else
 			{
 				if (Shell.GetItemTemplate(bo) != null)
-					return Shell.GetItemTemplate(bo);
+				{
+					template = Shell.GetItemTemplate(bo);
+				}
 				else if (Shell.ItemTemplate != null)
-					return Shell.ItemTemplate;
+				{
+					template = Shell.ItemTemplate;
+				}
 
 				textBinding = "Title";
 				iconBinding = "FlyoutIcon";
 			}
-			return new DataTemplate(() =>
-			{
-				var grid = new Grid
+
+			return template?.SelectDataTemplate(bo, Shell) ?? new DataTemplate(
+				() =>
 				{
-					HeightRequest = this.GetFlyoutItemHeight(),
-				};
+					var grid = new Grid { HeightRequest = this.GetFlyoutItemHeight(), };
 
-				ColumnDefinitionCollection columnDefinitions = new ColumnDefinitionCollection();
-				columnDefinitions.Add(new ColumnDefinition { Width = this.GetFlyoutIconColumnSize() });
-				columnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
-				grid.ColumnDefinitions = columnDefinitions;
+					ColumnDefinitionCollection columnDefinitions = new ColumnDefinitionCollection();
+					columnDefinitions.Add(new ColumnDefinition { Width = this.GetFlyoutIconColumnSize() });
+					columnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
+					grid.ColumnDefinitions = columnDefinitions;
 
-				var image = new Image
-				{
-					VerticalOptions = LayoutOptions.Center,
-					HorizontalOptions = LayoutOptions.Center,
-					HeightRequest = this.GetFlyoutIconSize(),
-					WidthRequest = this.GetFlyoutIconSize(),
-					Margin = new Thickness(this.GetFlyoutMargin(), 0, 0, 0),
-				};
-				image.SetBinding(Image.SourceProperty, new Binding(iconBinding));
-				grid.Children.Add(image);
+					var image = new Image
+					            {
+						            VerticalOptions = LayoutOptions.Center,
+						            HorizontalOptions = LayoutOptions.Center,
+						            HeightRequest = this.GetFlyoutIconSize(),
+						            WidthRequest = this.GetFlyoutIconSize(),
+						            Margin = new Thickness(this.GetFlyoutMargin(), 0, 0, 0),
+					            };
+					image.SetBinding(Image.SourceProperty, new Binding(iconBinding));
+					grid.Children.Add(image);
 
-				var label = new Label
-				{
-					FontSize = this.GetFlyoutItemFontSize(),
-					VerticalTextAlignment = TextAlignment.Center,
-					TextColor = Xamarin.Forms.Color.Black.MultiplyAlpha(0.87),
-					Margin = new Thickness(this.GetFlyoutMargin(), 0, 0, 0),
-				};
-				label.SetBinding(Label.TextProperty, new Binding(textBinding));
+					var label = new Label
+					            {
+						            FontSize = this.GetFlyoutItemFontSize(),
+						            VerticalTextAlignment = TextAlignment.Center,
+						            TextColor = Xamarin.Forms.Color.Black.MultiplyAlpha(0.87),
+						            Margin = new Thickness(this.GetFlyoutMargin(), 0, 0, 0),
+					            };
+					label.SetBinding(Label.TextProperty, new Binding(textBinding));
 
-				grid.Children.Add(label, 1, 0);
+					grid.Children.Add(label, 1, 0);
 
-				var groups = new VisualStateGroupList();
+					var groups = new VisualStateGroupList();
 
-				var commonGroup = new VisualStateGroup();
-				commonGroup.Name = "CommonStates";
-				groups.Add(commonGroup);
+					var commonGroup = new VisualStateGroup();
+					commonGroup.Name = "CommonStates";
+					groups.Add(commonGroup);
 
-				var normalState = new VisualState();
-				normalState.Name = "Normal";
-				commonGroup.States.Add(normalState);
+					var normalState = new VisualState();
+					normalState.Name = "Normal";
+					commonGroup.States.Add(normalState);
 
-				var selectedState = new VisualState();
-				selectedState.Name = "Selected";
-				selectedState.Setters.Add(new Setter
-				{
-					Property = VisualElement.BackgroundColorProperty,
-					Value = new Color(0.95)
+					var selectedState = new VisualState();
+					selectedState.Name = "Selected";
+					selectedState.Setters.Add(new Setter
+					                          {
+						                          Property = VisualElement.BackgroundColorProperty,
+						                          Value = new Color(0.95)
+					                          });
+
+					commonGroup.States.Add(selectedState);
+					VisualStateManager.SetVisualStateGroups(grid, groups);
+
+					return grid;
 				});
-
-				commonGroup.States.Add(selectedState);
-				VisualStateManager.SetVisualStateGroups(grid, groups);
-				return grid;
-			});
 		}
 
 		void UpdateBackgroundImage()
