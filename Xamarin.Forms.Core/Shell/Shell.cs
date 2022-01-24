@@ -256,21 +256,19 @@ namespace Xamarin.Forms
 		DataTemplate IShellController.GetFlyoutItemDataTemplate(BindableObject bo)
 		{
 			BindableProperty bp;
-			string textBinding;
-			string iconBinding;
+			DataTemplate defaultTemplate;
+
 			var bindableObjectWithTemplate = GetBindableObjectWithFlyoutItemTemplate(bo);
 
 			if (bo is IMenuItemController)
 			{
 				bp = MenuItemTemplateProperty;
-				textBinding = "Text";
-				iconBinding = "Icon";
+				defaultTemplate = BaseShellItem.MenuItemDefaultDataTemplate;
 			}
 			else
 			{
 				bp = ItemTemplateProperty;
-				textBinding = "Title";
-				iconBinding = "FlyoutIcon";
+				defaultTemplate = BaseShellItem.ItemDefaultDataTemplate;
 			}
 
 			DataTemplate dataTemplate = (DataTemplate)(bindableObjectWithTemplate.IsSet(bp) ?
@@ -279,8 +277,7 @@ namespace Xamarin.Forms
 					GetValue(bp) :
 					null);
 
-			return dataTemplate?.SelectDataTemplate( bo, this ) ?? 
-			       BaseShellItem.CreateDefaultFlyoutItemCell(textBinding, iconBinding);
+			return dataTemplate?.SelectDataTemplate( bo, this ) ?? defaultTemplate;
 		}
 
 		event EventHandler IShellController.StructureChanged

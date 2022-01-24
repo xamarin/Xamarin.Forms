@@ -330,7 +330,15 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal static DataTemplate CreateDefaultFlyoutItemCell(string textBinding, string iconBinding)
+		internal static DataTemplate MenuItemDefaultDataTemplate =
+			new Lazy<DataTemplate>(
+				() => CreateDefaultFlyoutItemCell("Text", "Icon") ).Value;
+
+		internal static DataTemplate ItemDefaultDataTemplate =
+			new Lazy<DataTemplate>(
+				() => CreateDefaultFlyoutItemCell("Title", "FlyoutIcon")).Value;
+
+		static DataTemplate CreateDefaultFlyoutItemCell(string textBinding, string iconBinding)
 		{
 			return new DataTemplate(() =>
 			{
