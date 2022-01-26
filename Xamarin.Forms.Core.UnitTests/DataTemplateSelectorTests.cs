@@ -46,11 +46,11 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		class TemplateFour : DataTemplate
+		class NullSelector : DataTemplateSelector
 		{
-			public TemplateFour() : base(typeof(ContentView))
+			protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
 			{
-
+				return null;
 			}
 		}
 
@@ -100,6 +100,13 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void Constructor()
 		{
 			var dts = new TestDTS();
+		}
+
+		[Test]
+		public void CanReturnNull()
+		{
+			var dts = new NullSelector();
+			Assert.IsNull(dts.SelectTemplate((short)0, null));
 		}
 
 		[Test]
