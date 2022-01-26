@@ -32,6 +32,7 @@ using Xamarin.Forms.Platform.GTK.Renderers;
 [assembly: ExportRenderer(typeof(Page), typeof(PageRenderer))]
 [assembly: ExportRenderer(typeof(Picker), typeof(PickerRenderer))]
 [assembly: ExportRenderer(typeof(ProgressBar), typeof(ProgressBarRenderer))]
+[assembly: ExportRenderer(typeof(RadioButton), typeof(RadioButtonRenderer))]
 [assembly: ExportRenderer(typeof(ScrollView), typeof(ScrollViewRenderer))]
 [assembly: ExportRenderer(typeof(SearchBar), typeof(SearchBarRenderer))]
 [assembly: ExportRenderer(typeof(Slider), typeof(SliderRenderer))]
@@ -48,3 +49,9 @@ using Xamarin.Forms.Platform.GTK.Renderers;
 [assembly: ExportCell(typeof(Xamarin.Forms.ImageCell), typeof(ImageCellRenderer))]
 [assembly: ExportCell(typeof(Xamarin.Forms.SwitchCell), typeof(SwitchCellRenderer))]
 [assembly: ExportCell(typeof(Xamarin.Forms.ViewCell), typeof(ViewCellRenderer))]
+
+[assembly: ExportRenderer(typeof(Xamarin.Forms.Shapes.Rectangle), typeof(RectangleRenderer))]
+[assembly: ExportRenderer(typeof(Xamarin.Forms.Shapes.Ellipse), typeof(EllipseRenderer))]
+[assembly: ExportRenderer(typeof(Xamarin.Forms.Shapes.Path), typeof(PathRenderer))]
+[assembly: ExportRenderer(typeof(Xamarin.Forms.Shapes.Polygon), typeof(PolygonRenderer))]
+[assembly: ExportRenderer(typeof(Xamarin.Forms.Shapes.Polyline), typeof(PolylineRenderer))]
