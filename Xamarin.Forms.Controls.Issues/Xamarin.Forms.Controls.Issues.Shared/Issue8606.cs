@@ -21,24 +21,24 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 			var iconColor = Color.White;
-			List<(string fontFamily,string glyph,string familyShortName)> fontFamilyGlyphs = new List<(string,string,string)>
+			List<(string fontFamily, string glyph, string familyShortName)> fontFamilyGlyphs = new List<(string, string, string)>
 			{
 				(GetFontFamily("fa-solid-900.ttf","Font Awesome 5 Free"), GetGlyph("f059"),"FaSolid"),
 				(GetFontFamily("ionicons.ttf","Ionicons"), GetGlyph("f142"),"Ionicons"),
 				(GetFontFamily("materialdesignicons-webfont.ttf","Material Design Icons"),GetGlyph("f625"),"Material old"),
 				(GetFontFamily("MaterialIconsOutlined-Regular.otf","Material Icons Outlined"), GetGlyph("e8fd"),"Material"),
 			};
-			
+
 			List<Func<FontImageSource, View>> affectedViewsCreators = new List<Func<FontImageSource, View>>
 			{
 				(fontImageSource) => new Button { ImageSource = fontImageSource },
 				(fontImageSource) => new ImageButton { WidthRequest=39,HeightRequest=39, Source = fontImageSource, BackgroundColor = Color.FromHex("#333333")},
 				(fontImageSource) => new Frame{Content = new Image {  Source = fontImageSource}, BorderColor=iconColor, Padding=0,  }
 			};
-			
+
 			var content = new StackLayout { };
 			content.Children.Add(new Label { BackgroundColor = Color.Black, Padding = 12, TextColor = iconColor, Text = "Button, ImageButton and Image should use the same FontImageSourceHandler which should render centered." });
-			
+
 			foreach (var (fontFamily, glyph, familyShortName) in fontFamilyGlyphs)
 			{
 				var fontImageSource = new FontImageSource { Size = 24, Color = iconColor, FontFamily = fontFamily, Glyph = glyph };
@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 
 			Content = content;
-			
+
 		}
 
 		private string GetFontFamily(string fileName, string fontName)
