@@ -2,14 +2,14 @@
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Issue(IssueTracker.Github, 15066, "StackLayout's layout inside ScrollView is not updated properly when adding children", 
+	[Issue(IssueTracker.Github, 15066, "StackLayout's layout inside ScrollView is not updated properly when adding children",
 		PlatformAffected.Android)]
 	public class Issue15066 : TestContentPage
 	{
 		protected override void Init()
 		{
-			var instructions = new Label 
-			{ 
+			var instructions = new Label
+			{
 				BackgroundColor = Color.AntiqueWhite,
 				Padding = 3,
 				Text = "Tap the 'Add' button until the added items are past the bottom of the screen." +
@@ -22,7 +22,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var button = new Button() { Text = "Add" };
 
-			button.Clicked += (sender, args) => {
+			button.Clicked += (sender, args) =>
+			{
 				layout.Children.Add(new StackLayout() { BackgroundColor = Color.Gray, HeightRequest = 40.0 });
 			};
 
