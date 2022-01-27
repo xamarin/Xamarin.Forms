@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Platform.Android
 			// we need to make sure we are big enough to be laid out at 0,0
 			if (_childView != null)
 			{
-				SetMeasuredDimension((int)Context.ToPixels(_childView.Bounds.Right + _parent.Padding.Right), (int)Context.ToPixels(_childView.Bounds.Bottom + _parent.Padding.Bottom));
+				SetMeasuredDimension((int)Context.ToPixels(_childView.Bounds.Right + _childView.Margin.Right + _parent.Padding.Right), (int)Context.ToPixels(_childView.Bounds.Bottom + _childView.Margin.Bottom + _parent.Padding.Bottom));
 			}
 			else
 				SetMeasuredDimension((int)Context.ToPixels(_parent.Padding.Right), (int)Context.ToPixels(_parent.Padding.Bottom));
