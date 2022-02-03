@@ -144,6 +144,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateAdjustsFontSizeToFitWidth();
 			UpdateMaxLength();
 			UpdateReturnType();
+			UpdateFlowDirection();
 
 			if (_cursorPositionChangePending || _selectionLengthChangePending)
 				UpdateCursorSelection();
@@ -194,7 +195,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Specifics.AdjustsFontSizeToFitWidthProperty.PropertyName)
 				UpdateAdjustsFontSizeToFitWidth();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
-				UpdateHorizontalTextAlignment();
+				UpdateFlowDirection();
 			else if (e.PropertyName == Xamarin.Forms.InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
 			else if (e.PropertyName == Entry.ReturnTypeProperty.PropertyName)
@@ -459,6 +460,11 @@ namespace Xamarin.Forms.Platform.iOS
 					_cursorPositionChangePending = _selectionLengthChangePending = false;
 				}
 			}
+		}
+
+		void UpdateFlowDirection()
+		{			
+			Control.UpdateFlowDirection(Element);
 		}
 
 		UITextPosition GetSelectionEnd(int cursorPosition, UITextPosition start, int startOffset)
