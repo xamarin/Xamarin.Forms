@@ -11,7 +11,9 @@ namespace Xamarin.Forms.Controls.Issues
 
         public MyCollectionView(ObservableCollection<string> data)
         {
+#if APP
             InitializeComponent();
+#endif
             BindingContext = this;
 
             // Moving this above InitializeComponent fixes the problem.

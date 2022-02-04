@@ -15,6 +15,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public Issue13794()
 		{
+            ToolbarItems.Add(new ToolbarItem("Remove item", null, () => { if (_myCollectionView.Data.Count >= 1) _myCollectionView.Data.RemoveAt(0); }));
+
 			var carouselView = new CarouselView();
 
             BindingContext = this;
