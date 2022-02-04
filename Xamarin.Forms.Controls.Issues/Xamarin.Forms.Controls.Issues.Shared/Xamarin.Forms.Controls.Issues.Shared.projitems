@@ -1861,6 +1861,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue14805.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11954.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue13918.xaml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue13794.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\MyCollectionView.xaml.cs">
+      <DependentUpon>MyCollectionView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla22229.xaml">
@@ -2405,6 +2410,10 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue13918.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Controls\MyCollectionView.xaml">
+      <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
@@ -3013,7 +3022,7 @@
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue14801.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue8804.xaml">
       <SubType>Designer</SubType>
