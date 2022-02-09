@@ -4,9 +4,17 @@ using System.Collections.ObjectModel;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
+#if UITEST
+using NUnit.Framework;
+using Xamarin.Forms.Core.UITests;
+#endif
+
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve(AllMembers = true)]
+#if UITEST
+	[NUnit.Framework.Category(UITestCategories.CollectionView)]
+#endif
+    [Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 13794, "[Bug] CollectionView iOS draws both EmptyView and Items/ItemTemplate", PlatformAffected.iOS)]
 	public class Issue13794 : TestContentPage
 	{
@@ -17,7 +25,10 @@ namespace Xamarin.Forms.Controls.Issues
 		{
             ToolbarItems.Add(new ToolbarItem("Remove item", null, () => { if (_myCollectionView.Data.Count >= 1) _myCollectionView.Data.RemoveAt(0); }));
 
-			var carouselView = new CarouselView();
+            var carouselView = new CarouselView()
+            {
+                IsSwipeEnabled = false
+            };
 
             BindingContext = this;
 
@@ -48,14 +59,11 @@ namespace Xamarin.Forms.Controls.Issues
             // cause the problem. Its related to the CarouselView
             //Content = _myCollectionView;
 
-
             // Add data
             var rand = new Random();
             _data.Add(rand.Next().ToString());
             _data.Add(rand.Next().ToString());
             _data.Add(rand.Next().ToString());
-
-
 
             // Does not have the issue if the data is loaded with a delay.
             /*
@@ -70,16 +78,46 @@ namespace Xamarin.Forms.Controls.Issues
             });
             */
 
-            Content = carouselView;
+            var stackLayout = new StackLayout()
+            {
+                Children =
+                        {
+                            new Label()
+                            {
+                                Text = "If you don't see the EmptyView and CollectionView items together the test passed",
+                                Padding = 12,
+                                BackgroundColor = Color.Black,
+                                TextColor = Color.White,
+                                AutomationId = "Instructions"
+                            },
+                            carouselView
+                        }
+            };
+
+            Content = stackLayout;
 		}
 
 		protected override void Init()
 		{
 			
 		}
-	}
 
-	public class MyDataTemplateSelector : DataTemplateSelector
+#if UITEST
+        [Test]
+        public void EmptyViewAndItemsNotShownTogether()
+        {
+            // Wait until the collection view is shown
+            RunningApp.WaitForElement("TehCollectionView");
+
+            RunningApp.Screenshot("CollectionView should be shown with items and no EmptyView");
+
+            // Verify that the empty view is not shown
+            RunningApp.WaitForNoElement("CollectionViewEmptyView");
+        }
+#endif
+    }
+
+    public class MyDataTemplateSelector : DataTemplateSelector
 	{
 		public DataTemplate MyCollectionViewDataTemplate { get; set; }
 

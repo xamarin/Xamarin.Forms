@@ -6,17 +6,12 @@
     x:Class="Xamarin.Forms.Controls.Issues.MyCollectionView"
     ItemsSource="{Binding Data}"
     SelectionMode="Single"
-    SelectionChanged="CollectionView_SelectionChanged">
+    SelectionChanged="CollectionView_SelectionChanged"
+    AutomationId="TehCollectionView">
 
     <CollectionView.EmptyView>
-        <Label Text="The collection is empty" BackgroundColor="Transparent" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+        <Label Text="The collection is empty" BackgroundColor="Transparent" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" AutomationId="CollectionViewEmptyView"  />
     </CollectionView.EmptyView>
-
-    <CollectionView.Footer>
-        <Grid HeightRequest="50" BackgroundColor="LightGray">
-            <Label Text="Footer" VerticalOptions="Center" HorizontalOptions="Center"  />
-        </Grid>
-    </CollectionView.Footer>
 
     <CollectionView.ItemTemplate>
         <DataTemplate>
