@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public TItemsView ItemsView { get; }
 		protected ItemsViewLayout ItemsViewLayout { get; set; }
 		bool _initialized;
-		bool _isEmpty;
+		bool _isEmpty = true;
 		bool _emptyViewDisplayed;
 		bool _disposed;
 
