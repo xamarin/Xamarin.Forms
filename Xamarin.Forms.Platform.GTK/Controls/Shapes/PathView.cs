@@ -51,11 +51,13 @@ namespace Xamarin.Forms.Platform.GTK.Controls
 
 						for (int i = 0; i < points.Count; i++)
 						{
-							cr.LineTo(points[i].X, points[i].Y);
+							if (!double.IsNaN(points[i].X) && !double.IsNaN(points[i].Y))
+								cr.LineTo(points[i].X, points[i].Y);
 						}
 
 						if (points.Count > 0)
-							lastPoint = points[points.Count - 1];
+							if (!double.IsNaN(points[points.Count - 1].X) && !double.IsNaN(points[points.Count - 1].Y))
+								lastPoint = points[points.Count - 1];
 
 					}
 				}
