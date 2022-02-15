@@ -11,6 +11,8 @@ variables:
   value: true
 - name: DOTNET_VERSION
   value: 5.0.102
+- name: signingCondition
+  value: and(succeeded(), ne(variables['signVmImage'], ''), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
 
 resources:
   repositories:
@@ -260,8 +262,19 @@ stages:
             signedArtifactName: nuget
             signedArtifactPath: signed
             displayName: Sign Phase
-            condition: and(succeeded(), ne(variables['signVmImage'], ''), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
+            condition: ${{ variables.signingCondition }}
             preSignSteps:
               - task: NuGetToolInstaller@1
                 inputs:
                   versionSpec: $(NUGET_VERSION)
+    - stage: sbom
+      dependsOn: nuget_signing
+      displayName: 'Software Bill of Materials'
+      jobs:
+      - template: compliance/sbom/job.v1.yml@xamarin-templates        # Software Bill of Materials (SBOM): https://eng.ms/docs/cloud-ai-platform/devdiv/one-engineering-system-1es/1es-docs/secure-supply-chain/ado-sbom-generator
+        parameters:
+          artifactNames: ['nuget']
+          artifactMap: ['nuget/signed']
+          packageName: 'Xamarin Forms'
+          packageFilter: '*.nupkg'
+          condition: ${{ variables.signingCondition }}
