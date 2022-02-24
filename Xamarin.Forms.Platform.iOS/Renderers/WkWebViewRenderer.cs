@@ -714,6 +714,16 @@ namespace Xamarin.Forms.Platform.iOS
 				_renderer.UpdateCanGoBackForward();
 			}
 
+			public override void ContentProcessDidTerminate(WKWebView webView)
+			{
+				var url = GetCurrentUrl();
+				WebView.SendNavigated(
+					new WebNavigatedEventArgs(_lastEvent, new UrlWebViewSource { Url = url }, url, WebNavigationResult.Terminated)
+				);
+
+				_renderer.UpdateCanGoBackForward();
+			}
+
 			public override void DidFinishNavigation(WKWebView webView, WKNavigation navigation)
 			{
 				if (webView.IsLoading)

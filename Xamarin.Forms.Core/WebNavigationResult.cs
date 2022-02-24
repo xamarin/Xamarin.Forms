@@ -5,6 +5,7 @@ namespace Xamarin.Forms
 		Success = 1,
 		Cancel = 2,
 		Timeout = 3,
-		Failure = 4
+		Failure = 4,
+		Terminated = 5
 	}
 }
