@@ -26,8 +26,6 @@ trigger:
   branches:
     include:
     - main
-    - 3.*
-    - 4.*
     - 5.*
   tags:
     include:
@@ -41,8 +39,6 @@ pr:
   branches:
     include:
     - main
-    - 3.*
-    - 4.*
     - 5.*
 
 schedules:
@@ -64,8 +60,8 @@ stages:
         displayName: Build Windows Phase
         timeoutInMinutes: 60
         pool:
-          name: $(vs2019VmPool)
-          vmImage: $(vs2019VmImage)
+          name: $(windowsPool)
+          vmImage: $(windowsvmImage)
           demands:
             msbuild
         strategy:
@@ -87,8 +83,8 @@ stages:
         - win_hosted
         condition: succeeded()
         pool:
-          name: $(vs2019VmPool)
-          vmImage: $(vs2019VmImage)
+          name: $(windowsPool)
+          vmImage: $(windowsvmImage)
           demands:
             msbuild
         variables:
@@ -105,7 +101,7 @@ stages:
         timeoutInMinutes: 60
         pool:
           name: $(windowsPool)
-          vmImage: $(vs2019VmImage)
+          vmImage: $(windowsvmImage)
           demands:
             - Agent.OS -equals Windows_NT
             - msbuild
@@ -136,31 +132,31 @@ stages:
         steps:
           - template: ../build/steps/build-nuget.yml
 
-    - stage: nuget_signing
-      dependsOn: windows
-      displayName: Sign Nuget
-      jobs:
-        - template: sign-artifacts/jobs/v2.yml@xamarin-templates
-          parameters:
-            targetFolder: $(Build.ArtifactStagingDirectory)/nuget/signed
-            artifactPath: release
-            signedArtifactName: nuget
-            signedArtifactPath: signed
-            displayName: Sign Phase
-            condition: ${{ variables.signingCondition }}
-            preSignSteps:
-              - task: NuGetToolInstaller@1
-                inputs:
-                  versionSpec: $(NUGET_VERSION)
-
-    - stage: sbom
-      dependsOn: nuget_signing
-      displayName: 'Software Bill of Materials'
-      jobs:
-      - template: compliance/sbom/job.v1.yml@xamarin-templates        # Software Bill of Materials (SBOM): https://eng.ms/docs/cloud-ai-platform/devdiv/one-engineering-system-1es/1es-docs/secure-supply-chain/ado-sbom-generator
+  - stage: nuget_signing
+    dependsOn: windows
+    displayName: Sign Nuget
+    jobs:
+      - template: sign-artifacts/jobs/v2.yml@xamarin-templates
         parameters:
-          artifactNames: ['nuget']
-          artifactMap: ['nuget/signed']
-          packageName: 'Xamarin Forms'
-          packageFilter: '*.nupkg'
+          targetFolder: $(Build.ArtifactStagingDirectory)/nuget/signed
+          artifactPath: release
+          signedArtifactName: nuget
+          signedArtifactPath: signed
+          displayName: Sign Phase
           condition: ${{ variables.signingCondition }}
+          preSignSteps:
+            - task: NuGetToolInstaller@1
+              inputs:
+                versionSpec: $(NUGET_VERSION)
+
+  - stage: sbom
+    dependsOn: nuget_signing
+    displayName: 'Software Bill of Materials'
+    jobs:
+    - template: compliance/sbom/job.v1.yml@xamarin-templates        # Software Bill of Materials (SBOM): https://eng.ms/docs/cloud-ai-platform/devdiv/one-engineering-system-1es/1es-docs/secure-supply-chain/ado-sbom-generator
+      parameters:
+        artifactNames: ['nuget']
+        artifactMap: ['nuget/signed']
+        packageName: 'Xamarin Forms'
+        packageFilter: '*.nupkg'
+        condition: ${{ variables.signingCondition }}
