@@ -54,7 +54,6 @@ stages:
     displayName: Build Windows
     jobs:
       - job: win_hosted
-        condition: eq(variables['vs2019VmPool'], 'Azure Pipelines')
         workspace:
           clean: all
         displayName: Build Windows Phase
