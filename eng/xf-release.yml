@@ -93,41 +93,6 @@ stages:
           nugetPackageVersion : $[ dependencies.win_hosted.outputs['debug.winbuild.xamarinformspackageversion'] ]
         steps:
           - template: ../build/steps/build-nuget.yml
-      - job: win_bots
-        condition: ne(variables['vs2019VmPool'], 'Azure Pipelines')
-        workspace:
-          clean: all
-        displayName: Build Windows Phase Bots
-        timeoutInMinutes: 60
-        pool:
-          name: $(windowsPool)
-          vmImage: $(windowsvmImage)
-        strategy:
-          matrix:
-            debug:
-              BuildConfiguration:  'Debug'
-            release:
-              BuildConfiguration:  'Release'
-        steps:
-          - template: ../build/steps/build-windows.yml
-            parameters:
-              provisionatorPath : 'build/provisioning/provisioning.csx'
-      - job: nuget_pack_bots
-        workspace:
-          clean: all
-        displayName: Nuget Phase
-        dependsOn:
-        - win_bots
-        condition: succeeded()
-        pool:
-          name: $(windowsPool)
-          vmImage: $(windowsvmImage)
-        variables:
-          FormsIdAppend: ''
-          buildConfiguration: $(DefaultBuildConfiguration)
-          nugetPackageVersion : $[ dependencies.win_bots.outputs['debug.winbuild.xamarinformspackageversion'] ]
-        steps:
-          - template: ../build/steps/build-nuget.yml
 
   - stage: nuget_signing
     dependsOn: windows
