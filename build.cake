@@ -1102,8 +1102,13 @@ MSBuildSettings GetMSBuildSettings(PlatformTarget? platformTarget = PlatformTarg
     var buildSettings =  new MSBuildSettings {
         PlatformTarget = platformTarget,
         MSBuildPlatform = Cake.Common.Tools.MSBuild.MSBuildPlatform.x86,
-        Configuration = buildConfiguration ?? configuration,
+        Configuration = buildConfiguration ?? configuration
     };
+
+    if(!String.IsNullOrWhiteSpace(MSBuildExe))
+    {
+        buildSettings.ToolPath = MSBuildExe;
+    }
 
     buildSettings = buildSettings.WithProperty("ANDROID_RENDERERS", $"{ANDROID_RENDERERS}");
     if(!String.IsNullOrWhiteSpace(XamarinFormsVersion))
