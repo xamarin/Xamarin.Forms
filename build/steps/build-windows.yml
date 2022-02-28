@@ -29,7 +29,7 @@ steps:
       provisioning_script: ${{ parameters.provisionatorVSPath }}
       provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
 
-  - script: build.cmd -Target cg-uwp-build-tests -ScriptArgs '--BUILD_CONFIGURATION="$(BuildConfiguration)"'
+  - script: build.cmd -Target cg-uwp-build-tests -ScriptArgs '--BUILD_CONFIGURATION="$(BuildConfiguration)"','--MSBUILD="$(msbuild)"'
     condition: eq(variables['BuildConfiguration'], 'Release')
     displayName: 'Build Tests and APPX'
 
