@@ -71,7 +71,7 @@ stages:
             release:
               BuildConfiguration:  'Release'
         steps:
-          - template: build/steps/build-windows.yml
+          - template: ../build/steps/build-windows.yml
             parameters:
               provisionatorPath : 'build/provisioning/provisioning.csx'
               provisionatorVSPath : 'build/provisioning/vs.csx'
@@ -92,7 +92,7 @@ stages:
           buildConfiguration: $(DefaultBuildConfiguration)
           nugetPackageVersion : $[ dependencies.win_hosted.outputs['debug.winbuild.xamarinformspackageversion'] ]
         steps:
-          - template: build/steps/build-nuget.yml
+          - template: ../build/steps/build-nuget.yml
       - job: win_bots
         condition: ne(variables['vs2019VmPool'], 'Azure Pipelines')
         workspace:
@@ -102,9 +102,6 @@ stages:
         pool:
           name: $(windowsPool)
           vmImage: $(windowsvmImage)
-          demands:
-            - Agent.OS -equals Windows_NT
-            - msbuild
         strategy:
           matrix:
             debug:
