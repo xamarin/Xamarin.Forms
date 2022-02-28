@@ -29,13 +29,6 @@ steps:
       provisioning_script: ${{ parameters.provisionatorVSPath }}
       provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
 
-  # - task: UseDotNet@2
-  #   displayName: "Install .net core $(DOTNET_VERSION)"
-  #   condition: ne(variables['DOTNET_VERSION'], '')
-  #   inputs:
-  #     version: $(DOTNET_VERSION)
-  #     packageType: 'sdk'
-
   - script: build.cmd -Target cg-uwp-build-tests -ScriptArgs '--BUILD_CONFIGURATION="$(BuildConfiguration)"'
     condition: eq(variables['BuildConfiguration'], 'Release')
     displayName: 'Build Tests and APPX'
