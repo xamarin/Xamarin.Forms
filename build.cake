@@ -1105,7 +1105,7 @@ MSBuildSettings GetMSBuildSettings(PlatformTarget? platformTarget = PlatformTarg
         Configuration = buildConfiguration ?? configuration
     };
 
-    if(!String.IsNullOrWhiteSpace(MSBuildExe))
+    if(!String.IsNullOrWhiteSpace(MSBuildExe) || MSBuildExe != "none")
     {
         buildSettings.ToolPath = MSBuildExe;
     }
