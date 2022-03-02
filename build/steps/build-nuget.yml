@@ -72,12 +72,10 @@ steps:
        }
     failOnStderr: true
     displayName: 'Update nuspecs'
-    condition: eq(${{ parameters.nugetForRelease }}, 'true')
-    condition: and(succeeded(), or(eq(variables['Sign'], 'true'), or(eq(variables['DefaultBuildConfiguration'], 'Release'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
+    condition: and(succeeded(), or(eq(${{ parameters.nugetForRelease }}, 'true') , or(eq(variables['Sign'], 'true'), or(eq(variables['DefaultBuildConfiguration'], 'Release'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/')))))
 
   - task: NuGetCommand@2
     displayName: 'Make NuGet Package Release'
-    condition: eq(${{ parameters.nugetForRelease }}, 'true')
     inputs:
       command: pack
       feedsToUse: config
@@ -85,7 +83,7 @@ steps:
       packDestination: '$(Build.ArtifactStagingDirectory)/nuget/release'
       versioningScheme: byEnvVar
       versionEnvVar: nugetPackageVersion
-    condition: and(succeeded(), or(eq(variables['Sign'], 'true'), or(eq(variables['DefaultBuildConfiguration'], 'Release'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
+    condition: and(succeeded(), or(eq(${{ parameters.nugetForRelease }}, 'true') , or(eq(variables['Sign'], 'true'), or(eq(variables['DefaultBuildConfiguration'], 'Release'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/')))))
 
   - task: CopyFiles@2
     displayName: 'Copy SignList.xml Files'
