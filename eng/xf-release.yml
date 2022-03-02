@@ -65,8 +65,6 @@ stages:
             msbuild
         strategy:
           matrix:
-            debug:
-              BuildConfiguration:  'Debug'
             release:
               BuildConfiguration:  'Release'
         steps:
@@ -93,6 +91,9 @@ stages:
           nugetPackageVersion : $[ dependencies.win_hosted.outputs['debug.winbuild.xamarinformspackageversion'] ]
         steps:
           - template: ../build/steps/build-nuget.yml
+            parameters:
+              nugetForRelease : true
+              nugetForDebug : false
 
   - stage: nuget_signing
     dependsOn: windows

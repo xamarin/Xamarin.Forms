@@ -1,3 +1,7 @@
+parameters:
+  nugetForDebug: 'true'
+  nugetForRelease: 'true'
+
 steps:
   - checkout: self
     clean: true
@@ -36,6 +40,7 @@ steps:
 
   - task: NuGetCommand@2
     displayName: 'Make NuGet Package'
+    condition: eq(${{ parameters.nugetForDebug }}, 'true')
     inputs:
       command: pack
       feedsToUse: config
@@ -47,6 +52,7 @@ steps:
 
   - task: CopyFiles@2
     displayName: 'Copy SignList.xml Files'
+    condition: eq(${{ parameters.nugetForDebug }}, 'true')
     inputs:
       Contents: build/SignList.xml
       TargetFolder: '$(build.artifactstagingdirectory)/nuget/debug'
@@ -66,10 +72,12 @@ steps:
        }
     failOnStderr: true
     displayName: 'Update nuspecs'
+    condition: eq(${{ parameters.nugetForRelease }}, 'true')
     condition: and(succeeded(), or(eq(variables['Sign'], 'true'), or(eq(variables['DefaultBuildConfiguration'], 'Release'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
 
   - task: NuGetCommand@2
     displayName: 'Make NuGet Package Release'
+    condition: eq(${{ parameters.nugetForRelease }}, 'true')
     inputs:
       command: pack
       feedsToUse: config
@@ -81,6 +89,7 @@ steps:
 
   - task: CopyFiles@2
     displayName: 'Copy SignList.xml Files'
+    condition: eq(${{ parameters.nugetForRelease }}, 'true')
     inputs:
       Contents: build/SignList.xml
       TargetFolder: '$(build.artifactstagingdirectory)/nuget/release'
