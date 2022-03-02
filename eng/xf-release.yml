@@ -74,6 +74,7 @@ stages:
             parameters:
               provisionatorPath : 'build/provisioning/provisioning.csx'
               provisionatorVSPath : 'build/provisioning/vs.csx'
+              runTests: false
       - job: nuget_pack_hosted
         workspace:
           clean: all

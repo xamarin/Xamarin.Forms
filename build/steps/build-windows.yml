@@ -6,6 +6,7 @@ parameters:
   includeUwp: 'true'
   includeAndroid: 'true'
   includeNonUwpAndNonAndroid: 'true'
+  runTests: 'true'
 
 steps:
   - checkout: self
@@ -50,6 +51,7 @@ steps:
 
   - task: VSTest@2
     displayName: 'Unit Tests'
+    condition: eq(${{ parameters.runTests }}, 'true')
     inputs:
       testAssemblyVer2: |
         **/bin/$(BuildConfiguration)/Xamarin.Forms.Core.UnitTests.dll
