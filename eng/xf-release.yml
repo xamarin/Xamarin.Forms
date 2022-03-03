@@ -88,7 +88,7 @@ stages:
         variables:
           FormsIdAppend: ''
           buildConfiguration: $(DefaultBuildConfiguration)
-          nugetPackageVersion : $[ dependencies.win_hosted.outputs['debug.winbuild.xamarinformspackageversion'] ]
+          nugetPackageVersion : $[ dependencies.win_hosted.outputs['release.winbuild.xamarinformspackageversion'] ]
         steps:
           - template: ../build/steps/build-nuget.yml
             parameters:
