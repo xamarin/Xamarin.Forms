@@ -65,8 +65,6 @@ stages:
             msbuild
         strategy:
           matrix:
-            debug:
-              BuildConfiguration:  'Debug'
             release:
               BuildConfiguration:  'Release'
         steps:
@@ -74,6 +72,7 @@ stages:
             parameters:
               provisionatorPath : 'build/provisioning/provisioning.csx'
               provisionatorVSPath : 'build/provisioning/vs.csx'
+              runTests: false
       - job: nuget_pack_hosted
         workspace:
           clean: all
@@ -89,9 +88,12 @@ stages:
         variables:
           FormsIdAppend: ''
           buildConfiguration: $(DefaultBuildConfiguration)
-          nugetPackageVersion : $[ dependencies.win_hosted.outputs['debug.winbuild.xamarinformspackageversion'] ]
+          nugetPackageVersion : $[ dependencies.win_hosted.outputs['release.winbuild.xamarinformspackageversion'] ]
         steps:
           - template: ../build/steps/build-nuget.yml
+            parameters:
+              nugetForRelease : true
+              nugetForDebug : false
 
   - stage: nuget_signing
     dependsOn: windows
