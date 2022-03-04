@@ -18,10 +18,19 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _disposed;
 		WImage _image;
 		FormsButton _formsButton;
+		Action surfaceContentsLostAction;
 
 		public ImageButtonRenderer() : base()
 		{
 			ImageElementManager.Init(this);
+		}
+
+		protected override void SurfaceContentsLost()
+		{
+			if (surfaceContentsLostAction != null)
+			{
+				surfaceContentsLostAction();
+			}
 		}
 
 		protected override void Dispose(bool disposing)
@@ -273,6 +282,15 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void IImageVisualElementRenderer.SetImage(Windows.UI.Xaml.Media.ImageSource image)
 		{
+			if (image is IRecreateImageSource recreateImageSource)
+			{
+				image = recreateImageSource.InitialSource;
+				surfaceContentsLostAction = () =>
+				{
+					_image.Source = recreateImageSource.CreateImageSource();
+				};
+			}
+			
 			_image.Source = image;
 		}
 

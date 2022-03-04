@@ -32,6 +32,29 @@ namespace Xamarin.Forms.Platform.UWP
 
 		Canvas _backgroundLayer;
 
+		public VisualElementRenderer()
+		{
+			this.Loaded += VisualElementRenderer_Loaded;
+			this.Unloaded += VisualElementRenderer_Unloaded;
+		}
+
+		private void VisualElementRenderer_Unloaded(object sender, RoutedEventArgs e)
+		{
+			CompositionTarget.SurfaceContentsLost -= CompositionTarget_SurfaceContentsLost;
+		}
+
+		private void VisualElementRenderer_Loaded(object sender, RoutedEventArgs e)
+		{
+			CompositionTarget.SurfaceContentsLost += CompositionTarget_SurfaceContentsLost;
+		}
+
+		private void CompositionTarget_SurfaceContentsLost(object sender, object e)
+		{
+			SurfaceContentsLost();
+		}
+
+		protected virtual void SurfaceContentsLost() { }
+
 		public TNativeElement Control { get; private set; }
 
 		public TElement Element { get; private set; }

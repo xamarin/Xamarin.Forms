@@ -8,6 +8,7 @@ using WBrush = Windows.UI.Xaml.Media.Brush;
 using WImage = Windows.UI.Xaml.Controls.Image;
 using WStretch = Windows.UI.Xaml.Media.Stretch;
 using WThickness = Windows.UI.Xaml.Thickness;
+using System;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -16,7 +17,8 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _fontApplied;
 
 		FormsButton _button;
-		PointerEventHandler _pointerPressedHandler;		
+		PointerEventHandler _pointerPressedHandler;
+		Action surfaceContentsLostAction;
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Button> e)
 		{
@@ -153,6 +155,14 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected override bool PreventGestureBubbling { get; set; } = true;
 
+		protected override void SurfaceContentsLost()
+		{
+			if(surfaceContentsLostAction != null)
+			{
+				surfaceContentsLostAction();
+			}
+		}
+
 		void OnButtonClick(object sender, RoutedEventArgs e)
 		{
 			((IButtonController)Element)?.SendReleased();
@@ -215,6 +225,16 @@ namespace Xamarin.Forms.Platform.UWP
 				Width = size.Width,
 				Height = size.Height,
 			};
+
+			if (elementImage is IRecreateImageSource recreateImageSource)
+			{
+				elementImage = recreateImageSource.InitialSource;
+				image.Source = elementImage;
+				surfaceContentsLostAction = () =>
+				{
+					image.Source = recreateImageSource.CreateImageSource();
+				};
+			}
 
 			// BitmapImage is a special case that has an event when the image is loaded
 			// when this happens, we want to resize the button

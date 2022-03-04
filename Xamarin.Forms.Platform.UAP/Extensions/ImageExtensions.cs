@@ -22,7 +22,13 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				return Size.Zero;
 			}
-			else if (source is BitmapSource bitmap)
+
+			if(source is IRecreateImageSource recreateImageSource)
+			{
+				source = recreateImageSource.InitialSource;
+			}
+
+			if (source is BitmapSource bitmap)
 			{
 				return new Size
 				{
@@ -38,6 +44,7 @@ namespace Xamarin.Forms.Platform.UWP
 					Height = canvas.Size.Height
 				};
 			}
+			
 
 			throw new InvalidCastException($"\"{source.GetType().FullName}\" is not supported.");
 		}

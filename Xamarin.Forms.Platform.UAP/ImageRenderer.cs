@@ -10,11 +10,20 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		bool _measured;
 		bool _disposed;
+		Action surfaceContentsLostAction;
 
 		public ImageRenderer() : base()
 		{
 			ImageElementManager.Init(this);
 			Windows.UI.Xaml.Application.Current.Resuming += OnResumingAsync;
+		}
+
+		protected override void SurfaceContentsLost()
+		{
+			if (surfaceContentsLostAction != null)
+			{
+				surfaceContentsLostAction();
+			}
 		}
 
 		bool IImageVisualElementRenderer.IsDisposed => _disposed;
@@ -134,6 +143,14 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void IImageVisualElementRenderer.SetImage(Windows.UI.Xaml.Media.ImageSource image)
 		{
+			if(image is IRecreateImageSource recreateImageSource)
+			{
+				image = recreateImageSource.InitialSource;
+				surfaceContentsLostAction = () =>
+				{
+					Control.Source = recreateImageSource.CreateImageSource();
+				};
+			}
 			Control.Source = image;
 		}
 
