@@ -290,6 +290,10 @@ namespace Xamarin.Forms.Platform.UWP
 					_image.Source = recreateImageSource.CreateImageSource();
 				};
 			}
+			else
+			{
+				surfaceContentsLostAction = null;
+			}
 			
 			_image.Source = image;
 		}

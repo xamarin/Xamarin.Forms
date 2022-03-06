@@ -143,13 +143,17 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void IImageVisualElementRenderer.SetImage(Windows.UI.Xaml.Media.ImageSource image)
 		{
-			if(image is IRecreateImageSource recreateImageSource)
+			if (image is IRecreateImageSource recreateImageSource)
 			{
 				image = recreateImageSource.InitialSource;
 				surfaceContentsLostAction = () =>
 				{
 					Control.Source = recreateImageSource.CreateImageSource();
 				};
+			}
+			else
+			{
+				surfaceContentsLostAction = null;
 			}
 			Control.Source = image;
 		}

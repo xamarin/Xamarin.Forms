@@ -235,6 +235,10 @@ namespace Xamarin.Forms.Platform.UWP
 					image.Source = recreateImageSource.CreateImageSource();
 				};
 			}
+			else
+			{
+				surfaceContentsLostAction = null;
+			}
 
 			// BitmapImage is a special case that has an event when the image is loaded
 			// when this happens, we want to resize the button
