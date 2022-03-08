@@ -501,11 +501,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (isRtl)
 			{
+#pragma warning disable CS0618 // Type or member is obsolete
 				if (_emptyUIView.Transform.xx == -1)
 				{
 					return;
 				}
-
 				FlipEmptyView();
 			}
 			else
@@ -515,6 +515,7 @@ namespace Xamarin.Forms.Platform.iOS
 					FlipEmptyView();
 				}
 			}
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		void FlipEmptyView()
