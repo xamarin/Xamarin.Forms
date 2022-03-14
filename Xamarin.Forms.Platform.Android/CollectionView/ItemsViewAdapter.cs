@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Android.Content;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
@@ -13,7 +12,6 @@ namespace Xamarin.Forms.Platform.Android
 		where TItemsViewSource : IItemsViewSource
 	{
 		protected readonly TItemsView ItemsView;
-		protected readonly List<ItemContentView> ContentViews;
 		readonly Func<View, Context, ItemContentView> _createItemContentView;
 		protected internal TItemsViewSource ItemsSource;
 
@@ -23,7 +21,6 @@ namespace Xamarin.Forms.Platform.Android
 		protected internal ItemsViewAdapter(TItemsView itemsView, Func<View, Context, ItemContentView> createItemContentView = null)
 		{
 			ItemsView = itemsView ?? throw new ArgumentNullException(nameof(itemsView));
-			ContentViews = new List<ItemContentView>();
 
 			UpdateUsingItemTemplate();
 
@@ -90,8 +87,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			var itemContentView = _createItemContentView.Invoke(ItemsView, context);
 
-			ContentViews.Add(itemContentView);
-
 			return new TemplatedItemViewHolder(itemContentView, ItemsView.ItemTemplate);
 		}
 
@@ -114,12 +109,6 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (disposing)
 				{
-					foreach (var contentView in ContentViews)
-					{
-						contentView.Recycle();
-					}
-					ContentViews.Clear();
-
 					ItemsSource?.Dispose();
 					ItemsView.PropertyChanged -= ItemsViewPropertyChanged;
 				}

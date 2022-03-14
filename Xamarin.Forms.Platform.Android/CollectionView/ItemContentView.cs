@@ -53,8 +53,6 @@ namespace Xamarin.Forms.Platform.Android
 				RemoveView(Content.View);
 			}
 
-			Content?.Dispose();
-
 			Content = null;
 			_size = null;
 		}
