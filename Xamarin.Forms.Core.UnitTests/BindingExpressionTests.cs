@@ -123,7 +123,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[TestCaseSource(nameof(TryConvertWithNumbersAndCulturesCases))]
 		public void TryConvertWithNumbersAndCultures(object inputString, CultureInfo culture, object expected)
 		{
-			CultureInfo.CurrentUICulture = culture;
+			CultureInfo.CurrentCulture = culture;
 			BindingExpression.TryConvert(ref inputString, Entry.TextProperty, expected.GetType(), false);
 
 			Assert.AreEqual(expected, inputString);
