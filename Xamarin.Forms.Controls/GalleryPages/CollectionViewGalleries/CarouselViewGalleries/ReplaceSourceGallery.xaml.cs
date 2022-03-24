@@ -18,30 +18,29 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
         public void ItemsSourceButton_Clicked(object sender, EventArgs eventArgs)
         {
-            ((ViewModel)BindingContext).Images = new[]
-            {
-                "cover1.jpg",
-                "oasis.jpg",
-                "photo.jpg",
-                "Vegetables.jpg",
-                "Fruits.jpg",
-                "FlowerBuds.jpg",
-                "Legumes.jpg"
-            };
+            ((ViewModel)BindingContext).Images = CreateImages();
         }
+
+        private static IList<string> CreateImages() => new[]
+        {
+            "cover1.jpg",
+            "oasis.jpg",
+            "photo.jpg",
+            "Vegetables.jpg",
+            "Fruits.jpg",
+            "FlowerBuds.jpg",
+            "Legumes.jpg"
+        };
+
+        private static IList<Color> CreateColors() => new[]
+        {
+            Color.Red, Color.Blue, Color.Green
+        };
 
         public class ViewModel
         {
-            public IList<string> Images { get; set; } = new []
-            {
-                "cover1.jpg",
-                "oasis.jpg",
-                "photo.jpg",
-                "Vegetables.jpg",
-                "Fruits.jpg",
-                "FlowerBuds.jpg",
-                "Legumes.jpg"
-            };
+            public IList<string> Images { get; set; } = CreateImages();
+            public IList<Color> Colors { get; set; } = CreateColors();
         }
     }
 }
