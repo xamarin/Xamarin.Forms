@@ -38,9 +38,6 @@ pr:
   autoCancel: false
   branches:
     include:
-    - main
-    - 3.*
-    - 4.*
     - 5.*
 
 schedules:
