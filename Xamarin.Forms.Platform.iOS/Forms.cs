@@ -363,6 +363,10 @@ namespace Xamarin.Forms
 				// If iOS 13+ check all dynamic colors too
 				switch (name)
 				{
+					// Ignore obsolete Xamarin.iOS colors for now
+					// until this Xamarin.iOS version has been adopted more widely
+					// This is just a change in Xamarin.iOS not UIKit
+#pragma warning disable CS0618 // Type or member is obsolete
 					case NamedPlatformColor.Label:
 						resultColor = UIColor.LabelColor;
 						break;
@@ -432,6 +436,7 @@ namespace Xamarin.Forms
 					case NamedPlatformColor.TertiaryLabel:
 						resultColor = UIColor.TertiaryLabelColor;
 						break;
+#pragma warning restore CS0618 // Type or member is obsolete
 					default:
 						resultColor = UIColor.FromName(name);
 						break;

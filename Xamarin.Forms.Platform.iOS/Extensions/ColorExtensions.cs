@@ -13,6 +13,10 @@ using UIColor = AppKit.NSColor;
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
+	// Ignore obsolete Xamarin.iOS colors for now
+	// until this Xamarin.iOS version has been adopted more widely
+	// This is just a change in Xamarin.iOS not UIKit
+#pragma warning disable CS0618 // Type or member is obsolete
 	public static class ColorExtensions
 	{
 #if __MOBILE__
@@ -221,6 +225,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				return Color.LightGray.ToNSColor();
 			}
 		}
+#pragma warning restore CS0618 // Type or member is obsolete
+
 #endif
 
 		public static CGColor ToCGColor(this Color color)
