@@ -3,10 +3,11 @@ using Android.Content;
 using Android.Runtime;
 using Android.Util;
 using Android.Widget;
+using AndroidX.AppCompat.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class FormsTextView : TextView
+	public class FormsTextView : AppCompatTextView
 	{
 		public FormsTextView(Context context) : base(context)
 		{
