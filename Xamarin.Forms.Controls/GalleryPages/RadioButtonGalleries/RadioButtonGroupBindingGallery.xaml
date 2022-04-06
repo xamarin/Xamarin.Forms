@@ -3,20 +3,60 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:radiobuttongalleries="clr-namespace:Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries"
              mc:Ignorable="d"
+             x:DataType="radiobuttongalleries:RadioButtonGroupBindingModel"
              x:Class="Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries.RadioButtonGroupBindingGallery">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+                 <Style TargetType="RadioButton">
+                    <Setter Property="BorderWidth" Value="0" />
+                    <Setter Property="Margin" Value="0" />
+                </Style>
+                <Style TargetType="Frame">
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="IsClippedToBounds" Value="True" />
+                </Style>
+                <ControlTemplate x:Key="RadioTemplate">
+                    <Frame HasShadow="False" BorderColor="Transparent" CornerRadius="0" HeightRequest="40" MinimumWidthRequest="100" HorizontalOptions="Fill" VerticalOptions="Start" Padding="0">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroupList>
+                                <VisualStateGroup x:Name="CheckedStates">
+                                    <VisualState x:Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="Red"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Checked">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="Green"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Unchecked">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="Blue"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateGroupList>
+                        </VisualStateManager.VisualStateGroups>
+                        <Grid Margin="0" WidthRequest="100">
+                            <ContentPresenter></ContentPresenter>
+                        </Grid>
+                    </Frame>
+                </ControlTemplate>
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
-        <StackLayout>
-            
+        <ScrollView>
+            <StackLayout>
             <Grid RadioButtonGroup.GroupName="{Binding GroupName}" 
                          RadioButtonGroup.SelectedValue="{Binding Selection}">
 
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>
                     <RowDefinition Height="50"></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
+                    <RowDefinition Height="200"></RowDefinition>
                 </Grid.RowDefinitions>
 
                 <Grid.ColumnDefinitions>
@@ -28,14 +68,202 @@
 
                 <Label Text="{Binding GroupName, StringFormat='The GroupName is {0}'}" Grid.Row="1" />
                 <Label Text="{Binding Selection, StringFormat='The Selection is {0}'}" Grid.Row="1" Grid.Column="1" />
+                <Frame Grid.Row="2">
+                    <StackLayout>
+                        
+                <RadioButton Content="Option A" Value="A"></RadioButton>
+                <RadioButton Content="Option B" Value="B"></RadioButton>
+                <RadioButton Content="Option C" Value="C"></RadioButton>
+                <RadioButton Content="Option D" Value="D"></RadioButton>
 
-                <RadioButton Content="Option A" Value="A" Grid.Row="2"></RadioButton>
-                <RadioButton Content="Option B" Value="B" Grid.Row="2" Grid.Column="1"></RadioButton>
-                <RadioButton Content="Option C" Value="C" Grid.Row="3"></RadioButton>
-                <RadioButton Content="Option D" Value="D" Grid.Row="3" Grid.Column="1"></RadioButton>
-
-                <Button Margin="5" Grid.ColumnSpan="2" Grid.Row="4" Text="Set selection in view model to 'B'" Clicked="Button_Clicked"></Button>
+                    </StackLayout>
+                </Frame>
             </Grid>
-        </StackLayout>
+
+
+            <Grid RadioButtonGroup.GroupName="MySecondGroup" 
+                         RadioButtonGroup.SelectedValue="{Binding Selection2}">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="200"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.ColumnSpan="2" Text="The RadioButtons in this Grid has Selection2 bound to a ViewModel."></Label>
+
+                <Frame Grid.Row="2">
+                    <StackLayout>
+                        
+                        <RadioButton Content="Option A" Value="A"></RadioButton>
+                        <RadioButton Content="Option B" Value="B"></RadioButton>
+                        <RadioButton Content="Option C" Value="C"></RadioButton>
+                        <RadioButton Content="Option D" Value="D"></RadioButton>
+
+                    </StackLayout>
+                </Frame>
+            </Grid>
+
+
+           <StackLayout Orientation="Vertical" >
+                        
+                            <Frame BorderColor="LightGray" CornerRadius="15" BackgroundColor="Transparent" >
+
+                                <StackLayout Orientation="Horizontal"
+                                             Spacing="0" BackgroundColor="Transparent" Padding="0" Margin="0"
+                                             RadioButtonGroup.GroupName="MyLanguage"
+                                             RadioButtonGroup.SelectedValue="{Binding SelectionInt}">
+
+                                    <RadioButton ControlTemplate="{StaticResource RadioTemplate}"
+                                                 Value="1"
+                                                  CornerRadius="15">
+                                        <RadioButton.Content>
+                                            <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="Center">
+                                                <Label Text="1"/>
+                                            </StackLayout>
+                                        </RadioButton.Content>
+                                    </RadioButton>
+                        
+                                    <RadioButton ControlTemplate="{StaticResource RadioTemplate}"
+                                                 Value="2"
+                                                 CornerRadius="15">
+                                        <RadioButton.Content>
+                                            <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="Center">
+                                                <Label Text="2"/>
+                                            </StackLayout>
+                                        </RadioButton.Content>
+                                    </RadioButton>
+
+                                    <RadioButton ControlTemplate="{StaticResource RadioTemplate}"
+                                                 Value="3"
+                                                 CornerRadius="15">
+                                        <RadioButton.Content>
+                                            <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                                                <Label Text="3"/>
+                                            </StackLayout>
+                                        </RadioButton.Content>
+                                    </RadioButton>
+
+                                    <RadioButton ControlTemplate="{StaticResource RadioTemplate}"
+                                                 Value="4"
+                                                 CornerRadius="15">
+                                        <RadioButton.Content>
+                                            <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                                                <Label Text="4"/>
+                                            </StackLayout>
+                                        </RadioButton.Content>
+                                    </RadioButton>
+                                </StackLayout>
+                                </Frame>
+                    </StackLayout>
+
+
+                
+
+                    <Frame BorderColor="LightGray" CornerRadius="15" BackgroundColor="Transparent" >
+
+                        <StackLayout Orientation="Horizontal"
+                                        Spacing="0" BackgroundColor="Transparent" Padding="0" Margin="0"
+                                        RadioButtonGroup.GroupName="MyBool"
+                                        RadioButtonGroup.SelectedValue="{Binding SelectionBool}">
+
+                            <RadioButton ControlTemplate="{StaticResource RadioTemplate}"
+                                            Value="true" WidthRequest="175"
+                                            CornerRadius="15">
+                                <RadioButton.Content>
+                                    <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Label Text="True"/>
+                                    </StackLayout>
+                                </RadioButton.Content>
+                            </RadioButton>
+                        
+                            <RadioButton ControlTemplate="{StaticResource RadioTemplate}"
+                                            Value="false" WidthRequest="175"
+                                            CornerRadius="15">
+                                <RadioButton.Content>
+                                    <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Label Text="False"/>
+                                    </StackLayout>
+                                </RadioButton.Content>
+                            </RadioButton>
+
+                        </StackLayout>
+                    </Frame>
+
+                    <Frame BorderColor="LightGray" CornerRadius="15" BackgroundColor="Transparent" >
+
+                        <StackLayout Orientation="Horizontal"
+                                        Spacing="0" BackgroundColor="Transparent" Padding="0" Margin="0"
+                                        RadioButtonGroup.GroupName="MyObject"
+                                        RadioButtonGroup.SelectedValue="{Binding SelectionObject}">
+
+                            <RadioButton ControlTemplate="{StaticResource RadioTemplate}"
+                                            Value="True" WidthRequest="175"
+                                            CornerRadius="15">
+                                <RadioButton.Content>
+                                    <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Label Text="True"/>
+                                    </StackLayout>
+                                </RadioButton.Content>
+                            </RadioButton>
+                        
+                            <RadioButton ControlTemplate="{StaticResource RadioTemplate}"
+                                            Value="False" WidthRequest="175"
+                                            CornerRadius="15">
+                                <RadioButton.Content>
+                                    <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Label Text="False"/>
+                                    </StackLayout>
+                                </RadioButton.Content>
+                            </RadioButton>
+
+                        </StackLayout>
+                    </Frame>
+
+
+                    <Frame BorderColor="LightGray" CornerRadius="15" BackgroundColor="Transparent" >
+
+                        <StackLayout Orientation="Horizontal"
+                                        Spacing="0" BackgroundColor="Transparent" Padding="0" Margin="0"
+                                        RadioButtonGroup.GroupName="MyEnum"
+                                        RadioButtonGroup.SelectedValue="{Binding SelectionEnum}">
+
+                            <RadioButton ControlTemplate="{StaticResource RadioTemplate}"
+                                            Value="Red" WidthRequest="175"
+                                            CornerRadius="15">
+                                <RadioButton.Content>
+                                    <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Label Text="Red pill"/>
+                                    </StackLayout>
+                                </RadioButton.Content>
+                            </RadioButton>
+                        
+                            <RadioButton ControlTemplate="{StaticResource RadioTemplate}"
+                                            Value="Blue" WidthRequest="175"
+                                            CornerRadius="15">
+                                <RadioButton.Content>
+                                    <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Label Text="Blue pill"/>
+                                    </StackLayout>
+                                </RadioButton.Content>
+                            </RadioButton>
+
+                        </StackLayout>
+                    </Frame>
+
+
+                <!-- -scrollview layout -->
+                </StackLayout>
+
+        </ScrollView>
+
+
+
     </ContentPage.Content>
 </ContentPage>
