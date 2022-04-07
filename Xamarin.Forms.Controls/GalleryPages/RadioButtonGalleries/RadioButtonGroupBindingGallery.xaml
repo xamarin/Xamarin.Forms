@@ -9,6 +9,7 @@
              x:Class="Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries.RadioButtonGroupBindingGallery">
     <ContentPage.Resources>
         <ResourceDictionary>
+            <radiobuttongalleries:PillConverter x:Key="pillConverter" />
                  <Style TargetType="RadioButton">
                     <Setter Property="BorderWidth" Value="0" />
                     <Setter Property="Margin" Value="0" />
@@ -232,7 +233,7 @@
                         <StackLayout Orientation="Horizontal"
                                         Spacing="0" BackgroundColor="Transparent" Padding="0" Margin="0"
                                         RadioButtonGroup.GroupName="MyEnum"
-                                        RadioButtonGroup.SelectedValue="{Binding SelectionEnum}">
+                                        RadioButtonGroup.SelectedValue="{Binding SelectionEnum, Converter={StaticResource pillConverter}}">
 
                             <RadioButton ControlTemplate="{StaticResource RadioTemplate}"
                                             Value="Red" WidthRequest="175"

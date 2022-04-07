@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Globalization;
 using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries
@@ -13,6 +15,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries
 			InitializeComponent();
 			_viewModel = new RadioButtonGroupBindingModel() { GroupName = "group1" };
 			BindingContext = _viewModel;
+
 		}
 
 		private void Button_Clicked(object sender, System.EventArgs e)
@@ -78,7 +81,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries
 			set
 			{
 				_selectionInt = value;
-				OnPropertyChanged(nameof(_selectionInt));
+				OnPropertyChanged(nameof(SelectionInt));
 			}
 		}
 
@@ -89,7 +92,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries
 			set
 			{
 				_selectionBool = value;
-				OnPropertyChanged(nameof(_selectionBool));
+				OnPropertyChanged(nameof(SelectionBool));
 			}
 		}
 
@@ -99,7 +102,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries
 			set
 			{
 				_selectionObject = value;
-				OnPropertyChanged(nameof(_selectionObject));
+				OnPropertyChanged(nameof(SelectionObject));
 			}
 		}
 
@@ -109,7 +112,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries
 			set
 			{
 				_selectionEnum = value;
-				OnPropertyChanged(nameof(_selectionEnum));
+				OnPropertyChanged(nameof(SelectionEnum));
 			}
 		}
 
@@ -120,4 +123,23 @@ namespace Xamarin.Forms.Controls.GalleryPages.RadioButtonGalleries
 		Red,
 		Blue
 	}
+
+	public class PillConverter : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return value.ToString();
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			Pill parsedPill;
+			if (Enum.TryParse(value.ToString(), out parsedPill))
+			{
+				return parsedPill;
+			}
+			return Pill.Red;
+		}
+	}
+
 }
