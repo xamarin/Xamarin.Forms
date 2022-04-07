@@ -13,14 +13,18 @@ namespace Xamarin.Forms.Controls.Issues
 	{
         public Issue15287()
         {
+#if APP
             InitializeComponent();
+#endif
             BindingContext = new ViewModel();
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
+#if APP
             MainCollection.ItemSizingStrategy = ItemSizingStrategy.MeasureFirstItem;
+#endif
         }
 
         public class ViewModel
