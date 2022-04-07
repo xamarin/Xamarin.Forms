@@ -135,13 +135,18 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				RegisterHandler(typeof(Button), typeof(AppCompat.ButtonRenderer), typeof(ButtonRenderer));
 				RegisterHandler(typeof(Frame), typeof(AppCompat.FrameRenderer), typeof(FrameRenderer));
+				RegisterHandler(typeof(Label), typeof(FastRenderers.LabelRenderer), typeof(LabelRenderer));
+				RegisterHandler(typeof(Entry), typeof(EntryRenderer), typeof(EntryRenderer));
+				RegisterHandler(typeof(Editor), typeof(EditorRenderer), typeof(EditorRenderer));
 			}
 			else
 			{
 				RegisterHandler(typeof(Button), typeof(FastRenderers.ButtonRenderer), typeof(ButtonRenderer));
-				RegisterHandler(typeof(Label), typeof(FastRenderers.LabelRenderer), typeof(LabelRenderer));
+				RegisterHandler(typeof(Label), typeof(FastRenderers.LabelAppCompatRenderer), typeof(LabelRenderer));
 				RegisterHandler(typeof(Image), typeof(FastRenderers.ImageRenderer), typeof(ImageRenderer));
 				RegisterHandler(typeof(Frame), typeof(FastRenderers.FrameRenderer), typeof(FrameRenderer));
+				RegisterHandler(typeof(Entry), typeof(EntryAppCompatRenderer), typeof(EntryRenderer));
+				RegisterHandler(typeof(Editor), typeof(EditorAppCompatRenderer), typeof(EditorRenderer));
 			}
 
 			Registrar.Registered.Register(typeof(RadioButton), typeof(RadioButtonRenderer));
