@@ -144,6 +144,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Button.ImageSourceProperty.PropertyName)
 				_ = UpdateImageAsync();
 			else if (e.PropertyName == Button.TextProperty.PropertyName ||
+					 e.PropertyName == Button.TextColorProperty.PropertyName ||
 					 e.PropertyName == Button.TextTransformProperty.PropertyName ||
 					 e.PropertyName == Button.CharacterSpacingProperty.PropertyName)
 				UpdateText();
