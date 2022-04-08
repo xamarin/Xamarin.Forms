@@ -218,7 +218,10 @@ namespace Xamarin.Forms
 			{
 				Device.InvokeOnMainThreadAsync(() =>
 				{
-					Background.Parent = this;
+					if (Background != null)
+					{
+						Background.Parent = this;
+					}
 				});
 
 				Background.PropertyChanged += OnBackgroundChanged;
