@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
-using Android.Content.Res;
-using Android.OS;
 using Android.Text;
 using Android.Text.Method;
 using Android.Util;

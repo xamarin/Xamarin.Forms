@@ -6,6 +6,8 @@ namespace Xamarin.Forms
 	{
 		internal const string UseLegacyRenderers = "UseLegacyRenderers";
 
+		internal const string DisableAppCompatRenderer = "DisableAppCompatRenderers";
+
 		internal const string DisableAccessibilityExperimental = "Disable_Accessibility_Experimental";
 
 		public static bool IsFlagSet(string flagName)
