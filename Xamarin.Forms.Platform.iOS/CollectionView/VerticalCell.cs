@@ -16,10 +16,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override CGSize Measure()
 		{
-			var measure = VisualElementRenderer.Element.Measure(ConstrainedDimension,
+			var measure = VisualElementRenderer?.Element?.Measure(ConstrainedDimension,
 				double.PositiveInfinity, MeasureFlags.IncludeMargins);
 
-			return new CGSize(ConstrainedDimension, measure.Request.Height);
+			return new CGSize(ConstrainedDimension, measure?.Request.Height ?? Frame.Height);
 		}
 
 		protected override bool AttributesConsistentWithConstrainedDimension(UICollectionViewLayoutAttributes attributes)
