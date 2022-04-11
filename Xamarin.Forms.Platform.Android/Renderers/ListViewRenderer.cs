@@ -365,7 +365,14 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			if (footer == null)
+			{
+				if (_footerView.ChildCount == 0)
+				{
+					AListView nativeListView = Control;
+					nativeListView.RemoveFooterView(_adapter.FooterView);
+				}
 				return;
+			}
 
 			if (_footerRenderer != null)
 				_footerRenderer.SetElement(footer);
@@ -397,7 +404,14 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			if (header == null)
+			{
+				if (_headerView.ChildCount == 0)
+				{
+					AListView nativeListView = Control;
+					nativeListView.RemoveHeaderView(_adapter.HeaderView);
+				}
 				return;
+			}
 
 			if (_headerRenderer != null)
 				_headerRenderer.SetElement(header);
