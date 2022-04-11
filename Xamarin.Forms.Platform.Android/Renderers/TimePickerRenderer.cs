@@ -7,6 +7,7 @@ using Android.OS;
 using Android.Text.Format;
 using Android.Util;
 using Android.Widget;
+using AndroidX.AppCompat.Widget;
 using AColor = Android.Graphics.Color;
 using ATimePicker = Android.Widget.TimePicker;
 
@@ -211,6 +212,31 @@ namespace Xamarin.Forms.Platform.Android
 		protected override EditText CreateNativeControl()
 		{
 			return new PickerEditText(Context);
+		}
+
+		protected override EditText EditText => Control;
+		protected override void UpdateTextColor()
+		{
+			_textColorSwitcher = _textColorSwitcher ?? new TextColorSwitcher(EditText.TextColors, Element.UseLegacyColorManagement());
+			_textColorSwitcher.UpdateTextColor(EditText, Element.TextColor);
+		}
+	}
+
+	public class TimePickerAppCompatRenderer : TimePickerRendererBase<AppCompatEditText>
+	{
+		TextColorSwitcher _textColorSwitcher;
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use TimePickerRenderer(Context) instead.")]
+		public TimePickerAppCompatRenderer()
+		{
+		}
+
+		public TimePickerAppCompatRenderer(Context context) : base(context)
+		{
+		}
+
+		protected override AppCompatEditText CreateNativeControl()
+		{
+			return new PickerAppCompatEditText(Context);
 		}
 
 		protected override EditText EditText => Control;

@@ -6,6 +6,7 @@ using Android.Content;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using AndroidX.AppCompat.Widget;
 using AColor = Android.Graphics.Color;
 
 namespace Xamarin.Forms.Platform.Android
@@ -239,6 +240,32 @@ namespace Xamarin.Forms.Platform.Android
 		protected override EditText CreateNativeControl()
 		{
 			return new PickerEditText(Context);
+		}
+
+		protected override EditText EditText => Control;
+
+		protected override void UpdateTextColor()
+		{
+			_textColorSwitcher = _textColorSwitcher ?? new TextColorSwitcher(EditText.TextColors, Element.UseLegacyColorManagement());
+			_textColorSwitcher.UpdateTextColor(EditText, Element.TextColor);
+		}
+	}
+
+	public class DatePickerAppCompatRenderer : DatePickerRendererBase<AppCompatEditText>
+	{
+		TextColorSwitcher _textColorSwitcher;
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use DatePickerRenderer(Context) instead.")]
+		public DatePickerAppCompatRenderer()
+		{
+		}
+
+		public DatePickerAppCompatRenderer(Context context) : base(context)
+		{
+		}
+
+		protected override AppCompatEditText CreateNativeControl()
+		{
+			return new PickerAppCompatEditText(Context);
 		}
 
 		protected override EditText EditText => Control;

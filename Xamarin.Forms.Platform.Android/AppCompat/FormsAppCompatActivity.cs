@@ -123,7 +123,6 @@ namespace Xamarin.Forms.Platform.Android
 			RegisterHandler(typeof(TabbedPage), typeof(TabbedPageRenderer), typeof(TabbedRenderer));
 			RegisterHandler(typeof(FlyoutPage), typeof(FlyoutPageRenderer), typeof(FlyoutPageRenderer));
 			RegisterHandler(typeof(Switch), typeof(AppCompat.SwitchRenderer), typeof(SwitchRenderer));
-			RegisterHandler(typeof(Picker), typeof(AppCompat.PickerRenderer), typeof(PickerRenderer));
 			RegisterHandler(typeof(CarouselPage), typeof(AppCompat.CarouselPageRenderer), typeof(CarouselPageRenderer));
 			RegisterHandler(typeof(CheckBox), typeof(CheckBoxRenderer), typeof(CheckBoxDesignerRenderer));
 			RegisterHandler(typeof(FlyoutPage), typeof(FlyoutPageRenderer), typeof(FlyoutPageRendererNonAppCompat));
@@ -151,6 +150,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				RegisterHandler(typeof(Entry), typeof(EntryRenderer), typeof(EntryRenderer));
 				RegisterHandler(typeof(Editor), typeof(EditorRenderer), typeof(EditorRenderer));
+				RegisterHandler(typeof(Picker), typeof(AppCompat.PickerRenderer), typeof(PickerRenderer));
 
 				if (!useLegacyRenderers)
 					RegisterHandler(typeof(Label), typeof(FastRenderers.LabelRenderer), typeof(LabelRenderer));
@@ -160,7 +160,10 @@ namespace Xamarin.Forms.Platform.Android
 				RegisterHandler(typeof(Entry), typeof(EntryAppCompatRenderer), typeof(EntryRenderer));
 				RegisterHandler(typeof(Editor), typeof(EditorAppCompatRenderer), typeof(EditorRenderer));
 				RegisterHandler(typeof(Label), typeof(FastRenderers.LabelAppCompatRenderer), typeof(LabelRenderer));
-
+				RegisterHandler(typeof(Label), typeof(FastRenderers.LabelAppCompatRenderer), typeof(LabelRenderer));
+				RegisterHandler(typeof(Picker), typeof(PickerAppCompatRenderer), typeof(PickerRenderer));
+				RegisterHandler(typeof(DatePicker), typeof(DatePickerAppCompatRenderer), typeof(DatePickerRenderer));
+				RegisterHandler(typeof(TimePicker), typeof(TimePickerAppCompatRenderer), typeof(TimePickerRenderer));
 			}
 
 			Registrar.Registered.Register(typeof(RadioButton), typeof(RadioButtonRenderer));
