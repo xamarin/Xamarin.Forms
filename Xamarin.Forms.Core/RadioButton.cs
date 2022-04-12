@@ -419,12 +419,35 @@ namespace Xamarin.Forms
 
 		void HandleRadioButtonGroupValueChanged(Layout<View> layout, RadioButtonGroupValueChanged args)
 		{
-			if (IsChecked || string.IsNullOrEmpty(GroupName) || GroupName != args.GroupName || Value != args.Value || !MatchesScope(args))
+			if (IsChecked || string.IsNullOrEmpty(GroupName) || GroupName != args.GroupName || !MatchesScope(args))
 			{
 				return;
 			}
 
-			IsChecked = true;
+			// if both value and args value are null, we consider it good.
+			if (Value == null && args.Value == null)
+			{
+				IsChecked = true;
+				return;
+			}
+			else if (args.Value is bool && bool.TryParse(Value.ToString(), out bool boolRes))
+			{
+				// if it is a boolean value, compare as bool
+				if ((bool)args.Value == boolRes)
+				{
+					IsChecked = true;
+					return;
+				}
+			}
+
+			// Other values we can probably safely compare as string (int, string, enum)
+			if (Value != null && Value.ToString().Equals(args.Value.ToString()))
+			{
+				IsChecked = true;
+				return;
+			}
+
+			IsChecked = false;
 		}
 
 		static void BindToTemplatedParent(BindableObject bindableObject, params BindableProperty[] properties)
