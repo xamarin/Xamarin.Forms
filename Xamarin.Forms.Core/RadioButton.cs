@@ -424,9 +424,6 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			// 2022-04-06 jtorvald: the old check failed because it compare value and type
-			// in most cases working with XAML this is probably not what we want
-			// issue: 
 			// if both value and args value are null, we consider it good.
 			if (Value == null && args.Value == null)
 			{
@@ -443,8 +440,7 @@ namespace Xamarin.Forms
 				}
 			}
 
-			// 2022-04-06 jtorvald: other values we can probably safely compare as string (int, string, enum)
-			// maybe we need other checks for decimals values types?
+			// Other values we can probably safely compare as string (int, string, enum)
 			if (Value != null && Value.ToString().Equals(args.Value.ToString()))
 			{
 				IsChecked = true;
