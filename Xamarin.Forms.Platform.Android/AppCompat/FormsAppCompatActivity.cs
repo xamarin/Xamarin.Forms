@@ -162,8 +162,6 @@ namespace Xamarin.Forms.Platform.Android
 				RegisterHandler(typeof(Label), typeof(FastRenderers.LabelAppCompatRenderer), typeof(LabelRenderer));
 				RegisterHandler(typeof(Label), typeof(FastRenderers.LabelAppCompatRenderer), typeof(LabelRenderer));
 				RegisterHandler(typeof(Picker), typeof(PickerAppCompatRenderer), typeof(PickerRenderer));
-				RegisterHandler(typeof(DatePicker), typeof(DatePickerAppCompatRenderer), typeof(DatePickerRenderer));
-				RegisterHandler(typeof(TimePicker), typeof(TimePickerAppCompatRenderer), typeof(TimePickerRenderer));
 			}
 
 			Registrar.Registered.Register(typeof(RadioButton), typeof(RadioButtonRenderer));
