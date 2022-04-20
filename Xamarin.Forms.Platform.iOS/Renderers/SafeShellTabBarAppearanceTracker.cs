@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var tabBar = controller.TabBar;
 
-			var tabBarAppearance = new UITabBarAppearance();
+			var tabBarAppearance = tabBar.StandardAppearance;
 			tabBarAppearance.ConfigureWithDefaultBackground();
 
 			// Set TabBarBackgroundColor
