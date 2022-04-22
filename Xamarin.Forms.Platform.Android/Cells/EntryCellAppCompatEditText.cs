@@ -1,16 +1,16 @@
-using System;
+﻿using System;
 using Android.Content;
 using Android.Views;
-using Android.Widget;
+using AndroidX.AppCompat.Widget;
 using ARect = Android.Graphics.Rect;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public sealed class EntryCellEditText : EditText
+	public sealed class EntryCellAppCompatEditText : AppCompatEditText
 	{
 		SoftInput _startingMode;
 
-		public EntryCellEditText(Context context) : base(context)
+		public EntryCellAppCompatEditText(Context context) : base(context)
 		{
 		}
 

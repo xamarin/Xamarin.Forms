@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.Android
 			using (layoutParams)
 				AddView(_label, layoutParams);
 
-			EditText = new EntryCellEditText(context);
+			EditText = new EntryCellAppCompatEditText(context);
 			EditText.AddTextChangedListener(this);
 			EditText.OnFocusChangeListener = this;
 			EditText.SetOnEditorActionListener(this);
@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public Action EditingCompleted { get; set; }
 
-		public EntryCellEditText EditText { get; }
+		public EntryCellAppCompatEditText EditText { get; }
 
 		public Action<bool> FocusChanged { get; set; }
 
