@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -7,7 +7,6 @@ using Android.Content;
 using Android.Text;
 using Android.Text.Style;
 using Android.Util;
-using Android.Widget;
 using AndroidX.AppCompat.Widget;
 using AndroidX.Core.View;
 using AlertDialog = AndroidX.AppCompat.App.AlertDialog;

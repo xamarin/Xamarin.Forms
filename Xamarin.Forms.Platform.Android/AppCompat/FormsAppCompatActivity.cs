@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
@@ -163,6 +163,10 @@ namespace Xamarin.Forms.Platform.Android
 				RegisterHandler(typeof(Label), typeof(FastRenderers.LabelAppCompatRenderer), typeof(LabelRenderer));
 				RegisterHandler(typeof(Picker), typeof(PickerAppCompatRenderer), typeof(PickerRenderer));
 				RegisterHandler(typeof(SearchBar), typeof(SearchBarAppCompatRenderer), typeof(SearchBarRenderer));
+				RegisterHandler(typeof(SwitchCell), typeof(SwitchCellAppCompatRenderer), typeof(SwitchCellRenderer));
+				RegisterHandler(typeof(TextCell), typeof(TextCellAppCompatRenderer), typeof(TextCellRenderer));
+				RegisterHandler(typeof(EntryCell), typeof(EntryCellAppCompatRenderer), typeof(EntryCellRenderer));
+
 			}
 
 			Registrar.Registered.Register(typeof(RadioButton), typeof(RadioButtonRenderer));
