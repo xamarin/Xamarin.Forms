@@ -6,7 +6,7 @@ using ARect = Android.Graphics.Rect;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public sealed class EntryCellAppCompatEditText : AppCompatEditText
+	public sealed class EntryCellAppCompatEditText : FormsAppCompatEditTextBase
 	{
 		SoftInput _startingMode;
 
