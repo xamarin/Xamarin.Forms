@@ -45,7 +45,6 @@ schedules:
   displayName: Daily midnight build
   branches:
     include:
-    - main
     - 5.0.0
 
 stages:
