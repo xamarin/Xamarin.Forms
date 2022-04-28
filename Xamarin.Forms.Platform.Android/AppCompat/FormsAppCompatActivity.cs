@@ -131,7 +131,10 @@ namespace Xamarin.Forms.Platform.Android
 			RegisterHandler(typeof(MasterDetailPage), typeof(MasterDetailPageRenderer), typeof(MasterDetailRenderer));
 #pragma warning restore CS0618 // Type or member is obsolete
 
-			if (Forms.Flags.Contains(Flags.UseLegacyRenderers))
+			var useLegacyRenderers = Forms.Flags.Contains(Flags.UseLegacyRenderers);
+			var disableAppCompatRenderers = Forms.Flags.Contains(Flags.DisableAppCompatRenderer);
+
+			if (useLegacyRenderers)
 			{
 				RegisterHandler(typeof(Button), typeof(AppCompat.ButtonRenderer), typeof(ButtonRenderer));
 				RegisterHandler(typeof(Frame), typeof(AppCompat.FrameRenderer), typeof(FrameRenderer));
@@ -139,9 +142,25 @@ namespace Xamarin.Forms.Platform.Android
 			else
 			{
 				RegisterHandler(typeof(Button), typeof(FastRenderers.ButtonRenderer), typeof(ButtonRenderer));
-				RegisterHandler(typeof(Label), typeof(FastRenderers.LabelRenderer), typeof(LabelRenderer));
 				RegisterHandler(typeof(Image), typeof(FastRenderers.ImageRenderer), typeof(ImageRenderer));
 				RegisterHandler(typeof(Frame), typeof(FastRenderers.FrameRenderer), typeof(FrameRenderer));
+
+			}
+
+			if (disableAppCompatRenderers)
+			{
+				RegisterHandler(typeof(Entry), typeof(EntryRenderer), typeof(EntryRenderer));
+				RegisterHandler(typeof(Editor), typeof(EditorRenderer), typeof(EditorRenderer));
+
+				if (!useLegacyRenderers)
+					RegisterHandler(typeof(Label), typeof(FastRenderers.LabelRenderer), typeof(LabelRenderer));
+			}
+			else
+			{
+				RegisterHandler(typeof(Entry), typeof(EntryAppCompatRenderer), typeof(EntryRenderer));
+				RegisterHandler(typeof(Editor), typeof(EditorAppCompatRenderer), typeof(EditorRenderer));
+				RegisterHandler(typeof(Label), typeof(FastRenderers.LabelAppCompatRenderer), typeof(LabelRenderer));
+
 			}
 
 			Registrar.Registered.Register(typeof(RadioButton), typeof(RadioButtonRenderer));

@@ -120,7 +120,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateBackground()
 		{
-			var parent = Control.Superview;
+			var parent = Control?.Superview;
 
 			if (parent == null)
 				return;

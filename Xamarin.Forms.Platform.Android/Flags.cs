@@ -6,7 +6,9 @@ namespace Xamarin.Forms
 	{
 		internal const string UseLegacyRenderers = "UseLegacyRenderers";
 
-		internal const string AccessibilityExperimental = "Accessibility_Experimental";
+		internal const string DisableAppCompatRenderer = "DisableAppCompatRenderers";
+
+		internal const string DisableAccessibilityExperimental = "Disable_Accessibility_Experimental";
 
 		public static bool IsFlagSet(string flagName)
 		{
@@ -15,7 +17,10 @@ namespace Xamarin.Forms
 
 		public static bool IsAccessibilityExperimentalSet()
 		{
-			return IsFlagSet(AccessibilityExperimental);
+			if (IsFlagSet(DisableAccessibilityExperimental))
+				return false;
+			else
+				return true;
 		}
 	}
 }

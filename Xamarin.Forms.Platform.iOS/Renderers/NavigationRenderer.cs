@@ -451,7 +451,8 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName ||
 				e.PropertyName == NavigationPage.BarBackgroundProperty.PropertyName)
 			{
-				UpdateBarBackground();
+				UpdateBarBackground();		
+				UpdateHideNavigationBarSeparator();
 			}
 			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName
 				  || e.PropertyName == StatusBarTextColorModeProperty.PropertyName)

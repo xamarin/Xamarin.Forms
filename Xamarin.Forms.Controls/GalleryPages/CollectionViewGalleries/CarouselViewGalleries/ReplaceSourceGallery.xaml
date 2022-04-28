@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries.ReplaceSourceGallery">
+    <StackLayout>
+        <CarouselView Loop="False" ItemsSource="{Binding Images}" HeightRequest="200" x:Name="ImageCarousel">
+            <CarouselView.ItemTemplate>
+                <DataTemplate>
+                    <Image Source="{Binding .}" />
+                </DataTemplate>
+            </CarouselView.ItemTemplate>
+        </CarouselView>
+        <Label Text="{Binding Position, Source={x:Reference ImageCarousel}}"/>
+
+        <CarouselView Loop="False" ItemsSource="{Binding Colors}" HeightRequest="200" x:Name="ColorCarousel">
+            <CarouselView.ItemTemplate>
+                <DataTemplate>
+                    <BoxView Color="{Binding .}" />
+                </DataTemplate>
+            </CarouselView.ItemTemplate>
+        </CarouselView>
+        <Label Text="{Binding Position, Source={x:Reference ColorCarousel}}"/>
+
+        <Button Text="Update BindingContext" Clicked="BindingContextButton_Clicked" />
+        <Button Text="Update ItemsSource" Clicked="ItemsSourceButton_Clicked" />
+    </StackLayout>
+</ContentPage>
