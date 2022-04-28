@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <package >
   <metadata>
     <id>Xamarin.Forms</id>
@@ -22,7 +22,7 @@
 
         <!-- Because of a misspelled reference these all need to be explicitly included so the fixed version 
           is transitively loaded  https://github.com/xamarin/AndroidX/issues/283#issuecomment-788103573 -->
-        <dependency id="Xamarin.AndroidX.Core" version="[1.6.0.1,1.7)" />
+        <dependency id="Xamarin.AndroidX.Core" version="[1.6.0.1,1.7.0.2)" />
         <dependency id="Xamarin.AndroidX.CustomView" version="[1.1.0.7,1.2)" />
         <dependency id="Xamarin.AndroidX.Preference" version="[1.1.1.9,1.2)" />
         <dependency id="Xamarin.AndroidX.RecyclerView" version="[1.2.1.1,1.3)" />
