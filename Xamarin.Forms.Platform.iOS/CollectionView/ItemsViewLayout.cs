@@ -171,7 +171,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public override bool ShouldInvalidateLayout(UICollectionViewLayoutAttributes preferredAttributes, UICollectionViewLayoutAttributes originalAttributes)
 		{
 			// This is currently causing an infinite layout loop on iOS 15 https://github.com/xamarin/Xamarin.Forms/issues/15230
-			if (preferredAttributes.RepresentedElementKind == "UICollectionElementKindSectionHeader" && Forms.IsiOS15OrNewer)
+			if (preferredAttributes.RepresentedElementKind == "UICollectionElementKindSectionHeader" && Forms.IsiOS154OrNewer)
 				return base.ShouldInvalidateLayout(preferredAttributes, originalAttributes);
 				
 			if (ItemSizingStrategy == ItemSizingStrategy.MeasureAllItems)
