@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					new Button()
 					{
-						Command = new Command(CollectMemory),
+						Command = new Command(GarbageCollectionHelper.Collect),
 						Text = "Force GC",
 						AutomationId = "GC_14657"
 					},
@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Controls.Issues
 						},
 						new Button()
 						{
-							Command = new Command(CollectMemory),
+							Command = new Command(GarbageCollectionHelper.Collect),
 							Text = "Force GC",
 							AutomationId = "GC_14657"
 						}
@@ -95,18 +95,18 @@ namespace Xamarin.Forms.Controls.Issues
 
 		async Task GoToChild()
 		{
-			await GoToAsync(nameof(Issue14657_ChildPage));
-		}
 
-		static void CollectMemory()
-		{
-			GC.Collect();
-			GC.WaitForPendingFinalizers();
-			GC.WaitForPendingFinalizers();
-			GC.Collect();
-			GC.WaitForPendingFinalizers();
-			GC.WaitForPendingFinalizers();
-			GC.Collect();
+			int runCount = 0;
+			GarbageCollectionHelper.Collect();
+			await Task.Delay(10);
+			while (pageCount != 0 && runCount < 5)
+			{
+				GarbageCollectionHelper.Collect();
+				await Task.Delay(100);
+				runCount++;
+			}
+
+			await GoToAsync(nameof(Issue14657_ChildPage));
 		}
 
 #if UITEST
