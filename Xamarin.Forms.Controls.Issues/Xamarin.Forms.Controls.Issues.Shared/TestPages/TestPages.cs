@@ -575,7 +575,12 @@ namespace Xamarin.Forms.Controls
 #endif
 	public abstract class TestShell : Shell
 	{
+#if __ANDROID__
+		protected const string FlyoutIconAutomationId = "Open navigation drawer";
+#else
 		protected const string FlyoutIconAutomationId = "OK";
+#endif
+
 #if __IOS__ || __WINDOWS__
 		protected const string BackButtonAutomationId = "Back";
 #else
