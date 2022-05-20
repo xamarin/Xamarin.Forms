@@ -583,6 +583,8 @@ namespace Xamarin.Forms.Controls
 
 #if __IOS__ || __WINDOWS__
 		protected const string BackButtonAutomationId = "Back";
+#elif __ANDROID__
+		protected const string BackButtonAutomationId = "Navigate up";
 #else
 		protected const string BackButtonAutomationId = "OK";
 #endif
