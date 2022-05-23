@@ -442,6 +442,10 @@ namespace Xamarin.Forms
 
 		internal static bool TryConvert(ref object value, BindableProperty targetProperty, Type convertTo, bool toTarget)
 		{
+			if (targetProperty == null)
+				return false;
+			if (convertTo == null)
+				return false;
 			if (value == null)
 				return !convertTo.GetTypeInfo().IsValueType || Nullable.GetUnderlyingType(convertTo) != null;
 			try
