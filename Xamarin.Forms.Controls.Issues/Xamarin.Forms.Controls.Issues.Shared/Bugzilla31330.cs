@@ -152,16 +152,16 @@ namespace Xamarin.Forms.Controls.Issues
 		[Category(UITestCategories.UwpIgnore)]
 		public void Bugzilla31330Test()
 		{
-			RunningApp.WaitForElement(c => c.Marked("Something 2"));
+			RunningApp.WaitForElement(c => c.Marked("Something 2"), timeout: TimeSpan.FromSeconds(2), postTimeout: TimeSpan.FromSeconds(1));
 			RunningApp.ActivateContextMenu("Something 1");
 			RunningApp.WaitForElement(c => c.Marked("Delete"));
 			RunningApp.Tap(c => c.Marked("Delete"));
 			RunningApp.DismissContextMenu();
 			RunningApp.Tap(c => c.Marked("Something 2"));
 			RunningApp.ActivateContextMenu("Something 2");
-			RunningApp.WaitForElement(c => c.Marked("Delete"));
+			RunningApp.WaitForElement(c => c.Marked("Delete"), timeout: TimeSpan.FromSeconds(2), postTimeout: TimeSpan.FromSeconds(1));
 			RunningApp.Tap(c => c.Marked("Delete"));
-			RunningApp.WaitForNoElement(c => c.Marked("Something 2"));
+			RunningApp.WaitForNoElement(c => c.Marked("Something 2"), timeout: TimeSpan.FromSeconds(2), postTimeout: TimeSpan.FromSeconds(1));
 		}
 #endif
 	}

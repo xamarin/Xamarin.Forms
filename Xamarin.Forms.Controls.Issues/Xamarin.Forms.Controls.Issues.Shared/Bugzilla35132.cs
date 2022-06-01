@@ -78,15 +78,15 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement(q => q.Marked("Open"));
 			RunningApp.Tap(q => q.Marked("Open"));
-			RunningApp.WaitForElement(q => q.Marked("Testing..."));
+			RunningApp.WaitForElement(q => q.Marked("Testing..."), timeout: TimeSpan.FromSeconds(2), postTimeout: TimeSpan.FromSeconds(1));
 			RunningApp.Back();
-			RunningApp.WaitForElement(q => q.Marked("Open"));
+			RunningApp.WaitForElement(q => q.Marked("Open"), timeout: TimeSpan.FromSeconds(2), postTimeout: TimeSpan.FromSeconds(1));
 			RunningApp.Tap(q => q.Marked("Open"));
-			RunningApp.WaitForElement(q => q.Marked("Testing..."));
+			RunningApp.WaitForElement(q => q.Marked("Testing..."), timeout: TimeSpan.FromSeconds(1), postTimeout: TimeSpan.FromSeconds(1));
 			RunningApp.Back();
-			RunningApp.WaitForElement(q => q.Marked("Open"));
+			RunningApp.WaitForElement(q => q.Marked("Open"), timeout: TimeSpan.FromSeconds(2), postTimeout: TimeSpan.FromSeconds(1));
 			RunningApp.Tap(q => q.Marked("Open"));
-			RunningApp.WaitForElement(q => q.Marked("Success"));
+			RunningApp.WaitForElement(q => q.Marked("Success"), timeout: TimeSpan.FromSeconds(2), postTimeout: TimeSpan.FromSeconds(1));
 		}
 #endif
 	}
