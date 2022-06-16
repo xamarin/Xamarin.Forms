@@ -308,7 +308,12 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnLayout(changed, l, t, r, b);
 			//hack to make the split layout handle touches the full width
 			if (FlyoutPageController.ShouldShowSplitMode && _flyoutLayout != null)
-				_flyoutLayout.Right = r;
+			{
+				if (Element.FlowDirection == FlowDirection.RightToLeft)
+					_flyoutLayout.Left = l;
+				else
+					_flyoutLayout.Right = r;
+			}
 		}
 
 		async void DeviceInfoPropertyChanged(object sender, PropertyChangedEventArgs e)
