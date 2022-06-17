@@ -736,7 +736,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			});
 		}
 
-		void ResetToolbar()
+		internal void ResetToolbar()
 		{
 			AToolbar oldToolbar = _toolbar;
 
@@ -933,7 +933,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			ToolbarExtensions.UpdateMenuItemIcon(context, menuItem, toolBarItem, null);
 		}
 
-		void UpdateToolbar()
+		internal void UpdateToolbar()
 		{
 			if (_disposed)
 				return;
@@ -982,6 +982,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					toggle.DrawerIndicatorEnabled = _flyoutPage.ShouldShowToolbarButton();
 					toggle.SyncState();
+
+					if (toggle.DrawerArrowDrawable != null)
+						toggle.DrawerArrowDrawable.Progress = 0;
 				}
 			}
 

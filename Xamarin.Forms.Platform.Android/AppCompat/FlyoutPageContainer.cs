@@ -291,8 +291,15 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				//if we are showing the normal popover master doesn't have padding
 				supressPadding = isFlyoutPage;
+
+				if (_parent.FlowDirection == FlowDirection.RightToLeft && isFlyoutPage)
+				{
+					xPos = width - DefaultWidthFlyout;
+				}
+
 				//popover make the master smaller
 				width = isFlyoutPage && (Device.Info.CurrentOrientation.IsLandscape() || Device.Idiom == TargetIdiom.Tablet) ? DefaultWidthFlyout : width;
+
 			}
 
 			double padding = supressPadding ? 0 : Context.FromPixels(TopPadding);

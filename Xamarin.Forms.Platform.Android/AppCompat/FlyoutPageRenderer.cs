@@ -316,28 +316,48 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		async void DeviceInfoPropertyChanged(object sender, PropertyChangedEventArgs e)
+		async void UpdateFlyoutLayoutBehavior(bool requestLayout = false)
+		{
+			if (!FlyoutPageController.ShouldShowSplitMode && Presented)
+			{
+				FlyoutPageController.CanChangeIsPresented = true;
+				//hack : when the orientation changes and we try to close the Flyout on Android		
+				//sometimes Android picks the width of the screen previous to the rotation 		
+				//this leaves a little of the flyout visible, the hack is to delay for 100ms closing the drawer
+				await Task.Delay(100);
+
+				//Renderer may have been disposed during the delay
+				if (_disposed)
+				{
+					return;
+				}
+
+				CloseDrawer(_flyoutLayout);
+			}
+			else if (FlyoutPageController.ShouldShowSplitMode)
+			{
+				OpenDrawer(_flyoutLayout, false);
+			}
+
+			UpdateSplitViewLayout();
+
+			if (requestLayout)
+			{
+				_flyoutLayout?.MaybeRequestLayout();
+				_detailLayout?.MaybeRequestLayout();
+
+				if (Device.Idiom == TargetIdiom.Tablet && _flyoutLayout != null)
+				{
+					_detailLayout.GetFirstChildOfType<NavigationPageRenderer>()?.ResetToolbar();
+				}
+			}
+		}
+
+		void DeviceInfoPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (nameof(Device.Info.CurrentOrientation) == e.PropertyName)
 			{
-				if (!FlyoutPageController.ShouldShowSplitMode && Presented)
-				{
-					FlyoutPageController.CanChangeIsPresented = true;
-					//hack : when the orientation changes and we try to close the Flyout on Android		
-					//sometimes Android picks the width of the screen previous to the rotation 		
-					//this leaves a little of the flyout visible, the hack is to delay for 100ms closing the drawer
-					await Task.Delay(100);
-
-					//Renderer may have been disposed during the delay
-					if (_disposed)
-					{
-						return;
-					}
-
-					CloseDrawer(_flyoutLayout);
-				}
-
-				UpdateSplitViewLayout();
+				UpdateFlyoutLayoutBehavior();
 			}
 		}
 
@@ -378,7 +398,14 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor(Element);
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+			{
 				UpdateFlowDirection();
+				_detailLayout.GetFirstChildOfType<NavigationPageRenderer>()?.UpdateToolbar();
+			}
+			else if (e.Is(FlyoutPage.FlyoutLayoutBehaviorProperty))
+			{
+				UpdateFlyoutLayoutBehavior(true);
+			}
 		}
 
 		void FlyoutPageAppearing(object sender, EventArgs e)
