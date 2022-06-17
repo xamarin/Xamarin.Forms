@@ -983,6 +983,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					toggle.DrawerIndicatorEnabled = _flyoutPage.ShouldShowToolbarButton();
 					toggle.SyncState();
 
+					// When pivoting between split mode and flyout mode
+					// The DrawerArrowDrawable Progress will get out of sync and show a back button
+					// this forces it back to a hamburger
+
 					if (toggle.DrawerArrowDrawable != null)
 						toggle.DrawerArrowDrawable.Progress = 0;
 				}

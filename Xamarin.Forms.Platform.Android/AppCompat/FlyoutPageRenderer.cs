@@ -348,6 +348,9 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (Device.Idiom == TargetIdiom.Tablet && _flyoutLayout != null)
 				{
+					// This is required to add/remove the drawer button
+					// This basically runs the same code that runs when 
+					// a device changes between landscape/portrait
 					_detailLayout.GetFirstChildOfType<NavigationPageRenderer>()?.ResetToolbar();
 				}
 			}
@@ -400,6 +403,8 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 			{
 				UpdateFlowDirection();
+
+				// This will move the drawer layout button to the proper side of the toolbar
 				_detailLayout.GetFirstChildOfType<NavigationPageRenderer>()?.UpdateToolbar();
 			}
 			else if (e.Is(FlyoutPage.FlyoutLayoutBehaviorProperty))
