@@ -41,9 +41,9 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_adapter.NotifyItemMoved(fromPosition, toPosition);
 
-				//var minPosition = System.Math.Min(fromPosition, toPosition);
-				//var changedCount = _adapter.ItemCount - minPosition;
-				//_adapter.NotifyItemRangeChanged(minPosition, changedCount);
+				var minPosition = System.Math.Min(fromPosition, toPosition);
+				var changedCount = _adapter.ItemCount - minPosition;
+				_adapter.NotifyItemRangeChanged(minPosition, changedCount);
 			}
 		}
 
@@ -59,8 +59,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_adapter.NotifyItemRangeInserted(startIndex, count);
 
-				//var changedCount = _adapter.ItemCount - startIndex;
-				//_adapter.NotifyItemRangeChanged(startIndex, changedCount);
+				var changedCount = _adapter.ItemCount - startIndex;
+				_adapter.NotifyItemRangeChanged(startIndex, changedCount);
 			}
 		}
 
@@ -70,8 +70,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_adapter.NotifyItemRangeRemoved(startIndex, count);
 
-				//var changedCount = _adapter.ItemCount - startIndex;
-				//_adapter.NotifyItemRangeChanged(startIndex, changedCount);
+				var changedCount = _adapter.ItemCount - startIndex;
+				_adapter.NotifyItemRangeChanged(startIndex, changedCount);
 			}
 		}
 
@@ -81,8 +81,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_adapter.NotifyItemRemoved(startIndex);
 
-				//var changedCount = _adapter.ItemCount - startIndex;
-				//_adapter.NotifyItemRangeChanged(startIndex, changedCount);
+				var changedCount = _adapter.ItemCount - startIndex;
+				_adapter.NotifyItemRangeChanged(startIndex, changedCount);
 			}
 		}
 

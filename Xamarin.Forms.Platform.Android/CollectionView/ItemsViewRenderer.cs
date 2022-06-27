@@ -170,12 +170,31 @@ namespace Xamarin.Forms.Platform.Android
 						? LinearLayoutManager.Horizontal
 						: LinearLayoutManager.Vertical;
 
-					return new LinearLayoutManager(Context, orientation, false);
+					return new MyLinearLayoutManager(Context, orientation);
 			}
 
 			// Fall back to plain old vertical list
 			// TODO hartez 2018/08/30 19:34:36 Log a warning when we have to fall back because of an unknown layout	
-			return new LinearLayoutManager(Context);
+			return new MyLinearLayoutManager(Context);
+		}
+
+		class MyLinearLayoutManager : LinearLayoutManager
+		{
+			public MyLinearLayoutManager(Context context)
+				: base(context)
+			{
+
+			}
+			public MyLinearLayoutManager(Context context, int orientation)
+				: base(context, orientation, false)
+			{
+
+			}
+
+			public override bool SupportsPredictiveItemAnimations()
+			{
+				return false;
+			}
 		}
 
 		GridLayoutManager CreateGridLayout(GridItemsLayout gridItemsLayout)
