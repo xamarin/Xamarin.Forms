@@ -6,6 +6,7 @@ parameters:
   includeUwp: 'true'
   includeAndroid: 'true'
   includeNonUwpAndNonAndroid: 'true'
+  runTests: 'true'
 
 steps:
   - checkout: self
@@ -29,14 +30,7 @@ steps:
       provisioning_script: ${{ parameters.provisionatorVSPath }}
       provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
 
-  # - task: UseDotNet@2
-  #   displayName: "Install .net core $(DOTNET_VERSION)"
-  #   condition: ne(variables['DOTNET_VERSION'], '')
-  #   inputs:
-  #     version: $(DOTNET_VERSION)
-  #     packageType: 'sdk'
-
-  - script: build.cmd -Target cg-uwp-build-tests -ScriptArgs '--BUILD_CONFIGURATION="$(BuildConfiguration)"'
+  - script: build.cmd -Target cg-uwp-build-tests -ScriptArgs '--BUILD_CONFIGURATION="$(BuildConfiguration)"','--MSBUILD="$(msbuild)"'
     condition: eq(variables['BuildConfiguration'], 'Release')
     displayName: 'Build Tests and APPX'
 
@@ -51,12 +45,13 @@ steps:
         Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/Dependencies/x86/**
       TargetFolder: '$(build.artifactstagingdirectory)'
 
-  - script: build.cmd -Target BuildForNuget -ScriptArgs '--BUILD_CONFIGURATION="$(BuildConfiguration)"','--Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"'
+  - script: build.cmd -Target BuildForNuget -ScriptArgs '--BUILD_CONFIGURATION="$(BuildConfiguration)"','--Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"','--MSBUILD="$(msbuild)"'
     name: winbuild
     displayName: 'Build Projects For Nuget'
 
   - task: VSTest@2
     displayName: 'Unit Tests'
+    condition: eq(${{ parameters.runTests }}, 'true')
     inputs:
       testAssemblyVer2: |
         **/bin/$(BuildConfiguration)/Xamarin.Forms.Core.UnitTests.dll

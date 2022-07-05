@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public TItemsView ItemsView { get; }
 		protected ItemsViewLayout ItemsViewLayout { get; set; }
 		bool _initialized;
-		bool _isEmpty;
+		bool _isEmpty = true;
 		bool _emptyViewDisplayed;
 		bool _disposed;
 
@@ -128,7 +128,7 @@ namespace Xamarin.Forms.Platform.iOS
 				// If we're going from empty to having stuff, it's possible that we've never actually measured
 				// a prototype cell and our itemSize or estimatedItemSize are wrong/unset
 				// So trigger a constraint update; if we need a measurement, that will make it happen
-				ItemsViewLayout.ConstrainTo(CollectionView.Bounds.Size);
+				ConstrainToItemsView();
 			}
 		}
 
@@ -485,20 +485,27 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void AlignEmptyView() 
+		void AlignEmptyView()
 		{
 			if (_emptyUIView == null)
 			{
 				return;
 			}
 
-			if (CollectionView.EffectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirection.RightToLeft)
+			bool isRtl;
+
+			if (Forms.IsiOS10OrNewer)
+				isRtl = CollectionView.EffectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirection.RightToLeft;
+			else
+				isRtl = CollectionView.SemanticContentAttribute == UISemanticContentAttribute.ForceRightToLeft;
+
+			if (isRtl)
 			{
+#pragma warning disable CS0618 // Type or member is obsolete
 				if (_emptyUIView.Transform.xx == -1)
 				{
 					return;
 				}
-
 				FlipEmptyView();
 			}
 			else
@@ -508,6 +515,7 @@ namespace Xamarin.Forms.Platform.iOS
 					FlipEmptyView();
 				}
 			}
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		void FlipEmptyView()

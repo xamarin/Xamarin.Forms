@@ -146,7 +146,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST && __ANDROID__
 
 		UITest.Queries.AppResult[] GetPickerEditText(UITest.IApp RunningApp) =>
-			RunningApp.Query(q => q.TextField()).Where(x => x.Class.Contains("PickerEditText")).ToArray();
+			RunningApp.Query(q => q.TextField()).Where(x => x.Class.Contains("PickerEditText") || x.Class.Contains("PickerAppCompatEditText")).ToArray();
 
 		[Test]
 		public void Issue4187Test()
@@ -154,7 +154,9 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement("Text 1");
 			UITest.Queries.AppResult[] fields = RunningApp.Query(q => q.TextField());
 
-			Assert.AreEqual(7, GetPickerEditText(RunningApp).Length, "picker count");
+			var edittexts = GetPickerEditText(RunningApp);
+
+			Assert.AreEqual(7, edittexts.Length, "picker count");
 			TapOnPicker(1);
 			Assert.IsTrue(DialogIsOpened(), "#1");
 			RunningApp.Tap("Text 2");

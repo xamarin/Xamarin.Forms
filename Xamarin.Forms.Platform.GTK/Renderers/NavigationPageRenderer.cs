@@ -359,6 +359,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			{
 				var oldPageRenderer = Platform.GetRenderer(oldPage);
 				oldPageRenderer.Container.Sensitive = true;
+				oldPageRenderer.Container.ShowAll();
 			}
 
 			(page as IPageController)?.SendDisappearing();

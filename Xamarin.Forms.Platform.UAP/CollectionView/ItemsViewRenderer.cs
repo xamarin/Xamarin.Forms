@@ -127,6 +127,13 @@ namespace Xamarin.Forms.Platform.UWP
 				CollectionViewSource = null;
 			}
 
+			var itemContentControls = ListViewBase.GetChildren<ItemContentControl>();
+			foreach (ItemContentControl itemContentControl in itemContentControls)
+			{
+				itemContentControl.FormsDataContext = null;
+				itemContentControl.DataContext = null;
+			}
+
 			if (Element?.ItemsSource == null)
 			{
 				ListViewBase.ItemsSource = null;
@@ -213,10 +220,11 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			if (Layout != null)
+			if (oldElement is StructuredItemsView oldStructuredItemsView)
 			{
 				// Stop tracking the old layout
-				Layout.PropertyChanged -= LayoutPropertyChanged;
+				oldStructuredItemsView.ItemsLayout.PropertyChanged -= LayoutPropertyChanged;
+				oldStructuredItemsView.ItemsLayout = null;
 			}
 
 			// Stop listening for ScrollTo requests
@@ -604,7 +612,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				default:
 					return elementBounds.Left < containerBounds.Right && elementBounds.Right > containerBounds.Left;
-			};
+			}
 		}
 
 		void OnScrollViewChanged(object sender, ScrollViewerViewChangedEventArgs e)

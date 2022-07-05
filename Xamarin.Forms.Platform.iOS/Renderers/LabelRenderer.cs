@@ -174,9 +174,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				UpdateLineBreakMode();
 				UpdateText();
-				UpdateTextDecorations();
 				UpdateTextColor();
 				UpdateFont();
+				UpdateTextDecorations();
 				UpdateMaxLines();
 				UpdateCharacterSpacing();
 				UpdatePadding();
@@ -219,7 +219,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateHorizontalTextAlignment();
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
+			{
 				UpdateText();
+				UpdateTextDecorations();
+			}
 			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
 				UpdateMaxLines();
 			else if (e.PropertyName == Label.PaddingProperty.PropertyName)
@@ -442,7 +445,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			_formatted = Element.FormattedText;
 			if (_formatted == null && Element.LineHeight >= 0)
-				_formatted = Element.Text;
+				_formatted = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 
 			if (IsTextFormatted)
 			{
@@ -452,7 +455,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				var text = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 #if __MOBILE__
-				Control.Text = text;
+				Control.AttributedText = new NSAttributedString(text);
 #else
 				Control.StringValue = text ?? "";
 #endif
@@ -558,6 +561,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateTextColor()
 		{
+			if (IsElementOrControlEmpty)
+				return;
+				
 			if (IsTextFormatted)
 			{
 				UpdateFormattedText();

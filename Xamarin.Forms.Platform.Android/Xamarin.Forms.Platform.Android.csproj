@@ -57,4 +57,12 @@
   <ItemGroup>
     <Folder Include="Shapes\" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Renderers\PickerAppCompatRenderer.cs">
+      <SubType></SubType>
+    </Compile>
+    <Compile Update="Renderers\PickerAppCompatEditText.cs">
+      <SubType></SubType>
+    </Compile>
+  </ItemGroup>
 </Project>

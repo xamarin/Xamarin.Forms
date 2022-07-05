@@ -28,6 +28,7 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 		[Description("View transformation should match renderer transformation")]
 		public async Task TransformationConsistent(View view)
 		{
+#pragma warning disable CS0618 // Type or member is obsolete
 			var expected = new CATransform3D
 			{
 				m11 = -1.4984f,
@@ -39,6 +40,7 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 				m42 = 30f,
 				m44 = 1f,
 			};
+
 			var actual = await GetRendererProperty(view, r => r.NativeView.Layer.Transform, requiresLayout: true);
 			AssertTransform3DEqual(actual, expected, 0.0001);
 		}
@@ -62,5 +64,6 @@ namespace Xamarin.Forms.Platform.iOS.UnitTests
 			Assert.That((double)actual.m43, Is.EqualTo((double)expected.m43).Within(delta));
 			Assert.That((double)actual.m44, Is.EqualTo((double)expected.m44).Within(delta));
 		}
+#pragma warning restore CS0618 // Type or member is obsolete
 	}
 }

@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				FontFamily = GetFontSource(fontsource),
 				FontSize = (float)fontsource.Size,
-				HorizontalAlignment = CanvasHorizontalAlignment.Center,
+				HorizontalAlignment = CanvasHorizontalAlignment.Left,
 				VerticalAlignment = CanvasVerticalAlignment.Center,
 				Options = CanvasDrawTextOptions.Default
 			};
@@ -42,9 +42,7 @@ namespace Xamarin.Forms.Platform.UWP
 					var iconcolor = (fontsource.Color != Color.Default ? fontsource.Color : Color.White).ToWindowsColor();
 
 					// offset by 1 as we added a 1 inset
-					var x = (float)layout.DrawBounds.X * -1;
-					
-					ds.DrawTextLayout(layout, x, 1f, iconcolor);
+					ds.DrawTextLayout(layout, 1f, 1f, iconcolor);
 				}
 
 				return Task.FromResult((Windows.UI.Xaml.Media.ImageSource)imageSource);

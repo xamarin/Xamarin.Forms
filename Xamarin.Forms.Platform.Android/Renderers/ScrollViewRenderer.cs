@@ -287,6 +287,16 @@ namespace Xamarin.Forms.Platform.Android
 			_checkedForRtlScroll = true;
 		}
 
+		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
+		{
+			if (Element is Layout layout)
+			{
+				layout.ResolveLayoutChanges();
+			}
+
+			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+		}
+
 		protected override void OnScrollChanged(int l, int t, int oldl, int oldt)
 		{
 			_checkedForRtlScroll = true;

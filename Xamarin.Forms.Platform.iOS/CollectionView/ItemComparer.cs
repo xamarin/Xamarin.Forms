@@ -13,6 +13,8 @@ namespace Xamarin.Forms.Platform.iOS
 
             if (valueA == null && valueB != null || valueA != null && valueB == null)
                 result = false;
+			else if(valueA is Enum && !(valueB is Enum))
+				result = false;
             else if (selfValueComparer != null && selfValueComparer.CompareTo(valueB) != 0)
                 result = false;
             else if (!object.Equals(valueA, valueB))

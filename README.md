@@ -47,6 +47,8 @@ If you want to use the latest dev build then you should read [this blog post](ht
 
 ## Getting Started ##
 
+For both methods underneath you will have to add this [NuGet feed](https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json) for the build to succeed. See [this documentation page](https://docs.microsoft.com/azure/devops/artifacts/nuget/consume?view=azure-devops&tabs=windows#set-up-visual-studio) to find out how.
+
 ### Windows ###
 ##### Install Visual Studio 2019+ #####
 
@@ -175,4 +177,7 @@ We follow the style used by the [.NET Foundation](https://github.com/dotnet/runt
 
 ### Reporting Bugs ###
 
-We use [GitHub Issues](https://github.com/xamarin/Xamarin.Forms/issues) to track issues. If at all possible, please submit a [reproduction of your bug](https://github.com/xamarin/Xamarin.Forms/blob/main/repro.md) along with your bug report.
+We use [GitHub Issues](https://github.com/xamarin/Xamarin.Forms/issues) to track issues. If at all possible, please submit a [reproduction of your bug](https://github.com/xamarin/Xamarin.Forms/blob/main/.github/repro.md) along with your bug report.
+
+## Stats
+<img src="https://repobeats.axiom.co/api/embed/f917a77cbbdeee19b87fa1f2f932895d1df18b30.svg" />

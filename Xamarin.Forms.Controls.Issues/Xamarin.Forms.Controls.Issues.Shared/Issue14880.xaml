@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:local="clr-namespace:Xamarin.Forms.Controls.Issues"
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue14880"
+    Title="Issue 14880">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackLayout Orientation="Vertical" Spacing="5" Grid.Row="0" VerticalOptions="Center">
+            <Label LineBreakMode="WordWrap" Text="Place a breakpoint in the Dispose method of CheckBoxRendererBase.cs for the Android platform, then click the Back button. Does the breakpoint halt the program? If so, good. The Dispose method was called and the test passed." HorizontalTextAlignment="Start" VerticalTextAlignment="Center" Padding="30,10,30,10"/>
+        </StackLayout>
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Items}">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="5"/>
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout Orientation="Horizontal" Spacing="10" BackgroundColor="Beige" Padding="10">
+                        <CheckBox/>
+                        <Label Text="{Binding Text}" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" />
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</controls:TestContentPage>

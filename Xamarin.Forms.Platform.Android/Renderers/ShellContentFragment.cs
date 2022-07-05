@@ -165,6 +165,15 @@ namespace Xamarin.Forms.Platform.Android
 
 		void Destroy()
 		{
+			if (_page != null)
+			{
+				var titleView = Shell.GetTitleView(_page);
+				if (titleView != null)
+				{
+					Shell.SetTitleView(_page, null);
+				}
+			}
+
 			((IShellController)_shellContext.Shell).RemoveAppearanceObserver(this);
 
 			if (_shellContent != null)
@@ -180,6 +189,8 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_root is ViewGroup vg)
 					vg.RemoveView(_shellPageContainer);
+
+				_shellPageContainer.Dispose();
 			}
 
 			_renderer?.Dispose();
@@ -194,6 +205,7 @@ namespace Xamarin.Forms.Platform.Android
 			_root = null;
 			_renderer = null;
 			_shellContent = null;
+			_shellPageContainer = null;
 		}
 
 		protected override void Dispose(bool disposing)
