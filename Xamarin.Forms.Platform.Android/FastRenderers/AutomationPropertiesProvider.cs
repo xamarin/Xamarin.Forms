@@ -205,7 +205,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			// TODO: add EntryAccessibilityDelegate to Entry
 			// Let the specified Placeholder take precedence, but don't set the ContentDescription (won't work anyway)
-			if ((Element as Entry)?.Placeholder != null)
+			if ((Element as Entry)?.Placeholder != null || (Element as Editor)?.Placeholder != null)
 			{
 				return true;
 			}
