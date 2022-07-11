@@ -138,7 +138,7 @@ namespace Xamarin.Forms.Platform.Android
 				observableItemsSource.CollectionItemsSourceChanged += CollectionItemsSourceChanged;
 		}
 
-        protected override ItemsViewAdapter<ItemsView, IItemsViewSource> CreateAdapter()
+		protected override ItemsViewAdapter<ItemsView, IItemsViewSource> CreateAdapter()
 		{
 			// By default the CollectionViewAdapter creates the items at whatever size the template calls for
 			// But for the Carousel, we want it to create the items to fit the width/height of the viewport
@@ -147,7 +147,7 @@ namespace Xamarin.Forms.Platform.Android
 				(view, context) => new SizedItemContentView(Context, GetItemWidth, GetItemHeight));
 		}
 
-        protected override void UpdateItemsSource()
+		protected override void UpdateItemsSource()
 		{
 			base.UpdateItemsSource();
 			_carouselViewLoopManager.SetItemsSource(ItemsViewAdapter.ItemsSource);
