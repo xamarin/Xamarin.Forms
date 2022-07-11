@@ -265,6 +265,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateText()
 		{
+			if (EditText == null || Element == null)
+				return;
+
 			string newText = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 
 			if (EditText.Text == newText)
@@ -272,7 +275,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			newText = TrimToMaxLength(newText);
 			EditText.Text = newText;
-			EditText.SetSelection(newText.Length);
+			EditText.SetSelection(EditText.Text.Length);
 		}
 
 		abstract protected void UpdateTextColor();
