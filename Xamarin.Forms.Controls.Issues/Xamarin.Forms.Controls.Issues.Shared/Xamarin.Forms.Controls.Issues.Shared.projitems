@@ -1864,9 +1864,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue11954.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue13918.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue13794.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Issue15305.xaml.cs">
-      <DependentUpon>Issue15305.xaml</DependentUpon>
-    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\MyCollectionView.xaml.cs">
       <DependentUpon>MyCollectionView.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -2423,9 +2420,6 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue13918.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue15305.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Controls\MyCollectionView.xaml">
