@@ -148,7 +148,7 @@ stages:
       - template: build/steps/build-android.yml
         parameters:
           vmPool: $[coalesce(variables.macAndroid2019VmPool, 'Azure Pipelines')]
-          vmImage: $[coalesce(variables.macAndroid2019VmImage, 'macOS-10.15')]
+          vmImage: $[coalesce(variables.macAndroid2019VmImage, 'macOS-latest')]
           provisionatorPath : 'build/provisioning/provisioning.csx'
           buildConfiguration: $(DefaultBuildConfiguration)
           ${{ if ne(variables['MSBuildArguments_cg_android'], '') }}:
