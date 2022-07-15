@@ -308,7 +308,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			//Android offsets position of cells when using header
-			int realPositionWithHeader = scrollPosition + 1;
+			int realPositionWithHeader = scrollPosition + _headerView?.ChildCount ?? 0;
 
 			if (e.Position == ScrollToPosition.MakeVisible)
 			{
