@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+    xmlns:issues="clr-namespace:Xamarin.Forms.Controls.Issues"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue15305"
+    x:DataType="issues:ViewModelIssue15305">
+    <StackLayout>
+        <Label HorizontalTextAlignment="Center"
+               Padding="3.0"
+               Text="Activate TalkBack. Tap on the first or second item in the ListView on this page.&#x0a;If the screen reader reads out &quot;two of four in list, four items&quot; for the first item (or &quot;three of four in list, four items&quot; for the second item),&#x0a;the test has failed." />
+        <ListView ItemsSource="{Binding Path=Items}">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                    <ViewCell>
+                        <Label Text="{Binding Path=.}" />
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+</controls:TestContentPage>
