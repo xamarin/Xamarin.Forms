@@ -43,7 +43,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			Rectangle bounds = GetBounds(_isFlyout, l, t, r, b);
 			if (_isFlyout)
-				FlyoutPageController.FlyoutBounds = bounds;
+			{
+				if (_pageContainer != null && FlyoutPageController.ShouldShowSplitMode)
+					FlyoutPageController.FlyoutBounds = new Rectangle(0, 0, bounds.Width, bounds.Height);
+				else
+					FlyoutPageController.FlyoutBounds = bounds;
+			}
 			else
 				FlyoutPageController.DetailBounds = bounds;
 
@@ -56,15 +61,20 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (_isFlyout)
 				{
-					var controller = (IFlyoutPageController)_parent;
-					var width = (int)Context.ToPixels(controller.FlyoutBounds.Width);
+					var width = (int)Context.ToPixels(FlyoutPageController.FlyoutBounds.Width);
 					// When the base class computes the size of the Flyout container, it starts at the top of the 
 					// screen and adds padding (_parent.FlyoutBounds.Top) to leave room for the status bar
 					// When this container is laid out, it's already starting from the adjusted y value of the parent,
 					// so we subtract _parent.FlyoutBounds.Top from our starting point (to get 0) and add it to the 
 					// bottom (so the flyout page stretches to the bottom of the screen)
-					var height = (int)Context.ToPixels(controller.FlyoutBounds.Height + controller.FlyoutBounds.Top);
-					_pageContainer.Layout(0, 0, width, height);
+					var height = (int)Context.ToPixels(FlyoutPageController.FlyoutBounds.Height + FlyoutPageController.FlyoutBounds.Top);
+					var xPos = 0;
+
+					// If we're in RTL and SplitMode then we need to push the layout to the right edge					
+					if (FlyoutPageController.ShouldShowSplitMode && _parent.FlowDirection == FlowDirection.RightToLeft)
+						xPos = (int)Context.ToPixels(bounds.Left);
+
+					_pageContainer.Layout(xPos, 0, width + xPos, height);
 				}
 				else
 				{
@@ -188,13 +198,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		public int TopPadding { get; set; }
 
-		double DefaultWidthFlyout
+		double DefaultWidthFlyout => GetDefaultFlyoutWidth(Context, Resources);
+
+		internal static double GetDefaultFlyoutWidth(Context context, Resources resources)
 		{
-			get
-			{
-				double w = Context.FromPixels(Resources.DisplayMetrics.WidthPixels);
-				return w < DefaultSmallFlyoutSize ? w : (w < DefaultFlyoutSize ? DefaultSmallFlyoutSize : DefaultFlyoutSize);
-			}
+			double w = context.FromPixels(resources.DisplayMetrics.WidthPixels);
+			return w < DefaultSmallFlyoutSize ? w : (w < DefaultFlyoutSize ? DefaultSmallFlyoutSize : DefaultFlyoutSize);
 		}
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)

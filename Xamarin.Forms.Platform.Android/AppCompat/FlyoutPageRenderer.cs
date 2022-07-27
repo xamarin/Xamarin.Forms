@@ -303,6 +303,19 @@ namespace Xamarin.Forms.Platform.Android
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(oldElement, newElement));
 		}
 
+		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
+		{
+			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+
+			if (Element.FlowDirection == FlowDirection.RightToLeft && !FlyoutPageController.ShouldShowSplitMode)
+			{
+				var view = GetChildAt(1);
+				var defaultWidth = FlyoutPageContainer.GetDefaultFlyoutWidth(Context, Resources);
+				var widthMeasure = MeasureSpecFactory.MakeMeasureSpec((int)Context.ToPixels(defaultWidth), MeasureSpecMode.Exactly);
+				view.Measure(widthMeasure, heightMeasureSpec);
+			}
+		}
+
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
 			base.OnLayout(changed, l, t, r, b);
@@ -318,7 +331,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		async void UpdateFlyoutLayoutBehavior(bool requestLayout = false)
 		{
-			if (!FlyoutPageController.ShouldShowSplitMode && Presented)
+			if (!FlyoutPageController.ShouldShowSplitMode && (Presented || IsOpen))
 			{
 				FlyoutPageController.CanChangeIsPresented = true;
 				//hack : when the orientation changes and we try to close the Flyout on Android		
