@@ -171,7 +171,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 	public sealed class FileImageSourceHandler : IImageSourceHandler
 	{
-		public Task<Pixbuf> LoadImageAsync(
+		public async Task<Pixbuf> LoadImageAsync(
 			ImageSource imagesource,
 			CancellationToken cancelationToken = default(CancellationToken),
 			float scale = 1f)
@@ -188,12 +188,15 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 					if (File.Exists(imagePath))
 					{
-						image = new Pixbuf(imagePath);
+						await Device.InvokeOnMainThreadAsync(() =>
+						{
+							image = new Pixbuf(imagePath);
+						});
 					}
 				}
 			}
 
-			return Task.FromResult(image);
+			return image;
 		}
 	}
 
@@ -210,7 +213,12 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				.GetStreamAsync(cancelationToken).ConfigureAwait(false))
 			{
 				if (streamImage != null)
-					image = new Pixbuf(streamImage);
+				{	
+					await Device.InvokeOnMainThreadAsync(() =>
+					{
+						image = new Pixbuf(streamImage);
+					});
+				}
 			}
 
 			return image;
@@ -238,7 +246,10 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 					return null;
 				}
 
-				image = new Pixbuf(streamImage);
+				await Device.InvokeOnMainThreadAsync(() =>
+				{
+					image = new Pixbuf(streamImage);
+				});
 			}
 
 			return image;
@@ -248,13 +259,13 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 	public sealed class FontImageSourceHandler : IImageSourceHandler
 	{
-		public Task<Pixbuf> LoadImageAsync(ImageSource imageSource,
+		public async Task<Pixbuf> LoadImageAsync(ImageSource imageSource,
 			CancellationToken cancellationToken = new CancellationToken(), float scale = 1)
 		{
 			if (!(imageSource is FontImageSource fontImageSource))
 				return null;
 
-			Pixbuf pixbuf;
+			Pixbuf pixbuf = null;
 			using (var bmp = new Bitmap((int)fontImageSource.Size, (int)fontImageSource.Size))
 			{
 				using (var g = Graphics.FromImage(bmp))
@@ -270,11 +281,15 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				using (var stream = new MemoryStream())
 				{
 					bmp.Save(stream, ImageFormat.Jpeg);
-					pixbuf = new Pixbuf(stream.ToArray());
+					await Device.InvokeOnMainThreadAsync(() =>
+					{
+						pixbuf = new Pixbuf(stream.ToArray());
+					});
+					
 				}
 			}
 
-			return Task.FromResult(pixbuf);
+			return pixbuf;
 		}
 
 		static FontFamily GetFontFamily(FontImageSource fontImageSource)
