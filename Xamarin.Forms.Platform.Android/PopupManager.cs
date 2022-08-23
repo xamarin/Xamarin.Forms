@@ -6,6 +6,7 @@ using Android.Content;
 using Android.Text;
 using Android.Views;
 using Android.Widget;
+using AndroidX.AppCompat.Widget;
 using Xamarin.Forms.Internals;
 using AppCompatActivity = AndroidX.AppCompat.App.AppCompatActivity;
 using AppCompatAlertDialog = AndroidX.AppCompat.App.AlertDialog;
@@ -201,7 +202,18 @@ namespace Xamarin.Forms.Platform.Android
 				alertDialog.SetMessage(arguments.Message);
 
 				var frameLayout = new FrameLayout(Activity);
-				var editText = new EditText(Activity) { Hint = arguments.Placeholder, Text = arguments.InitialValue };
+				EditText editText;
+				
+				// If flag is set to restore "old" functionality instantiate a regular EditText as before 
+				if (Flags.IsFlagSet(Flags.DisableAppCompatRenderer))
+				{
+					editText = new EditText(Activity) { Hint = arguments.Placeholder, Text = arguments.InitialValue };
+				}
+				else
+				{
+					editText = new AppCompatEditText(Activity) { Hint = arguments.Placeholder, Text = arguments.InitialValue };
+				}
+				
 				var layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent)
 				{
 					LeftMargin = (int)(22 * Activity.Resources.DisplayMetrics.Density),
