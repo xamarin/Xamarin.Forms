@@ -203,7 +203,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				var frameLayout = new FrameLayout(Activity);
 				EditText editText;
-				
+
 				// If flag is set to restore "old" functionality instantiate a regular EditText as before 
 				if (Flags.IsFlagSet(Flags.DisableAppCompatRenderer))
 				{
@@ -213,7 +213,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					editText = new AppCompatEditText(Activity) { Hint = arguments.Placeholder, Text = arguments.InitialValue };
 				}
-				
+
 				var layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent)
 				{
 					LeftMargin = (int)(22 * Activity.Resources.DisplayMetrics.Density),

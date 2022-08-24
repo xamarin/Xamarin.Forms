@@ -213,7 +213,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				.GetStreamAsync(cancelationToken).ConfigureAwait(false))
 			{
 				if (streamImage != null)
-				{	
+				{
 					await Device.InvokeOnMainThreadAsync(() =>
 					{
 						image = new Pixbuf(streamImage);
@@ -285,7 +285,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 					{
 						pixbuf = new Pixbuf(stream.ToArray());
 					});
-					
+
 				}
 			}
 
