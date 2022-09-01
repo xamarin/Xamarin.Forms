@@ -130,7 +130,7 @@ namespace Xamarin.Forms.Platform.Android
 
 					var lineHeight = bounds.Height();
 					var lineStartOffset = layout.GetLineStart(curLine);
-					var lineVisibleEndOffset = layout.GetLineVisibleEnd(curLine);
+					var lineVisibleEndOffset = layout.GetLineVisibleEnd(curLine) - 1;
 
 					var startOffset = (curLine == spanStartLine) ? spanStartOffset : lineStartOffset;
 					var spanStartX = (int)layout.GetPrimaryHorizontal(startOffset);

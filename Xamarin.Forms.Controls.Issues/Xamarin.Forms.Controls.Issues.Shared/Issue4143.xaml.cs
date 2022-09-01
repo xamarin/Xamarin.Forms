@@ -44,6 +44,22 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			SetRandomBackgroundColor(Link5);
 		}
+		void OnLink6Tapped(object sender, EventArgs e)
+		{
+			SetRandomBackgroundColor(Link6);
+		}
+		void OnLink7Tapped(object sender, EventArgs e)
+		{
+			SetRandomBackgroundColor(Link7);
+		}
+		void OnLink8Tapped(object sender, EventArgs e)
+		{
+			SetRandomBackgroundColor(Link8);
+		}
+		void OnLink9Tapped(object sender, EventArgs e)
+		{
+			SetRandomBackgroundColor(Link9);
+		}
 #endif
 
 		void SetRandomBackgroundColor(Span span)
