@@ -67,6 +67,8 @@ jobs:
         inputs:
           provisioning_script: ${{ parameters.provisionatorPath }}
           provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
+        env:
+          AUTH_TOKEN_GITHUB_COM: $(github--pat--vs-mobiletools-engineering-service2)
 
       - script: '/bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh ${{ parameters.monoVersion }}"'
         displayName: 'Select MONO ${{ parameters.monoVersion }}'
