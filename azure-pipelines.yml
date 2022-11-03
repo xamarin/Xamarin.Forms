@@ -1,4 +1,5 @@
 variables:
+- Codeql.Enabled: true
 - name: DefaultBuildPlatform
   value: 'any cpu'
 - name: ApkName
