@@ -153,7 +153,9 @@ namespace Xamarin.Forms.Platform.Android
 					_currentTabbedPage.PropertyChanged -= CurrentTabbedPageOnPropertyChanged;
 
 					if (value == null)
+#pragma warning disable CS0618 // Type or member is obsolete
 						ActionBar.RemoveAllTabs();
+#pragma warning restore CS0618 // Type or member is obsolete
 				}
 
 				_currentTabbedPage = value;
@@ -646,15 +648,21 @@ namespace Xamarin.Forms.Platform.Android
 
 			TabbedPage currentTabs = CurrentTabbedPage;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 			var atab = actionBar.NewTab();
+#pragma warning restore CS0618 // Type or member is obsolete
 
+#pragma warning disable CS0618 // Type or member is obsolete
 			atab.SetText(new Java.Lang.String(page.Title));
+#pragma warning restore CS0618 // Type or member is obsolete
 			atab.TabSelected += (sender, e) =>
 			{
 				if (!_ignoreAndroidSelection)
 					currentTabs.CurrentPage = page;
 			};
+#pragma warning disable CS0618 // Type or member is obsolete
 			actionBar.AddTab(atab, index);
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			page.PropertyChanged += PagePropertyChanged;
 			return atab;
@@ -737,7 +745,11 @@ namespace Xamarin.Forms.Platform.Android
 				Page page = CurrentTabbedPage.CurrentPage;
 				int index = TabbedPage.GetIndex(page);
 				if (index >= 0 && index < CurrentTabbedPage.Children.Count)
+#pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
 					ActionBar.GetTabAt(index).Select();
+#pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
 			}
 
 			_ignoreAndroidSelection = false;
@@ -766,7 +778,9 @@ namespace Xamarin.Forms.Platform.Android
 			Page page = _currentTabbedPage.CurrentPage;
 			if (page == null)
 			{
+#pragma warning disable CS0618 // Type or member is obsolete
 				ActionBar.SelectTab(null);
+#pragma warning restore CS0618 // Type or member is obsolete
 				return;
 			}
 
@@ -776,7 +790,11 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
+#pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
 			ActionBar.SelectTab(ActionBar.GetTabAt(index));
+#pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		Drawable GetActionBarBackgroundDrawable()
@@ -874,8 +892,12 @@ namespace Xamarin.Forms.Platform.Android
 					return;
 
 				var page = sender as Page;
+#pragma warning disable CS0618 // Type or member is obsolete
 				var atab = actionBar.GetTabAt(currentTabs.Children.IndexOf(page));
+#pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
 				atab.SetText(new Java.Lang.String(page.Title));
+#pragma warning restore CS0618 // Type or member is obsolete
 			}
 		}
 
@@ -940,12 +962,16 @@ namespace Xamarin.Forms.Platform.Android
 		void RemoveTab(Page page, int index)
 		{
 			page.PropertyChanged -= PagePropertyChanged;
+#pragma warning disable CS0618 // Type or member is obsolete
 			ActionBar?.RemoveTabAt(index);
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		void Reset()
 		{
+#pragma warning disable CS0618 // Type or member is obsolete
 			ActionBar.RemoveAllTabs();
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			if (CurrentTabbedPage == null)
 				return;
@@ -955,7 +981,9 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				var realTab = AddTab(tab, i++);
 				if (tab == CurrentTabbedPage.CurrentPage)
+#pragma warning disable CS0618 // Type or member is obsolete
 					realTab.Select();
+#pragma warning restore CS0618 // Type or member is obsolete
 			}
 		}
 
