@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 				s = self.FittingSize;
 #endif
-			var request = new Size(s.Width == float.PositiveInfinity ? double.PositiveInfinity : s.Width,
+			var request = new Size((s.Width == float.PositiveInfinity || float.IsNaN((float)s.Width)) ? double.PositiveInfinity : s.Width,
 				s.Height == float.PositiveInfinity ? double.PositiveInfinity : s.Height);
 			var minimum = new Size(minimumWidth < 0 ? request.Width : minimumWidth,
 				minimumHeight < 0 ? request.Height : minimumHeight);
