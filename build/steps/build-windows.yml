@@ -16,7 +16,7 @@ steps:
     displayName: 'Cake Provision'
     condition: eq(variables['provisioningCake'], 'true')
 
-  - task: xamops.azdevex.provisionator-task.provisionator@1
+  - task: xamops.azdevex.provisionator-task.provisionator@2
     displayName: 'Provisionator'
     condition: eq(variables['provisioning'], 'true')
     inputs:
@@ -25,7 +25,7 @@ steps:
     env:
       AUTH_TOKEN_GITHUB_COM: $(github--pat--vs-mobiletools-engineering-service2)
   
-  - task: xamops.azdevex.provisionator-task.provisionator@1
+  - task: xamops.azdevex.provisionator-task.provisionator@2
     displayName: 'Provisioning VS'
     condition: eq(variables['provisioningVS'], 'true')
     inputs:

@@ -2,7 +2,7 @@ steps:
   - checkout: self
     clean: true
 
-  - task: xamops.azdevex.provisionator-task.provisionator@1
+  - task: xamops.azdevex.provisionator-task.provisionator@2
     displayName: 'Provision Xcode'
     condition: ne(variables['REQUIRED_XCODE'], '')
     inputs:
@@ -10,7 +10,7 @@ steps:
     env:
       AUTH_TOKEN_GITHUB_COM: $(github--pat--vs-mobiletools-engineering-service2)
 
-  - task: xamops.azdevex.provisionator-task.provisionator@1
+  - task: xamops.azdevex.provisionator-task.provisionator@2
     displayName: 'Provisionator'
     condition: eq(variables['provisioning'], 'true')
     inputs:
