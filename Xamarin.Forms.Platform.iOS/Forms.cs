@@ -42,6 +42,7 @@ namespace Xamarin.Forms
 		static bool? s_isiOS14OrNewer;
 		static bool? s_isiOS15OrNewer;
 		static bool? s_isiOS154OrNewer;
+		static bool? s_isiOS16OrNewer;
 		static bool? s_respondsTosetNeedsUpdateOfHomeIndicatorAutoHidden;
 
 		internal static bool IsiOS9OrNewer
@@ -125,6 +126,15 @@ namespace Xamarin.Forms
 			}
 		}
 
+		internal static bool IsiOS16OrNewer
+		{
+			get
+			{
+				if (!s_isiOS16OrNewer.HasValue)
+					s_isiOS16OrNewer = UIDevice.CurrentDevice.CheckSystemVersion(16, 0);
+				return s_isiOS16OrNewer.Value;
+			}
+		}
 
 		internal static bool RespondsToSetNeedsUpdateOfHomeIndicatorAutoHidden
 		{
