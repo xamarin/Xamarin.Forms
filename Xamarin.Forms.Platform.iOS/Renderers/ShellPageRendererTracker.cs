@@ -105,7 +105,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				SearchHandler = Shell.GetSearchHandler(Page);
 			}
-			else if (e.PropertyName == Shell.TitleViewProperty.PropertyName)
+			else if (e.PropertyName == Shell.TitleViewProperty.PropertyName || e.PropertyName == VisualElement.HeightProperty.PropertyName || e.PropertyName == VisualElement.WidthProperty.PropertyName)
 			{
 				UpdateTitleView();
 			}
