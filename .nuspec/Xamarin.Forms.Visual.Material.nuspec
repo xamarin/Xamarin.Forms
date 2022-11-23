@@ -22,7 +22,7 @@
       </group>
 
       <group targetFramework="MonoAndroid10.0">
-        <dependency id="Xamarin.AndroidX.Lifecycle.LiveData" version="[2.3.1.1,2.4)" />
+        <dependency id="Xamarin.AndroidX.Lifecycle.LiveData" version="[2.3.1.1,2.5.1.1]" />
         <dependency id="Xamarin.Google.Android.Material" version="[1.4.0.2,1.5)" />
       </group>
       <group targetFramework="Xamarin.iOS10">
