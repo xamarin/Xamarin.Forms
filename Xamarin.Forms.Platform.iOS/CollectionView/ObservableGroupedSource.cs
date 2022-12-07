@@ -37,6 +37,14 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		public object this[NSIndexPathRef indexPath]
+		{
+			get
+			{
+				return GetGroupItemAt((int)indexPath.Section, (int)indexPath.Item);
+			}
+		}
+
 		public int GroupCount => _groupSource.Count;
 
 		public int ItemCount

@@ -14,6 +14,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public int LoopCount => 0;
 
 		public object this[NSIndexPath indexPath] => throw new IndexOutOfRangeException("IItemsViewSource is empty");
+		public object this[NSIndexPathRef indexPath] => throw new IndexOutOfRangeException("IItemsViewSource is empty");
 
 		public int ItemCountInGroup(nint group) => 0;
 

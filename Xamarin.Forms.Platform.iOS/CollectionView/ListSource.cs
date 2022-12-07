@@ -42,6 +42,19 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		public object this[NSIndexPathRef indexPath]
+		{
+			get
+			{
+				if (indexPath.Section > 0)
+				{
+					throw new ArgumentOutOfRangeException(nameof(indexPath));
+				}
+
+				return this[(int)indexPath.Item];
+			}
+		}
+
 		public int GroupCount => 1;
 
 		public int ItemCount => Count;

@@ -625,7 +625,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return templatedCell;
 		}
 
-		internal CGSize GetSizeForItem(NSIndexPath indexPath) 
+		internal CGSize GetSizeForItem(NSIndexPathRef indexPath) 
 		{
 			if (ItemsViewLayout.EstimatedItemSize.IsEmpty)
 			{

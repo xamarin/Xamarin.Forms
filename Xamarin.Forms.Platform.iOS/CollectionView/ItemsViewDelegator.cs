@@ -6,7 +6,18 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class ItemsViewDelegator<TItemsView, TViewController> : UICollectionViewDelegateFlowLayout
+	public abstract class ItemsViewDelegator : UICollectionViewDelegateFlowLayout
+	{
+		[Export("collectionView:layout:sizeForItemAtIndexPath:")]
+		public CGSize GetSizeForItem(IntPtr collectionView, IntPtr layout, IntPtr indexPath)
+		{
+			return GetSizeForItem(collectionView, layout, new NSIndexPathRef(indexPath));
+		}
+
+		public abstract CGSize GetSizeForItem(IntPtr collectionView, IntPtr layout, NSIndexPathRef indexPath);
+	}
+
+	public class ItemsViewDelegator<TItemsView, TViewController> : ItemsViewDelegator
 		where TItemsView : ItemsView
 		where TViewController : ItemsViewController<TItemsView>
 	{
@@ -191,7 +202,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return index;
 		}
 
-		public override CGSize GetSizeForItem(UICollectionView collectionView, UICollectionViewLayout layout, NSIndexPath indexPath)
+		public override CGSize GetSizeForItem(IntPtr collectionView, IntPtr layout, NSIndexPathRef indexPath)
 		{
 			return ViewController.GetSizeForItem(indexPath);
 		}

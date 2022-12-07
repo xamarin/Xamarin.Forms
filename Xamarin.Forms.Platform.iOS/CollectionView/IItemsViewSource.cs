@@ -8,6 +8,7 @@ namespace Xamarin.Forms.Platform.iOS
 		int ItemCountInGroup(nint group);
 		int GroupCount { get; }
 		object this[Foundation.NSIndexPath indexPath] { get; }
+		object this[NSIndexPathRef indexPath] { get; }
 		object Group(Foundation.NSIndexPath indexPath);
 		Foundation.NSIndexPath GetIndexForItem(object item);
 	}

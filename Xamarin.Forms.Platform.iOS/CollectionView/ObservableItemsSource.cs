@@ -97,6 +97,19 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		public object this[NSIndexPathRef indexPath]
+		{
+			get
+			{
+				if (indexPath.Section != _section)
+				{
+					throw new ArgumentOutOfRangeException(nameof(indexPath));
+				}
+
+				return this[(int)indexPath.Item];
+			}
+		}
+
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
 			if (Device.IsInvokeRequired)
