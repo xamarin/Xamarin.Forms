@@ -1870,6 +1870,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue15305.xaml.cs">
       <DependentUpon>Issue15305.xaml</DependentUpon>
     </Compile>
+	<Compile Include="$(MSBuildThisFileDirectory)Issue15647.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\MyCollectionView.xaml.cs">
       <DependentUpon>MyCollectionView.xaml</DependentUpon>
       <SubType>Code</SubType>
