@@ -417,7 +417,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override void WillMoveToSuperview(UIView newSuper)
 			{
-				if (newSuper != null)
+				if (newSuper != null && newSuper.Bounds != CGRect.Empty)
 				{
 					if (!Forms.IsiOS11OrNewer)
 						Frame = new CGRect(Frame.X, newSuper.Bounds.Y, Frame.Width, newSuper.Bounds.Height);
