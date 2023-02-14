@@ -12,6 +12,13 @@ steps:
   - checkout: self
     clean: true
 
+  - task: UseDotNet@2
+    displayName: 'Install .net core $(DOTNET_VERSION)'
+    condition: ne(variables['DOTNET_VERSION'], '')
+    inputs:
+      version: $(DOTNET_VERSION)
+      packageType: 'sdk'
+
   - script: build.cmd -Target provision
     displayName: 'Cake Provision'
     condition: eq(variables['provisioningCake'], 'true')
