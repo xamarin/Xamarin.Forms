@@ -89,7 +89,7 @@ namespace Xamarin.Forms.Material.iOS
 
 		public static void ApplyThemeIfNeeded(IMaterialTextField textField, IMaterialEntryRenderer element)
 		{
-			var bgBrush = element.Background;
+			var bgBrush = element?.Background;
 
 			if (Brush.IsNullOrEmpty(bgBrush))
 				return;
