@@ -12,8 +12,6 @@
     <Company>Microsoft</Company>
     <Product>Xamarin.Forms</Product>
     <ProduceReferenceAssembly Condition="'$(UsingMicrosoftNETSdk)' == 'True' AND '$(Configuration)' == 'Debug'">True</ProduceReferenceAssembly>
-    <LicenseFile>$(MSBuildThisFileDirectory)LICENSE</LicenseFile>
-    <PackageThirdPartyNoticesFile>$(MSBuildThisFileDirectory)THIRD-PARTY-NOTICES.TXT</PackageThirdPartyNoticesFile>
   </PropertyGroup>
   <PropertyGroup>
     <GitDefaultBranch>main</GitDefaultBranch>

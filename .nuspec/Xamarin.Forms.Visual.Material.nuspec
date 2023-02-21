@@ -61,5 +61,8 @@
     <file src="..\Xamarin.Forms.Material.Tizen\bin\$Configuration$\tizen40\Xamarin.Forms.Material.dll" target="lib\tizen40" />
     <file src="..\Xamarin.Forms.Material.Tizen\bin\$Configuration$\tizen40\Xamarin.Forms.Material.*pdb" target="lib\tizen40" />
 
+    <!--Licenses-->
+    <file src="..\THIRD-PARTY-NOTICES.txt" target="\" />
+    <file src="..\LICENSE" target="\" />
   </files>
 </package>

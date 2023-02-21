@@ -27,5 +27,9 @@
 
     <file src="..\Xamarin.Forms.Platform.WPF\bin\$Configuration$\netcoreapp3.1\Xamarin.Forms.Platform.WPF.dll" target="lib\netcoreapp3.1" />
     <file src="..\Xamarin.Forms.Platform.WPF\bin\$Configuration$\netcoreapp3.1\Xamarin.Forms.Platform.WPF.*pdb" target="lib\netcoreapp3.1" />
+
+    <!--Licenses-->
+    <file src="..\THIRD-PARTY-NOTICES.txt" target="\" />
+    <file src="..\LICENSE" target="\" />
   </files>
 </package>

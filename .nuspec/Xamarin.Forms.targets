@@ -208,14 +208,4 @@
         Text="Xamarin.Forms recommends TargetPlatformVersion &gt;= 10.0.14393.0 (current project is $(MicrosoftUIXamlTargetPlatformCheckValue))"
         Condition="$(MicrosoftUIXamlTargetPlatformCheckValue) &lt; 14393 AND '$(OutputType)'=='Library'" />
   </Target>
-
-  <!-- License files -->
-  <ItemGroup>
-    <None Include="$(LicenseFile)"
-          PackagePath="$([System.IO.Path]::GetFileName('$(LicenseFile)'))"
-          Pack="true" />
-    <None Include="$(PackageThirdPartyNoticesFile)"
-          PackagePath="$([System.IO.Path]::GetFileName('$(PackageThirdPartyNoticesFile)'))"
-          Pack="true" />
-  </ItemGroup>
 </Project>
