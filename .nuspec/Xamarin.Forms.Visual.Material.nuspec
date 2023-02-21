@@ -63,6 +63,6 @@
 
     <!--Licenses-->
     <file src="..\THIRD-PARTY-NOTICES.txt" target="Licenses\" />
-    <file src="..\LICENSE" target="Licenses\" />
+    <file src="..\LICENSE" target="Licenses\LICENSE.txt" />
   </files>
 </package>
