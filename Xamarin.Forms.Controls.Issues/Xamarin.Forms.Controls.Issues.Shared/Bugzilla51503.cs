@@ -68,11 +68,11 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			for (int i = 0; i < 3; i++)
 			{
-				RunningApp.WaitForElement(q => q.Marked("Button"));
+				RunningApp.WaitForElement(q => q.Marked("Button"), timeout: TimeSpan.FromSeconds(2), postTimeout: TimeSpan.FromSeconds(1));
 
 				RunningApp.Tap(q => q.Marked("Button"));
 
-				RunningApp.WaitForElement(q => q.Marked("VisualElement"));
+				RunningApp.WaitForElement(q => q.Marked("VisualElement"), timeout: TimeSpan.FromSeconds(2), postTimeout: TimeSpan.FromSeconds(1));
 
 				RunningApp.Back();
 			}

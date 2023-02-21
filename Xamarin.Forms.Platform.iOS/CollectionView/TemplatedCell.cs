@@ -159,6 +159,12 @@ namespace Xamarin.Forms.Platform.iOS
 			CurrentTemplate = itemTemplate;
 		}
 
+		public void Unbind()
+		{
+			if (VisualElementRenderer?.Element != null)
+				VisualElementRenderer.Element.MeasureInvalidated -= MeasureInvalidated;
+		}
+
 		void SetRenderer(IVisualElementRenderer renderer)
 		{
 			VisualElementRenderer = renderer;
@@ -168,6 +174,8 @@ namespace Xamarin.Forms.Platform.iOS
 			ClearSubviews();
 
 			InitializeContentConstraints(nativeView);
+
+			UpdateVisualStates();
 
 			renderer.Element.MeasureInvalidated += MeasureInvalidated;
 		}
@@ -240,15 +248,7 @@ namespace Xamarin.Forms.Platform.iOS
 			set
 			{
 				base.Selected = value;
-
-				var element = VisualElementRenderer?.Element;
-
-				if (element != null)
-				{
-					VisualStateManager.GoToState(element, value
-						? VisualStateManager.CommonStates.Selected
-						: VisualStateManager.CommonStates.Normal);
-				}
+				UpdateVisualStates();
 			}
 		}
 
@@ -297,6 +297,18 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return true;
+		}
+
+		void UpdateVisualStates()
+		{
+			var element = VisualElementRenderer?.Element;
+
+			if (element != null)
+			{
+				VisualStateManager.GoToState(element, Selected
+					? VisualStateManager.CommonStates.Selected
+					: VisualStateManager.CommonStates.Normal);
+			}
 		}
 	}
 }

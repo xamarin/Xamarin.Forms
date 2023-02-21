@@ -34,6 +34,8 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var layout = new StackLayout();
 
+			layout.Background = Brush.LightGray;
+
 			var instructions = new Label
 			{
 				Text = "Tap the button below twice quickly."
@@ -91,6 +93,9 @@ namespace Xamarin.Forms.Controls.Issues
 			layout.Children.Add(instructions);
 			layout.Children.Add(_result);
 			layout.Children.Add(button);
+
+			if (Device.RuntimePlatform == Device.UWP)
+				layout.Children.Add(new Label { Text = "\xE76E", FontFamily = "Segoe MDL2 Assets", FontSize = 32 });
 
 			Content = layout;
 		}

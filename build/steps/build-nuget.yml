@@ -1,3 +1,7 @@
+parameters:
+  nugetForDebug: 'true'
+  nugetForRelease: 'true'
+
 steps:
   - checkout: self
     clean: true
@@ -36,6 +40,7 @@ steps:
 
   - task: NuGetCommand@2
     displayName: 'Make NuGet Package'
+    condition: eq(${{ parameters.nugetForDebug }}, 'true')
     inputs:
       command: pack
       feedsToUse: config
@@ -43,30 +48,31 @@ steps:
       packDestination: '$(Build.ArtifactStagingDirectory)/nuget/debug'
       versioningScheme: byEnvVar
       versionEnvVar: nugetPackageVersion
-      configuration: $(buildConfiguration)
+      configuration: Debug
 
   - task: CopyFiles@2
     displayName: 'Copy SignList.xml Files'
+    condition: eq(${{ parameters.nugetForDebug }}, 'true')
     inputs:
       Contents: build/SignList.xml
       TargetFolder: '$(build.artifactstagingdirectory)/nuget/debug'
       flattenFolders: true
 
 
-  - powershell: |
-       $buildConfiguration = "Release"
-       $formsNugetVersion = "" + $env:nugetPackageVersion
+  # - powershell: |
+  #      $buildConfiguration = "Release"
+  #      $formsNugetVersion = "" + $env:nugetPackageVersion
 
-       Write-Host("Update nuspecs")
-       Get-ChildItem './.nuspec/*.nuspec' -Recurse | Foreach-Object {
-            (Get-Content $_) | Foreach-Object  {
-                $_ -replace '\$version\$', $formsNugetVersion `
-                   -replace '\$Configuration\$', $buildConfiguration `
-           } | Set-Content $_
-       }
-    failOnStderr: true
-    displayName: 'Update nuspecs'
-    condition: and(succeeded(), or(eq(variables['Sign'], 'true'), or(eq(variables['DefaultBuildConfiguration'], 'Release'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
+  #      Write-Host("Update nuspecs")
+  #      Get-ChildItem './.nuspec/*.nuspec' -Recurse | Foreach-Object {
+  #           (Get-Content $_) | Foreach-Object  {
+  #               $_ -replace '\$version\$', $formsNugetVersion `
+  #                  -replace '\$Configuration\$', $buildConfiguration `
+  #          } | Set-Content $_
+  #      }
+  #   failOnStderr: true
+  #   displayName: 'Update nuspecs'
+  #   condition: and(succeeded(), or(eq(${{ parameters.nugetForRelease }}, 'true') , or(eq(variables['Sign'], 'true'), or(eq(variables['DefaultBuildConfiguration'], 'Release'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/')))))
 
   - task: NuGetCommand@2
     displayName: 'Make NuGet Package Release'
@@ -77,10 +83,12 @@ steps:
       packDestination: '$(Build.ArtifactStagingDirectory)/nuget/release'
       versioningScheme: byEnvVar
       versionEnvVar: nugetPackageVersion
-    condition: and(succeeded(), or(eq(variables['Sign'], 'true'), or(eq(variables['DefaultBuildConfiguration'], 'Release'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
+      configuration: Release
+    condition: and(succeeded(), or(eq(${{ parameters.nugetForRelease }}, 'true') , or(eq(variables['Sign'], 'true'), or(eq(variables['DefaultBuildConfiguration'], 'Release'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/')))))
 
   - task: CopyFiles@2
     displayName: 'Copy SignList.xml Files'
+    condition: eq(${{ parameters.nugetForRelease }}, 'true')
     inputs:
       Contents: build/SignList.xml
       TargetFolder: '$(build.artifactstagingdirectory)/nuget/release'

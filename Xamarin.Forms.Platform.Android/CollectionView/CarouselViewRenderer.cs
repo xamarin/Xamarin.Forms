@@ -119,11 +119,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void UpdateAdapter()
 		{
-			// By default the CollectionViewAdapter creates the items at whatever size the template calls for
-			// But for the Carousel, we want it to create the items to fit the width/height of the viewport
-			// So we give it an alternate delegate for creating the views
-
 			var oldItemViewAdapter = ItemsViewAdapter;
+
 			UnsubscribeCollectionItemsSourceChanged(oldItemViewAdapter);
 			if (oldItemViewAdapter != null)
 			{
@@ -131,25 +128,28 @@ namespace Xamarin.Forms.Platform.Android
 				Carousel.SetValueFromRenderer(FormsCarouselView.CurrentItemProperty, null);
 			}
 
-			ItemsViewAdapter = new CarouselViewAdapter<ItemsView, IItemsViewSource>(Carousel,
-				(view, context) => new SizedItemContentView(Context, GetItemWidth, GetItemHeight));
-
 			_gotoPosition = -1;
 
-			SwapAdapter(ItemsViewAdapter, false);
+			base.UpdateAdapter();
 
 			UpdateInitialPosition();
 
 			if (ItemsViewAdapter?.ItemsSource is ObservableItemsSource observableItemsSource)
 				observableItemsSource.CollectionItemsSourceChanged += CollectionItemsSourceChanged;
+		}
 
-			oldItemViewAdapter?.Dispose();
+		protected override ItemsViewAdapter<ItemsView, IItemsViewSource> CreateAdapter()
+		{
+			// By default the CollectionViewAdapter creates the items at whatever size the template calls for
+			// But for the Carousel, we want it to create the items to fit the width/height of the viewport
+			// So we give it an alternate delegate for creating the views
+			return new CarouselViewAdapter<ItemsView, IItemsViewSource>(Carousel,
+				(view, context) => new SizedItemContentView(Context, GetItemWidth, GetItemHeight));
 		}
 
 		protected override void UpdateItemsSource()
 		{
-			UpdateAdapter();
-			UpdateEmptyView();
+			base.UpdateItemsSource();
 			_carouselViewLoopManager.SetItemsSource(ItemsViewAdapter.ItemsSource);
 		}
 
@@ -205,12 +205,15 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_carouselViewLoopManager == null)
 				return;
-			//Special case here
-			//We could have a race condition where we are scrolling our collection to center the first item
-			//And at the same time the user is requesting we go to a particular item
-			if (position == -1 && Carousel.Loop)
+
+			// Special case here
+			// We could have a race condition where we are scrolling our collection to center the first item
+			// And at the same time the user is requesting we go to a particular item
+			if (position == -1)
 			{
-				_carouselViewLoopManager.AddPendingScrollTo(args);
+				if (Carousel.Loop)
+					_carouselViewLoopManager.AddPendingScrollTo(args);
+
 				return;
 			}
 
@@ -334,21 +337,21 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateInitialPosition()
 		{
-			int position = 0;
-			var items = Carousel.ItemsSource as IList;
-			var itemCount = items?.Count ?? 0;
+			int itemCount = 0;
+			int position;
 
-			if (Carousel.CurrentItem != null || items == null)
+			if (Carousel.CurrentItem != null)
 			{
-				for (int n = 0; n < itemCount; n++)
+				var carouselEnumerator = Carousel.ItemsSource.GetEnumerator();
+				var items = new List<object>();
+
+				while (carouselEnumerator.MoveNext())
 				{
-					if (items[n] == Carousel.CurrentItem)
-					{
-						position = n;
-						break;
-					}
+					items.Add(carouselEnumerator.Current);
+					itemCount++;
 				}
 
+				position = items.IndexOf(Carousel.CurrentItem);
 				Carousel.Position = position;
 			}
 			else

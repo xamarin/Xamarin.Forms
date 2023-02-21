@@ -3,6 +3,7 @@ using Foundation;
 using System.Collections.Generic;
 using System.Drawing;
 using Xamarin.Forms.Internals;
+using SizeF = CoreGraphics.CGSize;
 #if __MOBILE__
 using UIKit;
 using NativeLabel = UIKit.UILabel;
@@ -21,6 +22,12 @@ namespace Xamarin.Forms.Platform.MacOS
 	{
 		public static void RecalculateSpanPositions(this NativeLabel control, Label element)
 		{
+			if (element == null)
+				return;
+
+			if (element.TextType == TextType.Html)
+				return;
+
 			if (element?.FormattedText?.Spans == null
 				|| element.FormattedText.Spans.Count == 0)
 				return;
@@ -106,7 +113,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			var glyphRange = new NSRange();
 
 #if __MOBILE__
+#pragma warning disable CS0618 // Type or member is obsolete
 			layoutManager.CharacterRangeForGlyphRange(characterRange, ref glyphRange);
+#pragma warning restore CS0618 // Type or member is obsolete
 #else
 #pragma warning disable CS0618 // Type or member is obsolete
 			layoutManager.CharacterRangeForGlyphRange(characterRange, out glyphRange);

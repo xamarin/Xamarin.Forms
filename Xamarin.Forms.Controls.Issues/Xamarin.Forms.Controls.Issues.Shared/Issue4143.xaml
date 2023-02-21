@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                          xmlns:controls="clr-namespace:Xamarin.Forms.Controls"
+                          xmlns:system="clr-namespace:System;assembly=mscorlib"
+                          x:Name="This"
+                          x:Class="Xamarin.Forms.Controls.Issues.Issue4143">
+
+    <ScrollView>
+        <StackLayout>
+            <Label 
+                Text="This test is passed if all tappable spans (blue and underlined texts) react to touches by changing its background color. Only the touched span should react and not others."/>
+
+            <Label
+                Margin="10"
+                HorizontalOptions="Center"
+                TextColor="Black"
+                BackgroundColor="CadetBlue">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Two clickable spans in one line:&#10;" />
+                        <Span
+                            x:Name="Link1"
+                            TextDecorations="Underline"
+                            Text="Link1"
+                            TextColor="Blue">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnLink1Tapped"/>
+                            </Span.GestureRecognizers>
+                        </Span>
+                        <Span Text=" " />
+                        <Span
+                            x:Name="Link2"
+                            Text="Link2&#10;"
+                              TextDecorations="Underline"
+                              TextColor="Blue">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnLink2Tapped" />
+                            </Span.GestureRecognizers>
+                        </Span>
+
+                        <Span Text="Multiline tappable span:&#10;" />
+                        <Span
+                            x:Name="Link3"
+                            TextDecorations="Underline"
+                            Text="Link3_1&#10;Link3_2"
+                            TextColor="Blue">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnLink3Tapped" />
+                            </Span.GestureRecognizers>
+                        </Span>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+
+            <Label 
+                Margin="10"
+                HorizontalOptions="Center"
+                VerticalOptions="CenterAndExpand"
+                Padding="10,20"
+                BackgroundColor="CadetBlue">
+
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Clickable Span in a Label with padding:&#10;" />
+                        <Span
+                            x:Name="Link4"
+                            Text="Link4"
+                              TextDecorations="Underline"
+                              TextColor="Blue">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnLink4Tapped"/>
+                            </Span.GestureRecognizers>
+                        </Span>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+
+            <Label 
+                Margin = "10"
+                FlowDirection="RightToLeft" 
+                TextColor="Black"
+                BackgroundColor="CadetBlue">
+
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="لكن لا بد أن أوضح لك أن كل هذه الأفكار المغلوطة حول استنكار  النشوة وتمجيد الألم نشأت بالفعل، وسأعرض لك التفاصيل لتكتشف حقيقة وأساس تلك السعادة البشرية، فلا أحد يرفض أو يكره أو يتجنب الشعور بالسعادة، ولكن بفضل هؤلاء الأشخاص الذين لا يدركون بأن السعادة لا بد أن نستشعرها بصورة أكثر عقلانية ومنطقية فيعرضهم هذا لمواجهة الظروف الأليمة، وأكرر بأنه لا يوجد من يرغب في الحب ونيل المنال ويتلذذ بالآلام، الألم هو الألم ولكن نتيجة لظروف ما قد تكمن السعاده فيما نتحمله من كد وأسي." />
+                        <Span Text="{x:Static system:Environment.NewLine}"/>
+                        <Span
+                            x:Name="Link5"
+                            Text="و سأعرض مثال حي لهذا، من منا لم يتحمل جهد بدني شاق إلا من أجل الحصول على ميزة أو فائدة؟ ولكن من لديه الحق أن ينتقد شخص ما أراد أن يشعر بالسعادة التي لا تشوبها عواقب أليمة أو آخر أراد أن يتجنب الألم الذي ربما تنجم عنه بعض المتعة ؟ "
+                            TextDecorations="Underline"
+                            TextColor="Blue">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnLink5Tapped" />
+                            </Span.GestureRecognizers>
+                        </Span>
+                        <Span Text="علي الجانب الآخر نشجب ونستنكر هؤلاء الرجال المفتونون بنشوة اللحظة الهائمون في رغباتهم فلا يدركون ما يعقبها من الألم والأسي المحتم، واللوم كذلك يشمل هؤلاء الذين أخفقوا في واجباتهم نتيجة لضعف إرادتهم فيتساوي مع هؤلاء الذين يتجنبون وينأون عن تحمل الكدح والألم ." />
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+
+        </StackLayout>
+    </ScrollView>
+</controls:TestContentPage>

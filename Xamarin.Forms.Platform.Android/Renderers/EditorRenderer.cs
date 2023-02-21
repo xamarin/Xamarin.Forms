@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
-using Android.Content.Res;
-using Android.OS;
 using Android.Text;
 using Android.Text.Method;
 using Android.Util;
@@ -196,9 +194,14 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
-				if (EditText != null && EditText is IFormsEditText formsEditText)
+				if (EditText != null)
 				{
-					formsEditText.OnKeyboardBackPressed -= OnKeyboardBackPressed;
+					EditText.RemoveTextChangedListener(this);
+
+					if (EditText is IFormsEditText formsEditText)
+					{
+						formsEditText.OnKeyboardBackPressed -= OnKeyboardBackPressed;
+					}
 				}
 			}
 
@@ -262,6 +265,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateText()
 		{
+			if (EditText == null || Element == null)
+				return;
+
 			string newText = Element.UpdateFormsText(Element.Text, Element.TextTransform);
 
 			if (EditText.Text == newText)
@@ -269,7 +275,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			newText = TrimToMaxLength(newText);
 			EditText.Text = newText;
-			EditText.SetSelection(newText.Length);
+			EditText.SetSelection(EditText.Text.Length);
 		}
 
 		abstract protected void UpdateTextColor();

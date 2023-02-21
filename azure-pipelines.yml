@@ -1,4 +1,6 @@
 variables:
+- name : Codeql.Enabled
+  value: true
 - name: DefaultBuildPlatform
   value: 'any cpu'
 - name: ApkName
@@ -6,11 +8,14 @@ variables:
 - name: BuildVersion
   value: $[counter('nuget-counter', 126)]
 - name: NUGET_VERSION
-  value: 5.6.0
+  value: 5.8.1
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
   value: true
 - name: DOTNET_VERSION
-  value: 3.1.301
+  value: 5.0.102
+- name: signingCondition
+  value: and(succeeded(), ne(variables['signVmImage'], ''), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
+- group: Xamarin-Secrets
 
 resources:
   repositories:
@@ -48,7 +53,7 @@ schedules:
   displayName: Daily midnight build
   branches:
     include:
-    - main
+    - 5.0.0
 
 stages:
   - stage: windows
@@ -75,6 +80,7 @@ stages:
           - template: build/steps/build-windows.yml
             parameters:
               provisionatorPath : 'build/provisioning/provisioning.csx'
+              provisionatorVSPath : 'build/provisioning/vs.csx'
       - job: nuget_pack_hosted
         workspace:
           clean: all
@@ -145,7 +151,7 @@ stages:
       - template: build/steps/build-android.yml
         parameters:
           vmPool: $[coalesce(variables.macAndroid2019VmPool, 'Azure Pipelines')]
-          vmImage: $[coalesce(variables.macAndroid2019VmImage, 'macOS-10.15')]
+          vmImage: $[coalesce(variables.macAndroid2019VmImage, 'macOS-latest')]
           provisionatorPath : 'build/provisioning/provisioning.csx'
           buildConfiguration: $(DefaultBuildConfiguration)
           ${{ if ne(variables['MSBuildArguments_cg_android'], '') }}:
@@ -168,7 +174,6 @@ stages:
           vmImage: $(macOSXVmImage)
           demands:
             - sh
-            - Xamarin.iOS
         variables:
           provisionator.osxPath : 'build/provisioning/provisioning.csx'
           buildConfiguration: $(DefaultBuildConfiguration)
@@ -259,6 +264,19 @@ stages:
             signedArtifactName: nuget
             signedArtifactPath: signed
             displayName: Sign Phase
-            condition: and(succeeded(), ne(variables['signVmImage'], ''), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
-
-
+            condition: ${{ variables.signingCondition }}
+            preSignSteps:
+              - task: NuGetToolInstaller@1
+                inputs:
+                  versionSpec: $(NUGET_VERSION)
+    - stage: sbom
+      dependsOn: nuget_signing
+      displayName: 'Software Bill of Materials'
+      jobs:
+      - template: compliance/sbom/job.v1.yml@xamarin-templates        # Software Bill of Materials (SBOM): https://eng.ms/docs/cloud-ai-platform/devdiv/one-engineering-system-1es/1es-docs/secure-supply-chain/ado-sbom-generator
+        parameters:
+          artifactNames: ['nuget']
+          artifactMap: ['nuget/signed']
+          packageName: 'Xamarin Forms'
+          packageFilter: '*.nupkg'
+          condition: ${{ variables.signingCondition }}

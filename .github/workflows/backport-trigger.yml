@@ -1,0 +1,38 @@
+name: Backport Trigger
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  setupBackport:
+    runs-on: ubuntu-latest
+    if: github.event.issue.pull_request != '' && startswith(github.event.comment.body, '@vs-mobiletools-engineering-service2 backport')
+    outputs:
+      target_branch: ${{ steps.parse_comment.outputs.target_branch }}
+    steps:
+      - name: Parse Comment
+        id: parse_comment
+        run: |
+          Write-Host "Parsing $env:COMMENT"
+          ($botName, $backport, $backportTargetBranch) = [System.Text.RegularExpressions.Regex]::Split("$env:COMMENT", "\s+")
+          echo "::set-output name=target_branch::$backportTargetBranch"
+        shell: pwsh
+        env:
+          COMMENT: "${{ github.event.comment.body }}"
+
+  launchBackportBuild:
+    needs: setupBackport
+    uses: xamarin/backport-bot-action/.github/workflows/backport-action.yml@v1.1
+    with:
+      pull_request_url: ${{ github.event.issue.pull_request.url }}
+      target_branch: ${{ needs.setupBackport.outputs.target_branch }}
+      comment_author: ${{ github.actor }}
+      github_repository: ${{ github.repository }}
+      use_fork: false
+    secrets:
+      ado_organization: ${{ secrets.ADO_PROJECTCOLLECTION }}
+      ado_project: ${{ secrets.ADO_PROJECT }}
+      backport_pipeline_id: ${{ secrets.BACKPORT_PIPELINEID }}
+      ado_build_pat: ${{ secrets.ADO_BUILDPAT }}
+      github_account_pat: ${{ secrets.SERVICEACCOUNT_PAT }}

@@ -285,6 +285,8 @@ namespace Xamarin.Forms.Platform.UWP
 				_control.GotFocus -= OnGotFocus;
 				_control.GettingFocus -= OnGettingFocus;
 			}
+
+			UpdateIsFocused(false);
 			SetNativeControl(null);
 			SetElement(null);
 		}
@@ -293,6 +295,11 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (Element == null || availableSize.Width * availableSize.Height == 0)
 				return new Windows.Foundation.Size(0, 0);
+
+			if (Element is Layout layout)
+			{
+				layout.ResolveLayoutChanges();
+			}
 
 			Element.IsInNativeLayout = true;
 
@@ -630,7 +637,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnControlGotFocus(object sender, RoutedEventArgs args)
 		{
-			((IVisualElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
+			UpdateIsFocused(true);
 		}
 
 		void OnControlLoaded(object sender, RoutedEventArgs args)
@@ -640,7 +647,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnControlLostFocus(object sender, RoutedEventArgs args)
 		{
-			((IVisualElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
+			UpdateIsFocused(false);
 		}
 
 		void OnTrackerUpdated(object sender, EventArgs e)
@@ -654,6 +661,17 @@ namespace Xamarin.Forms.Platform.UWP
 				_control.IsEnabled = Element.IsEnabled;
 			else
 				IsHitTestVisible = Element.IsEnabled && !Element.InputTransparent;
+		}
+
+		void UpdateIsFocused(bool isFocused)
+		{
+			if (Element == null)
+				return;
+
+			bool updateIsFocused = (isFocused && !Element.IsFocused) || (!isFocused && Element.IsFocused);
+
+			if (updateIsFocused && Element is IVisualElementController visualElementController)
+				visualElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, isFocused);
 		}
 
 		void UpdateInputTransparent()

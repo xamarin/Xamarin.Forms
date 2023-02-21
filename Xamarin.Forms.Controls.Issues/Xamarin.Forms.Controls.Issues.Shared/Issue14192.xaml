@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 14192" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue14192">
+    <StackLayout
+        Padding="12">
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="Swipe the CarouselView. Without exceptions, the test has passed."/>
+        <CarouselView>
+            <CarouselView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Carousel Item 1</x:String>
+                    <x:String>Carousel Item 2</x:String>
+                    <x:String>Carousel Item 3</x:String>
+                </x:Array>
+            </CarouselView.ItemsSource>
+            <CarouselView.ItemTemplate>
+                <DataTemplate>
+                    <ListView
+                        CachingStrategy="RecycleElement"
+                        HasUnevenRows="True">
+                        <ListView.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>List Item 1</x:String>
+                                <x:String>List Item 2</x:String>
+                                <x:String>List Item 3</x:String>
+                                <x:String>List Item 4</x:String>
+                                <x:String>List Item 5</x:String>
+                                <x:String>List Item 6</x:String>
+                                <x:String>List Item 7</x:String>
+                                <x:String>List Item 8</x:String>
+                                <x:String>List Item 9</x:String>
+                                <x:String>List Item 10</x:String>
+                            </x:Array>
+                        </ListView.ItemsSource>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <Frame
+                                        Margin="6"
+                                        CornerRadius="12"
+                                        HeightRequest="60">
+                                        <Label
+                                            HorizontalOptions="Center"
+                                            VerticalOptions="Center"
+                                            Text="{Binding}"/>
+                                    </Frame>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </DataTemplate>
+            </CarouselView.ItemTemplate>
+        </CarouselView>
+    </StackLayout>
+</local:TestContentPage>

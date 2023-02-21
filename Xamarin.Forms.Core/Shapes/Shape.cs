@@ -1,4 +1,7 @@
-﻿namespace Xamarin.Forms.Shapes
+﻿using System;
+using System.ComponentModel;
+
+namespace Xamarin.Forms.Shapes
 {
 	public abstract class Shape : View
 	{
@@ -8,11 +11,29 @@
 
 		public static readonly BindableProperty FillProperty =
 			BindableProperty.Create(nameof(Fill), typeof(Brush), typeof(Shape), null,
-				propertyChanged: OnBrushChanged);
+				propertyChanging: (bindable, oldvalue, newvalue) =>
+				{
+					if (oldvalue != null)
+						(bindable as Shape)?.StopNotifyingBrushChanges(newvalue as Brush);
+				},
+				propertyChanged: (bindable, oldvalue, newvalue) =>
+				{
+					if (newvalue != null)
+						(bindable as Shape)?.NotifyBrushChanges(newvalue as Brush);
+				});
 
 		public static readonly BindableProperty StrokeProperty =
 			BindableProperty.Create(nameof(Stroke), typeof(Brush), typeof(Shape), null,
-				propertyChanged: OnBrushChanged);
+				propertyChanging: (bindable, oldvalue, newvalue) =>
+				{
+					if (oldvalue != null)
+						(bindable as Shape)?.StopNotifyingBrushChanges(newvalue as Brush);
+				},
+				propertyChanged: (bindable, oldvalue, newvalue) =>
+				{
+					if (newvalue != null)
+						(bindable as Shape)?.NotifyBrushChanges(newvalue as Brush);
+				});
 
 		public static readonly BindableProperty StrokeThicknessProperty =
 			BindableProperty.Create(nameof(StrokeThickness), typeof(double), typeof(Shape), 1.0);
@@ -90,15 +111,38 @@
 			get { return (Stretch)GetValue(AspectProperty); }
 		}
 
-		static void OnBrushChanged(BindableObject bindable, object oldValue, object newValue)
-		{
-			((Shape)bindable).UpdateBrushParent((Brush)newValue);
-		}
-
-		void UpdateBrushParent(Brush brush)
+		void NotifyBrushChanges(Brush brush)
 		{
 			if (brush != null)
+			{
 				brush.Parent = this;
+				brush.PropertyChanged += OnBackgroundChanged;
+
+				if (brush is GradientBrush gradientBrush)
+					gradientBrush.InvalidateGradientBrushRequested += InvalidateGradientBrushRequested;
+			}
+		}
+
+		void StopNotifyingBrushChanges(Brush brush)
+		{
+			if (brush != null)
+			{
+				brush.Parent = null;
+				brush.PropertyChanged -= OnBackgroundChanged;
+
+				if (brush is GradientBrush gradientBrush)
+					gradientBrush.InvalidateGradientBrushRequested -= InvalidateGradientBrushRequested;
+			}
+		}
+
+		void OnBackgroundChanged(object sender, PropertyChangedEventArgs e)
+		{
+			OnPropertyChanged(nameof(Fill));
+		}
+
+		void InvalidateGradientBrushRequested(object sender, EventArgs e)
+		{
+			OnPropertyChanged(nameof(Fill));
 		}
 	}
 }

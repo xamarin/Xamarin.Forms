@@ -5,7 +5,7 @@ using System.Collections.Specialized;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class ObservableGroupedSource : IGroupableItemsViewSource, ICollectionChangedNotifier
+	internal class ObservableGroupedSource : IGroupableItemsViewSource, ICollectionChangedNotifier, IGroupedItemsPosition
 	{
 		readonly ICollectionChangedNotifier _notifier;
 		readonly IList _groupSource;
@@ -340,7 +340,7 @@ namespace Xamarin.Forms.Platform.Android
 			var newStartIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _groupSource.IndexOf(args.NewItems[0]);
 			var oldStartIndex = args.OldStartingIndex > -1 ? args.OldStartingIndex : _groupSource.IndexOf(args.OldItems[0]);
 
-			var newItemCount = CountItemsInGroups(newStartIndex, groupCount);
+			var newItemCount = CountItemsInNewGroups(newStartIndex, groupCount);
 			var oldItemCount = CountItemsInGroups(oldStartIndex, groupCount);
 
 			if (newItemCount != oldItemCount)
@@ -435,6 +435,50 @@ namespace Xamarin.Forms.Platform.Android
 				itemCount += _groups[groupStartIndex + n].Count;
 			}
 			return itemCount;
+		}
+
+		int CountItemsInNewGroups(int groupStartIndex, int groupCount)
+		{
+			var itemCount = 0;
+			for (int n = 0; n < groupCount; n++)
+			{
+				// add 1 to accommodate the group header that is counted in _groups[groupStartIndex + n].Count
+				itemCount += ((_groupSource[groupStartIndex + n] as IList).Count + 1);
+			}
+			return itemCount;
+		}
+
+		public int GetPosition(int groupIndex, int itemIndex)
+		{
+			// Ignore invalid indexes
+			if (groupIndex >= _groups.Count)
+			{
+				return 0;
+			}
+
+			if (itemIndex >= _groups[groupIndex].Count)
+			{
+				return 0;
+			}
+
+			int position = 0;
+
+			// Account for all the positions in the earlier groups;
+			// these counts will already include headers/footers, if present
+			for (int g = 0; g < groupIndex; g++)
+			{
+				position += _groups[g].Count;
+			}
+
+			position += itemIndex;
+
+			if (_hasGroupHeaders)
+			{
+				// Does this last group have a header? We'll need to account for that
+				position += 1;
+			}
+
+			return position;
 		}
 	}
 }

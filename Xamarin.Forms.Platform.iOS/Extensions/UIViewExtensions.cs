@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using static System.String;
 using Xamarin.Forms.Internals;
+using SizeF = CoreGraphics.CGSize;
 #if __MOBILE__
 using UIKit;
 namespace Xamarin.Forms.Platform.iOS
@@ -87,8 +88,18 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 				s = self.FittingSize;
 #endif
-			var request = new Size(s.Width == float.PositiveInfinity ? double.PositiveInfinity : s.Width,
-				s.Height == float.PositiveInfinity ? double.PositiveInfinity : s.Height);
+
+			var width = s.Width;
+			var height = s.Height;
+
+			if (nfloat.IsNaN(width))
+				width = float.PositiveInfinity;
+
+			if (nfloat.IsNaN(height))
+				height = float.PositiveInfinity;
+
+			var request = new Size(width == float.PositiveInfinity ? double.PositiveInfinity : width,
+				height == float.PositiveInfinity ? double.PositiveInfinity : height);
 			var minimum = new Size(minimumWidth < 0 ? request.Width : minimumWidth,
 				minimumHeight < 0 ? request.Height : minimumHeight);
 			return new SizeRequest(request, minimum);

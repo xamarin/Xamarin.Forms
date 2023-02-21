@@ -575,9 +575,16 @@ namespace Xamarin.Forms.Controls
 #endif
 	public abstract class TestShell : Shell
 	{
+#if __ANDROID__
+		protected const string FlyoutIconAutomationId = "Open navigation drawer";
+#else
 		protected const string FlyoutIconAutomationId = "OK";
+#endif
+
 #if __IOS__ || __WINDOWS__
 		protected const string BackButtonAutomationId = "Back";
+#elif __ANDROID__
+		protected const string BackButtonAutomationId = "Navigate up";
 #else
 		protected const string BackButtonAutomationId = "OK";
 #endif
@@ -656,6 +663,34 @@ namespace Xamarin.Forms.Controls
 
 			if (!String.IsNullOrWhiteSpace(content.Title))
 				content.Route = content.Title;
+		}
+
+		public ContentPage AddBottomTab(ContentPage page, string title, string icon = null)
+		{
+			if (Items.Count == 0)
+			{
+				var item = AddContentPage(page);
+				item.Items[0].Items[0].Title = title ?? page.Title;
+				item.Items[0].Title = title ?? page.Title;
+				return page;
+			}
+
+			Items[0].Items.Add(new ShellSection()
+			{
+				AutomationId = title,
+				Route = title,
+				Title = title,
+				Icon = icon,
+				Items =
+ 				{
+ 					new ShellContent()
+ 					{
+ 						ContentTemplate = new DataTemplate(() => page),
+ 						Title = title
+ 					}
+ 				}
+			});
+			return page;
 		}
 
 		public ContentPage AddBottomTab(string title, string icon = null)

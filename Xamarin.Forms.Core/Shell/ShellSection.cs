@@ -116,7 +116,8 @@ namespace Xamarin.Forms
 			await poppingCompleted;
 
 			RemovePage(page);
-			SendUpdateCurrentState(ShellNavigationSource.Pop);
+
+			(Parent?.Parent as IShellController)?.UpdateCurrentState(ShellNavigationSource.Pop);
 		}
 
 		async void IShellSectionController.SendPoppingToRoot(Task finishedPopping)
@@ -136,7 +137,7 @@ namespace Xamarin.Forms
 			for (int i = 1; i < oldStack.Count; i++)
 				RemovePage(oldStack[i]);
 
-			SendUpdateCurrentState(ShellNavigationSource.PopToRoot);
+			(Parent?.Parent as IShellController)?.UpdateCurrentState(ShellNavigationSource.PopToRoot);
 		}
 
 		[Obsolete]
@@ -151,8 +152,6 @@ namespace Xamarin.Forms
 			_navStack.Remove(last);
 
 			RemovePage(last);
-
-			SendUpdateCurrentState(ShellNavigationSource.Pop);
 		}
 
 		// we want the list returned from here to remain point in time accurate
@@ -178,7 +177,6 @@ namespace Xamarin.Forms
 				_navStack.Remove(page);
 
 			RemovePage(page);
-			SendUpdateCurrentState(ShellNavigationSource.Pop);
 		}
 
 
@@ -360,7 +358,7 @@ namespace Xamarin.Forms
 						var page = GetOrCreateFromRoute(globalRoutes[i], queryData, i == globalRoutes.Count - 1, false);
 						if (IsModal(page))
 						{
-							await Navigation.PushModalAsync(page, IsNavigationAnimated(page));
+							await PushModalAsync(page, IsNavigationAnimated(page));
 							break;
 						}
 						else if (!isLast && navIndex < _navStack.Count)
@@ -382,7 +380,7 @@ namespace Xamarin.Forms
 					bool isLast = i == globalRoutes.Count - 1;
 					route = globalRoutes[i];
 
-					navStack = BuildFlattenedNavigationStack(_navStack, Navigation?.ModalStack);
+					navStack = ShellNavigationManager.BuildFlattenedNavigationStack(_navStack, Navigation?.ModalStack);
 
 					// if the navStack count is one that means there is nothing pushed
 					if (navStack.Count == 1)
@@ -415,14 +413,14 @@ namespace Xamarin.Forms
 							bool isAnimated = animate ?? IsNavigationAnimated(navStack[navStack.Count - 1]);
 							if (Navigation.ModalStack.Contains(navStack[navStack.Count - 1]))
 							{
-								await Navigation.PopModalAsync(isAnimated);
+								await PopModalAsync(isAnimated);
 							}
 							else if (Navigation.ModalStack.Count > 0)
 							{
 								await Navigation.ModalStack[Navigation.ModalStack.Count - 1].Navigation.PopAsync(isAnimated);
 							}
 
-							navStack = BuildFlattenedNavigationStack(_navStack, Navigation?.ModalStack);
+							navStack = ShellNavigationManager.BuildFlattenedNavigationStack(_navStack, Navigation?.ModalStack);
 						}
 
 						while (_navStack.Count > popCount)
@@ -440,7 +438,7 @@ namespace Xamarin.Forms
 							}
 						}
 
-						navStack = BuildFlattenedNavigationStack(_navStack, Navigation?.ModalStack);
+						navStack = ShellNavigationManager.BuildFlattenedNavigationStack(_navStack, Navigation?.ModalStack);
 
 						IsPoppingModalStack = false;
 
@@ -475,24 +473,6 @@ namespace Xamarin.Forms
 			}
 		}
 
-		List<Page> BuildFlattenedNavigationStack(List<Page> startingList, IReadOnlyList<Page> modalStack)
-		{
-			startingList = startingList.ToList();
-			if (modalStack == null)
-				return startingList;
-
-			for (int i = 0; i < modalStack.Count; i++)
-			{
-				startingList.Add(modalStack[i]);
-				for (int j = 1; j < modalStack[i].Navigation.NavigationStack.Count; j++)
-				{
-					startingList.Add(modalStack[i].Navigation.NavigationStack[j]);
-				}
-			}
-
-			return startingList;
-		}
-
 		Page GetOrCreateFromRoute(string route, IDictionary<string, string> queryData, bool isLast, bool isPopping)
 		{
 			var content = Routing.GetOrCreateContent(route) as Page;
@@ -522,7 +502,7 @@ namespace Xamarin.Forms
 
 			List<Page> modalPageStacks = new List<Page>();
 			List<Page> nonModalPageStacks = new List<Page>();
-			var currentNavStack = BuildFlattenedNavigationStack(_navStack, Navigation?.ModalStack);
+			var currentNavStack = ShellNavigationManager.BuildFlattenedNavigationStack(_navStack, Navigation?.ModalStack);
 
 			// populate global routes and build modal stacks
 
@@ -574,7 +554,7 @@ namespace Xamarin.Forms
 
 				if (modalPage is NavigationPage np)
 				{
-					await Navigation.PushModalAsync(modalPage, isAnimated);
+					await PushModalAsync(modalPage, isAnimated);
 					activeModalNavigationPage = np;
 				}
 				else
@@ -582,7 +562,7 @@ namespace Xamarin.Forms
 					if (activeModalNavigationPage != null)
 						await activeModalNavigationPage.Navigation.PushAsync(modalPage, animate ?? IsNavigationAnimated(modalPage));
 					else
-						await Navigation.PushModalAsync(modalPage, isAnimated);
+						await PushModalAsync(modalPage, isAnimated);
 				}
 			}
 
@@ -590,8 +570,24 @@ namespace Xamarin.Forms
 
 			if (Parent?.Parent is IShellController shell)
 			{
-				shell.UpdateCurrentState(ShellNavigationSource.ShellSectionChanged);
+				//shell.UpdateCurrentState(ShellNavigationSource.ShellSectionChanged);
 			}
+		}
+
+		Task PopModalAsync(bool isAnimated)
+		{
+			if (Navigation is NavigationImpl shellSectionProxy)
+				return shellSectionProxy.PopModalInnerAsync(isAnimated);
+
+			return Navigation.PopModalAsync(isAnimated);
+		}
+
+		Task PushModalAsync(Page page, bool isAnimated)
+		{
+			if (Navigation is NavigationImpl shellSectionProxy)
+				return shellSectionProxy.PushModalInnerAsync(page, isAnimated);
+
+			return Navigation.PushModalAsync(page, isAnimated);
 		}
 
 		async Task PushStackOfPages(List<Page> pages, bool? animate)
@@ -742,8 +738,6 @@ namespace Xamarin.Forms
 			};
 
 			_navigationRequested?.Invoke(this, args);
-
-			SendUpdateCurrentState(ShellNavigationSource.Insert);
 		}
 
 		protected async virtual Task<Page> OnPopAsync(bool animated)
@@ -779,8 +773,6 @@ namespace Xamarin.Forms
 			if (args.Task != null)
 				await args.Task;
 			RemovePage(page);
-
-			SendUpdateCurrentState(ShellNavigationSource.Pop);
 
 			return page;
 		}
@@ -822,7 +814,6 @@ namespace Xamarin.Forms
 			}
 
 			PresentedPageAppearing();
-			SendUpdateCurrentState(ShellNavigationSource.PopToRoot);
 		}
 
 		protected virtual Task OnPushAsync(Page page, bool animated)
@@ -851,8 +842,6 @@ namespace Xamarin.Forms
 			PresentedPageAppearing();
 			AddPage(page);
 			_navigationRequested?.Invoke(this, args);
-
-			SendUpdateCurrentState(ShellNavigationSource.Push);
 
 			if (args.Task == null)
 				return Task.FromResult(true);
@@ -883,10 +872,8 @@ namespace Xamarin.Forms
 					}
 
 					bool isAnimated = animated ?? (Shell.GetPresentationMode(pageToPop) & PresentationMode.NotAnimated) != PresentationMode.NotAnimated;
-					await Navigation.PopModalAsync(isAnimated);
+					await PopModalAsync(isAnimated);
 				}
-
-				((IShellController)Shell).UpdateCurrentState(ShellNavigationSource.ShellSectionChanged);
 			}
 			finally
 			{
@@ -929,8 +916,6 @@ namespace Xamarin.Forms
 				RequestType = NavigationRequestType.Remove
 			};
 			_navigationRequested?.Invoke(this, args);
-
-			SendUpdateCurrentState(ShellNavigationSource.Remove);
 		}
 
 		internal bool IsVisibleSection => Parent?.Parent is Shell shell && shell.CurrentItem?.CurrentItem == this;
@@ -1031,14 +1016,6 @@ namespace Xamarin.Forms
 
 		void SendAppearanceChanged() => ((IShellController)Parent?.Parent)?.AppearanceChanged(this, false);
 
-		void SendUpdateCurrentState(ShellNavigationSource source)
-		{
-			if (Parent?.Parent is IShellController shell)
-			{
-				shell.UpdateCurrentState(source);
-			}
-		}
-
 		protected override void OnBindingContextChanged()
 		{
 			base.OnBindingContextChanged();
@@ -1069,8 +1046,6 @@ namespace Xamarin.Forms
 
 			protected override IReadOnlyList<Page> GetNavigationStack() => _owner.GetNavigationStack();
 
-			protected override void OnInsertPageBefore(Page page, Page before) => _owner.OnInsertPageBefore(page, before);
-
 			protected override async Task<Page> OnPopAsync(bool animated)
 			{
 				if (!_owner.IsVisibleSection)
@@ -1081,7 +1056,7 @@ namespace Xamarin.Forms
 				var navigationParameters = new ShellNavigationParameters()
 				{
 					Animated = animated,
-					TargetState = ".."
+					TargetState = new ShellNavigationState("..")
 				};
 
 				var returnedPage = (_owner as IShellSectionController).PresentedPage;
@@ -1134,7 +1109,110 @@ namespace Xamarin.Forms
 				return _owner.Shell.NavigationManager.GoToAsync(navigationParameters);
 			}
 
-			protected override void OnRemovePage(Page page) => _owner.OnRemovePage(page);
+			// This is used when we just want to process the modal operation and we don't need
+			// it to process through the internal shell navigation bits
+			internal Task PushModalInnerAsync(Page modal, bool animated)
+			{
+				return Inner?.PushModalAsync(modal, animated);
+			}
+
+			// This is used when we just want to process the modal operation and we don't need
+			// it to process through the internal shell navigation bits
+			internal Task<Page> PopModalInnerAsync(bool animated)
+			{
+				return Inner?.PopModalAsync(animated);
+			}
+
+			protected override async Task OnPushModal(Page modal, bool animated)
+			{
+				if (_owner.Shell.NavigationManager.AccumulateNavigatedEvents)
+				{
+					await base.OnPushModal(modal, animated);
+					return;
+				}
+
+				if (animated)
+					Shell.SetPresentationMode(modal, PresentationMode.ModalAnimated);
+				else
+					Shell.SetPresentationMode(modal, PresentationMode.ModalNotAnimated);
+
+				var navigationParameters = new ShellNavigationParameters()
+				{
+					Animated = animated,
+					PagePushing = modal
+				};
+
+				await _owner.Shell.NavigationManager.GoToAsync(navigationParameters);
+			}
+
+			protected async override Task<Page> OnPopModal(bool animated)
+			{
+				if (_owner.Shell.NavigationManager.AccumulateNavigatedEvents)
+					return await base.OnPopModal(animated);
+
+				var page = ModalStack[ModalStack.Count - 1];
+				await _owner.Shell.GoToAsync("..", animated);
+				return page;
+			}
+
+			protected override void OnRemovePage(Page page)
+			{
+				if (!_owner.IsVisibleSection || _owner.Shell.NavigationManager.AccumulateNavigatedEvents)
+				{
+					_owner.OnRemovePage(page);
+					return;
+				}
+
+				var stack = _owner.Stack.ToList();
+				stack.Remove(page);
+				var navigationState = GetUpdatedStatus(stack);
+
+				ShellNavigatingEventArgs shellNavigatingEventArgs = new ShellNavigatingEventArgs(
+					_owner.Shell.CurrentState,
+					navigationState.Location,
+					ShellNavigationSource.Remove,
+					false);
+
+				_owner.Shell.NavigationManager.HandleNavigating(shellNavigatingEventArgs);
+				_owner.OnRemovePage(page);
+				(_owner.Shell as IShellController).UpdateCurrentState(ShellNavigationSource.Remove);
+			}
+
+			protected override void OnInsertPageBefore(Page page, Page before)
+			{
+				if (!_owner.IsVisibleSection || _owner.Shell.NavigationManager.AccumulateNavigatedEvents)
+				{
+					_owner.OnInsertPageBefore(page, before);
+					return;
+				}
+
+				var stack = _owner.Stack.ToList();
+				var index = stack.IndexOf(before);
+				if (index == -1)
+					throw new ArgumentException("Page not found in nav stack");
+
+				stack.Insert(index, page);
+				var navigationState = GetUpdatedStatus(stack);
+
+				ShellNavigatingEventArgs shellNavigatingEventArgs = new ShellNavigatingEventArgs(
+					_owner.Shell.CurrentState,
+					navigationState.Location,
+					ShellNavigationSource.Insert,
+					false);
+
+				_owner.Shell.NavigationManager.HandleNavigating(shellNavigatingEventArgs);
+				_owner.OnInsertPageBefore(page, before);
+				(_owner.Shell as IShellController).UpdateCurrentState(ShellNavigationSource.Insert);
+			}
+
+			ShellNavigationState GetUpdatedStatus(IReadOnlyList<Page> stack)
+			{
+				var shellItem = _owner.Shell.CurrentItem;
+				var shellSection = shellItem?.CurrentItem;
+				var shellContent = shellSection?.CurrentItem;
+				var modalStack = shellSection?.Navigation?.ModalStack;
+				return ShellNavigationManager.GetNavigationState(shellItem, shellSection, shellContent, stack, modalStack);
+			}
 		}
 	}
 }

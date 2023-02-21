@@ -29,6 +29,12 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			ObserveStateChange(false);
 
+			var formsButton = Control as FormsNSButton;
+			if (formsButton != null)
+			{
+				formsButton.Activated -= HandleActivated;
+			}
+
 			base.Dispose(disposing);
 		}
 
@@ -44,6 +50,8 @@ namespace Xamarin.Forms.Platform.MacOS
 					btn.SetButtonType(NSButtonType.Radio);
 					SetNativeControl(btn);
 					ObserveStateChange(true);
+
+					btn.Activated += HandleActivated;
 				}
 
 				UpdateContent();
@@ -155,6 +163,16 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 
 			Element.IsChecked = Control.State == NSCellStateValue.On;
+		}
+
+		void HandleActivated(object sender, EventArgs args)
+		{
+			if (Element == null || sender == null)
+			{
+				return;
+			}
+
+			Element.IsChecked = (sender as FormsNSButton).State == NSCellStateValue.On;
 		}
 	}
 }

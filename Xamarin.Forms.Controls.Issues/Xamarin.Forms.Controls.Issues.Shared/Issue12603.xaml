@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Xamarin.Forms.Controls.Issues.Issue12603"
+             Title="Issue 12603">
+    <ContentPage.Content>
+        <Grid  ColumnDefinitions="*"
+               RowDefinitions="Auto,*">
+            <Button  Grid.Row="0"
+                     Text="On iOS click the button. If you see no empty space after the 'Last Label' the test has passed."
+                     Clicked="Button_Clicked"
+                     Grid.Column="0" />
+            <ScrollView  Grid.Row="1"
+                         x:Name="scrollview">
+                <StackLayout Spacing="30">
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Label" />
+                <Label Text="Last Label"
+                       x:Name="lastLabel" />
+                </StackLayout>
+            </ScrollView>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

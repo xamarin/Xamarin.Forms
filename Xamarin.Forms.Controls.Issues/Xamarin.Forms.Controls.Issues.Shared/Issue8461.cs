@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 			var page1 = CreateContentPage("page 1");
-			var page2 = new ContentPage() { Title = "page 2" };
+			var page2 = new ContentPage() { Title = "page 2", AutomationId = "ThePage" };
 
 			var pushPageBtn = new Button();
 			pushPageBtn.Text = "Push Page";
@@ -98,8 +98,9 @@ namespace Xamarin.Forms.Controls.Issues
 			Assert.AreEqual(1, page2Layout.Length);
 			// Swipe in from left across 1/2 of screen width
 			RunningApp.SwipeLeftToRight(LayoutId, 0.99, 500, false);
+			System.Threading.Tasks.Task.Delay(2000);
 			// Swipe in from left across full screen width
-			RunningApp.SwipeLeftToRight(0.99, 500);
+			RunningApp.SwipeLeftToRight("ThePage", 0.99, 200, false);
 
 			pushButton = RunningApp.WaitForElement(ButtonId);
 			Assert.AreEqual(1, pushButton.Length);

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
@@ -123,7 +123,6 @@ namespace Xamarin.Forms.Platform.Android
 			RegisterHandler(typeof(TabbedPage), typeof(TabbedPageRenderer), typeof(TabbedRenderer));
 			RegisterHandler(typeof(FlyoutPage), typeof(FlyoutPageRenderer), typeof(FlyoutPageRenderer));
 			RegisterHandler(typeof(Switch), typeof(AppCompat.SwitchRenderer), typeof(SwitchRenderer));
-			RegisterHandler(typeof(Picker), typeof(AppCompat.PickerRenderer), typeof(PickerRenderer));
 			RegisterHandler(typeof(CarouselPage), typeof(AppCompat.CarouselPageRenderer), typeof(CarouselPageRenderer));
 			RegisterHandler(typeof(CheckBox), typeof(CheckBoxRenderer), typeof(CheckBoxDesignerRenderer));
 			RegisterHandler(typeof(FlyoutPage), typeof(FlyoutPageRenderer), typeof(FlyoutPageRendererNonAppCompat));
@@ -131,7 +130,10 @@ namespace Xamarin.Forms.Platform.Android
 			RegisterHandler(typeof(MasterDetailPage), typeof(MasterDetailPageRenderer), typeof(MasterDetailRenderer));
 #pragma warning restore CS0618 // Type or member is obsolete
 
-			if (Forms.Flags.Contains(Flags.UseLegacyRenderers))
+			var useLegacyRenderers = Forms.Flags.Contains(Flags.UseLegacyRenderers);
+			var disableAppCompatRenderers = Forms.Flags.Contains(Flags.DisableAppCompatRenderer);
+
+			if (useLegacyRenderers)
 			{
 				RegisterHandler(typeof(Button), typeof(AppCompat.ButtonRenderer), typeof(ButtonRenderer));
 				RegisterHandler(typeof(Frame), typeof(AppCompat.FrameRenderer), typeof(FrameRenderer));
@@ -139,9 +141,32 @@ namespace Xamarin.Forms.Platform.Android
 			else
 			{
 				RegisterHandler(typeof(Button), typeof(FastRenderers.ButtonRenderer), typeof(ButtonRenderer));
-				RegisterHandler(typeof(Label), typeof(FastRenderers.LabelRenderer), typeof(LabelRenderer));
 				RegisterHandler(typeof(Image), typeof(FastRenderers.ImageRenderer), typeof(ImageRenderer));
 				RegisterHandler(typeof(Frame), typeof(FastRenderers.FrameRenderer), typeof(FrameRenderer));
+
+			}
+
+			if (disableAppCompatRenderers)
+			{
+				RegisterHandler(typeof(Entry), typeof(EntryRenderer), typeof(EntryRenderer));
+				RegisterHandler(typeof(Editor), typeof(EditorRenderer), typeof(EditorRenderer));
+				RegisterHandler(typeof(Picker), typeof(AppCompat.PickerRenderer), typeof(PickerRenderer));
+
+				if (!useLegacyRenderers)
+					RegisterHandler(typeof(Label), typeof(FastRenderers.LabelRenderer), typeof(LabelRenderer));
+			}
+			else
+			{
+				RegisterHandler(typeof(Entry), typeof(EntryAppCompatRenderer), typeof(EntryRenderer));
+				RegisterHandler(typeof(Editor), typeof(EditorAppCompatRenderer), typeof(EditorRenderer));
+				RegisterHandler(typeof(Label), typeof(FastRenderers.LabelAppCompatRenderer), typeof(LabelRenderer));
+				RegisterHandler(typeof(Label), typeof(FastRenderers.LabelAppCompatRenderer), typeof(LabelRenderer));
+				RegisterHandler(typeof(Picker), typeof(PickerAppCompatRenderer), typeof(PickerRenderer));
+				RegisterHandler(typeof(SearchBar), typeof(SearchBarAppCompatRenderer), typeof(SearchBarRenderer));
+				RegisterHandler(typeof(SwitchCell), typeof(SwitchCellAppCompatRenderer), typeof(SwitchCellRenderer));
+				RegisterHandler(typeof(TextCell), typeof(TextCellAppCompatRenderer), typeof(TextCellRenderer));
+				RegisterHandler(typeof(EntryCell), typeof(EntryCellAppCompatRenderer), typeof(EntryCellRenderer));
+
 			}
 
 			Registrar.Registered.Register(typeof(RadioButton), typeof(RadioButtonRenderer));
@@ -223,6 +248,7 @@ namespace Xamarin.Forms.Platform.Android
 				// because we're rebuilding everything from scratch. This saves a bit of memory
 				// and prevents loading errors from child fragment managers
 				savedInstanceState?.Remove("android:support:fragments");
+				savedInstanceState?.Remove("androidx.lifecycle.BundlableSavedStateRegistry.key");
 			}
 
 			Profile.FramePartition("Xamarin.Android.OnCreate");

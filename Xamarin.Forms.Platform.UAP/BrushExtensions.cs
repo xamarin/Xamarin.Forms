@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (brush == null)
 				return null;
-			
+
 			if (brush is SolidColorBrush solidColorBrush)
 			{
 				return solidColorBrush.Color.ToBrush();
@@ -44,7 +44,8 @@ namespace Xamarin.Forms.Platform.UWP
 			if (brush is RadialGradientBrush radialGradientBrush)
 			{
 				var wRadialGradientBrush = new WRadialGradientBrush()
-				{
+				{ 
+					GradientOrigin = new WPoint(radialGradientBrush.Center.X, radialGradientBrush.Center.Y),
 					Center = new WPoint(radialGradientBrush.Center.X, radialGradientBrush.Center.Y),
 					RadiusX = radialGradientBrush.Radius,
 					RadiusY = radialGradientBrush.Radius

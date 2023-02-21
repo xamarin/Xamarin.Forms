@@ -92,9 +92,12 @@ namespace Xamarin.Forms
 
 		public async Task<string> EvaluateJavaScriptAsync(string script)
 		{
+			if (script == null)
+				return null;
+
 			EvaluateJavaScriptDelegate handler = EvaluateJavaScriptRequested;
 
-			if (script == null)
+			if (handler == null)
 				return null;
 
 			//make all the platforms mimic Android's implementation, which is by far the most complete.

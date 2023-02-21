@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Used in Issue13794 -->
+<CollectionView
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Xamarin.Forms.Controls.Issues.MyCollectionView"
+    ItemsSource="{Binding Data}"
+    SelectionMode="Single"
+    SelectionChanged="CollectionView_SelectionChanged"
+    AutomationId="TehCollectionView">
+
+    <CollectionView.EmptyView>
+        <Label Text="The collection is empty" BackgroundColor="Transparent" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" AutomationId="CollectionViewEmptyView"  />
+    </CollectionView.EmptyView>
+
+    <CollectionView.ItemTemplate>
+        <DataTemplate>
+            <SwipeView>
+                  <SwipeView.RightItems>
+                    <SwipeItems>
+                        <SwipeItem Text="Delete" BackgroundColor="Red" Invoked="DeleteItem_Invoked" />
+                    </SwipeItems>
+                </SwipeView.RightItems>
+
+                
+                <Label Text="{Binding .}" Padding="20" />
+
+            </SwipeView>
+        </DataTemplate>
+    </CollectionView.ItemTemplate>
+
+</CollectionView>
