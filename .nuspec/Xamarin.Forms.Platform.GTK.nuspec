@@ -29,7 +29,7 @@
     <file src="..\Xamarin.Forms.Platform.GTK\bin\$Configuration$\Xamarin.Forms.Platform.GTK.*pdb" target="lib\net45"/>
 
     <!--Licenses-->
-    <file src="..\THIRD-PARTY-NOTICES.txt" target="\" />
-    <file src="..\LICENSE" target="\" />
+    <file src="..\THIRD-PARTY-NOTICES.txt" target="" />
+    <file src="..\LICENSE" target="" />
   </files>
 </package>

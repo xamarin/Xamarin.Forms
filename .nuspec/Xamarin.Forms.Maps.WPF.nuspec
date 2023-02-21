@@ -30,7 +30,7 @@
     <file src="..\Xamarin.Forms.Maps.WPF\bin\$Configuration$\net461\Xamarin.Forms.Maps.WPF.*pdb" target="lib\net461" />
     
     <!--Licenses-->
-    <file src="..\THIRD-PARTY-NOTICES.txt" target="\" />
-    <file src="..\LICENSE" target="\" />
+    <file src="..\THIRD-PARTY-NOTICES.txt" target="" />
+    <file src="..\LICENSE" target="" />
   </files>
 </package>

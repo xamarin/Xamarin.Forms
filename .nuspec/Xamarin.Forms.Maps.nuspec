@@ -59,7 +59,7 @@
     <file src="..\Xamarin.Forms.Maps\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Maps.dll" target="lib\tizen40" />
     <file src="..\build\docs\Xamarin.Forms.Maps.xml" target="lib\tizen40" />
     <!--Licenses-->
-    <file src="..\THIRD-PARTY-NOTICES.txt" target="\" />
-    <file src="..\LICENSE" target="\" />
+    <file src="..\THIRD-PARTY-NOTICES.txt" target="" />
+    <file src="..\LICENSE" target="" />
   </files>
 </package>

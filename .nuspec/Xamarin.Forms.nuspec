@@ -314,8 +314,8 @@
     <file src="..\build\docs\Xamarin.Forms.Xaml.xml" target="lib\tizen40" />
     
     <!--Licenses-->
-    <file src="..\THIRD-PARTY-NOTICES.txt" target="\" />
-    <file src="..\LICENSE" target="\" />
+    <file src="..\THIRD-PARTY-NOTICES.txt" target="" />
+    <file src="..\LICENSE" target="" />
   </files>
 
 </package>
