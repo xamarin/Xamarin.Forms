@@ -45,5 +45,8 @@
     <file src="..\Xamarin.Forms.DualScreen\bin\$Configuration$\uap10.0.16299\Xamarin.Forms.DualScreen.*pdb" target="lib\uap10.0.16299" />
     <file src="..\Xamarin.Forms.DualScreen\bin\$Configuration$\uap10.0.16299\Xamarin.Forms.DualScreen.*mdb" target="lib\uap10.0.16299" />
 
+    <!--Licenses-->
+    <file src="..\THIRD-PARTY-NOTICES.txt" target="Licenses\" />
+    <file src="..\LICENSE*" target="Licenses\" />
   </files>
 </package>

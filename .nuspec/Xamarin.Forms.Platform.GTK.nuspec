@@ -27,5 +27,9 @@
     <file src="..\Xamarin.Forms.Platform.GTK\Libs\webkit-sharp\webkit-sharp.dll.config" target="content"/>
     <file src="..\Xamarin.Forms.Platform.GTK\bin\$Configuration$\Xamarin.Forms.Platform.GTK.dll" target="lib\net45"/>
     <file src="..\Xamarin.Forms.Platform.GTK\bin\$Configuration$\Xamarin.Forms.Platform.GTK.*pdb" target="lib\net45"/>
+
+    <!--Licenses-->
+    <file src="..\THIRD-PARTY-NOTICES.txt" target="Licenses\" />
+    <file src="..\LICENSE*" target="Licenses\" />
   </files>
 </package>

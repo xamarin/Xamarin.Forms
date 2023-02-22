@@ -30,5 +30,9 @@
     <!--Icon-->
     <file src="..\Assets\xamarin_128x128.png" target="Assets\" />
     <file src="..\Xamarin.Forms.Platform.Android.AppLinks\bin\$Configuration$\MonoAndroid10.0\Xamarin.Forms.Platform.Android.AppLinks.dll" target="lib\MonoAndroid10.0" />
+
+    <!--Licenses-->
+    <file src="..\THIRD-PARTY-NOTICES.txt" target="Licenses\" />
+    <file src="..\LICENSE*" target="Licenses\" />
   </files>
 </package>
