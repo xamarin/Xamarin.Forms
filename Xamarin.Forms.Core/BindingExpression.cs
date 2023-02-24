@@ -652,7 +652,7 @@ namespace Xamarin.Forms
 				_listener.SetTarget(listener);
 			}
 
-			public void Unsubscribe()
+			public void Unsubscribe(bool finalizer = false)
 			{
 				INotifyPropertyChanged source;
 				if (_source.TryGetTarget(out source) && source != null)
@@ -660,6 +660,10 @@ namespace Xamarin.Forms
 				var bo = source as BindableObject;
 				if (bo != null)
 					bo.BindingContextChanged -= _bchandler;
+
+				// If we are called from a finalizer, WeakReference<T>.SetTarget() can throw InvalidOperationException
+				if (finalizer)
+					return;
 
 				_source.SetTarget(null);
 				_listener.SetTarget(null);
@@ -684,6 +688,8 @@ namespace Xamarin.Forms
 			readonly BindingExpression _expression;
 			readonly PropertyChangedEventHandler _changeHandler;
 			WeakPropertyChangedProxy _listener;
+
+			~BindingExpressionPart() => _listener?.Unsubscribe(finalizer: true);
 
 			public BindingExpressionPart(BindingExpression expression, string content, bool isIndexer = false)
 			{
