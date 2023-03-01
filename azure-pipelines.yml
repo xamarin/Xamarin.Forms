@@ -64,7 +64,7 @@ stages:
         workspace:
           clean: all
         displayName: Build Windows Phase
-        timeoutInMinutes: 60
+        timeoutInMinutes: 90
         pool:
           name: $(vs2019VmPool)
           vmImage: $(vs2019VmImage)
@@ -104,7 +104,7 @@ stages:
         workspace:
           clean: all
         displayName: Build Windows Phase Bots
-        timeoutInMinutes: 60
+        timeoutInMinutes: 90
         pool:
           name: $(vs2019VmPool)
           vmImage: $(vs2019VmImage)
