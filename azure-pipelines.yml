@@ -222,7 +222,7 @@ stages:
               ArtifactName: CodeAnalysisLogs
             condition: succeededOrFailed()
 
-          - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@1
+          - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@2
             displayName: Fail Job if Security Issues are Detected
             inputs:
               CredScan: true
