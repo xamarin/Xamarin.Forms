@@ -202,21 +202,21 @@ stages:
             parameters:
               suppressionsFile: $(System.DefaultWorkingDirectory)\build\automation\CredScanSuppressions.json
 
-          - task: securedevelopmentteam.vss-secure-development-tools.build-task-antimalware.AntiMalware@3
+          - task: securedevelopmentteam.vss-secure-development-tools.build-task-antimalware.AntiMalware@4
             displayName: Run AntiMalware (Defender) Scan
             inputs:
               FileDirPath: $(System.DefaultWorkingDirectory)
               EnableServices: true
             condition: succeededOrFailed()
 
-          - task: securedevelopmentteam.vss-secure-development-tools.build-task-report.SdtReport@1
+          - task: securedevelopmentteam.vss-secure-development-tools.build-task-report.SdtReport@2
             displayName: Create Security Analysis Report
             inputs:
               CredScan: true
               PoliCheck: true
             condition: succeededOrFailed()
 
-          - task: securedevelopmentteam.vss-secure-development-tools.build-task-publishsecurityanalysislogs.PublishSecurityAnalysisLogs@2
+          - task: securedevelopmentteam.vss-secure-development-tools.build-task-publishsecurityanalysislogs.PublishSecurityAnalysisLogs@3
             displayName: Publish Security Analysis Logs
             inputs:
               ArtifactName: CodeAnalysisLogs
