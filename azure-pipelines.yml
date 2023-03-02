@@ -227,6 +227,7 @@ stages:
             inputs:
               CredScan: true
               PoliCheck: true
+              GdnBreakGdnToolPoliCheckSeverity: 'Error'
             condition: succeededOrFailed()
 
       # - job: api_scan
