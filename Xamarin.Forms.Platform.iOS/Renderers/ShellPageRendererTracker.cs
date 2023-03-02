@@ -194,22 +194,9 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else
 			{
-				if (titleView.Parent != null)
-				{
-					var view = new TitleViewContainer(titleView);
-					NavigationItem.TitleView = view;
-				}
-				else
-				{
-					titleView.ParentSet += OnTitleViewParentSet;
-				}
+				var view = new TitleViewContainer(titleView);
+				NavigationItem.TitleView = view;
 			}
-		}
-
-		void OnTitleViewParentSet(object sender, EventArgs e)
-		{
-			((Element)sender).ParentSet -= OnTitleViewParentSet;
-			UpdateTitleView();
 		}
 
 		protected virtual async Task UpdateToolbarItems()
