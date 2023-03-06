@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Android.Content;
-using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.OS;
 using Android.Views;
@@ -217,7 +216,7 @@ namespace Xamarin.Forms.Platform.Android
 
 					using (var text = new TextView(Context))
 					{
-						text.Typeface = Typeface.SansSerif;
+						text.Typeface = "sans-serif-medium".ToTypeFace();
 						text.SetTextColor(AColor.Black);
 						text.Text = shellContent.Title;
 						lp = new LinearLayout.LayoutParams(0, LP.WrapContent)
