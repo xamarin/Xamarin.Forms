@@ -453,6 +453,7 @@ namespace Xamarin.Forms
 				{
 					defaultLabelClass.Setters.Add(new Setter { Property = Label.FontSizeProperty, Value = 14 });
 					defaultLabelClass.Setters.Add(new Setter { Property = Label.TextColorProperty, Value = Color.Black.MultiplyAlpha(0.87) });
+					defaultLabelClass.Setters.Add(new Setter { Property = Label.FontFamilyProperty, Value = "sans-serif-medium" });
 					defaultLabelClass.Setters.Add(new Setter { Property = Label.MarginProperty, Value = new Thickness(20, 0, 0, 0) });
 				}
 				else if (Device.RuntimePlatform == Device.iOS)
