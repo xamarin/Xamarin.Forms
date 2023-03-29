@@ -365,7 +365,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		class ClipDrawableWrapper : ASupportDrawable.DrawableWrapper
+		class ClipDrawableWrapper : ASupportDrawable.DrawableWrapperCompat
 		{
 			public ClipDrawableWrapper(Drawable dr) : base(dr)
 			{

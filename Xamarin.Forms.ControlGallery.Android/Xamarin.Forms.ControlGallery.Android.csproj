@@ -17,9 +17,9 @@
     <AndroidApplication>true</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <AndroidTargetFrameworkVersion Condition="'$(AndroidTargetFrameworkVersion)' == ''">v11.0</AndroidTargetFrameworkVersion>
+    <AndroidTargetFrameworkVersion Condition="'$(AndroidTargetFrameworkVersion)' == ''">v13.0</AndroidTargetFrameworkVersion>
     <TargetFrameworkVersion>$(AndroidTargetFrameworkVersion)</TargetFrameworkVersion>
-    <AndroidManifest Condition="$(AndroidTargetFrameworkVersion) == 'v11.0'">Properties\AndroidManifest.xml</AndroidManifest>
+    <AndroidManifest Condition="$(AndroidTargetFrameworkVersion) == 'v13.0'">Properties\AndroidManifest.xml</AndroidManifest>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <NuGetPackageImportStamp>
@@ -349,12 +349,12 @@
     </PackageReference>
     <PackageReference Include="Xam.Plugin.DeviceInfo">
       <Version>3.0.2</Version>
-    </PackageReference>  
-    <PackageReference Include="Xamarin.AndroidX.Legacy.Support.V4" Version="1.0.0.8" />
-    <PackageReference Include="Xamarin.AndroidX.Core" Version="1.6.0.1" />
-    <PackageReference Include="Xamarin.AndroidX.CustomView" Version="1.1.0.7" />
-    <PackageReference Include="Xamarin.AndroidX.Preference" Version="1.1.1.9" />
-    <PackageReference Include="Xamarin.AndroidX.RecyclerView" Version="1.2.1.1" />
+    </PackageReference>
+    <PackageReference Include="Xamarin.AndroidX.Legacy.Support.V4" Version="1.0.0.16" />
+    <PackageReference Include="Xamarin.AndroidX.Core" Version="1.9.0.2" />
+    <PackageReference Include="Xamarin.AndroidX.CustomView" Version="1.1.0.15" />
+    <PackageReference Include="Xamarin.AndroidX.Preference" Version="1.2.0.4" />
+    <PackageReference Include="Xamarin.AndroidX.RecyclerView" Version="1.2.1.9" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\fonts\ionicons.ttf">
@@ -402,7 +402,7 @@
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties TriggeredFromHotReload="False" XamarinHotReloadUnhandledDeviceExceptionXamarinFormsControlGalleryAndroidHideInfoBar="True" />
+      <UserProperties XamarinHotReloadUnhandledDeviceExceptionXamarinFormsControlGalleryAndroidHideInfoBar="True" TriggeredFromHotReload="False" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

@@ -798,14 +798,14 @@ Task("Build")
     }
 });
 
-Task("Android100")
-    .Description("Builds Monodroid10.0 targets")
+Task("Android130")
+    .Description("Builds Monodroid13.0 targets")
     .Does(() =>
     {
         MSBuild("Xamarin.Forms.sln",
                 GetMSBuildSettings()
                     .WithRestore()
-                    .WithProperty("AndroidTargetFrameworks", "MonoAndroid10.0"));
+                    .WithProperty("AndroidTargetFrameworks", "MonoAndroid13.0"));
     });
 
 Task("VSMAC")
