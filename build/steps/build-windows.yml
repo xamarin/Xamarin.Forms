@@ -19,11 +19,6 @@ steps:
       version: $(DOTNET_VERSION)
       packageType: 'sdk'
 
-  - task: Boots@1
-    displayName: Install Xamarin.Android
-    inputs:
-      uri: https://aka.ms/xamarin-android-commercial-d16-2-windows
-
   - script: build.cmd -Target provision
     displayName: 'Cake Provision'
     condition: eq(variables['provisioningCake'], 'true')
