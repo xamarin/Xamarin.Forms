@@ -7,6 +7,17 @@ Xamarin.Forms provides a way to quickly build native apps for iOS, Android, Wind
 
 Read more about the platform at https://www.xamarin.com/forms.
 
+# Support
+
+Xamarin.Forms now has a successor which is .NET MAUI as part of .NET 6+ and follows the same support lifecycle as the [MAUI Support Lifecycle][maui-support-lifecycle].
+
+Support for Xamarin.Forms will end on **May 1, 2024** as per the [Xamarin Support Policy][xamarin-support-policy]:
+
+> Xamarin support will end on May 1, 2024 for all classic Xamarin SDKs.
+
+[maui-support-lifecycle]: https://dotnet.microsoft.com/platform/support/policy/maui
+[xamarin-support-policy]: https://dotnet.microsoft.com/platform/support/policy/xamarin
+
 ## Build Status ##
 
 ![Azure DevOps](https://devdiv.visualstudio.com/DevDiv/_apis/build/status/Xamarin/XamarinForms/Xamarin%20Forms?branchName=main "Azure Pipelines")
