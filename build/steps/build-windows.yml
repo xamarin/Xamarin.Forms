@@ -23,6 +23,11 @@ steps:
     displayName: 'Cake Provision'
     condition: eq(variables['provisioningCake'], 'true')
 
+  # Setup JDK Paths
+  - bash: |
+      echo "##vso[task.setvariable variable=JI_JAVA_HOME]$(JAVA_HOME_11_X64)"
+    displayName: 'Setup JDK Paths'
+
   - task: xamops.azdevex.provisionator-task.provisionator@2
     displayName: 'Provisionator'
     condition: eq(variables['provisioning'], 'true')
