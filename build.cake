@@ -299,10 +299,6 @@ Task("provision-androidsdk")
             }
         }
 
-        if (IsRunningOnWindows() && isHostedAgent && isCIBuild) {
-            SetEnvironmentVariable("JAVA_HOME", EnvironmentVariable("JAVA_HOME_11_X64", "JAVA_HOME_8_X64"), ctx);
-        }
-
         if (!IsRunningOnWindows ()) {
             if(!String.IsNullOrWhiteSpace(androidSDK))
             {
