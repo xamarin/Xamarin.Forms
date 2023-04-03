@@ -16,6 +16,8 @@
     <Deterministic>True</Deterministic>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AndroidTargetFrameworkVersion Condition="'$(AndroidTargetFrameworkVersion)' == ''">v13.0</AndroidTargetFrameworkVersion>
+    <TargetFrameworkVersion>v13.0</TargetFrameworkVersion>
     <TargetFrameworks>$(AndroidTargetFrameworks)</TargetFrameworks>
     <AndroidUseAapt2>true</AndroidUseAapt2>
   </PropertyGroup>
