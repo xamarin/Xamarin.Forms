@@ -19,6 +19,7 @@
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <AndroidTargetFrameworkVersion Condition="'$(AndroidTargetFrameworkVersion)' == ''">v13.0</AndroidTargetFrameworkVersion>
     <TargetFrameworkVersion>$(AndroidTargetFrameworkVersion)</TargetFrameworkVersion>
+    <TargetFrameworks>$(AndroidTargetFrameworks)</TargetFrameworks>
     <AndroidManifest Condition="$(AndroidTargetFrameworkVersion) == 'v13.0'">Properties\AndroidManifest.xml</AndroidManifest>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
