@@ -252,7 +252,7 @@ Task("provision-iossdk")
 
 Task("provision-androidsdk")
     .Description("Install Xamarin.Android SDK")
-    .Does(async () =>
+    .Does(async (ctx) =>
     {
         Information ("ANDROID_HOME: {0}", ANDROID_HOME);
 
@@ -297,6 +297,10 @@ Task("provision-androidsdk")
             {
                 Information("AndroidSdkManagerInstall: {0}", exc);
             }
+        }
+
+        if (IsRunningOnWindows() && isHostedAgent && isCIBuild) {
+            SetEnvironmentVariable("JAVA_HOME", EnvironmentVariable("JAVA_HOME_11_X64", "JAVA_HOME_8_X64"), ctx)
         }
 
         if (!IsRunningOnWindows ()) {
