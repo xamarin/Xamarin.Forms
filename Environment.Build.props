@@ -43,6 +43,5 @@
     <AcceptAndroidSDKLicenses Condition="'$(AcceptAndroidSDKLicenses)' == ''">False</AcceptAndroidSDKLicenses>
     <AndroidSdkBuildToolsVersion>32.0.0</AndroidSdkBuildToolsVersion>
     <AndroidUseLatestPlatformSdk>true</AndroidUseLatestPlatformSdk>
-    <AndroidTargetFrameworkVersion>v13.0</AndroidTargetFrameworkVersion>
   </PropertyGroup>
 </Project>
