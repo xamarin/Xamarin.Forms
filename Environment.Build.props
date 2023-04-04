@@ -41,6 +41,6 @@
   <PropertyGroup Condition="'$(CI)' == 'true'">
     <AndroidRestoreOnBuild Condition="'$(AndroidRestoreOnBuild)' == ''">False</AndroidRestoreOnBuild>
     <AcceptAndroidSDKLicenses Condition="'$(AcceptAndroidSDKLicenses)' == ''">False</AcceptAndroidSDKLicenses>
-    <AndroidSdkBuildToolsVersion>33.0.2</AndroidSdkBuildToolsVersion>
+    <AndroidSdkBuildToolsVersion>32.0.0</AndroidSdkBuildToolsVersion>
   </PropertyGroup>
 </Project>
