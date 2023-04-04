@@ -42,5 +42,6 @@
     <AndroidRestoreOnBuild Condition="'$(AndroidRestoreOnBuild)' == ''">False</AndroidRestoreOnBuild>
     <AcceptAndroidSDKLicenses Condition="'$(AcceptAndroidSDKLicenses)' == ''">False</AcceptAndroidSDKLicenses>
     <AndroidSdkBuildToolsVersion>32.0.0</AndroidSdkBuildToolsVersion>
+    <AndroidUseLatestPlatformSdk>true</AndroidUseLatestPlatformSdk>
   </PropertyGroup>
 </Project>
