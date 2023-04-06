@@ -80,13 +80,13 @@ namespace Xamarin.Forms.Controls.Issues
 			var threadpoolButton = new Button { Text = "Update Instructions from Thread Pool" };
 			layout.Children.Add(threadpoolButton);
 
-			this.Dispatcher.BeginInvokeOnMainThread(() => { instructions.Text = "updated from thread pool 1"; });
+			this.Dispatcher.BeginInvokeOnMainThread(() => { instructions.Text = "updated from thread pool 1 IsInvokeRequired=" + this.Dispatcher.IsInvokeRequired; });
 
 			threadpoolButton.Clicked += (o, a) =>
 			{
 				Task.Run(() =>
 				{
-					this.Dispatcher.BeginInvokeOnMainThread(() => { instructions.Text = "updated from thread pool 2"; });
+					this.Dispatcher.BeginInvokeOnMainThread(() => { instructions.Text = "updated from thread pool 2 IsInvokeRequired=" + this.Dispatcher.IsInvokeRequired; });
 				});
 			};
 
