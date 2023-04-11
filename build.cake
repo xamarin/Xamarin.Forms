@@ -299,17 +299,13 @@ Task("provision-androidsdk")
             }
         }
 
-        if (!IsRunningOnWindows ()) {
-            if(!String.IsNullOrWhiteSpace(androidSDK))
-            {
-                await Boots (androidSDK);
-            }
-            else
-                await Boots (Product.XamarinAndroid, releaseChannel);
-        }
-        else if(!String.IsNullOrWhiteSpace(androidSDK))
+        if(!String.IsNullOrWhiteSpace(androidSDK))
         {
             await Boots (androidSDK);
+        }
+        else
+        {
+            await Boots (Product.XamarinAndroid, releaseChannel);
         }
     });
 
