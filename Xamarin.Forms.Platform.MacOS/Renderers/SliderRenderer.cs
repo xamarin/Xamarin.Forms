@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			var defaultMinTrackColor = Color.Accent.ToNSColor();
 
 			if (Forms.IsMojaveOrNewer)
-				defaultMinTrackColor = NSColor.ControlAccentColor;
+				defaultMinTrackColor = NSColor.ControlAccent;
 
 			var minTrackColor = MinimumTrackColor.IsDefault ? defaultMinTrackColor : MinimumTrackColor.ToNSColor();
 			minTrackColor.SetFill();
@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			var defaultMaxTrackColor = NSColor.ControlShadow;
 
 			if (Forms.IsMojaveOrNewer)
-				defaultMaxTrackColor = NSColor.SeparatorColor;
+				defaultMaxTrackColor = NSColor.Separator;
 
 			// Draw max track
 			var maxTrackPath = NSBezierPath.FromRoundedRect(maxTrackRect, radius, radius);
@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (Forms.IsMojaveOrNewer)
 				NSColor.ControlShadow.SetStroke();
 			else
-				NSColor.SeparatorColor.SetStroke();
+				NSColor.Separator.SetStroke();
 
 			path.Stroke();
 		}

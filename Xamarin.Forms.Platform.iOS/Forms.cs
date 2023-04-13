@@ -470,7 +470,7 @@ namespace Xamarin.Forms
 #elif __MACOS__
 
 				NSColor resultColor = null;
-
+#pragma warning disable CS0618 // Type or member is obsolete
 				switch (name)
 				{
 					case NamedPlatformColor.AlternateSelectedControlTextColor:
@@ -627,7 +627,9 @@ namespace Xamarin.Forms
 						resultColor = NSColor.SystemYellowColor;
 						break;
 					case NamedPlatformColor.TertiaryLabel:
+
 						resultColor = NSColor.TertiaryLabelColor;
+#pragma warning restore CS0618 // Type or member is obsolete
 						break;
 					default:
 						resultColor = NSColor.FromName(name);
