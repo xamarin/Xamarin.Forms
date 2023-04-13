@@ -43,7 +43,7 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.5.1.2" />
+    <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.6.1" />
     <PackageReference Include="Xamarin.Google.Android.Material" Version="1.8.0" />
     <PackageReference Include="Xamarin.AndroidX.Legacy.Support.V4" Version="1.0.0.16" />
     <PackageReference Include="Xamarin.AndroidX.Navigation.UI" Version="2.3.5.1" />
