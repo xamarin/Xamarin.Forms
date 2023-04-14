@@ -27,6 +27,11 @@ namespace Xamarin.Forms.Platform.UWP
 						s_current = new Dispatcher(renderer.ContainerElement.Dispatcher);
 						return s_current;
 					}
+					else
+					{
+						s_current = new Dispatcher();
+						return s_current;
+					}
 				}
 
 				return null;
