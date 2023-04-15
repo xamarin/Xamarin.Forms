@@ -55,7 +55,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			var oldElement = Element;
 			Element = element;
 
-			Init();
+			Initialize();
 
 			RaiseElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 
@@ -196,7 +196,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			return shown;
 		}
 
-		void Init()
+		void Initialize()
 		{
 			ConfigurePageRenderer();
 

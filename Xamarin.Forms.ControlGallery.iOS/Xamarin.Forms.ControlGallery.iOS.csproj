@@ -5,7 +5,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <iOSPlatform Condition=" '$(iOSPlatform)' == '' ">iPhone</iOSPlatform>
-    <Platform Condition=" '$(Platform)' == '' ">$(iOSPlatform)</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
     <ProjectGuid>{C7131F14-274F-4B55-ACA9-E81731AD012F}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
@@ -388,13 +388,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AdvancedColorPicker" Version="2.0.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NUnit">
       <Version>3.13.1</Version>
     </PackageReference>
     <PackageReference Include="Xam.Plugin.DeviceInfo" Version="3.0.2" />
     <PackageReference Include="Xamarin.Insights" Version="1.12.3" />
-    <PackageReference Include="Xamarin.TestCloud.Agent" Version="0.22.2" />
+    <PackageReference Include="Xamarin.TestCloud.Agent" Version="0.23.1" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />

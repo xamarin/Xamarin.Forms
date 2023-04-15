@@ -52,7 +52,7 @@
     <WarningLevel>4</WarningLevel>
     <AndroidLinkMode>None</AndroidLinkMode>
     <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
-    <AndroidSupportedAbis>armeabi-v7a;x86</AndroidSupportedAbis>
+    <AndroidSupportedAbis>armeabi-v7a;x86_64</AndroidSupportedAbis>
     <Debugger>Xamarin</Debugger>
     <DevInstrumentationEnabled>True</DevInstrumentationEnabled>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -342,7 +342,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>13.0.1</Version>
+      <Version>13.0.3</Version>
     </PackageReference>
     <PackageReference Include="NUnit">
       <Version>3.13.1</Version>
@@ -350,11 +350,6 @@
     <PackageReference Include="Xam.Plugin.DeviceInfo">
       <Version>3.0.2</Version>
     </PackageReference>  
-    <PackageReference Include="Xamarin.AndroidX.Legacy.Support.V4" Version="1.0.0.8" />
-    <PackageReference Include="Xamarin.AndroidX.Core" Version="1.6.0.1" />
-    <PackageReference Include="Xamarin.AndroidX.CustomView" Version="1.1.0.7" />
-    <PackageReference Include="Xamarin.AndroidX.Preference" Version="1.1.1.9" />
-    <PackageReference Include="Xamarin.AndroidX.RecyclerView" Version="1.2.1.1" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\fonts\ionicons.ttf">
