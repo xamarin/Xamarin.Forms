@@ -10,6 +10,7 @@ using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.OS;
+using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
@@ -1253,6 +1254,11 @@ namespace Xamarin.Forms.Platform.Android
 			public DefaultRenderer(Context context) : base(context)
 			{
 				ChildrenDrawingOrderEnabled = true;
+			}
+
+			public DefaultRenderer(IntPtr handle, JniHandleOwnership transfer)
+				: base(handle, transfer)
+			{
 			}
 
 			internal void NotifyFakeHandling()
