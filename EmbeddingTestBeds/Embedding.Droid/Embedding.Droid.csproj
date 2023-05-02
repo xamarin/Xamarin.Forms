@@ -16,10 +16,10 @@
     <AndroidApplication>True</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <AndroidTargetFrameworkVersion Condition="'$(AndroidTargetFrameworkVersion)' == ''">v10.0</AndroidTargetFrameworkVersion>
+    <AndroidTargetFrameworkVersion Condition="'$(AndroidTargetFrameworkVersion)' == ''">v13.0</AndroidTargetFrameworkVersion>
     <TargetFrameworkVersion>$(AndroidTargetFrameworkVersion)</TargetFrameworkVersion>
     <AndroidManifest Condition="$(AndroidTargetFrameworkVersion) == 'v10.0.99'">Properties\AndroidManifest30.xml</AndroidManifest>
-    <AndroidManifest Condition="$(AndroidTargetFrameworkVersion) == 'v10.0'">Properties\AndroidManifest.xml</AndroidManifest>
+    <AndroidManifest Condition="$(AndroidTargetFrameworkVersion) == 'v13.0'">Properties\AndroidManifest.xml</AndroidManifest>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>

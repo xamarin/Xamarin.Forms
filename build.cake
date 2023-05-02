@@ -22,7 +22,7 @@ PowerShell:
 #addin "nuget:?package=Cake.Android.Adb&version=3.2.0"
 #addin "nuget:?package=Cake.Git&version=0.21.0"
 #addin "nuget:?package=Cake.Android.SdkManager&version=3.0.2"
-#addin "nuget:?package=Cake.Boots&version=1.0.2.437"
+#addin "nuget:?package=Cake.Boots&version=1.1.0.36"
 #addin "nuget:?package=Cake.AppleSimulator&version=0.2.0"
 #addin "nuget:?package=Cake.FileHelpers&version=3.2.1"
 
@@ -88,7 +88,7 @@ MSBuildArguments = $"{MSBuildArgumentsENV} {MSBuildArgumentsARGS}";
     
 Information("MSBuildArguments: {0}", MSBuildArguments);
 
-string androidSdks = EnvironmentVariable("ANDROID_API_SDKS", "platform-tools,platforms;android-26,platforms;android-27,platforms;android-28,platforms;android-29,build-tools;29.0.3,platforms;android-30,build-tools;30.0.2");
+string androidSdks = EnvironmentVariable("ANDROID_API_SDKS", "platform-tools,platforms;android-26,platforms;android-27,platforms;android-28,platforms;android-29,build-tools;29.0.3,platforms;android-30,build-tools;30.0.2,platforms;android-32,build-tools;32.0.0,platforms;android-33,build-tools;33.0.2");
 
 Information("ANDROID_API_SDKS: {0}", androidSdks);
 string[] androidSdkManagerInstalls = androidSdks.Split(',');
@@ -252,7 +252,7 @@ Task("provision-iossdk")
 
 Task("provision-androidsdk")
     .Description("Install Xamarin.Android SDK")
-    .Does(async () =>
+    .Does(async (ctx) =>
     {
         Information ("ANDROID_HOME: {0}", ANDROID_HOME);
 
@@ -299,17 +299,13 @@ Task("provision-androidsdk")
             }
         }
 
-        if (!IsRunningOnWindows ()) {
-            if(!String.IsNullOrWhiteSpace(androidSDK))
-            {
-                await Boots (androidSDK);
-            }
-            else
-                await Boots (Product.XamarinAndroid, releaseChannel);
-        }
-        else if(!String.IsNullOrWhiteSpace(androidSDK))
+        if(!String.IsNullOrWhiteSpace(androidSDK))
         {
             await Boots (androidSDK);
+        }
+        else
+        {
+            await Boots (Product.XamarinAndroid, releaseChannel);
         }
     });
 
@@ -798,14 +794,14 @@ Task("Build")
     }
 });
 
-Task("Android100")
-    .Description("Builds Monodroid10.0 targets")
+Task("Android130")
+    .Description("Builds Monodroid13.0 targets")
     .Does(() =>
     {
         MSBuild("Xamarin.Forms.sln",
                 GetMSBuildSettings()
                     .WithRestore()
-                    .WithProperty("AndroidTargetFrameworks", "MonoAndroid10.0"));
+                    .WithProperty("AndroidTargetFrameworks", "MonoAndroid13.0"));
     });
 
 Task("VSMAC")

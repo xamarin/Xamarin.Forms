@@ -189,7 +189,9 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				MenuItem action = ActionModeContext.ContextActions[i];
 
+#pragma warning disable CS0618 // Type or member is obsolete
 				IMenuItem item = menu.Add(global::Android.Views.Menu.None, i, global::Android.Views.Menu.None, action.Text);
+#pragma warning restore CS0618 // Type or member is obsolete
 
 				_ = _context.ApplyDrawableAsync(action, MenuItem.IconImageSourceProperty, iconDrawable =>
 				{

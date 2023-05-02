@@ -40,11 +40,15 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static event BackButtonPressedEventHandler BackPressed;
 
+#pragma warning disable CS0672 // Member overrides obsolete member
 		public override void OnBackPressed()
+#pragma warning restore CS0672 // Member overrides obsolete member
 		{
 			if (BackPressed != null && BackPressed(this, EventArgs.Empty))
 				return;
+#pragma warning disable CS0618 // Type or member is obsolete
 			base.OnBackPressed();
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		public override void OnConfigurationChanged(Configuration newConfig)

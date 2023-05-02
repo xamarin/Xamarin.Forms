@@ -73,8 +73,8 @@ namespace Xamarin.Forms.Platform.Android.AppLinks
 			 * https://firebase.google.com/docs/app-indexing/android/personal-content#update-the-index for
 			 * adding content to the index 
             */
-			FirebaseAppIndex.Instance.Update(indexable);
-			GMSTask gmsTask = FirebaseUserActions.Instance
+			FirebaseAppIndex.GetInstance(Context).Update(indexable);
+			GMSTask gmsTask = FirebaseUserActions.GetInstance(Context)
 												 .Start(indexAction)
 												 .AddOnSuccessListener(Context.GetActivity(),
 																	   new AndroidActionSuccessListener(appLink as AppLinkEntry, indexAction))
@@ -84,7 +84,7 @@ namespace Xamarin.Forms.Platform.Android.AppLinks
 
 		void RemoveFromIndexItemAsync(string identifier)
 		{
-			FirebaseAppIndex.Instance.Remove(identifier);
+			FirebaseAppIndex.GetInstance(Context).Remove(identifier);
 		}
 
 		IIndexable GetIndexable(IAppLinkEntry appLink, string url)
@@ -122,11 +122,11 @@ namespace Xamarin.Forms.Platform.Android.AppLinks
 						{
 							if (appLink.IsLinkActive)
 							{
-								FirebaseUserActions.Instance.Start(indexAction);
+								FirebaseUserActions.GetInstance(Context).Start(indexAction);
 							}
 							else
 							{
-								FirebaseUserActions.Instance.End(indexAction);
+								FirebaseUserActions.GetInstance(Context).End(indexAction);
 							}
 						}
 					};
