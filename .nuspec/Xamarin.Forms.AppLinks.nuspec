@@ -16,8 +16,8 @@
     <dependencies>
       <group targetFramework="MonoAndroid13.0">
         <dependency id="Xamarin.Firebase.AppIndexing" version="120.0.0.11"/>        
-        <dependency id="Xamarin.AndroidX.Lifecycle.LiveData" version="2.5.1.2"/>
-        <dependency id="Xamarin.AndroidX.Legacy.Support.V4" version="1.0.0.16"/>
+        <dependency id="Xamarin.AndroidX.Lifecycle.LiveData" version="2.6.1.1"/>
+        <dependency id="Xamarin.AndroidX.Legacy.Support.V4" version="1.0.0.17"/>
       </group>
     </dependencies>
     <references>
