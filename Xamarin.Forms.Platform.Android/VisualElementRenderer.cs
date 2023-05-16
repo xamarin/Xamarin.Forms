@@ -37,6 +37,11 @@ namespace Xamarin.Forms.Platform.Android
 			_gestureManager = new GestureManager(this);
 		}
 
+		protected VisualElementRenderer(IntPtr handle, JniHandleOwnership transfer)
+			: base(handle, transfer)
+		{
+		}
+
 		public override bool OnTouchEvent(MotionEvent e)
 		{
 			return _gestureManager.OnTouchEvent(e) || base.OnTouchEvent(e);
