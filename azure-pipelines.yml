@@ -173,77 +173,8 @@ stages:
         steps:
           - template: build/steps/build-osx.yml
 
-  - stage: PoliCheck
-    displayName: 'Code Analysis'
-    dependsOn: windows
-    jobs:
-      - job: run_poli_check
-        displayName: 'Policheck And Credentials Compliance'
-        pool:
-          name: $(vs2019VmPool)
-          vmImage: $(vs2019VmImage)
-        timeoutInMinutes: 60
-        cancelTimeoutInMinutes: 5
-        steps:
-          - checkout: self
-
-          - template: security/policheck/v1.yml@xamarin-templates
-
-          - template: security/credscan/v2.yml@xamarin-templates
-            parameters:
-              suppressionsFile: $(System.DefaultWorkingDirectory)\build\automation\CredScanSuppressions.json
-
-          - task: securedevelopmentteam.vss-secure-development-tools.build-task-antimalware.AntiMalware@3
-            displayName: Run AntiMalware (Defender) Scan
-            inputs:
-              FileDirPath: $(System.DefaultWorkingDirectory)
-              EnableServices: true
-            condition: succeededOrFailed()
-
-          - task: securedevelopmentteam.vss-secure-development-tools.build-task-report.SdtReport@1
-            displayName: Create Security Analysis Report
-            inputs:
-              CredScan: true
-              PoliCheck: true
-            condition: succeededOrFailed()
-
-          - task: securedevelopmentteam.vss-secure-development-tools.build-task-publishsecurityanalysislogs.PublishSecurityAnalysisLogs@2
-            displayName: Publish Security Analysis Logs
-            inputs:
-              ArtifactName: CodeAnalysisLogs
-            condition: succeededOrFailed()
-
-          - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@1
-            displayName: Fail Job if Security Issues are Detected
-            inputs:
-              CredScan: true
-              PoliCheck: true
-            condition: succeededOrFailed()
-
-      # - job: api_scan
-      #   displayName: APIScan Compliance
-      #   pool:
-      #     name: $(corpVmImage)
-      #   steps:
-      #     - checkout: none
-      #       clean: true
-
-      #     - task: DownloadBuildArtifacts@0
-      #       displayName: 'Download build artifact win_build'
-      #       inputs:
-      #         artifactName: win_build
-      #         downloadPath: $(Build.StagingDirectory)
-
-      #     - task: securedevelopmentteam.vss-secure-development-tools.build-task-apiscan.APIScan@2
-      #       displayName: 'Run APIScan'
-      #       inputs:
-      #         softwareFolder: '$(Build.StagingDirectory)\win_build'
-      #         softwareName: Xamarin.Forms
-      #         softwareVersionNum: $(Build.BuildNumber)
-      #         isLargeApp: false
-
   # only sign using the private server and not sigining Maui for now
-  - ${{ if and(eq(variables['System.TeamProject'], 'devdiv'), ne(variables['System.DefinitionId'], '13330')) }}:
+  - ${{ if eq(variables['System.TeamProject'], 'devdiv') }}:
     - stage: nuget_signing
       dependsOn: windows
       displayName: Sign Nuget
@@ -260,3 +191,63 @@ stages:
               - task: NuGetToolInstaller@1
                 inputs:
                   versionSpec: $(NUGET_VERSION)
+
+    - stage: PoliCheck
+      displayName: 'Code Analysis'
+      dependsOn: windows
+      jobs:
+        - job: run_poli_check
+          displayName: 'Policheck And Credentials Compliance'
+          pool:
+            name: $(vs2019VmPool)
+            vmImage: $(vs2019VmImage)
+          timeoutInMinutes: 60
+          cancelTimeoutInMinutes: 5
+          steps:
+            - checkout: self
+
+            - template: security/policheck/v2.yml@xamarin-templates
+
+            - template: security/credscan/v3.yml@xamarin-templates
+              parameters:
+                suppressionsFile: $(System.DefaultWorkingDirectory)\build\automation\CredScanSuppressions.json
+
+            - task: securedevelopmentteam.vss-secure-development-tools.build-task-antimalware.AntiMalware@4
+              displayName: Run AntiMalware (Defender) Scan
+              inputs:
+                FileDirPath: $(System.DefaultWorkingDirectory)
+                EnableServices: true
+              condition: succeededOrFailed()
+
+            - task: securedevelopmentteam.vss-secure-development-tools.build-task-report.SdtReport@2
+              displayName: Create Security Analysis Report
+              inputs:
+                CredScan: true
+                PoliCheck: true
+              condition: succeededOrFailed()
+
+            - task: securedevelopmentteam.vss-secure-development-tools.build-task-publishsecurityanalysislogs.PublishSecurityAnalysisLogs@3
+              displayName: Publish Security Analysis Logs
+              inputs:
+                ArtifactName: CodeAnalysisLogs
+              condition: succeededOrFailed()
+
+            - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@2
+              displayName: Fail Job if Security Issues are Detected
+              inputs:
+                CredScan: true
+                PoliCheck: true
+                GdnBreakGdnToolPoliCheckSeverity: 'Error'
+              condition: succeededOrFailed()
+
+    - stage: sbom
+      dependsOn: nuget_signing
+      displayName: 'Software Bill of Materials'
+      jobs:
+      - template: compliance/sbom/job.v1.yml@xamarin-templates        # Software Bill of Materials (SBOM): https://eng.ms/docs/cloud-ai-platform/devdiv/one-engineering-system-1es/1es-docs/secure-supply-chain/ado-sbom-generator
+        parameters:
+          artifactNames: ['nuget']
+          artifactMap: ['nuget/signed']
+          packageName: 'Xamarin Forms'
+          packageFilter: '*.nupkg'
+          condition: ${{ variables.signingCondition }}
