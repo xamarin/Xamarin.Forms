@@ -416,7 +416,7 @@ Task ("cg-uwp-build-tests")
             .WithProperty("AppxBundle", "Always")
             .WithProperty("UapAppxPackageBuildMode", "StoreUpload")
             .WithProperty("AppxPackageSigningEnabled", "true")
-            .WithProperty("PackageCertificateThumbprint", "56bd4afa82e773646496fb0c168516d3cbd85731")
+            .WithProperty("PackageCertificateThumbprint", "edf444faf5de86f6de696f9cb434b9ae040257b1")
             .WithProperty("PackageCertificateKeyFile", "Xamarin.Forms.ControlGallery.WindowsUniversal_TemporaryKey.pfx")
             .WithProperty("PackageCertificatePassword", "")
             // The platform unit tests can't run when UseDotNetNativeToolchain is set to true so we force it off here
