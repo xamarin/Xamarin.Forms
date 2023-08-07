@@ -1,7 +1,7 @@
 parameters:
   name: ''            # in the form type_platform_host
   displayName: ''     # the human name
-  vmImage: 'macOS-10.15'         # the VM image
+  vmImage: 'internal-macos12'         # the VM image
   vmPool: 'Azure Pipelines'         # the VM pool
   dependsOn: []       # the dependiencies
   preBuildSteps: []   # any steps to run before the build
@@ -24,7 +24,7 @@ jobs:
     timeoutInMinutes: 120
     pool:
       name: ${{ coalesce(parameters.vmPool, 'Azure Pipelines') }}
-      vmImage: ${{ coalesce(parameters.vmImage, 'macOS-10.15') }}
+      vmImage: ${{ coalesce(parameters.vmImage, 'internal-macos12') }}
     dependsOn: ${{ parameters.dependsOn }}
     strategy:
       matrix:
