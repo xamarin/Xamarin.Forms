@@ -105,7 +105,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public static UIImage GetBackgroundImage(this UIView control, Brush brush)
 		{
-			if (control == null || brush == null || brush.IsEmpty)
+			if (control == null || brush == null || brush.IsEmpty || control.Bounds == CGRect.Empty)
 				return null;
 
 			var backgroundLayer = control.GetBackgroundLayer(brush);
