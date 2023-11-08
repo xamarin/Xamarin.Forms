@@ -113,16 +113,13 @@ namespace Xamarin.Forms.Platform.iOS
 			if (backgroundLayer == null)
 				return null;
 
-			UIGraphics.BeginImageContextWithOptions(backgroundLayer.Bounds.Size, false, UIScreen.MainScreen.Scale);
+			var renderer = new UIGraphicsImageRenderer(backgroundLayer.Bounds.Size, new UIGraphicsImageRendererFormat()
+			{
+				Opaque = false,
+				Scale = UIScreen.MainScreen.Scale,
+			});
 
-			if (UIGraphics.GetCurrentContext() == null)
-				return null;
-
-			backgroundLayer.RenderInContext(UIGraphics.GetCurrentContext());
-			UIImage gradientImage = UIGraphics.GetImageFromCurrentImageContext();
-			UIGraphics.EndImageContext(); 
-
-			return gradientImage;
+			return renderer.CreateImage((context) => backgroundLayer.RenderInContext(context.CGContext));
 		}
 
 		public static void InsertBackgroundLayer(this UIView view, CALayer backgroundLayer, int index = -1)

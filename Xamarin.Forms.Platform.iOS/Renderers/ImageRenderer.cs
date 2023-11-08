@@ -8,6 +8,8 @@ using UIKit;
 using Xamarin.Forms.Internals;
 using RectangleF = CoreGraphics.CGRect;
 using PreserveAttribute = Foundation.PreserveAttribute;
+using CoreGraphics;
+using System.Drawing;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -279,17 +281,23 @@ namespace Xamarin.Forms.Platform.iOS
 				var iconcolor = fontsource.Color.IsDefault ? _defaultColor : fontsource.Color;
 				var attString = new NSAttributedString(fontsource.Glyph, font: font, foregroundColor: iconcolor.ToUIColor());
 				var imagesize = ((NSString)fontsource.Glyph).GetSizeUsingAttributes(attString.GetUIKitAttributes(0, out _));
-				
-				UIGraphics.BeginImageContextWithOptions(imagesize, false, 0f);
-				var ctx = new NSStringDrawingContext();
-				var boundingRect = attString.GetBoundingRect(imagesize, (NSStringDrawingOptions)0, ctx);
-				attString.DrawString(new RectangleF(
-					imagesize.Width / 2 - boundingRect.Size.Width / 2,
-					imagesize.Height / 2 - boundingRect.Size.Height / 2,
-					imagesize.Width,
-					imagesize.Height));
-				image = UIGraphics.GetImageFromCurrentImageContext();
-				UIGraphics.EndImageContext();
+
+				var renderer = new UIGraphicsImageRenderer(imagesize, new UIGraphicsImageRendererFormat()
+				{
+					Opaque = false,
+					Scale = 0,
+				});
+
+				image = renderer.CreateImage((context) =>
+				{
+					var ctx = new NSStringDrawingContext();
+					var boundingRect = attString.GetBoundingRect(imagesize, (NSStringDrawingOptions)0, ctx);
+					attString.DrawString(new RectangleF(
+						imagesize.Width / 2 - boundingRect.Size.Width / 2,
+						imagesize.Height / 2 - boundingRect.Size.Height / 2,
+						imagesize.Width,
+						imagesize.Height));
+				});
 
 				if (image != null && iconcolor != _defaultColor)
 					image = image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
