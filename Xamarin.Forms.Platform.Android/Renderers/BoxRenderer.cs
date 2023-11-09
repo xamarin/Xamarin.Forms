@@ -52,10 +52,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.IsOneOf(VisualElement.BackgroundColorProperty, VisualElement.BackgroundProperty, BoxView.ColorProperty))
+			if (e.IsOneOf(VisualElement.BackgroundColorProperty, VisualElement.BackgroundProperty, BoxView.ColorProperty, BoxView.CornerRadiusProperty))
 				UpdateBoxView();
-			else if (e.PropertyName == BoxView.CornerRadiusProperty.PropertyName)
-				UpdateCornerRadius();
 		}
 
 		protected override void UpdateBackgroundColor()
@@ -179,8 +177,6 @@ namespace Xamarin.Forms.Platform.Android
 					backgroundGradient.SetCornerRadii(cornerRadii);
 				}
 			}
-
-			UpdateBackgroundColor();
 		}
 	}
 }

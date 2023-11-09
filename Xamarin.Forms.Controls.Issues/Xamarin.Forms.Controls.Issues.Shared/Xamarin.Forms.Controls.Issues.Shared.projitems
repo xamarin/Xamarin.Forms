@@ -1732,6 +1732,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue11869.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11723.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue12061.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11155.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue11643.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HeaderFooterShellFlyout.cs" />
