@@ -672,7 +672,7 @@ namespace Xamarin.Forms.Platform.Android
 			int position = TemplatedItemsView.TemplatedItems.GetGlobalIndexOfItem(item);
 			AView view = null;
 			if (position != -1)
-				view = _realListView.GetChildAt(position + 1 - _realListView.FirstVisiblePosition);
+				view = _realListView.GetChildAt(position + _realListView.HeaderViewsCount - _realListView.FirstVisiblePosition);
 
 			Select(position, view);
 		}
