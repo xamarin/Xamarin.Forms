@@ -271,7 +271,10 @@ namespace Xamarin.Forms.Platform.Android
 				MeasureSpecFactory.MakeMeasureSpec(bottom - top, MeasureSpecMode.Unspecified));
 			base.OnLayout(changed, left, top, right, bottom);
 			if (_view.Content != null && _hScrollView != null)
-				_hScrollView.Layout(0, 0, right - left, Math.Max(bottom - top, (int)Context.ToPixels(_view.Content.Height)));
+			{
+				double scrollViewHeight = _view.Content.Height + _view.Padding.Top + _view.Padding.Bottom + _view.Content.Margin.Top + _view.Content.Margin.Bottom;
+				_hScrollView.Layout(0, 0, right - left, Math.Max(bottom - top, (int)Context.ToPixels(scrollViewHeight)));
+			}
 			else if (_view.Content != null && requestContainerLayout)
 				_container?.RequestLayout();
 
@@ -285,6 +288,16 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			_checkedForRtlScroll = true;
+		}
+
+		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
+		{
+			if (Element is Layout layout)
+			{
+				layout.ResolveLayoutChanges();
+			}
+
+			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
 		}
 
 		protected override void OnScrollChanged(int l, int t, int oldl, int oldt)

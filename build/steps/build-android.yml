@@ -1,7 +1,7 @@
 parameters:
   name: ''            # in the form type_platform_host
   displayName: ''     # the human name
-  vmImage: 'macOS-10.15'         # the VM image
+  vmImage: 'internal-macos12'         # the VM image
   vmPool: 'Azure Pipelines'         # the VM pool
   dependsOn: []       # the dependiencies
   preBuildSteps: []   # any steps to run before the build
@@ -24,7 +24,7 @@ jobs:
     timeoutInMinutes: 120
     pool:
       name: ${{ coalesce(parameters.vmPool, 'Azure Pipelines') }}
-      vmImage: ${{ coalesce(parameters.vmImage, 'macOS-10.15') }}
+      vmImage: ${{ coalesce(parameters.vmImage, 'internal-macos12') }}
     dependsOn: ${{ parameters.dependsOn }}
     strategy:
       matrix:
@@ -61,12 +61,14 @@ jobs:
           echo "##vso[task.setvariable variable=JI_JAVA_HOME]$(JAVA_HOME_11_X64)"
         displayName: 'Setup JDK Paths'
 
-      - task: xamops.azdevex.provisionator-task.provisionator@1
+      - task: xamops.azdevex.provisionator-task.provisionator@2
         displayName: 'Provisionator'
         condition: eq(variables['provisioning'], 'true')
         inputs:
           provisioning_script: ${{ parameters.provisionatorPath }}
           provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
+        env:
+          AUTH_TOKEN_GITHUB_COM: $(github--pat--vs-mobiletools-engineering-service2)
 
       - script: '/bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh ${{ parameters.monoVersion }}"'
         displayName: 'Select MONO ${{ parameters.monoVersion }}'

@@ -274,15 +274,32 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				//to keep some behavior we have on iPad where you can toggle and it won't do anything 
 				bool isDefaultNoToggle = _parent.FlyoutLayoutBehavior == FlyoutLayoutBehavior.Default;
-				xPos = isFlyoutPage ? 0 : (_parent.IsPresented || isDefaultNoToggle ? DefaultWidthFlyout : 0);
+
+				if (_parent.FlowDirection == FlowDirection.RightToLeft)
+				{
+					double rightDp2 = Context.FromPixels(right);
+					xPos = isFlyoutPage ? rightDp2 - DefaultWidthFlyout : (_parent.IsPresented || isDefaultNoToggle ? 0 : rightDp2 - DefaultWidthFlyout);
+				}
+				else
+				{
+					xPos = isFlyoutPage ? 0 : (_parent.IsPresented || isDefaultNoToggle ? DefaultWidthFlyout : 0);
+				}
+
 				width = isFlyoutPage ? DefaultWidthFlyout : _parent.IsPresented || isDefaultNoToggle ? width - DefaultWidthFlyout : width;
 			}
 			else
 			{
 				//if we are showing the normal popover master doesn't have padding
 				supressPadding = isFlyoutPage;
+
+				if (_parent.FlowDirection == FlowDirection.RightToLeft && isFlyoutPage)
+				{
+					xPos = width - DefaultWidthFlyout;
+				}
+
 				//popover make the master smaller
 				width = isFlyoutPage && (Device.Info.CurrentOrientation.IsLandscape() || Device.Idiom == TargetIdiom.Tablet) ? DefaultWidthFlyout : width;
+
 			}
 
 			double padding = supressPadding ? 0 : Context.FromPixels(TopPadding);

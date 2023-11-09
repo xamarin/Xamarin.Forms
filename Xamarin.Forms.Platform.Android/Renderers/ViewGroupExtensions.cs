@@ -23,5 +23,27 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 		}
+
+		public static T GetFirstChildOfType<T>(this AViewGroup viewGroup) where T : AView
+		{
+			for (var i = 0; i < viewGroup.ChildCount; i++)
+			{
+				AView child = viewGroup.GetChildAt(i);
+
+				if (child is T typedChild)
+					return typedChild;
+
+				if (child is AViewGroup vg)
+				{
+					var descendant = vg.GetFirstChildOfType<T>();
+					if (descendant != null)
+					{
+						return descendant;
+					}
+				}
+			}
+
+			return null;
+		}
 	}
 }

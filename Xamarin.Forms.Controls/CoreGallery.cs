@@ -81,8 +81,23 @@ namespace Xamarin.Forms.Controls
 			Detail = detailPage;
 		}
 	}
+
 	[Preserve(AllMembers = true)]
-	internal class CoreNavigationPage : NavigationPage
+	public class CoreFlyoutView : ContentPage
+	{
+		public CoreFlyoutView()
+		{
+			On<iOS>().SetUseSafeArea(true);
+			Title = "Flyout";
+			Content = new StackLayout { BackgroundColor = Color.Red, Children = { new Label { Text = "This is master Page" } } };
+			BackgroundColor = Color.SkyBlue;
+			IconImageSource = "menuIcon";
+			IconImageSource.AutomationId = "btnMDPAutomationID";
+		}
+	}
+
+	[Preserve(AllMembers = true)]
+	public class CoreNavigationPage : NavigationPage
 	{
 		public CoreNavigationPage()
 		{
@@ -667,6 +682,11 @@ namespace Xamarin.Forms.Controls
 		public static Page GetMainPage()
 		{
 			return new CoreNavigationPage();
+		}
+
+		public static Page GetFlyoutPage()
+		{
+			return new CoreFlyoutView();
 		}
 	}
 }

@@ -132,13 +132,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void OnItemClick(AdapterView parent, AView view, int position, long id)
 		{
+			var listView = parent as AListView;
+			if (listView != null)
+				position -= listView.HeaderViewsCount;
+
 			if (_actionMode != null || _supportActionMode != null)
-			{
-				var listView = parent as AListView;
-				if (listView != null)
-					position -= listView.HeaderViewsCount;
 				HandleContextMode(view, position);
-			}
 			else
 				HandleItemClick(parent, view, position, id);
 		}
@@ -190,7 +189,9 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				MenuItem action = ActionModeContext.ContextActions[i];
 
+#pragma warning disable CS0618 // Type or member is obsolete
 				IMenuItem item = menu.Add(global::Android.Views.Menu.None, i, global::Android.Views.Menu.None, action.Text);
+#pragma warning restore CS0618 // Type or member is obsolete
 
 				_ = _context.ApplyDrawableAsync(action, MenuItem.IconImageSourceProperty, iconDrawable =>
 				{

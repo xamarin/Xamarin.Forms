@@ -171,20 +171,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void SetBackgroundColor(Color color)
 		{
-			UIColor backgroundColor = ColorExtensions.BackgroundColor;
+			Color backgroundColor = Element.BackgroundColor;
 
-			if (Element.BackgroundColor != Color.Default)
-			{
-				BackgroundColor = Element.BackgroundColor.ToUIColor();
+			if (Element.BackgroundColor == Color.Default)
+				return;
 
-				if (_contentView != null && (Element.Content == null || (Element.Content != null && Element.Content.BackgroundColor == Color.Default)))
-					_contentView.BackgroundColor = Element.BackgroundColor.ToUIColor();
-			}
-			else
-				BackgroundColor = backgroundColor;
+			BackgroundColor = backgroundColor.ToUIColor();
 
-			if (_contentView != null && _contentView.BackgroundColor == UIColor.Clear)
-				_contentView.BackgroundColor = backgroundColor;
+			if (_contentView != null && (Element.Content == null || (Element.Content != null && Element.Content.BackgroundColor == Color.Default)))
+				_contentView.BackgroundColor = backgroundColor.ToUIColor();
 		}
 
 		protected override void SetBackground(Brush brush)
@@ -755,12 +750,17 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var width = maxResizeFactor * sourceSize.Width;
 			var height = maxResizeFactor * sourceSize.Height;
-			UIGraphics.BeginImageContextWithOptions(new CGSize((nfloat)width, (nfloat)height), false, 0);
-			sourceImage.Draw(new CGRect(0, 0, (nfloat)width, (nfloat)height));
-			var resultImage = UIGraphics.GetImageFromCurrentImageContext();
-			UIGraphics.EndImageContext();
 
-			return resultImage;
+			var renderer = new UIGraphicsImageRenderer(new CGSize((nfloat)width, (nfloat)height), new UIGraphicsImageRendererFormat()
+			{
+				Opaque = false,
+				Scale = 0,
+			});
+
+			return renderer.CreateImage((context) =>
+			{
+				sourceImage.Draw(new CGRect(0, 0, (nfloat)width, (nfloat)height));
+			});
 		}
 
 		void HandleTouchInteractions(GestureStatus status, CGPoint point)

@@ -171,60 +171,57 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal virtual UIImage CreateCheckBox(UIImage check)
 		{
-			UIGraphics.BeginImageContextWithOptions(new CGSize(_defaultSize, _defaultSize), false, 0);
-			var context = UIGraphics.GetCurrentContext();
-			context.SaveState();
-
-			var checkedColor = CheckBoxTintUIColor;
-			checkedColor.SetFill();
-			checkedColor.SetStroke();
-
-			var vPadding = _lineWidth / 2;
-			var hPadding = _lineWidth / 2;
-			var diameter = _defaultSize - _lineWidth;
-
-			var backgroundRect = new CGRect(hPadding, vPadding, diameter, diameter);
-			var boxPath = CreateBoxPath(backgroundRect);
-			boxPath.LineWidth = _lineWidth;
-			boxPath.Stroke();
-
-			if (check != null)
+			var renderer = new UIGraphicsImageRenderer(new CGSize(_defaultSize, _defaultSize), new UIGraphicsImageRendererFormat()
 			{
-				boxPath.Fill();
-				check.Draw(new CGPoint(0, 0), CGBlendMode.DestinationOut, 1);
-			}
+				Opaque = false,
+				Scale = 0,
+			});
 
-			context.RestoreState();
-			var img = UIGraphics.GetImageFromCurrentImageContext();
-			UIGraphics.EndImageContext();
+			return renderer.CreateImage((context) =>
+			{
+				var checkedColor = CheckBoxTintUIColor;
+				checkedColor.SetFill();
+				checkedColor.SetStroke();
 
-			return img;
+				var vPadding = _lineWidth / 2;
+				var hPadding = _lineWidth / 2;
+				var diameter = _defaultSize - _lineWidth;
+
+				var backgroundRect = new CGRect(hPadding, vPadding, diameter, diameter);
+				var boxPath = CreateBoxPath(backgroundRect);
+				boxPath.LineWidth = _lineWidth;
+				boxPath.Stroke();
+
+				if (check != null)
+				{
+					boxPath.Fill();
+					check.Draw(new CGPoint(0, 0), CGBlendMode.DestinationOut, 1);
+				}
+			});
 		}
-
 
 		internal UIImage CreateCheckMark()
 		{
-			UIGraphics.BeginImageContextWithOptions(new CGSize(_defaultSize, _defaultSize), false, 0);
-			var context = UIGraphics.GetCurrentContext();
-			context.SaveState();
+			var renderer = new UIGraphicsImageRenderer(new CGSize(_defaultSize, _defaultSize), new UIGraphicsImageRendererFormat()
+			{
+				Opaque = false,
+				Scale = 0,
+			});
 
-			var vPadding = _lineWidth / 2;
-			var hPadding = _lineWidth / 2;
-			var diameter = _defaultSize - _lineWidth;
+			return renderer.CreateImage((context) =>
+			{
+				var vPadding = _lineWidth / 2;
+				var hPadding = _lineWidth / 2;
+				var diameter = _defaultSize - _lineWidth;
 
-			var checkPath = CreateCheckPath();
+				var checkPath = CreateCheckPath();
 
-			context.TranslateCTM(hPadding + (nfloat)(0.05 * diameter), vPadding + (nfloat)(0.1 * diameter));
-			context.ScaleCTM(diameter, diameter);
-			DrawCheckMark(checkPath);
-			UIColor.White.SetStroke();
-			checkPath.Stroke();
-
-			context.RestoreState();
-			var img = UIGraphics.GetImageFromCurrentImageContext();
-			UIGraphics.EndImageContext();
-
-			return img;
+				context.CGContext.TranslateCTM(hPadding + (nfloat)(0.05 * diameter), vPadding + (nfloat)(0.1 * diameter));
+				context.CGContext.ScaleCTM(diameter, diameter);
+				DrawCheckMark(checkPath);
+				UIColor.White.SetStroke();
+				checkPath.Stroke();
+			});
 		}
 
 		protected override void Dispose(bool disposing)

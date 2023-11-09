@@ -7,6 +7,17 @@ Xamarin.Forms provides a way to quickly build native apps for iOS, Android, Wind
 
 Read more about the platform at https://www.xamarin.com/forms.
 
+# Support
+
+Xamarin.Forms now has a successor which is .NET MAUI as part of .NET 6+ and follows the same support lifecycle as the [MAUI Support Lifecycle][maui-support-lifecycle].
+
+Support for Xamarin.Forms will end on **May 1, 2024** as per the [Xamarin Support Policy][xamarin-support-policy]:
+
+> Xamarin support will end on May 1, 2024 for all classic Xamarin SDKs.
+
+[maui-support-lifecycle]: https://dotnet.microsoft.com/platform/support/policy/maui
+[xamarin-support-policy]: https://dotnet.microsoft.com/platform/support/policy/xamarin
+
 ## Build Status ##
 
 ![Azure DevOps](https://devdiv.visualstudio.com/DevDiv/_apis/build/status/Xamarin/XamarinForms/Xamarin%20Forms?branchName=main "Azure Pipelines")
@@ -177,4 +188,7 @@ We follow the style used by the [.NET Foundation](https://github.com/dotnet/runt
 
 ### Reporting Bugs ###
 
-We use [GitHub Issues](https://github.com/xamarin/Xamarin.Forms/issues) to track issues. If at all possible, please submit a [reproduction of your bug](https://github.com/xamarin/Xamarin.Forms/blob/main/repro.md) along with your bug report.
+We use [GitHub Issues](https://github.com/xamarin/Xamarin.Forms/issues) to track issues. If at all possible, please submit a [reproduction of your bug](https://github.com/xamarin/Xamarin.Forms/blob/main/.github/repro.md) along with your bug report.
+
+## Stats
+<img src="https://repobeats.axiom.co/api/embed/f917a77cbbdeee19b87fa1f2f932895d1df18b30.svg" />

@@ -19,7 +19,7 @@ namespace Xamarin.Forms
 
 		readonly Dictionary<BindableProperty, BindablePropertyContext> _properties = new Dictionary<BindableProperty, BindablePropertyContext>(4);
 		bool _applying;
-		object _inheritedContext;
+		WeakReference _inheritedContext;
 
 		public static readonly BindableProperty BindingContextProperty =
 			BindableProperty.Create(nameof(BindingContext), typeof(object), typeof(BindableObject), default(object),
@@ -27,7 +27,7 @@ namespace Xamarin.Forms
 
 		public object BindingContext
 		{
-			get => _inheritedContext ?? GetValue(BindingContextProperty);
+			get => _inheritedContext?.Target ?? GetValue(BindingContextProperty);
 			set => SetValue(BindingContextProperty, value);
 		}
 
@@ -225,7 +225,7 @@ namespace Xamarin.Forms
 			if (bpContext != null && ((bpContext.Attributes & BindableContextAttributes.IsManuallySet) != 0))
 				return;
 
-			object oldContext = bindable._inheritedContext;
+			object oldContext = bindable._inheritedContext?.Target;
 
 			if (ReferenceEquals(oldContext, value))
 				return;
@@ -240,7 +240,7 @@ namespace Xamarin.Forms
 			}
 			else
 			{
-				bindable._inheritedContext = value;
+				bindable._inheritedContext = new WeakReference(value);
 			}
 
 			bindable.ApplyBindings(skipBindingContext: false, fromBindingContextChanged: true);
@@ -533,7 +533,7 @@ namespace Xamarin.Forms
 
 		static void BindingContextPropertyBindingChanging(BindableObject bindable, BindingBase oldBindingBase, BindingBase newBindingBase)
 		{
-			object context = bindable._inheritedContext;
+			object context = bindable._inheritedContext?.Target;
 			var oldBinding = oldBindingBase as Binding;
 			var newBinding = newBindingBase as Binding;
 

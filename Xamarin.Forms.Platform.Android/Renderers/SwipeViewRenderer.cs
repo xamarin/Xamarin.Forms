@@ -151,6 +151,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (Element != null)
 			{
+				if (_pageParent == null)
+					_pageParent = Element.FindParentOfType<TabbedPage>();
+
 				if (_scrollParent == null)
 				{
 					_scrollParent = Element.FindParentOfType<ScrollView>();
@@ -176,9 +179,6 @@ namespace Xamarin.Forms.Platform.Android
 						collectionView.Scrolled += OnParentScrolled;
 					}
 				}
-
-				if (_pageParent == null)
-					_pageParent = Element.FindParentOfType<TabbedPage>();
 			}
 		}
 
@@ -384,8 +384,12 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_contentView != null)
 			{
-				_contentView.RemoveFromParent();
-				_contentView.Dispose();
+				if (!_contentView.IsDisposed())
+				{
+					_contentView.RemoveFromParent();
+					_contentView.Dispose();
+				}
+
 				_contentView = null;
 			}
 
@@ -394,6 +398,7 @@ namespace Xamarin.Forms.Platform.Android
 			else
 				_contentView = CreateContent();
 
+			_contentView.RemoveFromParent();
 			AddView(_contentView);
 
 			UpdateBackgroundColor();

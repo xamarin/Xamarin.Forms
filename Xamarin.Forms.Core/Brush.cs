@@ -1,162 +1,465 @@
-﻿namespace Xamarin.Forms
+﻿using System;
+
+namespace Xamarin.Forms
 {
-	[TypeConverter(typeof(BrushTypeConverter))]
-	public abstract class Brush : Element
+	internal class ImmutableBrush : SolidColorBrush
 	{
-		public static Brush Default
+		static readonly BindablePropertyKey ColorPropertyKey =
+			BindableProperty.CreateReadOnly(nameof(Color), typeof(Color), typeof(ImmutableBrush), null);
+
+		public new static readonly BindableProperty ColorProperty = ColorPropertyKey.BindableProperty;
+
+		public ImmutableBrush(Color color)
 		{
-			get { return new SolidColorBrush(Color.Default); }
+			SetValue(ColorPropertyKey, color);
 		}
+
+		public override Color Color
+		{
+			get => (Color)GetValue(ColorProperty);
+			set { }
+		}
+	}
+
+	[TypeConverter(typeof(BrushTypeConverter))]
+	public abstract partial class Brush : Element
+	{
+		static ImmutableBrush defaultBrush;
+		/// <include file="../../docs/Microsoft.Maui.Controls/Brush.xml" path="//Member[@MemberName='Default']/Docs/*" />
+		public static Brush Default => defaultBrush ??= new ImmutableBrush(Color.Default);
 
 		public static implicit operator Brush(Color color) => new SolidColorBrush(color);
 
+		/// <include file="../../docs/Microsoft.Maui.Controls/Brush.xml" path="//Member[@MemberName='IsEmpty']/Docs/*" />
 		public abstract bool IsEmpty { get; }
 
+		/// <include file="../../docs/Microsoft.Maui.Controls/Brush.xml" path="//Member[@MemberName='IsNullOrEmpty']/Docs/*" />
 		public static bool IsNullOrEmpty(Brush brush)
 		{
 			return brush == null || brush.IsEmpty;
 		}
 
-		public static readonly SolidColorBrush AliceBlue = new SolidColorBrush(Color.AliceBlue);
-		public static readonly SolidColorBrush AntiqueWhite = new SolidColorBrush(Color.AntiqueWhite);
-		public static readonly SolidColorBrush Aqua = new SolidColorBrush(Color.Aqua);
-		public static readonly SolidColorBrush Aquamarine = new SolidColorBrush(Color.Aquamarine);
-		public static readonly SolidColorBrush Azure = new SolidColorBrush(Color.Azure);
-		public static readonly SolidColorBrush Beige = new SolidColorBrush(Color.Beige);
-		public static readonly SolidColorBrush Bisque = new SolidColorBrush(Color.Bisque);
-		public static readonly SolidColorBrush Black = new SolidColorBrush(Color.Black);
-		public static readonly SolidColorBrush BlanchedAlmond = new SolidColorBrush(Color.BlanchedAlmond);
-		public static readonly SolidColorBrush Blue = new SolidColorBrush(Color.Blue);
-		public static readonly SolidColorBrush BlueViolet = new SolidColorBrush(Color.BlueViolet);
-		public static readonly SolidColorBrush Brown = new SolidColorBrush(Color.Brown);
-		public static readonly SolidColorBrush BurlyWood = new SolidColorBrush(Color.BurlyWood);
-		public static readonly SolidColorBrush CadetBlue = new SolidColorBrush(Color.CadetBlue);
-		public static readonly SolidColorBrush Chartreuse = new SolidColorBrush(Color.Chartreuse);
-		public static readonly SolidColorBrush Chocolate = new SolidColorBrush(Color.Chocolate);
-		public static readonly SolidColorBrush Coral = new SolidColorBrush(Color.Coral);
-		public static readonly SolidColorBrush CornflowerBlue = new SolidColorBrush(Color.CornflowerBlue);
-		public static readonly SolidColorBrush Cornsilk = new SolidColorBrush(Color.Cornsilk);
-		public static readonly SolidColorBrush Crimson = new SolidColorBrush(Color.Crimson);
-		public static readonly SolidColorBrush Cyan = new SolidColorBrush(Color.Cyan);
-		public static readonly SolidColorBrush DarkBlue = new SolidColorBrush(Color.DarkBlue);
-		public static readonly SolidColorBrush DarkCyan = new SolidColorBrush(Color.DarkCyan);
-		public static readonly SolidColorBrush DarkGoldenrod = new SolidColorBrush(Color.DarkGoldenrod);
-		public static readonly SolidColorBrush DarkGray = new SolidColorBrush(Color.DarkGray);
-		public static readonly SolidColorBrush DarkGreen = new SolidColorBrush(Color.DarkGreen);
-		public static readonly SolidColorBrush DarkKhaki = new SolidColorBrush(Color.DarkKhaki);
-		public static readonly SolidColorBrush DarkMagenta = new SolidColorBrush(Color.DarkMagenta);
-		public static readonly SolidColorBrush DarkOliveGreen = new SolidColorBrush(Color.DarkOliveGreen);
-		public static readonly SolidColorBrush DarkOrange = new SolidColorBrush(Color.DarkOrange);
-		public static readonly SolidColorBrush DarkOrchid = new SolidColorBrush(Color.DarkOrchid);
-		public static readonly SolidColorBrush DarkRed = new SolidColorBrush(Color.DarkRed);
-		public static readonly SolidColorBrush DarkSalmon = new SolidColorBrush(Color.DarkSalmon);
-		public static readonly SolidColorBrush DarkSeaGreen = new SolidColorBrush(Color.DarkSeaGreen);
-		public static readonly SolidColorBrush DarkSlateBlue = new SolidColorBrush(Color.DarkSlateBlue);
-		public static readonly SolidColorBrush DarkSlateGray = new SolidColorBrush(Color.DarkSlateGray);
-		public static readonly SolidColorBrush DarkTurquoise = new SolidColorBrush(Color.DarkTurquoise);
-		public static readonly SolidColorBrush DarkViolet = new SolidColorBrush(Color.DarkViolet);
-		public static readonly SolidColorBrush DeepPink = new SolidColorBrush(Color.DeepPink);
-		public static readonly SolidColorBrush DeepSkyBlue = new SolidColorBrush(Color.DeepSkyBlue);
-		public static readonly SolidColorBrush DimGray = new SolidColorBrush(Color.DimGray);
-		public static readonly SolidColorBrush DodgerBlue = new SolidColorBrush(Color.DodgerBlue);
-		public static readonly SolidColorBrush Firebrick = new SolidColorBrush(Color.Firebrick);
-		public static readonly SolidColorBrush FloralWhite = new SolidColorBrush(Color.FloralWhite);
-		public static readonly SolidColorBrush ForestGreen = new SolidColorBrush(Color.ForestGreen);
-		public static readonly SolidColorBrush Fuchsia = new SolidColorBrush(Color.Fuchsia);
-		public static readonly SolidColorBrush Gainsboro = new SolidColorBrush(Color.Gainsboro);
-		public static readonly SolidColorBrush GhostWhite = new SolidColorBrush(Color.GhostWhite);
-		public static readonly SolidColorBrush Gold = new SolidColorBrush(Color.Gold);
-		public static readonly SolidColorBrush Goldenrod = new SolidColorBrush(Color.Goldenrod);
-		public static readonly SolidColorBrush Gray = new SolidColorBrush(Color.Gray);
-		public static readonly SolidColorBrush Green = new SolidColorBrush(Color.Green);
-		public static readonly SolidColorBrush GreenYellow = new SolidColorBrush(Color.GreenYellow);
-		public static readonly SolidColorBrush Honeydew = new SolidColorBrush(Color.Honeydew);
-		public static readonly SolidColorBrush HotPink = new SolidColorBrush(Color.HotPink);
-		public static readonly SolidColorBrush IndianRed = new SolidColorBrush(Color.IndianRed);
-		public static readonly SolidColorBrush Indigo = new SolidColorBrush(Color.Indigo);
-		public static readonly SolidColorBrush Ivory = new SolidColorBrush(Color.Ivory);
-		public static readonly SolidColorBrush Khaki = new SolidColorBrush(Color.Ivory);
-		public static readonly SolidColorBrush Lavender = new SolidColorBrush(Color.Lavender);
-		public static readonly SolidColorBrush LavenderBlush = new SolidColorBrush(Color.LavenderBlush);
-		public static readonly SolidColorBrush LawnGreen = new SolidColorBrush(Color.LawnGreen);
-		public static readonly SolidColorBrush LemonChiffon = new SolidColorBrush(Color.LemonChiffon);
-		public static readonly SolidColorBrush LightBlue = new SolidColorBrush(Color.LightBlue);
-		public static readonly SolidColorBrush LightCoral = new SolidColorBrush(Color.LightCoral);
-		public static readonly SolidColorBrush LightCyan = new SolidColorBrush(Color.LightCyan);
-		public static readonly SolidColorBrush LightGoldenrodYellow = new SolidColorBrush(Color.LightGoldenrodYellow);
-		public static readonly SolidColorBrush LightGray = new SolidColorBrush(Color.LightGray);
-		public static readonly SolidColorBrush LightGreen = new SolidColorBrush(Color.LightGreen);
-		public static readonly SolidColorBrush LightPink = new SolidColorBrush(Color.LightPink);
-		public static readonly SolidColorBrush LightSalmon = new SolidColorBrush(Color.LightSalmon);
-		public static readonly SolidColorBrush LightSeaGreen = new SolidColorBrush(Color.LightSeaGreen);
-		public static readonly SolidColorBrush LightSkyBlue = new SolidColorBrush(Color.LightSkyBlue);
-		public static readonly SolidColorBrush LightSlateGray = new SolidColorBrush(Color.LightSlateGray);
-		public static readonly SolidColorBrush LightSteelBlue = new SolidColorBrush(Color.LightSteelBlue);
-		public static readonly SolidColorBrush LightYellow = new SolidColorBrush(Color.LightYellow);
-		public static readonly SolidColorBrush Lime = new SolidColorBrush(Color.Lime);
-		public static readonly SolidColorBrush LimeGreen = new SolidColorBrush(Color.LimeGreen);
-		public static readonly SolidColorBrush Linen = new SolidColorBrush(Color.Linen);
-		public static readonly SolidColorBrush Magenta = new SolidColorBrush(Color.Magenta);
-		public static readonly SolidColorBrush Maroon = new SolidColorBrush(Color.Maroon);
-		public static readonly SolidColorBrush MediumAquamarine = new SolidColorBrush(Color.MediumAquamarine);
-		public static readonly SolidColorBrush MediumBlue = new SolidColorBrush(Color.MediumBlue);
-		public static readonly SolidColorBrush MediumOrchid = new SolidColorBrush(Color.MediumOrchid);
-		public static readonly SolidColorBrush MediumPurple = new SolidColorBrush(Color.MediumPurple);
-		public static readonly SolidColorBrush MediumSeaGreen = new SolidColorBrush(Color.MediumSeaGreen);
-		public static readonly SolidColorBrush MediumSlateBlue = new SolidColorBrush(Color.MediumSlateBlue);
-		public static readonly SolidColorBrush MediumSpringGreen = new SolidColorBrush(Color.MediumSpringGreen);
-		public static readonly SolidColorBrush MediumTurquoise = new SolidColorBrush(Color.MediumTurquoise);
-		public static readonly SolidColorBrush MediumVioletRed = new SolidColorBrush(Color.MediumVioletRed);
-		public static readonly SolidColorBrush MidnightBlue = new SolidColorBrush(Color.MidnightBlue);
-		public static readonly SolidColorBrush MintCream = new SolidColorBrush(Color.MintCream);
-		public static readonly SolidColorBrush MistyRose = new SolidColorBrush(Color.MistyRose);
-		public static readonly SolidColorBrush Moccasin = new SolidColorBrush(Color.Moccasin);
-		public static readonly SolidColorBrush NavajoWhite = new SolidColorBrush(Color.NavajoWhite);
-		public static readonly SolidColorBrush Navy = new SolidColorBrush(Color.Navy);
-		public static readonly SolidColorBrush OldLace = new SolidColorBrush(Color.DarkBlue);
-		public static readonly SolidColorBrush Olive = new SolidColorBrush(Color.Olive);
-		public static readonly SolidColorBrush OliveDrab = new SolidColorBrush(Color.OliveDrab);
-		public static readonly SolidColorBrush Orange = new SolidColorBrush(Color.Orange);
-		public static readonly SolidColorBrush OrangeRed = new SolidColorBrush(Color.OrangeRed);
-		public static readonly SolidColorBrush Orchid = new SolidColorBrush(Color.Orchid);
-		public static readonly SolidColorBrush PaleGoldenrod = new SolidColorBrush(Color.PaleGoldenrod);
-		public static readonly SolidColorBrush PaleGreen = new SolidColorBrush(Color.MistyRose);
-		public static readonly SolidColorBrush PaleTurquoise = new SolidColorBrush(Color.PaleTurquoise);
-		public static readonly SolidColorBrush PaleVioletRed = new SolidColorBrush(Color.PaleVioletRed);
-		public static readonly SolidColorBrush PapayaWhip = new SolidColorBrush(Color.PapayaWhip);
-		public static readonly SolidColorBrush PeachPuff = new SolidColorBrush(Color.PeachPuff);
-		public static readonly SolidColorBrush Peru = new SolidColorBrush(Color.Peru);
-		public static readonly SolidColorBrush Pink = new SolidColorBrush(Color.Pink);
-		public static readonly SolidColorBrush Plum = new SolidColorBrush(Color.Plum);
-		public static readonly SolidColorBrush PowderBlue = new SolidColorBrush(Color.PowderBlue);
-		public static readonly SolidColorBrush Purple = new SolidColorBrush(Color.Purple);
-		public static readonly SolidColorBrush Red = new SolidColorBrush(Color.Red);
-		public static readonly SolidColorBrush RosyBrown = new SolidColorBrush(Color.RosyBrown);
-		public static readonly SolidColorBrush RoyalBlue = new SolidColorBrush(Color.RoyalBlue);
-		public static readonly SolidColorBrush SaddleBrown = new SolidColorBrush(Color.SaddleBrown);
-		public static readonly SolidColorBrush Salmon = new SolidColorBrush(Color.Salmon);
-		public static readonly SolidColorBrush SandyBrown = new SolidColorBrush(Color.SandyBrown);
-		public static readonly SolidColorBrush SeaGreen = new SolidColorBrush(Color.SeaGreen);
-		public static readonly SolidColorBrush SeaShell = new SolidColorBrush(Color.SeaShell);
-		public static readonly SolidColorBrush Sienna = new SolidColorBrush(Color.Sienna);
-		public static readonly SolidColorBrush Silver = new SolidColorBrush(Color.Silver);
-		public static readonly SolidColorBrush SkyBlue = new SolidColorBrush(Color.SkyBlue);
-		public static readonly SolidColorBrush SlateBlue = new SolidColorBrush(Color.SlateBlue);
-		public static readonly SolidColorBrush SlateGray = new SolidColorBrush(Color.SlateGray);
-		public static readonly SolidColorBrush Snow = new SolidColorBrush(Color.Snow);
-		public static readonly SolidColorBrush SpringGreen = new SolidColorBrush(Color.SpringGreen);
-		public static readonly SolidColorBrush SteelBlue = new SolidColorBrush(Color.SteelBlue);
-		public static readonly SolidColorBrush Tan = new SolidColorBrush(Color.Tan);
-		public static readonly SolidColorBrush Teal = new SolidColorBrush(Color.Teal);
-		public static readonly SolidColorBrush Thistle = new SolidColorBrush(Color.Thistle);
-		public static readonly SolidColorBrush Tomato = new SolidColorBrush(Color.Tomato);
-		public static readonly SolidColorBrush Transparent = new SolidColorBrush(Color.Transparent);
-		public static readonly SolidColorBrush Turquoise = new SolidColorBrush(Color.Turquoise);
-		public static readonly SolidColorBrush Violet = new SolidColorBrush(Color.Violet);
-		public static readonly SolidColorBrush Wheat = new SolidColorBrush(Color.Wheat);
-		public static readonly SolidColorBrush White = new SolidColorBrush(Color.White);
-		public static readonly SolidColorBrush WhiteSmoke = new SolidColorBrush(Color.WhiteSmoke);
-		public static readonly SolidColorBrush Yellow = new SolidColorBrush(Color.Yellow);
-		public static readonly SolidColorBrush YellowGreen = new SolidColorBrush(Color.YellowGreen);
+		static ImmutableBrush aliceBlue;
+		public static SolidColorBrush AliceBlue => aliceBlue ??= new ImmutableBrush(Color.AliceBlue);
+
+		static ImmutableBrush antiqueWhite;
+		public static SolidColorBrush AntiqueWhite => antiqueWhite ??= new ImmutableBrush(Color.AntiqueWhite);
+
+		static ImmutableBrush aqua;
+		public static SolidColorBrush Aqua => aqua ??= new ImmutableBrush(Color.Aqua);
+
+		static ImmutableBrush aquamarine;
+		public static SolidColorBrush Aquamarine => aquamarine ??= new ImmutableBrush(Color.Aquamarine);
+
+		static ImmutableBrush azure;
+		public static SolidColorBrush Azure => azure ??= new ImmutableBrush(Color.Azure);
+
+		static ImmutableBrush beige;
+		public static SolidColorBrush Beige => beige ??= new ImmutableBrush(Color.Beige);
+
+		static ImmutableBrush bisque;
+		public static SolidColorBrush Bisque => bisque ??= new ImmutableBrush(Color.Bisque);
+
+		static ImmutableBrush black;
+		public static SolidColorBrush Black => black ??= new ImmutableBrush(Color.Black);
+
+		static ImmutableBrush blanchedAlmond;
+		public static SolidColorBrush BlanchedAlmond => blanchedAlmond ??= new ImmutableBrush(Color.BlanchedAlmond);
+
+		static ImmutableBrush blue;
+		public static SolidColorBrush Blue => blue ??= new ImmutableBrush(Color.Blue);
+
+		static ImmutableBrush blueViolet;
+		public static SolidColorBrush BlueViolet => blueViolet ??= new ImmutableBrush(Color.BlueViolet);
+
+		static ImmutableBrush brown;
+		public static SolidColorBrush Brown => brown ??= new ImmutableBrush(Color.Brown);
+
+		static ImmutableBrush burlyWood;
+		public static SolidColorBrush BurlyWood => burlyWood ??= new ImmutableBrush(Color.BurlyWood);
+
+		static ImmutableBrush cadetBlue;
+		public static SolidColorBrush CadetBlue => cadetBlue ??= new ImmutableBrush(Color.CadetBlue);
+
+		static ImmutableBrush chartreuse;
+		public static SolidColorBrush Chartreuse => chartreuse ??= new ImmutableBrush(Color.Chartreuse);
+
+		static ImmutableBrush chocolate;
+		public static SolidColorBrush Chocolate => chocolate ??= new ImmutableBrush(Color.Chocolate);
+
+		static ImmutableBrush coral;
+		public static SolidColorBrush Coral => coral ??= new ImmutableBrush(Color.Coral);
+
+		static ImmutableBrush cornflowerBlue;
+		public static SolidColorBrush CornflowerBlue => cornflowerBlue ??= new ImmutableBrush(Color.CornflowerBlue);
+
+		static ImmutableBrush cornsilk;
+		public static SolidColorBrush Cornsilk => cornsilk ??= new ImmutableBrush(Color.Cornsilk);
+
+		static ImmutableBrush crimson;
+		public static SolidColorBrush Crimson => crimson ??= new ImmutableBrush(Color.Crimson);
+
+		static ImmutableBrush cyan;
+		public static SolidColorBrush Cyan => cyan ??= new ImmutableBrush(Color.Cyan);
+
+		static ImmutableBrush darkBlue;
+		public static SolidColorBrush DarkBlue => darkBlue ??= new ImmutableBrush(Color.DarkBlue);
+
+		static ImmutableBrush darkCyan;
+		public static SolidColorBrush DarkCyan => darkCyan ??= new ImmutableBrush(Color.DarkCyan);
+
+		static ImmutableBrush darkGoldenrod;
+		public static SolidColorBrush DarkGoldenrod => darkGoldenrod ??= new ImmutableBrush(Color.DarkGoldenrod);
+
+		static ImmutableBrush darkGray;
+		public static SolidColorBrush DarkGray => darkGray ??= new ImmutableBrush(Color.DarkGray);
+
+		static ImmutableBrush darkGreen;
+		public static SolidColorBrush DarkGreen => darkGreen ??= new ImmutableBrush(Color.DarkGreen);
+
+		static ImmutableBrush darkKhaki;
+		public static SolidColorBrush DarkKhaki => darkKhaki ??= new ImmutableBrush(Color.DarkKhaki);
+
+		static ImmutableBrush darkMagenta;
+		public static SolidColorBrush DarkMagenta => darkMagenta ??= new ImmutableBrush(Color.DarkMagenta);
+
+		static ImmutableBrush darkOliveGreen;
+		public static SolidColorBrush DarkOliveGreen => darkOliveGreen ??= new ImmutableBrush(Color.DarkOliveGreen);
+
+		static ImmutableBrush darkOrange;
+		public static SolidColorBrush DarkOrange => darkOrange ??= new ImmutableBrush(Color.DarkOrange);
+
+		static ImmutableBrush darkOrchid;
+		public static SolidColorBrush DarkOrchid => darkOrchid ??= new ImmutableBrush(Color.DarkOrchid);
+
+		static ImmutableBrush darkRed;
+		public static SolidColorBrush DarkRed => darkRed ??= new ImmutableBrush(Color.DarkRed);
+
+		static ImmutableBrush darkSalmon;
+		public static SolidColorBrush DarkSalmon => darkSalmon ??= new ImmutableBrush(Color.DarkSalmon);
+
+		static ImmutableBrush darkSeaGreen;
+		public static SolidColorBrush DarkSeaGreen => darkSeaGreen ??= new ImmutableBrush(Color.DarkSeaGreen);
+
+		static ImmutableBrush darkSlateBlue;
+		public static SolidColorBrush DarkSlateBlue => darkSlateBlue ??= new ImmutableBrush(Color.DarkSlateBlue);
+
+		static ImmutableBrush darkSlateGray;
+		public static SolidColorBrush DarkSlateGray => darkSlateGray ??= new ImmutableBrush(Color.DarkSlateGray);
+
+		static ImmutableBrush darkTurquoise;
+		public static SolidColorBrush DarkTurquoise => darkTurquoise ??= new ImmutableBrush(Color.DarkTurquoise);
+
+		static ImmutableBrush darkViolet;
+		public static SolidColorBrush DarkViolet => darkViolet ??= new ImmutableBrush(Color.DarkViolet);
+
+		static ImmutableBrush deepPink;
+		public static SolidColorBrush DeepPink => deepPink ??= new ImmutableBrush(Color.DeepPink);
+
+		static ImmutableBrush deepSkyBlue;
+		public static SolidColorBrush DeepSkyBlue => deepSkyBlue ??= new ImmutableBrush(Color.DeepSkyBlue);
+
+		static ImmutableBrush dimGray;
+		public static SolidColorBrush DimGray => dimGray ??= new ImmutableBrush(Color.DimGray);
+
+		static ImmutableBrush dodgerBlue;
+		public static SolidColorBrush DodgerBlue => dodgerBlue ??= new ImmutableBrush(Color.DodgerBlue);
+
+		static ImmutableBrush firebrick;
+		public static SolidColorBrush Firebrick => firebrick ??= new ImmutableBrush(Color.Firebrick);
+
+		static ImmutableBrush floralWhite;
+		public static SolidColorBrush FloralWhite => floralWhite ??= new ImmutableBrush(Color.FloralWhite);
+
+		static ImmutableBrush forestGreen;
+		public static SolidColorBrush ForestGreen => forestGreen ??= new ImmutableBrush(Color.ForestGreen);
+
+		static ImmutableBrush fuschia;
+		public static SolidColorBrush Fuchsia => fuschia ??= new ImmutableBrush(Color.Fuchsia);
+
+		static ImmutableBrush gainsboro;
+		public static SolidColorBrush Gainsboro => gainsboro ??= new ImmutableBrush(Color.Gainsboro);
+
+		static ImmutableBrush ghostWhite;
+		public static SolidColorBrush GhostWhite => ghostWhite ??= new ImmutableBrush(Color.GhostWhite);
+
+		static ImmutableBrush gold;
+		public static SolidColorBrush Gold => gold ??= new ImmutableBrush(Color.Gold);
+
+		static ImmutableBrush goldenrod;
+		public static SolidColorBrush Goldenrod => goldenrod ??= new ImmutableBrush(Color.Goldenrod);
+
+		static ImmutableBrush gray;
+		public static SolidColorBrush Gray => gray ??= new ImmutableBrush(Color.Gray);
+
+		static ImmutableBrush green;
+		public static SolidColorBrush Green => green ??= new ImmutableBrush(Color.Green);
+
+		static ImmutableBrush greenYellow;
+		public static SolidColorBrush GreenYellow => greenYellow ??= new ImmutableBrush(Color.GreenYellow);
+
+		static ImmutableBrush honeydew;
+		public static SolidColorBrush Honeydew => honeydew ??= new ImmutableBrush(Color.Honeydew);
+
+		static ImmutableBrush hotPink;
+		public static SolidColorBrush HotPink => hotPink ??= new ImmutableBrush(Color.HotPink);
+
+		static ImmutableBrush indianRed;
+		public static SolidColorBrush IndianRed => indianRed ??= new ImmutableBrush(Color.IndianRed);
+
+		static ImmutableBrush indigo;
+		public static SolidColorBrush Indigo => indigo ??= new ImmutableBrush(Color.Indigo);
+
+		static ImmutableBrush ivory;
+		public static SolidColorBrush Ivory => ivory ??= new ImmutableBrush(Color.Ivory);
+
+		static ImmutableBrush khaki;
+		public static SolidColorBrush Khaki => khaki ??= new ImmutableBrush(Color.Khaki);
+
+		static ImmutableBrush lavender;
+		public static SolidColorBrush Lavender => lavender ??= new ImmutableBrush(Color.Lavender);
+
+		static ImmutableBrush lavenderBlush;
+		public static SolidColorBrush LavenderBlush => lavenderBlush ??= new ImmutableBrush(Color.LavenderBlush);
+
+		static ImmutableBrush lawnGreen;
+		public static SolidColorBrush LawnGreen => lawnGreen ??= new ImmutableBrush(Color.LawnGreen);
+
+		static ImmutableBrush lemonChiffon;
+		public static SolidColorBrush LemonChiffon => lemonChiffon ??= new ImmutableBrush(Color.LemonChiffon);
+
+		static ImmutableBrush lightBlue;
+		public static SolidColorBrush LightBlue => lightBlue ??= new ImmutableBrush(Color.LightBlue);
+
+		static ImmutableBrush lightCoral;
+		public static SolidColorBrush LightCoral => lightCoral ??= new ImmutableBrush(Color.LightCoral);
+
+		static ImmutableBrush lightCyan;
+		public static SolidColorBrush LightCyan => lightCyan ??= new ImmutableBrush(Color.LightCyan);
+
+		static ImmutableBrush lightGoldenrodYellow;
+		public static SolidColorBrush LightGoldenrodYellow => lightGoldenrodYellow ??= new ImmutableBrush(Color.LightGoldenrodYellow);
+
+		static ImmutableBrush lightGray;
+		public static SolidColorBrush LightGray => lightGray ??= new ImmutableBrush(Color.LightGray);
+
+		static ImmutableBrush lightGreen;
+		public static SolidColorBrush LightGreen => lightGreen ??= new ImmutableBrush(Color.LightGreen);
+
+		static ImmutableBrush lightPink;
+		public static SolidColorBrush LightPink => lightPink ??= new ImmutableBrush(Color.LightPink);
+
+		static ImmutableBrush lightSalmon;
+		public static SolidColorBrush LightSalmon => lightSalmon ??= new ImmutableBrush(Color.LightSalmon);
+
+		static ImmutableBrush lightSeaGreen;
+		public static SolidColorBrush LightSeaGreen => lightSeaGreen ??= new ImmutableBrush(Color.LightSeaGreen);
+
+		static ImmutableBrush lightSkyBlue;
+		public static SolidColorBrush LightSkyBlue => lightSkyBlue ??= new ImmutableBrush(Color.LightSkyBlue);
+
+		static ImmutableBrush lightSlateGray;
+		public static SolidColorBrush LightSlateGray => lightSlateGray ??= new ImmutableBrush(Color.LightSlateGray);
+
+		static ImmutableBrush lightSteelBlue;
+		public static SolidColorBrush LightSteelBlue => lightSteelBlue ??= new ImmutableBrush(Color.LightSteelBlue);
+
+		static ImmutableBrush lightYellow;
+		public static SolidColorBrush LightYellow => lightYellow ??= new ImmutableBrush(Color.LightYellow);
+
+		static ImmutableBrush lime;
+		public static SolidColorBrush Lime => lime ??= new ImmutableBrush(Color.Lime);
+
+		static ImmutableBrush limeGreen;
+		public static SolidColorBrush LimeGreen => limeGreen ??= new ImmutableBrush(Color.LimeGreen);
+
+		static ImmutableBrush linen;		 
+		public static SolidColorBrush Linen => linen ??= new ImmutableBrush(Color.Linen);
+
+		static ImmutableBrush magenta;
+		public static SolidColorBrush Magenta => magenta ??= new ImmutableBrush(Color.Magenta);
+
+		static ImmutableBrush maroon;
+		public static SolidColorBrush Maroon => maroon ??= new ImmutableBrush(Color.Maroon);
+
+		static ImmutableBrush mediumAquararine;
+		public static SolidColorBrush MediumAquamarine => mediumAquararine ??= new ImmutableBrush(Color.MediumAquamarine);
+
+		static ImmutableBrush mediumBlue;
+		public static SolidColorBrush MediumBlue => mediumBlue ??= new ImmutableBrush(Color.MediumBlue);
+
+		static ImmutableBrush mediumOrchid;
+		public static SolidColorBrush MediumOrchid => mediumOrchid ??= new ImmutableBrush(Color.MediumOrchid);
+
+		static ImmutableBrush mediumPurple;
+		public static SolidColorBrush MediumPurple => mediumPurple ??= new ImmutableBrush(Color.MediumPurple);
+
+		static ImmutableBrush mediumSeaGreen;
+		public static SolidColorBrush MediumSeaGreen => mediumSeaGreen ??= new ImmutableBrush(Color.MediumSeaGreen);
+
+		static ImmutableBrush mediumSlateBlue;
+		public static SolidColorBrush MediumSlateBlue => mediumSlateBlue ??= new ImmutableBrush(Color.MediumSlateBlue);
+
+		static ImmutableBrush mediumSpringGreen;
+		public static SolidColorBrush MediumSpringGreen => mediumSpringGreen ??= new ImmutableBrush(Color.MediumSpringGreen);
+
+		static ImmutableBrush mediumTurquoise;	
+		public static SolidColorBrush MediumTurquoise => mediumTurquoise ??= new ImmutableBrush(Color.MediumTurquoise);
+
+		static ImmutableBrush mediumVioletRed;
+		public static SolidColorBrush MediumVioletRed => mediumVioletRed ??= new ImmutableBrush(Color.MediumVioletRed);
+
+		static ImmutableBrush midnightBlue;
+		public static SolidColorBrush MidnightBlue => midnightBlue ??= new ImmutableBrush(Color.MidnightBlue);
+
+		static ImmutableBrush mintCream;
+		public static SolidColorBrush MintCream => mintCream ??= new ImmutableBrush(Color.MintCream);
+
+		static ImmutableBrush mistyRose;
+		public static SolidColorBrush MistyRose => mistyRose ??= new ImmutableBrush(Color.MistyRose);
+
+		static ImmutableBrush moccasin;
+		public static SolidColorBrush Moccasin => moccasin ??= new ImmutableBrush(Color.Moccasin);
+
+		static ImmutableBrush navajoWhite;
+		public static SolidColorBrush NavajoWhite => navajoWhite ??= new ImmutableBrush(Color.NavajoWhite);
+
+		static ImmutableBrush navy;
+		public static SolidColorBrush Navy => navy ??= new ImmutableBrush(Color.Navy);
+
+		static ImmutableBrush oldLace;
+		public static SolidColorBrush OldLace => oldLace ??= new ImmutableBrush(Color.OldLace);
+
+		static ImmutableBrush olive;
+		public static SolidColorBrush Olive => olive ??= new ImmutableBrush(Color.Olive);
+
+		static ImmutableBrush oliveDrab;
+		public static SolidColorBrush OliveDrab => oliveDrab ??= new ImmutableBrush(Color.OliveDrab);
+
+		static ImmutableBrush orange;
+		public static SolidColorBrush Orange => orange ??= new ImmutableBrush(Color.Orange);
+
+		static ImmutableBrush orangeRed;
+		public static SolidColorBrush OrangeRed => orangeRed ??= new ImmutableBrush(Color.OrangeRed);
+
+		static ImmutableBrush orchid;
+		public static SolidColorBrush Orchid => orchid ??= new ImmutableBrush(Color.Orchid);
+
+		static ImmutableBrush paleGoldenrod;
+		public static SolidColorBrush PaleGoldenrod => paleGoldenrod ??= new ImmutableBrush(Color.PaleGoldenrod);
+
+		static ImmutableBrush paleGreen;
+		public static SolidColorBrush PaleGreen => paleGreen ??= new ImmutableBrush(Color.PaleGreen);
+
+		static ImmutableBrush paleTurquoise;
+		public static SolidColorBrush PaleTurquoise => paleTurquoise ??= new ImmutableBrush(Color.PaleTurquoise);
+
+		static ImmutableBrush paleVioletRed;
+		public static SolidColorBrush PaleVioletRed => paleVioletRed ??= new ImmutableBrush(Color.PaleVioletRed);
+
+		static ImmutableBrush papayaWhip;
+		public static SolidColorBrush PapayaWhip => papayaWhip ??= new ImmutableBrush(Color.PapayaWhip);
+
+		static ImmutableBrush peachPuff;
+		public static SolidColorBrush PeachPuff => peachPuff ??= new ImmutableBrush(Color.PeachPuff);
+
+		static ImmutableBrush peru;
+		public static SolidColorBrush Peru => peru ??= new ImmutableBrush(Color.Peru);
+
+		static ImmutableBrush pink;
+		public static SolidColorBrush Pink => pink ??= new ImmutableBrush(Color.Pink);
+
+		static ImmutableBrush plum;
+		public static SolidColorBrush Plum => plum ??= new ImmutableBrush(Color.Plum);
+
+		static ImmutableBrush powderBlue;
+		public static SolidColorBrush PowderBlue => powderBlue ??= new ImmutableBrush(Color.PowderBlue);
+
+		static ImmutableBrush purple;
+		public static SolidColorBrush Purple => purple ??= new ImmutableBrush(Color.Purple);
+
+		static ImmutableBrush red;
+		public static SolidColorBrush Red => red ??= new ImmutableBrush(Color.Red);
+
+		static ImmutableBrush rosyBrown;
+		public static SolidColorBrush RosyBrown => rosyBrown ??= new ImmutableBrush(Color.RosyBrown);
+
+		static ImmutableBrush royalBlue;
+		public static SolidColorBrush RoyalBlue => royalBlue ??= new ImmutableBrush(Color.RoyalBlue);
+
+		static ImmutableBrush saddleBrown;
+		public static SolidColorBrush SaddleBrown => saddleBrown ??= new ImmutableBrush(Color.SaddleBrown);
+
+		static ImmutableBrush salmon;
+		public static SolidColorBrush Salmon => salmon ??= new ImmutableBrush(Color.Salmon);
+
+		static ImmutableBrush sandyBrown;
+		public static SolidColorBrush SandyBrown => sandyBrown ??= new ImmutableBrush(Color.SandyBrown);
+
+		static ImmutableBrush seaGreen;
+		public static SolidColorBrush SeaGreen => seaGreen ??= new ImmutableBrush(Color.SeaGreen);
+
+		static ImmutableBrush seaShell;
+		public static SolidColorBrush SeaShell => seaShell ??= new ImmutableBrush(Color.SeaShell);
+
+		static ImmutableBrush sienna;
+		public static SolidColorBrush Sienna => sienna ??= new ImmutableBrush(Color.Sienna);
+
+		static ImmutableBrush silver;
+		public static SolidColorBrush Silver => silver ??= new ImmutableBrush(Color.Silver);
+
+		static ImmutableBrush skyBlue;
+		public static SolidColorBrush SkyBlue => skyBlue ??= new ImmutableBrush(Color.SkyBlue);
+
+		static ImmutableBrush slateBlue;
+		public static SolidColorBrush SlateBlue => slateBlue ??= new ImmutableBrush(Color.SlateBlue);
+
+		static ImmutableBrush slateGray;
+		public static SolidColorBrush SlateGray => slateGray ??= new ImmutableBrush(Color.SlateGray);
+
+		static ImmutableBrush snow;
+		public static SolidColorBrush Snow => snow ??= new ImmutableBrush(Color.Snow);
+
+		static ImmutableBrush springGreen;
+		public static SolidColorBrush SpringGreen => springGreen ??= new ImmutableBrush(Color.SpringGreen);
+
+		static ImmutableBrush steelBlue;
+		public static SolidColorBrush SteelBlue => steelBlue ??= new ImmutableBrush(Color.SteelBlue);
+
+		static ImmutableBrush tan;
+		public static SolidColorBrush Tan => tan ??= new ImmutableBrush(Color.Tan);
+
+		static ImmutableBrush teal;
+		public static SolidColorBrush Teal => teal ??= new ImmutableBrush(Color.Teal);
+
+		static ImmutableBrush thistle;
+		public static SolidColorBrush Thistle => thistle ??= new ImmutableBrush(Color.Thistle);
+
+		static ImmutableBrush tomato;
+		public static SolidColorBrush Tomato => tomato ??= new ImmutableBrush(Color.Tomato);
+
+		static ImmutableBrush transparent;
+		public static SolidColorBrush Transparent => transparent ??= new ImmutableBrush(Color.Transparent);
+
+		static ImmutableBrush turquoise;
+		public static SolidColorBrush Turquoise => turquoise ??= new ImmutableBrush(Color.Turquoise);
+
+		static ImmutableBrush violet;
+		public static SolidColorBrush Violet => violet ??= new ImmutableBrush(Color.Violet);
+
+		static ImmutableBrush wheat;
+		public static SolidColorBrush Wheat => wheat ??= new ImmutableBrush(Color.Wheat);
+
+		static ImmutableBrush white;
+		public static SolidColorBrush White => white ??= new ImmutableBrush(Color.White);
+
+		static ImmutableBrush whiteSmoke;
+		public static SolidColorBrush WhiteSmoke => whiteSmoke ??= new ImmutableBrush(Color.WhiteSmoke);
+
+		static ImmutableBrush yellow;
+		public static SolidColorBrush Yellow => yellow ??= new ImmutableBrush(Color.Yellow);
+
+		static ImmutableBrush yellowGreen;
+		public static SolidColorBrush YellowGreen => yellowGreen ??= new ImmutableBrush(Color.YellowGreen);
 	}
 }

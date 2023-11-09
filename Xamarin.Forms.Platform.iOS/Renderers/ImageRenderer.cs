@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
@@ -9,6 +8,8 @@ using UIKit;
 using Xamarin.Forms.Internals;
 using RectangleF = CoreGraphics.CGRect;
 using PreserveAttribute = Foundation.PreserveAttribute;
+using CoreGraphics;
+using System.Drawing;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -72,6 +73,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				await TrySetImage(e.OldElement as Image);
+				UpdateBackground();
 			}
 
 			base.OnElementChanged(e);
@@ -83,6 +85,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (e.PropertyName == Image.SourceProperty.PropertyName)
 				await TrySetImage().ConfigureAwait(false);
+			else if (e.PropertyName == VisualElement.BackgroundProperty.PropertyName)
+				UpdateBackground();
 		}
 
 		protected virtual async Task TrySetImage(Image previous = null)
@@ -115,8 +119,17 @@ namespace Xamarin.Forms.Platform.iOS
 		bool IImageVisualElementRenderer.IsDisposed => _isDisposed;
 
 		UIImageView IImageVisualElementRenderer.GetImage() => Control;
-	}
 
+		void UpdateBackground()
+		{
+			var parent = Control?.Superview;
+
+			if (parent == null)
+				return;
+
+			parent.UpdateBackground(Element.Background);
+		}
+	}
 
 	public interface IImageSourceHandler : IRegisterable
 	{
@@ -196,7 +209,7 @@ namespace Xamarin.Forms.Platform.iOS
 			FormsCAKeyFrameAnimation animation = await ImageAnimationHelper.CreateAnimationFromStreamImageSourceAsync(imagesource as StreamImageSource, cancelationToken).ConfigureAwait(false);
 			if (animation == null)
 			{
-				Log.Warning(nameof(FileImageSourceHandler), "Could not find image: {0}", imagesource);
+				Log.Warning(nameof(StreamImagesourceHandler), "Could not find image: {0}", imagesource);
 			}
 
 			return animation;
@@ -268,17 +281,23 @@ namespace Xamarin.Forms.Platform.iOS
 				var iconcolor = fontsource.Color.IsDefault ? _defaultColor : fontsource.Color;
 				var attString = new NSAttributedString(fontsource.Glyph, font: font, foregroundColor: iconcolor.ToUIColor());
 				var imagesize = ((NSString)fontsource.Glyph).GetSizeUsingAttributes(attString.GetUIKitAttributes(0, out _));
-				
-				UIGraphics.BeginImageContextWithOptions(imagesize, false, 0f);
-				var ctx = new NSStringDrawingContext();
-				var boundingRect = attString.GetBoundingRect(imagesize, (NSStringDrawingOptions)0, ctx);
-				attString.DrawString(new RectangleF(
-					imagesize.Width / 2 - boundingRect.Size.Width / 2,
-					imagesize.Height / 2 - boundingRect.Size.Height / 2,
-					imagesize.Width,
-					imagesize.Height));
-				image = UIGraphics.GetImageFromCurrentImageContext();
-				UIGraphics.EndImageContext();
+
+				var renderer = new UIGraphicsImageRenderer(imagesize, new UIGraphicsImageRendererFormat()
+				{
+					Opaque = false,
+					Scale = 0,
+				});
+
+				image = renderer.CreateImage((context) =>
+				{
+					var ctx = new NSStringDrawingContext();
+					var boundingRect = attString.GetBoundingRect(imagesize, (NSStringDrawingOptions)0, ctx);
+					attString.DrawString(new RectangleF(
+						imagesize.Width / 2 - boundingRect.Size.Width / 2,
+						imagesize.Height / 2 - boundingRect.Size.Height / 2,
+						imagesize.Width,
+						imagesize.Height));
+				});
 
 				if (image != null && iconcolor != _defaultColor)
 					image = image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);

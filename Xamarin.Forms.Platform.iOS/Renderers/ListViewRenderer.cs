@@ -53,6 +53,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		}
 
+		[Internals.Preserve(Conditional = true)]
+		public ListViewRenderer(IntPtr handle)
+		{
+
+		}
+
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			return Control.GetSizeRequest(widthConstraint, heightConstraint, DefaultRowHeight, DefaultRowHeight);

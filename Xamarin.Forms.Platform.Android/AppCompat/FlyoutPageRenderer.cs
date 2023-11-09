@@ -308,31 +308,59 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnLayout(changed, l, t, r, b);
 			//hack to make the split layout handle touches the full width
 			if (FlyoutPageController.ShouldShowSplitMode && _flyoutLayout != null)
-				_flyoutLayout.Right = r;
+			{
+				if (Element.FlowDirection == FlowDirection.RightToLeft)
+					_flyoutLayout.Left = l;
+				else
+					_flyoutLayout.Right = r;
+			}
 		}
 
-		async void DeviceInfoPropertyChanged(object sender, PropertyChangedEventArgs e)
+		async void UpdateFlyoutLayoutBehavior(bool requestLayout = false)
+		{
+			if (!FlyoutPageController.ShouldShowSplitMode && Presented)
+			{
+				FlyoutPageController.CanChangeIsPresented = true;
+				//hack : when the orientation changes and we try to close the Flyout on Android		
+				//sometimes Android picks the width of the screen previous to the rotation 		
+				//this leaves a little of the flyout visible, the hack is to delay for 100ms closing the drawer
+				await Task.Delay(100);
+
+				//Renderer may have been disposed during the delay
+				if (_disposed)
+				{
+					return;
+				}
+
+				CloseDrawer(_flyoutLayout);
+			}
+			else if (FlyoutPageController.ShouldShowSplitMode)
+			{
+				OpenDrawer(_flyoutLayout, false);
+			}
+
+			UpdateSplitViewLayout();
+
+			if (requestLayout)
+			{
+				_flyoutLayout?.MaybeRequestLayout();
+				_detailLayout?.MaybeRequestLayout();
+
+				if (Device.Idiom == TargetIdiom.Tablet && _flyoutLayout != null)
+				{
+					// This is required to add/remove the drawer button
+					// This basically runs the same code that runs when 
+					// a device changes between landscape/portrait
+					_detailLayout.GetFirstChildOfType<NavigationPageRenderer>()?.ResetToolbar();
+				}
+			}
+		}
+
+		void DeviceInfoPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (nameof(Device.Info.CurrentOrientation) == e.PropertyName)
 			{
-				if (!FlyoutPageController.ShouldShowSplitMode && Presented)
-				{
-					FlyoutPageController.CanChangeIsPresented = true;
-					//hack : when the orientation changes and we try to close the Flyout on Android		
-					//sometimes Android picks the width of the screen previous to the rotation 		
-					//this leaves a little of the flyout visible, the hack is to delay for 100ms closing the drawer
-					await Task.Delay(100);
-
-					//Renderer may have been disposed during the delay
-					if (_disposed)
-					{
-						return;
-					}
-
-					CloseDrawer(_flyoutLayout);
-				}
-
-				UpdateSplitViewLayout();
+				UpdateFlyoutLayoutBehavior();
 			}
 		}
 
@@ -373,7 +401,16 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor(Element);
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+			{
 				UpdateFlowDirection();
+
+				// This will move the drawer layout button to the proper side of the toolbar
+				_detailLayout.GetFirstChildOfType<NavigationPageRenderer>()?.UpdateToolbar();
+			}
+			else if (e.Is(FlyoutPage.FlyoutLayoutBehaviorProperty))
+			{
+				UpdateFlyoutLayoutBehavior(true);
+			}
 		}
 
 		void FlyoutPageAppearing(object sender, EventArgs e)

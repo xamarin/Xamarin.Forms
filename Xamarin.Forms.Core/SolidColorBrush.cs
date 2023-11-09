@@ -25,7 +25,7 @@
 		public static readonly BindableProperty ColorProperty = BindableProperty.Create(
 			nameof(Color), typeof(Color), typeof(SolidColorBrush), Color.Default);
 
-		public Color Color
+		public virtual Color Color
 		{
 			get => (Color)GetValue(ColorProperty);
 			set => SetValue(ColorProperty, value);

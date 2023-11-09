@@ -2,18 +2,22 @@ steps:
   - checkout: self
     clean: true
 
-  - task: xamops.azdevex.provisionator-task.provisionator@1
+  - task: xamops.azdevex.provisionator-task.provisionator@2
     displayName: 'Provision Xcode'
     condition: ne(variables['REQUIRED_XCODE'], '')
     inputs:
       provisioning_script: 'build/provisioning/xcode.csx'
+    env:
+      AUTH_TOKEN_GITHUB_COM: $(github--pat--vs-mobiletools-engineering-service2)
 
-  - task: xamops.azdevex.provisionator-task.provisionator@1
+  - task: xamops.azdevex.provisionator-task.provisionator@2
     displayName: 'Provisionator'
     condition: eq(variables['provisioning'], 'true')
     inputs:
       provisioning_script: $(provisionator.osxPath)
       provisioning_extra_args: $(provisionator.extraArguments) --v
+    env:
+      AUTH_TOKEN_GITHUB_COM: $(github--pat--vs-mobiletools-engineering-service2)
 
   - script: |
       echo "##vso[task.prependpath]/Library/Frameworks/Mono.framework/Versions/Current/Commands/"
@@ -60,6 +64,9 @@ steps:
     displayName: 'Install an Apple provisioning profile'
     inputs:
       provProfileSecureFile: 'Xamarin Forms iOS Provisioning.mobileprovision'
+
+  - bash: rm -rf ~/.config/NuGet/NuGet.Config
+    displayName: 'Workaround to make build work'       
 
   - task: Bash@3
     displayName: 'Build Control Gallery IPA'

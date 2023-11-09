@@ -17,13 +17,13 @@
       <group>
         <dependency id="Xamarin.Forms" version="$version$"/>
       </group>
-      <group targetFramework="MonoAndroid10">
+      <group targetFramework="MonoAndroid13">
         <dependency id="Xamarin.Forms" version="$version$"/>
       </group>
 
-      <group targetFramework="MonoAndroid10.0">
-        <dependency id="Xamarin.AndroidX.Lifecycle.LiveData" version="[2.3.1.1,2.4)" />
-        <dependency id="Xamarin.Google.Android.Material" version="[1.4.0.2,1.5)" />
+      <group targetFramework="MonoAndroid13.0">
+        <dependency id="Xamarin.AndroidX.Lifecycle.LiveData" version="[2.3.1.1,2.7)" />
+        <dependency id="Xamarin.Google.Android.Material" version="[1.4.0.2,1.9)" />
       </group>
       <group targetFramework="Xamarin.iOS10">
         <dependency id="Xamarin.iOS.MaterialComponents" version="92.0.0"/>
@@ -41,16 +41,16 @@
     <file src="_._" target="lib\netstandard1.0\_._" />
 
     <!--Android 10-->
-    <file src="_._" target="lib\MonoAndroid10\_._" />
-    <file src="Xamarin.Forms.Visual.Material.targets" target="build\MonoAndroid10\Xamarin.Forms.Visual.Material.targets" />
+    <file src="_._" target="lib\MonoAndroid13\_._" />
+    <file src="Xamarin.Forms.Visual.Material.targets" target="build\MonoAndroid13\Xamarin.Forms.Visual.Material.targets" />
 
     <!--Android 10 buildTransitive-->
-    <file src="Xamarin.Forms.Visual.Material.targets" target="buildTransitive\MonoAndroid10\Xamarin.Forms.Visual.Material.targets" />
+    <file src="Xamarin.Forms.Visual.Material.targets" target="buildTransitive\MonoAndroid13\Xamarin.Forms.Visual.Material.targets" />
       
     <!--Android 10.0-->
-    <file src="..\Xamarin.Forms.Material.Android\bin\$Configuration$\monoandroid10.0\Xamarin.Forms.Material.dll" target="lib\MonoAndroid10.0" />
-    <file src="..\Xamarin.Forms.Material.Android\bin\$Configuration$\monoandroid10.0\Xamarin.Forms.Material.*pdb" target="lib\MonoAndroid10.0" />
-    <file src="..\Xamarin.Forms.Material.Android\bin\$Configuration$\monoandroid10.0\Xamarin.Forms.Material.*mdb" target="lib\MonoAndroid10.0" />
+    <file src="..\Xamarin.Forms.Material.Android\bin\$Configuration$\monoandroid13.0\Xamarin.Forms.Material.dll" target="lib\MonoAndroid13.0" />
+    <file src="..\Xamarin.Forms.Material.Android\bin\$Configuration$\monoandroid13.0\Xamarin.Forms.Material.*pdb" target="lib\MonoAndroid13.0" />
+    <file src="..\Xamarin.Forms.Material.Android\bin\$Configuration$\monoandroid13.0\Xamarin.Forms.Material.*mdb" target="lib\MonoAndroid13.0" />
 
     <!--iOS-->
     <file src="..\Xamarin.Forms.Material.iOS\bin\$Configuration$\Xamarin.Forms.Material.dll" target="lib\Xamarin.iOS10" />
@@ -61,5 +61,8 @@
     <file src="..\Xamarin.Forms.Material.Tizen\bin\$Configuration$\tizen40\Xamarin.Forms.Material.dll" target="lib\tizen40" />
     <file src="..\Xamarin.Forms.Material.Tizen\bin\$Configuration$\tizen40\Xamarin.Forms.Material.*pdb" target="lib\tizen40" />
 
+    <!--Licenses-->
+    <file src="..\THIRD-PARTY-NOTICES.txt" target="Licenses\" />
+    <file src="..\LICENSE*" target="Licenses\" />
   </files>
 </package>

@@ -54,9 +54,9 @@
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'MonoAndroid10.0'">
-    <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.3.1.1" />
-    <PackageReference Include="Xamarin.Google.Android.Material" Version="1.4.0.2" />
-    <PackageReference Include="Xamarin.AndroidX.Legacy.Support.V4" Version="1.0.0.8" />
+  <ItemGroup Condition="$(TargetFramework.StartsWith('MonoAndroid'))">
+    <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.6.1.1" />
+    <PackageReference Include="Xamarin.Google.Android.Material" Version="1.8.0.1" />
+    <PackageReference Include="Xamarin.AndroidX.Legacy.Support.V4" Version="1.0.0.17" />
   </ItemGroup>
 </Project>

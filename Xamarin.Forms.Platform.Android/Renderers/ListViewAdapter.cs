@@ -481,9 +481,6 @@ namespace Xamarin.Forms.Platform.Android
 				cell = (Cell)(cellOwner as INativeElementView)?.Element;
 			}
 
-			// All our ListView's have called AddHeaderView. This effectively becomes index 0, so our index 0 is index 1 to the listView.
-			position--;
-
 			if (position < 0 || position >= Count)
 				return;
 
@@ -615,7 +612,11 @@ namespace Xamarin.Forms.Platform.Android
 				// In a TabbedPage page with two pages, Page A and Page B with ListView, if A changes B's ListView,
 				// we need to reset the ListView's adapter to reflect the changes on page B
 				// If there header and footer are present at the reset time of the adapter
-				// they will be DOUBLE added to the ViewGround (the ListView) causing indexes to be off by one. 
+				// they will be DOUBLE added to the ViewGround (the ListView) causing indexes to be off by one.
+
+				if (_realListView.IsDisposed())
+					return;
+
 				_realListView.RemoveHeaderView(HeaderView);
 				_realListView.RemoveFooterView(FooterView);
 				_realListView.Adapter = _realListView.Adapter;
@@ -671,7 +672,7 @@ namespace Xamarin.Forms.Platform.Android
 			int position = TemplatedItemsView.TemplatedItems.GetGlobalIndexOfItem(item);
 			AView view = null;
 			if (position != -1)
-				view = _realListView.GetChildAt(position + 1 - _realListView.FirstVisiblePosition);
+				view = _realListView.GetChildAt(position + _realListView.HeaderViewsCount - _realListView.FirstVisiblePosition);
 
 			Select(position, view);
 		}

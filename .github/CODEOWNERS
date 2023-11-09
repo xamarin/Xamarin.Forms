@@ -1,11 +1,11 @@
 # Tizen
-/Xamarin.Forms.ControlGallery.Tizen/ @rookiejava
-/Stubs/Xamarin.Forms.Platform.Tizen/ @rookiejava
-/Xamarin.Forms.Platform.Tizen/ @rookiejava
-/Xamarin.Forms.Maps.Tizen/ @rookiejava
-/EmbeddingTestBeds/Embedding.Tizen/ @rookiejava
-/PagesGallery/PagesGallery.Tizen/ @rookiejava
-/Xamarin.Forms.Core/PlatformConfiguration/TizenSpecific @rookiejava
+/Xamarin.Forms.ControlGallery.Tizen/ @rookiejava @myroot @shyunmin @sung-su
+/Stubs/Xamarin.Forms.Platform.Tizen/ @rookiejava @myroot @shyunmin @sung-su
+/Xamarin.Forms.Platform.Tizen/ @rookiejava @myroot @shyunmin @sung-su
+/Xamarin.Forms.Maps.Tizen/ @rookiejava @myroot @shyunmin @sung-su
+/EmbeddingTestBeds/Embedding.Tizen/ @rookiejava @myroot @shyunmin @sung-su
+/PagesGallery/PagesGallery.Tizen/ @rookiejava @myroot @shyunmin @sung-su
+/Xamarin.Forms.Core/PlatformConfiguration/TizenSpecific @rookiejava  @myroot @wonyoungChoi
 
 # GTK
 /Xamarin.Forms.ControlGallery.GTK/ @jsuarezruiz
