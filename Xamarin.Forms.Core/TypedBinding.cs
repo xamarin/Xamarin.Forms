@@ -255,6 +255,9 @@ namespace Xamarin.Forms.Internals
 			WeakReference<INotifyPropertyChanged> _weakPart = new WeakReference<INotifyPropertyChanged>(null);
 			readonly BindingBase _binding;
 			PropertyChangedEventHandler handler;
+
+			~PropertyChangedProxy() => Listener?.Unsubscribe(finalizer: true);
+
 			public INotifyPropertyChanged Part
 			{
 				get

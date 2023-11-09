@@ -5,6 +5,8 @@ using System.Threading;
 using CoreAnimation;
 using CoreGraphics;
 using Xamarin.Forms.Internals;
+using RectangleF = CoreGraphics.CGRect;
+using PointF = CoreGraphics.CGPoint;
 
 #if __MOBILE__
 using UIKit;
@@ -317,7 +319,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				// not just an optimization, iOS will not "pixel align" a view which has m34 set
 				if (Math.Abs(rotationY % 180) > epsilon || Math.Abs(rotationX % 180) > epsilon)
+#pragma warning disable CS0618 // Type or member is obsolete
 					transform.m34 = 1.0f / -400f;
+#pragma warning restore CS0618 // Type or member is obsolete
 
 				if (Math.Abs(rotationX % 360) > epsilon)
 					transform = transform.Rotate(rotationX * (float)Math.PI / 180.0f, 1.0f, 0.0f, 0.0f);

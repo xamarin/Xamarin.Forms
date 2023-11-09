@@ -105,7 +105,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				SearchHandler = Shell.GetSearchHandler(Page);
 			}
-			else if (e.PropertyName == Shell.TitleViewProperty.PropertyName)
+			else if (e.PropertyName == Shell.TitleViewProperty.PropertyName || e.PropertyName == VisualElement.HeightProperty.PropertyName || e.PropertyName == VisualElement.WidthProperty.PropertyName)
 			{
 				UpdateTitleView();
 			}
@@ -325,25 +325,30 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var rect = new CGRect(0, 0, 23f, 23f);
 
-			UIGraphics.BeginImageContextWithOptions(rect.Size, false, 0);
-			var ctx = UIGraphics.GetCurrentContext();
-			ctx.SaveState();
-			ctx.SetStrokeColor(UIColor.Blue.CGColor);
-
-			float size = 3f;
-			float start = 4f;
-			ctx.SetLineWidth(size);
-
-			for (int i = 0; i < 3; i++)
+			var renderer = new UIGraphicsImageRenderer(rect.Size, new UIGraphicsImageRendererFormat()
 			{
-				ctx.MoveTo(1f, start + i * (size * 2));
-				ctx.AddLineToPoint(22f, start + i * (size * 2));
-				ctx.StrokePath();
-			}
+				Opaque = false,
+				Scale = 0,
+			});
 
-			ctx.RestoreState();
-			img = UIGraphics.GetImageFromCurrentImageContext();
-			UIGraphics.EndImageContext();
+			img = renderer.CreateImage((context) =>
+			{
+				context.CGContext.SaveState();
+				UIColor.Blue.SetStroke();
+
+				float size = 3f;
+				float start = 4f;
+				context.CGContext.SetLineWidth(size);
+
+				for (int i = 0; i < 3; i++)
+				{
+					context.CGContext.MoveTo(1f, start + i * (size * 2));
+					context.CGContext.AddLineToPoint(22f, start + i * (size * 2));
+					context.CGContext.StrokePath();
+				}
+
+				context.CGContext.RestoreState();
+			});
 
 			_nSCache.SetObjectforKey(img, (NSString)hamburgerKey);
 			return img;
@@ -417,7 +422,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override void WillMoveToSuperview(UIView newSuper)
 			{
-				if (newSuper != null)
+				if (newSuper != null && newSuper.Bounds != CGRect.Empty)
 				{
 					if (!Forms.IsiOS11OrNewer)
 						Frame = new CGRect(Frame.X, newSuper.Bounds.Y, Frame.Width, newSuper.Bounds.Height);
@@ -476,6 +481,11 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateSearchVisibility(_searchController);
 			else if (e.PropertyName == SearchHandler.IsSearchEnabledProperty.PropertyName)
 				UpdateSearchIsEnabled(_searchController);
+			else if (e.PropertyName == SearchHandler.IsFocusedProperty.PropertyName)
+			{
+				if (!_searchHandler.IsFocused)
+					_searchController.Active = false;
+			}
 			else if (e.Is(SearchHandler.AutomationIdProperty))
 			{
 				UpdateAutomationId();

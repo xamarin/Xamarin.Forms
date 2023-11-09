@@ -442,6 +442,10 @@ namespace Xamarin.Forms
 
 		internal static bool TryConvert(ref object value, BindableProperty targetProperty, Type convertTo, bool toTarget)
 		{
+			if (targetProperty == null)
+				return false;
+			if (convertTo == null)
+				return false;
 			if (value == null)
 				return !convertTo.GetTypeInfo().IsValueType || Nullable.GetUnderlyingType(convertTo) != null;
 			try
@@ -457,10 +461,12 @@ namespace Xamarin.Forms
 			object original = value;
 			try
 			{
+				convertTo = Nullable.GetUnderlyingType(convertTo) ?? convertTo;
+
 				var stringValue = value as string ?? string.Empty;
 				// see: https://bugzilla.xamarin.com/show_bug.cgi?id=32871
 				// do not canonicalize "*.[.]"; "1." should not update bound BindableProperty
-				if (stringValue.EndsWith(".", StringComparison.Ordinal) && DecimalTypes.Contains(convertTo))
+				if (stringValue.EndsWith(CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator, StringComparison.Ordinal) && DecimalTypes.Contains(convertTo))
 				{
 					value = original;
 					return false;
@@ -473,9 +479,8 @@ namespace Xamarin.Forms
 					return false;
 				}
 
-				convertTo = Nullable.GetUnderlyingType(convertTo) ?? convertTo;
+				value = Convert.ChangeType(value, convertTo, CultureInfo.CurrentCulture);
 
-				value = Convert.ChangeType(value, convertTo, CultureInfo.InvariantCulture);
 				return true;
 			}
 			catch (Exception ex) when (ex is InvalidCastException || ex is FormatException || ex is InvalidOperationException || ex is OverflowException)
@@ -647,7 +652,7 @@ namespace Xamarin.Forms
 				_listener.SetTarget(listener);
 			}
 
-			public void Unsubscribe()
+			public void Unsubscribe(bool finalizer = false)
 			{
 				INotifyPropertyChanged source;
 				if (_source.TryGetTarget(out source) && source != null)
@@ -655,6 +660,10 @@ namespace Xamarin.Forms
 				var bo = source as BindableObject;
 				if (bo != null)
 					bo.BindingContextChanged -= _bchandler;
+
+				// If we are called from a finalizer, WeakReference<T>.SetTarget() can throw InvalidOperationException
+				if (finalizer)
+					return;
 
 				_source.SetTarget(null);
 				_listener.SetTarget(null);
@@ -679,6 +688,8 @@ namespace Xamarin.Forms
 			readonly BindingExpression _expression;
 			readonly PropertyChangedEventHandler _changeHandler;
 			WeakPropertyChangedProxy _listener;
+
+			~BindingExpressionPart() => _listener?.Unsubscribe(finalizer: true);
 
 			public BindingExpressionPart(BindingExpression expression, string content, bool isIndexer = false)
 			{

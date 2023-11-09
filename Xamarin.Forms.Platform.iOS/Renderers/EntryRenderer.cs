@@ -7,6 +7,7 @@ using Foundation;
 using UIKit;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.iOSSpecific.Entry;
+using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -47,6 +48,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		static readonly int baseHeight = 30;
 		static CGSize initialSize = CGSize.Empty;
+
+		UIImage _defaultClearImage;
 
 		public EntryRendererBase()
 		{
@@ -551,7 +554,63 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateClearButtonVisibility()
 		{
-			Control.ClearButtonMode = Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing ? UITextFieldViewMode.WhileEditing : UITextFieldViewMode.Never;
+			if (Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing)
+			{
+				Control.ClearButtonMode = UITextFieldViewMode.WhileEditing;
+				UpdateClearButtonColor();
+			}
+			else
+				Control.ClearButtonMode = UITextFieldViewMode.Never;
+		}
+
+		void UpdateClearButtonColor()
+		{
+			if (Control.ValueForKey(new NSString("clearButton")) is UIButton clearButton)
+			{
+				clearButton.TintColor = Element.TextColor.ToUIColor();
+
+				if(_defaultClearImage == null)
+					_defaultClearImage = clearButton.ImageForState(UIControlState.Highlighted);
+
+				if (Element.TextColor == Color.Default)
+				{
+					clearButton.SetImage(_defaultClearImage, UIControlState.Normal);
+					clearButton.SetImage(_defaultClearImage, UIControlState.Highlighted);
+				}
+				else
+				{
+					var tintedClearImage = GetClearButtonTintImage(_defaultClearImage, Element.TextColor.ToUIColor());
+
+					if (tintedClearImage != null)
+					{
+						clearButton.SetImage(tintedClearImage, UIControlState.Normal);
+						clearButton.SetImage(tintedClearImage, UIControlState.Highlighted);
+					}
+				}
+			}
+		}
+
+		UIImage GetClearButtonTintImage(UIImage image, UIColor color)
+		{
+			if (image == null)
+				return null;
+
+			var size = image.Size;
+
+			var renderer = new UIGraphicsImageRenderer(size, new UIGraphicsImageRendererFormat()
+			{
+				Opaque = false,
+				Scale = UIScreen.MainScreen.Scale,
+			});
+
+			return renderer.CreateImage((context) =>
+			{
+				image.Draw(CGPoint.Empty, CGBlendMode.Normal, 1.0f);
+				color.ColorWithAlpha(1.0f).SetFill();
+
+				var rect = new CGRect(CGPoint.Empty.X, CGPoint.Empty.Y, image.Size.Width, image.Size.Height);
+				context?.FillRect(rect, CGBlendMode.SourceIn);
+			});
 		}
 	}
 }

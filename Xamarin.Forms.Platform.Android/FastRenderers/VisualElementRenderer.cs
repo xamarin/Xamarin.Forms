@@ -42,6 +42,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (_disposed)
 				return;
 
+			if (Control.IsDisposed())
+				return;
+
 			Control.UpdateFlowDirection(Element);
 		}
 
@@ -106,9 +109,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		void UpdateIsEnabled()
 		{
 			if (Element == null || _disposed)
-			{
 				return;
-			}
+
+			if (Control.IsDisposed())
+				return;
 
 			Control.Enabled = Element.IsEnabled;
 		}

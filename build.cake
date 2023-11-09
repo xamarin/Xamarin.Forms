@@ -22,7 +22,7 @@ PowerShell:
 #addin "nuget:?package=Cake.Android.Adb&version=3.2.0"
 #addin "nuget:?package=Cake.Git&version=0.21.0"
 #addin "nuget:?package=Cake.Android.SdkManager&version=3.0.2"
-#addin "nuget:?package=Cake.Boots&version=1.0.2.437"
+#addin "nuget:?package=Cake.Boots&version=1.1.0.36"
 #addin "nuget:?package=Cake.AppleSimulator&version=0.2.0"
 #addin "nuget:?package=Cake.FileHelpers&version=3.2.1"
 
@@ -78,6 +78,8 @@ NUNIT_TEST_WHERE = ParseDevOpsInputs(NUNIT_TEST_WHERE);
 var ANDROID_HOME = EnvironmentVariable("ANDROID_HOME") ??
     (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
 
+
+string MSBuildExe = Argument("msbuild", EnvironmentVariable("MSBUILD_EXE", ""));
 string MSBuildArgumentsENV = EnvironmentVariable("MSBuildArguments", "");
 string MSBuildArgumentsARGS = Argument("MSBuildArguments", "");
 string MSBuildArguments;
@@ -86,7 +88,7 @@ MSBuildArguments = $"{MSBuildArgumentsENV} {MSBuildArgumentsARGS}";
     
 Information("MSBuildArguments: {0}", MSBuildArguments);
 
-string androidSdks = EnvironmentVariable("ANDROID_API_SDKS", "platform-tools,platforms;android-26,platforms;android-27,platforms;android-28,platforms;android-29,build-tools;29.0.3,platforms;android-30,build-tools;30.0.2");
+string androidSdks = EnvironmentVariable("ANDROID_API_SDKS", "platform-tools,platforms;android-26,platforms;android-27,platforms;android-28,platforms;android-29,build-tools;29.0.3,platforms;android-30,build-tools;30.0.2,platforms;android-32,build-tools;32.0.0,platforms;android-33,build-tools;33.0.2");
 
 Information("ANDROID_API_SDKS: {0}", androidSdks);
 string[] androidSdkManagerInstalls = androidSdks.Split(',');
@@ -104,7 +106,6 @@ string[] netFrameworkSdksLocalInstall = new string[]
     "https://go.microsoft.com/fwlink/?linkid=2099470", //NET461 SDK
     "https://go.microsoft.com/fwlink/?linkid=874338", //NET472 SDK
     "https://go.microsoft.com/fwlink/?linkid=2099465", //NET47
-    "https://download.microsoft.com/download/A/1/D/A1D07600-6915-4CB8-A931-9A980EF47BB7/NDP47-DevPack-KB3186612-ENU.exe", //net47 targeting pack
     "https://go.microsoft.com/fwlink/?linkid=2088517", //NET48 SDK
 };
 
@@ -132,6 +133,7 @@ Information ("ANDROID_HOME: {0}", ANDROID_HOME);
 Information ("Team Project: {0}", teamProject);
 Information ("Agent.Name: {0}", agentName);
 Information ("isCIBuild: {0}", isCIBuild);
+Information("MSBUILD: {0}", MSBuildExe);
 Information ("artifactStagingDirectory: {0}", artifactStagingDirectory);
 Information("workingDirectory: {0}", workingDirectory);
 Information("NUNIT_TEST_WHERE: {0}", NUNIT_TEST_WHERE);
@@ -250,7 +252,7 @@ Task("provision-iossdk")
 
 Task("provision-androidsdk")
     .Description("Install Xamarin.Android SDK")
-    .Does(async () =>
+    .Does(async (ctx) =>
     {
         Information ("ANDROID_HOME: {0}", ANDROID_HOME);
 
@@ -297,17 +299,13 @@ Task("provision-androidsdk")
             }
         }
 
-        if (!IsRunningOnWindows ()) {
-            if(!String.IsNullOrWhiteSpace(androidSDK))
-            {
-                await Boots (androidSDK);
-            }
-            else
-                await Boots (Product.XamarinAndroid, releaseChannel);
-        }
-        else if(!String.IsNullOrWhiteSpace(androidSDK))
+        if(!String.IsNullOrWhiteSpace(androidSDK))
         {
             await Boots (androidSDK);
+        }
+        else
+        {
+            await Boots (Product.XamarinAndroid, releaseChannel);
         }
     });
 
@@ -418,7 +416,7 @@ Task ("cg-uwp-build-tests")
             .WithProperty("AppxBundle", "Always")
             .WithProperty("UapAppxPackageBuildMode", "StoreUpload")
             .WithProperty("AppxPackageSigningEnabled", "true")
-            .WithProperty("PackageCertificateThumbprint", "a59087cc92a9a8117ffdb5255eaa155748f9f852")
+            .WithProperty("PackageCertificateThumbprint", "edf444faf5de86f6de696f9cb434b9ae040257b1")
             .WithProperty("PackageCertificateKeyFile", "Xamarin.Forms.ControlGallery.WindowsUniversal_TemporaryKey.pfx")
             .WithProperty("PackageCertificatePassword", "")
             // The platform unit tests can't run when UseDotNetNativeToolchain is set to true so we force it off here
@@ -685,66 +683,6 @@ Task("BuildForNuget")
         msbuildSettings.BinaryLogger = binaryLogger;
         binaryLogger.FileName = $"{artifactStagingDirectory}/win-{configuration}.binlog";
         MSBuild("./Xamarin.Forms.sln", msbuildSettings.WithRestore());
-        
-        // // This currently fails on CI will revisit later
-        // if(isCIBuild)
-        // {        
-        //     MSBuild("./Xamarin.Forms.Xaml.UnitTests/Xamarin.Forms.Xaml.UnitTests.csproj", GetMSBuildSettings().WithTarget("Restore"));
-        //     MSBuild("./Xamarin.Forms.Xaml.UnitTests/Xamarin.Forms.Xaml.UnitTests.csproj", GetMSBuildSettings());
-        // }
-
-        // MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings().WithTarget("Restore"));
-        // MSBuild("./Xamarin.Forms.DualScreen.sln", GetMSBuildSettings().WithTarget("Restore"));
-
-        // if(isCIBuild)
-        // {       
-        //     foreach(var platformProject in GetFiles("./Xamarin.*.UnitTests/*.csproj").Select(x=> x.FullPath))
-        //     {
-        //         if(platformProject.Contains("Xamarin.Forms.Xaml.UnitTests"))
-        //             continue;
-
-        //         Information("Building: {0}", platformProject);
-        //         MSBuild(platformProject,
-        //                 GetMSBuildSettings().WithRestore());
-        //     }
-        // }
-
-        // MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings().WithTarget("Restore"));
-        // MSBuild("./Xamarin.Forms.DualScreen.sln", GetMSBuildSettings().WithTarget("Restore"));
-        
-        // msbuildSettings.BinaryLogger = binaryLogger;
-        
-        // var platformProjects = 
-        //     GetFiles("./Xamarin.Forms.Platform.*/*.csproj")
-        //         .Union(GetFiles("./Stubs/*/*.csproj"))
-        //         .Union(GetFiles("./Xamarin.Forms.Maps.*/*.csproj"))
-        //         .Union(GetFiles("./Xamarin.Forms.Pages.*/*.csproj"))
-        //         .Union(GetFiles("./Xamarin.Forms.Material.*/*.csproj"))
-        //         .Union(GetFiles("./Xamarin.Forms.Core.Design/*.csproj"))
-        //         .Union(GetFiles("./Xamarin.Forms.Xaml.Design/*.csproj"))
-        //         .Select(x=> x.FullPath).Distinct()
-        //         .ToList();
-
-        // foreach(var platformProject in platformProjects)
-        // {
-        //     if(platformProject.Contains("UnitTests"))
-        //         continue;
-                
-        //     msbuildSettings = GetMSBuildSettings();
-        //     string projectName = platformProject
-        //         .Replace(' ', '_')
-        //         .Split('/')
-        //         .Last();
-
-        //     binaryLogger.FileName = $"{artifactStagingDirectory}/{projectName}-{configuration}.binlog";
-        //     msbuildSettings.BinaryLogger = binaryLogger;
-
-        //     Information("Building: {0}", platformProject);
-        //     MSBuild(platformProject,
-        //             msbuildSettings);
-        // }
-
-        // dual screen
 
         if(IsRunningOnWindows())
         {
@@ -856,14 +794,14 @@ Task("Build")
     }
 });
 
-Task("Android100")
-    .Description("Builds Monodroid10.0 targets")
+Task("Android130")
+    .Description("Builds Monodroid13.0 targets")
     .Does(() =>
     {
         MSBuild("Xamarin.Forms.sln",
                 GetMSBuildSettings()
                     .WithRestore()
-                    .WithProperty("AndroidTargetFrameworks", "MonoAndroid10.0"));
+                    .WithProperty("AndroidTargetFrameworks", "MonoAndroid13.0"));
     });
 
 Task("VSMAC")
@@ -1160,8 +1098,13 @@ MSBuildSettings GetMSBuildSettings(PlatformTarget? platformTarget = PlatformTarg
     var buildSettings =  new MSBuildSettings {
         PlatformTarget = platformTarget,
         MSBuildPlatform = Cake.Common.Tools.MSBuild.MSBuildPlatform.x86,
-        Configuration = buildConfiguration ?? configuration,
+        Configuration = buildConfiguration ?? configuration
     };
+
+    if(!String.IsNullOrWhiteSpace(MSBuildExe) && MSBuildExe != "none")
+    {
+        buildSettings.ToolPath = MSBuildExe;
+    }
 
     buildSettings = buildSettings.WithProperty("ANDROID_RENDERERS", $"{ANDROID_RENDERERS}");
     if(!String.IsNullOrWhiteSpace(XamarinFormsVersion))

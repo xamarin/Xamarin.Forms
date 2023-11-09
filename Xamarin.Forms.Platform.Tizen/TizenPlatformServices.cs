@@ -182,10 +182,5 @@ namespace Xamarin.Forms.Platform.Tizen
 		}
 
 		public OSAppTheme RequestedTheme => OSAppTheme.Unspecified;
-
-		static MD5 CreateChecksum()
-		{
-			return MD5.Create();
-		}
 	}
 }

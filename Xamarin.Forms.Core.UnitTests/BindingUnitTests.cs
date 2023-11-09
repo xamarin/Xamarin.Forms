@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -1237,6 +1239,82 @@ namespace Xamarin.Forms.Core.UnitTests
 				Assert.IsFalse(weakBindable.IsAlive, "Bindable wasn't collected");
 		}
 
+		[Category("[Binding] Complex paths")]
+		[TestCase(BindingMode.OneWay)]
+		[TestCase(BindingMode.OneWayToSource)]
+		[TestCase(BindingMode.TwoWay)]
+		public async Task WeakPropertyChangedProxyDoesNotLeak(BindingMode mode)
+		{
+			var proxies = new List<WeakReference>();
+			WeakReference weakViewModel = null, weakBindable = null;
+
+			int i = 0;
+			void create()
+			{
+				if (i++ < 1024)
+				{
+					create();
+					return;
+				}
+
+				var binding = new Binding("Model.Model[1]");
+				var bindable = new MockBindable();
+				weakBindable = new WeakReference(bindable);
+
+				var viewmodel = new ComplexMockViewModel
+				{
+					Model = new ComplexMockViewModel
+					{
+						Model = new ComplexMockViewModel()
+					}
+				};
+
+				weakViewModel = new WeakReference(viewmodel);
+
+				bindable.BindingContext = viewmodel;
+				bindable.SetBinding(MockBindable.TextProperty, binding);
+
+				// Access private members:
+				// WeakPropertyChangedProxy proxy = binding._expression._parts[i]._listener;
+				var flags = BindingFlags.NonPublic | BindingFlags.Instance;
+				var expression = binding.GetType().GetField("_expression", flags).GetValue(binding);
+				Assert.NotNull(expression);
+				var parts = expression.GetType().GetField("_parts", flags).GetValue(expression) as IEnumerable;
+				Assert.NotNull(parts);
+				foreach (var part in parts)
+				{
+					var listener = part.GetType().GetField("_listener", flags).GetValue(part);
+					if (listener == null)
+						continue;
+					proxies.Add(new WeakReference(listener));
+				}
+
+				Assert.IsNotEmpty(proxies); // Should be at least 1
+			};
+
+			create();
+
+			await Task.Yield();
+			GC.Collect();
+			GC.WaitForPendingFinalizers();
+
+			if (mode == BindingMode.TwoWay || mode == BindingMode.OneWay)
+				Assert.False(weakViewModel.IsAlive, "ViewModel wasn't collected");
+
+			if (mode == BindingMode.TwoWay || mode == BindingMode.OneWayToSource)
+				Assert.False(weakBindable.IsAlive, "Bindable wasn't collected");
+
+			// WeakPropertyChangedProxy won't go away until the second GC, BindingExpressionPart unsubscribes in its finalizer
+			await Task.Yield();
+			GC.Collect();
+			GC.WaitForPendingFinalizers();
+
+			foreach (var proxy in proxies)
+			{
+				Assert.False(proxy.IsAlive, "WeakPropertyChangedProxy wasn't collected");
+			}
+		}
+
 		// Mono doesn't handle the GC properly until the stack frame where the object is created is popped.
 		// This means calling another method and not just using lambda as works in real .NET
 		void HackAroundMonoSucking(int i, BindableProperty property, Binding binding, out WeakReference weakViewModel, out WeakReference weakBindable)
@@ -1998,21 +2076,22 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 #if !WINDOWS_PHONE
-		[TestCase("en-US"), TestCase("pt-PT")]
-		public void ConvertIsCultureInvariant(string culture)
+		[TestCase("en-US", "0.5", 0.5, 0.9, "0.9")]
+		[TestCase("pt-PT", "0,5", 0.5, 0.9, "0,9")]
+		public void ConvertIsCultureAware(string culture, string sliderSetStringValue, double sliderExpectedDoubleValue, double sliderSetDoubleValue, string sliderExpectedStringValue)
 		{
 			System.Threading.Thread.CurrentThread.CurrentCulture = System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo(culture);
 
 			var slider = new Slider();
-			var vm = new MockViewModel { Text = "0.5" };
+			var vm = new MockViewModel { Text = sliderSetStringValue };
 			slider.BindingContext = vm;
 			slider.SetBinding(Slider.ValueProperty, "Text", BindingMode.TwoWay);
 
-			Assert.That(slider.Value, Is.EqualTo(0.5));
+			Assert.That(slider.Value, Is.EqualTo(sliderExpectedDoubleValue));
 
-			slider.Value = 0.9;
+			slider.Value = sliderSetDoubleValue;
 
-			Assert.That(vm.Text, Is.EqualTo("0.9"));
+			Assert.That(vm.Text, Is.EqualTo(sliderExpectedStringValue));
 		}
 #endif
 

@@ -145,7 +145,11 @@
     <Compile Include="CustomEffects\FooEffect.cs" />
     <Compile Include="_10337CustomRenderer.cs" />
     <Compile Include="_11132CustomRenderer.cs" />
+    <Compile Include="CustomRenderers\UIStatusBarStyleRenderer.cs" />
     <Compile Include="CustomRenderers\_12372CustomRenderer.cs" />
+    <Compile Include="CustomRenderers\_DemoShellPageCustomRenderer.cs" />
+    <Compile Include="CustomRenderers\_ModalShellPageCustomRenderer.cs" />
+    <Compile Include="_13577CustomRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Controls\Xamarin.Forms.Controls.csproj">
@@ -384,13 +388,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AdvancedColorPicker" Version="2.0.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NUnit">
       <Version>3.13.1</Version>
     </PackageReference>
     <PackageReference Include="Xam.Plugin.DeviceInfo" Version="3.0.2" />
     <PackageReference Include="Xamarin.Insights" Version="1.12.3" />
-    <PackageReference Include="Xamarin.TestCloud.Agent" Version="0.22.1" />
+    <PackageReference Include="Xamarin.TestCloud.Agent" Version="0.22.2" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />

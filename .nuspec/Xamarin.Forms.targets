@@ -48,9 +48,9 @@
 
 	<Target Name="_ValidateNETFrameworkVersion"
 			BeforeTargets="_CheckForInvalidConfigurationAndPlatform"
-			Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework' AND '$(TargetFrameworkVersion.Substring(1))' &lt; '4.6.1' AND '$(XFDisableFrameworkVersionValidation)' != 'True'">
+			Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework' AND '$(TargetFrameworkVersion.Substring(1))' &lt; '4.6.1' AND '$(ProjectExt)' != '.wapproj' AND '$(XFDisableFrameworkVersionValidation)' != 'True'">
 		<Error Code="XF004"
-			Text="XF requires .NETFramework >= v4.6.1. You have '$(TargetFrameworkVersion)'" />
+			Text="Xamarin.Forms requires .NETFramework >= v4.6.1. You have '$(TargetFrameworkVersion)'" />
 	</Target>
 
 	<!-- XamlG -->
@@ -159,7 +159,7 @@
   
  <!-- 
     Platform Specific Targets.
-    We can't use a framework specific targets file because it breaks shared projects i.e.  /build/MonoAndroid10/Xamarin.Forms.targets
+    We can't use a framework specific targets file because it breaks shared projects i.e.  /build/MonoAndroid13/Xamarin.Forms.targets
   -->
 
   <!-- MonoAndroid targets. -->
@@ -176,7 +176,7 @@
   
   <Target Name="IncludeProguardForAndroid" Condition="'$(XFDisableDefaultProguardConfiguration)' != 'True'">
     <ItemGroup>
-      <ProguardConfiguration Include="$(MSBuildThisFileDirectory)MonoAndroid10\proguard.cfg" />
+      <ProguardConfiguration Include="$(MSBuildThisFileDirectory)MonoAndroid13\proguard.cfg" />
     </ItemGroup>
   </Target>
 

@@ -277,8 +277,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnEnded(object sender, EventArgs eventArgs)
 		{
-			if (TextView.Text != Element.Text)
-				ElementController.SetValueFromRenderer(Editor.TextProperty, TextView.Text);
+			// Typing aid changes don't always raise EditingChanged event
+			// Normalizing nulls to string.Empty allows us to ensure that a change from null to "" doesn't result in a change event.
+			// While technically this is a difference it serves no functional good.
+			
+			var textViewText = TextView.Text ?? string.Empty;
+			var editorText = Element.Text ?? string.Empty;
+			
+			if (textViewText != editorText)
+				ElementController.SetValueFromRenderer(Editor.TextProperty, textViewText);			
 
 			Element.SetValue(VisualElement.IsFocusedPropertyKey, false);
 			ElementController.SendCompleted();

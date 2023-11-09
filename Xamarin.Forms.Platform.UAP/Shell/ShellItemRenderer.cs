@@ -161,7 +161,7 @@ namespace Xamarin.Forms.Platform.UWP
 							var icon = new FontIcon()
 							{
 								Glyph = fontImageSource.Glyph,
-								FontFamily = new FontFamily(fontImageSource.FontFamily),
+								FontFamily = fontImageSource.FontFamily.ToFontFamily(),
 								FontSize = fontImageSource.Size,
 							};
 

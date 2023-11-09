@@ -133,7 +133,7 @@ namespace Xamarin.Forms.Material.iOS
 
 		protected virtual void ApplyThemeIfNeeded()
 		{
-			var bgBrush = Element.Background;
+			var bgBrush = Element?.Background;
 
 			if (Brush.IsNullOrEmpty(bgBrush))
 				return;

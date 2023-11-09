@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (linearGradientBrush.GradientStops != null && linearGradientBrush.GradientStops.Count > 0)
 				{
 					var orderedStops = linearGradientBrush.GradientStops.OrderBy(x => x.Offset).ToList();
-					linearGradientLayer.Colors = orderedStops.Select(x => x.Color.ToCGColor()).ToArray();
+					linearGradientLayer.Colors = GetCAGradientLayerColors(orderedStops);
 					linearGradientLayer.Locations = GetCAGradientLayerLocations(orderedStops);
 				}
 
@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (radialGradientBrush.GradientStops != null && radialGradientBrush.GradientStops.Count > 0)
 				{
 					var orderedStops = radialGradientBrush.GradientStops.OrderBy(x => x.Offset).ToList();
-					radialGradientLayer.Colors = orderedStops.Select(x => x.Color.ToCGColor()).ToArray();
+					radialGradientLayer.Colors = GetCAGradientLayerColors(orderedStops);
 					radialGradientLayer.Locations = GetCAGradientLayerLocations(orderedStops);
 				}
 
@@ -113,16 +113,13 @@ namespace Xamarin.Forms.Platform.iOS
 			if (backgroundLayer == null)
 				return null;
 
-			UIGraphics.BeginImageContextWithOptions(backgroundLayer.Bounds.Size, false, UIScreen.MainScreen.Scale);
+			var renderer = new UIGraphicsImageRenderer(backgroundLayer.Bounds.Size, new UIGraphicsImageRendererFormat()
+			{
+				Opaque = false,
+				Scale = UIScreen.MainScreen.Scale,
+			});
 
-			if (UIGraphics.GetCurrentContext() == null)
-				return null;
-
-			backgroundLayer.RenderInContext(UIGraphics.GetCurrentContext());
-			UIImage gradientImage = UIGraphics.GetImageFromCurrentImageContext();
-			UIGraphics.EndImageContext(); 
-
-			return gradientImage;
+			return renderer.CreateImage((context) => backgroundLayer.RenderInContext(context.CGContext));
 		}
 
 		public static void InsertBackgroundLayer(this UIView view, CALayer backgroundLayer, int index = -1)

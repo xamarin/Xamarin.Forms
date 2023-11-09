@@ -381,6 +381,83 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(page.GetType(), typeof(ModalTestPage));
 		}
 
+		[Test]
+		public async Task PopModalWithDots()
+		{
+			Shell shell = new Shell();
+			shell.Items.Add(CreateShellItem());
+
+			await shell.CurrentPage.Navigation.PushModalAsync(new ContentPage());
+			await shell.CurrentPage.Navigation.PushModalAsync(new ContentPage());
+			await shell.GoToAsync("..");
+			Assert.AreEqual(1, shell.Navigation.ModalStack.Count);
+			await shell.GoToAsync("..");
+			Assert.AreEqual(0, shell.Navigation.ModalStack.Count);
+		}
+
+		[Test]
+		public async Task CanCancelGoToModalAsync()
+		{
+			TestShell shell = new TestShell();
+			shell.Items.Add(CreateShellItem());
+
+			shell.Navigating += async (_, args) =>
+			{
+				var deferral = args.GetDeferral();
+				await Task.Delay(10);
+				args.Cancel();
+				deferral.Complete();
+			};
+
+			await shell.GoToAsync("ModalTestPage");
+			Assert.AreEqual(0, shell.Navigation.ModalStack.Count);
+		}
+
+		[Test]
+		public async Task CanCancelPushModalAsync()
+		{
+			TestShell shell = new TestShell();
+
+			shell.Items.Add(CreateShellItem());
+			shell.Navigating += async (_, args) =>
+			{
+				var deferral = args.GetDeferral();
+				await Task.Delay(10);
+				args.Cancel();
+				deferral.Complete();
+			};
+
+			await shell.CurrentPage.Navigation.PushModalAsync(new ContentPage());
+			Assert.AreEqual(0, shell.Navigation.ModalStack.Count);
+		}
+
+		[Test]
+		public async Task PopModalFromShellNavigationProxy()
+		{
+			Routing.RegisterRoute("ModalTestPage", typeof(ModalTestPage));
+			Shell shell = new Shell();
+			shell.Items.Add(CreateShellItem(shellItemRoute: "NewRoute"));
+
+			await shell.GoToAsync("ModalTestPage");
+			await shell.Navigation.PopModalAsync();
+
+			Assert.AreEqual("//NewRoute", shell.CurrentState.Location.ToString());
+		}
+
+		[Test]
+		public async Task PushModalFromShellNavigationProxy()
+		{
+			ModalTestPage modalTestPage = new ModalTestPage();
+			Routing.SetRoute(modalTestPage, "ModalTestPage");
+
+			Routing.RegisterRoute("ModalTestPage", typeof(ModalTestPage));
+			Shell shell = new Shell();
+			shell.Items.Add(CreateShellItem(shellItemRoute: "NewRoute"));
+			await shell.Navigation.PushModalAsync(modalTestPage);
+
+			Assert.AreEqual("//NewRoute/ModalTestPage", shell.CurrentState.Location.ToString());
+		}
+
 
 		[QueryProperty("SomeQueryParameter", "SomeQueryParameter")]
 		public class ModalTestPageBase : ShellLifeCycleTests.LifeCyclePage

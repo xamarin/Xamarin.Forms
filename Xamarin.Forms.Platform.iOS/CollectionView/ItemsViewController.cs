@@ -13,10 +13,11 @@ namespace Xamarin.Forms.Platform.iOS
 		public const int EmptyTag = 333;
 
 		public IItemsViewSource ItemsSource { get; protected set; }
+		
 		public TItemsView ItemsView { get; }
 		protected ItemsViewLayout ItemsViewLayout { get; set; }
 		bool _initialized;
-		bool _isEmpty;
+		bool _isEmpty = true;
 		bool _emptyViewDisplayed;
 		bool _disposed;
 
@@ -59,6 +60,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
+				UnbindCells();
+				_measurementCells = null;
+			
 				ItemsSource?.Dispose();
 
 				CollectionView.Delegate = null;
@@ -71,6 +75,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				ItemsViewLayout?.Dispose();
 				CollectionView?.Dispose();
+
 			}
 
 			base.Dispose(disposing);
@@ -108,7 +113,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (_isEmpty)
 			{
-				_measurementCells.Clear();
+				UnbindCells();
+				_measurementCells?.Clear();
 				ItemsViewLayout?.ClearCellSizeCache();
 			}
 
@@ -123,6 +129,24 @@ namespace Xamarin.Forms.Platform.iOS
 				// a prototype cell and our itemSize or estimatedItemSize are wrong/unset
 				// So trigger a constraint update; if we need a measurement, that will make it happen
 				ItemsViewLayout.ConstrainTo(CollectionView.Bounds.Size);
+			}
+		}
+
+		private void UnbindCells()
+		{
+			if (_measurementCells == null || _measurementCells.Count == 0)
+				return;
+
+			foreach (var _cell in _measurementCells)
+			{
+				var _tCell = _cell.Value;
+				if (_tCell == null)
+					continue;
+
+				_tCell.Unbind();
+
+				_tCell.ContentSizeChanged -= CellContentSizeChanged;
+				_tCell.LayoutAttributesChanged -= CellLayoutAttributesChanged;
 			}
 		}
 
@@ -207,8 +231,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public virtual void UpdateItemsSource()
 		{
-			_measurementCells.Clear();
+			_measurementCells?.Clear();
 			ItemsViewLayout?.ClearCellSizeCache();
+			ItemsSource?.Dispose();
 			ItemsSource = CreateItemsViewSource();
 			CollectionView.ReloadData();
 			CollectionView.CollectionViewLayout.InvalidateLayout();
@@ -250,7 +275,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var bindingContext = ItemsSource[indexPath];
 
 			// If we've already created a cell for this index path (for measurement), re-use the content
-			if (_measurementCells.TryGetValue(bindingContext, out TemplatedCell measurementCell))
+			if (_measurementCells != null && _measurementCells.TryGetValue(bindingContext, out TemplatedCell measurementCell))
 			{
 				_measurementCells.Remove(bindingContext);
 				measurementCell.ContentSizeChanged -= CellContentSizeChanged;
@@ -403,7 +428,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual void HandleFormsElementMeasureInvalidated(VisualElement formsElement)
 		{
 			RemeasureLayout(formsElement);
-        }
+		}
 
 		internal void UpdateView(object view, DataTemplate viewTemplate, ref UIView uiView, ref VisualElement formsElement)
 		{
@@ -460,20 +485,27 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void AlignEmptyView() 
+		void AlignEmptyView()
 		{
 			if (_emptyUIView == null)
 			{
 				return;
 			}
 
-			if (CollectionView.EffectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirection.RightToLeft)
+			bool isRtl;
+
+			if (Forms.IsiOS10OrNewer)
+				isRtl = CollectionView.EffectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirection.RightToLeft;
+			else
+				isRtl = CollectionView.SemanticContentAttribute == UISemanticContentAttribute.ForceRightToLeft;
+
+			if (isRtl)
 			{
+#pragma warning disable CS0618 // Type or member is obsolete
 				if (_emptyUIView.Transform.xx == -1)
 				{
 					return;
 				}
-
 				FlipEmptyView();
 			}
 			else
@@ -483,6 +515,7 @@ namespace Xamarin.Forms.Platform.iOS
 					FlipEmptyView();
 				}
 			}
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		void FlipEmptyView()
@@ -587,7 +620,8 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateTemplatedCell(templatedCell, indexPath);
 
 			// Keep this cell around, we can transfer the contents to the actual cell when the UICollectionView creates it
-			_measurementCells[ItemsSource[indexPath]] = templatedCell;
+			if (_measurementCells != null)
+				_measurementCells[ItemsSource[indexPath]] = templatedCell;
 
 			return templatedCell;
 		}
@@ -618,6 +652,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (CollectionView.Hidden)
 				{
+					CollectionView.ReloadData();
 					CollectionView.Hidden = false;
 					Layout.InvalidateLayout();
 					CollectionView.LayoutIfNeeded();

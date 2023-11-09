@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Test 14444" xmlns:local="using:Xamarin.Forms.Controls"
+    x:Class="Xamarin.Forms.Controls.Issues.Issue14444"
+    BackgroundColor="LightGray">
+    <StackLayout>
+        <Label
+            Padding="12"
+            BackgroundColor="Black"
+            TextColor="White"
+            Text="If the SwipeView background is transparent, the test has passed."/>
+        <StackLayout
+            Padding="12">
+            <SwipeView
+                BackgroundColor="Transparent">
+                <SwipeView.LeftItems>
+                    <SwipeItemView WidthRequest="50">
+                        <BoxView
+                            HeightRequest="50"
+                            HorizontalOptions="FillAndExpand"
+                            BackgroundColor="Red"/>
+                    </SwipeItemView>
+                </SwipeView.LeftItems>
+                <BoxView
+                    HeightRequest="50"
+                    HorizontalOptions="FillAndExpand"
+                    BackgroundColor="Gray"
+                    CornerRadius="16"/>
+            </SwipeView>
+        </StackLayout>
+    </StackLayout>
+</local:TestContentPage>

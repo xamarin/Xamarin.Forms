@@ -34,12 +34,12 @@
 
   <!-- This is used by the libraries -->
   <PropertyGroup Condition="'$(AndroidTargetFrameworks)' == ''">
-    <AndroidTargetFrameworks>MonoAndroid10.0;</AndroidTargetFrameworks>
+    <AndroidTargetFrameworks>MonoAndroid13.0;</AndroidTargetFrameworks>
   </PropertyGroup>
 
   <!-- Auto install any missing Android SDKs -->
   <PropertyGroup Condition="'$(CI)' == 'true'">
-    <AndroidRestoreOnBuild Condition="'$(AndroidRestoreOnBuild)' == ''">True</AndroidRestoreOnBuild>
-    <AcceptAndroidSDKLicenses Condition="'$(AcceptAndroidSDKLicenses)' == ''">True</AcceptAndroidSDKLicenses>
+    <AndroidRestoreOnBuild Condition="'$(AndroidRestoreOnBuild)' == ''">False</AndroidRestoreOnBuild>
+    <AcceptAndroidSDKLicenses Condition="'$(AcceptAndroidSDKLicenses)' == ''">False</AcceptAndroidSDKLicenses>
   </PropertyGroup>
 </Project>

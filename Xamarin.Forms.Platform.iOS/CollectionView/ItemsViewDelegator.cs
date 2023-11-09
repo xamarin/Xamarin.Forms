@@ -120,13 +120,22 @@ namespace Xamarin.Forms.Platform.iOS
 			var indexPathsForVisibleItems = ViewController.CollectionView.IndexPathsForVisibleItems.OrderBy(x => x.Row).ToList();
 
 			var visibleItems = indexPathsForVisibleItems.Count > 0;
+
 			NSIndexPath firstVisibleItemIndex = null, centerItemIndex = null, lastVisibleItemIndex = null;
 
 			if (visibleItems)
 			{
+				NSIndexPath firstVisibleItem = indexPathsForVisibleItems.First();
+
+				UICollectionView collectionView = ViewController.CollectionView;
+				NSIndexPath centerIndexPath = GetCenteredIndexPath(collectionView);
+				NSIndexPath centerItem = centerIndexPath ?? firstVisibleItem;
+
+				NSIndexPath lastVisibleItem = indexPathsForVisibleItems.Last();
+
 				firstVisibleItemIndex = indexPathsForVisibleItems.First();
-				centerItemIndex = GetCenteredIndexPath(ViewController.CollectionView);
-				lastVisibleItemIndex = indexPathsForVisibleItems.Last();
+				centerItemIndex = centerItem;
+				lastVisibleItemIndex = lastVisibleItem;
 			}
 
 			return (visibleItems, firstVisibleItemIndex, centerItemIndex, lastVisibleItemIndex);
@@ -136,12 +145,16 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var (VisibleItems, First, Center, Last) = GetVisibleItemsIndexPath();
 			int firstVisibleItemIndex = -1, centerItemIndex = -1, lastVisibleItemIndex = -1;
+
 			if (VisibleItems)
 			{
-				firstVisibleItemIndex = (int)First.Item;
-				centerItemIndex = (int)Center.Item;
-				lastVisibleItemIndex = (int)Last.Item;
+				IItemsViewSource source = ViewController.ItemsSource;
+
+				firstVisibleItemIndex = GetItemIndex(First, source);
+				centerItemIndex = GetItemIndex(Center, source);
+				lastVisibleItemIndex = GetItemIndex(Last, source);
 			}
+
 			return (VisibleItems, firstVisibleItemIndex, centerItemIndex, lastVisibleItemIndex);
 		}
 
@@ -159,7 +172,23 @@ namespace Xamarin.Forms.Platform.iOS
 			var centerPoint = new CGPoint(collectionView.Center.X + collectionView.ContentOffset.X, collectionView.Center.Y + collectionView.ContentOffset.Y);
 			var centerIndexPath = collectionView.IndexPathForItemAtPoint(centerPoint);
 			centerItemIndex = centerIndexPath ?? firstVisibleItemIndex;
+
 			return centerItemIndex;
+		}
+
+		static int GetItemIndex(NSIndexPath indexPath, IItemsViewSource itemSource)
+		{
+			int index = (int)indexPath.Item;
+
+			if (indexPath.Section > 0)
+			{
+				for (int i = 0; i < indexPath.Section; i++)
+				{
+					index += itemSource.ItemCountInGroup(i);
+				}
+			}
+
+			return index;
 		}
 
 		public override CGSize GetSizeForItem(UICollectionView collectionView, UICollectionViewLayout layout, NSIndexPath indexPath)

@@ -6,30 +6,47 @@ parameters:
   includeUwp: 'true'
   includeAndroid: 'true'
   includeNonUwpAndNonAndroid: 'true'
+  runTests: 'true'
 
 steps:
   - checkout: self
     clean: true
 
+  - task: UseDotNet@2
+    displayName: 'Install .net core $(DOTNET_VERSION)'
+    condition: ne(variables['DOTNET_VERSION'], '')
+    inputs:
+      version: $(DOTNET_VERSION)
+      packageType: 'sdk'
+
   - script: build.cmd -Target provision
     displayName: 'Cake Provision'
     condition: eq(variables['provisioningCake'], 'true')
 
-  - task: xamops.azdevex.provisionator-task.provisionator@1
+  # Setup JDK Paths
+  - bash: |
+      echo "##vso[task.setvariable variable=JI_JAVA_HOME]$(JAVA_HOME_11_X64)"
+    displayName: 'Setup JDK Paths'
+
+  - task: xamops.azdevex.provisionator-task.provisionator@2
     displayName: 'Provisionator'
     condition: eq(variables['provisioning'], 'true')
     inputs:
       provisioning_script: ${{ parameters.provisionatorPath }}
       provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
+    env:
+      AUTH_TOKEN_GITHUB_COM: $(github--pat--vs-mobiletools-engineering-service2)
+  
+  - task: xamops.azdevex.provisionator-task.provisionator@2
+    displayName: 'Provisioning VS'
+    condition: eq(variables['provisioningVS'], 'true')
+    inputs:
+      provisioning_script: ${{ parameters.provisionatorVSPath }}
+      provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
+    env:
+      AUTH_TOKEN_GITHUB_COM: $(github--pat--vs-mobiletools-engineering-service2)
 
-  # - task: UseDotNet@2
-  #   displayName: "Install .net core $(DOTNET_VERSION)"
-  #   condition: ne(variables['DOTNET_VERSION'], '')
-  #   inputs:
-  #     version: $(DOTNET_VERSION)
-  #     packageType: 'sdk'
-
-  - script: build.cmd -Target cg-uwp-build-tests -ScriptArgs '--BUILD_CONFIGURATION="$(BuildConfiguration)"'
+  - script: build.cmd -Target cg-uwp-build-tests -ScriptArgs '--BUILD_CONFIGURATION="$(BuildConfiguration)"','--MSBUILD="$(msbuild)"'
     condition: eq(variables['BuildConfiguration'], 'Release')
     displayName: 'Build Tests and APPX'
 
@@ -44,12 +61,13 @@ steps:
         Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/Dependencies/x86/**
       TargetFolder: '$(build.artifactstagingdirectory)'
 
-  - script: build.cmd -Target BuildForNuget -ScriptArgs '--BUILD_CONFIGURATION="$(BuildConfiguration)"','--Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"'
+  - script: build.cmd -Target BuildForNuget -ScriptArgs '--BUILD_CONFIGURATION="$(BuildConfiguration)"','--Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"','--MSBUILD="$(msbuild)"'
     name: winbuild
     displayName: 'Build Projects For Nuget'
 
   - task: VSTest@2
     displayName: 'Unit Tests'
+    condition: eq(${{ parameters.runTests }}, 'true')
     inputs:
       testAssemblyVer2: |
         **/bin/$(BuildConfiguration)/Xamarin.Forms.Core.UnitTests.dll

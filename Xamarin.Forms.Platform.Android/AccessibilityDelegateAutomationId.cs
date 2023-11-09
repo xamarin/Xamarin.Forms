@@ -4,7 +4,7 @@ using System.Text;
 using Android.Views.Accessibility;
 using AndroidX.AppCompat.Widget;
 using AndroidX.Core.View;
-using AndroidX.Core.View.Accessibiity;
+using AndroidX.Core.View.Accessibility;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 
 namespace Xamarin.Forms.Platform.Android
@@ -34,9 +34,18 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					host.ContentDescription = value;
 				}
-				else if (host.ContentDescription == (_element as VisualElement)?.AutomationId)
+				else if (host.ContentDescription == (_element as Element)?.AutomationId)
 				{
 					host.ContentDescription = null;
+				}
+
+				if (_element is Element element &&
+					!string.IsNullOrWhiteSpace(element.AutomationId) &&
+					host?.Context != null)
+				{
+					// This is used by Appium and other automation testing frameworks
+					// to locate views
+					info.ViewIdResourceName = $"{host.Context.PackageName}:id/{element.AutomationId}";
 				}
 			}
 		}

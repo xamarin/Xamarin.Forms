@@ -1,0 +1,125 @@
+variables:
+- name: DefaultBuildPlatform
+  value: 'any cpu'
+- name: ApkName
+  value: AndroidControlGallery.AndroidControlGallery.apk
+- name: BuildVersion
+  value: $[counter('nuget-counter-1', 2400)]
+- name: NUGET_VERSION
+  value: 5.8.1
+- name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
+  value: true
+- name: DOTNET_VERSION
+  value: 5.0.102
+- name: signingCondition
+  value: and(succeeded(), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
+- group: Xamarin-Secrets
+
+resources:
+  repositories:
+    - repository: xamarin-templates
+      type: github
+      name: xamarin/yaml-templates
+      endpoint: xamarin
+      ref: refs/heads/main
+
+trigger:
+  branches:
+    include:
+    - main
+    - 5.*
+  tags:
+    include:
+    - '*'
+  paths:
+    exclude:
+    - README.md
+
+pr:
+  autoCancel: false
+  branches:
+    include:
+    - main
+    - 5.*
+
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily midnight build
+  branches:
+    include:
+    - 5.0.0
+
+stages:
+  - stage: windows
+    displayName: Build Windows
+    jobs:
+      - job: win_hosted
+        workspace:
+          clean: all
+        displayName: Build Windows Phase
+        timeoutInMinutes: 60
+        pool:
+          name: $(windowsPool)
+          vmImage: $(windowsvmImage)
+          demands:
+            msbuild
+        strategy:
+          matrix:
+            release:
+              BuildConfiguration:  'Release'
+        steps:
+          - template: ../build/steps/build-windows.yml
+            parameters:
+              provisionatorPath : 'build/provisioning/provisioning.csx'
+              provisionatorVSPath : 'build/provisioning/vs.csx'
+              runTests: false
+      - job: nuget_pack_hosted
+        workspace:
+          clean: all
+        displayName: Nuget Phase
+        dependsOn:
+        - win_hosted
+        condition: succeeded()
+        pool:
+          name: $(windowsPool)
+          vmImage: $(windowsvmImage)
+          demands:
+            msbuild
+        variables:
+          FormsIdAppend: ''
+          buildConfiguration: $(DefaultBuildConfiguration)
+          nugetPackageVersion : $[ dependencies.win_hosted.outputs['release.winbuild.xamarinformspackageversion'] ]
+        steps:
+          - template: ../build/steps/build-nuget.yml
+            parameters:
+              nugetForRelease : true
+              nugetForDebug : false
+
+  - stage: nuget_signing
+    dependsOn: windows
+    displayName: Sign Nuget
+    jobs:
+      - template: sign-artifacts/jobs/v2.yml@xamarin-templates
+        parameters:
+          targetFolder: $(Build.ArtifactStagingDirectory)/nuget/signed
+          artifactPath: release
+          signedArtifactName: nuget
+          signedArtifactPath: signed
+          displayName: Sign Phase
+          condition: ${{ variables.signingCondition }}
+          preSignSteps:
+            - task: NuGetToolInstaller@1
+              inputs:
+                versionSpec: $(NUGET_VERSION)
+
+  - stage: sbom
+    dependsOn: nuget_signing
+    displayName: 'Software Bill of Materials'
+    jobs:
+    - template: compliance/sbom/job.v1.yml@xamarin-templates        # Software Bill of Materials (SBOM): https://eng.ms/docs/cloud-ai-platform/devdiv/one-engineering-system-1es/1es-docs/secure-supply-chain/ado-sbom-generator
+      parameters:
+        artifactNames: ['nuget']
+        artifactMap: ['nuget/signed']
+        packageName: 'Xamarin Forms'
+        packageFilter: '*.nupkg'
+        condition: ${{ variables.signingCondition }}

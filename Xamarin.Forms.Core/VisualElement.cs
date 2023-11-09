@@ -216,7 +216,14 @@ namespace Xamarin.Forms
 		{
 			if (Background != null)
 			{
-				Background.Parent = this;
+				Device.InvokeOnMainThreadAsync(() =>
+				{
+					if (Background != null)
+					{
+						Background.Parent = this;
+					}
+				});
+
 				Background.PropertyChanged += OnBackgroundChanged;
 
 				if (Background is GradientBrush gradientBrush)

@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:TestContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                          xmlns:controls="clr-namespace:Xamarin.Forms.Controls" 
+                          x:Class="Xamarin.Forms.Controls.Issues.Issue15100"
+                          x:Name="page">
+    <ScrollView BackgroundColor="DarkBlue" Orientation="Both" Padding="5.0">
+        <Frame BackgroundColor="DarkGreen"
+               BorderColor="White"
+               CornerRadius="0.0"
+               HeightRequest="{Binding Path=Height, Source={x:Reference page}}"
+               Margin="30.0"
+               Padding="0.0"
+               WidthRequest="{Binding Path=Width, Source={x:Reference page}}">
+            <Label HorizontalTextAlignment="Center"
+                   TextColor="#FFAAAAAA"
+                   Padding="3.0"
+                   Text="Scroll to the bottom right of the page.&#x0a;If the white frame or the dark blue margin is not visible&#x0a;or the margin is thinner than the margin at the top left of the page,&#x0a;the test has failed." />
+        </Frame>
+    </ScrollView>
+</controls:TestContentPage>

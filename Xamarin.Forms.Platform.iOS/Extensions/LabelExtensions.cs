@@ -3,6 +3,7 @@ using Foundation;
 using System.Collections.Generic;
 using System.Drawing;
 using Xamarin.Forms.Internals;
+using SizeF = CoreGraphics.CGSize;
 #if __MOBILE__
 using UIKit;
 using NativeLabel = UIKit.UILabel;
@@ -112,7 +113,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			var glyphRange = new NSRange();
 
 #if __MOBILE__
+#pragma warning disable CS0618 // Type or member is obsolete
 			layoutManager.CharacterRangeForGlyphRange(characterRange, ref glyphRange);
+#pragma warning restore CS0618 // Type or member is obsolete
 #else
 #pragma warning disable CS0618 // Type or member is obsolete
 			layoutManager.CharacterRangeForGlyphRange(characterRange, out glyphRange);

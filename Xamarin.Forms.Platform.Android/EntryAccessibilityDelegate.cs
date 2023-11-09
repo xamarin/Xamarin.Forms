@@ -1,5 +1,5 @@
 ﻿using Android.Views.Accessibility;
-using AndroidX.Core.View.Accessibiity;
+using AndroidX.Core.View.Accessibility;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 
 namespace Xamarin.Forms.Platform.Android

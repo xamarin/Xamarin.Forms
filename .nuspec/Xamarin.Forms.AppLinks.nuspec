@@ -14,14 +14,14 @@
     <description>Add support for deep linking and indexing app content using Xamarin.Forms on the Android Platform</description>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <dependencies>
-      <group targetFramework="MonoAndroid10.0">
-        <dependency id="Xamarin.Firebase.AppIndexing" version="119.1.0"/>        
-        <dependency id="Xamarin.AndroidX.Lifecycle.LiveData" version="2.2.0.4"/>
-        <dependency id="Xamarin.AndroidX.Legacy.Support.V4" version="1.0.0.6"/>
+      <group targetFramework="MonoAndroid13.0">
+        <dependency id="Xamarin.Firebase.AppIndexing" version="120.0.0.11"/>        
+        <dependency id="Xamarin.AndroidX.Lifecycle.LiveData" version="2.6.1.1"/>
+        <dependency id="Xamarin.AndroidX.Legacy.Support.V4" version="1.0.0.17"/>
       </group>
     </dependencies>
     <references>
-      <group targetFramework="MonoAndroid10.0">
+      <group targetFramework="MonoAndroid13.0">
         <reference file="Xamarin.Forms.Platform.Android.AppLinks.dll" />
       </group>
     </references>
@@ -29,6 +29,10 @@
   <files>
     <!--Icon-->
     <file src="..\Assets\xamarin_128x128.png" target="Assets\" />
-    <file src="..\Xamarin.Forms.Platform.Android.AppLinks\bin\$Configuration$\MonoAndroid10.0\Xamarin.Forms.Platform.Android.AppLinks.dll" target="lib\MonoAndroid10.0" />
+    <file src="..\Xamarin.Forms.Platform.Android.AppLinks\bin\$Configuration$\MonoAndroid13.0\Xamarin.Forms.Platform.Android.AppLinks.dll" target="lib\MonoAndroid13.0" />
+
+    <!--Licenses-->
+    <file src="..\THIRD-PARTY-NOTICES.txt" target="Licenses\" />
+    <file src="..\LICENSE*" target="Licenses\" />
   </files>
 </package>

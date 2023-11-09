@@ -51,6 +51,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 							new CarouselXamlGallery(false, 3), Navigation),
 						GalleryBuilder.NavButton("CarouselView Set CurrentItem Loop", () =>
 							new CarouselXamlGallery(true, 3), Navigation),
+						GalleryBuilder.NavButton("CarouselView Replace Source", () =>
+							new ReplaceSourceGallery(), Navigation)
 					}
 				}
 			};
