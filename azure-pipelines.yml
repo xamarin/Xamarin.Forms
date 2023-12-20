@@ -201,7 +201,7 @@ stages:
                 inputs:
                   versionSpec: $(NUGET_VERSION)
 
-    - template: security/full/v1.yml@internal-templates
+    - template: security/full/v1.yml@xamarin-templates
       parameters:
         dependsOn: windows
         credScanSuppressionFile: $(System.DefaultWorkingDirectory)\build\automation\CredScanSuppressions.json
