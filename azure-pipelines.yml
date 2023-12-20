@@ -202,9 +202,9 @@ stages:
                   versionSpec: $(NUGET_VERSION)
 
     - template: security/full/v1.yml@internal-templates
-      dependsOn: windows
       parameters:
-          credScanSuppressionFile: $(System.DefaultWorkingDirectory)\build\automation\CredScanSuppressions.json
+        dependsOn: windows
+        credScanSuppressionFile: $(System.DefaultWorkingDirectory)\build\automation\CredScanSuppressions.json
 
     - stage: sbom
       dependsOn: nuget_signing
