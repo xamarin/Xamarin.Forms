@@ -201,53 +201,10 @@ stages:
                 inputs:
                   versionSpec: $(NUGET_VERSION)
 
-    - stage: PoliCheck
-      displayName: 'Code Analysis'
+    - template: security/full/v1.yml@internal-templates
       dependsOn: windows
-      jobs:
-        - job: run_poli_check
-          displayName: 'Policheck And Credentials Compliance'
-          pool:
-            name: $(vs2019VmPool)
-            vmImage: $(vs2019VmImage)
-          timeoutInMinutes: 60
-          cancelTimeoutInMinutes: 5
-          steps:
-            - checkout: self
-
-            - template: security/policheck/v2.yml@xamarin-templates
-
-            - template: security/credscan/v3.yml@xamarin-templates
-              parameters:
-                suppressionsFile: $(System.DefaultWorkingDirectory)\build\automation\CredScanSuppressions.json
-
-            - task: securedevelopmentteam.vss-secure-development-tools.build-task-antimalware.AntiMalware@4
-              displayName: Run AntiMalware (Defender) Scan
-              inputs:
-                FileDirPath: $(System.DefaultWorkingDirectory)
-                EnableServices: true
-              condition: succeededOrFailed()
-
-            - task: securedevelopmentteam.vss-secure-development-tools.build-task-report.SdtReport@2
-              displayName: Create Security Analysis Report
-              inputs:
-                CredScan: true
-                PoliCheck: true
-              condition: succeededOrFailed()
-
-            - task: securedevelopmentteam.vss-secure-development-tools.build-task-publishsecurityanalysislogs.PublishSecurityAnalysisLogs@3
-              displayName: Publish Security Analysis Logs
-              inputs:
-                ArtifactName: CodeAnalysisLogs
-              condition: succeededOrFailed()
-
-            - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@2
-              displayName: Fail Job if Security Issues are Detected
-              inputs:
-                CredScan: true
-                PoliCheck: true
-                GdnBreakGdnToolPoliCheckSeverity: 'Error'
-              condition: succeededOrFailed()
+      parameters:
+          credScanSuppressionFile: $(System.DefaultWorkingDirectory)\build\automation\CredScanSuppressions.json
 
     - stage: sbom
       dependsOn: nuget_signing
