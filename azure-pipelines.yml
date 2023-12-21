@@ -204,6 +204,11 @@ stages:
     - template: security/full/v1.yml@xamarin-templates
       parameters:
         stageDependsOn: windows
+        scanArtifacts: [ 'win_build' ]
+        antiMalwareEnabled: true
+        binSkimEnabled: true
+        enableCodeInspector: true
+        credScanEnabled: true
         credScanSuppressionFile: $(System.DefaultWorkingDirectory)\build\automation\CredScanSuppressions.json
         apiScanEnabled: true
         apiScanSoftwareName: 'Xamarin.Forms'
