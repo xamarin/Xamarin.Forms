@@ -204,7 +204,7 @@ stages:
     - template: security/full/v1.yml@xamarin-templates
       parameters:
         stageDependsOn: windows
-        scanArtifacts: [ 'nuget' ]
+        scanArtifacts: [ 'apiscan' ]
         antiMalwareEnabled: true
         binSkimEnabled: true
         enableCodeInspector: true

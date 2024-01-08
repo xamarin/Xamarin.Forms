@@ -224,6 +224,23 @@ steps:
       CleanTargetFolder: false
       flattenFolders: false
 
+  - task: CopyFiles@2
+    displayName: 'Copy releasable binaries for compliance scanning'
+    condition: eq(variables['BuildConfiguration'], 'Release')
+    inputs:
+      Contents: |
+        **/bin/Release/**/*.dll
+        **/bin/Release/**/*.pdb
+      TargetFolder: '$(build.artifactstagingdirectory)/apiscan'
+      CleanTargetFolder: true
+      flattenFolders: true
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Releasable Binaries for compliance scanning'
+    condition: always()
+    inputs:
+      ArtifactName: 'apiscan'
+
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: ${{ parameters.artifactsName }}'
     condition: always()
