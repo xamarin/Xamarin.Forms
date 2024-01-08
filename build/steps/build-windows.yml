@@ -237,7 +237,7 @@ steps:
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Releasable Binaries for compliance scanning'
-    condition: always()
+    condition: eq(variables['BuildConfiguration'], 'Release')
     inputs:
       PathtoPublish: '$(build.artifactstagingdirectory)/apiscan'
       ArtifactName: 'apiscan'
