@@ -229,8 +229,10 @@ steps:
     condition: eq(variables['BuildConfiguration'], 'Release')
     inputs:
       Contents: |
-        **/bin/Release/**/*.dll
-        **/bin/Release/**/*.pdb
+        **/bin/Release/**/Xamarin.Forms.*.dll
+        **/bin/Release/**/FormsViewGroup.dll
+        **/bin/Release/**/Xamarin.Forms.*.pdb
+        **/bin/Release/**/FormsViewGroup.pdb
       TargetFolder: '$(build.artifactstagingdirectory)/apiscan'
       CleanTargetFolder: true
       flattenFolders: true
