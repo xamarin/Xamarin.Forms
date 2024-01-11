@@ -212,7 +212,7 @@ stages:
         credScanEnabled: true
         credScanSuppressionFile: $(Build.SourcesDirectory)\build\automation\CredScanSuppressions.json
         sourceGdnSuppressionFile: $(Build.SourcesDirectory)\build\automation\source.gdnsuppress
-        tsaConfigFile: $(Build.SourcesDirectory)\build-tools\automation\guardian\tsaoptions-v2.json
+        tsaConfigFile: $(Build.SourcesDirectory)\build-tools\automation\tsaoptions-v2.json
         apiScanEnabled: true
         apiScanSoftwareName: 'Xamarin.Forms'
         apiScanSoftwareVersionNum: $(Build.BuildNumber)
