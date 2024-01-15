@@ -216,6 +216,7 @@ stages:
         apiScanEnabled: true
         apiScanSoftwareName: 'Xamarin.Forms'
         apiScanSoftwareVersionNum: $(Build.BuildNumber)
+        apiScanPreserveLogsFolder: true
 
     - stage: sbom
       dependsOn: nuget_signing
