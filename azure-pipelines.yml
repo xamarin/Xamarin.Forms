@@ -215,7 +215,7 @@ stages:
         tsaConfigFile: $(Build.SourcesDirectory)\build\automation\tsaoptions-v2.json
         apiScanEnabled: true
         apiScanSoftwareName: 'Xamarin.Forms'
-        apiScanSoftwareVersionNum: $(Build.BuildNumber)
+        apiScanSoftwareVersionNum: '5.0.0'
         apiScanPreserveLogsFolder: true
 
     - stage: sbom
