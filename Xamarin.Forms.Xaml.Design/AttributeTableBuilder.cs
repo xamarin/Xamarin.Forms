@@ -1,6 +1,5 @@
 ﻿using System;
-using System.ComponentModel;
-using Microsoft.Windows.Design;
+using Microsoft.VisualStudio.DesignTools.Extensibility;
 
 namespace Xamarin.Forms.Xaml.Design
 {
