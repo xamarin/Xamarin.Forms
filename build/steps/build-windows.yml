@@ -231,6 +231,9 @@ steps:
       Contents: |
         **/bin/Release/**/Xamarin.Forms.*.dll
         **/bin/Release/**/FormsViewGroup.dll
+        !**/bin/Release/**/*.UnitTests.dll
+        !**/bin/Release/**/*.ControlGallery.*.dll
+        !**/bin/Release/**/Xamarin.Forms.Controls.dll
       TargetFolder: '$(build.artifactstagingdirectory)/apiscan'
       CleanTargetFolder: true
       flattenFolders: true
