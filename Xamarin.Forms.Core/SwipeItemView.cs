@@ -64,7 +64,7 @@ namespace Xamarin.Forms
 
 		void OnCommandCanExecuteChanged(object sender, EventArgs eventArgs)
 		{
-			IsEnabled = Command.CanExecute(CommandParameter);
+			IsEnabled = Command?.CanExecute(CommandParameter) ?? true;
 		}
 	}
 }
