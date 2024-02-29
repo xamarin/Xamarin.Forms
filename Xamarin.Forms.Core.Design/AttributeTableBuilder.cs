@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows.Markup;
 using Microsoft.Windows.Design;
 using Xamarin.Forms.Internals;
 
@@ -13,7 +12,7 @@ namespace Xamarin.Forms.Core.Design
 		{
 			// Turn off validation of values, which doesn't work for OnPlatform/OnIdiom
 			AddCustomAttributes(typeof(AbsoluteLayout).Assembly,
-				new XmlnsSupportsValidationAttribute("http://xamarin.com/schemas/2014/forms", false));
+				new Microsoft.VisualStudio.DesignTools.Extensibility.XmlnsSupportsValidationAttribute("http://xamarin.com/schemas/2014/forms", false));
 
 			// Style isn't a view, make it visible
 			AddCallback(typeof(Style), builder => builder.AddCustomAttributes(

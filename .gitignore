@@ -75,3 +75,4 @@ Visual Studio 2019/**
 TestResult.xml
 build/packages
 WriteDevopsVariables.csproj
+!Microsoft.VisualStudio.DesignTools.Extensibility.dll
