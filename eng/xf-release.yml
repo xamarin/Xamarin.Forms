@@ -92,7 +92,7 @@ extends:
         exclude:
         - repository: yaml-templates
       suppression:
-        suppressionFile: $(Build.SourcesDirectory)\eng\automation\guardian\source.gdnsuppress
+        suppressionFile: $(Build.SourcesDirectory)\build\automation\guardian\source.gdnsuppress
     stages:
       - stage: windows
         displayName: Build Windows
