@@ -155,6 +155,7 @@ extends:
                   publishArtifacts: false
                   artifact: ${{ parameters.PackPlatform.artifact }}
                   binariesArtifact: ${{ parameters.PackPlatform.binariesArtifact }}
+                  artifactsTargetFolder: '$(build.artifactstagingdirectory)/${{ parameters.PackPlatform.artifact }}'
 
       - stage: nuget_signing
         dependsOn: windows

@@ -4,7 +4,7 @@ parameters:
   publishArtifacts: 'true'
   binariesArtifact: 'win_build'
   artifact: 'nuget'
-  artifactsTargetFolder: '$(build.artifactstagingdirectory)'
+  artifactsTargetFolder: '$(build.artifactstagingdirectory)/nuget'
 
 
 steps:
@@ -12,23 +12,23 @@ steps:
     clean: true
 
   - task: DownloadBuildArtifacts@0
-    displayName: 'Download build artifact ${{ parameters.PackPlatform.binariesArtifact }}'
+    displayName: 'Download build artifact ${{ parameters.binariesArtifact }}'
     inputs:
-      artifactName: ${{ parameters.PackPlatform.binariesArtifact }}
+      artifactName: ${{ parameters.binariesArtifact }}
       downloadPath: '$(Build.ArtifactsDirectory)'
 
 
   - task: CopyFiles@2
     displayName: 'Copy Files to: $(System.DefaultWorkingDirectory)'
     inputs:
-      SourceFolder: '$(Build.ArtifactsDirectory)/${{ parameters.PackPlatform.binariesArtifact }}'
+      SourceFolder: '$(Build.ArtifactsDirectory)/${{ parameters.binariesArtifact }}'
       TargetFolder: '$(System.DefaultWorkingDirectory)'
 
   - task: CopyFiles@2
     displayName: 'Copy SignList.xml Files'
     inputs:
       Contents: build/SignList.xml
-      TargetFolder: ${{ parameters.artifactsTargetFolder}}/nuget
+      TargetFolder: ${{ parameters.artifactsTargetFolder}}
       flattenFolders: true
 
   - task: PowerShell@1
@@ -49,33 +49,21 @@ steps:
       command: pack
       feedsToUse: config
       packagesToPack: '.nuspec/*.nuspec'
-      packDestination: '${{ parameters.artifactsTargetFolder}}/nuget/$(BuildConfiguration)'
+      packDestination: '${{ parameters.artifactsTargetFolder}}/$(BuildConfiguration)'
       versioningScheme: byEnvVar
       versionEnvVar: nugetPackageVersion
       configuration: $(BuildConfiguration)
-
-  - task: NuGetCommand@2
-    displayName: 'Make NuGet Package Release'
-    inputs:
-      command: pack
-      feedsToUse: config
-      packagesToPack: '.nuspec/*.nuspec'
-      packDestination: '${{ parameters.artifactsTargetFolder}}/nuget/release'
-      versioningScheme: byEnvVar
-      versionEnvVar: nugetPackageVersion
-      configuration: Release
-    condition: and(succeeded(), or(eq(${{ parameters.nugetForRelease }}, 'true') , or(eq(variables['Sign'], 'true'), or(eq(variables['BuildConfiguration'], 'Release'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/')))))
 
   - task: CopyFiles@2
     displayName: 'Copy SignList.xml Files'
     inputs:
       Contents: build/SignList.xml
-      TargetFolder: '${{ parameters.artifactsTargetFolder}}/nuget/$(BuildConfiguration)'
+      TargetFolder: '${{ parameters.artifactsTargetFolder}}/$(BuildConfiguration)'
       flattenFolders: true
 
   - ${{ if eq(parameters.publishArtifacts, 'true') }}:
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: nuget'
       inputs:
-        PathtoPublish: '${{ parameters.artifactsTargetFolder}}/nuget'
+        PathtoPublish: '${{ parameters.artifactsTargetFolder}}
         ArtifactName: ${{ parameters.artifact }}
