@@ -352,6 +352,23 @@
         "default"
       ],
       "createdDate": "2024-01-09 12:36:17Z"
-    }
+    },
+    "269549c010eaec1246c156e063e64c56200363edbeb4fc9f0640b01793a130d6": {
+      "signature": "269549c010eaec1246c156e063e64c56200363edbeb4fc9f0640b01793a130d6",
+      "alternativeSignatures": [],
+      "target": "debug.keystore",
+      "memberOf": [
+        "default"
+      ],
+      "createdDate": "2024-03-01 14:41:58Z"
+    },
+    "2c3e6f9b445213109abaa36b16af43d146fe88b4fb5f637b388c6fde1f7957e8": {
+      "signature": "2c3e6f9b445213109abaa36b16af43d146fe88b4fb5f637b388c6fde1f7957e8",
+      "alternativeSignatures": [],
+      "target": "Xamarin.Forms.ControlGallery.WindowsUniversal/Xamarin.Forms.ControlGallery.WindowsUniversal_TemporaryKey.pfx",
+      "memberOf": [
+        "default"
+      ],
+      "createdDate": "2024-03-01 14:41:58Z"
   }
 }
