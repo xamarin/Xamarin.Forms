@@ -42,17 +42,16 @@ steps:
     inputs:
       versionSpec: $(NUGET_VERSION)
 
-  - ${{ if eq(parameters.nugetForDebug, 'true') }} 
-    - task: NuGetCommand@2
-      displayName: 'Make NuGet Package'
-      inputs:
-        command: pack
-        feedsToUse: config
-        packagesToPack: '.nuspec/*.nuspec'
-        packDestination: '${{ parameters.artifactsTargetFolder}}/nuget/debug'
-        versioningScheme: byEnvVar
-        versionEnvVar: nugetPackageVersion
-        configuration: Debug
+  - task: NuGetCommand@2
+    displayName: 'Make NuGet Package'
+    inputs:
+      command: pack
+      feedsToUse: config
+      packagesToPack: '.nuspec/*.nuspec'
+      packDestination: '${{ parameters.artifactsTargetFolder}}/nuget/$(BuildConfiguration)'
+      versioningScheme: byEnvVar
+      versionEnvVar: nugetPackageVersion
+      configuration: $(BuildConfiguration)
 
   - task: NuGetCommand@2
     displayName: 'Make NuGet Package Release'
@@ -64,13 +63,13 @@ steps:
       versioningScheme: byEnvVar
       versionEnvVar: nugetPackageVersion
       configuration: Release
-    condition: and(succeeded(), or(eq(${{ parameters.nugetForRelease }}, 'true') , or(eq(variables['Sign'], 'true'), or(eq(variables['DefaultBuildConfiguration'], 'Release'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/')))))
+    condition: and(succeeded(), or(eq(${{ parameters.nugetForRelease }}, 'true') , or(eq(variables['Sign'], 'true'), or(eq(variables['BuildConfiguration'], 'Release'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/')))))
 
   - task: CopyFiles@2
     displayName: 'Copy SignList.xml Files'
     inputs:
       Contents: build/SignList.xml
-      TargetFolder: '${{ parameters.artifactsTargetFolder}}/nuget/${{ variables.DefaultBuildConfiguration}}'
+      TargetFolder: '${{ parameters.artifactsTargetFolder}}/nuget/$(BuildConfiguration)'
       flattenFolders: true
 
   - ${{ if eq(parameters.publishArtifacts, 'true') }} 
