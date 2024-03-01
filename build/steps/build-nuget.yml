@@ -65,5 +65,5 @@ steps:
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: nuget'
       inputs:
-        PathtoPublish: '${{ parameters.artifactsTargetFolder}}
+        PathtoPublish: ${{ parameters.artifactsTargetFolder }}
         ArtifactName: ${{ parameters.artifact }}
