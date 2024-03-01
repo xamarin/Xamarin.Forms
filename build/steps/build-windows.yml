@@ -50,7 +50,7 @@ steps:
     env:
       AUTH_TOKEN_GITHUB_COM: $(github--pat--vs-mobiletools-engineering-service2)
 
-  - script: build.cmd -Target cg-uwp-build-tests -ScriptArgs '--BUILD_CONFIGURATION="$(BuildConfiguration)"'
+  - script: build.cmd -Target cg-uwp-build-tests -ScriptArgs '--BUILD_CONFIGURATION="$(BuildConfiguration)"','--MSBUILD="$(msbuild)"'
     condition: eq(variables['BuildConfiguration'], 'Release')
     displayName: 'Build Tests and APPX'
 
@@ -65,7 +65,7 @@ steps:
         Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/Dependencies/x86/**
       TargetFolder: ${{ parameters.artifactsPath }}
 
-  - script: build.cmd -Target BuildForNuget -ScriptArgs '--BUILD_CONFIGURATION="$(BuildConfiguration)"','--Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"'
+  - script: build.cmd -Target BuildForNuget -ScriptArgs '--BUILD_CONFIGURATION="$(BuildConfiguration)"','--Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"','--MSBUILD="$(msbuild)"'
     name: winbuild
     displayName: 'Build Projects For Nuget'
 
