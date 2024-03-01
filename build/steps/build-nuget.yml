@@ -72,7 +72,7 @@ steps:
       TargetFolder: '${{ parameters.artifactsTargetFolder}}/nuget/$(BuildConfiguration)'
       flattenFolders: true
 
-  - ${{ if eq(parameters.publishArtifacts, 'true') }} 
+  ${{ if eq(parameters.publishArtifacts, 'true') }}:
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: nuget'
       inputs:
