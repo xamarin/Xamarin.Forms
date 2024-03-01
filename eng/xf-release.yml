@@ -91,8 +91,8 @@ extends:
       sourceRepositoriesToScan:
         exclude:
         - repository: yaml-templates
-      # suppression:
-      #   suppressionFile: $(Build.SourcesDirectory)\eng\automation\guardian\source.gdnsuppress
+      suppression:
+        suppressionFile: $(Build.SourcesDirectory)\eng\automation\guardian\source.gdnsuppress
     stages:
       - stage: windows
         displayName: Build Windows
