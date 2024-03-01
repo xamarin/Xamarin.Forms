@@ -20,7 +20,7 @@ parameters:
     type: object
     default:
       name: AzurePipelines-EO
-      image: 1ESPT-Windows2022
+      image: 1ESPT-Windows2019
       os: windows
   
   - name: PackPlatform
