@@ -63,7 +63,7 @@ steps:
         Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/Add-AppDevPackage.resources/**
         Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/TelemetryDependencies/**
         Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/Dependencies/x86/**
-      TargetFolder: ${{ parameters.artifactsPath }}
+      TargetFolder: ${{ parameters.artifactsTargetFolder }}
 
   - script: build.cmd -Target BuildForNuget -ScriptArgs '--BUILD_CONFIGURATION="$(BuildConfiguration)"','--Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"','--MSBUILD="$(msbuild)"'
     name: winbuild
@@ -216,7 +216,7 @@ steps:
     condition: eq(variables['BuildConfiguration'], 'Release')
     inputs:
       SourceFolder: Xamarin.Forms.Core.Windows.UITests/bin/Debug/
-      TargetFolder: '${{ parameters.artifactsPath }}/UITests'
+      TargetFolder: '${{ parameters.artifactsTargetFolder }}/UITests'
 
   - task: CopyFiles@2
     displayName: 'Copy Certificate File'
@@ -224,7 +224,7 @@ steps:
     inputs:
       Contents: |
         Xamarin.Forms.ControlGallery.WindowsUniversal\Xamarin.Forms.ControlGallery.WindowsUniversal_TemporaryKey.pfx
-      TargetFolder: ${{ parameters.artifactsPath }}
+      TargetFolder: ${{ parameters.artifactsTargetFolder }}
       CleanTargetFolder: false
       flattenFolders: false
 
