@@ -6,11 +6,11 @@ variables:
 - name: BuildVersion
   value: $[counter('nuget-counter-1', 2400)]
 - name: NUGET_VERSION
-  value: 6.4.0
+  value: 5.8.1
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
   value: true
 - name: DOTNET_VERSION
-  value: 8.0.101
+  value: 5.0.102
 - name: signingCondition
   value: and(succeeded(), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
 - group: Xamarin-Secrets
