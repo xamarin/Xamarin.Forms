@@ -7,6 +7,10 @@ parameters:
   includeAndroid: 'true'
   includeNonUwpAndNonAndroid: 'true'
   runTests: 'true'
+  artifact: 'nuget'
+  artifactBinaries: 'pack-binaries'
+  artifactDocs: 'pack-docs'
+  publishArtifacts: true
 
 steps:
   - checkout: self
@@ -59,7 +63,7 @@ steps:
         Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/Add-AppDevPackage.resources/**
         Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/TelemetryDependencies/**
         Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/Dependencies/x86/**
-      TargetFolder: '$(build.artifactstagingdirectory)'
+      TargetFolder: ${{ parameters.artifactsPath }}
 
   - script: build.cmd -Target BuildForNuget -ScriptArgs '--BUILD_CONFIGURATION="$(BuildConfiguration)"','--Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"','--MSBUILD="$(msbuild)"'
     name: winbuild
@@ -212,7 +216,7 @@ steps:
     condition: eq(variables['BuildConfiguration'], 'Release')
     inputs:
       SourceFolder: Xamarin.Forms.Core.Windows.UITests/bin/Debug/
-      TargetFolder: '$(build.artifactstagingdirectory)/UITests'
+      TargetFolder: '${{ parameters.artifactsPath }}/UITests'
 
   - task: CopyFiles@2
     displayName: 'Copy Certificate File'
@@ -220,12 +224,13 @@ steps:
     inputs:
       Contents: |
         Xamarin.Forms.ControlGallery.WindowsUniversal\Xamarin.Forms.ControlGallery.WindowsUniversal_TemporaryKey.pfx
-      TargetFolder: '$(build.artifactstagingdirectory)'
+      TargetFolder: ${{ parameters.artifactsPath }}
       CleanTargetFolder: false
       flattenFolders: false
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: ${{ parameters.artifactsName }}'
-    condition: always()
-    inputs:
-      ArtifactName: ${{ parameters.artifactsName }}
+  - ${{ if eq(parameters.publishArtifacts, 'true') }}:
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: ${{ parameters.artifactsName }}'
+      condition: always()
+      inputs:
+        ArtifactName: ${{ parameters.artifactsName }}
