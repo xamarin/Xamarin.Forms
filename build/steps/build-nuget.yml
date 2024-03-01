@@ -2,6 +2,7 @@ parameters:
   nugetForDebug: 'true'
   nugetForRelease: 'true'
   publishArtifacts: 'true'
+  binariesArtifact: 'win_build'
   artifact: 'nuget'
   artifactsTargetFolder: '$(build.artifactstagingdirectory)'
 
@@ -11,16 +12,16 @@ steps:
     clean: true
 
   - task: DownloadBuildArtifacts@0
-    displayName: 'Download build artifact win_build'
+    displayName: 'Download build artifact ${{ parameters.PackPlatform.binariesArtifact }}'
     inputs:
-      artifactName: 'win_build'
+      artifactName: ${{ parameters.PackPlatform.binariesArtifact }}
       downloadPath: '$(Build.ArtifactsDirectory)'
 
 
   - task: CopyFiles@2
     displayName: 'Copy Files to: $(System.DefaultWorkingDirectory)'
     inputs:
-      SourceFolder: '$(Build.ArtifactsDirectory)/win_build'
+      SourceFolder: '$(Build.ArtifactsDirectory)/${{ parameters.PackPlatform.binariesArtifact }}'
       TargetFolder: '$(System.DefaultWorkingDirectory)'
 
   - task: CopyFiles@2

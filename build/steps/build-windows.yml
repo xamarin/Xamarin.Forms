@@ -1,14 +1,13 @@
 parameters:
   msbuildExtraArguments : ''
   artifactsTargetFolder: '$(build.artifactstagingdirectory)'
-  artifactsName: 'win_build'
   nunitTestFolder: '$(build.sourcesdirectory)'
   includeUwp: 'true'
   includeAndroid: 'true'
   includeNonUwpAndNonAndroid: 'true'
   runTests: 'true'
   artifact: 'nuget'
-  artifactBinaries: 'pack-binaries'
+  artifactBinaries: 'win_build'
   artifactDocs: 'pack-docs'
   publishArtifacts: true
 
@@ -230,7 +229,7 @@ steps:
 
   - ${{ if eq(parameters.publishArtifacts, 'true') }}:
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: ${{ parameters.artifactsName }}'
+      displayName: 'Publish Artifact: ${{ parameters.artifactBinaries }}'
       condition: always()
       inputs:
-        ArtifactName: ${{ parameters.artifactsName }}
+        ArtifactName: ${{ parameters.artifactBinaries }}

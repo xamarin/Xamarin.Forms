@@ -28,7 +28,7 @@ parameters:
     default:
       name: Windows
       artifact: nuget
-      binariesArtifact: pack-binaries
+      binariesArtifact: win_build
       docsArtifact: xml-docs
 
   - name: Skip1ESComplianceTasks
@@ -108,14 +108,14 @@ extends:
             templateContext:
               outputs:
                 - output: pipelineArtifact
-                  displayName: 'Publish the ${{ parameters.PackPlatform.artifact }} artifacts'
-                  artifactName: ${{ parameters.PackPlatform.artifact }}
+                  displayName: 'Publish the ${{ parameters.PackPlatform.binariesArtifact }} artifacts'
+                  artifactName: ${{ parameters.PackPlatform.binariesArtifact }}
                   targetPath: '(Build.ArtifactStagingDirectory)'
                 
-                # - output: pipelineArtifact
-                #   displayName: 'Publish the ${{ parameters.PackPlatform.binariesArtifact }} artifacts'
-                #   artifactName: ${{ parameters.PackPlatform.binariesArtifact }}
-                #   targetPath: '$(System.DefaultWorkingDirectory)/artifacts/binaries'
+                - output: pipelineArtifact
+                  displayName: 'Publish the ${{ parameters.PackPlatform.artifact }} artifacts'
+                  artifactName: ${{ parameters.PackPlatform.artifact }}
+                  targetPath: '$(System.DefaultWorkingDirectory)/nuget'
 
                 # - output: pipelineArtifact
                 #   displayName: 'Publish the ${{ parameters.PackPlatform.docsArtifact }} artifacts'
@@ -130,6 +130,7 @@ extends:
                   provisionatorVSPath : 'build/provisioning/vs.csx'
                   runTests: false
                   publishArtifacts: false
+                  binariesArtifact: ${{ parameters.PackPlatform.binariesArtifact }}
                   artifact: ${{ parameters.PackPlatform.artifact }}
                   artifactBinaries: ${{ parameters.PackPlatform.binariesArtifact }}
                   artifactsTargetFolder: '(Build.ArtifactStagingDirectory)'
@@ -153,6 +154,7 @@ extends:
                   nugetForDebug : false
                   publishArtifacts: false
                   artifact: ${{ parameters.PackPlatform.artifact }}
+                  binariesArtifact: ${{ parameters.PackPlatform.binariesArtifact }}
 
       - stage: nuget_signing
         dependsOn: windows
