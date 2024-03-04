@@ -10,9 +10,6 @@ namespace Xamarin.Forms.Platform.Android
 	internal class PlatformRenderer : ViewGroup
 	{
 		readonly IPlatformLayout _canvas;
-		Point _downPosition;
-
-		DateTime _downTime;
 
 		public PlatformRenderer(Context context, IPlatformLayout canvas) : base(context)
 		{
@@ -22,53 +19,6 @@ namespace Xamarin.Forms.Platform.Android
 				Focusable = true;
 				FocusableInTouchMode = true;
 			}
-		}
-
-		public override bool DispatchTouchEvent(MotionEvent e)
-		{
-			if (e.Action == MotionEventActions.Down)
-			{
-				_downTime = DateTime.UtcNow;
-				_downPosition = new Point(e.RawX, e.RawY);
-			}
-
-			if (e.Action != MotionEventActions.Up)
-				return base.DispatchTouchEvent(e);
-
-			global::Android.Views.View currentView = Context.GetActivity().CurrentFocus;
-			bool result = base.DispatchTouchEvent(e);
-
-			do
-			{
-				if (!(currentView is EditText))
-					break;
-
-				global::Android.Views.View newCurrentView = Context.GetActivity().CurrentFocus;
-
-				if (currentView != newCurrentView)
-					break;
-
-				double distance = _downPosition.Distance(new Point(e.RawX, e.RawY));
-
-				if (distance > Context.ToPixels(20) || DateTime.UtcNow - _downTime > TimeSpan.FromMilliseconds(200))
-					break;
-
-				var location = new int[2];
-				currentView.GetLocationOnScreen(location);
-
-				float x = e.RawX + currentView.Left - location[0];
-				float y = e.RawY + currentView.Top - location[1];
-
-				var rect = new Rectangle(currentView.Left, currentView.Top, currentView.Width, currentView.Height);
-
-				if (rect.Contains(x, y))
-					break;
-
-				Context.HideKeyboard(currentView);
-				Context.GetActivity().Window.DecorView.ClearFocus();
-			} while (false);
-
-			return result;
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)

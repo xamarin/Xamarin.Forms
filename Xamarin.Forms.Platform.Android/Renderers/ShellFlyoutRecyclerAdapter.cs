@@ -105,13 +105,11 @@ namespace Xamarin.Forms.Platform.Android
 			elementHolder.Element = item.Element;
 		}
 
-		class LinearLayoutWithFocus : LinearLayout, ITabStop, IVisualElementRenderer
+		class ShellLinearLayout : LinearLayout, IVisualElementRenderer
 		{
-			public LinearLayoutWithFocus(global::Android.Content.Context context) : base(context)
+			public ShellLinearLayout(global::Android.Content.Context context) : base(context)
 			{
 			}
-
-			AView ITabStop.TabStop => this;
 
 			#region IVisualElementRenderer
 
@@ -180,7 +178,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var content = (View)template.CreateContent();
 
-			var linearLayout = new LinearLayoutWithFocus(parent.Context)
+			var linearLayout = new ShellLinearLayout(parent.Context)
 			{
 				Orientation = Orientation.Vertical,
 				LayoutParameters = new RecyclerView.LayoutParams(LP.MatchParent, LP.WrapContent),

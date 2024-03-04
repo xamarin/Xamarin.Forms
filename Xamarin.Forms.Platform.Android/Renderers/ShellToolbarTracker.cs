@@ -595,13 +595,11 @@ namespace Xamarin.Forms.Platform.Android
 					if (_searchView.View.Parent != null)
 						_searchView.View.RemoveFromParent();
 
-					_searchView.ShowKeyboardOnAttached = true;
 					item.SetActionView(_searchView.View);
 					item.Dispose();
 				}
 				else if (SearchHandler.SearchBoxVisibility == SearchBoxVisibility.Expanded)
 				{
-					_searchView.ShowKeyboardOnAttached = false;
 					if (_searchView.View.Parent != _toolbar)
 						_toolbar.AddView(_searchView.View);
 				}
