@@ -133,7 +133,7 @@ extends:
                   binariesArtifact: ${{ parameters.PackPlatform.binariesArtifact }}
                   artifact: ${{ parameters.PackPlatform.artifact }}
                   artifactBinaries: ${{ parameters.PackPlatform.binariesArtifact }}
-                  artifactsTargetFolder: '(Build.ArtifactStagingDirectory)'
+                  artifactsTargetFolder: '$(Build.ArtifactStagingDirectory)'
       
           - job: nuget_pack_hosted
             workspace:
