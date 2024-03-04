@@ -110,7 +110,7 @@ extends:
                 - output: pipelineArtifact
                   displayName: 'Publish the ${{ parameters.PackPlatform.binariesArtifact }} artifacts'
                   artifactName: ${{ parameters.PackPlatform.binariesArtifact }}
-                  targetPath: '(Build.ArtifactStagingDirectory)'
+                  targetPath: '$(Build.ArtifactStagingDirectory)'
                 
                 - output: pipelineArtifact
                   displayName: 'Publish the ${{ parameters.PackPlatform.artifact }} artifacts'
