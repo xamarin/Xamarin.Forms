@@ -174,7 +174,6 @@ steps:
         Xamarin.Forms.DualScreen.UnitTests/bin/$(BuildConfiguration)/**/*.dll
 
       TargetFolder: ${{ parameters.artifactsTargetFolder }}
-
     
   - task: CopyFiles@2
     displayName: 'Copy Android Files dlls'

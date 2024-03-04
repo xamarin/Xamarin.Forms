@@ -146,7 +146,7 @@ extends:
             variables:
               FormsIdAppend: ''
               buildConfiguration: Release
-              nugetPackageVersion : $[ dependencies.win_hosted.outputs['release.winbuild.xamarinformspackageversion'] ]
+              nugetPackageVersion : $[ dependencies.win_hosted.outputs['winbuild.xamarinformspackageversion'] ]
             steps:
               - template: /build/steps/build-nuget.yml@self
                 parameters:
