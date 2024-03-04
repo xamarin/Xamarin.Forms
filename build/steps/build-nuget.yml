@@ -15,7 +15,7 @@ steps:
     displayName: 'Download build artifact ${{ parameters.binariesArtifact }}'
     inputs:
       artifactName: ${{ parameters.binariesArtifact }}
-      downloadPath: '$(Build.ArtifactsDirectory)'
+      downloadPath: '$(Build.ArtifactsDirectory)/${{ parameters.binariesArtifact }}'
 
 
   - task: CopyFiles@2
