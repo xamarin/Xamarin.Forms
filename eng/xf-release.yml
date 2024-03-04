@@ -102,25 +102,13 @@ extends:
               clean: all
             displayName: ${{ parameters.PackPlatform.name }}
             timeoutInMinutes: 60
-            
             pool: ${{ parameters.VM_IMAGE_HOST }}
-
             templateContext:
               outputs:
                 - output: pipelineArtifact
                   displayName: 'Publish the ${{ parameters.PackPlatform.binariesArtifact }} artifacts'
                   artifactName: ${{ parameters.PackPlatform.binariesArtifact }}
                   targetPath: '$(Build.ArtifactStagingDirectory)'
-                
-                - output: pipelineArtifact
-                  displayName: 'Publish the ${{ parameters.PackPlatform.artifact }} artifacts'
-                  artifactName: ${{ parameters.PackPlatform.artifact }}
-                  targetPath: '$(System.DefaultWorkingDirectory)/nuget'
-
-                # - output: pipelineArtifact
-                #   displayName: 'Publish the ${{ parameters.PackPlatform.docsArtifact }} artifacts'
-                #   artifactName: ${{ parameters.PackPlatform.docsArtifact }}
-                #   targetPath: '$(System.DefaultWorkingDirectory)/artifacts/docs-packs'
             variables:
               BuildConfiguration: Release
             steps:
@@ -148,8 +136,7 @@ extends:
                 - output: pipelineArtifact
                   displayName: 'Publish the ${{ parameters.PackPlatform.artifact }} artifacts'
                   artifactName: ${{ parameters.PackPlatform.artifact }}
-                  targetPath: '$(System.DefaultWorkingDirectory)/nuget'
-                  
+                  targetPath: '$(Build.ArtifactStagingDirectory)/nuget/Release'
             variables:
               FormsIdAppend: ''
               buildConfiguration: Release
