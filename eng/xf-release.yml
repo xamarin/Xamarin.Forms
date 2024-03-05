@@ -122,6 +122,18 @@ extends:
                   artifact: ${{ parameters.PackPlatform.artifact }}
                   artifactBinaries: ${{ parameters.PackPlatform.binariesArtifact }}
                   artifactsTargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+          - template: security/apiscan/v0.yml@xamarin-templates
+            parameters:
+              windowsPoolName: ${{ parameters.VM_IMAGE_HOST.name }}
+              windowsImageOverride: ${{ parameters.VM_IMAGE_HOST.image }}
+              stageDependsOn: 'windows'
+              timeoutInMinutes: 600
+              scanArtifacts: [ '${{ parameters.PackPlatform.artifact }}', '${{ parameters.PackPlatform.binariesArtifact }}' ]
+              sourceGdnSuppressionFile: '$(Build.SourcesDirectory)\build\automation\guardian\source.gdnsuppress'
+              tsaConfigFile: '$(Build.SourcesDirectory)\build\automation\tsaoptions-v2.json'
+              apiScanSoftwareName: 'Xamarin.Forms'
+              apiScanSoftwareVersionNum: '5.0.0'
       
           - job: nuget_pack_hosted
             workspace:
