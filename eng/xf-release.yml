@@ -15,6 +15,25 @@ variables:
   value: and(succeeded(), or(eq(variables['Sign'], 'true'), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/'))))
 - group: Xamarin-Secrets
 
+parameters:
+  - name: VM_IMAGE_HOST
+    type: object
+    default:
+      name: AzurePipelines-EO
+      image: 1ESPT-Windows2019
+      os: windows
+  
+  - name: PackPlatform
+    type: object
+    default:
+      name: Windows
+      artifact: nuget
+      binariesArtifact: win_build
+      docsArtifact: xml-docs
+
+  - name: Skip1ESComplianceTasks
+    default: false
+
 resources:
   repositories:
     - repository: xamarin-templates
@@ -22,6 +41,10 @@ resources:
       name: xamarin/yaml-templates
       endpoint: xamarin
       ref: refs/heads/main
+    - repository: 1ESPipelineTemplates
+      type: git
+      name: 1ESPipelineTemplates/1ESPipelineTemplates
+      ref: refs/tags/release
 
 trigger:
   branches:
@@ -49,77 +72,92 @@ schedules:
     include:
     - 5.0.0
 
-stages:
-  - stage: windows
-    displayName: Build Windows
-    jobs:
-      - job: win_hosted
-        workspace:
-          clean: all
-        displayName: Build Windows Phase
-        timeoutInMinutes: 60
-        pool:
-          name: $(windowsPool)
-          vmImage: $(windowsvmImage)
-          demands:
-            msbuild
-        strategy:
-          matrix:
-            release:
-              BuildConfiguration:  'Release'
-        steps:
-          - template: ../build/steps/build-windows.yml
-            parameters:
-              provisionatorPath : 'build/provisioning/provisioning.csx'
-              provisionatorVSPath : 'build/provisioning/vs.csx'
-              runTests: false
-      - job: nuget_pack_hosted
-        workspace:
-          clean: all
-        displayName: Nuget Phase
-        dependsOn:
-        - win_hosted
-        condition: succeeded()
-        pool:
-          name: $(windowsPool)
-          vmImage: $(windowsvmImage)
-          demands:
-            msbuild
-        variables:
-          FormsIdAppend: ''
-          buildConfiguration: $(DefaultBuildConfiguration)
-          nugetPackageVersion : $[ dependencies.win_hosted.outputs['release.winbuild.xamarinformspackageversion'] ]
-        steps:
-          - template: ../build/steps/build-nuget.yml
-            parameters:
-              nugetForRelease : true
-              nugetForDebug : false
+extends:
+  template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
+  parameters:
+    pool: ${{ parameters.VM_IMAGE_HOST }}
+    sdl:
+      ${{ if eq('${{ parameters.Skip1ESComplianceTasks }}', 'true') }}:
+        enableAllTools: false
+      binskim:
+        scanOutputDirectoryOnly: true
+      codeql:
+        runSourceLanguagesInSourceAnalysis: true
+      policheck:
+        enabled: true
+      spotBugs:
+        enabled: false
+        justification: 'Failing with "Could not successfully find the java tool launcher"'
+      sourceRepositoriesToScan:
+        exclude:
+        - repository: yaml-templates
+      suppression:
+        suppressionFile: $(Build.SourcesDirectory)\build\automation\guardian\source.gdnsuppress
+    stages:
+      - stage: windows
+        displayName: Build Windows
+        jobs:
+          - job: win_hosted
+            workspace:
+              clean: all
+            displayName: ${{ parameters.PackPlatform.name }}
+            timeoutInMinutes: 60
+            pool: ${{ parameters.VM_IMAGE_HOST }}
+            templateContext:
+              outputs:
+                - output: pipelineArtifact
+                  displayName: 'Publish the ${{ parameters.PackPlatform.binariesArtifact }} artifacts'
+                  artifactName: ${{ parameters.PackPlatform.binariesArtifact }}
+                  targetPath: '$(Build.ArtifactStagingDirectory)'
+            variables:
+              BuildConfiguration: Release
+            steps:
+              - template: /build/steps/build-windows.yml@self
+                parameters:
+                  provisionatorPath : 'build/provisioning/provisioning.csx'
+                  provisionatorVSPath : 'build/provisioning/vs.csx'
+                  runTests: false
+                  publishArtifacts: false
+                  binariesArtifact: ${{ parameters.PackPlatform.binariesArtifact }}
+                  artifact: ${{ parameters.PackPlatform.artifact }}
+                  artifactBinaries: ${{ parameters.PackPlatform.binariesArtifact }}
+                  artifactsTargetFolder: '$(Build.ArtifactStagingDirectory)'
+      
+          - job: nuget_pack_hosted
+            workspace:
+              clean: all
+            displayName: Nuget Phase
+            dependsOn:
+            - win_hosted
+            condition: succeeded()
+            pool: ${{ parameters.VM_IMAGE_HOST }}
+            templateContext:
+              outputs:                
+                - output: pipelineArtifact
+                  displayName: 'Publish the ${{ parameters.PackPlatform.artifact }} artifacts'
+                  artifactName: ${{ parameters.PackPlatform.artifact }}
+                  targetPath: '$(Build.ArtifactStagingDirectory)/nuget/Release'
+            variables:
+              FormsIdAppend: ''
+              buildConfiguration: Release
+              nugetPackageVersion : $[ dependencies.win_hosted.outputs['winbuild.xamarinformspackageversion'] ]
+            steps:
+              - template: /build/steps/build-nuget.yml@self
+                parameters:
+                  nugetForRelease : true
+                  nugetForDebug : false
+                  publishArtifacts: false
+                  artifact: ${{ parameters.PackPlatform.artifact }}
+                  binariesArtifact: ${{ parameters.PackPlatform.binariesArtifact }}
+                  artifactsTargetFolder: '$(build.artifactstagingdirectory)/${{ parameters.PackPlatform.artifact }}'
 
-  - stage: nuget_signing
-    dependsOn: windows
-    displayName: Sign Nuget
-    jobs:
-      - template: sign-artifacts/jobs/v2.yml@xamarin-templates
-        parameters:
-          targetFolder: $(Build.ArtifactStagingDirectory)/nuget/signed
-          artifactPath: release
-          signedArtifactName: nuget
-          signedArtifactPath: signed
-          displayName: Sign Phase
-          condition: ${{ variables.signingCondition }}
-          preSignSteps:
-            - task: NuGetToolInstaller@1
-              inputs:
-                versionSpec: $(NUGET_VERSION)
-
-  - stage: sbom
-    dependsOn: nuget_signing
-    displayName: 'Software Bill of Materials'
-    jobs:
-    - template: compliance/sbom/job.v1.yml@xamarin-templates        # Software Bill of Materials (SBOM): https://eng.ms/docs/cloud-ai-platform/devdiv/one-engineering-system-1es/1es-docs/secure-supply-chain/ado-sbom-generator
-      parameters:
-        artifactNames: ['nuget']
-        artifactMap: ['nuget/signed']
-        packageName: 'Xamarin Forms'
-        packageFilter: '*.nupkg'
-        condition: ${{ variables.signingCondition }}
+      - stage: nuget_signing
+        dependsOn: windows
+        displayName: Sign Nuget
+        jobs:
+          - template: sign-artifacts/jobs/v2.yml@xamarin-templates
+            parameters:
+              displayName: Sign Phase
+              condition: ${{ variables.signingCondition }}
+              use1ESTemplate: true
+              usePipelineArtifactTasks: true
