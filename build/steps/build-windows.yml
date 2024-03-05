@@ -240,12 +240,13 @@ steps:
       CleanTargetFolder: true
       flattenFolders: true
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Releasable Binaries for compliance scanning'
-    condition: eq(variables['BuildConfiguration'], 'Release')
-    inputs:
-      PathtoPublish: '$(build.artifactstagingdirectory)/${{ parameters.artifactApiscan }}'
-      ArtifactName: ${{ parameters.artifactApiscan }}
+  - ${{ if eq(parameters.publishArtifacts, 'true') }}:
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Releasable Binaries for compliance scanning'
+      condition: eq(variables['BuildConfiguration'], 'Release')
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)/${{ parameters.artifactApiscan }}'
+        ArtifactName: ${{ parameters.artifactApiscan }}
 
   - ${{ if eq(parameters.publishArtifacts, 'true') }}:
     - task: PublishBuildArtifacts@1
