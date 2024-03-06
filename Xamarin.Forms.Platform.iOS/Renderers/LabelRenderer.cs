@@ -263,6 +263,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (!(Control.AttributedStringValue?.Length > 0))
 				return;
 #endif
+			// If FormattedText is changed after the initial render, it will be removed on either line 285 or line 290.
+			if(IsTextFormatted && _formatted.Spans?.Any(span => span.TextDecoration > TextDecorations.None))
+				return;
 
 			var textDecorations = Element.TextDecorations;
 #if __MOBILE__
