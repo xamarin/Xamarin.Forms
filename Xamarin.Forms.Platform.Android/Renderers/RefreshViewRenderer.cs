@@ -9,6 +9,7 @@ using AndroidX.Core.Widget;
 using AndroidX.RecyclerView.Widget;
 using AndroidX.SwipeRefreshLayout.Widget;
 using Xamarin.Forms.Internals;
+using static AndroidX.RecyclerView.Widget.RecyclerView;
 using AView = Android.Views.View;
 using AWebView = Android.Webkit.WebView;
 
@@ -185,7 +186,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			if (view is RecyclerView recyclerView)
-				return recyclerView.ComputeVerticalScrollOffset() > 0;
+				return CanScrollUpRecyclerView(recyclerView);
 
 			if (view is NestedScrollView nestedScrollView)
 				return nestedScrollView.ComputeVerticalScrollOffset() > 0;
@@ -194,6 +195,18 @@ namespace Xamarin.Forms.Platform.Android
 				return webView.ScrollY > 0;
 
 			return true;
+		}
+
+		bool CanScrollUpRecyclerView(RecyclerView recyclerView)
+		{
+			if (!(recyclerView.GetLayoutManager() is LinearLayoutManager layoutManager))
+				return recyclerView.ComputeVerticalScrollOffset() > 0;
+
+			int position = layoutManager.FindFirstVisibleItemPosition();
+			ViewHolder mViewHolder = recyclerView.FindViewHolderForAdapterPosition(position);
+			var item = mViewHolder?.ItemView;
+
+			return item != null && (int)item.GetY() > 0;
 		}
 
 		public void OnRefresh()
