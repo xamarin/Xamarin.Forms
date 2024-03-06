@@ -8,7 +8,7 @@ parameters:
   runTests: 'true'
   artifact: 'nuget'
   artifactBinaries: 'win_build'
-  artifactDocs: 'pack-docs'
+  artifactApiscan: 'apiscan'
   publishArtifacts: true
 
 steps:
@@ -225,6 +225,28 @@ steps:
       TargetFolder: ${{ parameters.artifactsTargetFolder }}
       CleanTargetFolder: false
       flattenFolders: false
+
+  - task: CopyFiles@2
+    displayName: 'Copy releasable binaries for compliance scanning'
+    condition: eq(variables['BuildConfiguration'], 'Release')
+    inputs:
+      Contents: |
+        **/bin/Release/**/Xamarin.Forms.*.dll
+        **/bin/Release/**/FormsViewGroup.dll
+        !**/bin/Release/**/*.UnitTests.dll
+        !**/bin/Release/**/*.ControlGallery.*.dll
+        !**/bin/Release/**/Xamarin.Forms.Controls.dll
+      TargetFolder: '$(build.artifactstagingdirectory)/${{ parameters.artifactApiscan }}'
+      CleanTargetFolder: true
+      flattenFolders: true
+
+  - ${{ if eq(parameters.publishArtifacts, 'true') }}:
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Releasable Binaries for compliance scanning'
+      condition: eq(variables['BuildConfiguration'], 'Release')
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)/${{ parameters.artifactApiscan }}'
+        ArtifactName: ${{ parameters.artifactApiscan }}
 
   - ${{ if eq(parameters.publishArtifacts, 'true') }}:
     - task: PublishBuildArtifacts@1
