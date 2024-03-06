@@ -15,6 +15,7 @@ namespace Embedding.iOS
 			base.ViewDidLoad();
 			ShowWebView.TouchUpInside += (sender, e) => AppDelegate.Shared.ShowWebView();
 			ShowAlertsAndActionSheets.TouchUpInside += (sender, e) => AppDelegate.Shared.ShowAlertsAndActionSheets();
+			ShowTransparent.TouchUpInside += (sender, e) => AppDelegate.Shared.ShowTransparent();
 		}
     }
 }
