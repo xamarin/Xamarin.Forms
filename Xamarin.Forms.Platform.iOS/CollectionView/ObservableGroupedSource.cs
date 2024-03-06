@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (Device.IsInvokeRequired)
 			{
-				Device.BeginInvokeOnMainThread(() => CollectionChanged(args));
+				Device.BeginInvokeOnMainThread(()  => CollectionChanged(args));
 			}
 			else
 			{
@@ -168,15 +168,7 @@ namespace Xamarin.Forms.Platform.iOS
 			ResetGroupTracking();
 
 			_collectionView.ReloadData();
-
-			// I'm trying to modify as little as possible
-			// due to possible unpredictable consequences including perf. degradation
-			// https://github.com/xamarin/Xamarin.Forms/issues/13268
-			if (collectionWasReset)
-			{
-				_collectionView.LayoutIfNeeded();
-			}
-
+			_collectionView.LayoutIfNeeded();
 			_collectionView.CollectionViewLayout.InvalidateLayout();
 		}
 
