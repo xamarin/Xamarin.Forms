@@ -38,6 +38,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue14095.xaml.cs">
       <DependentUpon>Issue14095.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Issue14763.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue14523.xaml.cs">
       <DependentUpon>Issue14523.xaml</DependentUpon>
     </Compile>
@@ -1856,6 +1857,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue8383.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8383-2.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue8384.xaml.cs" />
+	  <Compile Include="$(MSBuildThisFileDirectory)Issue8384.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue13577.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue14505.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue14505-II.cs" />
