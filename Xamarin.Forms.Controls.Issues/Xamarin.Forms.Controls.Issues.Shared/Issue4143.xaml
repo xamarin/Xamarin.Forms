@@ -43,10 +43,37 @@
                         <Span
                             x:Name="Link3"
                             TextDecorations="Underline"
-                            Text="Link3_1&#10;Link3_2"
+                            Text="Link3_1&#10;Link3_2&#10;"
                             TextColor="Blue">
                             <Span.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnLink3Tapped" />
+                            </Span.GestureRecognizers>
+                        </Span>
+                        <Span
+                            x:Name="Link7"
+                            TextDecorations="Underline"
+                            Text="7777777777777"
+                            TextColor="Blue">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnLink7Tapped" />
+                            </Span.GestureRecognizers>
+                        </Span>
+                        <Span
+                            x:Name="Link8"
+                            TextDecorations="Underline"
+                            Text="888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888"
+                            TextColor="Pink">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnLink8Tapped" />
+                            </Span.GestureRecognizers>
+                        </Span>
+                        <Span
+                            x:Name="Link9"
+                            TextDecorations="Underline"
+                            Text="9999999999999999999999999999999999"
+                            TextColor="Green">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnLink9Tapped" />
                             </Span.GestureRecognizers>
                         </Span>
                     </FormattedString>
@@ -95,11 +122,18 @@
                                 <TapGestureRecognizer Tapped="OnLink5Tapped" />
                             </Span.GestureRecognizers>
                         </Span>
-                        <Span Text="علي الجانب الآخر نشجب ونستنكر هؤلاء الرجال المفتونون بنشوة اللحظة الهائمون في رغباتهم فلا يدركون ما يعقبها من الألم والأسي المحتم، واللوم كذلك يشمل هؤلاء الذين أخفقوا في واجباتهم نتيجة لضعف إرادتهم فيتساوي مع هؤلاء الذين يتجنبون وينأون عن تحمل الكدح والألم ." />
-                    </FormattedString>
+                        <Span
+                            x:Name="Link6"
+                            Text="علي الجانب الآخر نشجب ونستنكر هؤلاء الرجال المفتونون بنشوة اللحظة الهائمون في رغباتهم فلا يدركون ما يعقبها من الألم والأسي المحتم، واللوم كذلك يشمل هؤلاء الذين أخفقوا في واجباتهم نتيجة لضعف إرادتهم فيتساوي مع هؤلاء الذين يتجنبون وينأون عن تحمل الكدح والألم ."
+                            TextDecorations="Underline"
+                            TextColor="Pink">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnLink6Tapped" />
+                            </Span.GestureRecognizers>
+                        </Span>
+                        </FormattedString>
                 </Label.FormattedText>
             </Label>
-
         </StackLayout>
     </ScrollView>
 </controls:TestContentPage>
