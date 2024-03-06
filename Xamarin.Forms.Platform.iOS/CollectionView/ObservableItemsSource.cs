@@ -237,7 +237,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal object ElementAt(int index)
 		{
-			if (_itemsSource is IList list)
+			if (_itemsSource is IList list && list.Count > index)
 				return list[index];
 
 			int count = 0;
