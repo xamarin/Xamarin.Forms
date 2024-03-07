@@ -1,0 +1,35 @@
+{
+  "hydrated": false,
+  "properties": {
+    "helpUri": "https://eng.ms/docs/microsoft-security/security/azure-security/cloudai-security-fundamentals-engineering/security-integration/guardian-wiki/microsoft-guardian/general/suppressions",
+    "hydrationStatus": "This file does not contain identifying data. It is safe to check into your repo. To hydrate this file with identifying data, run `guardian hydrate --help` and follow the guidance."
+  },
+  "version": "1.0.0",
+  "suppressionSets": {
+    "default": {
+      "name": "default",
+      "createdDate": "2024-03-01 14:41:58Z",
+      "lastUpdatedDate": "2024-03-01 14:41:58Z"
+    }
+  },
+  "results": {
+    "269549c010eaec1246c156e063e64c56200363edbeb4fc9f0640b01793a130d6": {
+      "signature": "269549c010eaec1246c156e063e64c56200363edbeb4fc9f0640b01793a130d6",
+      "alternativeSignatures": [],
+      "target": "debug.keystore",
+      "memberOf": [
+        "default"
+      ],
+      "createdDate": "2024-03-01 14:41:58Z"
+    },
+    "2c3e6f9b445213109abaa36b16af43d146fe88b4fb5f637b388c6fde1f7957e8": {
+      "signature": "2c3e6f9b445213109abaa36b16af43d146fe88b4fb5f637b388c6fde1f7957e8",
+      "alternativeSignatures": [],
+      "target": "Xamarin.Forms.ControlGallery.WindowsUniversal/Xamarin.Forms.ControlGallery.WindowsUniversal_TemporaryKey.pfx",
+      "memberOf": [
+        "default"
+      ],
+      "createdDate": "2024-03-01 14:41:58Z"
+    }
+  }
+}

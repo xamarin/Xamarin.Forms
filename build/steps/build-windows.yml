@@ -1,12 +1,15 @@
 parameters:
   msbuildExtraArguments : ''
   artifactsTargetFolder: '$(build.artifactstagingdirectory)'
-  artifactsName: 'win_build'
   nunitTestFolder: '$(build.sourcesdirectory)'
   includeUwp: 'true'
   includeAndroid: 'true'
   includeNonUwpAndNonAndroid: 'true'
   runTests: 'true'
+  artifact: 'nuget'
+  artifactBinaries: 'win_build'
+  artifactApiscan: 'apiscan'
+  publishArtifacts: true
 
 steps:
   - checkout: self
@@ -59,7 +62,7 @@ steps:
         Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/Add-AppDevPackage.resources/**
         Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/TelemetryDependencies/**
         Xamarin.Forms.ControlGallery.WindowsUniversal/AppPackages/*/Dependencies/x86/**
-      TargetFolder: '$(build.artifactstagingdirectory)'
+      TargetFolder: ${{ parameters.artifactsTargetFolder }}
 
   - script: build.cmd -Target BuildForNuget -ScriptArgs '--BUILD_CONFIGURATION="$(BuildConfiguration)"','--Build_ArtifactStagingDirectory="$(Build.ArtifactStagingDirectory)"','--MSBUILD="$(msbuild)"'
     name: winbuild
@@ -171,7 +174,6 @@ steps:
         Xamarin.Forms.DualScreen.UnitTests/bin/$(BuildConfiguration)/**/*.dll
 
       TargetFolder: ${{ parameters.artifactsTargetFolder }}
-
     
   - task: CopyFiles@2
     displayName: 'Copy Android Files dlls'
@@ -212,7 +214,7 @@ steps:
     condition: eq(variables['BuildConfiguration'], 'Release')
     inputs:
       SourceFolder: Xamarin.Forms.Core.Windows.UITests/bin/Debug/
-      TargetFolder: '$(build.artifactstagingdirectory)/UITests'
+      TargetFolder: '${{ parameters.artifactsTargetFolder }}/UITests'
 
   - task: CopyFiles@2
     displayName: 'Copy Certificate File'
@@ -220,12 +222,35 @@ steps:
     inputs:
       Contents: |
         Xamarin.Forms.ControlGallery.WindowsUniversal\Xamarin.Forms.ControlGallery.WindowsUniversal_TemporaryKey.pfx
-      TargetFolder: '$(build.artifactstagingdirectory)'
+      TargetFolder: ${{ parameters.artifactsTargetFolder }}
       CleanTargetFolder: false
       flattenFolders: false
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: ${{ parameters.artifactsName }}'
-    condition: always()
+  - task: CopyFiles@2
+    displayName: 'Copy releasable binaries for compliance scanning'
+    condition: eq(variables['BuildConfiguration'], 'Release')
     inputs:
-      ArtifactName: ${{ parameters.artifactsName }}
+      Contents: |
+        **/bin/Release/**/Xamarin.Forms.*.dll
+        **/bin/Release/**/FormsViewGroup.dll
+        !**/bin/Release/**/*.UnitTests.dll
+        !**/bin/Release/**/*.ControlGallery.*.dll
+        !**/bin/Release/**/Xamarin.Forms.Controls.dll
+      TargetFolder: '$(build.artifactstagingdirectory)/${{ parameters.artifactApiscan }}'
+      CleanTargetFolder: true
+      flattenFolders: true
+
+  - ${{ if eq(parameters.publishArtifacts, 'true') }}:
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Releasable Binaries for compliance scanning'
+      condition: eq(variables['BuildConfiguration'], 'Release')
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)/${{ parameters.artifactApiscan }}'
+        ArtifactName: ${{ parameters.artifactApiscan }}
+
+  - ${{ if eq(parameters.publishArtifacts, 'true') }}:
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: ${{ parameters.artifactBinaries }}'
+      condition: always()
+      inputs:
+        ArtifactName: ${{ parameters.artifactBinaries }}

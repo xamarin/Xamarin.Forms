@@ -1,29 +1,34 @@
 parameters:
   nugetForDebug: 'true'
   nugetForRelease: 'true'
+  publishArtifacts: 'true'
+  binariesArtifact: 'win_build'
+  artifact: 'nuget'
+  artifactsTargetFolder: '$(build.artifactstagingdirectory)/nuget'
+
 
 steps:
   - checkout: self
     clean: true
 
-  - task: DownloadBuildArtifacts@0
-    displayName: 'Download build artifact win_build'
+  - task: DownloadBuildArtifacts@1
+    displayName: 'Download build artifact ${{ parameters.binariesArtifact }}'
     inputs:
-      artifactName: 'win_build'
-      downloadPath: '$(Build.ArtifactsDirectory)'
+      artifactName: ${{ parameters.binariesArtifact }}
+      downloadPath: '$(Build.ArtifactsDirectory)/${{ parameters.binariesArtifact }}'
 
 
   - task: CopyFiles@2
     displayName: 'Copy Files to: $(System.DefaultWorkingDirectory)'
     inputs:
-      SourceFolder: '$(Build.ArtifactsDirectory)/win_build'
+      SourceFolder: '$(Build.ArtifactsDirectory)/${{ parameters.binariesArtifact }}'
       TargetFolder: '$(System.DefaultWorkingDirectory)'
 
   - task: CopyFiles@2
     displayName: 'Copy SignList.xml Files'
     inputs:
       Contents: build/SignList.xml
-      TargetFolder: '$(build.artifactstagingdirectory)/nuget'
+      TargetFolder: ${{ parameters.artifactsTargetFolder}}
       flattenFolders: true
 
   - task: PowerShell@1
@@ -40,62 +45,25 @@ steps:
 
   - task: NuGetCommand@2
     displayName: 'Make NuGet Package'
-    condition: eq(${{ parameters.nugetForDebug }}, 'true')
     inputs:
       command: pack
       feedsToUse: config
       packagesToPack: '.nuspec/*.nuspec'
-      packDestination: '$(Build.ArtifactStagingDirectory)/nuget/debug'
+      packDestination: '${{ parameters.artifactsTargetFolder}}/$(BuildConfiguration)'
       versioningScheme: byEnvVar
       versionEnvVar: nugetPackageVersion
-      configuration: Debug
+      configuration: $(BuildConfiguration)
 
   - task: CopyFiles@2
     displayName: 'Copy SignList.xml Files'
-    condition: eq(${{ parameters.nugetForDebug }}, 'true')
     inputs:
       Contents: build/SignList.xml
-      TargetFolder: '$(build.artifactstagingdirectory)/nuget/debug'
+      TargetFolder: '${{ parameters.artifactsTargetFolder}}/$(BuildConfiguration)'
       flattenFolders: true
 
-
-  # - powershell: |
-  #      $buildConfiguration = "Release"
-  #      $formsNugetVersion = "" + $env:nugetPackageVersion
-
-  #      Write-Host("Update nuspecs")
-  #      Get-ChildItem './.nuspec/*.nuspec' -Recurse | Foreach-Object {
-  #           (Get-Content $_) | Foreach-Object  {
-  #               $_ -replace '\$version\$', $formsNugetVersion `
-  #                  -replace '\$Configuration\$', $buildConfiguration `
-  #          } | Set-Content $_
-  #      }
-  #   failOnStderr: true
-  #   displayName: 'Update nuspecs'
-  #   condition: and(succeeded(), or(eq(${{ parameters.nugetForRelease }}, 'true') , or(eq(variables['Sign'], 'true'), or(eq(variables['DefaultBuildConfiguration'], 'Release'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/')))))
-
-  - task: NuGetCommand@2
-    displayName: 'Make NuGet Package Release'
-    inputs:
-      command: pack
-      feedsToUse: config
-      packagesToPack: '.nuspec/*.nuspec'
-      packDestination: '$(Build.ArtifactStagingDirectory)/nuget/release'
-      versioningScheme: byEnvVar
-      versionEnvVar: nugetPackageVersion
-      configuration: Release
-    condition: and(succeeded(), or(eq(${{ parameters.nugetForRelease }}, 'true') , or(eq(variables['Sign'], 'true'), or(eq(variables['DefaultBuildConfiguration'], 'Release'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/tags/')))))
-
-  - task: CopyFiles@2
-    displayName: 'Copy SignList.xml Files'
-    condition: eq(${{ parameters.nugetForRelease }}, 'true')
-    inputs:
-      Contents: build/SignList.xml
-      TargetFolder: '$(build.artifactstagingdirectory)/nuget/release'
-      flattenFolders: true
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: nuget'
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)/nuget'
-      ArtifactName: nuget
+  - ${{ if eq(parameters.publishArtifacts, 'true') }}:
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: nuget'
+      inputs:
+        PathtoPublish: '${{ parameters.artifactsTargetFolder }}/$(BuildConfiguration)'
+        ArtifactName: ${{ parameters.artifact }}

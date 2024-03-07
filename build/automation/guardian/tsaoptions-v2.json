@@ -1,0 +1,11 @@
+{
+    "codebaseName": "xamarin.xamarinforms_5.0.0",
+    "notificationAliases": [
+        "dotnet-maui-eng@microsoft.com"
+    ],
+    "instanceUrl": "https://devdiv.visualstudio.com/",
+    "projectName": "DevDiv",
+    "areaPath": "DevDiv\\VS Client - Runtime SDKs\\Xamarin Forms",
+    "iterationPath": "DevDiv",
+    "allTools": true
+}
