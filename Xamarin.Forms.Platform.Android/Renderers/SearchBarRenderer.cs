@@ -46,7 +46,6 @@ namespace Xamarin.Forms.Platform.Android
 		bool SearchView.IOnQueryTextListener.OnQueryTextSubmit(string query)
 		{
 			((ISearchBarController)Element).OnSearchButtonPressed();
-			ClearFocus(Control);
 			return true;
 		}
 
@@ -225,7 +224,6 @@ namespace Xamarin.Forms.Platform.Android
 			SearchView control = Control;
 			if (!model.IsEnabled)
 			{
-				ClearFocus(control);
 				// removes cursor in SearchView
 				control.SetInputType(InputTypes.Null);
 			}

@@ -12,7 +12,5 @@ namespace Xamarin.Forms.Platform.Android
 		void LoadView();
 
 		event EventHandler SearchConfirmed;
-
-		bool ShowKeyboardOnAttached { get; set; }
 	}
 }
