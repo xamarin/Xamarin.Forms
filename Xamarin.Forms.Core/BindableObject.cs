@@ -598,16 +598,15 @@ namespace Xamarin.Forms
 			if (checkAccess && property.IsReadOnly)
 				throw new InvalidOperationException($"The BindableProperty \"{property.PropertyName}\" is readonly.");
 
+			if (property.CoerceValue == null)
+				return;
+
 			BindablePropertyContext bpcontext = GetContext(property);
 			if (bpcontext == null)
 				return;
 
-			object currentValue = bpcontext.Value;
-
-			if (property.ValidateValue != null && !property.ValidateValue(this, currentValue))
-				throw new ArgumentException($"Value is an invalid value for {property.PropertyName}", nameof(currentValue));
-
-			property.CoerceValue?.Invoke(this, currentValue);
+			object coercedValue = property.CoerceValue.Invoke(this, bpcontext.Value);
+			SetValueCore(property, coercedValue, SetValueFlags.None, checkAccess ? SetValuePrivateFlags.CheckAccess : 0);
 		}
 
 		[Flags]
