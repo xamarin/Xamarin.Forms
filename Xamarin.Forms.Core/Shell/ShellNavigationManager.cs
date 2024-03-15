@@ -163,7 +163,11 @@ namespace Xamarin.Forms
 			}
 			else
 			{
-				await _shell.CurrentItem.CurrentItem.GoToAsync(navigationRequest, queryData, animate, isRelativePopping);
+				// TODO get rid of this hack and fix so if there's a stack the current page doesn't display
+				await Device.InvokeOnMainThreadAsync(() =>
+				{
+					return _shell.CurrentItem.CurrentItem.GoToAsync(navigationRequest, queryData, animate, isRelativePopping);
+				});
 			}
 
 			(_shell as IShellController).UpdateCurrentState(source);
