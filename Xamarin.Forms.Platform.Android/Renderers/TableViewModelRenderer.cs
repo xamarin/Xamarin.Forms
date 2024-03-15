@@ -160,8 +160,6 @@ namespace Xamarin.Forms.Platform.Android
 
 				_restoreFocus = null;
 			}
-			else if (aview.HasFocus)
-				aview.ClearFocus();
 
 			return layout;
 		}
