@@ -24,13 +24,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public static (UIView NativeView, VisualElement FormsElement) RealizeView(object view, DataTemplate viewTemplate, ItemsView itemsView)
 		{
-			if (viewTemplate != null)
-			{
-				// Run this through the extension method in case it's really a DataTemplateSelector
-				viewTemplate = viewTemplate.SelectDataTemplate(view, itemsView);
+			// Run this through the extension method in case it's really a DataTemplateSelector
+			var itemTemplate = viewTemplate?.SelectDataTemplate(view, itemsView) ??
+			                   DataTemplateHelpers.DefaultContentTemplate;
 
+			if (itemTemplate != null)
+			{
 				// We have a template; turn it into a Forms view 
-				var templateElement = viewTemplate.CreateContent() as View;
+				var templateElement = itemTemplate.CreateContent() as View;
 
 				// Make sure the Visual property is available when the renderer is created
 				PropertyPropagationExtensions.PropagatePropertyChanged(null, templateElement, itemsView);

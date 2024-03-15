@@ -130,13 +130,15 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			if (_renderer?.ContainerElement == null || _currentTemplate != formsTemplate
-				|| formsTemplate is DataTemplateSelector)
+			var template = formsTemplate.SelectDataTemplate(dataContext, container) ??
+			               DataTemplateHelpers.DefaultContentTemplate;
+
+			if (_renderer?.ContainerElement == null || _currentTemplate != template)
 			{
 				// If the content has never been realized (i.e., this is a new instance), 
 				// or if we need to switch DataTemplates (because this instance is being recycled)
 				// then we'll need to create the content from the template 
-				_visualElement = formsTemplate.CreateContent(dataContext, container) as VisualElement;
+				_visualElement = template.CreateContent() as VisualElement;
 				_visualElement.BindingContext = dataContext;
 				_renderer = Platform.CreateRenderer(_visualElement);
 				Platform.SetRenderer(_visualElement, _renderer);
@@ -150,7 +152,7 @@ namespace Xamarin.Forms.Platform.UWP
 				SetNativeStateConsistent(_visualElement);
 
 				// Keep track of the template in case this instance gets reused later
-				_currentTemplate = formsTemplate;
+				_currentTemplate = template;
 			}
 			else
 			{

@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 
 namespace Xamarin.Forms.Internals
@@ -16,7 +17,38 @@ namespace Xamarin.Forms.Internals
 
 		public static object CreateContent(this DataTemplate self, object item, BindableObject container)
 		{
-			return self.SelectDataTemplate(item, container).CreateContent();
+			return self.SelectDataTemplate(item, container)?.CreateContent();
+		}
+	}
+
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public  static class DataTemplateHelpers
+	{
+		public readonly static DataTemplate DefaultContentTemplate =
+			new Lazy<DataTemplate>(
+				() => new DataTemplate(CreateCoreContent)).Value;
+
+		public readonly static DataTemplate DefaultPageTemplate =
+			new Lazy<DataTemplate>(
+				() => new DataTemplate(() =>
+				                       {
+					                       var page = new ContentPage() { Content = CreateCoreContent() };
+					                       page.SetBinding(Page.TitleProperty, ".");
+
+					                       return page;
+				                       })).Value;
+
+		static View CreateCoreContent()
+		{
+			var label = new Label();
+			label.SetBinding(Label.TextProperty, ".");
+
+			return new StackLayout()
+			       {
+				       HorizontalOptions = LayoutOptions.Center,
+				       VerticalOptions = LayoutOptions.Center,
+				       Children = { label }
+			       };
 		}
 	}
 }

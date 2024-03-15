@@ -53,8 +53,8 @@ namespace Xamarin.Forms
 
 		Page IShellContentController.GetOrCreateContent()
 		{
-			var template = ContentTemplate;
 			var content = Content;
+			var template = ContentTemplate?.SelectDataTemplate(content, this);
 
 			Page result = null;
 			if (template == null)
@@ -64,7 +64,7 @@ namespace Xamarin.Forms
 			}
 			else
 			{
-				result = ContentCache ?? (Page)template.CreateContent(content, this);
+				result = ContentCache ?? (Page)template.CreateContent();
 				ContentCache = result;
 			}
 

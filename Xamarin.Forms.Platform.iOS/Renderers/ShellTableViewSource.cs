@@ -43,10 +43,6 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		protected virtual DataTemplate DefaultItemTemplate => null;
-
-		protected virtual DataTemplate DefaultMenuItemTemplate => null;
-
 		internal void ReSyncCache()
 		{
 			var newGroups = ((IShellController)_context.Shell).GenerateFlyoutGrouping();
@@ -138,18 +134,8 @@ namespace Xamarin.Forms.Platform.iOS
 			var context = Groups[section][row];
 
 			DataTemplate template = ShellController.GetFlyoutItemDataTemplate(context);
-			if (context is IMenuItemController)
-			{
-				if (DefaultMenuItemTemplate != null && _context.Shell.MenuItemTemplate == template)
-					template = DefaultMenuItemTemplate;
-			}
-			else
-			{
-				if (DefaultItemTemplate != null && _context.Shell.ItemTemplate == template)
-					template = DefaultItemTemplate;
-			}
 
-			var cellId = ((IDataTemplateController)template.SelectDataTemplate(context, _context.Shell)).IdString;
+			var cellId = ((IDataTemplateController)template).IdString;
 
 			UIContainerCell cell;
 			if (!_cells.TryGetValue(context, out cell))

@@ -24,7 +24,7 @@ namespace Xamarin.Forms
 				throw new NotSupportedException(
 					"DataTemplateSelector.OnSelectTemplate must not return another DataTemplateSelector");
 
-			if (recycle)
+			if (recycle && dataTemplate != null)
 			{
 				if (!dataTemplate.CanRecycle)
 					throw new NotSupportedException(

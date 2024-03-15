@@ -230,6 +230,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			var item = templatedList.ListProxy[(int)indexPath.Item];
 
 			itemTemplate = selector.SelectTemplate(item, List);
+
+			// check again to guard against DataTemplateSelectors that return null
+			if (itemTemplate == null)
+				return DefaultItemTemplateId;
+
 			int key;
 			if (!_templateToId.TryGetValue(itemTemplate, out key))
 			{

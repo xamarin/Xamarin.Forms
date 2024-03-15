@@ -1,4 +1,5 @@
 using System;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -20,11 +21,7 @@ namespace Xamarin.Forms
 
 		protected override ContentPage CreateDefault(object item)
 		{
-			var page = new ContentPage();
-			if (item != null)
-				page.Title = item.ToString();
-
-			return page;
+			return (ContentPage)DataTemplateHelpers.DefaultPageTemplate.CreateContent();
 		}
 	}
 }

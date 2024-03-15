@@ -96,7 +96,8 @@ namespace Xamarin.Forms.Platform.iOS
 			var oldElement = VisualElementRenderer?.Element;
 
 			// Run this through the extension method in case it's really a DataTemplateSelector
-			var itemTemplate = template.SelectDataTemplate(bindingContext, itemsView);
+			var itemTemplate = template?.SelectDataTemplate(bindingContext, itemsView) ??
+			                   DataTemplateHelpers.DefaultContentTemplate;
 
 			if (itemTemplate != CurrentTemplate)
 			{
@@ -135,6 +136,9 @@ namespace Xamarin.Forms.Platform.iOS
 						BackgroundColor = UIColor.Clear
 					};
 				}
+
+				// Keep track of the template in case this instance gets reused later
+				CurrentTemplate = itemTemplate;
 			}
 			else
 			{
@@ -155,8 +159,6 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 				}
 			}
-
-			CurrentTemplate = itemTemplate;
 		}
 
 		public void Unbind()

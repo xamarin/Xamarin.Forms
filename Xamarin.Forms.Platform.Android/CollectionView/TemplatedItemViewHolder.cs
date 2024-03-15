@@ -6,8 +6,8 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Platform.Android
 {
 	public class TemplatedItemViewHolder : SelectableViewHolder
-	{
-		readonly ItemContentView _itemContentView;
+    {
+        readonly ItemContentView _itemContentView;
 		readonly DataTemplate _template;
 		DataTemplate _selectedTemplate;
 
@@ -48,11 +48,12 @@ namespace Xamarin.Forms.Platform.Android
 		public void Bind(object itemBindingContext, ItemsView itemsView,
 			Action<Size> reportMeasure = null, Size? size = null)
 		{
-			var template = _template.SelectDataTemplate(itemBindingContext, itemsView);
+			var template = _template?.SelectDataTemplate(itemBindingContext, itemsView) ??
+			               DataTemplateHelpers.DefaultContentTemplate;
 
 			var templateChanging = template != _selectedTemplate;
 
-			if (templateChanging)
+            if (templateChanging)
 			{
 				// Clean up any content we're still holding on to
 				_itemContentView.Recycle();

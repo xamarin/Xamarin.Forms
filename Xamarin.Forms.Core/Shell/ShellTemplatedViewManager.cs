@@ -49,9 +49,11 @@ namespace Xamarin.Forms
 			Shell shell)
 		{
 			View newContentView = currentViewData as View;
-			if (newViewTemplate != null)
+
+			DataTemplate template = newViewTemplate?.SelectDataTemplate(newViewTemplate, shell);
+			if (template != null)
 			{
-				newContentView = (View)newViewTemplate.CreateContent(newViewTemplate, shell);
+				newContentView = (View)template.CreateContent();
 			}
 
 			SetView(ref localViewRef,

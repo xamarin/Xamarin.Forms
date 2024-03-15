@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using ElmSharp;
+using Xamarin.Forms.Internals;
 using ESize = ElmSharp.Size;
 using XLabel = Xamarin.Forms.Label;
 
@@ -10,6 +11,24 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 {
 	public class ItemDefaultTemplateAdaptor : ItemTemplateAdaptor
 	{
+		public static readonly DataTemplate DefaultTemplate =
+			new Lazy<DataTemplate>(() => new DataTemplate(
+				                       () =>
+				                       {
+					                       var label = new XLabel { TextColor = Color.Black, };
+					                       
+					                       label.SetBinding(
+						                       XLabel.TextProperty,
+						                       new Binding(".", converter: new ToTextConverter()));
+
+					                       return new StackLayout
+					                              {
+						                              BackgroundColor = Color.White,
+						                              Padding = 30,
+						                              Children = { label }
+					                              };
+				                       })).Value;
+
 		class ToTextConverter : IValueConverter
 		{
 			public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -22,24 +41,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		public ItemDefaultTemplateAdaptor(ItemsView itemsView) : base(itemsView)
 		{
-			ItemTemplate = new DataTemplate(() =>
-			{
-				var label = new XLabel
-				{
-					TextColor = Color.Black,
-				};
-				label.SetBinding(XLabel.TextProperty, new Binding(".", converter: new ToTextConverter()));
-
-				return new StackLayout
-				{
-					BackgroundColor = Color.White,
-					Padding = 30,
-					Children =
-					{
-						label
-					}
-				};
-			});
+			ItemTemplate = DefaultTemplate;
 		}
 	}
 
@@ -84,22 +86,20 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		{
 			if (ItemTemplate is DataTemplateSelector selector)
 			{
-				return selector.SelectTemplate(this[index], Element);
+				// return the selected, or default if returns null.
+				return selector.SelectTemplate(this[index], Element) ??
+				       ItemDefaultTemplateAdaptor.DefaultTemplate;
 			}
 			return base.GetViewCategory(index);
 		}
 
 		public override EvasObject CreateNativeView(int index, EvasObject parent)
 		{
-			View view = null;
-			if (ItemTemplate is DataTemplateSelector selector)
-			{
-				view = selector.SelectTemplate(this[index], Element).CreateContent() as View;
-			}
-			else
-			{
-				view = ItemTemplate.CreateContent() as View;
-			}
+			var itemTemplate = ItemTemplate?.SelectDataTemplate(this[index], Element) ??
+			                   ItemDefaultTemplateAdaptor.DefaultTemplate;
+
+			View view = itemTemplate.CreateContent() as View;
+
 			var renderer = Platform.GetOrCreateRenderer(view);
 			var native = renderer.NativeView;
 
@@ -185,15 +185,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				return createdView.Measure(Forms.ConvertToScaledDP(widthConstraint), Forms.ConvertToScaledDP(heightConstraint), MeasureFlags.IncludeMargins).Request.ToPixel();
 			}
 
-			View view = null;
-			if (ItemTemplate is DataTemplateSelector selector)
-			{
-				view = selector.SelectTemplate(this[index], Element).CreateContent() as View;
-			}
-			else
-			{
-				view = ItemTemplate.CreateContent() as View;
-			}
+			var itemTemplate = ItemTemplate?.SelectDataTemplate(this[index], Element) ??
+			                   ItemDefaultTemplateAdaptor.DefaultTemplate;
+
+			View view = itemTemplate.CreateContent() as View;
+
 			using (var renderer = Platform.GetOrCreateRenderer(view))
 			{
 				view.Parent = Element;

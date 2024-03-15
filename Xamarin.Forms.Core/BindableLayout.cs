@@ -275,9 +275,11 @@ namespace Xamarin.Forms
 				return null;
 			}
 
-			if (dataTemplate != null)
+			var template = dataTemplate?.SelectDataTemplate(layout.BindingContext, layout);
+
+			if (template != null)
 			{
-				var view = (View)dataTemplate.CreateContent();
+				var view = (View)template.CreateContent();
 				view.BindingContext = layout.BindingContext;
 				return view;
 			}

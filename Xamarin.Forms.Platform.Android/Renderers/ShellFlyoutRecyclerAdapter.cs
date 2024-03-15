@@ -36,10 +36,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		IShellController ShellController => (IShellController)Shell;
 
-		protected virtual DataTemplate DefaultItemTemplate => null;
-
-		protected virtual DataTemplate DefaultMenuItemTemplate => null;
-
 		public override int GetItemViewType(int position)
 		{
 			return _listItems[position].Index;
@@ -58,20 +54,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 
-			DataTemplate dataTemplate = ShellController.GetFlyoutItemDataTemplate(item.Element);
-			if (item.Element is IMenuItemController)
-			{
-				if (DefaultMenuItemTemplate != null && Shell.MenuItemTemplate == dataTemplate)
-					dataTemplate = DefaultMenuItemTemplate;
-			}
-			else
-			{
-				if (DefaultItemTemplate != null && Shell.ItemTemplate == dataTemplate)
-					dataTemplate = DefaultItemTemplate;
-			}
-
-			var template = dataTemplate.SelectDataTemplate(item.Element, Shell);
-			return template;
+			return ShellController.GetFlyoutItemDataTemplate(item.Element);
 		}
 
 		public override void OnViewRecycled(Java.Lang.Object holder)
@@ -176,9 +159,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
 		{
-			var template = GetDataTemplate(viewType);
-
-			var content = (View)template.CreateContent();
+			var content = (View)GetDataTemplate(viewType).CreateContent();
 
 			var linearLayout = new LinearLayoutWithFocus(parent.Context)
 			{
