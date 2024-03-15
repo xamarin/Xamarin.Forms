@@ -646,6 +646,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				AView _trackedView;
 				int _trackedViewPrevPosition;
+				int _trackedViewPrevHeight;
 				int _trackedViewPrevTop;
 
 				public void SyncState(AbsListView view)
@@ -653,6 +654,7 @@ namespace Xamarin.Forms.Platform.Android
 					if (view.ChildCount > 0)
 					{
 						_trackedView = GetChild(view);
+						_trackedViewPrevHeight = view.Height;
 						_trackedViewPrevTop = GetY();
 						_trackedViewPrevPosition = view.GetPositionForView(_trackedView);
 					}
@@ -690,7 +692,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				int GetY()
 				{
-					return _position <= 1 ? _trackedView.Bottom : _trackedView.Top;
+					return _position <= 1 ? (_trackedView.Bottom - (_trackedView.Height - _trackedViewPrevHeight)) : _trackedView.Top;
 				}
 			}
 
@@ -747,6 +749,9 @@ namespace Xamarin.Forms.Platform.Android
 						t.SyncState(view);
 					}
 				}
+				
+				if (!wasTracked)
+                    _contentOffset = 0;
 			}
 
 			public void OnScrollStateChanged(AbsListView view, ScrollState scrollState)
