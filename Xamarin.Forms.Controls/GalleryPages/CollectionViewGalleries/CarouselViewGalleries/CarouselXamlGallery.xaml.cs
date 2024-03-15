@@ -35,27 +35,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			IsLoop = loop;
 			_type = type;
 
-			var items = new List<CarouselItem>();
-			for (int i = 0; i < initialItems; i++)
-			{
-				switch (_type)
-				{
-					case CarouselXamlSampleType.Peek:
-						items.Add(new CarouselItem(i, "cardBackground.png"));
-						break;
-					default:
-						items.Add(new CarouselItem(i));
-						break;
-				}
-			}
-
-			MessagingCenter.Subscribe<ExampleTemplateCarousel>(this, "remove", (obj) => Items.Remove(obj.BindingContext as CarouselItem));
-
-			Items = new ObservableCollection<CarouselItem>(items);
-			Count = Items.Count - 1;
-
-			if (startCurrentItem != -1)
-				Selected = Items[startCurrentItem];
+			SetItems(initialItems, startCurrentItem);
 		}
 
 		public bool IsLoop
@@ -124,6 +104,44 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				Selected = newItem;
 			}
 		});
+
+		public ICommand ClearCommand => new Command(ClearItems);
+
+		public ICommand SetCommand => new Command(() =>
+		{
+			SetItems(10, 5);
+		});
+
+		void ClearItems()
+		{
+			Items.Clear();
+			Selected = null;
+		}
+
+		void SetItems(int initialItems, int startCurrentItem)
+		{
+			var items = new List<CarouselItem>();
+			for (int i = 0; i < initialItems; i++)
+			{
+				switch (_type)
+				{
+					case CarouselXamlSampleType.Peek:
+						items.Add(new CarouselItem(i, "cardBackground.png"));
+						break;
+					default:
+						items.Add(new CarouselItem(i));
+						break;
+				}
+			}
+
+			MessagingCenter.Subscribe<ExampleTemplateCarousel>(this, "remove", (obj) => Items.Remove(obj.BindingContext as CarouselItem));
+
+			Items = new ObservableCollection<CarouselItem>(items);
+			Count = Items.Count - 1;
+
+			if (startCurrentItem != -1)
+				Selected = Items[startCurrentItem];
+		}
 	}
 
 	[Preserve(AllMembers = true)]
@@ -142,5 +160,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		public string Image { get; set; }
 
 		public string FeaturedImage { get; set; }
+
+		public override string ToString()
+		{
+			return Index.ToString();
+		}
 	}
 }
