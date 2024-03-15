@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+			 Title="Test 14350"
+             x:Class="Xamarin.Forms.Controls.Issues.Issue14350">
+    <StackLayout>
+        <Label Text="Test for issue #14350" />
+        <Label Text="Refresh enabled" IsVisible="{Binding IsRefreshAllowed}" TextColor="Green"/>
+        <Button Text="Refresh now" Command="{Binding Refresh}" />
+        <StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Label Text="Enable refresh:" HorizontalOptions="FillAndExpand"/>
+                <Switch IsToggled="{Binding IsRefreshAllowed}" />
+            </StackLayout>
+        </StackLayout>
+        <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding Refresh}" IsEnabled="{Binding IsRefreshAllowed}">
+            <ScrollView>
+                <StackLayout>
+                    <Label Text="Pull-to-refresh here" />
+                    <Label Text="Refreshing ..." IsVisible="{Binding IsRefreshing}" TextColor="Orange"/>
+                    <BoxView HeightRequest="30" />
+                    <StackLayout>
+                        <Label Text="Test steps:" />
+                        <Label Text="1. Swipe to refresh" />
+                        <Label Text="2. Refresh/busy indicator appears at the top" />
+                        <Label Text="3. Refresh/busy indicator should remain visible until content changes (refresh is finished). Due to issue #14350 the indicator vanishes too early if Command.CanExecute toggles (in this test after 1 second)." />
+                        <Label Text="4. Repeat steps 1 to 3 multiple times" />
+                    </StackLayout>
+                </StackLayout>
+            </ScrollView>
+        </RefreshView>
+    </StackLayout>
+</ContentPage>

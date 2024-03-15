@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Xamarin.Forms.Platform;
@@ -47,6 +48,9 @@ namespace Xamarin.Forms
 				return value;
 
 			if (!view.IsEnabled)
+				return false;
+
+			if (!view.IsRefreshAllowed)
 				return false;
 
 			if (view.Command == null)
@@ -98,12 +102,22 @@ namespace Xamarin.Forms
 			set { SetValue(CommandParameterProperty, value); }
 		}
 
+		public static readonly BindableProperty IsRefreshAllowedProperty =
+			BindableProperty.Create(nameof(IsRefreshAllowed), typeof(bool), typeof(RefreshView), true, BindingMode.TwoWay);
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public bool IsRefreshAllowed
+		{
+			get { return (bool)GetValue(IsRefreshAllowedProperty); }
+			set { SetValue(IsRefreshAllowedProperty, value); }
+		}
+
 		void RefreshCommandCanExecuteChanged(object sender, EventArgs eventArgs)
 		{
 			if (Command != null)
-				SetValueCore(IsEnabledProperty, Command.CanExecute(CommandParameter));
+				SetValueCore(IsRefreshAllowedProperty, Command.CanExecute(CommandParameter));
 			else
-				SetValueCore(IsEnabledProperty, true);
+				SetValueCore(IsRefreshAllowedProperty, true);
 		}
 
 		public static readonly BindableProperty RefreshColorProperty =

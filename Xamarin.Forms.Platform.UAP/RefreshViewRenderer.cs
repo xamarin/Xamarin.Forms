@@ -105,6 +105,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateContent();
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateIsEnabled();
+			else if (e.PropertyName == RefreshView.IsRefreshAllowedProperty.PropertyName)
+				UpdateIsEnabled();
 			else if (e.PropertyName == RefreshView.IsRefreshingProperty.PropertyName)
 				UpdateIsRefreshing();
 			else if (e.PropertyName == RefreshView.RefreshColorProperty.PropertyName)
@@ -135,7 +137,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateIsEnabled()
 		{
-			Control.IsEnabled = Element.IsEnabled;
+			Control.IsEnabled = Element.IsEnabled && Element.IsRefreshAllowed;
 		}
 
 		void UpdateIsRefreshing()
